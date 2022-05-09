@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: path
+name: ID
+schema:
+  type: string
+required: true
+description: ID of callback

@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  ID:
+    type: string
+    description: Unique ID of the booking.
+  Start:
+    type: string
+    description: Start time of the booking.
+    format: RFC3339
+  End:
+    type: string
+    description: End time of the booking.
+    format: RFC3339
+  Devices:
+    type: array
+    items:
+      type: string
+  You:
+    type: boolean
+    description: If true, this booking was done by you.

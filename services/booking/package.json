@@ -1,0 +1,14 @@
+{
+  "name": "@crosslab/service-booking",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "openapi-lint": "npx @redocly/openapi-cli lint ./api/openapi.yml",
+    "openapi-bundle": "npx @redocly/openapi-cli bundle ./api/openapi.yml --output dist/openapi.json",
+    "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
+  },
+  "author": "Johannes Nau",
+  "license": "UNLICENSED"
+}

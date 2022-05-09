@@ -1,0 +1,735 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Booking Service REST API (internal)",
+    "description": "This is the OpenAPI description of the internal CrossLab Booking Service REST API.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "booking": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "description": "Unique ID of the booking."
+          },
+          "Start": {
+            "type": "string",
+            "description": "Start time of the booking.",
+            "format": "RFC3339"
+          },
+          "End": {
+            "type": "string",
+            "description": "End time of the booking.",
+            "format": "RFC3339"
+          },
+          "Devices": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "You": {
+            "type": "boolean",
+            "description": "If true, this booking was done by you."
+          }
+        }
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "description": "Unique ID per user."
+          },
+          "Roles": {
+            "type": "array",
+            "description": "Array of user roles.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "device": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "description": "Unique ID of the device."
+          },
+          "Type": {
+            "type": "string",
+            "description": "ID of the device type."
+          },
+          "Institute": {
+            "type": "string",
+            "description": "Institute at which the device is located."
+          }
+        }
+      }
+    },
+    "parameters": {
+      "callback_id": {
+        "in": "path",
+        "name": "ID",
+        "schema": {
+          "type": "string"
+        },
+        "required": true,
+        "description": "ID of callback"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "booking",
+      "description": "APIs, die der Buchungsserver zur Verfügung stellt"
+    },
+    {
+      "name": "extern",
+      "description": "APIs, die benötigt werden"
+    },
+    {
+      "name": "intern",
+      "description": "APIs, über die die Buchungssysteme miteinander kommunizieren. Die APIs sollten nicht von anderen verwendet werden."
+    }
+  ],
+  "paths": {
+    "/GetTimetable": {
+      "post": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Returns the timetable for given devices.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "TypeIDs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "MaxNumber": {
+                    "type": "integer"
+                  },
+                  "Start": {
+                    "type": "string",
+                    "description": "Start time of the booking.",
+                    "format": "RFC3339"
+                  },
+                  "End": {
+                    "type": "string",
+                    "description": "End time of the booking.",
+                    "format": "RFC3339"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Timetable of devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "DeviceID": {
+                        "type": "string"
+                      },
+                      "TypeID": {
+                        "type": "string"
+                      },
+                      "Timetable": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/booking"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown type IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/BookDevice": {
+      "put": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Books a list of device for a given user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "DeviceIDs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "Start": {
+                    "type": "string",
+                    "description": "Start time of the booking.",
+                    "format": "RFC3339"
+                  },
+                  "End": {
+                    "type": "string",
+                    "description": "End time of the booking.",
+                    "format": "RFC3339"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "All devices were booked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "BookingID": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown device IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/CancelBooking": {
+      "put": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Cancels a booking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "BookingID": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The booking was cancelled. All associated devices were released."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
+          "423": {
+            "description": "Some of the devices are currently in use, no device booking is cancelled. The locked devices are listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/BookSpontaneous": {
+      "put": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Books a free device for each provided TypeID starting now. The user has no control on the selected devices, the service will try to choose the best available.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "TypeIDs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "Until": {
+                    "type": "string",
+                    "format": "RFC3339"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "All devices were booked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "BookingID": {
+                      "type": "string"
+                    },
+                    "DeviceIDs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown type IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/IsBooked": {
+      "post": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Returns whether a list of devices is currently booked for a user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "User": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "Devices": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "All devices were booked by user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Bookings": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/booking"
+                      }
+                    },
+                    "Until": {
+                      "type": "string",
+                      "format": "RFC3339"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "UserKnown": {
+                      "type": "boolean"
+                    },
+                    "UnknownDevices": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/LockDevice": {
+      "put": {
+        "tags": [
+          "booking"
+        ],
+        "summary": "Locks a device for an experiment ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "User": {
+                    "$ref": "#/components/schemas/user"
+                  },
+                  "Devices": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "All devices were booked by user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Bookings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "URL"
+                      }
+                    },
+                    "Until": {
+                      "type": "string",
+                      "format": "RFC3339"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "UserKnown": {
+                      "type": "boolean"
+                    },
+                    "UnknownDevices": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not booked. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Callback/{ID}": {
+      "put": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/callback_id"
+          }
+        ],
+        "tags": [
+          "booking"
+        ],
+        "summary": "Releases a device and cancel the associated booking",
+        "responses": {
+          "200": {
+            "description": "Callback was successfully called. Device is released."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Unknown Callback"
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/GetDevices": {
+      "post": {
+        "tags": [
+          "extern"
+        ],
+        "summary": "Returns all known devices for a type ID. If nessecary, the type ID will be resolved and looked up at other institutions. type ID might be a group, in which case the returned list will contain devices with different real type IDs.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "TypeIDs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "MaxNumber": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "List of devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/device"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown type ID."
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

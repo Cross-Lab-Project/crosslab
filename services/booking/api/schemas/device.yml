@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  ID:
+    type: string
+    description: Unique ID of the device.
+  Type:
+    type: string
+    description: ID of the device type.
+  Institute:
+    type: string
+    description: Institute at which the device is located.
