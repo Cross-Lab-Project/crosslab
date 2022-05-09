@@ -1,8 +1,8 @@
 {
     "yaml.schemas": {
-        "https://json-schema.org/draft/2020-12/schema": "**/api/schemas/**/*.yml",
-        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference": "**/api/resources/**/*.yml",
-        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/parameter-or-reference": "**/api/parameters/**/*.yml",
-        "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/media-types": "**/api/content/**/*.yml"
+        "https://json-schema.org/draft/2020-12/schema": ["**/api/schemas/**/*.yml", "**/api/meta-schemas/**/*.yml"],
+        "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json": "**/api/resources/**/*.yml",
+        "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json": "**/api/parameters/**/*.yml",
+        "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json": "**/api/content/**/*.yml"
     }
 }

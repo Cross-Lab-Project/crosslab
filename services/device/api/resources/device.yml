@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
   summary: View a registered device.
   tags:

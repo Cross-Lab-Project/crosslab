@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/media-type
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
   type: array
   items:

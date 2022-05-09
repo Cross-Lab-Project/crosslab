@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/parameter-or-reference
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
 in: path
 name: device_id
 description: UUID of the device

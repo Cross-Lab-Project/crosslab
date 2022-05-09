@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
 openapi: 3.1.0
 info:
   title: CrossLab Device Service REST API (internal)
