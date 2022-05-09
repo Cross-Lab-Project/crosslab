@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  serviceType:
+    type: string
+    format: uri
+  serviceId:
+    type: string
+  remoteServiceId:
+    type: string
+additionalProperties: true

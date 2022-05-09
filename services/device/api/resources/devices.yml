@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference
+get:
+  summary: List devices
+  tags:
+    - device
+  security:
+    - JWT:
+      - device
+      - device:list
+  responses:
+    200:
+      description: The list of all devices.
+      content:
+        application/json:
+          $ref: '../content/device_list.yml'
+post:
+  summary: Create a new device
+  tags:
+    - device
+  security:
+    - JWT:
+      - device
+      - device:create
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: '../content/device.yml'
+  responses:
+    201:
+      description: The device was created. A JSON representation of the new device is returned.
+      content:
+        application/json:
+          $ref: '../content/device.yml'

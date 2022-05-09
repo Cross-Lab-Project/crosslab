@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/parameter-or-reference
+name: closedUrl
+in: query
+required: false
+description: |
+  An URL that will be called once the peer connection is closed.
+schema:
+  type: string
+  format: uri

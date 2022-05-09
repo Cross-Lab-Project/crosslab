@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/media-type
+schema:
+  type: array
+  items:
+    $ref: '../schemas/peerconnection_overview.yml'

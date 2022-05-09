@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=../schemas/device_concrete.yml
+name: ATmega328P
+description: |-
+  8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash
+owner: https://api.example.com/groups/goldi
+type: device
+services:
+  - serviceType: https://api.example.com/services/electrical
+    serviceId: pins
+    serviceDirection: prosumer
+    interfaces:
+      - interfaceType: gpio
+        availableSignals:
+          gpio:
+            - PB0
+            - PB1
+            - PB2
+            - PB3
+            - PB4
+            - PB5
+            - PB6
+            - PB7
+            - PC0
+            - PC1
+            - PC2
+            - PC3
+            - PC4
+            - PC5
+            - PC6
+            - PD0
+            - PD1
+            - PD2
+            - PD3
+            - PD4
+            - PD5
+            - PD6
+            - PD7
+      - interfaceType: i2c
+        availableSignals:
+          sda:
+            - PC4
+          scl:
+            - PC5
+      - interfaceType: spi
+        roles:
+          - master
+          - slave
+        availableSignals:
+          miso:
+            - PB4
+          mosi:
+            - PB3
+          sck:
+            - PB5
+          ss-slave:
+            - PB2
+          ss-master:
+            - PB0
+            - PB1
+            - PB2
+            - PB6
+            - PB7
+            - PC0
+            - PC1
+            - PC2
+            - PC3
+            - PC4
+            - PC5
+            - PC6
+            - PD0
+            - PD1
+            - PD2
+            - PD3
+            - PD4
+            - PD5
+            - PD6
+            - PD7

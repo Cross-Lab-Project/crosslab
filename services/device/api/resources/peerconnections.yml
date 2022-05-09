@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference
+get:
+  summary: List Peer Connection
+  tags:
+    - peerconnection
+  security:
+    - JWT:
+      - peerconnection
+      - peerconnection:list
+  responses:
+    200:
+      description: The list of all peerconnection.
+      content:
+        application/json:
+          $ref: '../content/peerconnection_list.yml'
+post:
+  summary: Create a new Peer Connection
+  tags:
+    - peerconnection
+  security:
+    - JWT:
+      - peerconnection
+      - peerconnection:create
+  parameters:
+    - $ref: '../parameters/closed_url.yml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: '../content/peerconnection.yml'
+  responses:
+    201:
+      description: The peer connection was created. A JSON representation of the new peer connection is returned.
+      content:
+        application/json:
+          $ref: '../content/peerconnection.yml'
+  callbacks:
+    closed:
+      '{$request.query.closedUrl}':
+        post:
+          requestBody:
+            description: test
+            content:
+              application/json:
+                $ref: '../content/peerconnection_event.yml'
+          responses:
+            201:
+              description: The event was successfully processed.

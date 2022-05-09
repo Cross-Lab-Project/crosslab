@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/media-type
+schema:
+  type: object
+  properties:
+    callbackType:
+      type: string
+      enum:
+        - event
+    eventType:
+      type: string
+      enum:
+        - peerconnection-closed
+    peerconnection:
+      $ref: '../schemas/peerconnection.yml'

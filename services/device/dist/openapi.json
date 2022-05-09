@@ -1,0 +1,1094 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Device Service REST API (internal)",
+    "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "device_overview": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the device"
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "device_concrete": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ]
+      },
+      "device_group": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the device",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "peerconnection_overview": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the peerconnection",
+            "format": "uri",
+            "readOnly": true
+          },
+          "devices": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string",
+                  "description": "URL of the device",
+                  "format": "uri"
+                }
+              }
+            }
+          }
+        }
+      },
+      "service_config": {
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "remoteServiceId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "peerconnection": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the device",
+                      "format": "uri"
+                    },
+                    "config": {
+                      "type": "object",
+                      "properties": {
+                        "services": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/service_config"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "UUID of the device",
+        "required": true,
+        "schema": {
+          "type": "uuid"
+        }
+      },
+      "closed_url": {
+        "name": "closedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called once the peer connection is closed.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "peerconnection_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "UUID of the device",
+        "required": true,
+        "schema": {
+          "type": "uuid"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "device",
+      "description": "This tag describes the device resource."
+    },
+    {
+      "name": "peerconnection",
+      "description": "This tag describes the peer connection resource."
+    }
+  ],
+  "paths": {
+    "/devices": {
+      "get": {
+        "summary": "List devices",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all devices.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/device_overview"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/device_concrete"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_group"
+                  }
+                ]
+              },
+              "examples": {
+                "microcontroller": {
+                  "value": {
+                    "name": "ATmega328P",
+                    "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                    "owner": "https://api.example.com/groups/goldi",
+                    "type": "device",
+                    "services": [
+                      {
+                        "serviceType": "https://api.example.com/services/electrical",
+                        "serviceId": "pins",
+                        "serviceDirection": "prosumer",
+                        "interfaces": [
+                          {
+                            "interfaceType": "gpio",
+                            "availableSignals": {
+                              "gpio": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB3",
+                                "PB4",
+                                "PB5",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "i2c",
+                            "availableSignals": {
+                              "sda": [
+                                "PC4"
+                              ],
+                              "scl": [
+                                "PC5"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "spi",
+                            "roles": [
+                              "master",
+                              "slave"
+                            ],
+                            "availableSignals": {
+                              "miso": [
+                                "PB4"
+                              ],
+                              "mosi": [
+                                "PB3"
+                              ],
+                              "sck": [
+                                "PB5"
+                              ],
+                              "ss-slave": [
+                                "PB2"
+                              ],
+                              "ss-master": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The device was created. A JSON representation of the new device is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/devices/{device_id}": {
+      "get": {
+        "summary": "View a registered device.",
+        "tags": [
+          "device"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the device",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an existing device.",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the device",
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/device_concrete"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_group"
+                  }
+                ]
+              },
+              "examples": {
+                "microcontroller": {
+                  "value": {
+                    "name": "ATmega328P",
+                    "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                    "owner": "https://api.example.com/groups/goldi",
+                    "type": "device",
+                    "services": [
+                      {
+                        "serviceType": "https://api.example.com/services/electrical",
+                        "serviceId": "pins",
+                        "serviceDirection": "prosumer",
+                        "interfaces": [
+                          {
+                            "interfaceType": "gpio",
+                            "availableSignals": {
+                              "gpio": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB3",
+                                "PB4",
+                                "PB5",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "i2c",
+                            "availableSignals": {
+                              "sda": [
+                                "PC4"
+                              ],
+                              "scl": [
+                                "PC5"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "spi",
+                            "roles": [
+                              "master",
+                              "slave"
+                            ],
+                            "availableSignals": {
+                              "miso": [
+                                "PB4"
+                              ],
+                              "mosi": [
+                                "PB3"
+                              ],
+                              "sck": [
+                                "PB5"
+                              ],
+                              "ss-slave": [
+                                "PB2"
+                              ],
+                              "ss-master": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed device",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a registered device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The device was delete."
+          }
+        }
+      }
+    },
+    "/peerconnections": {
+      "get": {
+        "summary": "List Peer Connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all peerconnection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/peerconnection_overview"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new Peer Connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/closed_url"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The peer connection was created. A JSON representation of the new peer connection is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          }
+        },
+        "callbacks": {
+          "closed": {
+            "{$request.query.closedUrl}": {
+              "post": {
+                "requestBody": {
+                  "description": "test",
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-closed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/peerconnections/{peerconnection_id}": {
+      "get": {
+        "summary": "View a peer connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the device peer connection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a peer connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ]
+      }
+    }
+  }
+}

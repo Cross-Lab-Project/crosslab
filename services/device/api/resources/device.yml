@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference
+get:
+  summary: View a registered device.
+  tags:
+    - device
+  parameters:
+    - $ref: '../parameters/device_id.yml'
+  security:
+    - JWT:
+      - device
+      - device:list
+  responses:
+    200:
+      description: The JSON Representation of the device
+      content:
+        application/json:
+          $ref: '../content/device.yml'
+patch:
+  summary: Update an existing device.
+  tags:
+    - device
+  security:
+    - JWT:
+      - device
+      - device:edit
+  parameters:
+    - $ref: '../parameters/device_id.yml'
+  requestBody:
+    description: Update the device
+    content:
+      application/json:
+        $ref: '../content/device.yml'
+  responses:
+    200:
+      description: The JSON Representation of the changed device
+      content:
+        application/json:
+          $ref: '../content/device.yml'
+delete:
+  summary: Delete a registered device
+  tags:
+    - device
+  security:
+    - JWT:
+      - device
+      - device:create
+  parameters:
+    - $ref: '../parameters/device_id.yml'
+  responses:
+    204:
+      description: The device was delete.

@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/path-item-or-reference
+get:
+  summary: View a peer connection
+  tags:
+    - peerconnection
+  security:
+    - JWT:
+      - peerconnection
+      - peerconnection:list
+  responses:
+    200:
+      description: The JSON Representation of the device peer connection
+      content:
+        application/json:
+          $ref: '../content/peerconnection.yml'
+delete:
+  summary: Delete a peer connection
+  tags:
+    - peerconnection
+  security:
+    - JWT:
+      - peerconnection
+      - peerconnection:create
+  parameters:
+    - $ref: '../parameters/peerconnection_id.yml'

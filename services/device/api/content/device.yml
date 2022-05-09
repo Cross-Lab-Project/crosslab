@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/media-type
+schema:
+  anyOf:
+    - $ref: '../schemas/device_concrete.yml'
+    - $ref: '../schemas/device_group.yml'
+examples:
+  microcontroller:
+    value:
+      $ref: '../examples/device_microcontroller.yml'

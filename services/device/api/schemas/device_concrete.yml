@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+allOf:
+  - $ref: ./device_overview.yml
+  - type: object
+    properties:
+      type:
+        const: device
+      experiment:
+        type: string
+        format: uri
