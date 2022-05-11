@@ -5,6 +5,7 @@ get:
     - device
   parameters:
     - $ref: '../parameters/device_id.yml'
+    - $ref: '../parameters/flat_group.yml'
   security:
     - JWT:
       - device
