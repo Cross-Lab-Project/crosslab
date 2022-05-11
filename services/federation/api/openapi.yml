@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab Device Service REST API (internal)
+  description: |-
+    This is the OpenAPI description of the internal CrossLab Device Service REST API.
+  version: 0.0.1
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description.
+tags:
+  - name: device
+    description: |-
+      This tag describes the device resource.
+  - name: proxy
+    description: |-
+      An authorized service can use these endpoints to request external resources that are supplied in the URL query parameters.
+      The request made to the proxy endpoint will be forwarded as seen to the external server, including all HTTP Headers and the request body.
+      For known servers the proxy will also add authentification details to the request, so that the original service doesn't need to handle the authentification with possible multiple external resources.
+      The response will be the proxied response from the external server.
+
+      The idea is that a service can use external resource by only changing the url to the address of the federation service.
+paths:
+  /institutions:
+    $ref: './resources/institutions.yml'
+  /institutions/{institution_id}:
+    $ref: './resources/institution.yml'
+  /proxy:
+    $ref: './resources/proxy.yml'

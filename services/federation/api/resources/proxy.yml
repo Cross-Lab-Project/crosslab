@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: Make an authorized GET request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+post:
+  summary: Make an authorized POST request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+put:
+  summary: Make an authorized PUT request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+patch:
+  summary: Make an authorized PATCH request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+delete:
+  summary: Make an authorized DELETE request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+head:
+  summary: Make an authorized HEAD request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+options:
+  summary: Make an authorized OPTIONS request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.
+trace:
+  summary: Make an authorized TRACE request to an external resource.
+  tags:
+    - proxy
+  security:
+    - JWT:
+      - authorized_proxy
+  parameters:
+    - $ref: '../parameters/url.yml'
+  responses:
+    200:
+      description: The response of the external resource.

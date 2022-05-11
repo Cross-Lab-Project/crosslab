@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: List institutions
+  tags:
+    - institution
+  security:
+    - JWT:
+      - institution
+      - institution:list
+  responses:
+    200:
+      description: The list of all institutions.
+      content:
+        application/json:
+          $ref: '../content/institution_list.yml'
+post:
+  summary: Create a new institution
+  tags:
+    - institution
+  security:
+    - JWT:
+      - institution
+      - institution:create
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: '../content/institution.yml'
+  responses:
+    201:
+      description: The institution was created. A JSON representation of the new institution is returned.
+      content:
+        application/json:
+          $ref: '../content/institution.yml'

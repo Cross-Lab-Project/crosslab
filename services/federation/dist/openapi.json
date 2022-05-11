@@ -1,0 +1,429 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Device Service REST API (internal)",
+    "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "institution": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri"
+          },
+          "api": {
+            "type": "string",
+            "format": "uri"
+          },
+          "federatedApi": {
+            "type": "string",
+            "format": "uri"
+          },
+          "apiToken": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      }
+    },
+    "parameters": {
+      "institution_id": {
+        "in": "path",
+        "name": "institution_id",
+        "description": "UUID of the institution",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "url": {
+        "name": "URL",
+        "in": "query",
+        "required": false,
+        "description": "The URL of the external resource. \n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "device",
+      "description": "This tag describes the device resource."
+    },
+    {
+      "name": "proxy",
+      "description": "An authorized service can use these endpoints to request external resources that are supplied in the URL query parameters.\nThe request made to the proxy endpoint will be forwarded as seen to the external server, including all HTTP Headers and the request body.\nFor known servers the proxy will also add authentification details to the request, so that the original service doesn't need to handle the authentification with possible multiple external resources.\nThe response will be the proxied response from the external server.\n\nThe idea is that a service can use external resource by only changing the url to the address of the federation service."
+    }
+  ],
+  "paths": {
+    "/institutions": {
+      "get": {
+        "summary": "List institutions",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all institutions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/institution"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new institution",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/institution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The institution was created. A JSON representation of the new institution is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/institutions/{institution_id}": {
+      "get": {
+        "summary": "View a institution.",
+        "tags": [
+          "institution"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the institution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an institution.",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the institution",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/institution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed institution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a institution",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The institution was delete."
+          }
+        }
+      }
+    },
+    "/proxy": {
+      "get": {
+        "summary": "Make an authorized GET request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "post": {
+        "summary": "Make an authorized POST request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "put": {
+        "summary": "Make an authorized PUT request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "patch": {
+        "summary": "Make an authorized PATCH request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Make an authorized DELETE request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "head": {
+        "summary": "Make an authorized HEAD request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "options": {
+        "summary": "Make an authorized OPTIONS request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      },
+      "trace": {
+        "summary": "Make an authorized TRACE request to an external resource.",
+        "tags": [
+          "proxy"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "authorized_proxy"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The response of the external resource."
+          }
+        }
+      }
+    }
+  }
+}

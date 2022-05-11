@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  name:
+    type: string
+  homepage:
+    type: string
+    format: uri
+  api:
+    type: string
+    format: uri
+  federatedApi:
+    type: string
+    format: uri
+  apiToken:
+    type: string
+    writeOnly: true

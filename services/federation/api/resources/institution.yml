@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: View a institution.
+  tags:
+    - institution
+  parameters:
+    - $ref: '../parameters/institution_id.yml'
+  security:
+    - JWT:
+      - institution
+      - institution:list
+  responses:
+    200:
+      description: The JSON Representation of the institution
+      content:
+        application/json:
+          $ref: '../content/institution.yml'
+patch:
+  summary: Update an institution.
+  tags:
+    - institution
+  security:
+    - JWT:
+      - institution
+      - institution:edit
+  parameters:
+    - $ref: '../parameters/institution_id.yml'
+  requestBody:
+    description: Update the institution
+    content:
+      application/json:
+        $ref: '../content/institution.yml'
+  responses:
+    200:
+      description: The JSON Representation of the changed institution
+      content:
+        application/json:
+          $ref: '../content/institution.yml'
+delete:
+  summary: Delete a institution
+  tags:
+    - institution
+  security:
+    - JWT:
+      - institution
+      - institution:create
+  parameters:
+    - $ref: '../parameters/institution_id.yml'
+  responses:
+    204:
+      description: The institution was delete.
