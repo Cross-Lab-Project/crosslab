@@ -5,6 +5,18 @@ allOf:
     properties:
       type:
         const: device
+      connected:
+        description: |
+          If true, the device is connected to the service and can be used.
+        type: boolean
+        readOnly: true
+      announcedAvailability:
+        description: |
+          A list of time slots that the maintainer of the device announced it is available
+        type: array
+        items:
+          $ref: ./time_slot.yml
+        readOnly: true
       experiment:
         type: string
         format: uri

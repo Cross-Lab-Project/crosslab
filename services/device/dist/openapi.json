@@ -46,6 +46,44 @@
           }
         }
       },
+      "time_slot": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "repeat": {
+            "description": "If specified the time slot is repeated in a fixed offset specified by the freqency",
+            "type": "object",
+            "properties": {
+              "freqency": {
+                "type": "string",
+                "enum": [
+                  "HOURLY",
+                  "DAILY",
+                  "WEEKLY",
+                  "MONTHLY",
+                  "YEARLY"
+                ]
+              },
+              "until": {
+                "description": "Up to this date-time the time slot will be repeated.",
+                "type": "string",
+                "format": "date-time"
+              },
+              "count": {
+                "description": "How often the time slot will be repeated",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
       "device_concrete": {
         "allOf": [
           {
@@ -56,6 +94,19 @@
             "properties": {
               "type": {
                 "const": "device"
+              },
+              "connected": {
+                "description": "If true, the device is connected to the service and can be used.\n",
+                "type": "boolean",
+                "readOnly": true
+              },
+              "announcedAvailability": {
+                "description": "A list of time slots that the maintainer of the device announced it is available\n",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/time_slot"
+                },
+                "readOnly": true
               },
               "experiment": {
                 "type": "string",
