@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  type: array
+  items:
+    $ref: '../schemas/experiment.yml'

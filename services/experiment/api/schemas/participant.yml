@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  device:
+    type: string
+    format: uri
+    description: Participating device
+  config:
+    type: object
+    description: Service configuration of the participant
+    properties:
+      serviceId:
+        type: string
+        description: ID of the service
+    additionalProperties: true

@@ -1,0 +1,291 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Experiment Service REST API (internal)",
+    "description": "This is the OpenAPI description of the internal CrossLab Experiment Service REST API.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Experiment API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "service_config": {
+        "type": "object",
+        "description": "Configuration of the service",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri",
+            "description": "Type of the service"
+          },
+          "serviceId": {
+            "type": "string",
+            "description": "ID of the service"
+          }
+        },
+        "additionalProperties": true
+      },
+      "participant": {
+        "type": "object",
+        "properties": {
+          "device": {
+            "type": "string",
+            "format": "uri",
+            "description": "Participating device"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant",
+            "properties": {
+              "serviceId": {
+                "type": "string",
+                "description": "ID of the service"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "service": {
+        "type": "object",
+        "properties": {
+          "configuration": {
+            "$ref": "#/components/schemas/service_config"
+          },
+          "participants": {
+            "type": "array",
+            "description": "List of participants for the service",
+            "items": {
+              "$ref": "#/components/schemas/participant"
+            }
+          }
+        }
+      },
+      "experiment": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the experiment",
+            "format": "uri",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the experiment",
+            "enum": [
+              "Created",
+              "Running",
+              "Finished"
+            ]
+          },
+          "devices": {
+            "type": "array",
+            "description": "Devices associated with the experiment",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "connections": {
+            "type": "array",
+            "description": "Connections associated with the experiment",
+            "items": {
+              "type": "string"
+            }
+          },
+          "services": {
+            "type": "array",
+            "description": "Services associated with the experiment",
+            "items": {
+              "$ref": "#/components/schemas/service"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "experiment_id": {
+        "in": "path",
+        "name": "experiment_id",
+        "description": "UUID of the experiment",
+        "required": true,
+        "schema": {
+          "type": "uuid"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "experiment",
+      "description": "This tag describes the experiment resource."
+    }
+  ],
+  "paths": {
+    "/experiments": {
+      "get": {
+        "summary": "List experiments",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all experiments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/experiment"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new experiment",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/experiment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The experiment was created. A JSON representation of the new experiment is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/experiments/{experiment_id}": {
+      "get": {
+        "summary": "View a registered experiment.",
+        "tags": [
+          "experiment"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the experiment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an existing experiment.",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the experiment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/experiment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The experiment was updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a registered experiment",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The experiment was deleted."
+          }
+        }
+      }
+    }
+  }
+}

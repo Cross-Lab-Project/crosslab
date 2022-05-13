@@ -49,4 +49,4 @@ delete:
     - $ref: '../parameters/device_id.yml'
   responses:
     204:
-      description: The device was delete.
+      description: The device was deleted.

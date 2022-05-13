@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: View a registered experiment.
+  tags:
+    - experiment
+  parameters:
+    - $ref: '../parameters/experiment_id.yml'
+  security:
+    - JWT:
+      - experiment
+      - experiment:list
+  responses:
+    200:
+      description: The JSON Representation of the experiment
+      content:
+        application/json:
+          $ref: '../content/experiment.yml'
+patch:
+  summary: Update an existing experiment.
+  tags:
+    - experiment
+  security:
+    - JWT:
+      - experiment
+      - experiment:edit
+  parameters:
+    - $ref: '../parameters/experiment_id.yml'
+  requestBody:
+    description: Update the experiment
+    content:
+      application/json:
+        $ref: '../content/experiment.yml'
+  responses:
+    204:
+      description: The experiment was updated
+delete:
+  summary: Delete a registered experiment
+  tags:
+    - experiment
+  security:
+    - JWT:
+      - experiment
+      - experiment:create
+  parameters:
+    - $ref: '../parameters/experiment_id.yml'
+  responses:
+    204:
+      description: The experiment was deleted.

@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: List experiments
+  tags:
+    - experiment
+  security:
+    - JWT:
+      - experiment
+      - experiment:list
+  responses:
+    200:
+      description: The list of all experiments.
+      content:
+        application/json:
+          $ref: '../content/experiment_list.yml'
+post:
+  summary: Create a new experiment
+  tags:
+    - experiment
+  security:
+    - JWT:
+      - experiment
+      - experiment:create
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: '../content/experiment.yml'
+  responses:
+    201:
+      description: The experiment was created. A JSON representation of the new experiment is returned.
+      content:
+        application/json:
+          $ref: '../content/experiment.yml'

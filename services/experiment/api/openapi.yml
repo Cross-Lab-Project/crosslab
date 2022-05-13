@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab Experiment Service REST API (internal)
+  description: |-
+    This is the OpenAPI description of the internal CrossLab Experiment Service REST API.
+  version: 0.0.1
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Experiment API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section]() in the CrossLab architecture description.
+tags:
+  - name: experiment
+    description: |-
+      This tag describes the experiment resource.
+paths:
+  /experiments:
+    $ref: './resources/experiments.yml'
+  /experiments/{experiment_id}:
+    $ref: './resources/experiment.yml'
