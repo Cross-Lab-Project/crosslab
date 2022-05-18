@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  type: object
+  properties:
+    callbackType:
+      type: string
+      enum:
+        - event
+    eventType:
+      type: string
+      enum:
+        - device-changed
+    device:
+      anyOf:
+        - $ref: "../schemas/device_concrete.yml"
+        - $ref: "../schemas/device_group.yml"

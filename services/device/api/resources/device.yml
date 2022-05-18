@@ -4,49 +4,65 @@ get:
   tags:
     - device
   parameters:
-    - $ref: '../parameters/device_id.yml'
-    - $ref: '../parameters/flat_group.yml'
+    - $ref: "../parameters/device_id.yml"
+    - $ref: "../parameters/flat_group.yml"
   security:
     - JWT:
-      - device
-      - device:list
+        - device
+        - device:list
   responses:
     200:
       description: The JSON Representation of the device
       content:
         application/json:
-          $ref: '../content/device.yml'
+          $ref: "../content/device.yml"
 patch:
   summary: Update an existing device.
   tags:
     - device
   security:
     - JWT:
-      - device
-      - device:edit
+        - device
+        - device:edit
   parameters:
-    - $ref: '../parameters/device_id.yml'
+    - $ref: "../parameters/device_id.yml"
+    - $ref: "../parameters/device_changed_url.yml"
   requestBody:
     description: Update the device
     content:
       application/json:
-        $ref: '../content/device.yml'
+        $ref: "../content/device.yml"
   responses:
     200:
       description: The JSON Representation of the changed device
       content:
         application/json:
-          $ref: '../content/device.yml'
+          $ref: "../content/device.yml"
+  callbacks:
+    changed:
+      "{$request.query.changedUrl}":
+        post:
+          requestBody:
+            required: true
+            content:
+              application/json:
+                $ref: "../content/device_event.yml"
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+
 delete:
   summary: Delete a registered device
   tags:
     - device
   security:
     - JWT:
-      - device
-      - device:create
+        - device
+        - device:create
   parameters:
-    - $ref: '../parameters/device_id.yml'
+    - $ref: "../parameters/device_id.yml"
   responses:
     204:
       description: The device was deleted.

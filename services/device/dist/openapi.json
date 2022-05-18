@@ -97,16 +97,14 @@
               },
               "connected": {
                 "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean",
-                "readOnly": true
+                "type": "boolean"
               },
               "announcedAvailability": {
                 "description": "A list of time slots that the maintainer of the device announced it is available\n",
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/time_slot"
-                },
-                "readOnly": true
+                }
               },
               "experiment": {
                 "type": "string",
@@ -226,13 +224,24 @@
       }
     },
     "parameters": {
+      "device_changed_url": {
+        "name": "changedUrl",
+        "in": "query",
+        "required": false,
+        "description": "**An URL that will be called once the device changes.**\n\nOnce the device was given a changedUrl parameter the contained URL will be called every time a device is changed\nas long as every callback resolves with a successful status code.\n\nIf the callback fails the url MIGHT not be called in the future.\n\nThere can be multiple callbacks registered with the same device.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
       "device_id": {
         "in": "path",
         "name": "device_id",
         "description": "UUID of the device",
         "required": true,
         "schema": {
-          "type": "uuid"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "flat_group": {
@@ -261,7 +270,8 @@
         "description": "UUID of the device",
         "required": true,
         "schema": {
-          "type": "uuid"
+          "type": "string",
+          "format": "uuid"
         }
       }
     }
@@ -318,6 +328,11 @@
               "device",
               "device:create"
             ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_changed_url"
           }
         ],
         "requestBody": {
@@ -561,6 +576,56 @@
               }
             }
           }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/device_concrete"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_group"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -725,6 +790,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_changed_url"
           }
         ],
         "requestBody": {
@@ -968,6 +1036,56 @@
               }
             }
           }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/device_concrete"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_group"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
@@ -990,7 +1108,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The device was delete."
+            "description": "The device was deleted."
           }
         }
       }
