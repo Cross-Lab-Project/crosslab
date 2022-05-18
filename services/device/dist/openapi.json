@@ -242,7 +242,10 @@
         "schema": {
           "type": "string",
           "format": "uuid"
-        }
+        },
+        "example": [
+          "908fec03-ee1e-4996-b11a-0ef8fc7d0909"
+        ]
       },
       "flat_group": {
         "in": "query",
@@ -272,7 +275,10 @@
         "schema": {
           "type": "string",
           "format": "uuid"
-        }
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
       }
     }
   },

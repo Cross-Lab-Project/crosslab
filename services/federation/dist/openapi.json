@@ -49,7 +49,10 @@
         "schema": {
           "type": "string",
           "format": "uuid"
-        }
+        },
+        "example": [
+          "5202de35-7f61-4eed-a361-e627619f9d19"
+        ]
       },
       "url": {
         "name": "URL",

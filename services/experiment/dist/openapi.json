@@ -117,8 +117,12 @@
         "description": "UUID of the experiment",
         "required": true,
         "schema": {
-          "type": "uuid"
-        }
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
       }
     }
   },

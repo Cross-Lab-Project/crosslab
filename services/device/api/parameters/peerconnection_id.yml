@@ -4,4 +4,7 @@ name: device_id
 description: UUID of the device
 required: true
 schema:
-  type: uuid
+  type: string
+  format: uuid
+example:
+  - f4c69c42-6e1c-44c3-8e44-f74bd22c3713
