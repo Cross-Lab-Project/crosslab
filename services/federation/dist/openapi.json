@@ -261,7 +261,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -284,7 +296,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -307,7 +331,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -330,7 +366,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -353,7 +401,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -376,7 +436,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -399,7 +471,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
@@ -422,7 +506,19 @@
           }
         ],
         "responses": {
-          "200": {
+          "1XX": {
+            "description": "The response of the external resource."
+          },
+          "2XX": {
+            "description": "The response of the external resource."
+          },
+          "3XX": {
+            "description": "The response of the external resource."
+          },
+          "4XX": {
+            "description": "The response of the external resource."
+          },
+          "5XX": {
             "description": "The response of the external resource."
           }
         }
