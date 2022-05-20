@@ -84,6 +84,13 @@
           }
         }
       },
+      "availability": {
+        "description": "A list of time slots that the maintainer of the device announced it is available\n",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/time_slot"
+        }
+      },
       "device_concrete": {
         "allOf": [
           {
@@ -100,11 +107,7 @@
                 "type": "boolean"
               },
               "announcedAvailability": {
-                "description": "A list of time slots that the maintainer of the device announced it is available\n",
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/time_slot"
-                }
+                "$ref": "#/components/schemas/availability"
               },
               "experiment": {
                 "type": "string",
@@ -1115,6 +1118,101 @@
         "responses": {
           "204": {
             "description": "The device was deleted."
+          }
+        }
+      }
+    },
+    "/devices/{device_id}/availability": {
+      "post": {
+        "summary": "Update the device availability.",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "available": {
+                          "type": "boolean",
+                          "description": "if set to false this timeslot will be removed from the available times.",
+                          "default": true
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "$ref": "#/components/schemas/availability"
+                  }
+                ]
+              },
+              "examples": {
+                "Make the device always unavailable": {
+                  "value": [
+                    {
+                      "available": false
+                    }
+                  ]
+                },
+                "Make the device always available": {
+                  "value": [
+                    {
+                      "available": true
+                    }
+                  ]
+                },
+                "Make the device only available from monday 9:00 through friday 17:00": {
+                  "value": [
+                    {
+                      "available": true,
+                      "start": "2022-05-15T09:00:00Z",
+                      "end": "2022-05-20T17:00:00Z",
+                      "repeat": {
+                        "freqency": "WEEKLY"
+                      }
+                    },
+                    {
+                      "available": false,
+                      "start": "2022-05-20T17:00:00Z",
+                      "end": "2022-05-23T09:00:00Z",
+                      "repeat": {
+                        "freqency": "WEEKLY"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed device",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/availability"
+                }
+              }
+            }
           }
         }
       }

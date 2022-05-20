@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  allOf:
+    - type: array
+      items:
+        type: object
+        properties:
+          available:
+            type: boolean
+            description: if set to false this timeslot will be removed from the available times.
+            default: true
+    - $ref: ../schemas/availability.yml
+examples:
+  Make the device always unavailable:
+    value:
+      - available: false
+  Make the device always available:
+    value:
+      - available: true
+  Make the device only available from monday 9:00 through friday 17:00:
+    value:
+      - available: true
+        start: 2022-05-15T09:00:00Z
+        end: 2022-05-20T17:00:00Z
+        repeat:
+          freqency: WEEKLY
+      - available: false
+        start: 2022-05-20T17:00:00Z
+        end: 2022-05-23T09:00:00Z
+        repeat:
+          freqency: WEEKLY

@@ -25,10 +25,12 @@ tags:
       This tag describes the peer connection resource.
 paths:
   /devices:
-    $ref: './resources/devices.yml'
+    $ref: "./resources/devices.yml"
   /devices/{device_id}:
-    $ref: './resources/device.yml'
+    $ref: "./resources/device.yml"
+  /devices/{device_id}/availability:
+    $ref: "./resources/device_availability.yml"
   /peerconnections:
-    $ref: './resources/peerconnections.yml'
+    $ref: "./resources/peerconnections.yml"
   /peerconnections/{peerconnection_id}:
-    $ref: './resources/peerconnection.yml'
+    $ref: "./resources/peerconnection.yml"

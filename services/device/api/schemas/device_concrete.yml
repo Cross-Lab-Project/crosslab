@@ -11,12 +11,7 @@ allOf:
         type: boolean
         #readOnly: true
       announcedAvailability:
-        description: |
-          A list of time slots that the maintainer of the device announced it is available
-        type: array
-        items:
-          $ref: ./time_slot.yml
-        #readOnly: true
+        $ref: "../schemas/availability.yml"
       experiment:
         type: string
         format: uri
