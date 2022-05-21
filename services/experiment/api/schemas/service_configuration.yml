@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties: 
+  serviceType:
+    type: string
+    format: uri
+    description: Type of the service
+  configuration:
+    type: object
+    description: |
+      Configuration of the service
+
+      This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    additionalProperties: true
+  participants:
+    type: array
+    description: List of participants for the service
+    items: 
+      type: object
+      properties:
+        role:
+          $ref: '../schemas/role.yml#/properties/name'
+        serviceId:
+          type: string
+        config:
+          type: object
+          description: |
+            Service configuration of the participant.
+            
+            This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+          serviceId:
+            type: string
+            description: ID of the service
+          additionalProperties: true

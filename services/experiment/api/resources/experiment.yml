@@ -1,48 +1,67 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  summary: View a registered experiment.
+  summary: View an experiment.
   tags:
     - experiment
   parameters:
-    - $ref: '../parameters/experiment_id.yml'
+    - $ref: "../parameters/experiment_id.yml"
   security:
     - JWT:
-      - experiment
-      - experiment:list
+        - experiment
+        - experiment:list
   responses:
     200:
       description: The JSON Representation of the experiment
       content:
         application/json:
-          $ref: '../content/experiment.yml'
+          $ref: "../content/experiment.yml"
 patch:
   summary: Update an existing experiment.
+  description: |
+    With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
+
+    If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.
   tags:
     - experiment
   security:
     - JWT:
-      - experiment
-      - experiment:edit
+        - experiment
+        - experiment:edit
   parameters:
-    - $ref: '../parameters/experiment_id.yml'
+    - $ref: "../parameters/experiment_id.yml"
+    - $ref: "../parameters/experiment_changed_url.yml"
   requestBody:
     description: Update the experiment
     content:
       application/json:
-        $ref: '../content/experiment.yml'
+        $ref: "../content/experiment.yml"
   responses:
     204:
       description: The experiment was updated
+  callbacks:
+    changed:
+      "{$request.query.changedUrl}":
+        post:
+          requestBody:
+            required: true
+            content:
+              application/json:
+                $ref: "../content/experiment_event.yml"
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference.
 delete:
-  summary: Delete a registered experiment
+  summary: Delete an experiment
   tags:
     - experiment
   security:
     - JWT:
-      - experiment
-      - experiment:create
+        - experiment
+        - experiment:create
   parameters:
-    - $ref: '../parameters/experiment_id.yml'
+    - $ref: "../parameters/experiment_id.yml"
   responses:
     204:
       description: The experiment was deleted.

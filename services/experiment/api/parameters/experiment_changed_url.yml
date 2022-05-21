@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+name: changedURL
+in: query
+required: false
+description: |
+  An URL that will be called when the experiment status changes.
+schema:
+  type: string
+  format: uri

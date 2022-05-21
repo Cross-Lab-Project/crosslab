@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+properties:
+  url:
+    type: string
+    description: URL of the experiment
+    format: uri
+    readOnly: true
+  status:
+    type: string
+    description: Status of the experiment
+    enum:
+      - created
+      - booked
+      - running
+      - finished

@@ -15,59 +15,7 @@
       }
     },
     "schemas": {
-      "service_config": {
-        "type": "object",
-        "description": "Configuration of the service",
-        "properties": {
-          "serviceType": {
-            "type": "string",
-            "format": "uri",
-            "description": "Type of the service"
-          },
-          "serviceId": {
-            "type": "string",
-            "description": "ID of the service"
-          }
-        },
-        "additionalProperties": true
-      },
-      "participant": {
-        "type": "object",
-        "properties": {
-          "device": {
-            "type": "string",
-            "format": "uri",
-            "description": "Participating device"
-          },
-          "config": {
-            "type": "object",
-            "description": "Service configuration of the participant",
-            "properties": {
-              "serviceId": {
-                "type": "string",
-                "description": "ID of the service"
-              }
-            },
-            "additionalProperties": true
-          }
-        }
-      },
-      "service": {
-        "type": "object",
-        "properties": {
-          "configuration": {
-            "$ref": "#/components/schemas/service_config"
-          },
-          "participants": {
-            "type": "array",
-            "description": "List of participants for the service",
-            "items": {
-              "$ref": "#/components/schemas/participant"
-            }
-          }
-        }
-      },
-      "experiment": {
+      "experiment_overview": {
         "type": "object",
         "properties": {
           "url": {
@@ -80,34 +28,134 @@
             "type": "string",
             "description": "Status of the experiment",
             "enum": [
-              "Created",
-              "Running",
-              "Finished"
+              "created",
+              "booked",
+              "running",
+              "finished"
             ]
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "description": "Name for an experiment role."
+      },
+      "role": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name for an experiment role."
           },
-          "devices": {
-            "type": "array",
-            "description": "Devices associated with the experiment",
-            "items": {
-              "type": "string",
-              "format": "uri"
-            }
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "service_configuration": {
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri",
+            "description": "Type of the service"
           },
-          "connections": {
-            "type": "array",
-            "description": "Connections associated with the experiment",
-            "items": {
-              "type": "string"
-            }
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
           },
-          "services": {
+          "participants": {
             "type": "array",
-            "description": "Services associated with the experiment",
+            "description": "List of participants for the service",
             "items": {
-              "$ref": "#/components/schemas/service"
+              "type": "object",
+              "properties": {
+                "role": {
+                  "$ref": "#/components/schemas/name"
+                },
+                "serviceId": {
+                  "type": "string"
+                },
+                "config": {
+                  "type": "object",
+                  "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+                  "serviceId": {
+                    "type": "string",
+                    "description": "ID of the service"
+                  },
+                  "additionalProperties": true
+                }
+              }
             }
           }
         }
+      },
+      "experiment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "device": {
+                      "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "role": {
+                      "$ref": "#/components/schemas/name"
+                    }
+                  }
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "connections": {
+                "type": "array",
+                "description": "Connections associated with the experiment",
+                "items": {
+                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
+                  "type": "string",
+                  "fromat": "uri"
+                },
+                "readOnly": true
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "parameters": {
@@ -123,6 +171,16 @@
         "example": [
           "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
         ]
+      },
+      "experiment_changed_url": {
+        "name": "changedURL",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called when the experiment status changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     }
   },
@@ -155,7 +213,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/experiment"
+                    "$ref": "#/components/schemas/experiment_overview"
                   }
                 }
               }
@@ -202,7 +260,7 @@
     },
     "/experiments/{experiment_id}": {
       "get": {
-        "summary": "View a registered experiment.",
+        "summary": "View an experiment.",
         "tags": [
           "experiment"
         ],
@@ -234,6 +292,7 @@
       },
       "patch": {
         "summary": "Update an existing experiment.",
+        "description": "With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.\n",
         "tags": [
           "experiment"
         ],
@@ -248,6 +307,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/experiment_id"
+          },
+          {
+            "$ref": "#/components/parameters/experiment_changed_url"
           }
         ],
         "requestBody": {
@@ -264,10 +326,53 @@
           "204": {
             "description": "The experiment was updated"
           }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
-        "summary": "Delete a registered experiment",
+        "summary": "Delete an experiment",
         "tags": [
           "experiment"
         ],

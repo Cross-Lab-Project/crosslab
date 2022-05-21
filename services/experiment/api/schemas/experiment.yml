@@ -1,31 +1,43 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
-type: object
-properties:
-  url:
-    type: string
-    description: URL of the experiment
-    format: uri
-    readOnly: true
-  status:
-    type: string
-    description: Status of the experiment
-    enum:
-      - Created
-      - Running
-      - Finished
-  devices:
-    type: array
-    description: Devices associated with the experiment
-    items:
-      type: string
-      format: uri
-  connections:
-    type: array
-    description: Connections associated with the experiment
-    items:
-      type: string
-  services:
-    type: array
-    description: Services associated with the experiment
-    items:
-      $ref: './service.yml'
+allOf:
+  - $ref: ./experiment_overview.yml
+  - type: object
+    properties:
+      bookingTime:
+        type: object
+        properties:
+          startTime:
+            type: string
+            format: date-time
+          endTime:
+            type: string
+            format: date-time
+      devices:
+        type: array
+        description: Devices associated with the experiment
+        items:
+          type: object
+          properties:
+            device:
+              description: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+              type: string
+              format: uri
+            role:
+              $ref: "../schemas/role.yml#/properties/name"
+      roles:
+        type: array
+        description: Roles that are used in this experiment
+        items:
+          $ref: "../schemas/role.yml"
+      connections:
+        type: array
+        description: Connections associated with the experiment
+        items:
+          description: URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).
+          type: string
+          fromat: uri
+        readOnly: true
+      serviceConfigurations:
+        type: array
+        description: Services associated with the experiment
+        items:
+          $ref: "./service_configuration.yml"
