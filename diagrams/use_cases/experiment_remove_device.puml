@@ -1,0 +1,6 @@
+@startuml ExperimentRemoveDevice
+[-> "Experiment Service@TUI": PATCH /experiments/{experiment_id} (remove device)
+"Experiment Service@TUI" -> "Booking Service@TUI": PATCH /RemoveDevice/{ID}
+"Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+"Experiment Service@TUI" -->[: 204: experiment updated successfully
+@enduml

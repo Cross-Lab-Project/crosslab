@@ -1,0 +1,13 @@
+@startuml ExperimentClose
+"Client@TUI" -> "Experiment Service@TUI": PATCH /experiments/{experiment_id} (state=finished)
+
+loop for all peerconnections
+
+    "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+
+end
+
+"Experiment Service@TUI" -> "Booking Service@TUI": PATCH /UnlockDevices/{ID}
+"Booking Service@TUI" --> "Experiment Service@TUI": 200: devices unlocked
+"Experiment Service@TUI" --> "Client@TUI": 204: experiment updated successfully
+@enduml

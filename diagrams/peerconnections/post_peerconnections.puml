@@ -1,0 +1,8 @@
+@startuml PostPeerconnection
+Client -> "Device Service": POST /peerconnections
+Client <-- "Device Service": 201: JSON representation of created peerconnection
+...
+]-> "Device Service": close
+Client <- "Device Service": peerconnection closed
+Client --> "Device Service": 201: event processed successfully
+@enduml

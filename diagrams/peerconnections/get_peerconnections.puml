@@ -1,0 +1,4 @@
+@startuml GetPeerconnections
+Client -> "Device Service": GET /peerconnections
+Client <-- "Device Service": 200: list of all peerconnections
+@enduml

@@ -1,0 +1,4 @@
+@startuml GetDevice
+Client -> "Device Service": GET /devices/{device_id}
+Client <-- "Device Service": 200: JSON representation of the device
+@enduml

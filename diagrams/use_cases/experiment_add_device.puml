@@ -1,0 +1,24 @@
+@startuml ExperimentAddDevice
+[-> "Experiment Service@TUI": PATCH /experiments/{experiment_id} (add device)
+"Experiment Service@TUI" -> "Booking Service@TUI": PATCH /AddDevice/{ID}
+"Booking Service@TUI" -> "Device Service@TUI": GET /devices/{device_id}
+"Device Service@TUI" --> "Booking Service@TUI": 200: device
+"Booking Service@TUI" -> "Booking Service@TUI": check timetable of device
+
+alt device available
+
+    "Booking Service@TUI" --> "Experiment Service@TUI": 200: device booked successfully
+    "Experiment Service@TUI" -> "Booking Service@TUI": PATCH /LockDevices/{ID}
+    "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices locked succcessfully
+    "Experiment Service@TUI" -> "Device Service@TUI": POST /peerconnections
+    "Device Service@TUI" --> "Experiment Service@TUI": 201: peerconnection established
+    "Experiment Service@TUI" -->[: 204: experiment updated successfully
+
+else device not available
+
+    "Booking Service@TUI" --> "Experiment Service@TUI": 4XX: device could not be booked  
+    "Experiment Service@TUI" -->[: 4XX: experiment could not be updated
+
+end
+
+@enduml

@@ -1,0 +1,4 @@
+@startuml GetPeerconnection
+Client -> "Device Service": GET /peerconnections/{peerconnection_id}
+Client <-- "Device Service": 200: JSON representation of the peerconnection
+@enduml

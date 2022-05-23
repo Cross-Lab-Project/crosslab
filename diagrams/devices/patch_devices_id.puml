@@ -1,0 +1,17 @@
+@startuml PatchDevice
+Client -> "Device Service": PATCH /devices/{device_id}
+Client <-- "Device Service": 200: JSON representation of the changed device
+
+alt successful event
+
+    Client <- "Device Service": device url changed
+    Client --> "Device Service": 2XX: event processed successfully
+
+else remove callback
+
+    Client <- "Device Service": device url changed
+    Client --> "Device Service": 410: callback no longer needed
+    "Device Service" -> "Device Service": remove callback reference
+
+end
+@enduml

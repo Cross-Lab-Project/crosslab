@@ -1,0 +1,17 @@
+@startuml PostDevice
+Client -> "Device Service": POST /devices
+Client <-- "Device Service": 201: JSON representation of created device
+
+alt successful event
+
+    Client <- "Device Service": device url changed
+    Client --> "Device Service": 2XX: event processed successfully
+
+else remove callback
+
+    Client <- "Device Service": device url changed
+    Client --> "Device Service": 410: callback no longer needed
+    "Device Service" -> "Device Service": remove callback reference
+
+end
+@enduml

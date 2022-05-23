@@ -1,0 +1,41 @@
+@startuml ExperimentLifecycle
+
+[-> "Device Service@NAK": peerconnection closed
+"Device Service@NAK" -> "Experiment Service@TUI": POST callback closed
+    
+"Experiment Service@TUI" -> "Device Service@NAK": POST /peerconnections
+
+alt reconnecting successful
+
+    "Device Service@NAK" --> "Experiment Service@TUI": 201: peerconnection was established
+
+else reconnecting failed
+
+    "Device Service@NAK" --> "Experiment Service@TUI": 4XX: peerconnection could not be established
+
+    loop for all peerconnections
+
+        alt local peerconnection
+
+            "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+
+        else remote peerconnection
+
+            "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+            "Device Service@TUI" -> "Device Service@NAK": DELETE /peerconnections/{peerconnection_id}
+
+        end
+
+    end
+
+    "Experiment Service@TUI" -> "Booking Service@TUI": PATCH /UnlockDevices
+    "Booking Service@TUI" -> "Booking Service@NAK": PATCH /UnlockDevices
+    "Booking Service@NAK" --> "Booking Service@TUI": 200: devices unlocked
+    "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices unlocked
+    "Experiment Service@TUI" -> Client@TUI: experiment closed
+
+end
+
+"Experiment Service@TUI" --> "Device Service@NAK": 201: event processed successfully
+
+@enduml

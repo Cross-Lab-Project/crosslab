@@ -1,0 +1,4 @@
+@startuml DeleteDevice
+Client -> "Device Service": DELETE /devices/{device_id}
+Client <-- "Device Service": 204: device was deleted
+@enduml

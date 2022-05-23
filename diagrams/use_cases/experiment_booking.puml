@@ -1,0 +1,16 @@
+@startuml ExperimentBooking
+Client@TUI -> "Experiment Service@TUI": POST /experiments
+"Experiment Service@TUI" -> "Booking Service@TUI": PUT /BookDevice
+"Booking Service@TUI" -> "Device Service@TUI": GET /devices/{device_id}
+"Device Service@TUI" --> "Booking Service@TUI": 200: resolved devices
+"Booking Service@TUI" -> "Booking Service@TUI": check timetables of devices
+"Booking Service@TUI" -> "Federation Service@TUI": PUT /proxy (/BookDevice)
+"Federation Service@TUI" -> "Booking Service@NAK": PUT /BookDevice
+"Booking Service@NAK" -> "Device Service@NAK": GET /devices/{device_id}
+"Device Service@NAK" --> "Booking Service@NAK": 200: resolved devices
+"Booking Service@NAK" -> "Booking Service@NAK": check timetables of devices
+"Booking Service@NAK" --> "Federation Service@TUI": 200: devices booked successfully
+"Federation Service@TUI" --> "Booking Service@TUI": 200: devices booked successfully
+"Booking Service@TUI" --> "Experiment Service@TUI": 200: devices booked successfully
+"Experiment Service@TUI" --> Client@TUI: 201: experiment created successfully
+@enduml

@@ -1,0 +1,4 @@
+@startuml DeletePeerconnection
+Client -> "Device Service": DELETE /peerconnections/{peerconnection_id}
+Client <-- "Device Service": 204: peerconnection was deleted
+@enduml

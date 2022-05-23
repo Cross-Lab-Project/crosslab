@@ -1,0 +1,4 @@
+@startuml GetDevices
+Client -> "Device Service": GET /devices
+Client <-- "Device Service": 200: list of all devices
+@enduml

@@ -1,0 +1,32 @@
+@startuml ExperimentStart
+Client@TUI -> "Experiment Service@TUI": PATCH /experiments/{experiment_id}
+"Experiment Service@TUI" -> "Booking Service@TUI": GET /LockDevices/{ID}
+
+alt devices locked
+
+    "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices locked
+    "Experiment Service@TUI" -> "Device Service@TUI": POST /peerconnections
+    "Device Service@TUI" -> "Federation Service@TUI": POST /proxy (/peerconnections)
+    "Federation Service@TUI" -> "Device Service@NAK": POST /peerconnections
+    "Device Service@NAK" --> "Federation Service@TUI": 201: peerconnection established
+    "Federation Service@TUI" --> "Device Service@TUI": 201: peerconnection established
+    "Device Service@TUI" --> "Experiment Service@TUI": 201: peerconnection established
+    "Experiment Service@TUI" --> Client@TUI: 204: experiment started
+
+else devices not locked
+
+    alt id unknown
+
+        "Booking Service@TUI" --> "Experiment Service@TUI": 404: id unknown
+
+    else booking not owned by user
+
+        "Booking Service@TUI" --> "Experiment Service@TUI": 4XX: booking not owned by user
+
+    end
+
+    "Experiment Service@TUI" --> Client@TUI: 4XX: experiment could not be started
+
+end
+
+@enduml

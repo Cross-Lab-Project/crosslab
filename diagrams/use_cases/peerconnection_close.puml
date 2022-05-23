@@ -1,0 +1,79 @@
+@startuml ExperimentLifecycle
+
+[-> "Device Service@NAK": peerconnection closed
+"Device Service@NAK" -> "Federation Service@NAK": POST /proxy (callback closed)
+"Federation Service@NAK" -> "Experiment Service@TUI": POST callback closed
+
+alt try reconnecting
+    
+    "Experiment Service@TUI" -> "Federation Service@NAK": POST /proxy (/peerconnections)
+    "Federation Service@NAK" -> "Device Service@NAK": POST /peerconnections
+
+    alt reconnecting successful
+
+        "Device Service@NAK" --> "Federation Service@NAK": 201: peerconnection established
+        "Federation Service@NAK" --> "Experiment Service@TUI": 201: peerconnection established
+
+    else reconnecting failed
+
+        "Device Service@NAK" --> "Federation Service@NAK": 4XX: peerconnection could not be established
+        "Federation Service@NAK" --> "Experiment Service@TUI": 4XX: peerconnection could not be established
+
+        loop for all peerconnections
+
+            alt local peerconnection
+
+                "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+
+            else remote peerconnection
+    
+                "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+                "Device Service@TUI" -> "Federation Service@TUI": DELETE /proxy (/peerconnections/{peerconnection_id})
+                "Federation Service@TUI" -> "Device Service@NAK": DELETE /peerconnections/{peerconnection_id}
+
+            end
+
+        end
+
+        "Experiment Service@TUI" -> "Booking Service@TUI": PATCH /UnlockDevices
+        "Booking Service@TUI" -> "Federation Service@TUI": PATCH /proxy (/UnlockDevices)
+        "Federation Service@TUI" -> "Booking Service@NAK": PATCH /UnlockDevices
+        "Booking Service@NAK" --> "Federation Service@TUI": 200: devices unlocked
+        "Federation Service@TUI" --> "Booking Service@TUI": 200: devices unlocked
+        "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices unlocked
+        "Experiment Service@TUI" -> Client@TUI: experiment closed
+
+    end 
+
+else stop experiment 
+
+    loop for all peerconnections
+
+        alt local peerconnection
+
+            "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+
+        else remote peerconnection
+
+            "Experiment Service@TUI" -> "Device Service@TUI": DELETE /peerconnections/{peerconnection_id}
+            "Device Service@TUI" -> "Federation Service@TUI": DELETE /proxy (/peerconnections/{peerconnection_id})
+            "Federation Service@TUI" -> "Device Service@NAK": DELETE /peerconnections/{peerconnection_id}
+
+        end
+
+    end
+
+    "Experiment Service@TUI" -> "Booking Service@TUI": PATCH /UnlockDevices
+    "Booking Service@TUI" -> "Federation Service@TUI": PATCH /proxy (/UnlockDevices)
+    "Federation Service@TUI" -> "Booking Service@NAK": PATCH /UnlockDevices
+    "Booking Service@NAK" --> "Federation Service@TUI": 200: devices unlocked
+    "Federation Service@TUI" --> "Booking Service@TUI": 200: devices unlocked
+    "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices unlocked
+    "Experiment Service@TUI" -> Client@TUI: experiment closed
+
+end
+
+"Experiment Service@TUI" --> "Federation Service@NAK": 201: event processed successfully
+"Federation Service@NAK" --> "Device Service@NAK": 201: event processed successfully
+
+@enduml
