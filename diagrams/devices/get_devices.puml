@@ -1,4 +1,4 @@
 @startuml GetDevices
-Client -> "Device Service": GET /devices
+Client -> "Device Service": [[https://jonau.github.io/crosslab-test/api/device.html#get-/devices GET /devices]]
 Client <-- "Device Service": 200: list of all devices
 @enduml
