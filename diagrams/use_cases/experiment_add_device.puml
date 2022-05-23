@@ -10,8 +10,14 @@ alt device available
     "Booking Service@TUI" --> "Experiment Service@TUI": 200: device booked successfully
     "Experiment Service@TUI" -> "Booking Service@TUI": PATCH /LockDevices/{ID}
     "Booking Service@TUI" --> "Experiment Service@TUI": 200: devices locked succcessfully
-    "Experiment Service@TUI" -> "Device Service@TUI": POST /peerconnections
-    "Device Service@TUI" --> "Experiment Service@TUI": 201: peerconnection established
+
+    loop for all new necessary peerconnections
+
+        "Experiment Service@TUI" -> "Device Service@TUI": POST /peerconnections
+        "Device Service@TUI" --> "Experiment Service@TUI": 201: peerconnection established
+
+    end
+
     "Experiment Service@TUI" -->[: 204: experiment updated successfully
 
 else device not available

@@ -1,4 +1,4 @@
-@startuml ExperimentLifecycle
+@startuml PeerconnectionClosedRetry
 
 [-> "Device Service@NAK": peerconnection closed
 "Device Service@NAK" -> "Experiment Service@TUI": POST callback closed
