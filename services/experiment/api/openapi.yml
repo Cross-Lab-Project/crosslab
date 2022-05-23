@@ -15,7 +15,7 @@ components:
       description: |-
         As this is the API description of the internal Experiment API, the only supported security schema is the JWT bearer token.
         This token will be populated by the API Gateway.
-        To learn about the general Authentification scheme, please refer to the [Authentication section](/backend.html#authentification) in the CrossLab architecture description.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 tags:
   - name: experiment
     description: |-
