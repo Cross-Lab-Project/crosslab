@@ -16,6 +16,7 @@
     },
     "schemas": {
       "device_overview": {
+        "title": "Device Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -47,6 +48,7 @@
         }
       },
       "time_slot": {
+        "title": "Time Slot",
         "type": "object",
         "properties": {
           "start": {
@@ -85,6 +87,7 @@
         }
       },
       "availability": {
+        "title": "Availability",
         "description": "A list of time slots that the maintainer of the device announced it is available\n",
         "type": "array",
         "items": {
@@ -92,6 +95,7 @@
         }
       },
       "device_concrete": {
+        "title": "Concrete Device",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -118,6 +122,7 @@
         ]
       },
       "device_group": {
+        "title": "Device Group",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -146,6 +151,7 @@
         ]
       },
       "peerconnection_overview": {
+        "title": "Peerconnection Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -172,6 +178,7 @@
         }
       },
       "service_config": {
+        "title": "Service Config",
         "type": "object",
         "properties": {
           "serviceType": {
@@ -188,6 +195,7 @@
         "additionalProperties": true
       },
       "peerconnection": {
+        "title": "Peerconnection",
         "allOf": [
           {
             "$ref": "#/components/schemas/peerconnection_overview"

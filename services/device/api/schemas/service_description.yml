@@ -1,4 +1,5 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Service Description
 type: object
 properties:
   serviceType:
