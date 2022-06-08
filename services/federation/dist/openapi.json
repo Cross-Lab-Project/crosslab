@@ -16,6 +16,7 @@
     },
     "schemas": {
       "institution": {
+        "title": "Institution",
         "type": "object",
         "properties": {
           "name": {
