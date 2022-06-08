@@ -217,6 +217,9 @@ async function generateTypes(api: OpenAPIV3_1.Document) {
     let properties
     if (api.components) {
         if (api.components.schemas) {
+            for (const schema in api.components.schemas) {
+                api.components.schemas[schema].title = api.components.schemas[schema].title ?? formatName(schema)
+            }
             properties = Object.fromEntries(Object.keys(api.components.schemas).map(x => [x, { "$ref": "#/components/schemas/" + x }]))
         }
 
@@ -363,12 +366,12 @@ function generateRoutes(basePath: string, routes: Array<Route>) {
     })
 
     const header = `import express from "express"
-    import { checkJWT } from "../security"
-    import * as ${basePath} from "../services/${basePath}"
+    import { checkJWT } from "../../security"
+    import * as ${basePath} from "../../services/${basePath}"
     import { ${typeDependencies.join(", ")} } from "../types"
     import { ${valDependencies.join(", ")} } from "../validation/${basePath}"
     
-    const router = express.Router()\n`
+    export const router = express.Router()\n`
 
     return format(
         header + routes.map(route => {
@@ -475,10 +478,42 @@ function generateValidationFunctions(basePath: string, routes: Array<Route>) {
         }).join("\n\n"), { tabWidth: 4, semi: false, parser: "typescript" })
 }
 
+function generateIndex(api: OpenAPIV3_1.Document, basePaths: Array<String>) {
+    return format(`import express from "express"
+    import bodyParser from "body-parser"
+    ` + basePaths.map(bp => `import * as ${bp} from "./routes/${bp}"`).join("\n") + `
+    
+    export const app = express()
+    
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: false }))
+    
+    /*
+     * Routes
+     */
+    ` + basePaths.map(bp => `app.use("/${bp}", ${bp}.router)`).join("\n")
+    + `
+
+    // catch 404
+    app.use((req, res, next) => {
+        console.error(\`Error 404 on \${req.url}.\`);
+        res.status(404).send({ status: 404, error: "Not found" });
+    });
+    
+    // catch errors
+    app.use((err, req, res, next) => {
+        const status = err.status || 500;
+        const msg = err.error || err.message;
+        console.error(\`Error \${status} (\${msg}) on \${req.method} \${req.url} with payload \${req.body}.\`);
+        res.status(status).send({ status, error: msg });
+    });`,
+     { tabWidth: 4, semi: false, parser: "typescript" })
+}
+
 async function generate(apiPath: string, options: { outPath: string }) {
     const outPath = options.outPath
     const routesPath = outPath + "/routes"
-    const servicesPath = outPath + "/services"
+    const servicesPath = outPath + "/services_templates"
     const validationPath = outPath + "/validation"
     if (fs.existsSync(outPath)) fs.rmdirSync(outPath, { recursive: true })
     fs.mkdirSync(outPath)
@@ -493,9 +528,13 @@ async function generate(apiPath: string, options: { outPath: string }) {
 
     const routes = await collectRoutes(parsedAPI)
     const mapping = new Map<string, Array<Route>>()
+    const basePaths = []
 
     for (const route of routes) {
-        if (!mapping.get(route.basePath)) mapping.set(route.basePath, [])
+        if (!mapping.get(route.basePath)) {
+            mapping.set(route.basePath, [])
+            basePaths.push(route.basePath)
+        }
         mapping.get(route.basePath)?.push(route)
     }
 
@@ -507,6 +546,7 @@ async function generate(apiPath: string, options: { outPath: string }) {
 
     fs.writeFileSync(`${validationPath}/validation.mjs`, generateBasicValidationFunctions(parsedAPI))
     fs.writeFileSync(`${outPath}/types.ts`, await generateTypes(parsedAPI))
+    fs.writeFileSync(`${outPath}/index.ts`, generateIndex(parsedAPI, basePaths))
 }
 
 if (require.main === module) {

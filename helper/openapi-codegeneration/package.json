@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
+    "openapi-types": "^12.0.0",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "json-schema-to-typescript": "^10.1.5",
