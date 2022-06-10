@@ -1,71 +1,45 @@
-export async function getProxy() {
-    // add your implementation here
+import fetch from 'node-fetch';
+import { AppDataSource } from '../data_source';
+import { InstitutionModel } from '../model';
 
+import { deleteProxySignature, getProxySignature, headProxySignature, optionsProxySignature, patchProxySignature, postProxySignature, putProxySignature, traceProxySignature } from "../_types"
+
+type proxySignature = 
+getProxySignature |
+postProxySignature |
+patchProxySignature |
+deleteProxySignature |
+optionsProxySignature |
+headProxySignature |
+traceProxySignature |
+putProxySignature
+
+const proxy: proxySignature = async (parameters, _body, _user)=> {
+    const basePathMatch=parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
+
+    let headers: HeadersInit={}
+    if (basePathMatch){
+        const basePath=basePathMatch[0]
+        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const institution = await InstitutionRepository.findOneBy({api: basePath})
+        
+        if(institution){
+            headers["Authorization"]="Bearer " + institution.apiToken
+        }
+    }
+    
+    const response=await fetch(parameters.URL, {headers})
     return {
-        status: 200,
-        data: "getProxy ok!",
+        status: response.status,
+        data: await response.text(),
     }
 }
 
-export async function postProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "postProxy ok!",
-    }
-}
-
-export async function patchProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "patchProxy ok!",
-    }
-}
-
-export async function deleteProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "deleteProxy ok!",
-    }
-}
-
-export async function optionsProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "optionsProxy ok!",
-    }
-}
-
-export async function headProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "headProxy ok!",
-    }
-}
-
-export async function traceProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "traceProxy ok!",
-    }
-}
-
-export async function putProxy() {
-    // add your implementation here
-
-    return {
-        status: 200,
-        data: "putProxy ok!",
-    }
-}
+export const getProxy = proxy
+export const postProxy = proxy
+export const patchProxy = proxy
+export const deleteProxy = proxy
+export const optionsProxy = proxy
+export const headProxy = proxy
+export const traceProxy = proxy
+export const putProxy = proxy
