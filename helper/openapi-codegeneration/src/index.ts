@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import SwaggerParser from "@apidevtools/swagger-parser"
 import fs from "fs"
 import { exit } from "process"
@@ -936,7 +938,7 @@ async function generateTypes(openAPIData: OpenAPIData, outPath: string) {
     ts = ts.replace(/export interface Superschema \{[\s\S]*?\}/gm, "")
     ts = ts.replace(/\n\s+\n/gm, "\n")
 
-    fs.writeFileSync(`${outPath}/types.ts`, nunjucks.render(__dirname + "/templates/types.njk", {
+    fs.writeFileSync(`${outPath}/types.ts`, nunjucks.render("types.njk", {
         pregeneratedTypes: ts
     }))
 }
@@ -1066,7 +1068,7 @@ function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) 
     const dependencies = getDependencies(openAPIData)
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(__dirname + "/templates/validation.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("validation.njk", {
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
                 validationDependencies: dependencies.get(key) ? dependencies.get(key)!.validationDependencies : []
@@ -1089,7 +1091,7 @@ function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
                 validationDependencies.push(routeFunction.validateInput)
                 validationDependencies.push(routeFunction.validateOutput)
             }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(__dirname + "/templates/route.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("route.njk", {
                 basePath: key,
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
@@ -1112,7 +1114,7 @@ function generateOperationTemplates(openAPIData: OpenAPIData, outPath: string) {
             for (const routeFunction of openAPIData.routeFunctions[key]) {
                 signatures.push(routeFunction.signature)
             }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(__dirname + "/templates/operations.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("operations.njk", {
                 functions: openAPIData.routeFunctions[key],
                 basePath: key,
                 signatures: signatures,
@@ -1135,7 +1137,7 @@ function generateSignatures(openAPIData: OpenAPIData, outPath: string) {
             for (const routeFunction of openAPIData.routeFunctions[key]) {
                 signatures.push(routeFunction.signature)
             }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(__dirname + "/templates/signatures.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("signatures.njk", {
                 functions: openAPIData.routeFunctions[key],
                 basePath: key,
                 signatures: signatures,
@@ -1151,7 +1153,7 @@ function generateSignatures(openAPIData: OpenAPIData, outPath: string) {
  * @param outPath path to write file to
  */
 function generateIndex(openAPIData: OpenAPIData, outPath: string) {
-    fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render(__dirname + "/templates/index.njk", {
+    fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render("index.njk", {
         routes: openAPIData.routeFunctions ? Object.keys(openAPIData.routeFunctions) : []
     }))
 }
@@ -1175,6 +1177,8 @@ async function generateProject(apiPath: string, options: { outPath: string }) {
     fs.mkdirSync(signaturesPath)
     fs.mkdirSync(validationPath)
 
+    nunjucks.configure(__dirname + "/templates")
+
     const parsedAPI = await parse(apiPath).catch((err) => {
         console.log(err)
         exit(1)
@@ -1191,11 +1195,5 @@ async function generateProject(apiPath: string, options: { outPath: string }) {
 }
 
 if (require.main === module) {
-    if (process.argv.length !== 4) {
-        console.log("Incorrect argument amount!")
-        exit(1)
-    }
-    generateProject(process.argv[2], { outPath: process.argv[3]})
-} else {
     generateProject(process.argv[2], { outPath: "." })
 }
