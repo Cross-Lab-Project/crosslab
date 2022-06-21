@@ -159,73 +159,76 @@ function formatMethodPath(path: string, method: OperationMethod, upperCase: bool
 /**
  * resolves the type declaration and type dependencies of a schema
  * @param schema SchemaObject for which to resolve type declaration and type dependencies
+ * @param api used openapi-specification
  * @returns type declaration and type dependencies
  */
-function schemaToTypeDeclaration(schema: OpenAPIV3_1.SchemaObject): { typeDeclaration: string, typeDependencies: Array<string> } {
-    if (schema.title) {
-        return { typeDeclaration: formatName(schema.title), typeDependencies: [formatName(schema.title)] }
+function schemaToTypeDeclaration(schema: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject, api: OpenAPIV3_1.Document): { typeDeclaration: string, typeDependencies: Array<string> } {
+    const derefSchema = isReferenceObject(schema) ? getReference(api, schema.$ref) as OpenAPIV3_1.SchemaObject : schema
+    if (derefSchema.title) {
+        return { typeDeclaration: formatName(derefSchema.title), typeDependencies: [formatName(derefSchema.title)] }
     }
-    if (schema.allOf) {
+    if (derefSchema.allOf) {
         let type = undefined
         const typeDeclarations = []
         let dependencies: Array<string> = []
-        for (const subschema of schema.allOf as Array<OpenAPIV3_1.SchemaObject>) {
-            if (!type) type = subschema.type
-            if (type != subschema.type) throw ("Error: cannot merge types for allOf")
-            const td = schemaToTypeDeclaration(subschema)
+        for (const subschema of derefSchema.allOf as Array<OpenAPIV3_1.SchemaObject>) {
+            const derefSubschema = isReferenceObject(subschema) ? getReference(api, subschema.$ref) as OpenAPIV3_1.SchemaObject : subschema
+            if (!type) type = derefSubschema.type
+            if (type != derefSubschema.type) throw ("Error: cannot merge types for allOf")
+            const td = schemaToTypeDeclaration(derefSubschema, api)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
         return { typeDeclaration: typeDeclarations.join(" & "), typeDependencies: dependencies }
     }
-    if (schema.anyOf) {
+    if (derefSchema.anyOf) {
         const typeDeclarations = []
         let dependencies: Array<string> = []
-        for (const subschema of schema.anyOf) {
-            const td = schemaToTypeDeclaration(subschema)
+        for (const subschema of derefSchema.anyOf) {
+            const td = schemaToTypeDeclaration(subschema, api)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
         return { typeDeclaration: typeDeclarations.join(" | "), typeDependencies: dependencies }
     }
-    if (schema.oneOf) {
+    if (derefSchema.oneOf) {
         const typeDeclarations = []
         let dependencies: Array<string> = []
-        for (const subschema of schema.oneOf) {
-            const td = schemaToTypeDeclaration(subschema)
+        for (const subschema of derefSchema.oneOf) {
+            const td = schemaToTypeDeclaration(subschema, api)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
         return { typeDeclaration: typeDeclarations.join(" | "), typeDependencies: dependencies }
     }
-    if (schema.enum) {
-        return { typeDeclaration: schema.enum.join(" | "), typeDependencies: [] }
+    if (derefSchema.enum) {
+        return { typeDeclaration: derefSchema.enum.join(" | "), typeDependencies: [] }
     }
-    if ((schema as any).const) {
-        if (typeof (schema as any).const === "string")
-            return { typeDeclaration: `"${(schema as any).const}"`, typeDependencies: [] }
+    if ((derefSchema as any).const) {
+        if (typeof (derefSchema as any).const === "string")
+            return { typeDeclaration: `"${(derefSchema as any).const}"`, typeDependencies: [] }
         else
-            return { typeDeclaration: `${(schema as any).const}`, typeDependencies: [] }
+            return { typeDeclaration: `${(derefSchema as any).const}`, typeDependencies: [] }
     }
 
-    switch (schema.type) {
+    switch (derefSchema.type) {
         case "object":
             const properties = []
             let dependencies: Array<string> = []
-            if (schema.properties) {
-                for (const property of Object.keys(schema.properties)) {
-                    const td = schemaToTypeDeclaration(schema.properties[property])
+            if (derefSchema.properties) {
+                for (const property of Object.keys(derefSchema.properties)) {
+                    const td = schemaToTypeDeclaration(derefSchema.properties[property], api)
                     properties.push(`${property}: ${td.typeDeclaration}`)
                     dependencies = dependencies.concat(td.typeDependencies)
                 }
             }
-            if (schema.additionalProperties && schema.additionalProperties == true) {
+            if (derefSchema.additionalProperties && derefSchema.additionalProperties == true) {
                 properties.push("[k: string]: unknown")
             }
             return { typeDeclaration: `{\n\t${properties.join("\n").replace(/\n/gi, "\n\t")}\n}`, typeDependencies: dependencies }
 
         case "array":
-            const td = schemaToTypeDeclaration((schema as OpenAPIV3_1.ArraySchemaObject).items)
+            const td = schemaToTypeDeclaration((derefSchema as OpenAPIV3_1.ArraySchemaObject).items, api)
             return { typeDeclaration: `Array<${td.typeDeclaration}>`, typeDependencies: td.typeDependencies }
 
         case "integer":
@@ -276,19 +279,20 @@ function isOperationMethod(str: string): str is OperationMethod {
 
 /**
  * parses a SchemaObject | ReferenceObject to SchemaData | ReferenceData
+ * @param api used openapi-specification
  * @param schema a SchemaObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed SchemaData | ReferenceData
  */
-function parseSchemaObject(schema: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject, location?: string): SchemaData | ReferenceData {
+function parseSchemaObject(api: OpenAPIV3_1.Document, schema: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject, location?: string): SchemaData | ReferenceData {
     if (!isReferenceObject(schema)) {
-        const { typeDeclaration, typeDependencies: dependencies } = schemaToTypeDeclaration(schema)
+        const {typeDeclaration, typeDependencies} = schemaToTypeDeclaration(schema, api)
         const schemaData: SchemaData = {
             type: "schema",
             schema: schema,
-            typeDeclaration: typeDeclaration,
-            dependencies: dependencies,
             location: location,
+            typeDeclaration: typeDeclaration,
+            dependencies: typeDependencies
         }
         if (location) {
             schemaData.validationFunction = "validate" + formatLocation(location, true)
@@ -312,21 +316,23 @@ function parseSchemaObject(schema: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.Refere
 
 /**
  * parses a ParameterObject | ReferenceObject to ParameterData | ReferenceData
+ * @param api used openapi-specification
  * @param parameter a ParameterObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed ParameterObject | ReferenceData
  */
-function parseParameterObject(parameter: OpenAPIV3_1.ParameterObject | OpenAPIV3_1.ReferenceObject, location?: string): ParameterData | ReferenceData {
+function parseParameterObject(api: OpenAPIV3_1.Document, parameter: OpenAPIV3_1.ParameterObject | OpenAPIV3_1.ReferenceObject, location?: string): ParameterData | ReferenceData {
     if (!isReferenceObject(parameter)) {
         const parameterData: ParameterData = {
             type: "parameter",
             in: parameter.in,
             name: parameter.name,
             parameter: parameter,
+            required: parameter.required ?? false,
             location: location
         }
         if (parameter.schema) {
-            parameterData.schema = parseSchemaObject(parameter.schema, location ? location + "/schema" : undefined )
+            parameterData.schema = parseSchemaObject(api, parameter.schema, location ? location + "/schema" : undefined )
         }
         eventEmitter.emit("parameter", parameterData)
         return parameterData
@@ -345,11 +351,12 @@ function parseParameterObject(parameter: OpenAPIV3_1.ParameterObject | OpenAPIV3
 /**
  * TBD: https://spec.openapis.org/oas/v3.1.0#header-object
  * parses a HeaderObject | ReferenceObject to HeaderData | ReferenceData
+ * @param api used openapi-specification
  * @param header a HeaderObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed HeaderData | ReferenceData
  */
-function parseHeaderObject(header: OpenAPIV3_1.HeaderObject | OpenAPIV3_1.ReferenceObject, location?: string): HeaderData | ReferenceData {
+function parseHeaderObject(api: OpenAPIV3_1.Document, header: OpenAPIV3_1.HeaderObject | OpenAPIV3_1.ReferenceObject, location?: string): HeaderData | ReferenceData {
     if (!isReferenceObject(header)) {
         const headerData: HeaderData = {
             type: "header",
@@ -373,11 +380,12 @@ function parseHeaderObject(header: OpenAPIV3_1.HeaderObject | OpenAPIV3_1.Refere
 /**
  * TBD: https://spec.openapis.org/oas/v3.1.0#encoding-object
  * parses an EncodingObject to EncodingData
+ * @param api used openapi-specification
  * @param encoding an EncodingObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed EncodingData
  */
-function parseEncodingObject(encoding: OpenAPIV3_1.EncodingObject, location?: string): EncodingData {
+function parseEncodingObject(api: OpenAPIV3_1.Document, encoding: OpenAPIV3_1.EncodingObject, location?: string): EncodingData {
     const encodingData: EncodingData = {
         type: "encoding",
         encoding: encoding,
@@ -389,12 +397,13 @@ function parseEncodingObject(encoding: OpenAPIV3_1.EncodingObject, location?: st
 
 /**
  * parses a MediaTypeObject to MediaTypeData
+ * @param api used openapi-specification
  * @param mediaType a MediaTypeObject to be parsed
  * @param key key of the MediaTypeObject, e.g. "application/json"
  * @param location location of the object in the openapi specification
  * @returns parsed MediaTypeData
  */
-function parseMediaTypeObject(mediaType: OpenAPIV3_1.MediaTypeObject, key: string, location?: string): MediaTypeData {
+function parseMediaTypeObject(api: OpenAPIV3_1.Document, mediaType: OpenAPIV3_1.MediaTypeObject, key: string, location?: string): MediaTypeData {
     const mediaTypeData: MediaTypeData = {
         type: "mediaType",
         mediaType: mediaType,
@@ -402,12 +411,12 @@ function parseMediaTypeObject(mediaType: OpenAPIV3_1.MediaTypeObject, key: strin
         location: location
     }
     if (mediaType.schema) {
-        mediaTypeData.schema = parseSchemaObject(mediaType.schema, location ? location + "/schema" : undefined)
+        mediaTypeData.schema = parseSchemaObject(api, mediaType.schema, location ? location + "/schema" : undefined)
     }
     if (mediaType.encoding) {
         mediaTypeData.encoding = []
         for (const encodingName in mediaType.encoding) {
-            mediaTypeData.encoding.push(parseEncodingObject(mediaType.encoding[encodingName]))
+            mediaTypeData.encoding.push(parseEncodingObject(api, mediaType.encoding[encodingName]))
         }
     }
     eventEmitter.emit("mediaType", mediaTypeData)
@@ -417,11 +426,12 @@ function parseMediaTypeObject(mediaType: OpenAPIV3_1.MediaTypeObject, key: strin
 /**
  * TBD: https://spec.openapis.org/oas/v3.1.0#link-object
  * parses a LinkObject | ReferenceObject to LinkData | ReferenceData
+ * @param api used openapi-specification
  * @param link a LinkObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed LinkData | ReferenceData
  */
-function parseLinkObject(link: OpenAPIV3_1.LinkObject | OpenAPIV3_1.ReferenceObject, location?: string): LinkData | ReferenceData {
+function parseLinkObject(api: OpenAPIV3_1.Document, link: OpenAPIV3_1.LinkObject | OpenAPIV3_1.ReferenceObject, location?: string): LinkData | ReferenceData {
     if (!isReferenceObject(link)) {
         const linkData: LinkData = {
             type: "link",
@@ -444,11 +454,12 @@ function parseLinkObject(link: OpenAPIV3_1.LinkObject | OpenAPIV3_1.ReferenceObj
 
 /**
  * parses a ResponseObject | ReferenceObject to ResponseData | ReferenceData
+ * @param api used openapi-specification
  * @param response a ResponseObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed ResponseData | ReferenceData
  */
-function parseResponseObject(response: OpenAPIV3_1.ResponseObject | OpenAPIV3_1.ReferenceObject, location?: string): ResponseData | ReferenceData {
+function parseResponseObject(api: OpenAPIV3_1.Document, response: OpenAPIV3_1.ResponseObject | OpenAPIV3_1.ReferenceObject, location?: string): ResponseData | ReferenceData {
     if (!isReferenceObject(response)) {
         const responseData: ResponseData = {
             type: "response",
@@ -458,19 +469,19 @@ function parseResponseObject(response: OpenAPIV3_1.ResponseObject | OpenAPIV3_1.
         if (response.headers) {
             responseData.headers = []
             for (const headerName in response.headers) {
-                responseData.headers.push(parseHeaderObject(response.headers[headerName], location ? location + `/headers/${headerName}` : undefined ))
+                responseData.headers.push(parseHeaderObject(api, response.headers[headerName], location ? location + `/headers/${headerName}` : undefined ))
             }
         }
         if (response.content) {
             responseData.content = []
             for (const mediaType in response.content) {
-                responseData.content.push(parseMediaTypeObject(response.content[mediaType], mediaType, location ? location + `/content/${mediaType}` : undefined ))
+                responseData.content.push(parseMediaTypeObject(api, response.content[mediaType], mediaType, location ? location + `/content/${mediaType}` : undefined ))
             }
         }
         if (response.links) {
             responseData.links = []
             for (const linkName in response.links) {
-                responseData.links.push(parseLinkObject(response.links[linkName], location ? location + `/links/${linkName}` : undefined ))
+                responseData.links.push(parseLinkObject(api, response.links[linkName], location ? location + `/links/${linkName}` : undefined ))
             }
         }
         eventEmitter.emit("response", responseData)
@@ -488,11 +499,12 @@ function parseResponseObject(response: OpenAPIV3_1.ResponseObject | OpenAPIV3_1.
 
 /**
  * parses a RequestBodyObject | ReferenceObject to RequestBodyData | ReferenceData
+ * @param api used openapi-specification
  * @param requestBody a RequestBodyObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed RequestBodyData | ReferenceData
  */
-function parseRequestBodyObject(requestBody: OpenAPIV3_1.RequestBodyObject | OpenAPIV3_1.ReferenceObject, location?: string): RequestBodyData | ReferenceData {
+function parseRequestBodyObject(api: OpenAPIV3_1.Document, requestBody: OpenAPIV3_1.RequestBodyObject | OpenAPIV3_1.ReferenceObject, location?: string): RequestBodyData | ReferenceData {
     if (!isReferenceObject(requestBody)) {
         const requestBodyData: RequestBodyData = {
             type: "requestBody",
@@ -503,7 +515,7 @@ function parseRequestBodyObject(requestBody: OpenAPIV3_1.RequestBodyObject | Ope
         if (requestBody.content) {
             requestBodyData.content = []
             for (const mediaType in requestBody.content) {
-                requestBodyData.content.push(parseMediaTypeObject(requestBody.content[mediaType], mediaType, location ? location + `/content/${mediaType}` : undefined ))
+                requestBodyData.content.push(parseMediaTypeObject(api, requestBody.content[mediaType], mediaType, location ? location + `/content/${mediaType}` : undefined ))
             }
         }
         eventEmitter.emit("requestBody", requestBodyData)
@@ -523,11 +535,12 @@ function parseRequestBodyObject(requestBody: OpenAPIV3_1.RequestBodyObject | Ope
 /**
  * TBD: https://spec.openapis.org/oas/v3.1.0#callback-object
  * parses a CallbackObject | ReferenceObject to CallbackData | ReferenceData
+ * @param api used openapi-specification
  * @param callback a CallbackObject | ReferenceObject to be parsed
  * @param location location of the object in the openapi specification
  * @returns parsed CallbackData | ReferenceData
  */
-function parseCallbackObject(callback: OpenAPIV3_1.CallbackObject | OpenAPIV3_1.ReferenceObject, location?: string): CallbackData | ReferenceData {
+function parseCallbackObject(api: OpenAPIV3_1.Document, callback: OpenAPIV3_1.CallbackObject | OpenAPIV3_1.ReferenceObject, location?: string): CallbackData | ReferenceData {
     if (!isReferenceObject(callback)) {
         const callbackData: CallbackData = {
             type: "callback",
@@ -550,13 +563,14 @@ function parseCallbackObject(callback: OpenAPIV3_1.CallbackObject | OpenAPIV3_1.
 
 /**
  * parses an OperationObject to OperationData
+ * @param api used openapi-specification
  * @param operation an OperationObject to be parsed
  * @param method the method of the operation (OperationMethod)
  * @param path path the operation belongs to (e.g. /devices/{device_id})
  * @param location location of the object in the openapi specification
  * @returns parsed OperationData
  */
-function parseOperationObject(operation: OpenAPIV3_1.OperationObject, method: OperationMethod, path: string, location?: string): OperationData {
+function parseOperationObject(api: OpenAPIV3_1.Document, operation: OpenAPIV3_1.OperationObject, method: OperationMethod, path: string, location?: string): OperationData {
     const operationData: OperationData = {
         type: "operation",
         operation: operation,
@@ -567,16 +581,16 @@ function parseOperationObject(operation: OpenAPIV3_1.OperationObject, method: Op
     if (operation.parameters) {
         operationData.parameters = []
         for (const parameter of operation.parameters) {
-            operationData.parameters.push(parseParameterObject(parameter))
+            operationData.parameters.push(parseParameterObject(api, parameter))
         }
     }
     if (operation.requestBody) {
-        operationData.requestBody = parseRequestBodyObject(operation.requestBody, location ? location + "/requestBody" : undefined )
+        operationData.requestBody = parseRequestBodyObject(api, operation.requestBody, location ? location + "/requestBody" : undefined )
     }
     if (operation.responses) {
         operationData.responses = []
         for (const status in operation.responses) {
-            const responseData = parseResponseObject(operation.responses[status], location ? location + `/responses/${status}` : undefined )
+            const responseData = parseResponseObject(api, operation.responses[status], location ? location + `/responses/${status}` : undefined )
             responseData.status = status
             operationData.responses.push(responseData)
         }
@@ -584,7 +598,7 @@ function parseOperationObject(operation: OpenAPIV3_1.OperationObject, method: Op
     if (operation.callbacks) {
         operationData.callbacks = []
         for (const callbackName in operation.callbacks) {
-            operationData.callbacks.push(parseCallbackObject(operation.callbacks[callbackName], location ? location + `/callbacks/${callbackName}` : undefined ))
+            operationData.callbacks.push(parseCallbackObject(api, operation.callbacks[callbackName], location ? location + `/callbacks/${callbackName}` : undefined ))
         }
     }
     if (operation.security) {
@@ -596,12 +610,13 @@ function parseOperationObject(operation: OpenAPIV3_1.OperationObject, method: Op
 
 /**
  * parses a PathItemObject to PathItemData
+ * @param api used openapi-specification
  * @param pathItem a PathItemObject to be parsed
  * @param path path of the PathItemObject (e.g. /devices/{device_id})
  * @param location location of the object in the openapi specification
  * @returns parsed PathItemData
  */
-function parsePathItemObject(pathItem: OpenAPIV3_1.PathItemObject, path: string, location?: string): PathItemData {
+function parsePathItemObject(api: OpenAPIV3_1.Document, pathItem: OpenAPIV3_1.PathItemObject, path: string, location?: string): PathItemData {
     const pathItemData: PathItemData = {
         type: "pathItem",
         pathItem: pathItem,
@@ -609,17 +624,17 @@ function parsePathItemObject(pathItem: OpenAPIV3_1.PathItemObject, path: string,
         basePath: path.split("/")[1],
         path: path
     }
-    for (const method of ["get", "put", "post", "delete", "options", "trace", "head", "patch"]) {
+    for (const method of ["head", "get", "put", "post", "delete", "options", "trace", "patch"]) {
         const operation = ((pathItem as any)[method] as OpenAPIV3_1.OperationObject)
         if (operation && isOperationMethod(method)) {
             if (!pathItemData.operations) pathItemData.operations = [] 
-            pathItemData.operations.push(parseOperationObject(operation, method, path, location ? location + `/${method}` : undefined ))
+            pathItemData.operations.push(parseOperationObject(api, operation, method, path, location ? location + `/${method}` : undefined ))
         }
     }
     if (pathItem.parameters) {
         pathItemData.parameters = []
         for (const parameter of pathItem.parameters) {
-            pathItemData.parameters.push(parseParameterObject(parameter))
+            pathItemData.parameters.push(parseParameterObject(api, parameter))
         }
     }
     if (pathItem.$ref) {
@@ -659,11 +674,13 @@ function getReference(api: OpenAPIV3_1.Document, ref: string): any {
  * @param f function to be run
  * @returns return value of ran function
  */
-function runWithoutEvents(f: () => any) {
+function runWithoutEvents(f: () => any, eventNames?: Array<keyof OpenAPIDataEvents>) {
     const events = new Map<keyof OpenAPIDataEvents,any>()
     for (const key of eventEmitter.eventNames()) {
-        events.set(key, eventEmitter.listeners(key))
-        eventEmitter.removeAllListeners(key)
+        if (!eventNames || eventNames.includes(key)) {
+            events.set(key, eventEmitter.listeners(key))
+            eventEmitter.removeAllListeners(key)
+        }
     }
     const ret = f()
     for (const key of events.keys()) {
@@ -698,90 +715,90 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
 
     /**
      * TBD: explain what happens here
-     * @param schema 
+     * @param schemaData 
      */
-    const schemaCallback = (schema: SchemaData) => {
-        if (schema.name && openAPIData.superschema && schema.location) {
-            openAPIData.superschema.properties[key+index++] = { $ref: schema.location }
+    const schemaCallback = (schemaData: SchemaData) => {
+        if (schemaData.name && openAPIData.superschema && schemaData.location) {
+            openAPIData.superschema.properties[key+index++] = { $ref: schemaData.location }
         }
-        if (schema.validationFunction && schema.location) {
+        if (schemaData.validationFunction && schemaData.location) {
             if (!openAPIData.validationBlueprints) openAPIData.validationBlueprints = []
             openAPIData.validationBlueprints.push({
-                name: schema.validationFunction,
-                schema: schema.schema,
-                schemaLocation: schema.location
+                name: schemaData.validationFunction,
+                schema: schemaData.schema,
+                schemaLocation: schemaData.location
             })
         }
-        if (schema.schema.title && schema.location) {
-            getReference(dereferencedAPI, schema.location).title = schema.schema.title
+        if (schemaData.schema.title && schemaData.location) {
+            getReference(dereferencedAPI, schemaData.location).title = schemaData.schema.title
         }
     }
 
     /**
      * TBD: explain what happens here
-     * @param reference 
+     * @param referenceData 
      */
-    const referenceCallback = (reference: ReferenceData) => {
-        if (reference.refType == "schema" && reference.location) {
+    const referenceCallback = (referenceData: ReferenceData) => {
+        if (referenceData.refType == "schema" && referenceData.location) {
             if (!openAPIData.validationBlueprints) openAPIData.validationBlueprints = []
             openAPIData.validationBlueprints.push({
-                name: "validate" + formatLocation(reference.location, true),
-                schema: reference.reference,
-                schemaLocation: reference.location
+                name: "validate" + formatLocation(referenceData.location, true),
+                schema: referenceData.reference,
+                schemaLocation: referenceData.location
             })
         }
     }
 
     /**
      * TBD: explain what happens here
-     * @param operation 
+     * @param operationData 
      */
-    const operationCallback = (operation: OperationData) => {
+    const operationCallback = (operationData: OperationData) => {
         if (!openAPIData.routeFunctions) openAPIData.routeFunctions = {}
-        const basePath = operation.path.split("/")[1]
+        const basePath = operationData.path.split("/")[1]
 
-        const parameters = operation.parameters ? operation.parameters.map(p => {
+        const parameters = operationData.parameters ? operationData.parameters.map(p => {
             if (!isReferenceData(p)) {
                 if (p.schema && p.schema.location) {
                     const reference = getReference(dereferencedAPI, p.schema.location)
                     const location = p.schema.location
                     runWithoutEvents(() => {
-                        p.schema = parseSchemaObject(reference, location)
+                        p.schema = parseSchemaObject(api, reference, location)
                     })
                 }
-                return p;
+                return p
             } else {
                 return runWithoutEvents(() => {
                     const reference = getReference(dereferencedAPI, p.reference.$ref)
-                    const parameter = parseParameterObject(reference, p.reference.$ref) as ParameterData
+                    const parameter = parseParameterObject(api, reference, p.reference.$ref) as ParameterData
                     return parameter
                 })
             }
         }) : undefined
 
         let body: RequestBodyData | undefined
-        if (operation.requestBody) {
-            if (!isReferenceData(operation.requestBody)) {
-                if (operation.requestBody.content) {
-                    const content = operation.requestBody.content.find(c => c.key == "application/json")
+        if (operationData.requestBody) {
+            if (!isReferenceData(operationData.requestBody)) {
+                if (operationData.requestBody.content) {
+                    const content = operationData.requestBody.content.find(c => c.key == "application/json")
                     if (content && content.schema && content.schema.location) {
                         const reference = getReference(dereferencedAPI, content.schema.location)
                         const location = content.schema.location
                         runWithoutEvents(() => {
-                            content.schema = parseSchemaObject(reference, location)
+                            content.schema = parseSchemaObject(api, reference, location)
                         })
                     }
                 }
-                body = operation.requestBody
+                body = operationData.requestBody
             } else {
                 runWithoutEvents(() => {
-                    const reference = getReference(dereferencedAPI, (operation.requestBody! as ReferenceData).reference.$ref)
-                    body = parseRequestBodyObject(reference, operation.requestBody!.location) as RequestBodyData
+                    const reference = getReference(dereferencedAPI, (operationData.requestBody! as ReferenceData).reference.$ref)
+                    body = parseRequestBodyObject(api, reference, operationData.requestBody!.location) as RequestBodyData
                 })
             }
         }
 
-        const responses = operation.responses ? operation.responses.map(r => {
+        const responses = operationData.responses ? operationData.responses.map(r => {
             if (!isReferenceData(r)) {
                 if (r.content) {
                     const content = r.content.find(c => c.key == "application/json")
@@ -789,15 +806,15 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
                         const reference = getReference(dereferencedAPI, content.schema.location)
                         const location = content.schema.location
                         runWithoutEvents(() => {
-                            content.schema = parseSchemaObject(reference, location)
+                            content.schema = parseSchemaObject(api, reference, location)
                         })
                     }
                 }
                 return r
             } else {
-                runWithoutEvents(() => {
+                return runWithoutEvents(() => {
                     const reference = getReference(dereferencedAPI, r.reference.$ref)
-                    const response = parseResponseObject(reference, r.location) as ResponseData
+                    const response = parseResponseObject(api, reference, r.location) as ResponseData
                     response.status = r.status
                     if (!response.status) console.error("Response has no status code!")
                     return response
@@ -805,32 +822,47 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             }
         }) : undefined
 
-        if (!openAPIData.routeFunctions[basePath]) {
-            openAPIData.routeFunctions[basePath] = []
-        } else {
-            let scopes: Array<string> = []
-            if (operation.security) {
-                const jwt = operation.security.find(el => Object.keys(el).includes("JWT"))
-                if (jwt) scopes = jwt["JWT"]
-            }
-            openAPIData.routeFunctions[basePath].push({
-                name: formatMethodPath(operation.path, operation.method),
-                method: operation.method,
-                path: operation.path,
-                validateInput: "validate" + formatMethodPath(operation.path, operation.method, true) + "Input",
-                validateOutput: "validate" + formatMethodPath(operation.path, operation.method, true) + "Output",
-                signature: formatMethodPath(operation.path, operation.method) + "Signature",
-                scopes: scopes,
-                parameters: parameters ? {
-                    cookie: parameters.filter(p => p.in == "cookie"),
-                    header: parameters.filter(p => p.in == "header"),
-                    path: parameters.filter(p => p.in == "path"),
-                    query: parameters.filter(p => p.in == "query")
-                } : undefined,
-                body: body,
-                responses: responses as ResponseData[] | undefined
-            })
+        if (!openAPIData.routeFunctions[basePath]) openAPIData.routeFunctions[basePath] = []
+        
+        let scopes: Array<string> = []
+        if (operationData.security) {
+            const jwt = operationData.security.find(el => Object.keys(el).includes("JWT"))
+            if (jwt) scopes = jwt["JWT"]
         }
+        openAPIData.routeFunctions[basePath].push({
+            name: formatMethodPath(operationData.path, operationData.method),
+            method: operationData.method,
+            path: operationData.path,
+            validateInput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Input",
+            validateOutput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Output",
+            signature: formatMethodPath(operationData.path, operationData.method) + "Signature",
+            scopes: scopes,
+            parameters: parameters ? {
+                cookie: parameters.filter(p => p.in == "cookie"),
+                header: parameters.filter(p => p.in == "header"),
+                path: parameters.filter(p => p.in == "path"),
+                query: parameters.filter(p => p.in == "query")
+            } : undefined,
+            body: body,
+            responses: responses as ResponseData[] | undefined,
+            genericResponseStatuses: {
+                "1XX": responses ? 
+                    Array.from(Array(100).keys()).map(n => n + 100).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100).keys()).map(n => n + 100),
+                "2XX": responses ? 
+                    Array.from(Array(100).keys()).map(n => n + 200).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100).keys()).map(n => n + 200),
+                "3XX": responses ? 
+                    Array.from(Array(100).keys()).map(n => n + 300).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100).keys()).map(n => n + 300),
+                "4XX": responses ? 
+                    Array.from(Array(100).keys()).map(n => n + 400).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100).keys()).map(n => n + 400),
+                "5XX": responses ? 
+                    Array.from(Array(100).keys()).map(n => n + 500).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100).keys()).map(n => n + 500),
+            }
+        })
     }
 
     // register event listeners
@@ -847,7 +879,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             for (const schemaName in api.components.schemas) {
                 const schema = api.components.schemas[schemaName]
                 schema.title = schema.title ?? formatName(schemaName)
-                const schemaData = parseSchemaObject(schema, `#/components/schemas/${schemaName}`)
+                const schemaData = parseSchemaObject(api, schema, `#/components/schemas/${schemaName}`)
                 openAPIData.components.schemas.push(schemaData)
             }
         }
@@ -856,7 +888,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.parameters = []
             for (const parameterName in api.components.parameters) {
                 const parameter = api.components.parameters[parameterName]
-                const parameterData = parseParameterObject(parameter, `#/components/parameters/${parameterName}`)
+                const parameterData = parseParameterObject(api, parameter, `#/components/parameters/${parameterName}`)
                 openAPIData.components.parameters.push(parameterData)
             }
         }
@@ -865,7 +897,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.callbacks = []
             for (const callbackName in api.components.callbacks) {
                 const callback = api.components.callbacks[callbackName]
-                const callbackData = parseCallbackObject(callback, `#/components/callbacks/${callbackName}`)
+                const callbackData = parseCallbackObject(api, callback, `#/components/callbacks/${callbackName}`)
                 openAPIData.components.callbacks.push(callbackData)
             }
         }
@@ -874,7 +906,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.requestBodies = []
             for (const requestBodyName in api.components.requestBodies) {
                 const requestBody = api.components.requestBodies[requestBodyName]
-                const requestBodyData = parseRequestBodyObject(requestBody, `#/components/requestBodies/${requestBodyName}`)
+                const requestBodyData = parseRequestBodyObject(api, requestBody, `#/components/requestBodies/${requestBodyName}`)
                 openAPIData.components.requestBodies.push(requestBodyData)
             }
         }
@@ -883,7 +915,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.pathItems = []
             for (const pathItemName in api.components.pathItems) {
                 const pathItem = api.components.pathItems[pathItemName]
-                const pathItemData = parsePathItemObject(pathItem, pathItemName, `#/components/pathItems/${pathItemName}`)
+                const pathItemData = parsePathItemObject(api, pathItem, pathItemName, `#/components/pathItems/${pathItemName}`)
                 openAPIData.components.pathItems.push(pathItemData)
             }
         }
@@ -892,7 +924,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.responses = []
             for (const responseName in api.components.responses) {
                 const response = api.components.responses[responseName]
-                const responseData = parseResponseObject(response, `#/components/responses/${responseName}`)
+                const responseData = parseResponseObject(api, response, `#/components/responses/${responseName}`)
                 openAPIData.components.responses.push(responseData)
             }
         }
@@ -901,7 +933,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.headers = []
             for (const headerName in api.components.headers) {
                 const header = api.components.headers[headerName]
-                const headerData = parseHeaderObject(header, `#/components/headers/${headerName}`)
+                const headerData = parseHeaderObject(api, header, `#/components/headers/${headerName}`)
                 openAPIData.components.headers.push(headerData)
             }
         }
@@ -914,7 +946,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             // parse pathItem objects
             const pathItem = api.paths[pathName]
             if (pathItem) {
-                const pathItemData = parsePathItemObject(pathItem, pathName, `#/paths/${pathName}`)
+                const pathItemData = parsePathItemObject(api, pathItem, pathName, `#/paths/${pathName}`)
                 openAPIData.paths.push(pathItemData)
             }
         }
@@ -948,7 +980,36 @@ async function generateTypes(openAPIData: OpenAPIData, outPath: string) {
  * @param openAPIData OpenAPIData for which to get dependencies
  * @returns type and validation dependencies of given OpenAPIData
  */
-function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencies: Array<string>, validationDependencies: Array<string> }> {
+function getDependencies(
+    openAPIData: OpenAPIData, 
+    options?: { 
+        types?: {
+            parameter?: boolean
+            body?: boolean
+            response?: boolean 
+        }
+        validation?: {
+            parameter?: boolean
+            body?: boolean
+            response?: boolean 
+        }
+    }
+): Map<string,{ typeDependencies: Array<string>, validationDependencies: Array<string> }> {
+
+    // correctly initialize options
+    const _options = {
+        types: {
+            parameter: options ? (options.types ? (options.types.parameter ?? true) : true) : true,
+            body: options ? (options.types ? (options.types.body ?? true) : true) : true,
+            response: options ? (options.types ? (options.types.response ?? true) : true) : true 
+        },
+        validation: {
+            parameter: options ? (options.validation ? (options.validation.parameter ?? true) : true) : true,
+            body: options ? (options.validation ? (options.validation.body ?? true) : true) : true,
+            response: options ? (options.validation ? (options.validation.response ?? true) : true) : true 
+        }
+    }
+
     const map = new Map<string,{ typeDependencies: Array<string>, validationDependencies: Array<string> }>()
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
@@ -959,10 +1020,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                     if (rf.parameters.cookie) {
                         for (const parameter of rf.parameters.cookie) {
                             if (parameter.schema && parameter.schema.dependencies) {
-                                if (parameter.schema.validationFunction) {
+                                if (parameter.schema.validationFunction && _options.validation.parameter) {
                                     validationDependencies.push(parameter.schema.validationFunction)
                                 }
-                                if (parameter.schema.dependencies) {
+                                if (parameter.schema.dependencies && _options.types.parameter) {
                                     typeDependencies.push(parameter.schema.dependencies)
                                 }
                             }
@@ -971,10 +1032,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                     if (rf.parameters.header) {
                         for (const parameter of rf.parameters.header) {
                             if (parameter.schema && parameter.schema.dependencies) {
-                                if (parameter.schema.validationFunction) {
+                                if (parameter.schema.validationFunction && _options.validation.parameter) {
                                     validationDependencies.push(parameter.schema.validationFunction)
                                 }
-                                if (parameter.schema.dependencies) {
+                                if (parameter.schema.dependencies && _options.types.parameter) {
                                     typeDependencies.push(parameter.schema.dependencies)
                                 }
                             }
@@ -983,10 +1044,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                     if (rf.parameters.path) {
                         for (const parameter of rf.parameters.path) {
                             if (parameter.schema && parameter.schema.dependencies) {
-                                if (parameter.schema.validationFunction) {
+                                if (parameter.schema.validationFunction && _options.validation.parameter) {
                                     validationDependencies.push(parameter.schema.validationFunction)
                                 }
-                                if (parameter.schema.dependencies) {
+                                if (parameter.schema.dependencies && _options.types.parameter) {
                                     typeDependencies.push(parameter.schema.dependencies)
                                 }
                             }
@@ -995,10 +1056,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                     if (rf.parameters.query) {
                         for (const parameter of rf.parameters.query) {
                             if (parameter.schema && parameter.schema.dependencies) {
-                                if (parameter.schema.validationFunction) {
+                                if (parameter.schema.validationFunction && _options.validation.parameter) {
                                     validationDependencies.push(parameter.schema.validationFunction)
                                 }
-                                if (parameter.schema.dependencies) {
+                                if (parameter.schema.dependencies && _options.types.parameter) {
                                     typeDependencies.push(parameter.schema.dependencies)
                                 }
                             }
@@ -1008,10 +1069,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                 if (rf.body && rf.body.content) {
                     const content = rf.body.content.find(c => c.key == "application/json")
                     if (content && content.schema) {
-                        if (content.schema.validationFunction) {
+                        if (content.schema.validationFunction && _options.validation.body) {
                             validationDependencies.push(content.schema.validationFunction)
                         }
-                        if (content.schema.dependencies) {
+                        if (content.schema.dependencies && _options.types.body) {
                             typeDependencies.push(content.schema.dependencies)
                         }
                     }
@@ -1021,10 +1082,10 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
                         if (response.content) {
                             const content = response.content.find(c => c.key == "application/json")
                             if (content && content.schema) {
-                                if (content.schema.validationFunction) {
+                                if (content.schema.validationFunction && _options.validation.response) {
                                     validationDependencies.push(content.schema.validationFunction)
                                 }
-                                if (content.schema.dependencies) {
+                                if (content.schema.dependencies && _options.types.response) {
                                     typeDependencies.push(content.schema.dependencies)
                                 }
                             }
@@ -1053,7 +1114,7 @@ function getDependencies(openAPIData: OpenAPIData): Map<string,{ typeDependencie
  * @param outPath path to write files to
  */
 function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) {
-    const ajv = new Ajv({ code: { source: true, esm: true }, inlineRefs: false })
+    const ajv = new Ajv({ code: { source: true, esm: true }, verbose: true, inlineRefs: false })
     addFormats(ajv)
     let mapping: any = {}
     if (openAPIData.validationBlueprints) {
@@ -1065,7 +1126,7 @@ function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) 
     let moduleCode = standaloneCode(ajv, mapping)
     fs.writeFileSync(`${outPath}/validation.ts`, "//@ts-nocheck\n" + format(moduleCode, { parser: "babel", tabWidth: 4 }))
 
-    const dependencies = getDependencies(openAPIData)
+    const dependencies = getDependencies(openAPIData, { types: { response: false } })
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
             fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("validation.njk", {
@@ -1083,7 +1144,7 @@ function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) 
  * @param outPath path to write files to
  */
 function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
-    const dependencies = getDependencies(openAPIData)
+    const dependencies = getDependencies(openAPIData, { types: { response: false } })
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
             const validationDependencies = []

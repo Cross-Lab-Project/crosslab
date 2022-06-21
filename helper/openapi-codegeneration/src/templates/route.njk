@@ -1,7 +1,7 @@
 {%- import "./utils.njk" as utils -%}
 
 {%- macro generateRoute(function, basePath) -%}
-router.{{ function.method }}("{{ function.path }}", async (req: TypedRequest<
+router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | replace("//", "/") | replace(r/\{([^\}]+)\}/g, ":$1")  }}", async (req: TypedRequest<
     {%- if function.parameters.path and function.parameters.path.length > 0 -%}
     {{- utils.parametersTypeDeclaration(function.parameters,false,["path"]) | safe -}}
     {%- else -%}

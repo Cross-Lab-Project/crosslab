@@ -22,6 +22,7 @@ export interface ParameterData extends DefaultData {
     name: string
     in: string // "path" | "query" | "header" | "cookie"
     parameter: OpenAPIV3_1.ParameterObject | OpenAPIV3_1.ReferenceObject
+    required: boolean
     schema?: SchemaData | ReferenceData
 }
 
@@ -124,6 +125,13 @@ export interface RouteFunction {
     }
     body?: RequestBodyData
     responses?: Array<ResponseData>
+    genericResponseStatuses: {
+        "1XX": Array<number> 
+        "2XX": Array<number> 
+        "3XX": Array<number> 
+        "4XX": Array<number> 
+        "5XX": Array<number>
+    }
 }
 
 export interface OpenAPIData {

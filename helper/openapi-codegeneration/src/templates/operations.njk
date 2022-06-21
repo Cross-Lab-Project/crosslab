@@ -22,7 +22,7 @@ import {
 } from "../types"
 import {
     {{ signatures | join(",\n\t") }}
-} from "./signatures_{{ basePath }}"
+} from "./signatures/{{ basePath }}"
 {% for function in functions %}
 {{ generateOperation(function) }}
 {% endfor %}
