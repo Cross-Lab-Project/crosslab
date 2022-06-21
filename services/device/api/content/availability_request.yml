@@ -23,9 +23,9 @@ examples:
         start: 2022-05-15T09:00:00Z
         end: 2022-05-20T17:00:00Z
         repeat:
-          freqency: WEEKLY
+          frequency: WEEKLY
       - available: false
         start: 2022-05-20T17:00:00Z
         end: 2022-05-23T09:00:00Z
         repeat:
-          freqency: WEEKLY
+          frequency: WEEKLY

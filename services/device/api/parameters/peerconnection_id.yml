@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
 in: path
-name: device_id
+name: peerconnection_id
 description: UUID of the device
 required: true
 schema:

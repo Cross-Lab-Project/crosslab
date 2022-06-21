@@ -63,7 +63,7 @@
             "description": "If specified the time slot is repeated in a fixed offset specified by the freqency",
             "type": "object",
             "properties": {
-              "freqency": {
+              "frequency": {
                 "type": "string",
                 "enum": [
                   "HOURLY",
@@ -280,7 +280,7 @@
       },
       "peerconnection_id": {
         "in": "path",
-        "name": "device_id",
+        "name": "peerconnection_id",
         "description": "UUID of the device",
         "required": true,
         "schema": {
@@ -788,6 +788,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       },
@@ -1052,6 +1055,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         },
         "callbacks": {
@@ -1126,6 +1132,9 @@
         "responses": {
           "204": {
             "description": "The device was deleted."
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       }
@@ -1194,7 +1203,7 @@
                       "start": "2022-05-15T09:00:00Z",
                       "end": "2022-05-20T17:00:00Z",
                       "repeat": {
-                        "freqency": "WEEKLY"
+                        "frequency": "WEEKLY"
                       }
                     },
                     {
@@ -1202,7 +1211,7 @@
                       "start": "2022-05-20T17:00:00Z",
                       "end": "2022-05-23T09:00:00Z",
                       "repeat": {
-                        "freqency": "WEEKLY"
+                        "frequency": "WEEKLY"
                       }
                     }
                   ]
@@ -1221,6 +1230,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       }
@@ -1361,8 +1373,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested peer connection could not be found"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ]
       },
       "delete": {
         "summary": "Delete a peer connection",
@@ -1377,6 +1397,14 @@
             ]
           }
         ],
+        "responses": {
+          "204": {
+            "description": "The peer connection was deleted successfully"
+          },
+          "404": {
+            "description": "The requested peer connection could not be found"
+          }
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/peerconnection_id"

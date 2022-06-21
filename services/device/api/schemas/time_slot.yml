@@ -12,7 +12,7 @@ properties:
     description: If specified the time slot is repeated in a fixed offset specified by the freqency
     type: object
     properties:
-      freqency:
+      frequency:
         type: string
         enum:
           - HOURLY
