@@ -38,6 +38,10 @@ paths:
                   description: End time for the booking.
                 Combined:
                   type: boolean
+                  description: If true, show only one timetable per device instead of one for all available physical devices.
+                onlyOwn:
+                  type: boolean
+                  description: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
       responses:
         '200':
           description: Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.
@@ -65,7 +69,8 @@ paths:
                       description: Array of free times.
                       items:
                         $ref: '#/components/schemas/Timeslot'
-                   
+        '400':
+          description: onlyOwn was set, but devices not belonging to that institution were requested.
         '401':
           description: No authorisation header found.
         '404':
@@ -118,7 +123,7 @@ paths:
             application/json:
               schema:
                 type: object
-                required: 
+                required:
                  - BookingID
                 properties:
                   BookingID:
@@ -182,7 +187,7 @@ paths:
                     Devices:
                      type: array
                      description: List of devices which should be added.
-                     items: 
+                     items:
                       $ref: '#/components/schemas/Device'
                     Start:
                       type: string
@@ -240,7 +245,7 @@ paths:
                 description: List of unavailable devices.
                 items:
                   type: string
-        '423': 
+        '423':
           description: >-
             The booking 'locked' status and the requested locked status do not match.
         '503':
@@ -262,7 +267,7 @@ paths:
           description: ID of Booking
       tags:
         - public
-      summary: Cancels a booking
+      summary: Cancels a booking, as long as the booking was originally done by you.
       responses:
         '200':
           description: >-
@@ -325,6 +330,9 @@ paths:
                     type: string
                     format: RFC3339
                     description: End time of booking.
+                  Locked:
+                    type: boolean
+                    description: Shows if the booking is in a locked status.
         '401':
           description: No authorisation header found.
         '404':
@@ -338,6 +346,46 @@ paths:
               schema:
                 type: string
                 description: Error code
+  /booking/destroy/{ID}:
+    delete:
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+        - public
+      summary: Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
+      responses:
+        '200':
+          description: >-
+            The booking was cancelled. All associated devices were released.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown booking ID.
+        '423':
+          description: >-
+            Some of the devices are currently in use, no device booking is cancelled. The locked
+            devices are listed in response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of locked devices.
+                items:
+                  type: string
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description
   /booking/lock/{ID}:
     put:
       parameters:
@@ -434,7 +482,227 @@ paths:
               schema:
                 type: string
                 description: Error description.
+  /booking/callback/{ID}:
+    post:
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - public
+      summary: >-
+        Callback used for updating device info / booking info.
+      responses:
+        '200':
+          description: Update was processed.
+        '404':
+          description: Callback is no longer needed.
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
+  /booking/p/precommit:
+    put:
+      tags:
+        - private
+      summary: >-
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+      requestBody:
+        $ref: '#/paths/~1booking~1manage/put/requestBody'
+      responses:
+        '200':
+          description: Pre-commit successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitTarget'
+        '400':
+          description: Devices were requested not belonging to that institution.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown device IDs. Those will be listed in response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of unknown device IDs.
+                items:
+                  type: string
+        '409':
+          description: >-
+            One or multiple devices are not available. Those will be listed in
+            response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of unavailable device IDs.
+                items:
+                  type: string
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                description: Error description
+                type: string
+  /booking/p/precommit/{ID}:
+    patch:
+      tags:
+        - private
+      summary: >-
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Bookin
+      requestBody:
+        $ref: '#/paths/~1booking~1manage~1%7BID%7D/patch/requestBody'
+      responses:
+        '200':
+          description: Pre-commit successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitTarget'
+        '400':
+          description: Devices were requested not belonging to that institution.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown device IDs. Those will be listed in response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of unknown device IDs.
+                items:
+                  type: string
+        '409':
+          description: >-
+            One or multiple devices are not available. Those will be listed in
+            response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of unavailable devices.
+                items:
+                  type: string
+        '423':
+          description: >-
+            The booking 'locked' status and the requested locked status do not match.
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description
+    delete:
+      tags:
+        - private
+      summary: >-
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      responses:
+        '200':
+          description: Pre-commit successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitTarget'
+        '400':
+          description: Devices were requested not belonging to that institution.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown booking ID.
+        '423':
+          description: >-
+            Some of the devices are currently in use, no device booking is cancelled. The locked
+            devices are listed in response.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: List of locked devices.
+                items:
+                  type: string
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description
+  /booking/p/commit/{ID}:
+    post:
+      tags:
+        - private
+      summary: >-
+        Commit finishes a two-phase commit and makes the changes permanent.
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      responses:
+        '200':
+          description: Commit was successful, ID of the booking is returned. If this was a change to a booking, ID will be identical than previous ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                 - BookingID
+                 - WasDeletion
+                properties:
+                  BookingID:
+                    type: string
+                    format: URI
+                    description: ID at which the booking can be managed.
+                  WasDeletio:
+                    type: boolean
+                    description: Returns whether the commit was a deletion (if true, BookingID will be empty).
 
+        '404':
+          description: Request contains unknown ID
+        '503':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description
 
 components:
   schemas:
@@ -446,6 +714,7 @@ components:
        - Time
        - Devices
        - You
+       - External
       properties:
         ID:
           type: string
@@ -461,6 +730,9 @@ components:
         You:
           type: boolean
           description: If true, this booking was done by you.
+        External:
+          type: boolean
+          description: Shows whether the booking was done by an external institution.
     Device:
       description: A device might either be a physical/virtual device or a group of device.
       type: object
@@ -497,3 +769,18 @@ components:
           type: string
           description: End time of the booking.
           format: RFC3339
+    CommitTarget:
+      description: CommitTarget contains all information needed to make a commit.
+      type: object
+      required:
+       - CommitURI
+      properties:
+        CommitURI:
+          type: string
+          format: URI
+          description: URI at which a POST must be done in order to commit.
+        Timeout:
+          description: After this time, the commit is timed out, i.e. it is not possible to do the commit.
+          type: string
+          format: RFC3339
+
