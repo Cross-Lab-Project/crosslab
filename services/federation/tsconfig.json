@@ -20,5 +20,6 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-    }
+    },
+    "exclude": ["src/generated_modified"]
 }
