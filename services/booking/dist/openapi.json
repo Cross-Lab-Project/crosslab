@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Buchungssystem",
-    "description": "APIs, die der Buchungsserver bereitstellt bzw. benutzen will",
+    "title": "Booking service",
+    "description": "All APIs (public and private) provided by the booking service",
     "version": "0.0.0"
   },
   "servers": [
@@ -12,72 +12,87 @@
   ],
   "tags": [
     {
-      "name": "booking",
-      "description": "APIs, die der Buchungsserver zur Verfügung stellt"
+      "name": "public",
+      "description": "Public APIs accessable by everyone (as long as authorised)"
     },
     {
-      "name": "extern",
-      "description": "APIs, die benötigt werden"
-    },
-    {
-      "name": "intern",
-      "description": "APIs, über die die Buchungssysteme miteinander kommunizieren. Die APIs sollten nicht von anderen verwendet werden."
+      "name": "private",
+      "description": "Internal APIs needed for inter-institutional operations. Only available to other booking systems."
     }
   ],
   "paths": {
-    "/GetTimetable": {
+    "/booking/schedule": {
       "post": {
         "tags": [
-          "booking"
+          "public"
         ],
-        "summary": "Returns the timetable for given devices.",
+        "summary": "Returns the free / booked times for given experiment.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "Experiment",
+                  "Start",
+                  "End"
+                ],
                 "properties": {
                   "Experiment": {
                     "$ref": "#/components/schemas/Experiment"
                   },
                   "Start": {
                     "type": "string",
-                    "format": "RFC3339"
+                    "format": "RFC3339",
+                    "description": "Start time for the booking."
                   },
                   "End": {
                     "type": "string",
-                    "format": "RFC3339"
+                    "format": "RFC3339",
+                    "description": "End time for the booking."
                   },
                   "Combined": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "If true, show only one timetable per device instead of one for all available physical devices."
+                  },
+                  "onlyOwn": {
+                    "type": "boolean",
+                    "description": "(private) Show only devices of this institution. Give an error if a device of an other institution is requested."
                   }
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable",
+            "description": "Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
                     "type": "object",
+                    "required": [
+                      "Device",
+                      "Booked",
+                      "Free"
+                    ],
                     "properties": {
                       "Device": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "ID of the device (or * if combined)."
                       },
                       "Booked": {
                         "type": "array",
+                        "description": "Array of booked times.",
                         "items": {
                           "$ref": "#/components/schemas/Timeslot"
                         }
                       },
                       "Free": {
                         "type": "array",
+                        "description": "Array of free times.",
                         "items": {
                           "$ref": "#/components/schemas/Timeslot"
                         }
@@ -88,6 +103,9 @@
               }
             }
           },
+          "400": {
+            "description": "onlyOwn was set, but devices not belonging to that institution were requested."
+          },
           "401": {
             "description": "No authorisation header found."
           },
@@ -97,6 +115,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "List of unknown device IDs.",
                   "items": {
                     "type": "string"
                   }
@@ -109,7 +128,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Error description."
                 }
               }
             }
@@ -117,10 +137,10 @@
         }
       }
     },
-    "/BookDevice": {
+    "/booking/manage": {
       "put": {
         "tags": [
-          "booking"
+          "public"
         ],
         "summary": "Books an experiment.",
         "requestBody": {
@@ -128,6 +148,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "Experiment",
+                  "Start",
+                  "End"
+                ],
                 "properties": {
                   "Experiment": {
                     "$ref": "#/components/schemas/Experiment"
@@ -145,8 +170,7 @@
                 }
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -155,9 +179,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "BookingID"
+                  ],
                   "properties": {
                     "BookingID": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "URI",
+                      "description": "ID at which the booking can be managed."
                     }
                   }
                 }
@@ -173,6 +202,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "List of unknown device IDs.",
                   "items": {
                     "type": "string"
                   }
@@ -186,6 +216,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "List of unavailable device IDs.",
                   "items": {
                     "type": "string"
                   }
@@ -198,6 +229,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "description": "Error description",
                   "type": "string"
                 }
               }
@@ -206,7 +238,146 @@
         }
       }
     },
-    "/CancelBooking/{ID}": {
+    "/booking/manage/{ID}": {
+      "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Use this request for adding devices.",
+                    "properties": {
+                      "Locked": {
+                        "type": "boolean",
+                        "description": "Expresses whether the devices should be locked. Must match current status of booking."
+                      },
+                      "Devices": {
+                        "type": "array",
+                        "description": "List of devices which should be added.",
+                        "items": {
+                          "$ref": "#/components/schemas/Device"
+                        }
+                      },
+                      "Start": {
+                        "type": "string",
+                        "description": "Start time of the booking.",
+                        "format": "RFC3339"
+                      },
+                      "End": {
+                        "type": "string",
+                        "description": "End time of the booking.",
+                        "format": "RFC3339"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "description": "Use this request for adding callbacks.",
+                    "properties": {
+                      "Callback": {
+                        "type": "string",
+                        "format": "URI",
+                        "description": "Callback which should be called at changes."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "All devices were booked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "BookingID"
+                  ],
+                  "properties": {
+                    "BookingID": {
+                      "type": "string",
+                      "format": "URI"
+                    },
+                    "Token": {
+                      "type": "array",
+                      "description": "If the booking is locked, a list of access tokens will be send. If booking is not locked, this will not be returned in response.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown device IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unknown device IDs.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unavailable devices.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "The booking 'locked' status and the requested locked status do not match."
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "parameters": [
           {
@@ -220,9 +391,9 @@
           }
         ],
         "tags": [
-          "booking"
+          "public"
         ],
-        "summary": "Cancels a booking",
+        "summary": "Cancels a booking, as long as the booking was originally done by you.",
         "responses": {
           "200": {
             "description": "The booking was cancelled. All associated devices were released."
@@ -239,6 +410,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
+                  "description": "List of locked devices.",
                   "items": {
                     "type": "string"
                   }
@@ -251,15 +423,14 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Error description"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/GetBooking/{ID}": {
+      },
       "get": {
         "parameters": [
           {
@@ -273,7 +444,7 @@
           }
         ],
         "tags": [
-          "booking"
+          "public"
         ],
         "summary": "Returns whether a list of devices is currently booked for a user",
         "responses": {
@@ -295,11 +466,17 @@
                     },
                     "Start": {
                       "type": "string",
+                      "description": "Start time of booking.",
                       "format": "RFC3339"
                     },
                     "End": {
                       "type": "string",
-                      "format": "RFC3339"
+                      "format": "RFC3339",
+                      "description": "End time of booking."
+                    },
+                    "Locked": {
+                      "type": "boolean",
+                      "description": "Shows if the booking is in a locked status."
                     }
                   }
                 }
@@ -317,7 +494,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Error code"
                 }
               }
             }
@@ -325,8 +503,8 @@
         }
       }
     },
-    "/LockDevices/{ID}": {
-      "patch": {
+    "/booking/destroy/{ID}": {
+      "delete": {
         "parameters": [
           {
             "in": "path",
@@ -339,9 +517,64 @@
           }
         ],
         "tags": [
-          "booking"
+          "public"
         ],
-        "summary": "Locks all devices belonging to a booking",
+        "summary": "Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.",
+        "responses": {
+          "200": {
+            "description": "The booking was cancelled. All associated devices were released."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
+          "423": {
+            "description": "Some of the devices are currently in use, no device booking is cancelled. The locked devices are listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of locked devices.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking/lock/{ID}": {
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "summary": "Locks all devices belonging to a booking. This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time.",
         "responses": {
           "200": {
             "description": "All devices were booked by user.",
@@ -358,11 +591,20 @@
                     },
                     "Start": {
                       "type": "string",
-                      "format": "RFC3339"
+                      "format": "RFC3339",
+                      "description": "Start time of booking"
                     },
                     "End": {
                       "type": "string",
-                      "format": "RFC3339"
+                      "format": "RFC3339",
+                      "description": "End time of booking."
+                    },
+                    "Token": {
+                      "type": "array",
+                      "description": "A list of access tokens",
+                      "items": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -380,16 +622,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Error string"
                 }
               }
             }
           }
         }
-      }
-    },
-    "/UnlockDevices/{ID}": {
-      "patch": {
+      },
+      "delete": {
         "parameters": [
           {
             "in": "path",
@@ -402,7 +643,7 @@
           }
         ],
         "tags": [
-          "booking"
+          "public"
         ],
         "summary": "Unlocks all devices belonging to a booking",
         "responses": {
@@ -421,11 +662,13 @@
                     },
                     "Start": {
                       "type": "string",
-                      "format": "RFC3339"
+                      "format": "RFC3339",
+                      "description": "Start time of deleted booking."
                     },
                     "End": {
                       "type": "string",
-                      "format": "RFC3339"
+                      "format": "RFC3339",
+                      "description": "End time of deleted booking."
                     }
                   }
                 }
@@ -443,6 +686,113 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking/callback/{ID}": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "summary": "Callback used for updating device info / booking info.",
+        "responses": {
+          "200": {
+            "description": "Update was processed."
+          },
+          "404": {
+            "description": "Callback is no longer needed."
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking/p/precommit": {
+      "put": {
+        "tags": [
+          "private"
+        ],
+        "summary": "precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.",
+        "requestBody": {
+          "$ref": "#/paths/~1booking~1manage/put/requestBody"
+        },
+        "responses": {
+          "200": {
+            "description": "Pre-commit successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitTarget"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Devices were requested not belonging to that institution."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown device IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unknown device IDs.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unavailable device IDs.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error description",
                   "type": "string"
                 }
               }
@@ -451,49 +801,204 @@
         }
       }
     },
-    "/GetDevices/{URL}": {
-      "get": {
+    "/booking/p/precommit/{ID}": {
+      "patch": {
+        "tags": [
+          "private"
+        ],
+        "summary": "precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.",
         "parameters": [
           {
             "in": "path",
-            "name": "URL",
+            "name": "ID",
             "schema": {
               "type": "string"
             },
             "required": true,
-            "description": "ID of device or group"
+            "description": "ID of Bookin"
           }
         ],
-        "tags": [
-          "extern"
-        ],
-        "summary": "Returns all known devices for a type ID. If nessecary, the type ID will be resolved and looked up at other institutions. type ID might be a group, in which case the returned list will contain devices with different real type IDs (recursively resolved).",
+        "requestBody": {
+          "$ref": "#/paths/~1booking~1manage~1%7BID%7D/patch/requestBody"
+        },
         "responses": {
           "200": {
-            "description": "List of devices",
+            "description": "Pre-commit successful.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Device"
-                  }
+                  "$ref": "#/components/schemas/CommitTarget"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Devices were requested not belonging to that institution."
           },
           "401": {
             "description": "No authorisation header found."
           },
           "404": {
-            "description": "Request contains unknown type ID."
+            "description": "Request contains unknown device IDs. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unknown device IDs.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "One or multiple devices are not available. Those will be listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unavailable devices.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "The booking 'locked' status and the requested locked status do not match."
           },
           "503": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "private"
+        ],
+        "summary": "precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pre-commit successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommitTarget"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Devices were requested not belonging to that institution."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
+          "423": {
+            "description": "Some of the devices are currently in use, no device booking is cancelled. The locked devices are listed in response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of locked devices.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/booking/p/commit/{ID}": {
+      "post": {
+        "tags": [
+          "private"
+        ],
+        "summary": "Commit finishes a two-phase commit and makes the changes permanent.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Commit was successful, ID of the booking is returned. If this was a change to a booking, ID will be identical than previous ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "BookingID",
+                    "WasDeletion"
+                  ],
+                  "properties": {
+                    "BookingID": {
+                      "type": "string",
+                      "format": "URI",
+                      "description": "ID at which the booking can be managed."
+                    },
+                    "WasDeletio": {
+                      "type": "boolean",
+                      "description": "Returns whether the commit was a deletion (if true, BookingID will be empty)."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request contains unknown ID"
+          },
+          "503": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
                 }
               }
             }
@@ -504,27 +1009,20 @@
   },
   "components": {
     "schemas": {
-      "User": {
-        "type": "object",
-        "properties": {
-          "ID": {
-            "type": "string",
-            "description": "Unique ID per user."
-          },
-          "Roles": {
-            "type": "array",
-            "description": "Array of user roles.",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
       "Booking": {
+        "description": "A booking in the booking system.",
         "type": "object",
+        "required": [
+          "ID",
+          "Time",
+          "Devices",
+          "You",
+          "External"
+        ],
         "properties": {
           "ID": {
             "type": "string",
+            "format": "URI",
             "description": "Unique ID of the booking."
           },
           "Time": {
@@ -540,12 +1038,19 @@
           "You": {
             "type": "boolean",
             "description": "If true, this booking was done by you."
+          },
+          "External": {
+            "type": "boolean",
+            "description": "Shows whether the booking was done by an external institution."
           }
         }
       },
       "Device": {
-        "description": "A device might either be a physical/virtual device or a group of devicec",
+        "description": "A device might either be a physical/virtual device or a group of device.",
         "type": "object",
+        "required": [
+          "ID"
+        ],
         "properties": {
           "ID": {
             "type": "string",
@@ -559,17 +1064,23 @@
         }
       },
       "Experiment": {
+        "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
         "type": "object",
+        "required": [
+          "Devices"
+        ],
         "properties": {
           "Devices": {
             "type": "array",
+            "description": "List of devices used in experiment.",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Device"
             }
           }
         }
       },
       "Timeslot": {
+        "description": "A time slot represents a slice of time used for bookings.",
         "type": "object",
         "properties": {
           "Start": {
@@ -580,6 +1091,25 @@
           "End": {
             "type": "string",
             "description": "End time of the booking.",
+            "format": "RFC3339"
+          }
+        }
+      },
+      "CommitTarget": {
+        "description": "CommitTarget contains all information needed to make a commit.",
+        "type": "object",
+        "required": [
+          "CommitURI"
+        ],
+        "properties": {
+          "CommitURI": {
+            "type": "string",
+            "format": "URI",
+            "description": "URI at which a POST must be done in order to commit."
+          },
+          "Timeout": {
+            "description": "After this time, the commit is timed out, i.e. it is not possible to do the commit.",
+            "type": "string",
             "format": "RFC3339"
           }
         }
