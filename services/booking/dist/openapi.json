@@ -123,7 +123,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -133,6 +133,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -224,7 +227,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -234,6 +237,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -365,7 +371,7 @@
           "423": {
             "description": "The booking 'locked' status and the requested locked status do not match."
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -375,6 +381,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       },
@@ -418,7 +427,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -428,6 +437,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       },
@@ -489,7 +501,7 @@
           "404": {
             "description": "Request contains unknown ID"
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -499,6 +511,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -544,7 +559,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -554,6 +569,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -617,7 +635,7 @@
           "404": {
             "description": "Request contains unknown ID"
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -627,6 +645,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       },
@@ -681,7 +702,7 @@
           "404": {
             "description": "Request contains unknown ID"
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -691,6 +712,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -719,7 +743,7 @@
           "404": {
             "description": "Callback is no longer needed."
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -729,6 +753,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -787,7 +814,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -797,6 +824,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -869,7 +899,7 @@
           "423": {
             "description": "The booking 'locked' status and the requested locked status do not match."
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -879,6 +909,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       },
@@ -932,7 +965,7 @@
               }
             }
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -942,6 +975,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -992,7 +1028,7 @@
           "404": {
             "description": "Request contains unknown ID"
           },
-          "503": {
+          "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
               "application/json": {
@@ -1002,6 +1038,9 @@
                 }
               }
             }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         }
       }
@@ -1034,6 +1073,13 @@
               "type": "string",
               "format": "URI"
             }
+          },
+          "Type": {
+            "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
+            "type": "string",
+            "enum": [
+              "normal"
+            ]
           },
           "You": {
             "type": "boolean",
