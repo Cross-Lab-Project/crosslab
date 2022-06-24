@@ -34,7 +34,7 @@ allOf:
         items:
           description: URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).
           type: string
-          fromat: uri
+          format: uri
         readOnly: true
       serviceConfigurations:
         type: array

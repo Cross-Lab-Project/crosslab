@@ -15,6 +15,8 @@ get:
       content:
         application/json:
           $ref: "../content/experiment.yml"
+    404:
+      description: The requested experiment could not be found
 patch:
   summary: Update an existing experiment.
   description: |
@@ -36,8 +38,13 @@ patch:
       application/json:
         $ref: "../content/experiment.yml"
   responses:
-    204:
-      description: The experiment was updated
+    200:
+      description: The JSON Representation of the changed experiment
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
+    404:
+      description: The requested experiment could not be found
   callbacks:
     changed:
       "{$request.query.changedUrl}":
@@ -65,3 +72,5 @@ delete:
   responses:
     204:
       description: The experiment was deleted.
+    404:
+      description: The requested experiment could not be found
