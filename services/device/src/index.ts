@@ -4,7 +4,6 @@ import { app } from './generated/index'
 
 AppDataSource.initialize()
     .then(() => {
-        console.log("Data Source has been initialized!")
         app.initService({JWTVerify: (_jwt, _scopes) => {return {username: "testuser"}}})
         app.listen(config.PORT)
     })

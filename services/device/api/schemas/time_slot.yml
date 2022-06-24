@@ -2,6 +2,8 @@
 title: Time Slot
 type: object
 properties:
+  available:
+    type: boolean
   start:
     type: string
     format: date-time

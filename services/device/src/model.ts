@@ -10,24 +10,21 @@ import {
     ManyToOne, 
     JoinTable,
     OneToOne,
-    JoinColumn
+    JoinColumn,
+    AfterLoad
 } from "typeorm";
 
-@Entity()
+@Entity({ name: "DeviceReference" })
 export class DeviceReferenceModel {
     @PrimaryGeneratedColumn()
     id!: number
     @Column()
     url?: string
-}
-
-@Entity()
-export class ConfiguredDeviceReferenceModel extends DeviceReferenceModel {
-    @OneToMany(() => ServiceConfigModel, (serviceConfig) => serviceConfig.device, { cascade: true })
+    @OneToMany(() => ServiceConfigModel, (serviceConfig) => serviceConfig.device)
     config?: ServiceConfigModel[]
 }
 
-@Entity()
+@Entity({ name: "ServiceConfig" })
 export class ServiceConfigModel {
     @PrimaryGeneratedColumn("uuid")
     uuid!: string
@@ -37,17 +34,17 @@ export class ServiceConfigModel {
     serviceId?: string
     @Column()
     remoteServiceId?: string
-    @ManyToOne(() => ConfiguredDeviceReferenceModel, (device) => device.config)
-    device?: ConfiguredDeviceReferenceModel
+    @ManyToOne(() => DeviceReferenceModel, (device) => device.config)
+    device?: DeviceReferenceModel
 }
 
-@Entity()
-@TableInheritance({ column: { type: "varchar", name: "modelType" } })
+@Entity({ name: "Device" })
+@TableInheritance({ column: { type: "varchar", name: "type", enum: ["device", "group"] } })
 export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn("uuid")
     uuid!: string
     @Column()
-    name!: string
+    name?: string
     @Column()
     description?: string
     @Column()
@@ -58,7 +55,7 @@ export abstract class DeviceOverviewModel {
     deletedAt?: Date
 }
 
-@ChildEntity()
+@ChildEntity("device")
 export class DeviceConcreteModel extends DeviceOverviewModel {
     @Column()
     type?: "device"
@@ -71,53 +68,54 @@ export class DeviceConcreteModel extends DeviceOverviewModel {
 }
 
 
-@ChildEntity()
+@ChildEntity("group")
 export class DeviceGroupModel extends DeviceOverviewModel {
     @Column()
     type?: "group"
     @ManyToMany(() => DeviceReferenceModel)
-    @JoinTable()
+    @JoinTable({ name: "DeviceGroupMapping" })
     devices?: DeviceReferenceModel[]
 }
 
-@Entity()
+@Entity({ name: "TimeSlot" })
 export class TimeSlotModel {
     @PrimaryGeneratedColumn()
     id!: number
     @Column()
+    available?: boolean
+    @Column({ nullable: true })
     start?: string
-    @Column()
+    @Column({ nullable: true })
     end?: string
-    @Column()
+    @Column({ nullable: true })
     frequency?: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY"
-    @Column()
+    @Column({ nullable: true })
     until?: string
-    @Column()
+    @Column({ nullable: true })
     count?: number
     @ManyToOne(() => DeviceConcreteModel, (device) => device.announcedAvailability)
     device?: DeviceConcreteModel
+    @AfterLoad()
+    nullToUndefined() {
+        if (this.available == null) this.available = undefined
+        if (this.start == null) this.start = undefined
+        if (this.end == null) this.end = undefined
+        if (this.frequency == null) this.frequency = undefined
+        if (this.until == null) this.until = undefined
+        if (this.count == null) this.count = undefined
+    }
 }
 
-@Entity()
-export abstract class PeerconnectionOverviewModel {
+@Entity({ name: "Peerconnection" })
+export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn("uuid")
     uuid!: string
     @OneToOne(() => DeviceReferenceModel)
     @JoinColumn()
-    deviceA?: DeviceReferenceModel
+    deviceA!: DeviceReferenceModel
     @OneToOne(() => DeviceReferenceModel)
     @JoinColumn()
-    deviceB?: DeviceReferenceModel
+    deviceB!: DeviceReferenceModel
     @DeleteDateColumn()
     deletedAt?: Date
-}
-
-@Entity()
-export class PeerconnectionModel extends PeerconnectionOverviewModel {
-    @OneToOne(() => ConfiguredDeviceReferenceModel)
-    @JoinColumn()
-    deviceA!: ConfiguredDeviceReferenceModel
-    @OneToOne(() => ConfiguredDeviceReferenceModel)
-    @JoinColumn()
-    deviceB!: ConfiguredDeviceReferenceModel
 }

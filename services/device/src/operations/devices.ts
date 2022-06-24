@@ -20,16 +20,16 @@ import { config } from "../config"
 const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
 
 function formatTimeSlot(timeSlot: TimeSlotModel): TimeSlot {
-    const ts: TimeSlot = {}
-    if (timeSlot.start) ts.start = timeSlot.start
-    if (timeSlot.end) ts.end = timeSlot.end
-    if (timeSlot.frequency || timeSlot.until || timeSlot.count) {
-        ts.repeat = {}
-        if (timeSlot.frequency) ts.repeat.freqency = timeSlot.frequency
-        if (timeSlot.until) ts.repeat.until = timeSlot.until
-        if (timeSlot.count) ts.repeat.count = timeSlot.count
+    return {
+        available: timeSlot.available ?? true,
+        start: timeSlot.start ?? undefined,
+        end: timeSlot.end ?? undefined,
+        repeat: {
+            frequency: timeSlot.frequency ?? undefined,
+            until: timeSlot.until ?? undefined,
+            count: timeSlot.count ?? undefined
+        }
     }
-    return ts
 } 
 
 function formatDevice(device: DeviceOverviewModel): DeviceOverview {
@@ -50,37 +50,32 @@ function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
     return device.type == "group"
 }
 
-function writeTimeSlot(timeSlot: TimeSlotModel, device: DeviceConcreteModel, object: TimeSlot) {
-    if (object.start) timeSlot.start = object.start
-    if (object.end) timeSlot.end = object.end
+function writeTimeSlot(timeSlot: TimeSlotModel, object: TimeSlot) {
+    timeSlot.available = object.available ?? true
+    timeSlot.start = object.start
+    timeSlot.end = object.end
     if (object.repeat) {
-        if (object.repeat.freqency) timeSlot.frequency = object.repeat.frequency
-        if (object.repeat.until) timeSlot.until = object.repeat.until
-        if (object.repeat.count) timeSlot.count = object.repeat.count
+        timeSlot.frequency = object.repeat.frequency
+        timeSlot.until = object.repeat.until
+        timeSlot.count = object.repeat.count
     }
-    timeSlot.device = device
 }
 
 async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) {
-    if (object.name) 
-        device.name = object.name
-    if (object.description) 
-        device.description = object.description
-    if (object.type) 
-        device.type = object.type
-    if (object.owner) 
-        device.owner = object.owner
+    device.name = object.name
+    device.description = object.description
+    device.type = object.type
+    device.owner = object.owner
 
     if (isConcreteDevice(object)) {
         const concreteDevice = device as DeviceConcreteModel
-        if (object.connected) 
-            concreteDevice.connected = object.connected
+        concreteDevice.connected = object.connected
         if (object.announcedAvailability) {
-            const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
             concreteDevice.announcedAvailability = []
+            const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
             for (const ts of object.announcedAvailability) {
                 const timeSlot = timeSlotRepository.create()
-                writeTimeSlot(timeSlot, concreteDevice, ts)
+                writeTimeSlot(timeSlot, ts)
                 await timeSlotRepository.save(timeSlot)
                 concreteDevice.announcedAvailability.push(timeSlot)
             }
@@ -90,10 +85,11 @@ async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) 
         const deviceGroup = device as DeviceGroupModel
         if (object.devices) {
             deviceGroup.devices = []
+            const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
             for (const d of object.devices) {
-                const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
                 const deviceReference = deviceReferenceRepository.create()
                 if (d.url) deviceReference.url = d.url
+                await deviceReferenceRepository.save(deviceReference)
                 deviceGroup.devices.push(deviceReference)
             }
         }
@@ -111,10 +107,18 @@ export const getDevices: getDevicesSignature = async (_user) => {
 }
 
 export const postDevices: postDevicesSignature = async (_parameters, body, _user) => {
-    const deviceRepository = AppDataSource.getRepository(DeviceOverviewModel)
-    const device = deviceRepository.create()
-    await writeDevice(device, body)
-    await deviceRepository.save(device)
+    let device
+    if (isConcreteDevice(body)) {
+        const deviceRepository = AppDataSource.getRepository(DeviceConcreteModel)
+        device = deviceRepository.create()
+        await writeDevice(device, body)
+        await deviceRepository.save(device)
+    } else {
+        const deviceRepository = AppDataSource.getRepository(DeviceGroupModel)
+        device = deviceRepository.create()
+        await writeDevice(device, body)
+        await deviceRepository.save(device)
+    }
     
     return {
         status: 201,
@@ -187,40 +191,23 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
     }
 
     const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
-    const to_remove: TimeSlotModel[] = []
-    if (!device.announcedAvailability) device.announcedAvailability = []
-    for (const timeSlot of body) {
-        const ts = timeSlotRepository.create()
-        if (timeSlot.available) {
-            writeTimeSlot(ts, device, timeSlot)
-            await timeSlotRepository.save(ts)
-            device.announcedAvailability.push(ts)
-        } else {
-            const timeSlots = device.announcedAvailability.filter((ts) => ts.start == timeSlot.start && ts.end == timeSlot.end)
-            if (timeSlot.repeat) {
-                for (const ts of timeSlots) {
-                    if (timeSlot.repeat.freqency) {
-                        if (!ts.frequency) break
-                        if (timeSlot.repeat.freqency != ts.frequency) break
-                    }
-                    if (timeSlot.repeat.until) {
-                        if (!ts.until) break
-                        if (timeSlot.repeat.until != ts.until) break
-                    }
-                    if (timeSlot.repeat.count) {
-                        if (!ts.count) break
-                        if (timeSlot.repeat.count != ts.count) break
-                    }
-                }
-            }
-            to_remove.push(ts)
+
+    // remove old timeslot
+    if (!device.announcedAvailability) {
+        device.announcedAvailability = []
+    } else {
+        let timeSlot = undefined
+        while (timeSlot = device.announcedAvailability.pop()) {
+            await timeSlotRepository.softDelete({ id : timeSlot.id })
         }
     }
 
-    device.announcedAvailability = device.announcedAvailability.filter((el) => to_remove.includes(el))
-
-    for (const ts of to_remove) {
-        await timeSlotRepository.softDelete(ts)
+    // insert new timeslots
+    for (const ts of body) {
+        const timeSlot = timeSlotRepository.create()
+        writeTimeSlot(timeSlot, ts)
+        await timeSlotRepository.save(timeSlot)
+        device.announcedAvailability.push(timeSlot)
     }
 
     await deviceRepository.save(device)

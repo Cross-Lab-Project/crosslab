@@ -7,13 +7,9 @@ import {
 	deletePeerconnectionsByPeerconnectionIdSignature
 } from "../generated/signatures/peerconnections"
 import { Peerconnection, ServiceConfig } from "../generated/types"
-import { ConfiguredDeviceReferenceModel, DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
+import { DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
 
 const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
-
-function isConfiguredDeviceReferenceModel(device: DeviceReferenceModel): device is ConfiguredDeviceReferenceModel {
-    return Object.keys(device).includes("config")
-}
 
 function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
     return {
@@ -26,9 +22,7 @@ function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
 function formatDevice(device: DeviceReferenceModel) {
     return {
         url: device.url,
-        config: isConfiguredDeviceReferenceModel(device) ? 
-            (device.config ? { services: device.config.map(formatServiceConfig) } : undefined)
-            : undefined
+        config: device.config ? { services: device.config.map(formatServiceConfig) } : undefined
     }
 }
 
@@ -49,7 +43,7 @@ function writeServiceConfig(serviceConfig: ServiceConfigModel, object: ServiceCo
 }
 
 async function writeConfiguredDeviceReference(
-    configuredDeviceReference: ConfiguredDeviceReferenceModel, 
+    configuredDeviceReference: DeviceReferenceModel, 
     object: {
         url?: string
         config?: {
@@ -76,15 +70,15 @@ async function writeConfiguredDeviceReference(
 
 async function writePeerconnection(peerconnection: PeerconnectionModel, object: Peerconnection) {
     if (object.devices) {
-        const configuredDeviceReferenceRepository = AppDataSource.getRepository(ConfiguredDeviceReferenceModel)
-        const configuredDeviceReferenceA = configuredDeviceReferenceRepository.create()
-        const configuredDeviceReferenceB = configuredDeviceReferenceRepository.create()
-        await writeConfiguredDeviceReference(configuredDeviceReferenceA, object.devices[0])
-        await writeConfiguredDeviceReference(configuredDeviceReferenceB, object.devices[1])
-        await configuredDeviceReferenceRepository.save(configuredDeviceReferenceA)
-        await configuredDeviceReferenceRepository.save(configuredDeviceReferenceB)
-        peerconnection.deviceA = configuredDeviceReferenceA
-        peerconnection.deviceB = configuredDeviceReferenceB
+        const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
+        const deviceReferenceA = deviceReferenceRepository.create()
+        const deviceReferenceB = deviceReferenceRepository.create()
+        await writeConfiguredDeviceReference(deviceReferenceA, object.devices[0])
+        await writeConfiguredDeviceReference(deviceReferenceB, object.devices[1])
+        await deviceReferenceRepository.save(deviceReferenceA)
+        await deviceReferenceRepository.save(deviceReferenceB)
+        peerconnection.deviceA = deviceReferenceA
+        peerconnection.deviceB = deviceReferenceB
     }
 }
 
