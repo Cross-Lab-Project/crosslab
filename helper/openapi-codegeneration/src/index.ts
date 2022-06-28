@@ -651,7 +651,7 @@ function parsePathItemObject(api: OpenAPIV3_1.Document, pathItem: OpenAPIV3_1.Pa
  * @returns referenced object if found else undefined
  */
 function getReference(api: OpenAPIV3_1.Document, ref: string): any {
-    ref = ref.replace("#/","")
+    ref = decodeURI(ref).replace("#/","").replace(/~1/gi,"/")
     let current = api as any
     while (ref.length > 0) {
         let longestMatch = 0
@@ -795,6 +795,17 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
                     const reference = getReference(dereferencedAPI, (operationData.requestBody! as ReferenceData).reference.$ref)
                     body = parseRequestBodyObject(api, reference, operationData.requestBody!.location) as RequestBodyData
                 })
+                if (body && body.content && body.content[0] && body.content[0].schema) {
+                    const schemaData = body.content[0].schema
+                    if (schemaData.location && operationData.requestBody.location) {
+                        if (!openAPIData.validationBlueprints) openAPIData.validationBlueprints = []
+                        openAPIData.validationBlueprints.push({
+                            name: "validate" + formatLocation(operationData.requestBody.location, true),
+                            schema: schemaData.schema,
+                            schemaLocation: schemaData.location
+                        })
+                    }
+                }
             }
         }
 
@@ -847,20 +858,20 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             responses: responses as ResponseData[] | undefined,
             genericResponseStatuses: {
                 "1XX": responses ? 
-                    Array.from(Array(100).keys()).map(n => n + 100).filter(n => !responses.find(res => res.status == n.toString())) :
-                    Array.from(Array(100).keys()).map(n => n + 100),
+                    Array.from(Array(100),((_,i) => i + 100)).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100),((_,i) => i + 100)),
                 "2XX": responses ? 
-                    Array.from(Array(100).keys()).map(n => n + 200).filter(n => !responses.find(res => res.status == n.toString())) :
-                    Array.from(Array(100).keys()).map(n => n + 200),
+                    Array.from(Array(100),((_,i) => i + 200)).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100),((_,i) => i + 200)),
                 "3XX": responses ? 
-                    Array.from(Array(100).keys()).map(n => n + 300).filter(n => !responses.find(res => res.status == n.toString())) :
-                    Array.from(Array(100).keys()).map(n => n + 300),
+                    Array.from(Array(100),((_,i) => i + 300)).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100),((_,i) => i + 300)),
                 "4XX": responses ? 
-                    Array.from(Array(100).keys()).map(n => n + 400).filter(n => !responses.find(res => res.status == n.toString())) :
-                    Array.from(Array(100).keys()).map(n => n + 400),
+                    Array.from(Array(100),((_,i) => i + 400)).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100),((_,i) => i + 400)),
                 "5XX": responses ? 
-                    Array.from(Array(100).keys()).map(n => n + 500).filter(n => !responses.find(res => res.status == n.toString())) :
-                    Array.from(Array(100).keys()).map(n => n + 500),
+                    Array.from(Array(100),((_,i) => i + 500)).filter(n => !responses.find(res => res.status == n.toString())) :
+                    Array.from(Array(100),((_,i) => i + 500)),
             }
         })
     }
