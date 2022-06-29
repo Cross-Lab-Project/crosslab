@@ -86,15 +86,12 @@ function parse(apiPath: string): Promise<OpenAPIV3_1.Document> {
  * @returns formatted path
  */
 function formatPath(path: string) {
-    let splitPath = path.split("/")
-    if (splitPath.length > 2) {
-        splitPath[0] = splitPath[1]
-        splitPath[1] = "by"
-    } else {
-        return splitPath[1].charAt(0).toUpperCase() + splitPath[1].slice(1)
-    }
+    let splitPath = path.split("/").slice(1)
     return splitPath.map(el => {
+        if (el.startsWith("{") && el.endsWith("}")) el = "By_" + el
         el = el.replace(/[{}]/gi, "")
+        el = el.replace(/_+/gi, "_")
+        if (el.startsWith("_")) el = el.slice(1)
         const split = el.split("_")
         return split.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join("")
     }).join("")
