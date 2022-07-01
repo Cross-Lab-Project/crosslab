@@ -121,7 +121,7 @@ paths:
                   format: date-time
       responses:
         '200':
-          description: All devices were booked successfully.
+          description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
           content:
             application/json:
               schema:
@@ -135,26 +135,6 @@ paths:
                     description: ID at which the booking can be managed.
         '401':
           description: No authorisation header found.
-        '404':
-          description: Request contains unknown device IDs. Those will be listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
-        '409':
-          description: >-
-            One or multiple devices are not available. Those will be listed in
-            response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unavailable device IDs.
-                items:
-                  type: string
         '500':
           description: >-
             Request could not be answered. An error string containing the reason
@@ -213,7 +193,7 @@ paths:
         required: true
       responses:
         '200':
-          description: All devices were booked successfully.
+          description: The booking change was accepted. The booking status will display whether the booking of all devices was successful.
           content:
             application/json:
               schema:
@@ -224,33 +204,8 @@ paths:
                   BookingID:
                     type: string
                     format: uri
-                  Token:
-                    type: array
-                    description: If the booking is locked, a list of access tokens will be send. If booking is not locked, this will not be returned in response.
-                    items:
-                      type: string
         '401':
           description: No authorisation header found.
-        '404':
-          description: Request contains unknown device IDs. Those will be listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
-        '409':
-          description: >-
-            One or multiple devices are not available. Those will be listed in
-            response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unavailable devices.
-                items:
-                  type: string
         '423':
           description: >-
             The booking 'locked' status and the requested locked status do not match.
@@ -287,8 +242,7 @@ paths:
           description: Request contains unknown booking ID.
         '423':
           description: >-
-            Some of the devices are currently in use, no device booking is cancelled. The locked
-            devices are listed in response.
+            The booking is currently locked, deletion not possible.
           content:
             application/json:
               schema:
@@ -322,7 +276,7 @@ paths:
         Returns whether a list of devices is currently booked for a user
       responses:
         '200':
-          description: All devices were booked by user.
+          description: Returns the current booking.
           content:
             application/json:
               schema:
@@ -383,15 +337,7 @@ paths:
           description: Request contains unknown booking ID.
         '423':
           description: >-
-            Some of the devices are currently in use, no device booking is cancelled. The locked
-            devices are listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of locked devices.
-                items:
-                  type: string
+            The booking is currently locked, deletion not possible.
         '500':
           description: >-
             Request could not be answered. An error string containing the reason
@@ -416,7 +362,7 @@ paths:
       tags:
       - public
       summary: >-
-        Locks all devices belonging to a booking. This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time.
+        Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
       responses:
         '200':
           description: All devices were booked by user.
@@ -469,7 +415,7 @@ paths:
       tags:
       - public
       summary: >-
-        Unlocks all devices belonging to a booking
+        Unlocks all devices belonging to a booking, status will be set to 'booked'.
       responses:
         '200':
           description: All devices were booked by user.
@@ -541,7 +487,7 @@ paths:
       tags:
         - private
       summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain devices for the same institution.
       requestBody:
         $ref: '#/paths/~1booking~1manage/put/requestBody'
       responses:
@@ -592,7 +538,7 @@ paths:
       tags:
         - private
       summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain devices/IDs for the same institution.
       parameters:
         - in: path
           name: ID
@@ -652,7 +598,7 @@ paths:
       tags:
         - private
       summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit.
+        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain ID for the same institution.
       parameters:
         - in: path
           name: ID
@@ -752,6 +698,7 @@ components:
        - ID
        - Time
        - Devices
+       - Status
        - You
        - External
       properties:
@@ -788,6 +735,9 @@ components:
         External:
           type: boolean
           description: Shows whether the booking was done by an external institution.
+        Message:
+          type: string
+          description: User readable notes about the status of the booking (e.g. if devices are unknown).
     Device:
       description: A device might either be a physical/virtual device or a group of device.
       type: object
