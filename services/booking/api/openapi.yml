@@ -30,11 +30,11 @@ paths:
                   $ref: '#/components/schemas/Experiment'
                 Start:
                   type: string
-                  format: RFC3339
+                  format: date-time
                   description: Start time for the booking.
                 End:
                   type: string
-                  format: RFC3339
+                  format: date-time
                   description: End time for the booking.
                 Combined:
                   type: boolean
@@ -114,11 +114,11 @@ paths:
                 Start:
                   type: string
                   description: Start time of the booking.
-                  format: RFC3339
+                  format: date-time
                 End:
                   type: string
                   description: End time of the booking.
-                  format: RFC3339
+                  format: date-time
       responses:
         '200':
           description: All devices were booked successfully.
@@ -131,7 +131,7 @@ paths:
                 properties:
                   BookingID:
                     type: string
-                    format: URI
+                    format: uri
                     description: ID at which the booking can be managed.
         '401':
           description: No authorisation header found.
@@ -198,17 +198,17 @@ paths:
                     Start:
                       type: string
                       description: Start time of the booking.
-                      format: RFC3339
+                      format: date-time
                     End:
                       type: string
                       description: End time of the booking.
-                      format: RFC3339
+                      format: date-time
               - type: object
                 description: Use this request for adding callbacks.
                 properties:
                   Callback:
                     type: string
-                    format: URI
+                    format: uri
                     description: Callback which should be called at changes.
         required: true
       responses:
@@ -223,7 +223,7 @@ paths:
                 properties:
                   BookingID:
                     type: string
-                    format: URI
+                    format: uri
                   Token:
                     type: array
                     description: If the booking is locked, a list of access tokens will be send. If booking is not locked, this will not be returned in response.
@@ -337,10 +337,10 @@ paths:
                   Start:
                     type: string
                     description: Start time of booking.
-                    format: RFC3339
+                    format: date-time
                   End:
                     type: string
-                    format: RFC3339
+                    format: date-time
                     description: End time of booking.
                   Locked:
                     type: boolean
@@ -431,11 +431,11 @@ paths:
                       $ref: '#/components/schemas/Booking'
                   Start:
                     type: string
-                    format: RFC3339
+                    format: date-time
                     description: Start time of booking
                   End:
                     type: string
-                    format: RFC3339
+                    format: date-time
                     description: End time of booking.
                   Token:
                     type: array
@@ -484,11 +484,11 @@ paths:
                       $ref: '#/components/schemas/Booking'
                   Start:
                     type: string
-                    format: RFC3339
+                    format: date-time
                     description: Start time of deleted booking.
                   End:
                     type: string
-                    format: RFC3339
+                    format: date-time
                     description: End time of deleted booking.
         '401':
           description: No authorisation header found.
@@ -722,7 +722,7 @@ paths:
                 properties:
                   BookingID:
                     type: string
-                    format: URI
+                    format: uri
                     description: ID at which the booking can be managed.
                   WasDeletio:
                     type: boolean
@@ -757,7 +757,7 @@ components:
       properties:
         ID:
           type: string
-          format: URI
+          format: uri
           description: Unique ID of the booking.
         Time:
           $ref: "#/components/schemas/Timeslot"
@@ -765,12 +765,23 @@ components:
           type: array
           items:
             type: string
-            format: URI
+            format: uri
         Type:
           description: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
           type: string
           enum:
            - normal
+        Status:
+          description: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+          type: string
+          enum:
+           - pending
+           - booked
+           - rejected
+           - cancelled
+           - active
+           - active-pending
+           - active-rejected
         You:
           type: boolean
           description: If true, this booking was done by you.
@@ -785,11 +796,8 @@ components:
       properties:
         ID:
           type: string
-          description: Unique ID of the device.
-          format: URI
-        Institute:
-          type: string
-          description: Institute at which the device is located.
+          description: Unique ID of the device. Contains the institution (by having an end point at that institution)
+          format: uri
     Experiment:
       description: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
       type: object
@@ -808,11 +816,11 @@ components:
         Start:
           type: string
           description: Start time of the booking.
-          format: RFC3339
+          format: date-time
         End:
           type: string
           description: End time of the booking.
-          format: RFC3339
+          format: date-time
     CommitTarget:
       description: CommitTarget contains all information needed to make a commit.
       type: object
@@ -821,9 +829,9 @@ components:
       properties:
         CommitURI:
           type: string
-          format: URI
+          format: uri
           description: URI at which a POST must be done in order to commit.
         Timeout:
           description: After this time, the commit is timed out, i.e. it is not possible to do the commit.
           type: string
-          format: RFC3339
+          format: date-time
