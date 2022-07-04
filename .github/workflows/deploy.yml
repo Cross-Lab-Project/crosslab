@@ -22,8 +22,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Run deploy.sh
         run: |
-          chmod +x ./deploy/docker-compose/deploy.sh
-          ./deploy/docker-compose/deploy.sh
+          scp deploy/docker-compose/docker-compose.yml $DEPLOY_SERVER:$DEPLOY_DIR/docker-compose.yml
+          ssh $DEPLOY_SERVER "cd $DEPLOY_DIR && docker-compose pull && docker-compose up -d"
         env:
           DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
