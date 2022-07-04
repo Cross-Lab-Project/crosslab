@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Create .npmrc
-        run:
+        run: |
           touch ./services/device/.npmrc
           echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> ./services/device/.npmrc
           echo @cross-lab-project:registry=https://npm.pkg.github.com >> ./services/device/.npmrc
