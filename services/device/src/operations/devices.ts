@@ -188,7 +188,7 @@ function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
     }
 }
 
-async function formatDeviceReference(reference: DeviceReferenceModel, flat_group: boolean = false): Promise<DeviceReference> {
+async function formatDeviceReference(reference: DeviceReferenceModel, _flat_group: boolean = false): Promise<DeviceReference> {
     if (reference.url) {
         fetch(reference.url, {
             method: "get"
