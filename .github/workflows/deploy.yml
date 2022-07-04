@@ -1,0 +1,24 @@
+on:
+  workflow_run:
+    workflows: ["Build and Publish Device Service","Build and Publish Experiment Service","Build and Publish Federation Service"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  docker-compose deployment:
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+    steps:
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: ./deploy/docker-compose/deploy.sh
+        env:
+          DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}

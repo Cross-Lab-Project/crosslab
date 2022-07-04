@@ -1,0 +1,21 @@
+---
+version: '2'
+services:
+  device:
+    image: crosslab/device-service
+    ports:
+      - "8080:8080"
+  experiment:
+    image: crosslab/experiment-service
+    ports:
+      - "8081:8080"
+    environment:
+      SECURITY_ISSUER: https://dev.goldi-labs.de
+      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+  federation:
+    image: crosslab/federation-service
+    ports:
+      - "8082:8080"
+    environment:
+      SECURITY_ISSUER: https://dev.goldi-labs.de
+      SECURITY_AUDIENCE: https://dev.goldi-labs.de
