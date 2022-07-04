@@ -16,6 +16,7 @@
     },
     "schemas": {
       "device_overview": {
+        "title": "Device Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -47,8 +48,12 @@
         }
       },
       "time_slot": {
+        "title": "Time Slot",
         "type": "object",
         "properties": {
+          "available": {
+            "type": "boolean"
+          },
           "start": {
             "type": "string",
             "format": "date-time"
@@ -61,7 +66,7 @@
             "description": "If specified the time slot is repeated in a fixed offset specified by the freqency",
             "type": "object",
             "properties": {
-              "freqency": {
+              "frequency": {
                 "type": "string",
                 "enum": [
                   "HOURLY",
@@ -85,6 +90,7 @@
         }
       },
       "availability": {
+        "title": "Availability",
         "description": "A list of time slots that the maintainer of the device announced it is available\n",
         "type": "array",
         "items": {
@@ -92,6 +98,7 @@
         }
       },
       "device_concrete": {
+        "title": "Concrete Device",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -118,6 +125,7 @@
         ]
       },
       "device_group": {
+        "title": "Device Group",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -146,6 +154,7 @@
         ]
       },
       "peerconnection_overview": {
+        "title": "Peerconnection Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -172,6 +181,7 @@
         }
       },
       "service_config": {
+        "title": "Service Config",
         "type": "object",
         "properties": {
           "serviceType": {
@@ -188,6 +198,7 @@
         "additionalProperties": true
       },
       "peerconnection": {
+        "title": "Peerconnection",
         "allOf": [
           {
             "$ref": "#/components/schemas/peerconnection_overview"
@@ -272,7 +283,7 @@
       },
       "peerconnection_id": {
         "in": "path",
-        "name": "device_id",
+        "name": "peerconnection_id",
         "description": "UUID of the device",
         "required": true,
         "schema": {
@@ -780,6 +791,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       },
@@ -1044,6 +1058,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         },
         "callbacks": {
@@ -1118,6 +1135,9 @@
         "responses": {
           "204": {
             "description": "The device was deleted."
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       }
@@ -1186,7 +1206,7 @@
                       "start": "2022-05-15T09:00:00Z",
                       "end": "2022-05-20T17:00:00Z",
                       "repeat": {
-                        "freqency": "WEEKLY"
+                        "frequency": "WEEKLY"
                       }
                     },
                     {
@@ -1194,7 +1214,7 @@
                       "start": "2022-05-20T17:00:00Z",
                       "end": "2022-05-23T09:00:00Z",
                       "repeat": {
-                        "freqency": "WEEKLY"
+                        "frequency": "WEEKLY"
                       }
                     }
                   ]
@@ -1213,6 +1233,45 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
+          }
+        }
+      }
+    },
+    "/devices/{device_id}/token": {
+      "get": {
+        "summary": "Get new token for device.",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:connect"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The newly generated token of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested device could not be found"
           }
         }
       }
@@ -1285,6 +1344,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The peer connection could not be created because of an unresolvable device."
           }
         },
         "callbacks": {
@@ -1353,8 +1415,16 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested peer connection could not be found"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ]
       },
       "delete": {
         "summary": "Delete a peer connection",
@@ -1369,6 +1439,14 @@
             ]
           }
         ],
+        "responses": {
+          "204": {
+            "description": "The peer connection was deleted successfully"
+          },
+          "404": {
+            "description": "The requested peer connection could not be found"
+          }
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/peerconnection_id"

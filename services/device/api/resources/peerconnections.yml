@@ -34,6 +34,8 @@ post:
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
+    404:
+      description: The peer connection could not be created because of an unresolvable device.
   callbacks:
     closed:
       '{$request.query.closedUrl}':

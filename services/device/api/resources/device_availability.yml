@@ -19,3 +19,5 @@ post:
       content:
         application/json:
           $ref: "../content/availability.yml"
+    404:
+      description: The requested device could not be found

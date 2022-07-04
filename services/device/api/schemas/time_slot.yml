@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Time Slot
 type: object
 properties:
+  available:
+    type: boolean
   start:
     type: string
     format: date-time
@@ -11,7 +14,7 @@ properties:
     description: If specified the time slot is repeated in a fixed offset specified by the freqency
     type: object
     properties:
-      freqency:
+      frequency:
         type: string
         enum:
           - HOURLY

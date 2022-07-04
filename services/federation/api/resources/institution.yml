@@ -15,6 +15,8 @@ get:
       content:
         application/json:
           $ref: '../content/institution.yml'
+    404:
+      description: The requested institution could not be found
 patch:
   summary: Update an institution.
   tags:
@@ -36,6 +38,8 @@ patch:
       content:
         application/json:
           $ref: '../content/institution.yml'
+    404:
+      description: The requested institution could not be found
 delete:
   summary: Delete a institution
   tags:
@@ -49,3 +53,5 @@ delete:
   responses:
     204:
       description: The institution was delete.
+    404:
+      description: The requested institution could not be found

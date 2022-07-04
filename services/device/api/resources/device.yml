@@ -16,6 +16,8 @@ get:
       content:
         application/json:
           $ref: "../content/device.yml"
+    404:
+      description: The requested device could not be found
 patch:
   summary: Update an existing device.
   tags:
@@ -38,6 +40,8 @@ patch:
       content:
         application/json:
           $ref: "../content/device.yml"
+    404:
+      description: The requested device could not be found
   callbacks:
     changed:
       "{$request.query.changedUrl}":
@@ -66,3 +70,5 @@ delete:
   responses:
     204:
       description: The device was deleted.
+    404:
+      description: The requested device could not be found

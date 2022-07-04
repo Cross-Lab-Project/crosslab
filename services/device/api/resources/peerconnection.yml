@@ -13,6 +13,10 @@ get:
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
+    404:
+      description: The requested peer connection could not be found
+  parameters:
+    - $ref: '../parameters/peerconnection_id.yml'
 delete:
   summary: Delete a peer connection
   tags:
@@ -21,5 +25,10 @@ delete:
     - JWT:
       - peerconnection
       - peerconnection:create
+  responses:
+    204:
+      description: The peer connection was deleted successfully
+    404:
+      description: The requested peer connection could not be found
   parameters:
     - $ref: '../parameters/peerconnection_id.yml'

@@ -1,0 +1,40 @@
+{
+  "name": "@cross-lab-project/openapi-codegen",
+  "version": "0.0.5",
+  "description": "A generator for typescript code from an openapi-specification",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  },
+  "main": "dist/index.js",
+  "bin": {
+    "openapi-codegen": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && npm run copy-templates",
+    "copy-templates": "cp -r ./src/templates/ ./dist/",
+    "prepare": "npm run build"
+  },
+  "author": "Pierre Helbing",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/ajv": "^1.0.0",
+    "@types/node": "^17.0.35",
+    "@types/prettier": "^2.6.3",
+    "openapi-types": "^12.0.0",
+    "typescript": "^4.6.4",
+    "@types/nunjucks": "^3.2.1"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1",
+    "json-schema-to-typescript": "^10.1.5",
+    "prettier": "^2.6.2",
+    "tiny-typed-emitter": "^2.1.0",
+    "nunjucks": "^3.2.3"
+  }
+}

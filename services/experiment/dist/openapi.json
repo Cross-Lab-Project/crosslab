@@ -80,9 +80,11 @@
                 "config": {
                   "type": "object",
                   "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-                  "serviceId": {
-                    "type": "string",
-                    "description": "ID of the service"
+                  "properties": {
+                    "serviceId": {
+                      "type": "string",
+                      "description": "ID of the service"
+                    }
                   },
                   "additionalProperties": true
                 }
@@ -142,7 +144,7 @@
                 "items": {
                   "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
                   "type": "string",
-                  "fromat": "uri"
+                  "format": "uri"
                 },
                 "readOnly": true
               },
@@ -287,6 +289,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested experiment could not be found"
           }
         }
       },
@@ -323,8 +328,18 @@
           }
         },
         "responses": {
-          "204": {
-            "description": "The experiment was updated"
+          "200": {
+            "description": "The JSON Representation of the changed experiment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested experiment could not be found"
           }
         },
         "callbacks": {
@@ -392,6 +407,9 @@
         "responses": {
           "204": {
             "description": "The experiment was deleted."
+          },
+          "404": {
+            "description": "The requested experiment could not be found"
           }
         }
       }

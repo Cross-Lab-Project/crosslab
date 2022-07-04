@@ -5,6 +5,11 @@
     "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
     "version": "0.0.1"
   },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "JWT": {
@@ -16,6 +21,7 @@
     },
     "schemas": {
       "institution": {
+        "title": "Institution",
         "type": "object",
         "properties": {
           "name": {
@@ -173,6 +179,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested institution could not be found"
           }
         }
       },
@@ -214,6 +223,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested institution could not be found"
           }
         }
       },
@@ -238,6 +250,9 @@
         "responses": {
           "204": {
             "description": "The institution was delete."
+          },
+          "404": {
+            "description": "The requested institution could not be found"
           }
         }
       }
