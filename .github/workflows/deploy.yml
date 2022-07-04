@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  delploy:
+  deploy:
     runs-on: ubuntu-latest
     environment:
       name: development
