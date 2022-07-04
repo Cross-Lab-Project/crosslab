@@ -20,7 +20,10 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Checkout
         uses: actions/checkout@v3
-      - run: ./deploy/docker-compose/deploy.sh
+      - name: Run deploy.sh
+        run: |
+          chmod +x ./deploy/docker-compose/deploy.sh
+          ./deploy/docker-compose/deploy.sh
         env:
           DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
