@@ -1,20 +1,32 @@
 openapi: 3.0.1
 info:
   title: Booking service
-  description: All APIs (public and private) provided by the booking service
+  description: >-
+    This API represents the booking service.
+
+    The booking service itself is build on 4 different microservices, as shown by the different tags used in this documentation. By using different micro service, scaling is easier to realise (especially when using a language like TypeScript which does not support parallel execution). The booking service as a whole should have different data bases:
+     * **Device booking database**: This database contains the booking for all individual devices. The *schedule-service* will access it read-only and the *device-booking* will access it read-write.
+     * **Booking database**: This contains the database with all bookings. It can be accessed read-write by *booking-frontend* and *booking-backend*.
+     * **Callback-Database**: This contains all known callbacks (both registered from other services and one callbacks registered at the booking service). It should only be accessed by booking-backend.
+
+    To facillitate communication between the different services, a message broker will be used.
   version: 0.0.0
 servers:
   - url: /v0
 tags:
-  - name: public
-    description: Public APIs accessable by everyone (as long as authorised)
-  - name: private
-    description: Internal APIs needed for inter-institutional operations. Only available to other booking systems.
+  - name: schedule-service
+    description: The schedule service is responsible for showing the schedule of devices. It shares a database with device-booking, but accesses it read-only. It can be scaled horizontally
+  - name: booking-frontend
+    description: The booking-frontend is tasked with accepting and showing bookings. It itself only does minimal management, most intensive tasks are handled by the booking backend. It communicates with the backend through a message protocol. It should not be scaled horizontally.
+  - name: booking-backend
+    description: The booking backend handles the computation heavy tasks of the booking, like the device selection / booking and the response to callbacks .It communicates with the backend through a message protocol. It should be scaled horizontally.
+  - name: device-booking
+    description: The device booking service handles the actual booking of devices. Since all requests must be serialised, it must not be scaled horizontally. It only does minimal computation, since all requests must be handled as quickly as possible. This means that callers have to prepare the booking on their side (e.g. like the booking-backen). It must only be called by the booking services and not by user.
 paths:
   /booking/schedule:
     post:
       tags:
-        - public
+        - schedule-service
       summary: Returns the free / booked times for given experiment.
       requestBody:
         content:
@@ -23,19 +35,12 @@ paths:
               type: object
               required:
                - Experiment
-               - Start
-               - End
+               - Time
               properties:
                 Experiment:
                   $ref: '#/components/schemas/Experiment'
-                Start:
-                  type: string
-                  format: date-time
-                  description: Start time for the booking.
-                End:
-                  type: string
-                  format: date-time
-                  description: End time for the booking.
+                Time:
+                  $ref: '#/components/schemas/Timeslot'
                 Combined:
                   type: boolean
                   description: If true, show only one timetable per device instead of one for all available physical devices.
@@ -97,7 +102,7 @@ paths:
   /booking/manage:
     put:
       tags:
-        - public
+        - booking-frontend
       summary: Books an experiment.
       requestBody:
         content:
@@ -106,19 +111,12 @@ paths:
               type: object
               required:
                - Experiment
-               - Start
-               - End
+               - Time
               properties:
                 Experiment:
                  $ref: '#/components/schemas/Experiment'
-                Start:
-                  type: string
-                  description: Start time of the booking.
-                  format: date-time
-                End:
-                  type: string
-                  description: End time of the booking.
-                  format: date-time
+                Time:
+                  $ref: '#/components/schemas/Timeslot'
       responses:
         '200':
           description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
@@ -157,7 +155,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-        - public
+        - booking-frontend
       summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
       requestBody:
         content:
@@ -175,14 +173,6 @@ paths:
                      description: List of devices which should be added.
                      items:
                       $ref: '#/components/schemas/Device'
-                    Start:
-                      type: string
-                      description: Start time of the booking.
-                      format: date-time
-                    End:
-                      type: string
-                      description: End time of the booking.
-                      format: date-time
               - type: object
                 description: Use this request for adding callbacks.
                 properties:
@@ -230,7 +220,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-        - public
+        - booking-frontend
       summary: Cancels a booking, as long as the booking was originally done by you.
       responses:
         '200':
@@ -271,7 +261,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-      - public
+      - booking-frontend
       summary: >-
         Returns whether a list of devices is currently booked for a user
       responses:
@@ -281,21 +271,18 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                 - Experiment
+                 - Booking
+                 - Time
+                 - Locked
                 properties:
                   Experiment:
                     $ref: '#/components/schemas/Experiment'
-                  Bookings:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Booking'
-                  Start:
-                    type: string
-                    description: Start time of booking.
-                    format: date-time
-                  End:
-                    type: string
-                    format: date-time
-                    description: End time of booking.
+                  Booking:
+                    $ref: '#/components/schemas/Booking'
+                  Time:
+                    $ref: '#/components/schemas/Timeslot'
                   Locked:
                     type: boolean
                     description: Shows if the booking is in a locked status.
@@ -325,7 +312,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-        - public
+        - booking-frontend
       summary: Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
       responses:
         '200':
@@ -360,7 +347,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-      - public
+      - booking-backend
       summary: >-
         Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
       responses:
@@ -370,24 +357,26 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - Booking
+                  - Time
+                  - Tokens
                 properties:
-                  Bookings:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Booking'
-                  Start:
-                    type: string
-                    format: date-time
-                    description: Start time of booking
-                  End:
-                    type: string
-                    format: date-time
-                    description: End time of booking.
-                  Token:
+                  Booking:
+                    $ref: '#/components/schemas/Booking'
+                  Time:
+                    $ref: '#/components/schemas/Timeslot'
+                  Tokens:
                     type: array
                     description: A list of access tokens
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        Device:
+                          type: string
+                          format: uri
+                        Token:
+                          type: string
         '401':
           description: No authorisation header found.
         '404':
@@ -413,29 +402,13 @@ paths:
           required: true
           description: ID of Booking
       tags:
-      - public
+      - booking-backend
       summary: >-
         Unlocks all devices belonging to a booking, status will be set to 'booked'.
       responses:
         '200':
-          description: All devices were booked by user.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  Bookings:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Booking'
-                  Start:
-                    type: string
-                    format: date-time
-                    description: Start time of deleted booking.
-                  End:
-                    type: string
-                    format: date-time
-                    description: End time of deleted booking.
+          description: Unlocking was successful.
+
         '401':
           description: No authorisation header found.
         '404':
@@ -462,7 +435,7 @@ paths:
           required: true
           description: ID of Booking
       tags:
-      - public
+      - booking-backend
       summary: >-
         Callback used for updating device info / booking info.
       responses:
@@ -482,198 +455,91 @@ paths:
         '503':
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/p/precommit:
+  /booking/device/:
     put:
       tags:
-        - private
-      summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain devices for the same institution.
+        - device-booking
+      summary: Books the actual device. Must only be called by the booking service.
       requestBody:
-        $ref: '#/paths/~1booking~1manage/put/requestBody'
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+               - Device
+               - Time
+              properties:
+                Device:
+                 $ref: '#/components/schemas/Device'
+                Time:
+                 $ref: '#/components/schemas/Timeslot'
+                BookingReference:
+                  type: string
+                  description: Reference to the booking this request belongs to.
       responses:
         '200':
-          description: Pre-commit successful.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommitTarget'
-        '400':
-          description: Devices were requested not belonging to that institution.
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown device IDs. Those will be listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
-        '409':
-          description: >-
-            One or multiple devices are not available. Those will be listed in
-            response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unavailable device IDs.
-                items:
-                  type: string
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                description: Error description
-                type: string
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/p/precommit/{ID}:
-    patch:
-      tags:
-        - private
-      summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain devices/IDs for the same institution.
-      parameters:
-        - in: path
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Bookin
-      requestBody:
-        $ref: '#/paths/~1booking~1manage~1%7BID%7D/patch/requestBody'
-      responses:
-        '200':
-          description: Pre-commit successful.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommitTarget'
-        '400':
-          description: Devices were requested not belonging to that institution.
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown device IDs. Those will be listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
-        '409':
-          description: >-
-            One or multiple devices are not available. Those will be listed in
-            response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of unavailable devices.
-                items:
-                  type: string
-        '423':
-          description: >-
-            The booking 'locked' status and the requested locked status do not match.
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error description
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-    delete:
-      tags:
-        - private
-      summary: >-
-        precommit allows to prepare a two-phase commit for cross-institution reservation. The operations are similar to the public API but return a callback for commit. Must only contain ID for the same institution.
-      parameters:
-        - in: path
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      responses:
-        '200':
-          description: Pre-commit successful.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommitTarget'
-        '400':
-          description: Devices were requested not belonging to that institution.
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown booking ID.
-        '423':
-          description: >-
-            Some of the devices are currently in use, no device booking is cancelled. The locked
-            devices are listed in response.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of locked devices.
-                items:
-                  type: string
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error description
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/p/commit/{ID}:
-    post:
-      tags:
-        - private
-      summary: >-
-        Commit finishes a two-phase commit and makes the changes permanent.
-      parameters:
-        - in: path
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      responses:
-        '200':
-          description: Commit was successful, ID of the booking is returned. If this was a change to a booking, ID will be identical than previous ID.
+          description: The booking was successful, it is guaranteed that the device is now booked.
           content:
             application/json:
               schema:
                 type: object
                 required:
                  - BookingID
-                 - WasDeletion
                 properties:
                   BookingID:
                     type: string
                     format: uri
-                    description: ID at which the booking can be managed.
-                  WasDeletio:
-                    type: boolean
-                    description: Returns whether the commit was a deletion (if true, BookingID will be empty).
-
+                    description: ID of the booking.
+        '401':
+          description: No authorisation header found.
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                description: Error description
+                type: string
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+  /booking/device/{ID}:
+    get:
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - device-booking
+      summary: >-
+        Returns the given booking and - if applicable - the access token.
+      responses:
+        '200':
+          description: Returns the current booking.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                 - Device
+                 - Time
+                properties:
+                  Device:
+                   $ref: '#/components/schemas/Device'
+                  Time:
+                   $ref: '#/components/schemas/Timeslot'
+                  BookingReference:
+                    type: string
+                    description: Reference to the booking this request belongs to.
+                  Token:
+                    type: string
+                    description: Access token to the device. This field only exists when the requested user is the user who did the booking and the time is between start and end.
+        '401':
+          description: No authorisation header found.
         '404':
           description: Request contains unknown ID
         '500':
@@ -684,7 +550,38 @@ paths:
             application/json:
               schema:
                 type: string
-                description: Error description
+                description: Error code
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+    delete:
+      parameters:
+        - in: path
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - device-booking
+      summary: >-
+        Deletes the single device booking
+      responses:
+        '200':
+          description: Deletion was successful. It is now guaranteed that the device booking does not exist any more.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown ID
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
         '503':
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
@@ -759,9 +656,15 @@ components:
           description: List of devices used in experiment.
           items:
             $ref: "#/components/schemas/Device"
+        Description:
+          type: string
+          description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
     Timeslot:
       description: A time slot represents a slice of time used for bookings.
       type: object
+      required:
+        - Start
+        - End
       properties:
         Start:
           type: string
@@ -770,18 +673,4 @@ components:
         End:
           type: string
           description: End time of the booking.
-          format: date-time
-    CommitTarget:
-      description: CommitTarget contains all information needed to make a commit.
-      type: object
-      required:
-       - CommitURI
-      properties:
-        CommitURI:
-          type: string
-          format: uri
-          description: URI at which a POST must be done in order to commit.
-        Timeout:
-          description: After this time, the commit is timed out, i.e. it is not possible to do the commit.
-          type: string
           format: date-time
