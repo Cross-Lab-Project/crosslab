@@ -12,9 +12,9 @@ info:
      * **Callback-Database**: This contains all known callbacks (both registered from other services and one callbacks registered at the booking service). It should only be accessed by booking-backend.
 
     To facillitate communication between the different services, a message broker will be used.
-  version: 0.0.0
+  version: 1.0.0
 servers:
-  - url: /v0
+  - url: /v1
 tags:
   - name: schedule-service
     description: The schedule service is responsible for showing the schedule of devices. It shares a database with device-reservation, but accesses it read-only. It can be scaled horizontally
@@ -24,6 +24,10 @@ tags:
     description: The booking backend handles the computation heavy tasks of the booking, like the device selection & reservation and the response to callbacks. It communicates with the frontend through a message protocol. It should be scaled horizontally.
   - name: device-reservation
     description: The device reservation service handles the actual low-level reservation of devices. Since all requests must be serialised, it must not be scaled horizontally. It only does minimal computation, since all requests must be handled as quickly as possible. This means that callers have to prepare the booking on their side (e.g. like the booking-backend). It must only be called by the booking services and not by user.
+
+security:
+  - JWT: []
+
 paths:
   /booking/schedule:
     post:
@@ -676,3 +680,12 @@ components:
           type: string
           description: End time of the booking.
           format: date-time
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
