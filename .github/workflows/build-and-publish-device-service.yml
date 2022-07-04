@@ -1,3 +1,5 @@
+name: Build and Publish Device Service
+
 on:
   push:
     branches:
@@ -18,6 +20,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create .npmrc
+        run:
+          touch ./services/device/.npmrc
+          echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> ./services/device/.npmrc
+          echo @cross-lab-project:registry=https://npm.pkg.github.com >> ./services/device/.npmrc
+          echo always-auth=true >> ./services/device/.npmrc
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v3

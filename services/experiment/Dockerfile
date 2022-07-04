@@ -1,7 +1,9 @@
 # Build Image
 FROM node:latest AS build
 WORKDIR /app
-COPY package.json package-lock.json /app/
+COPY . /app/
+RUN npm ci
+RUN npm run build
 RUN npm ci --only=production
  
 # Production Image
@@ -13,5 +15,5 @@ EXPOSE 8080/tcp
 USER node
 WORKDIR /app
 COPY --chown=node:node --from=build /app/node_modules /app/node_modules
-COPY --chown=node:node ./dist /app/dist
+COPY --chown=node:node --from=build ./app/dist /app/dist
 CMD ["dumb-init", "node", "dist/index.js"]
