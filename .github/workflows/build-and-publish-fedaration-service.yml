@@ -1,3 +1,5 @@
+name: Build and Publish Federation Service
+
 on:
   push:
     branches:
@@ -18,6 +20,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Create .npmrc
+        run:
+          touch ./services/federation/.npmrc
+          echo //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }} >> ./services/federation/.npmrc
+          echo @cross-lab-project:registry=https://npm.pkg.github.com >> ./services/federation/.npmrc
+          echo always-auth=true >> ./services/federation/.npmrc
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v3
