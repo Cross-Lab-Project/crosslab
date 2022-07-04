@@ -6,36 +6,30 @@ import {
     OneToMany, 
     TableInheritance, 
     ChildEntity, 
-    ManyToMany, 
     ManyToOne, 
-    JoinTable,
     OneToOne,
     JoinColumn,
     AfterLoad
 } from "typeorm";
+import { ServiceConfig } from "./generated/types";
 
-@Entity({ name: "DeviceReference" })
-export class DeviceReferenceModel {
-    @PrimaryGeneratedColumn()
-    id!: number
-    @Column()
-    url?: string
-    @OneToMany(() => ServiceConfigModel, (serviceConfig) => serviceConfig.device)
-    config?: ServiceConfigModel[]
+export function isConcreteDeviceModel(device: DeviceOverviewModel): device is ConcreteDeviceModel {
+    return device.type == "device"
 }
 
-@Entity({ name: "ServiceConfig" })
-export class ServiceConfigModel {
-    @PrimaryGeneratedColumn("uuid")
-    uuid!: string
-    @Column()
-    serviceType?: string
-    @Column()
-    serviceId?: string
-    @Column()
-    remoteServiceId?: string
-    @ManyToOne(() => DeviceReferenceModel, (device) => device.config)
-    device?: DeviceReferenceModel
+export function isDeviceGroupModel(device: DeviceOverviewModel): device is DeviceGroupModel {
+    return device.type == "group"
+}
+
+export interface DeviceReference {
+    url?: string
+    [k: string]: unknown
+}
+
+export interface ConfiguredDeviceReference {
+    url?: string
+    config?: ServiceConfig[]
+    [k: string]: unknown
 }
 
 @Entity({ name: "Device" })
@@ -56,15 +50,17 @@ export abstract class DeviceOverviewModel {
 }
 
 @ChildEntity("device")
-export class DeviceConcreteModel extends DeviceOverviewModel {
+export class ConcreteDeviceModel extends DeviceOverviewModel {
     @Column()
     type?: "device"
     @Column()
     connected?: boolean
-    @OneToMany(() => TimeSlotModel, (timeslot) => timeslot.device)
+    @OneToMany(() => TimeSlotModel, (timeslot) => timeslot.device, { onDelete: "CASCADE", cascade: true })
     announcedAvailability?: TimeSlotModel[]
     @Column()
     experiment?: string
+    @Column()
+    token?: string
 }
 
 
@@ -72,9 +68,38 @@ export class DeviceConcreteModel extends DeviceOverviewModel {
 export class DeviceGroupModel extends DeviceOverviewModel {
     @Column()
     type?: "group"
-    @ManyToMany(() => DeviceReferenceModel)
-    @JoinTable({ name: "DeviceGroupMapping" })
+    @OneToMany(() => DeviceReferenceModel, (deviceReference) => deviceReference.group, { onDelete: "CASCADE", cascade: true })
     devices?: DeviceReferenceModel[]
+}
+
+@Entity({ name: "DeviceReference" })
+export class DeviceReferenceModel {
+    @PrimaryGeneratedColumn()
+    id!: number
+    @Column()
+    url?: string
+    @OneToMany(() => ServiceConfigModel, (serviceConfig) => serviceConfig.device, { onDelete: "CASCADE", cascade: true })
+    config?: ServiceConfigModel[]
+    @ManyToOne(() => DeviceGroupModel, (deviceGroup) => deviceGroup.devices)
+    group?: DeviceGroupModel
+    @DeleteDateColumn()
+    deletedAt?: Date
+}
+
+@Entity({ name: "ServiceConfig" })
+export class ServiceConfigModel {
+    @PrimaryGeneratedColumn("uuid")
+    uuid!: string
+    @Column()
+    serviceType?: string
+    @Column()
+    serviceId?: string
+    @Column()
+    remoteServiceId?: string
+    @ManyToOne(() => DeviceReferenceModel, (device) => device.config)
+    device?: DeviceReferenceModel
+    @DeleteDateColumn()
+    deletedAt?: Date
 }
 
 @Entity({ name: "TimeSlot" })
@@ -93,8 +118,8 @@ export class TimeSlotModel {
     until?: string
     @Column({ nullable: true })
     count?: number
-    @ManyToOne(() => DeviceConcreteModel, (device) => device.announcedAvailability)
-    device?: DeviceConcreteModel
+    @ManyToOne(() => ConcreteDeviceModel, (device) => device.announcedAvailability)
+    device?: ConcreteDeviceModel
     @AfterLoad()
     nullToUndefined() {
         if (this.available == null) this.available = undefined
@@ -104,6 +129,8 @@ export class TimeSlotModel {
         if (this.until == null) this.until = undefined
         if (this.count == null) this.count = undefined
     }
+    @DeleteDateColumn()
+    deletedAt?: Date
 }
 
 @Entity({ name: "Peerconnection" })

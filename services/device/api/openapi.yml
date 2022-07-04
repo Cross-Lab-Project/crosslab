@@ -30,6 +30,8 @@ paths:
     $ref: "./resources/device.yml"
   /devices/{device_id}/availability:
     $ref: "./resources/device_availability.yml"
+  /devices/{device_id}/token:
+    $ref: "./resources/device_token.yml"
   /peerconnections:
     $ref: "./resources/peerconnections.yml"
   /peerconnections/{peerconnection_id}:

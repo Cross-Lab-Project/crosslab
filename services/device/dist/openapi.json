@@ -1240,6 +1240,42 @@
         }
       }
     },
+    "/devices/{device_id}/token": {
+      "get": {
+        "summary": "Get new token for device.",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:connect"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The newly generated token of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested device could not be found"
+          }
+        }
+      }
+    },
     "/peerconnections": {
       "get": {
         "summary": "List Peer Connection",
@@ -1308,6 +1344,9 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The peer connection could not be created because of an unresolvable device."
           }
         },
         "callbacks": {

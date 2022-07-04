@@ -8,8 +8,11 @@ import {
 } from "../generated/signatures/peerconnections"
 import { Peerconnection, ServiceConfig } from "../generated/types"
 import { DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
+import { CreatePeerConnectionMessage } from "./deviceMessages"
+import { connectedDevices, DeviceBaseURL } from "./devices"
 
 const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
+const closedCallbacks = new Map<string,Array<string>>()
 
 function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
     return {
@@ -60,7 +63,6 @@ async function writeConfiguredDeviceReference(
             for (const config of object.config.services) {
                 const serviceConfig = serviceConfigRepository.create()
                 writeServiceConfig(serviceConfig, config)
-                // serviceConfig.device = configuredDeviceReference
                 await serviceConfigRepository.save(serviceConfig)
                 configuredDeviceReference.config.push(serviceConfig)
             }
@@ -82,6 +84,7 @@ async function writePeerconnection(peerconnection: PeerconnectionModel, object: 
     }
 }
 
+// TODO: maybe resolve devices further?
 export const getPeerconnections: getPeerconnectionsSignature = async (_user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnections = await peerconnectionRepository.find({ 
@@ -101,11 +104,42 @@ export const getPeerconnections: getPeerconnectionsSignature = async (_user) => 
     }
 }
 
-export const postPeerconnections: postPeerconnectionsSignature = async (_parameters, body, _user) => {
+export const postPeerconnections: postPeerconnectionsSignature = async (parameters, body, _user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnection = peerconnectionRepository.create()
     await writePeerconnection(peerconnection, body)
+    
+    if (peerconnection.deviceA.url?.startsWith(DeviceBaseURL) && peerconnection.deviceB.url?.startsWith(DeviceBaseURL)) {
+        // connection between local devices
+        const idDeviceA = peerconnection.deviceA.url.split("/").at(-1)
+        const idDeviceB = peerconnection.deviceB.url.split("/").at(-1)
+        const wsDeviceA = idDeviceA ? connectedDevices.get(idDeviceA) : undefined
+        const wsDeviceB = idDeviceB ? connectedDevices.get(idDeviceB) : undefined
+        if (!wsDeviceA || !wsDeviceB) {
+            return {
+                status: 404
+            }
+        }
+        const common = <CreatePeerConnectionMessage> {
+            messageType: "command",
+            command: "createPeerConnection",
+            connectiontype: "webrtc",
+            id: peerconnection.uuid
+        }
+        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceA.config?.map(formatServiceConfig), tiebreaker: true}))
+        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
+    } else {
+        // connection containing at least one remote device
+        throw("Peerconnections of types local/remote and remote/remote are currently not supported!")
+    }
+
     await peerconnectionRepository.save(peerconnection)
+
+    if (parameters.query.closedUrl) {
+        const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
+        closedCallbackURLs.push(parameters.query.closedUrl)
+        closedCallbacks.set(peerconnection.uuid, closedCallbackURLs)
+    }
 
     return {
         status: 201,
@@ -128,7 +162,6 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
             },
         }
     })
-    
 
     if (!peerconnection) {
         return {
@@ -142,6 +175,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
     }
 }
 
+// TODO: send close message to devices?
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const result = await peerconnectionRepository.softDelete({ uuid: parameters.path.peerconnection_id })
@@ -153,7 +187,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     }
     
     if (result.affected > 1) {
-        // TBD
+        throw("Deleted Multiple Peerconnection with same uuid")
     }
 
     return {
