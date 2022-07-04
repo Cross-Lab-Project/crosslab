@@ -1,5 +1,9 @@
 name: Deploy
 
+concurrency: 
+  group: development_environment
+  cancel-in-progress: true
+
 on:
   workflow_run:
     workflows: ["Build and Publish Device Service","Build and Publish Experiment Service","Build and Publish Federation Service"]
