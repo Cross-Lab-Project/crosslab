@@ -1,3 +1,5 @@
+name: Deploy
+
 on:
   workflow_run:
     workflows: ["Build and Publish Device Service","Build and Publish Experiment Service","Build and Publish Federation Service"]
@@ -6,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker-compose deployment:
+  delploy:
     runs-on: ubuntu-latest
     environment:
       name: development
