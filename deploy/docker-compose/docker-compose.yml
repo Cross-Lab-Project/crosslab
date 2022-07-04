@@ -19,3 +19,10 @@ services:
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+  
+  logs:
+    image: amir20/dozzle
+    ports:
+      - "9000:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
