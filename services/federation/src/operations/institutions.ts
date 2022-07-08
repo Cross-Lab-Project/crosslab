@@ -42,7 +42,7 @@ export const postInstitutions: postInstitutionsSignature = async (body, _user) =
 
 export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature = async (parameters, _user) => {
     const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.path.institution_id })
+    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.institution_id })
     if (institution == null) {
         return {
             status: 404
@@ -56,7 +56,7 @@ export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSigna
 
 export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature = async (parameters, body, _user) => {
     const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.path.institution_id })
+    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.institution_id })
     if (institution == null) {
         return {
             status: 404
@@ -72,7 +72,7 @@ export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdS
 
 export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature = async (parameters, _user) => {
     const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const result = await InstitutionRepository.softDelete({ uuid: parameters.path.institution_id })
+    const result = await InstitutionRepository.softDelete({ uuid: parameters.institution_id })
     if (result.affected == 0) {
         return {
             status: 404

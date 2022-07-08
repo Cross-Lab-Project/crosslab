@@ -178,7 +178,7 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
     const experiment = await experimentRepository.findOne({
         where: {
-            uuid: parameters.path.experiment_id
+            uuid: parameters.experiment_id
         },
         relations: {
             devices: true,
@@ -202,7 +202,7 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
 
 export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature = async (parameters, _user) => {
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const result = await experimentRepository.softDelete({ uuid: parameters.path.experiment_id })
+    const result = await experimentRepository.softDelete({ uuid: parameters.experiment_id })
 
     if (!result.affected) {
         return {
@@ -221,7 +221,7 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
 
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature = async (parameters, body, _user) => {
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = await experimentRepository.findOneBy({ uuid: parameters.path.experiment_id })
+    const experiment = await experimentRepository.findOneBy({ uuid: parameters.experiment_id })
 
     if (!experiment) {
         return {

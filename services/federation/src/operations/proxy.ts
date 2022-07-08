@@ -15,7 +15,12 @@ traceProxySignature |
 putProxySignature
 
 const proxy: (method: string) => proxySignature = (method: string) => async (parameters, _user) => {
-    const basePathMatch=parameters.query.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
+    if (!parameters.URL) return {
+        status: 400,
+        body: "Missing URL Parameter"
+    }
+
+    const basePathMatch=parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
 
     let headers: HeadersInit={}
     if (basePathMatch){
@@ -28,7 +33,7 @@ const proxy: (method: string) => proxySignature = (method: string) => async (par
         }
     }
     
-    const response = await fetch(parameters.query.URL, { headers, method: method })
+    const response = await fetch(parameters.URL, { headers, method: method })
 
     if (response.status < 100 || response.status >= 600) {
         return {

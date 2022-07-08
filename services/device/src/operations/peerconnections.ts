@@ -135,9 +135,9 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
 
     await peerconnectionRepository.save(peerconnection)
 
-    if (parameters.query.closedUrl) {
+    if (parameters.closedUrl) {
         const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
-        closedCallbackURLs.push(parameters.query.closedUrl)
+        closedCallbackURLs.push(parameters.closedUrl)
         closedCallbacks.set(peerconnection.uuid, closedCallbackURLs)
     }
 
@@ -151,7 +151,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnection = await peerconnectionRepository.findOne({ 
         where: {
-            uuid: parameters.path.peerconnection_id 
+            uuid: parameters.peerconnection_id 
         },
         relations: {
             deviceA: { 
@@ -178,7 +178,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
 // TODO: send close message to devices?
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const result = await peerconnectionRepository.softDelete({ uuid: parameters.path.peerconnection_id })
+    const result = await peerconnectionRepository.softDelete({ uuid: parameters.peerconnection_id })
 
     if (!result.affected) {
         return {

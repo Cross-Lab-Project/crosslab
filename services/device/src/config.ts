@@ -1,8 +1,8 @@
-//import { exit } from "process"
+import { exit } from "process"
 
 function die(reason: string){
     console.error(reason)
-    //exit(1)
+    exit(1)
 }
 
 export const config = {

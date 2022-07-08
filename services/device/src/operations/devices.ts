@@ -292,9 +292,9 @@ export const postDevices: postDevicesSignature = async (parameters, body, _user)
         await handlePostDevices(body, ConcreteDeviceModel) : 
         await handlePostDevices(body, DeviceGroupModel)
 
-    if (parameters.query.changedUrl) {
+    if (parameters.changedUrl) {
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
-        changedCallbackURLs.push(parameters.query.changedUrl)
+        changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
 
@@ -310,7 +310,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
     const concreteDevice = await concreteDeviceRepository.findOne({ 
         where: { 
-            uuid: parameters.path.device_id 
+            uuid: parameters.device_id 
         },
         relations: {
             announcedAvailability: true
@@ -318,7 +318,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
     })
     const deviceGroup = await deviceGroupRepository.findOne({ 
         where: { 
-            uuid: parameters.path.device_id 
+            uuid: parameters.device_id 
         },
         relations: {
             devices: true
@@ -335,7 +335,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
     } else if (deviceGroup) {
         return {
             status: 200,
-            body: await formatDeviceGroup(deviceGroup, parameters.query.flat_group)
+            body: await formatDeviceGroup(deviceGroup, parameters.flat_group)
         }
     } else {
         return {
@@ -350,7 +350,7 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
 
     const concreteDevice = await concreteDeviceRepository.findOne({ 
         where: { 
-            uuid: parameters.path.device_id 
+            uuid: parameters.device_id 
         },
         relations: {
             announcedAvailability: true
@@ -358,7 +358,7 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     })
     const deviceGroup = await deviceGroupRepository.findOne({ 
         where: { 
-            uuid: parameters.path.device_id 
+            uuid: parameters.device_id 
         },
         relations: {
             devices: true
@@ -391,8 +391,8 @@ async function handlePatchDevicesByDeviceId<M extends DeviceOverviewModel>(devic
 
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (parameters, body, _user) => {
     const device = isConcreteDevice(body) ? 
-        await handlePatchDevicesByDeviceId(body, ConcreteDeviceModel, { uuid: parameters.path.device_id }) : 
-        await handlePatchDevicesByDeviceId(body, DeviceGroupModel, { uuid: parameters.path.device_id })
+        await handlePatchDevicesByDeviceId(body, ConcreteDeviceModel, { uuid: parameters.device_id }) : 
+        await handlePatchDevicesByDeviceId(body, DeviceGroupModel, { uuid: parameters.device_id })
 
     if (!device) {
         return {
@@ -400,9 +400,9 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
         }
     }
 
-    if (parameters.query.changedUrl) {
+    if (parameters.changedUrl) {
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
-        changedCallbackURLs.push(parameters.query.changedUrl)
+        changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
     handleChangedCallback(device)
@@ -415,7 +415,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
 
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature = async (parameters, body, _user) => {
     const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const device = await deviceRepository.findOneBy({ uuid: parameters.path.device_id })
+    const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
         return {
@@ -453,7 +453,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
 
 export const getDevicesByDeviceIdToken: getDevicesByDeviceIdTokenSignature = async (parameters, _user) => {
     const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const device = await deviceRepository.findOneBy({ uuid: parameters.path.device_id })
+    const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
         return {
