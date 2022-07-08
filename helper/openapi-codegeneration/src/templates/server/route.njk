@@ -1,4 +1,4 @@
-{%- import "./utils.njk" as utils -%}
+{%- import "../general/utils.njk" as utils -%}
 
 {%- macro generateRoute(function, basePath) -%}
 router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | replace("//", "/") | replace(r/\{([^\}]+)\}/g, ":$1")  }}", async (req: TypedRequest<
@@ -7,8 +7,8 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- else -%}
     {{- "{}" -}}
     {%- endif -%},
-    {%- if function.body.content[0].schema.typeDeclaration -%}
-    {{- " " }}{{ utils.formatDeclaration(function.body.content[0].schema.typeDeclaration) | safe -}}
+    {%- if function.body -%}
+    {{- " " }}{{ function.name + "BodyType" | safe -}}
     {%- else -%}
     {{- " {}" -}}
     {%- endif -%},
@@ -24,45 +24,43 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
         console.warn("JWT Verification Error!")
     }
     {% if function.parameters -%}
-        const parameters = {
-        {% if function.parameters.cookie and function.parameters.cookie.length > 0 -%}
-            cookie: {
-            {% for parameter in function.parameters.cookie -%}
-                {{ parameter.name }}: req.cookies["{{ parameter.name }}"]
-            {% endfor -%}
-            }{{ "," if function.parameters.header or function.parameters.path or function.parameters.query }}
-        {% endif -%}
-        {% if function.parameters.header and function.parameters.header.length > 0 -%}
-            header: {
-            {% for parameter in function.parameters.header -%}
-                {{ parameter.name }}: req.headers["{{ parameter.name }}"]
-            {% endfor -%}
-            }{{ "," if function.parameters.path or function.parameters.query }}
-        {% endif -%}
-        {% if function.parameters.path and function.parameters.path.length > 0 -%}
-            path: {
-            {% for parameter in function.parameters.path -%}
-                {{ parameter.name }}: req.params["{{ parameter.name }}"]
-            {% endfor -%}
-            }{{ "," if function.parameters.query }}
-        {% endif -%}
-        {% if function.parameters.query and function.parameters.query.length > 0 -%}
-            query: {
-            {% for parameter in function.parameters.query -%}
-                {{ parameter.name }}: req.query["{{ parameter.name }}"]
-            {% endfor -%}
-            }
-        {% endif -%}
-        }
+    const parameters: {{ function.name }}ParametersType = {
+    {%- if function.parameters.cookie and function.parameters.cookie.length > 0 %}
+    {%- for parameter in function.parameters.cookie %}
+        {{ parameter.name }}: req.cookies["{{ parameter.name }}"],
+    {%- endfor %}
+    {%- endif %}
+    {%- if function.parameters.header and function.parameters.header.length > 0 %}
+    {%- for parameter in function.parameters.header %}
+        {{ parameter.name }}: req.headers["{{ parameter.name }}"],
+    {%- endfor %}
+    {%- endif %}
+    {%- if function.parameters.path and function.parameters.path.length > 0 %}
+    {%- for parameter in function.parameters.path %}
+        {{ parameter.name }}: req.params["{{ parameter.name }}"],
+    {%- endfor %}
+    {%- endif -%}
+    {%- if function.parameters.query and function.parameters.query.length > 0 %}
+    {%- for parameter in function.parameters.query %}
+        {{ parameter.name }}: req.query["{{ parameter.name }}"],
+    {%- endfor %}
+    {%- endif %}
+    }
     {% endif -%}
     {% if function.body -%}
     const body = req.body
     {% endif -%}
-    if (!{{ function.validateInput }}({{ "parameters" if function.parameters }}{{ ", " if function.parameters and function.body }}{{ "body" if function.body }})) {
+    if (!{{ function.validateInput }}(
+        {{- "parameters, " if function.parameters else "undefined, " -}}
+        {{- "body" if function.body else "undefined" -}}
+        )) {
         return res.status(400).send()
     }
     try {
-        const result = await {{ basePath }}.{{ function.name }}({{ "parameters, " if function.parameters }}{{ "body, " if function.body }}user)
+        const result = await {{ basePath }}.{{ function.name }}(
+        {{- "parameters, " if function.parameters -}}
+        {{- "body, " if function.body -}}
+        user)
         if (!{{ function.validateOutput }}(result)) {
             return res.status(400).send()
         }
@@ -85,12 +83,21 @@ import express from "express"
 import * as {{ basePath }} from "../../operations/{{ basePath }}"
 import {
     initServiceOptions,
-    TypedRequest,
-    {{ typeDependencies | join(",\n\t") }}
+    TypedRequest
 } from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}
 } from "../validation/{{ basePath }}"
+import {
+{%- for function in functions %}
+    {%- if function.parameters %}
+    {{ function.name + "ParametersType," }}
+    {%- endif %}
+    {%- if function.body %}
+    {{ function.name + "BodyType," }}
+    {%- endif %}
+{%- endfor %}
+} from "../signatures/{{ basePath }}"
 
 export default function {{ basePath }}Routes(options: initServiceOptions): express.Router {
     const router = express.Router()

@@ -113,6 +113,7 @@ export interface RouteFunction {
     name: string
     method: OperationMethod
     path: string
+    basePath: string
     validateInput: string
     validateOutput: string
     signature: string

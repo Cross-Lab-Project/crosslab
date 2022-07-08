@@ -25,10 +25,10 @@ import {
     EncodingData,
     ResponseData,
     RequestBodyData,
-    OperationMethod
+    OperationMethod,
+    RouteFunction
 } from "./types"
 import { TypedEmitter } from "tiny-typed-emitter"
-import path from "path"
 
 /**
  * definition of possible events
@@ -841,6 +841,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             name: formatMethodPath(operationData.path, operationData.method),
             method: operationData.method,
             path: operationData.path,
+            basePath: basePath,
             validateInput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Input",
             validateOutput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Output",
             signature: formatMethodPath(operationData.path, operationData.method) + "Signature",
@@ -969,16 +970,17 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
 }
 
 /**
- * generates a file types.ts containing all necessary type declarations for the superschema of the given OpenAPIData
+ * generates a file types.ts containing all necessary type declarations for the superschema of the given OpenAPIData plus client/server specific types
  * @param openAPIData OpenAPIData containing a superschema
  * @param outPath path to write file to
  */
-async function generateTypes(openAPIData: OpenAPIData, outPath: string) {
+async function generateTypes(openAPIData: OpenAPIData, outPath: string, isServer: boolean) {
     let ts = await compile(openAPIData.superschema as JSONSchema, "Superschema", { style: { tabWidth: 4, semi: false } })
     ts = ts.replace(/export interface Superschema \{[\s\S]*?\}/gm, "")
     ts = ts.replace(/\n\s+\n/gm, "\n")
 
-    fs.writeFileSync(`${outPath}/types.ts`, nunjucks.render("types.njk", {
+    fs.writeFileSync(`${outPath}/types.ts`, nunjucks.render(
+        isServer ? "server/types.njk" : "client/types.njk", {
         pregeneratedTypes: ts
     }))
 }
@@ -1137,7 +1139,8 @@ function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) 
     const dependencies = getDependencies(openAPIData, { types: { response: false } })
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("validation.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("general/validation.njk", {
+                basePath: key,
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
                 validationDependencies: dependencies.get(key) ? dependencies.get(key)!.validationDependencies : []
@@ -1160,8 +1163,37 @@ function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
                 validationDependencies.push(routeFunction.validateInput)
                 validationDependencies.push(routeFunction.validateOutput)
             }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("route.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("server/route.njk", {
                 basePath: key,
+                functions: openAPIData.routeFunctions[key],
+                typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
+                validationDependencies: validationDependencies
+            }))
+        }
+    }
+}
+
+/**
+ * generates files {basePath}.ts containing the corresponding api clients
+ * @param openAPIData OpenAPIData with RouteFunctions
+ * @param outPath path to write files to
+ */
+ function generateClient(openAPIData: OpenAPIData, outPath: string) {
+    const dependencies = getDependencies(openAPIData, { types: { response: false } })
+    if (openAPIData.routeFunctions) {
+        for (const key in openAPIData.routeFunctions) {
+            const signatures = []
+            for (const routeFunction of openAPIData.routeFunctions[key]) {
+                signatures.push(routeFunction.name + "ResponseType")
+            }
+            const validationDependencies = []
+            for (const routeFunction of openAPIData.routeFunctions[key]) {
+                validationDependencies.push(routeFunction.validateInput)
+                validationDependencies.push(routeFunction.validateOutput)
+            }
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("client/api.njk", {
+                basePath: key,
+                signatures: signatures,
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
                 validationDependencies: validationDependencies
@@ -1183,7 +1215,7 @@ function generateOperationTemplates(openAPIData: OpenAPIData, outPath: string) {
             for (const routeFunction of openAPIData.routeFunctions[key]) {
                 signatures.push(routeFunction.signature)
             }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("operations.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("server/operations.njk", {
                 functions: openAPIData.routeFunctions[key],
                 basePath: key,
                 signatures: signatures,
@@ -1198,18 +1230,13 @@ function generateOperationTemplates(openAPIData: OpenAPIData, outPath: string) {
  * @param openAPIData OpenAPIData with RouteFunctions
  * @param outPath path to write files to
  */
-function generateSignatures(openAPIData: OpenAPIData, outPath: string) {
+function generateSignatures(openAPIData: OpenAPIData, outPath: string, isServer: boolean) {
     const dependencies = getDependencies(openAPIData)
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
-            const signatures = []
-            for (const routeFunction of openAPIData.routeFunctions[key]) {
-                signatures.push(routeFunction.signature)
-            }
-            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("signatures.njk", {
+            fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(isServer ? "server/signatures.njk": "client/signatures.njk", {
                 functions: openAPIData.routeFunctions[key],
                 basePath: key,
-                signatures: signatures,
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : []
             }))
         }
@@ -1221,20 +1248,41 @@ function generateSignatures(openAPIData: OpenAPIData, outPath: string) {
  * @param openAPIData OpenAPIData with RouteFunctions
  * @param outPath path to write file to
  */
-function generateIndex(openAPIData: OpenAPIData, outPath: string) {
-    fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render("index.njk", {
-        routes: openAPIData.routeFunctions ? Object.keys(openAPIData.routeFunctions) : []
-    }))
+function generateIndex(openAPIData: OpenAPIData, outPath: string, isServer: boolean) {
+    if (isServer) {
+        fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render("server/index.njk", {
+            routes: openAPIData.routeFunctions ? Object.keys(openAPIData.routeFunctions) : []
+        }))
+    } else {
+        if (openAPIData.routeFunctions) {
+            const routeFunctions: RouteFunction[] = []
+            for (const key in openAPIData.routeFunctions) {
+                routeFunctions.push(...openAPIData.routeFunctions[key])
+            }
+            fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render("client/index.njk", {
+                functions: routeFunctions,
+                basePaths: Object.keys(openAPIData.routeFunctions)
+            }))
+        }
+    }
 }
 
 /**
- * generates all files (types, validation, routes, operations, signatures, index) for a given openapi specification
+ * generates file fetch.ts which exports the generic fetch function
+ * @param outPath path to write file to
+ */
+ function generateFetch(outPath: string) {
+    fs.writeFileSync(`${outPath}/fetch.ts`, nunjucks.render("client/fetch.njk"))
+}
+
+/**
+ * generates all server files (types, validation, routes, operations, signatures, index) for a given openapi specification
  * @param apiPath path to the openapi specification
  * @param options options for parsing
  * @param options.outPath base path for generation 
  */
-async function generateProject(apiPath: string, options: { outPath: string }) {
-    const outPath = path.join(options.outPath, "/src/generated")
+async function generateServerProject(apiPath: string, options: { outPath: string }) {
+    const outPath = options.outPath
     const routesPath = outPath + "/routes"
     const operationTemplatesPath = outPath + "/operations_templates"
     const signaturesPath = outPath + "/signatures"
@@ -1255,14 +1303,63 @@ async function generateProject(apiPath: string, options: { outPath: string }) {
 
     const openAPIData = await parseOpenAPIData(parsedAPI)
 
-    await generateTypes(openAPIData, outPath)
+    await generateTypes(openAPIData, outPath, true)
     generateValidationFunctions(openAPIData, validationPath)
     generateRoutes(openAPIData, routesPath)
     generateOperationTemplates(openAPIData, operationTemplatesPath)
-    generateSignatures(openAPIData, signaturesPath)
-    generateIndex(openAPIData, outPath)
+    generateSignatures(openAPIData, signaturesPath, true)
+    generateIndex(openAPIData, outPath, true)
+}
+
+/**
+ * generates all client files (types, validation, routes, operations, signatures, index) for a given openapi specification
+ * @param apiPath path to the openapi specification
+ * @param options options for parsing
+ * @param options.outPath base path for generation 
+ */
+async function generateClientProject(apiPath: string, options: { outPath: string }) {
+    const outPath = options.outPath
+    const apisPath = outPath + "/api"
+    const signaturesPath = outPath + "/signatures"
+    const validationPath = outPath + "/validation"
+    if (fs.existsSync(outPath)) fs.rmSync(outPath, { recursive: true })
+    fs.mkdirSync(outPath, { recursive: true })
+    fs.mkdirSync(apisPath)
+    fs.mkdirSync(signaturesPath)
+    fs.mkdirSync(validationPath)
+
+    nunjucks.configure(__dirname + "/templates")
+
+    const parsedAPI = await parse(apiPath).catch((err) => {
+        console.log(err)
+        exit(1)
+    })
+
+    const openAPIData = await parseOpenAPIData(parsedAPI)
+
+    await generateTypes(openAPIData, outPath, false)
+    generateValidationFunctions(openAPIData, validationPath)
+    generateFetch(outPath)
+    generateSignatures(openAPIData, signaturesPath, false)
+    generateClient(openAPIData, apisPath)
+    generateIndex(openAPIData, outPath, false)
 }
 
 if (require.main === module) {
-    generateProject(process.argv[2], { outPath: "." })
+    if (process.argv.length < 4) {
+        console.error("Expected ['server'|'client'] [filepath] as arguments!")
+        exit(1)
+    }
+    let outPath = "./src/generated"
+    if (process.argv.length == 5) {
+        outPath = process.argv[4]
+    }
+    if (process.argv[2] == "server") {
+        generateServerProject(process.argv[3], { outPath: outPath })
+    } else if (process.argv[2] == "client") {
+        generateClientProject(process.argv[3], { outPath: outPath })
+    } else {
+        console.error("Expected ['server'|'client'] [filepath] as arguments!")
+        exit(1)
+    }
 }

@@ -13,7 +13,6 @@ import { initServiceOptions } from "./types"
 export const app: express.Application & { initService: (option: initServiceOptions) => void } = express() as any
 
 app.initService = (options) => {
-
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
 

@@ -3,13 +3,22 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import express from "express"
 
-export type TypedRequest<P,B,Q> = express.Request<P, {}, B, Q, {}>
 export type UserType = {
     username: string
 }
-export type initServiceOptions = {
-    JWTVerify: (jwt: string | undefined, endpoint_scopes: Array<string>) => unknown    
+
+export type HttpMethods = "get" | "post" | "patch" | "head" | "options" | "trace" | "delete" | "put"
+
+export interface FetchError {
+    type: string,
+    error: string,
+    response?: ResponseData
 }
+
+export interface ResponseData {
+    status: number,
+    body?: any
+}
+
 {{ pregeneratedTypes | safe }}

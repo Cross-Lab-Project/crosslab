@@ -1,42 +1,23 @@
 {%- macro generateValidation(function) -%}
 export function {{ function.validateInput }}(
-{%- if function.parameters %}
-    parameters: {
-    {% for location in ["cookie","query","header","path"] -%}
-    {% if function.parameters[location] and function.parameters[location].length > 0 -%}
-        {{ "\t" + location }}: {
-        {% for parameter in function.parameters[location] -%}
-            {{ "\t" + parameter.name }}: {{ parameter.schema.typeDeclaration }}
-        {% endfor -%} 
-        }
-    {% endif -%}
-    {% endfor -%}
-    }
-{%- endif -%}
-{{- ", " if function.parameters and function.body}}
-{%- if function.body %}
-    body: {{ function.body.content[0].schema.typeDeclaration | safe | indent }}{{ "\n" }}
-{%- elif function.parameters or function.body -%}
-    {{ "\n" }}
-{%- endif -%}
+    {{- ("parameters: " if function.parameters else "_parameters: ") + function.name + "ParametersType, " -}}
+    {{- ("body: " if function.body.content[0].schema.typeDeclaration else "_body: ") + function.name + "BodyType" -}}
 ): boolean {
-{%- if function.parameters %}
+    {%- if function.parameters %}
     if (parameters) {
-    {% for location in ["cookie","query","header","path"] -%}
-    {% if function.parameters[location] and function.parameters[location].length > 0 -%}
-        {{ "\t" -}} if (parameters.{{location}}) {
-        {% for parameter in function.parameters[location] -%}
-        {% if parameter.required -%}
-            {{ "\t" -}} if (!{{ parameter.schema.validationFunction }}(parameters.{{ location }}.{{ parameter.name }})) return false
-        {% else -%}
-            {{ "\t" -}} if (parameters.{{ location }}.{{ parameter.name }}) {
-                if (!{{ parameter.schema.validationFunction }}(parameters.{{ location }}.{{ parameter.name }})) return false
-            }
-        {% endif -%}
-        {% endfor -%}
+        {%- for location in ["cookie","query","header","path"] %}
+        {%- if function.parameters[location] and function.parameters[location].length > 0 %}
+        {%- for parameter in function.parameters[location] %}
+        {%- if parameter.required %}
+        if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.name }})) return false
+        {%- else %}
+        if (parameters.{{ parameter.name }} !== undefined) {
+            if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.name }})) return false
         }
-    {% endif -%}
-    {% endfor -%}
+        {%- endif %}
+        {%- endfor %}
+        {%- endif %}
+        {%- endfor %}
     }
     {% endif %}
     {% if function.body -%}
@@ -48,12 +29,7 @@ export function {{ function.validateInput }}(
     return true
 }
 
-export function {{ function.validateOutput }}(
-    response: {
-        status: number, 
-        body?: any
-    }
-): boolean {
+export function {{ function.validateOutput }}(response: ResponseData): response is {{ function.name + "ResponseType" }} {
     if (response.status < 100 || response.status >= 600) return false
 
     {% if function.responses != undefined -%}
@@ -102,11 +78,18 @@ export function {{ function.validateOutput }}(
  * and run openapi-codegeneration to regenerate this file.
  */
 import {
-    {{ typeDependencies | join(",\n\t") }}
+    ResponseData
 } from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}
 } from "./validation"
+import {
+{%- for function in functions -%}
+    {{- "\n\t" + function.name + "ParametersType," -}}
+    {{- "\n\t" + function.name + "BodyType," -}}
+    {{- "\n\t" + function.name + "ResponseType," -}}
+{%- endfor -%}
+{{"\n"}}} from "../signatures/{{ basePath }}"
 
 {% for function in functions -%}
 {{ generateValidation(function) }}
