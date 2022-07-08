@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab Simple Authentication Service (internal)
+  description: |-
+    This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.
+  version: 0.0.1
+
+components:
+  securitySchemes:
+    TuiAuth:
+      type: http
+      scheme: basic
+      description: Basic authentication using the TUI username and password.
+
+paths:
+  "/auth":
+    get:
+      security:
+        - TuiAuth: []
+      
+      operationId: auth
+      summary: Authenticate a user
+      description: |-
+        This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.
+        The return code will always be 200, but the JWT will be empty if the authentication failed.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Return the JWT which represent the authenticated user.
+          headers:
+            Authorization:
+              required: false
+              schema:
+                type: string
+                format: jwt
+                description: The JWT which represent the authenticated user.
