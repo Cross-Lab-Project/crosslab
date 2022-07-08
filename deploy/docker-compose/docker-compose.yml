@@ -5,6 +5,9 @@ services:
     image: crosslab/device-service
     ports:
       - "8080:8080"
+    environment:
+      SECURITY_ISSUER: https://dev.goldi-labs.de
+      SECURITY_AUDIENCE: https://dev.goldi-labs.de
   experiment:
     image: crosslab/experiment-service
     ports:
