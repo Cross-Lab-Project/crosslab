@@ -6,7 +6,7 @@ concurrency:
 
 on:
   workflow_run:
-    workflows: ["Build and Publish Device Service","Build and Publish Experiment Service","Build and Publish Federation Service"]
+    workflows: ["Build and Publish Device Service","Build and Publish Experiment Service","Build and Publish Federation Service","Build and Publish Auth Service","Build and Publish Gateway Service"]
     types:
       - completed
   workflow_dispatch:
