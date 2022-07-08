@@ -1,31 +1,38 @@
 ---
 version: '2'
 services:
-  device:
-    image: crosslab/device-service
+
+  gateway:
+    image: crosslab/gateway
     ports:
-      - "8080:8080"
+      - "80:80"
+    environment:
+      - SERVER_NAME=localhost
+      - DEVICE_SERVICE_URL=device:8080
+      - EXPERIMENT_SERVICE_URL=experiment:8080
+      - FEDERATION_SERVICE_URL=federation:8080
+      - LOGS_SERVICE_URL=logs:8080
+      - AUTH_SERVICE_URL=auth:8080
+  auth:
+    image: crosslab/auth-service
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+  device:
+    image: crosslab/device-service
   experiment:
     image: crosslab/experiment-service
-    ports:
-      - "8081:8080"
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
   federation:
     image: crosslab/federation-service
-    ports:
-      - "8082:8080"
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
-  
   logs:
     image: amir20/dozzle
-    ports:
-      - "9000:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      DOZZLE_BASE: /logs
