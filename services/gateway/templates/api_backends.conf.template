@@ -1,0 +1,19 @@
+upstream device_service {
+    server ${DEVICE_SERVICE_URL};
+}
+
+upstream experiment_service {
+    server ${EXPERIMENT_SERVICE_URL};
+}
+
+upstream federation_service {
+    server ${FEDERATION_SERVICE_URL};
+}
+
+upstream logs_service {
+    server ${LOGS_SERVICE_URL};
+}
+
+upstream auth_service {
+    server ${AUTH_SERVICE_URL};
+}

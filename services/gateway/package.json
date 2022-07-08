@@ -1,0 +1,13 @@
+{
+    "name": "@crosslab/gateway",
+    "version": "0.0.1",
+    "description": "",
+    "scripts": {
+        "generate-device-config": "./oas2nginx.sh --upstream device_service --basepath / ../device/dist/openapi.json > conf/device_service.conf",
+        "generate-experiment-config": "./oas2nginx.sh --upstream experiment_service --basepath / ../experiment/dist/openapi.json > conf/experiment_service.conf",
+        "generate-federation-config": "./oas2nginx.sh --upstream federation_service --basepath / ../federation/dist/openapi.json > conf/federation_service.conf",
+        "build": "npm run generate-device-config && npm run generate-experiment-config && npm run generate-federation-config"
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED"
+}
