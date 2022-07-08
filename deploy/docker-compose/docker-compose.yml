@@ -3,7 +3,7 @@ version: '2'
 services:
 
   gateway:
-    image: crosslab/gateway
+    image: crosslab/gateway-service
     ports:
       - "80:80"
     environment:
