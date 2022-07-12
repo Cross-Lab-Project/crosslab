@@ -12,11 +12,11 @@ generated
 │   ├── route_1.ts
 │   ├── ...
 │   └── route_n.ts
-├── services_templates
-│   ├── service_0.ts
-│   ├── service_1.ts
+├── operations_templates
+│   ├── operations_0.ts
+│   ├── operations_1.ts
 │   ├── ...
-│   └── service_n.ts
+│   └── operations_n.ts
 ├── types.ts
 └── validation
     ├── validation_0.ts
@@ -26,7 +26,7 @@ generated
     └── validation.mjs
 ```
 
-The file **index.ts** exports the express application. The generated type declarations are available in **types.ts**. The folder **routes** contains the routers for the different endpoints of the api, each in their corresponding file. For each route there will also be a template in **service_templates** containing stubs of the functions that need to be implemented for the given route. Validation functions are also generated for each route's body, parameters and responses. These can be found in the **validation** folder along with the file **validation.mjs** which contains the validation functions for all schemas contained in the openapi-specification.
+The file **index.ts** exports the express application. The generated type declarations are available in **types.ts**. The folder **routes** contains the routers for the different endpoints of the api, each in their corresponding file. For each route there will also be a template in **operations_templates** containing stubs of the functions that need to be implemented for the given route. Validation functions are also generated for each route's body, parameters and responses. These can be found in the **validation** folder along with the file **validation.mjs** which contains the validation functions for all schemas contained in the openapi-specification.
 
 ## Project Structure / Using the generated Files
 
@@ -36,15 +36,15 @@ src
 │   └── ...
 ├── index.ts
 ├── security.ts
-├── services
-│   ├── service_0.ts
-│   ├── service_1.ts
+├── operations
+│   ├── operations_0.ts
+│   ├── operations_1.ts
 │   ├── ...
-│   └── service_n.ts
+│   └── operations_n.ts
 └── ...
 ```
 
-In order to use the generated code the missing implementation of the functions contained in the files of the **service_templates** folder must be added. For this one should create a folder **services** which contains the corresponding files (e.g. copying and filling out the templates). Furthermore a file **security.ts** must be added which has to contain the implementation of the function **checkJWT()**. Finally the project should then contain an **index.ts** file which handles its execution.
+In order to use the generated code the missing implementation of the functions contained in the files of the **operations_templates** folder must be added. For this one should create a folder **operations** which contains the corresponding files (e.g. copying and filling out the templates). Furthermore a file **security.ts** must be added which has to contain the implementation of the function **checkJWT()**. Finally the project should then contain an **index.ts** file which handles its execution.
 
 ## Dependencies
 

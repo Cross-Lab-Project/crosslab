@@ -54,7 +54,9 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
         {{- "parameters, " if function.parameters else "undefined, " -}}
         {{- "body" if function.body else "undefined" -}}
         )) {
-        return res.status(400).send()
+        const errorMsg = "Input validation failed"
+        console.error(errorMsg, ({{ function.validateInput }} as any).errors)
+        return res.status(400).send(errorMsg)
     }
     try {
         const result = await {{ basePath }}.{{ function.name }}(
@@ -62,10 +64,13 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
         {{- "body, " if function.body -}}
         user)
         if (!{{ function.validateOutput }}(result)) {
-            return res.status(400).send()
+            const errorMsg = "Output validation failed"
+            console.error(errorMsg, ({{ function.validateOutput }} as any).errors)
+            return res.status(400).send(errorMsg)
         }
         return res.status(result.status || 200).send(result.body)
     } catch(err) {
+        console.error(`Server Error: ${err}`)
         return res.status(500).send({
             status: 500,
             error: "Server Error"

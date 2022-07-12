@@ -12,7 +12,10 @@ export function {{ function.validateInput }}(
         if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.name }})) return false
         {%- else %}
         if (parameters.{{ parameter.name }} !== undefined) {
-            if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.name }})) return false
+            if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.name }})) {
+                ({{ function.validateInput }} as any).errors = ({{ parameter.schema.validationFunction }} as any).errors
+                return false
+            }
         }
         {%- endif %}
         {%- endfor %}
@@ -22,7 +25,10 @@ export function {{ function.validateInput }}(
     {% endif %}
     {% if function.body -%}
     if (body) {
-        if (!{{ function.body.content[0].schema.validationFunction }}(body)) return false
+        if (!{{ function.body.content[0].schema.validationFunction }}(body)) {
+            ({{ function.validateInput }} as any).errors = ({{ function.body.content[0].schema.validationFunction }} as any).errors
+            return false
+        }
     }
     {% endif -%}
     {{ "\n\t" if function.body -}}
@@ -37,7 +43,12 @@ export function {{ function.validateOutput }}(response: ResponseData): response 
     {% if not response.status.endsWith("XX") -%}
     if (response.status == {{ response.status }}) {
         {% if response.content[0].schema.validationFunction -%}
-        return {{ response.content[0].schema.validationFunction }}(response.body)
+        if ({{ response.content[0].schema.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.content[0].schema.validationFunction }} as any).errors
+            return false
+        }
         {%- else -%}
         return true
         {%- endif %}
@@ -48,23 +59,68 @@ export function {{ function.validateOutput }}(response: ResponseData): response 
     {% for response in function.responses -%}
     {% if response.status == "1XX" -%}
     if (response.status >= 100 && response.status < 200) {
-        {{ "return " + response.validationFunction + "(response.body)" if response.validationFunction else "return true"}}
+        {% if response.validationFunction -%}
+        if ({{ response.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.validationFunction }} as any).errors
+            return false
+        }
+        {% else -%}
+        return true
+        {% endif -%}
     }
     {% elif response.status == "2XX" -%}
     if (response.status >= 200 && response.status < 300) {
-        {{ "return " + response.validationFunction + "(response.body)" if response.validationFunction else "return true"}}
+        {% if response.validationFunction -%}
+        if ({{ response.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.validationFunction }} as any).errors
+            return false
+        }
+        {% else -%}
+        return true
+        {% endif -%}
     }
     {% elif response.status == "3XX" -%}
     if (response.status >= 300 && response.status < 400) {
-        {{ "return " + response.validationFunction + "(response.body)" if response.validationFunction else "return true"}}
+        {% if response.validationFunction -%}
+        if ({{ response.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.validationFunction }} as any).errors
+            return false
+        }
+        {% else -%}
+        return true
+        {% endif -%}
     }
     {% elif response.status == "4XX" -%}
     if (response.status >= 400 && response.status < 500) {
-        {{ "return " + response.validationFunction + "(response.body)" if response.validationFunction else "return true"}}
+        {% if response.validationFunction -%}
+        if ({{ response.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.validationFunction }} as any).errors
+            return false
+        }
+        {% else -%}
+        return true
+        {% endif -%}
     }
     {% elif response.status == "5XX" -%}
     if (response.status >= 500 && response.status < 600) {
-        {{ "return " + response.validationFunction + "(response.body)" if response.validationFunction else "return true"}}
+        {% if response.validationFunction -%}
+        if ({{ response.validationFunction }}(response.body)) {
+            return true
+        } else {
+            ({{ function.validateOutput }} as any).errors = ({{ response.validationFunction }} as any).errors
+            return false
+        }
+        {% else -%}
+        return true
+        {% endif -%}
     }
     {% endif -%}
     {% endfor %}

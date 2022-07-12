@@ -16,6 +16,10 @@ export interface FetchError {
     response?: ResponseData
 }
 
+export function isFetchError(object: any): object is FetchError {
+    return Object.keys(object).includes("error") && Object.keys(object).includes("type")
+}
+
 export interface ResponseData {
     status: number,
     body?: any
