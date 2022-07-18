@@ -1,6 +1,8 @@
 ---
 version: '2'
 services:
+
+# Reverse Proxy ###################################################################################
   nginx-proxy:
     image: nginxproxy/nginx-proxy
     container_name: nginx-proxy
@@ -26,6 +28,7 @@ services:
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
+# API #############################################################################################
   gateway:
     image: crosslab/gateway-service
     environment:
@@ -59,14 +62,16 @@ services:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
   
+# Frontend ########################################################################################
 
+# Logging #########################################################################################
   logs:
     image: amir20/dozzle
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       - VIRTUAL_HOST=logs.$DOMAIN
-      - VIRTUAL_PORT=80
+      - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=logs.$DOMAIN
       - DOZZLE_USERNAME=$DOZZLE_USERNAME
       - DOZZLE_PASSWORD=$DOZZLE_PASSWORD
