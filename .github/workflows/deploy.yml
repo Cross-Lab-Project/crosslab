@@ -36,3 +36,5 @@ jobs:
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
           EMAIL: ${{ secrets.EMAIL }}
           DOMAIN: ${{ secrets.DOMAIN }}
+          DOZZLE_USERNAME: ${{ secrets.DOZZLE_USERNAME }}
+          DOZZLE_PASSWORD: ${{ secrets.DOZZLE_PASSWORD }}
