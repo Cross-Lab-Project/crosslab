@@ -25,6 +25,14 @@ import {
 } from "./generated/federation"
 
 export {
+    FetchError,
+    ResponseData,
+    UserType,
+    HttpMethods,
+    isFetchError
+} from "./generated/booking/types"
+
+export {
     BookingTypes,
     DeviceTypes,
     ExperimentTypes,
