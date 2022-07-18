@@ -13,7 +13,6 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    network_mode: bridge
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -26,12 +25,12 @@ services:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    network_mode: bridge
 
   gateway:
     image: crosslab/gateway-service
     environment:
       - VIRTUAL_HOST=api.$DOMAIN
+      - VIRTUAL_PORT=80
       - LETSENCRYPT_HOST=api.$DOMAIN
       - SERVER_NAME=api.$DOMAIN
       - DEVICE_SERVICE_URL=device:8080
