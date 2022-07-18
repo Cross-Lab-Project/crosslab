@@ -30,7 +30,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run deploy.sh
-        run: ./deploy/docker-compose/deploy.sh
+        run: ./deploy/docker-compose/deploy_goldi.sh
         env:
           DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
           DEPLOY_DIR: ${{ secrets.DEPLOY_DIR }}
+          EMAIL: ${{ secrets.EMAIL }}
+          DOMAIN: ${{ secrets.DOMAIN }}
