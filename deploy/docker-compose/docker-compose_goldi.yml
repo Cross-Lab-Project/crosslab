@@ -65,7 +65,11 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      DOZZLE_BASE: /logs
+      - VIRTUAL_HOST=logs.$DOMAIN
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=logs.$DOMAIN
+      - DOZZLE_USERNAME=$DOZZLE_USERNAME
+      - DOZZLE_PASSWORD=$DOZZLE_PASSWORD
 
 volumes:
   conf:
