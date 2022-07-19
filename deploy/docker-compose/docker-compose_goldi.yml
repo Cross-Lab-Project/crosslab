@@ -44,26 +44,33 @@ services:
   auth:
     image: crosslab/auth-service
     environment:
-      SECURITY_ISSUER: https://dev.goldi-labs.de
-      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      SECURITY_ISSUER: https://$DOMAIN
+      SECURITY_AUDIENCE: https://$DOMAIN
   device:
     image: crosslab/device-service
     environment:
-      SECURITY_ISSUER: https://dev.goldi-labs.de
-      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      SECURITY_ISSUER: https://$DOMAIN
+      SECURITY_AUDIENCE: https://$DOMAIN
   experiment:
     image: crosslab/experiment-service
     environment:
-      SECURITY_ISSUER: https://dev.goldi-labs.de
-      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      SECURITY_ISSUER: https://$DOMAIN
+      SECURITY_AUDIENCE: https://$DOMAIN
   federation:
     image: crosslab/federation-service
     environment:
-      SECURITY_ISSUER: https://dev.goldi-labs.de
-      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      SECURITY_ISSUER: https://$DOMAIN
+      SECURITY_AUDIENCE: https://$DOMAIN
   
 # Frontend ########################################################################################
-
+  gift:
+    image: goldi2/gift
+    environment:
+      - VIRTUAL_HOST=www.$DOMAIN
+      - VIRTUAL_PORT=80
+      - VIRTUAL_PATH=/gift
+      - VIRTUAL_DEST=/
+  
 # Logging #########################################################################################
   logs:
     image: amir20/dozzle
