@@ -67,7 +67,7 @@ services:
     image: goldi2/web-frontend
     environment:
       - VIRTUAL_HOST=www.$DOMAIN
-      - VIRTUAL_PORT=80
+      - VIRTUAL_PORT=8080
       - VIRTUAL_PATH=/
       - LETSENCRYPT_HOST=www.$DOMAIN
   gift:
