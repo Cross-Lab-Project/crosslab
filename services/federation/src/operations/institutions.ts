@@ -6,17 +6,22 @@ import { config } from "../config"
 
 const InstitutionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'institutions/'
 
-function formatInstitution(i: InstitutionModel){
-    return { name: i.name, api: i.api, url: InstitutionBaseURL+i.uuid }
+function formatInstitution(i: InstitutionModel): Institution {
+    return { 
+        name: i.name, 
+        api: i.api, 
+        url: InstitutionBaseURL+i.uuid,
+        homepage: i.homepage,
+        federatedApi: i.federatedApi
+    }
 }
 
 function writeInstitution(institution: InstitutionModel, object: Partial<Institution>) {
-    if (object.name)
-        institution.name = object.name
-    if (object.api)
-        institution.api = object.api
-    if (object.apiToken)
-        institution.apiToken = object.apiToken
+    if (object.name) institution.name = object.name
+    if (object.api) institution.api = object.api
+    if (object.apiToken) institution.apiToken = object.apiToken
+    if (object.homepage) institution.homepage = object.homepage
+    if (object.federatedApi) institution.federatedApi = object.federatedApi
 }
 
 

@@ -116,6 +116,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
         const wsDeviceA = idDeviceA ? connectedDevices.get(idDeviceA) : undefined
         const wsDeviceB = idDeviceB ? connectedDevices.get(idDeviceB) : undefined
         if (!wsDeviceA || !wsDeviceB) {
+            console.log("Missing a websocket connection")
             return {
                 status: 404
             }
@@ -127,7 +128,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
             id: peerconnection.uuid
         }
         wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceA.config?.map(formatServiceConfig), tiebreaker: true}))
-        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
+        wsDeviceB.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
     } else {
         // connection containing at least one remote device
         throw("Peerconnections of types local/remote and remote/remote are currently not supported!")

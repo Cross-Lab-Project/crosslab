@@ -5,7 +5,6 @@
         "allowSyntheticDefaultImports": true,
         "target": "ES2021",
         "lib": [
-            "dom",
             "ES2021"
         ],
         "esModuleInterop": true,

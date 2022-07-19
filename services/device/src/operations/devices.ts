@@ -19,8 +19,7 @@ import {
     ConcreteDeviceModel, 
     DeviceGroupModel, 
     TimeSlotModel, 
-    DeviceReferenceModel, 
-    DeviceReference,
+    DeviceReferenceModel,
     PeerconnectionModel,
     isConcreteDeviceModel
 } from "../model";
@@ -35,10 +34,18 @@ import {
 } from "./deviceMessages";
 import { randomUUID } from "crypto";
 import { EntityTarget, FindOptionsWhere } from "typeorm";
+import fetch from "node-fetch";
+import { APIClient, isFetchError } from "@cross-lab-project/api-client"
 
 export const connectedDevices = new Map<string, WebSocket>();
 export const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
 const changedCallbacks = new Map<string,Array<string>>();
+const apiClient = new APIClient({
+    booking: config.BASE_URL_BOOKING,
+    device: config.BASE_URL,
+    experiment: config.BASE_URL_EXPERIMENT,
+    federation: config.BASE_URL_FEDERATION
+});
 
 async function handleSignalingMessage(device: ConcreteDeviceModel, message: SignalingMessage) {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
@@ -69,6 +76,7 @@ function handleDeviceMessage(device: ConcreteDeviceModel, message: Message) {
     }
 }
 
+// TODO: generate callback signatures?
 async function handleChangedCallback(device: ConcreteDeviceModel | DeviceGroupModel) {
     const urls = changedCallbacks.get(device.uuid) ?? []
     for (const url in urls) {
@@ -90,7 +98,7 @@ async function handleChangedCallback(device: ConcreteDeviceModel | DeviceGroupMo
 
 export function deviceHandling(app: Express.Application) {
     // TODO: close Peerconnections that have device as participant?
-    app.ws("devices/ws", (ws) => {
+    app.ws("/devices/ws", (ws) => {
         // authenticate and start heartbeat
         ws.once("message", async (data) => {
             // device authentication and connection
@@ -157,11 +165,11 @@ function formatTimeSlot(timeSlot: TimeSlotModel): TimeSlot {
         available: timeSlot.available ?? true,
         start: timeSlot.start ?? undefined,
         end: timeSlot.end ?? undefined,
-        repeat: {
+        repeat: (timeSlot.frequency || timeSlot.until || timeSlot.count) ? {
             frequency: timeSlot.frequency ?? undefined,
             until: timeSlot.until ?? undefined,
             count: timeSlot.count ?? undefined
-        }
+        } : undefined
     }
 }
 
@@ -188,37 +196,67 @@ function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
     }
 }
 
-async function formatDeviceReference(reference: DeviceReferenceModel, _flat_group: boolean = false): Promise<DeviceReference> {
+async function resolveDeviceReference(reference: DeviceReferenceModel, flat_group: boolean = false): Promise<ConcreteDevice|DeviceGroup|undefined> {
     if (reference.url) {
-        fetch(reference.url, {
-            method: "get"
-        })
-    }
-
-    // NOTE: maybe return undefined here so that we can check if device still exists
-    return {
-        url: reference.url
-    }
-}
-
-async function formatDeviceGroup(device: DeviceGroupModel, flat_group: boolean = false): Promise<DeviceGroup> {
-    const devices = []
-    if (device.devices) {
-        for (const d of device.devices) {
-            const resolvedDevice = await formatDeviceReference(d, flat_group)
-            if (!resolvedDevice) {
-                // device reference could not be resolved -> return undefined?
+        const deviceId = reference.url.split("/").at(-1)
+        if (!deviceId) return undefined
+        if (reference.url.startsWith(apiClient.deviceClient.baseURL)) {
+            const device = await getDeviceModelByUUID(deviceId)
+            if (!device) return undefined
+            if (isConcreteDeviceModel(device)) return formatConcreteDevice(device)
+            else return formatDeviceGroup(device, flat_group)
+        } else {
+            const device = await apiClient.federationClient.getProxy({ 
+                URL: reference.url + "?" + new URLSearchParams({ flat_group: "" + flat_group }) 
+            })
+            if (isFetchError(device)) {
+                console.error(device)
+                return undefined
+            } else {
+                if (device.status === 404) return undefined
+                // TODO: check if groups are resolved correctly with flat_group
+                return device.body  
             }
-            devices.push(resolvedDevice)
         }
     }
+
+    return undefined
+}
+
+function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
+    const devices: ConcreteDevice[] = []
+
+    if (deviceGroup.devices) {
+        for (const device of deviceGroup.devices) {
+            if (!device.type) continue
+            if (device.type == "device") devices.push(device)
+            if (device.type == "group") devices.push(...flattenDeviceGroup(device))
+        }
+    }
+
+    return devices
+}
+
+async function formatDeviceGroup(deviceGroup: DeviceGroupModel, flat_group: boolean = false): Promise<DeviceGroup> {
+    const devices: (ConcreteDevice|DeviceGroup)[] = []
+    if (deviceGroup.devices) {
+        for (const d of deviceGroup.devices) {
+            const resolvedDevice = await resolveDeviceReference(d, flat_group)
+            if (resolvedDevice) {
+                if (resolvedDevice.type == "device") devices.push(resolvedDevice)
+                if (resolvedDevice.type == "group" && !flat_group) devices.push(resolvedDevice)
+                if (resolvedDevice.type == "group" && flat_group) devices.push(...flattenDeviceGroup(resolvedDevice))
+            }
+        }
+    }
+
     return {
-        url: DeviceBaseURL + device.uuid,
-        name: device.name,
-        description: device.description,
-        type: device.type,
-        owner: device.owner,
-        devices: devices
+        url: DeviceBaseURL + deviceGroup.uuid,
+        name: deviceGroup.name,
+        description: deviceGroup.description,
+        type: deviceGroup.type,
+        owner: deviceGroup.owner,
+        devices: devices.filter((v,i,s) => s.findIndex(d => d.url == v.url) == i)
     }
 }
 
@@ -304,13 +342,12 @@ export const postDevices: postDevicesSignature = async (parameters, body, _user)
     }
 }
 
-// TODO: return ConcreteDevice or DeviceGroup instead of DeviceOverview
-export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parameters, _user) => {
+async function getDeviceModelByUUID(uuid: string): Promise<ConcreteDeviceModel|DeviceGroupModel|undefined> {
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
     const concreteDevice = await concreteDeviceRepository.findOne({ 
         where: { 
-            uuid: parameters.device_id 
+            uuid: uuid 
         },
         relations: {
             announcedAvailability: true
@@ -318,7 +355,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
     })
     const deviceGroup = await deviceGroupRepository.findOne({ 
         where: { 
-            uuid: parameters.device_id 
+            uuid: uuid
         },
         relations: {
             devices: true
@@ -326,20 +363,27 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
     })
 
     if (concreteDevice && deviceGroup) throw("Multiple devices found for same uuid!")
+    if (concreteDevice) return concreteDevice
+    if (deviceGroup) return deviceGroup
+    return undefined
+}
 
-    if (concreteDevice) {
+export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parameters, _user) => {
+    const device = await getDeviceModelByUUID(parameters.device_id)
+
+    if (!device) {
         return {
-            status: 200,
-            body: formatConcreteDevice(concreteDevice)
+            status: 404
         }
-    } else if (deviceGroup) {
+    } else if (isConcreteDeviceModel(device)) {
         return {
             status: 200,
-            body: await formatDeviceGroup(deviceGroup, parameters.flat_group)
+            body: formatConcreteDevice(device)
         }
     } else {
         return {
-            status: 404
+            status: 200,
+            body: await formatDeviceGroup(device, parameters.flat_group)
         }
     }
 }
@@ -347,33 +391,17 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
 export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (parameters, _user) => {
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
+    const device = await getDeviceModelByUUID(parameters.device_id)
 
-    const concreteDevice = await concreteDeviceRepository.findOne({ 
-        where: { 
-            uuid: parameters.device_id 
-        },
-        relations: {
-            announcedAvailability: true
-        }
-    })
-    const deviceGroup = await deviceGroupRepository.findOne({ 
-        where: { 
-            uuid: parameters.device_id 
-        },
-        relations: {
-            devices: true
-        }
-    })
-
-    if (concreteDevice && deviceGroup) throw("Multiple devices found for same uuid!")
-    if (!concreteDevice && !deviceGroup) {
+    if (!device) {
         return {
             status: 404
         }
     }
 
-    if (concreteDevice) await concreteDeviceRepository.softRemove(concreteDevice)
-    if (deviceGroup) await deviceGroupRepository.softRemove(deviceGroup)
+    
+    if (isConcreteDeviceModel(device)) await concreteDeviceRepository.softRemove(device)
+    else await deviceGroupRepository.softRemove(device)
 
     return {
         status: 204

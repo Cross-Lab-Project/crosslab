@@ -19,14 +19,14 @@ export class ExperimentModel {
     bookingStart?: string
     @Column()
     bookingEnd?: string
-    @OneToMany(() => DeviceModel, (device) => device.experiment)
+    @OneToMany(() => DeviceModel, (device) => device.experiment, { onDelete: "CASCADE", cascade: true })
     devices?: DeviceModel[]
     @ManyToMany(() => RoleModel)
     @JoinTable({ name: "ExperimentRoleMapping" })
     roles?: RoleModel[]
-    @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment)
+    @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment, { onDelete: "CASCADE", cascade: true })
     connections?: PeerconnectionModel[]
-    @OneToMany(() => ServiceConfigurationModel, (serviceConfiguration) => serviceConfiguration.experiment)
+    @OneToMany(() => ServiceConfigurationModel, (serviceConfiguration) => serviceConfiguration.experiment, { onDelete: "CASCADE", cascade: true })
     serviceConfigurations?: ServiceConfigurationModel[]
     @DeleteDateColumn()
     deletedAt?: Date
@@ -72,7 +72,7 @@ export class ServiceConfigurationModel {
     serviceType?: string
     @Column()
     configuration?: string // save JSON as string
-    @OneToMany(() => ParticipantModel, (participant) => participant.serviceConfiguration)
+    @OneToMany(() => ParticipantModel, (participant) => participant.serviceConfiguration, { onDelete: "CASCADE", cascade: true })
     participants?: ParticipantModel[]
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.serviceConfigurations)
     experiment?: ExperimentModel[]

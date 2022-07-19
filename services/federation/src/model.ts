@@ -10,6 +10,10 @@ export class InstitutionModel {
     api?: string
     @Column()
     apiToken?: string
+    @Column()
+    homepage?: string
+    @Column()
+    federatedApi?: string
     @DeleteDateColumn()
     deletedAt?: Date;
 }
