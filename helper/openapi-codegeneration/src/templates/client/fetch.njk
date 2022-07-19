@@ -8,9 +8,9 @@ import {
     ResponseData,
     FetchError
 } from "./types"
-import * as node_fetch from "node-fetch"
+import * as cross_fetch from "cross-fetch"
 
-async function parseResponse(response: node_fetch.Response): Promise<ResponseData> {
+async function parseResponse(response: Response): Promise<ResponseData> {
     let text = null
     try {
         text = await response.text()
@@ -35,7 +35,7 @@ export async function fetch<P,B,R extends ResponseData>(
             error: "Request validation failed!"
         }
     }
-    const raw_response = await node_fetch.default(url, {
+    const raw_response = await cross_fetch.fetch(url, {
         method: method,
         body: JSON.stringify(body),
         headers: body ? { 'Content-Type': 'application/json' } : undefined
