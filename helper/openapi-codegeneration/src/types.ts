@@ -38,6 +38,7 @@ export interface OperationData extends DefaultData {
     method: OperationMethod
     path: string
     operation: OpenAPIV3_1.OperationObject
+    isProxyOperation?: boolean
     parameters?: Array<ParameterData|ReferenceData>
     requestBody?: RequestBodyData | ReferenceData
     responses?: Array<ResponseData|ReferenceData>
@@ -112,6 +113,7 @@ export interface ValidationBlueprint {
 export interface RouteFunction {
     name: string
     method: OperationMethod
+    isProxyFunction: boolean
     path: string
     basePath: string
     validateInput: string

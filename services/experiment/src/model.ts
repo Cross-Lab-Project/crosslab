@@ -28,6 +28,8 @@ export class ExperimentModel {
     connections?: PeerconnectionModel[]
     @OneToMany(() => ServiceConfigurationModel, (serviceConfiguration) => serviceConfiguration.experiment, { onDelete: "CASCADE", cascade: true })
     serviceConfigurations?: ServiceConfigurationModel[]
+    @Column()
+    bookingID?: string
     @DeleteDateColumn()
     deletedAt?: Date
 }

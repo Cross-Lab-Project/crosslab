@@ -4,7 +4,7 @@
 export type {{ function.signature }} = (
     {{- 
     ("parameters: " + function.name + "ParametersType, " if function.parameters) +
-    ("body: " + function.name + "BodyType, " if function.body.content[0].schema.typeDeclaration)
+    ("body: " + function.name + "BodyType, " if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
     -}} 
     user: UserType) => Promise<{{ function.name }}ResponseType> | {{ function.name }}ResponseType
 {%- endmacro -%}

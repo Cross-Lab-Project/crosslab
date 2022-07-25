@@ -581,6 +581,9 @@ function parseOperationObject(api: OpenAPIV3_1.Document, operation: OpenAPIV3_1.
             operationData.parameters.push(parseParameterObject(api, parameter))
         }
     }
+    if ((operation as any)["x-proxy-request"] === true) {
+        operationData.isProxyOperation = true
+    }
     if (operation.requestBody) {
         operationData.requestBody = parseRequestBodyObject(api, operation.requestBody, location ? location + "/requestBody" : undefined )
     }
@@ -840,6 +843,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
         openAPIData.routeFunctions[basePath].push({
             name: formatMethodPath(operationData.path, operationData.method),
             method: operationData.method,
+            isProxyFunction: operationData.isProxyOperation ?? false,
             path: operationData.path,
             basePath: basePath,
             validateInput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Input",

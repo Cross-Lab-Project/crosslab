@@ -33,7 +33,7 @@ import {
     SignalingMessage
 } from "./deviceMessages";
 import { randomUUID } from "crypto";
-import { EntityTarget, FindOptionsWhere } from "typeorm";
+import { EntityTarget } from "typeorm";
 import fetch from "node-fetch";
 import { APIClient, isFetchError } from "@cross-lab-project/api-client"
 
@@ -200,23 +200,14 @@ async function resolveDeviceReference(reference: DeviceReferenceModel, flat_grou
     if (reference.url) {
         const deviceId = reference.url.split("/").at(-1)
         if (!deviceId) return undefined
-        if (reference.url.startsWith(apiClient.deviceClient.baseURL)) {
-            const device = await getDeviceModelByUUID(deviceId)
-            if (!device) return undefined
-            if (isConcreteDeviceModel(device)) return formatConcreteDevice(device)
-            else return formatDeviceGroup(device, flat_group)
+        const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group })
+        if (isFetchError(device)) {
+            console.error(device)
+            return undefined
         } else {
-            const device = await apiClient.federationClient.getProxy({ 
-                URL: reference.url + "?" + new URLSearchParams({ flat_group: "" + flat_group }) 
-            })
-            if (isFetchError(device)) {
-                console.error(device)
-                return undefined
-            } else {
-                if (device.status === 404) return undefined
-                // TODO: check if groups are resolved correctly with flat_group
-                return device.body  
-            }
+            if (device.status === 404) return undefined
+            // TODO: check if groups are resolved correctly with flat_group
+            return device.body  
         }
     }
 
@@ -408,25 +399,39 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     }
 }
 
-async function handlePatchDevicesByDeviceId<M extends DeviceOverviewModel>(device: ConcreteDevice | DeviceGroup, model: EntityTarget<M>, where: FindOptionsWhere<M>): Promise<M | undefined> {
-    const deviceRepository = AppDataSource.getRepository(model)
-    const deviceModel = await deviceRepository.findOneBy(where)
-    if (!deviceModel) return undefined
-    await writeDevice(deviceModel, device)
-    await deviceRepository.save(deviceModel)
-    return deviceModel
-}
-
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (parameters, body, _user) => {
-    const device = isConcreteDevice(body) ? 
-        await handlePatchDevicesByDeviceId(body, ConcreteDeviceModel, { uuid: parameters.device_id }) : 
-        await handlePatchDevicesByDeviceId(body, DeviceGroupModel, { uuid: parameters.device_id })
+    const deviceOverviewRepository = AppDataSource.getRepository(DeviceOverviewModel)
+    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
+    const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
+
+    const deviceOverview = await deviceOverviewRepository.findOneBy({ uuid: parameters.device_id })
+
+    if (!deviceOverview) {
+        return {
+            status: 404
+        }
+    }
+
+    const device = deviceOverview.type === "device" ? 
+        await concreteDeviceRepository.findOneBy({ uuid: parameters.device_id }) :
+        await deviceGroupRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
         return {
             status: 404
         }
     }
+
+    if (!body) {
+        return {
+            status: 200,
+            body: isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device)
+        }
+    }
+
+    await writeDevice(device, body)
+    // TODO: check if this works as intended
+    await deviceOverviewRepository.save(device) 
 
     if (parameters.changedUrl) {
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
@@ -463,12 +468,15 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         }
     }
 
-    // insert new timeslots
-    for (const ts of body) {
-        const timeSlot = timeSlotRepository.create()
-        writeTimeSlot(timeSlot, ts)
-        await timeSlotRepository.save(timeSlot)
-        device.announcedAvailability.push(timeSlot)
+    // TODO: check if this suffices or if more steps need to be taken
+    if (body) {
+        // insert new timeslots
+        for (const ts of body) {
+            const timeSlot = timeSlotRepository.create()
+            writeTimeSlot(timeSlot, ts)
+            await timeSlotRepository.save(timeSlot)
+            device.announcedAvailability.push(timeSlot)
+        }
     }
 
     await deviceRepository.save(device)

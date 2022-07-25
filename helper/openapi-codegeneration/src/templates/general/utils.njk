@@ -32,7 +32,9 @@ export type {{ function.name }}ParametersType = {{ parametersTypeDeclaration(fun
 export type {{ function.name }}ParametersType = undefined
 {%- endif %}
 {%- if function.body.content[0].schema.typeDeclaration %}
-export type {{ function.name }}BodyType = {{ formatDeclaration(function.body.content[0].schema.typeDeclaration) }}
+export type {{ function.name }}BodyType = {{ formatDeclaration(function.body.content[0].schema.typeDeclaration) }} {{ "| undefined" if not function.body.required }}
+{%- elif function.isProxyFunction %}
+export type {{ function.name }}BodyType = any
 {%- else %}
 export type {{ function.name }}BodyType = undefined
 {%- endif %}

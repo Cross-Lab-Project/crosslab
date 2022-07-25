@@ -20,8 +20,15 @@ import {
     ServiceConfigurationModel 
 } from "../model"
 import { config } from "../config"
+import { APIClient, isFetchError } from "@cross-lab-project/api-client"
 
 const ExperimentBaseUrl = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/'
+const apiClient = new APIClient({
+    booking: config.BASE_URL_BOOKING,
+    device: config.BASE_URL_DEVICE,
+    experiment: config.BASE_URL,
+    federation: config.BASE_URL_FEDERATION
+});
 
 function formatDevice(device: DeviceModel) {
     return {
@@ -161,11 +168,210 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
     }
 }
 
+async function bookExperiment(experiment: ExperimentModel) {
+    // book devices for requested timeframe or default timeframe
+    const HOUR = 60 * 60 * 1000
+    const bookingStart = experiment.bookingStart ?? new Date().toISOString()
+    const bookingEnd = experiment.bookingEnd ?? new Date(Date.now() + HOUR).toISOString()
+    const bookingStartDate = new Date(bookingStart)
+    const bookingEndDate = new Date(bookingEnd)
+
+    // should this check really be done here or should this also be handled by the booking service?
+    if (bookingStartDate.getTime() > bookingEndDate.getTime()) {
+        // fail because start time is after end time
+        throw("Impossible timeframe")
+    }
+
+    if (!experiment.devices || experiment.devices.length === 0) {
+        // fail because experiment has no devices?
+        throw("No devices to be booked")
+    }
+
+    // try to book experiment
+    const response = await apiClient.putBookingManage({
+        Experiment: {
+            Devices: experiment.devices ? experiment.devices.map(d => {
+                return { ID: d.url }
+            }) : []
+        },
+        Time: {
+            Start: bookingStart,
+            End: bookingEnd
+        }
+    })
+
+    if (isFetchError(response)) {
+        // fail because of fetch error
+        throw(response)
+    }
+
+    if (response.status !== 200) {
+        // fail because some error occurred
+        throw(response)
+    }
+
+    // save booking id somewhere such that it can be checked later
+    experiment.bookingID = response.body.BookingID
+    experiment.status = "booked"
+    
+    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
+    experimentRepository.save(experiment)
+}
+
+async function _startExperiment(experiment: ExperimentModel) {
+    // make sure experiment is already booked
+    if (experiment.status !== "booked") {
+        // experiment is not booked
+        throw("Experiment is not booked")
+    }
+
+    // check if booking ID exists
+    if (!experiment.bookingID) {
+        // fail because booked experiment has no booking ID
+        throw("Booked experiment has no booking ID")
+    }
+
+    const response = await apiClient.putBookingLockByID({ ID: experiment.bookingID })
+    if (isFetchError(response)) {
+        // fail because of fetch error
+        throw(response)
+    }
+    if (response.status !== 200) {
+        // fail because some error occurred
+        throw(response)
+    }
+
+    // establish peerconnections between the devices
+    if (experiment.devices) {
+        for (let i = 0; i < experiment.devices.length; i++) {
+            for (let j = i + 1; j < experiment.devices.length; i++) {
+                // TODO: set closedURL
+                const response = await apiClient.postPeerconnections({ closedUrl: undefined }, { 
+                    devices: [{
+                        url: experiment.devices[i].url
+                    }, {
+                        url: experiment.devices[j].url
+                    }] 
+                })
+                if (isFetchError(response)) {
+                    throw(response)
+                }
+                if (response.status !== 201) {
+                    throw(response)
+                }
+                if (!experiment.connections) experiment.connections = []
+                if (!response.body.url) {
+                    throw("Created peerconnection does not have a url")
+                }
+                // create, save and push new peerconnection
+                const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+                const peerconnection = peerconnectionRepository.create()
+                peerconnection.experiment = experiment
+                peerconnection.url = response.body.url
+                await peerconnectionRepository.save(peerconnection)
+                experiment.connections.push(peerconnection)
+            }
+        } 
+    }
+
+    // set experiment status to running and save experiment
+    experiment.status = "running"
+    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
+    experimentRepository.save(experiment)
+}
+
+async function startExperiment(experiment: ExperimentModel) {
+    // check if experiment is already booked 
+    // if it is booked for the current time then proceed to start experiment
+    // if booking is for different time then try to book experiment for current time
+    // if successful then proceed to start experiment
+    // else fail
+    switch(experiment.status) {
+        case "created": {
+            await bookExperiment(experiment)
+            await _startExperiment(experiment)
+            break
+        }
+        case "booked": {
+            await _startExperiment(experiment)
+            break
+        }
+        case "running": {
+            // nothing to do since experiment is already running
+            break
+        }
+        case "finished": {
+            // fail because experiment is already finished
+            throw("Cannot start finished experiment")
+        }
+    }
+}
+
+async function finishExperiment(experiment: ExperimentModel) {
+    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
+
+    switch (experiment.status) {
+        case "created": {
+            // nothing to do here is status is set to finished below
+            break
+        }
+        case "booked": {
+            // delete booking 
+            if (!experiment.bookingID) {
+                throw("Booked experiment does not have a booking ID")
+            }
+            const response = await apiClient.deleteBookingManageByID({ ID: experiment.bookingID })
+            if (isFetchError(response)) {
+                // fail because of fetch error
+                throw(response)
+            }
+            if (response.status !== 200) {
+                // fail because some error occurred
+                throw(response)
+            }
+            break
+        }
+        case "running": {
+            // delete all peerconnections
+            if (experiment.connections) {
+                for (const peerconnection of experiment.connections) {
+                    const peerconnection_id = peerconnection.url.split("/").pop()
+                    if (!peerconnection_id) {
+                        throw("Peerconnection does not have an id")
+                    }
+                    const response = await apiClient.deletePeerconnectionsByPeerconnectionId({ peerconnection_id: peerconnection.url })
+                    console.log(response)
+                }
+            }
+            // unlock all devices
+            // delete booking
+            break
+        } 
+        case "finished": {
+            // nothing to do since experiment is already finished
+            break
+        }
+    }
+
+    experiment.status = "finished"
+    await experimentRepository.save(experiment)
+}
+
 export const postExperiments: postExperimentsSignature = async (body, _user) => {
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
     const experiment = experimentRepository.create()
     await writeExperiment(experiment, body)
     await experimentRepository.save(experiment)
+
+    try {
+        if (body.status) {
+            if (body.status == "booked") bookExperiment(experiment)
+            if (body.status == "running") startExperiment(experiment)
+            if (body.status == "finished") finishExperiment(experiment)
+        }
+    } catch (error) {
+        // handle error by maybe deleting the experiment or resetting possible changes
+    }
 
     return {
         status: 201,
@@ -228,7 +434,7 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
         }
     }
 
-    await writeExperiment(experiment, body)
+    if (body) await writeExperiment(experiment, body)
     await experimentRepository.save(experiment)
 
     return {

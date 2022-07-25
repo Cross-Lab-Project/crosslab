@@ -67,7 +67,7 @@ export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdS
             status: 404
         }
     }
-    writeInstitution(institution, body)
+    if (body) writeInstitution(institution, body)
     InstitutionRepository.save(institution)
     return {
         status: 200,

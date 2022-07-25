@@ -7,7 +7,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- else -%}
     {{- "{}" -}}
     {%- endif -%},
-    {%- if function.body -%}
+    {%- if function.body or function.isProxyFunction -%}
     {{- " " }}{{ function.name + "BodyType" | safe -}}
     {%- else -%}
     {{- " {}" -}}
@@ -47,7 +47,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- endif %}
     }
     {% endif -%}
-    {% if function.body -%}
+    {% if function.body or function.isProxyFunction -%}
     const body = req.body
     {% endif -%}
     if (!{{ function.validateInput }}(
@@ -61,7 +61,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     try {
         const result = await {{ basePath }}.{{ function.name }}(
         {{- "parameters, " if function.parameters -}}
-        {{- "body, " if function.body -}}
+        {{- "body, " if function.body or function.isProxyFunction -}}
         user)
         if (!{{ function.validateOutput }}(result)) {
             const errorMsg = "Output validation failed"
@@ -98,7 +98,7 @@ import {
     {%- if function.parameters %}
     {{ function.name + "ParametersType," }}
     {%- endif %}
-    {%- if function.body %}
+    {%- if function.body or function.isProxyFunction %}
     {{ function.name + "BodyType," }}
     {%- endif %}
 {%- endfor %}

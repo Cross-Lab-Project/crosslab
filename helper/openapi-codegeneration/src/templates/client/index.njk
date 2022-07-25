@@ -4,15 +4,15 @@
     public async {{ function.name }}(
     {{- 
     ("parameters: " + function.name + "ParametersType" if function.parameters) + 
-    (", " if function.parameters and function.body.content[0].schema.typeDeclaration) +
-    ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration)
+    (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction)) +
+    ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
     -}}
     ): Promise<{{ function.name }}ResponseType | FetchError> {
         return this.{{ function.basePath }}Client.{{ function.name }}(
         {{- 
         ("parameters" if function.parameters) + 
-        (", " if function.parameters and function.body.content[0].schema.typeDeclaration) +
-        ("body" if function.body.content[0].schema.typeDeclaration)
+        (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction)) +
+        ("body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
         -}}
         )
     }
@@ -34,7 +34,7 @@ import {
     {%- if function.parameters %}
     {{ function.name + "ParametersType," }}
     {%- endif %}
-    {%- if function.body.content[0].schema.typeDeclaration %}
+    {%- if function.body.content[0].schema.typeDeclaration or function.isProxyFunction %}
     {{ function.name + "BodyType," }}
     {%- endif %}
     {{ function.name + "ResponseType," }}
@@ -46,6 +46,9 @@ import {
 export * as Types from "./types"
 {%- for basePath in basePaths %}
 export * as Signatures{{ basePath | capitalize }} from "./signatures/{{ basePath }}"
+{%- endfor %}
+{%- for basePath in basePaths %}
+export * as Validation{{ basePath | capitalize }} from "./validation/{{ basePath }}"
 {%- endfor %}
 
 export class APIClient {

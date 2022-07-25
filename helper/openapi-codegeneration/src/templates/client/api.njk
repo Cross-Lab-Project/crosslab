@@ -4,8 +4,8 @@
 {{ "\t" }}public async {{ function.name }}(
     {{- 
     ("parameters: " + function.name + "ParametersType" if function.parameters) + 
-    (", " if function.parameters and function.body.content[0].schema.typeDeclaration) +
-    ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration)
+    (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction)) +
+    ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
     -}}
     ): Promise<{{ function.name }}ResponseType | FetchError> {
         {% if function.parameters.query -%}
@@ -15,8 +15,8 @@
         {% endfor -%}
         {% endif -%}
         return fetch<
-            {{- utils.parametersTypeDeclaration(function.parameters, false) if function.parameters else "undefined" }},
-            {{- utils.formatDeclaration(function.body.content[0].schema.typeDeclaration) if function.body.content[0].schema.typeDeclaration else "undefined" }},
+            {{- function.name }}ParametersType,
+            {{- function.name }}BodyType,
             {{- function.name }}ResponseType>(
             this._baseURL + `{{ function.path | replace(r/{(.*?)}/g, "$${parameters.$1}") }}`
                 {%- if function.parameters.query -%}
@@ -24,7 +24,7 @@
                 {%- endif -%},
             "{{ function.method }}", 
             {{ "parameters" if function.parameters else "undefined" }}, 
-            {{ "body" if function.body.content[0].schema.typeDeclaration else "undefined" }}, 
+            {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }}, 
             {{ function.validateInput }}, 
             {{ function.validateOutput }}
         )
@@ -38,20 +38,15 @@
  */
 import { fetch } from "../fetch"
 import {
-    FetchError,
-{{ typeDependencies | join(",\n\t") -}}
+    FetchError
 } from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}
 } from "../validation/{{ basePath }}"
 import {
 {%- for function in functions %}
-    {%- if function.parameters %}
     {{ function.name + "ParametersType," }}
-    {%- endif %}
-    {%- if function.body.content[0].schema.typeDeclaration %}
     {{ function.name + "BodyType," }}
-    {%- endif %}
     {{ function.name + "ResponseType," }}
 {%- endfor %}
 } from "../signatures/{{ basePath }}"
