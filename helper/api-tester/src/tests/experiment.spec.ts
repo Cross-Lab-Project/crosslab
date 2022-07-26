@@ -1,4 +1,4 @@
-import { APIClient, isFetchError } from "@cross-lab-project/api-client"
+import { APIClient } from "@cross-lab-project/api-client"
 import { ConcreteDevice, DeviceGroup, Peerconnection } from "@cross-lab-project/api-client/dist/generated/device/types"
 import { Experiment } from "@cross-lab-project/api-client/dist/generated/experiment/types"
 import assert, { fail } from "assert"
@@ -24,8 +24,7 @@ export async function test() {
             })
 
             it("should get all experiments", async function () {
-                const response = await apiClient.experimentClient.getExperiments()
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.getExperiments()
                 assert(response.status == 200, "Unexpected response status")
             })
 

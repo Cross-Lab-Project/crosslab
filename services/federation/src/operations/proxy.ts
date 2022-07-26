@@ -44,7 +44,6 @@ const proxy: (method: string) => proxySignature = (method: string) => async (par
 
     try {
         const text = await response.text()
-        console.log(text)
 
         return {
             status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution

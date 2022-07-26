@@ -1,4 +1,4 @@
-import { APIClient, isFetchError } from "@cross-lab-project/api-client"
+import { APIClient } from "@cross-lab-project/api-client"
 import { Institution } from "@cross-lab-project/api-client/dist/generated/federation/types"
 import assert, { fail } from "assert"
 import { exampleInstitutions } from "../../../example_data/federation.js"
@@ -15,8 +15,7 @@ export async function createInstitution(apiClient: APIClient, createdInstitution
         if (values.name) institution.name = values.name
     }
 
-    const response = await apiClient.federationClient.postInstitutions(institution)
-    if (isFetchError(response)) fail(response.error)
+    const response = await apiClient.postInstitutions(institution)
     assert(response.status == 201, "Unexpected response status")
     assert(compareInstitutions(response.body, institution))
 
@@ -29,8 +28,7 @@ export async function deleteInstitutions(apiClient: APIClient, createdInstitutio
     while (createdInstitutions.length > 0) {
         const institution = createdInstitutions.pop()
         assert(institution, "Institution is undefined")
-        const response = await apiClient.federationClient.deleteInstitutionsByInstitutionId({ institution_id: getId(institution) })
-        if (isFetchError(response)) fail(response.error)
+        const response = await apiClient.deleteInstitutionsByInstitutionId({ institution_id: getId(institution) })
         assert(response.status == 204, "Unexpected response status")
     }
 }

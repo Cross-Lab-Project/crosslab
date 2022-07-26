@@ -26,6 +26,7 @@ import {
 import { config } from "../config"
 import WebSocket from "ws";
 import { 
+    AuthenticationMessage,
     isAuthenticationMessage, 
     isMessage, 
     isSignalingMessage, 
@@ -35,7 +36,7 @@ import {
 import { randomUUID } from "crypto";
 import { EntityTarget } from "typeorm";
 import fetch from "node-fetch";
-import { APIClient, isFetchError } from "@cross-lab-project/api-client"
+import { APIClient } from "@cross-lab-project/api-client"
 
 export const connectedDevices = new Map<string, WebSocket>();
 export const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
@@ -54,11 +55,15 @@ async function handleSignalingMessage(device: ConcreteDeviceModel, message: Sign
         relations: { deviceA: true, deviceB: true } 
     })
 
+    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) {
+        throw("Peerconnection is missing an url for one of the devices")
+    }
+
     let peerDeviceId
     if (peerconnection.deviceA.url === DeviceBaseURL + device.uuid) {
-        peerDeviceId = peerconnection.deviceA.url.split("/").at(-1)
-    } else if (peerconnection.deviceB.url === DeviceBaseURL + device.uuid) {
         peerDeviceId = peerconnection.deviceB.url.split("/").at(-1)
+    } else if (peerconnection.deviceB.url === DeviceBaseURL + device.uuid) {
+        peerDeviceId = peerconnection.deviceA.url.split("/").at(-1)
     } else {
         console.error("Device not part of Peerconnection")
         return
@@ -117,6 +122,12 @@ export function deviceHandling(app: Express.Application) {
             await deviceRepository.save(device)
             handleChangedCallback(device)
             connectedDevices.set(device.uuid, ws)
+
+            ws.send(JSON.stringify(<AuthenticationMessage>{
+                messageType: "authenticate",
+                id: message.id,
+                authenticated: true
+            }))
 
             // heartbeat implementation
             let isAlive = true;
@@ -191,7 +202,7 @@ function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
         type: device.type,
         owner: device.owner,
         announcedAvailability: device.announcedAvailability ? device.announcedAvailability.map(formatTimeSlot) : undefined,
-        connected: device.connected ? device.connected : undefined,
+        connected: device.connected !== undefined ? device.connected : undefined,
         experiment: device.experiment ? device.experiment : undefined
     }
 }
@@ -200,15 +211,10 @@ async function resolveDeviceReference(reference: DeviceReferenceModel, flat_grou
     if (reference.url) {
         const deviceId = reference.url.split("/").at(-1)
         if (!deviceId) return undefined
-        const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group })
-        if (isFetchError(device)) {
-            console.error(device)
-            return undefined
-        } else {
-            if (device.status === 404) return undefined
-            // TODO: check if groups are resolved correctly with flat_group
-            return device.body  
-        }
+        const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group }, reference.url)
+        if (device.status === 404) return undefined
+        // TODO: check if groups are resolved correctly with flat_group
+        return device.body
     }
 
     return undefined
@@ -270,7 +276,7 @@ async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) 
 
     if (isConcreteDevice(object)) {
         const concreteDevice = device as ConcreteDeviceModel
-        concreteDevice.connected = object.connected
+        concreteDevice.connected = false
         concreteDevice.token = undefined
         if (object.announcedAvailability) {
             concreteDevice.announcedAvailability = []
@@ -278,7 +284,7 @@ async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) 
             for (const ts of object.announcedAvailability) {
                 const timeSlot = timeSlotRepository.create()
                 writeTimeSlot(timeSlot, ts)
-                await timeSlotRepository.save(timeSlot)
+                // await timeSlotRepository.save(timeSlot)
                 concreteDevice.announcedAvailability.push(timeSlot)
             }
         }
@@ -291,7 +297,7 @@ async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) 
             for (const d of object.devices) {
                 const deviceReference = deviceReferenceRepository.create()
                 if (d.url) deviceReference.url = d.url
-                await deviceReferenceRepository.save(deviceReference)
+                // await deviceReferenceRepository.save(deviceReference)
                 deviceGroup.devices.push(deviceReference)
             }
         }
@@ -474,7 +480,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         for (const ts of body) {
             const timeSlot = timeSlotRepository.create()
             writeTimeSlot(timeSlot, ts)
-            await timeSlotRepository.save(timeSlot)
+            // await timeSlotRepository.save(timeSlot)
             device.announcedAvailability.push(timeSlot)
         }
     }

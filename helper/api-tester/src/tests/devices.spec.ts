@@ -1,4 +1,4 @@
-import { APIClient, isFetchError } from "@cross-lab-project/api-client"
+import { APIClient } from "@cross-lab-project/api-client"
 import { ConcreteDevice, DeviceGroup, Peerconnection } from "@cross-lab-project/api-client/dist/generated/device/types"
 import assert, { fail } from "assert"
 import { config } from "../config.js"
@@ -18,8 +18,7 @@ export async function test() {
             })
 
             it("should get all devices", async function () {
-                const response = await apiClient.deviceClient.getDevices()
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.getDevices()
                 assert(response.status == 200, "Unexpected response status")
             })
 
@@ -119,8 +118,7 @@ export async function test() {
             })
 
             it("should get all peerconnections", async function () {
-                const response = await apiClient.deviceClient.getPeerconnections()
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.getPeerconnections()
                 assert(response.status == 200, "Unexpected response status")
             })
 

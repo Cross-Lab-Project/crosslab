@@ -1,6 +1,7 @@
-import { APIClient, isFetchError } from "@cross-lab-project/api-client"
+import { APIClient } from "@cross-lab-project/api-client"
 import { Institution } from "@cross-lab-project/api-client/dist/generated/federation/types"
 import assert, { fail } from "assert"
+import { config } from "../config.js"
 import { exampleInstitutions } from "../example_data/federation.js"
 import { startTestServer, stopTestServer } from "../test_server/index.js"
 import { getId } from "./util/common.js"
@@ -12,7 +13,7 @@ async function sleep(time: number): Promise<void> {
 }
 
 export async function test() {
-    const apiClient = new APIClient("http://localhost:80")
+    const apiClient = new APIClient(config.ENDPOINT)
     const TESTSERVER_ENDPOINT = "http://host.docker.internal:3001"
 
     describe("Federation Service", async function() {
@@ -27,57 +28,49 @@ export async function test() {
             })
 
             it(`should forward GET request`, async function() {
-                const response = await apiClient.federationClient.getProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.getProxy({ URL: TESTSERVER_ENDPOINT }, undefined)
                 assert.strictEqual(response.status, 200)
                 assert.strictEqual(response.body, "GET")
             })
 
             it(`should forward POST request`, async function() {
-                const response = await apiClient.federationClient.postProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.postProxy({ URL: TESTSERVER_ENDPOINT }, undefined)
                 assert.strictEqual(response.status, 200)
                 assert.strictEqual(response.body, "POST")
             })
 
             it(`should forward PATCH request`, async function() {
-                const response = await apiClient.federationClient.patchProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.patchProxy({ URL: TESTSERVER_ENDPOINT }, undefined)
                 assert.strictEqual(response.status, 200)
                 assert.strictEqual(response.body, "PATCH")
             })
 
             it(`should forward HEAD request`, async function() {
-                const response = await apiClient.federationClient.headProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.headProxy({ URL: TESTSERVER_ENDPOINT })
                 assert.strictEqual(response.status, 200)
                 assert(!response.body)
             })
 
             it(`should forward OPTIONS request`, async function() {
-                const response = await apiClient.federationClient.optionsProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.optionsProxy({ URL: TESTSERVER_ENDPOINT })
                 assert.strictEqual(response.status, 204)
                 assert.strictEqual(response.body, "")
             })
 
             it(`should forward DELETE request`, async function() {
-                const response = await apiClient.federationClient.deleteProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.deleteProxy({ URL: TESTSERVER_ENDPOINT }, undefined)
                 assert.strictEqual(response.status, 200)
                 assert.strictEqual(response.body, "DELETE")
             })
 
             it(`should forward PUT request`, async function() {
-                const response = await apiClient.federationClient.putProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.putProxy({ URL: TESTSERVER_ENDPOINT }, undefined)
                 assert.strictEqual(response.status, 200)
                 assert.strictEqual(response.body, "PUT")
             })
 
             it(`should forward TRACE request`, async function() {
-                const response = await apiClient.federationClient.traceProxy({ URL: TESTSERVER_ENDPOINT })
-                if (isFetchError(response)) fail(response.error)
+                const response = await apiClient.traceProxy({ URL: TESTSERVER_ENDPOINT })
                 assert.strictEqual(response.status, 405)
                 assert.strictEqual(response.body.message, "Method not allowed")
             })
@@ -92,8 +85,7 @@ export async function test() {
                 })
 
                 it("should get all institutions", async function () {
-                    const response = await apiClient.federationClient.getInstitutions()
-                    if (isFetchError(response)) fail(response.error)
+                    const response = await apiClient.getInstitutions()
                     assert(response.status == 200, "Unexpected response status")
                 })
 
@@ -106,8 +98,7 @@ export async function test() {
                 it("should get the created institutions by their ids", async function () {
                     for (const key in exampleInstitutions) {
                         const institution = await createInstitution(apiClient, createdInstitutions, exampleInstitutions[key])
-                        const response = await apiClient.federationClient.getInstitutionsByInstitutionId({ institution_id: getId(institution) })
-                        if (isFetchError(response)) fail(response.error)
+                        const response = await apiClient.getInstitutionsByInstitutionId({ institution_id: getId(institution) })
                         assert(response.status == 200, "Unexpected response status")
                         assert(compareInstitutions(response.body, institution))
                     }
@@ -115,8 +106,7 @@ export async function test() {
 
                 it("should update the institution", async function () {
                     const institution = await createInstitution(apiClient, createdInstitutions, exampleInstitutions[0])
-                    const response = await apiClient.federationClient.patchInstitutionsByInstitutionId({ institution_id: getId(institution) }, exampleInstitutions[1])
-                    if (isFetchError(response)) fail(response.error) 
+                    const response = await apiClient.patchInstitutionsByInstitutionId({ institution_id: getId(institution) }, exampleInstitutions[1])
                     assert(response.status == 200, "Unexpected response status")
                     assert(compareInstitutions(response.body, exampleInstitutions[1]))
                 })

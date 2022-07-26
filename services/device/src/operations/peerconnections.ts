@@ -63,7 +63,7 @@ async function writeConfiguredDeviceReference(
             for (const config of object.config.services) {
                 const serviceConfig = serviceConfigRepository.create()
                 writeServiceConfig(serviceConfig, config)
-                await serviceConfigRepository.save(serviceConfig)
+                // await serviceConfigRepository.save(serviceConfig)
                 configuredDeviceReference.config.push(serviceConfig)
             }
         }
@@ -77,8 +77,8 @@ async function writePeerconnection(peerconnection: PeerconnectionModel, object: 
         const deviceReferenceB = deviceReferenceRepository.create()
         await writeConfiguredDeviceReference(deviceReferenceA, object.devices[0])
         await writeConfiguredDeviceReference(deviceReferenceB, object.devices[1])
-        await deviceReferenceRepository.save(deviceReferenceA)
-        await deviceReferenceRepository.save(deviceReferenceB)
+        // await deviceReferenceRepository.save(deviceReferenceA)
+        // await deviceReferenceRepository.save(deviceReferenceB)
         peerconnection.deviceA = deviceReferenceA
         peerconnection.deviceB = deviceReferenceB
     }
@@ -108,15 +108,18 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnection = peerconnectionRepository.create()
     await writePeerconnection(peerconnection, body)
+
+    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) return {
+        status: 404
+    }
+    const idDeviceA = peerconnection.deviceA.url.split("/").at(-1)
+    const idDeviceB = peerconnection.deviceB.url.split("/").at(-1)
     
-    if (peerconnection.deviceA.url?.startsWith(DeviceBaseURL) && peerconnection.deviceB.url?.startsWith(DeviceBaseURL)) {
+    if (peerconnection.deviceA.url.startsWith(DeviceBaseURL) && peerconnection.deviceB.url.startsWith(DeviceBaseURL)) {
         // connection between local devices
-        const idDeviceA = peerconnection.deviceA.url.split("/").at(-1)
-        const idDeviceB = peerconnection.deviceB.url.split("/").at(-1)
         const wsDeviceA = idDeviceA ? connectedDevices.get(idDeviceA) : undefined
         const wsDeviceB = idDeviceB ? connectedDevices.get(idDeviceB) : undefined
         if (!wsDeviceA || !wsDeviceB) {
-            console.log("Missing a websocket connection")
             return {
                 status: 404
             }
@@ -131,7 +134,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
         wsDeviceB.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
     } else {
         // connection containing at least one remote device
-        throw("Peerconnections of types local/remote and remote/remote are currently not supported!")
+        throw("Peerconnections using remote devices are currently not supported!")
     }
 
     await peerconnectionRepository.save(peerconnection)

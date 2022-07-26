@@ -37,7 +37,8 @@ export function isSignalingMessage(message: Message): message is SignalingMessag
 export interface AuthenticationMessage extends Message {
     messageType: "authenticate"
     id: string
-    token: string
+    token?: string
+    authenticated?: boolean 
 }
 export function isAuthenticationMessage(message: Message): message is AuthenticationMessage {
     return message.messageType === "authenticate"

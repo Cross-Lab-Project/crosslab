@@ -137,10 +137,10 @@ export class TimeSlotModel {
 export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn("uuid")
     uuid!: string
-    @OneToOne(() => DeviceReferenceModel)
+    @OneToOne(() => DeviceReferenceModel, { onDelete: "CASCADE", cascade: true })
     @JoinColumn()
     deviceA!: DeviceReferenceModel
-    @OneToOne(() => DeviceReferenceModel)
+    @OneToOne(() => DeviceReferenceModel, { onDelete: "CASCADE", cascade: true })
     @JoinColumn()
     deviceB!: DeviceReferenceModel
     @DeleteDateColumn()

@@ -1,3 +1,3 @@
 export const config = {
-    ENDPOINT: "http://localhost:80"
+    ENDPOINT: "http://localhost"
 }
