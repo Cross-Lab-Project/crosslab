@@ -7,7 +7,7 @@
     (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction)) +
     ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
     -}}
-    ): Promise<{{ function.name }}ResponseType | FetchError> {
+    ): Promise<{{ function.name }}ResponseType> {
         return this.{{ function.basePath }}Client.{{ function.name }}(
         {{- 
         ("parameters" if function.parameters) + 
@@ -24,9 +24,7 @@
  * and run openapi-codegeneration to regenerate this file.
  */
 
-import { FetchError } from "./types"
 {%- for basePath in basePaths %}
-
 import { {{ basePath | capitalize }}Client } from "./api/{{ basePath }}"
 import {
 {%- for function in functions %}

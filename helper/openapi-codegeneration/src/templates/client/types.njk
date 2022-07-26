@@ -10,14 +10,13 @@ export type UserType = {
 
 export type HttpMethods = "get" | "post" | "patch" | "head" | "options" | "trace" | "delete" | "put"
 
-export interface FetchError {
-    type: string,
-    error: string,
-    response?: ResponseData
-}
+export class FetchError implements Error {
+    public name: string = "FetchError"
+    public message: string
 
-export function isFetchError(object: any): object is FetchError {
-    return Object.keys(object).includes("error") && Object.keys(object).includes("type")
+    constructor(message?: string) {
+        this.message = message ? message : "An error occurred during fetch"
+    }
 }
 
 export interface ResponseData {

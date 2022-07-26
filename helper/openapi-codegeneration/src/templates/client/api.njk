@@ -7,7 +7,7 @@
     (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction)) +
     ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
     -}}
-    ): Promise<{{ function.name }}ResponseType | FetchError> {
+    ): Promise<{{ function.name }}ResponseType> {
         {% if function.parameters.query -%}
         let query: [string,string][] = []
         {% for parameter in function.parameters.query -%}
@@ -37,9 +37,6 @@
  * and run openapi-codegeneration to regenerate this file.
  */
 import { fetch } from "../fetch"
-import {
-    FetchError
-} from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}
 } from "../validation/{{ basePath }}"

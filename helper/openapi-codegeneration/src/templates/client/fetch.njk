@@ -28,12 +28,9 @@ export async function fetch<P,B,R extends ResponseData>(
     body: B, 
     validateInput: (parameters: P, body: B) => boolean,
     validateOutput: (response: ResponseData) => boolean
-): Promise<R | FetchError> {
+): Promise<R> {
     if (!validateInput(parameters, body)) {
-        return {
-            type: "validation",
-            error: "Request validation failed!"
-        }
+        throw new FetchError("Request validation failed!")
     }
     const raw_response = await cross_fetch.fetch(url, {
         method: method,
@@ -42,11 +39,7 @@ export async function fetch<P,B,R extends ResponseData>(
     })
     const response = await parseResponse(raw_response)
     if (!validateOutput(response)) {
-        return {
-            type: "validation",
-            error: "Response validation failed!",
-            response: response
-        }
+        throw new FetchError("Response validation failed!")
     }
     return response as R
 }
