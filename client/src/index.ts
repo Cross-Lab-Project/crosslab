@@ -33,12 +33,12 @@ export {
     FetchError,
     ResponseData,
     UserType,
-    HttpMethods,
-    isFetchError
+    HttpMethods
 } from "./generated/booking/types"
 
 import {
-    FetchError, isFetchError, ResponseData,
+    FetchError, 
+    ResponseData
 } from "./generated/booking/types"
 import { URLSearchParams } from "url"
 
@@ -108,14 +108,11 @@ export class APIClient {
     public async postBookingSchedule(
         body: BookingSignatures.postBookingScheduleBodyType,
         url?: string
-    ): Promise<BookingSignatures.postBookingScheduleResponseType | FetchError> {
+    ): Promise<BookingSignatures.postBookingScheduleResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.postBookingSchedule(body)
         } else {
-            if (!isValidUrl(url, `/booking/schedule`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/schedule`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("post", url, undefined, body, BookingValidation.validatePostBookingScheduleInput, BookingValidation.validatePostBookingScheduleOutput)
         }
     }
@@ -123,14 +120,11 @@ export class APIClient {
     public async putBookingManage(
         body: BookingSignatures.putBookingManageBodyType,
         url?: string
-    ): Promise<BookingSignatures.putBookingManageResponseType | FetchError> {
+    ): Promise<BookingSignatures.putBookingManageResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.putBookingManage(body)
         } else {
-            if (!isValidUrl(url, `/booking/manage`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/manage`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("put", url, undefined, body, BookingValidation.validatePutBookingManageInput, BookingValidation.validatePutBookingManageOutput)
         }
     }
@@ -138,14 +132,11 @@ export class APIClient {
     public async getBookingManageByID(
         parameters: BookingSignatures.getBookingManageByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.getBookingManageByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.getBookingManageByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.getBookingManageByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, BookingValidation.validateGetBookingManageByIDInput, BookingValidation.validateGetBookingManageByIDOutput)
         }
     }
@@ -153,14 +144,11 @@ export class APIClient {
     public async deleteBookingManageByID(
         parameters: BookingSignatures.deleteBookingManageByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.deleteBookingManageByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.deleteBookingManageByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.deleteBookingManageByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, BookingValidation.validateDeleteBookingManageByIDInput, BookingValidation.validateDeleteBookingManageByIDOutput)
         }
     }
@@ -169,14 +157,11 @@ export class APIClient {
         parameters: BookingSignatures.patchBookingManageByIDParametersType, 
         body: BookingSignatures.patchBookingManageByIDBodyType,
         url?: string
-    ): Promise<BookingSignatures.patchBookingManageByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.patchBookingManageByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.patchBookingManageByID(parameters, body)
         } else {
-            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/manage/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("patch", url, parameters, body, BookingValidation.validatePatchBookingManageByIDInput, BookingValidation.validatePatchBookingManageByIDOutput)
         }
     }
@@ -184,14 +169,11 @@ export class APIClient {
     public async deleteBookingDestroyByID(
         parameters: BookingSignatures.deleteBookingDestroyByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.deleteBookingDestroyByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.deleteBookingDestroyByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.deleteBookingDestroyByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/destroy/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/destroy/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, BookingValidation.validateDeleteBookingDestroyByIDInput, BookingValidation.validateDeleteBookingDestroyByIDOutput)
         }
     }
@@ -199,14 +181,11 @@ export class APIClient {
     public async putBookingLockByID(
         parameters: BookingSignatures.putBookingLockByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.putBookingLockByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.putBookingLockByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.putBookingLockByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/lock/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/lock/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("put", url, parameters, undefined, BookingValidation.validatePutBookingLockByIDInput, BookingValidation.validatePutBookingLockByIDOutput)
         }
     }
@@ -214,14 +193,11 @@ export class APIClient {
     public async deleteBookingLockByID(
         parameters: BookingSignatures.deleteBookingLockByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.deleteBookingLockByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.deleteBookingLockByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.deleteBookingLockByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/lock/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/lock/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, BookingValidation.validateDeleteBookingLockByIDInput, BookingValidation.validateDeleteBookingLockByIDOutput)
         }
     }
@@ -229,14 +205,11 @@ export class APIClient {
     public async postBookingCallbackByID(
         parameters: BookingSignatures.postBookingCallbackByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.postBookingCallbackByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.postBookingCallbackByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.postBookingCallbackByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/callback/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/callback/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("post", url, parameters, undefined, BookingValidation.validatePostBookingCallbackByIDInput, BookingValidation.validatePostBookingCallbackByIDOutput)
         }
     }
@@ -244,14 +217,11 @@ export class APIClient {
     public async putBookingDevice(
         body: BookingSignatures.putBookingDeviceBodyType,
         url?: string
-    ): Promise<BookingSignatures.putBookingDeviceResponseType | FetchError> {
+    ): Promise<BookingSignatures.putBookingDeviceResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.putBookingDevice(body)
         } else {
-            if (!isValidUrl(url, `/booking/device`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/device`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("put", url, undefined, body, BookingValidation.validatePutBookingDeviceInput, BookingValidation.validatePutBookingDeviceOutput)
         }
     }
@@ -259,14 +229,11 @@ export class APIClient {
     public async getBookingDeviceByID(
         parameters: BookingSignatures.getBookingDeviceByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.getBookingDeviceByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.getBookingDeviceByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.getBookingDeviceByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/device/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/device/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, BookingValidation.validateGetBookingDeviceByIDInput, BookingValidation.validateGetBookingDeviceByIDOutput)
         }
     }
@@ -274,28 +241,22 @@ export class APIClient {
     public async deleteBookingDeviceByID(
         parameters: BookingSignatures.deleteBookingDeviceByIDParametersType,
         url?: string
-    ): Promise<BookingSignatures.deleteBookingDeviceByIDResponseType | FetchError> {
+    ): Promise<BookingSignatures.deleteBookingDeviceByIDResponseType> {
         if (!url || url.startsWith(this.bookingClient.baseURL)) {
             return this.bookingClient.deleteBookingDeviceByID(parameters)
         } else {
-            if (!isValidUrl(url, `/booking/device/${parameters.ID}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/booking/device/${parameters.ID}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, BookingValidation.validateDeleteBookingDeviceByIDInput, BookingValidation.validateDeleteBookingDeviceByIDOutput)
         }
     }
 
     // Device Service API calls
 
-    public async getDevices(url?: string): Promise<DeviceSignatures.getDevicesResponseType | FetchError> {
+    public async getDevices(url?: string): Promise<DeviceSignatures.getDevicesResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.getDevices()
         } else {
-            if (!isValidUrl(url, `/devices`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, undefined, undefined, DeviceValidation.validateGetDevicesInput, DeviceValidation.validateGetDevicesOutput)
         }
     }
@@ -304,14 +265,11 @@ export class APIClient {
         parameters: DeviceSignatures.postDevicesParametersType, 
         body: DeviceSignatures.postDevicesBodyType,
         url?: string
-    ): Promise<DeviceSignatures.postDevicesResponseType | FetchError> {
+    ): Promise<DeviceSignatures.postDevicesResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.postDevices(parameters, body)
         } else {
-            if (!isValidUrl(url, `/devices`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices`)) throw new FetchError("URL is not valid for this operation")
             let finalUrl = url
             if (parameters.changedUrl) finalUrl += "?" + new URLSearchParams({ changedUrl: parameters.changedUrl })
             return this.proxy("post", finalUrl, parameters, body, DeviceValidation.validatePostDevicesInput, DeviceValidation.validatePostDevicesOutput)
@@ -321,29 +279,27 @@ export class APIClient {
 	public async getDevicesByDeviceId(
         parameters: DeviceSignatures.getDevicesByDeviceIdParametersType,
         url?: string
-    ): Promise<DeviceSignatures.getDevicesByDeviceIdResponseType | FetchError> {
+    ): Promise<DeviceSignatures.getDevicesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
+            console.log("using local resolution")
             return this.deviceClient.getDevicesByDeviceId(parameters)
         } else {
-            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
-            return this.proxy("get", url, parameters, undefined, DeviceValidation.validateGetDevicesByDeviceIdInput, DeviceValidation.validateGetDevicesByDeviceIdOutput)
+            console.log("using remote resolution")
+            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
+            let finalUrl = url
+            if (parameters.flat_group !== undefined) finalUrl += "?" + new URLSearchParams({ flat_group: parameters.flat_group ? "true" : "false" })
+            return this.proxy("get", finalUrl, parameters, undefined, DeviceValidation.validateGetDevicesByDeviceIdInput, DeviceValidation.validateGetDevicesByDeviceIdOutput)
         }
     }
 
 	public async deleteDevicesByDeviceId(
         parameters: DeviceSignatures.deleteDevicesByDeviceIdParametersType,
         url?: string
-    ): Promise<DeviceSignatures.deleteDevicesByDeviceIdResponseType | FetchError> {
+    ): Promise<DeviceSignatures.deleteDevicesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.deleteDevicesByDeviceId(parameters)
         } else {
-            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, DeviceValidation.validateDeleteDevicesByDeviceIdInput, DeviceValidation.validateDeleteDevicesByDeviceIdOutput)
         }
     }
@@ -352,14 +308,11 @@ export class APIClient {
         parameters: DeviceSignatures.patchDevicesByDeviceIdParametersType, 
         body: DeviceSignatures.patchDevicesByDeviceIdBodyType,
         url?: string
-    ): Promise<DeviceSignatures.patchDevicesByDeviceIdResponseType | FetchError> {
+    ): Promise<DeviceSignatures.patchDevicesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.patchDevicesByDeviceId(parameters, body)
         } else {
-            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
             let finalUrl = url
             if (parameters.changedUrl) finalUrl += "?" + new URLSearchParams({ changedUrl: parameters.changedUrl })
             return this.proxy("patch", finalUrl, parameters, body, DeviceValidation.validatePatchDevicesByDeviceIdInput, DeviceValidation.validatePatchDevicesByDeviceIdOutput)
@@ -370,14 +323,11 @@ export class APIClient {
         parameters: DeviceSignatures.postDevicesByDeviceIdAvailabilityParametersType, 
         body: DeviceSignatures.postDevicesByDeviceIdAvailabilityBodyType,
         url?: string
-    ): Promise<DeviceSignatures.postDevicesByDeviceIdAvailabilityResponseType | FetchError> {
+    ): Promise<DeviceSignatures.postDevicesByDeviceIdAvailabilityResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.postDevicesByDeviceIdAvailability(parameters, body)
         } else {
-            if (!isValidUrl(url, `/devices/${parameters.device_id}/availability`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices/${parameters.device_id}/availability`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("post", url, parameters, body, DeviceValidation.validatePostDevicesByDeviceIdAvailabilityInput, DeviceValidation.validatePostDevicesByDeviceIdAvailabilityOutput)
         }
     }
@@ -385,26 +335,20 @@ export class APIClient {
 	public async getDevicesByDeviceIdToken(
         parameters: DeviceSignatures.getDevicesByDeviceIdTokenParametersType,
         url?: string
-    ): Promise<DeviceSignatures.getDevicesByDeviceIdTokenResponseType | FetchError> {
+    ): Promise<DeviceSignatures.getDevicesByDeviceIdTokenResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.getDevicesByDeviceIdToken(parameters)
         } else {
-            if (!isValidUrl(url, `/devices/${parameters.device_id}/token`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/devices/${parameters.device_id}/token`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, DeviceValidation.validateGetDevicesByDeviceIdTokenInput, DeviceValidation.validateGetDevicesByDeviceIdTokenOutput)
         }
     }
 
-    public async getPeerconnections(url?: string): Promise<PeerconnectionSignatures.getPeerconnectionsResponseType | FetchError> {
+    public async getPeerconnections(url?: string): Promise<PeerconnectionSignatures.getPeerconnectionsResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.getPeerconnections()
         } else {
-            if (!isValidUrl(url, `/peerconnections`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/peerconnections`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, undefined, undefined, PeerconnectionValidation.validateGetPeerconnectionsInput, PeerconnectionValidation.validateGetPeerconnectionsOutput)
         }
     }
@@ -413,14 +357,11 @@ export class APIClient {
         parameters: PeerconnectionSignatures.postPeerconnectionsParametersType, 
         body: PeerconnectionSignatures.postPeerconnectionsBodyType,
         url?: string
-    ): Promise<PeerconnectionSignatures.postPeerconnectionsResponseType | FetchError> {
+    ): Promise<PeerconnectionSignatures.postPeerconnectionsResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.postPeerconnections(parameters, body)
         } else {
-            if (!isValidUrl(url, `/peerconnections`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/peerconnections`)) throw new FetchError("URL is not valid for this operation")
             let finalUrl = url
             if (parameters.closedUrl) finalUrl += "?" + new URLSearchParams({ closedUrl: parameters.closedUrl })
             return this.proxy("post", finalUrl, parameters, body, PeerconnectionValidation.validatePostPeerconnectionsInput, PeerconnectionValidation.validatePostPeerconnectionsOutput)
@@ -430,14 +371,11 @@ export class APIClient {
 	public async getPeerconnectionsByPeerconnectionId(
         parameters: PeerconnectionSignatures.getPeerconnectionsByPeerconnectionIdParametersType,
         url?: string
-    ): Promise<PeerconnectionSignatures.getPeerconnectionsByPeerconnectionIdResponseType | FetchError> {
+    ): Promise<PeerconnectionSignatures.getPeerconnectionsByPeerconnectionIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.getPeerconnectionsByPeerconnectionId(parameters)
         } else {
-            if (!isValidUrl(url, `/peerconnections/${parameters.peerconnection_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/peerconnections/${parameters.peerconnection_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, PeerconnectionValidation.validateGetPeerconnectionsByPeerconnectionIdInput, PeerconnectionValidation.validateGetPeerconnectionsByPeerconnectionIdOutput)
         }
     }
@@ -445,28 +383,22 @@ export class APIClient {
 	public async deletePeerconnectionsByPeerconnectionId(
         parameters: PeerconnectionSignatures.deletePeerconnectionsByPeerconnectionIdParametersType,
         url?: string
-    ): Promise<PeerconnectionSignatures.deletePeerconnectionsByPeerconnectionIdResponseType | FetchError> {
+    ): Promise<PeerconnectionSignatures.deletePeerconnectionsByPeerconnectionIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
             return this.deviceClient.deletePeerconnectionsByPeerconnectionId(parameters)
         } else {
-            if (!isValidUrl(url, `/peerconnections/${parameters.peerconnection_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/peerconnections/${parameters.peerconnection_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, PeerconnectionValidation.validateDeletePeerconnectionsByPeerconnectionIdInput, PeerconnectionValidation.validateDeletePeerconnectionsByPeerconnectionIdOutput)
         }
     }
 
     // Experiment Service API calls
 
-    public async getExperiments(url?: string): Promise<ExperimentSignatures.getExperimentsResponseType | FetchError> {
+    public async getExperiments(url?: string): Promise<ExperimentSignatures.getExperimentsResponseType> {
         if (!url || url.startsWith(this.experimentClient.baseURL)) {
             return this.experimentClient.getExperiments()
         } else {
-            if (!isValidUrl(url, `/experiments`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/experiments`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, undefined, undefined, ExperimentValidation.validateGetExperimentsInput, ExperimentValidation.validateGetExperimentsOutput)
         }
     }
@@ -474,14 +406,11 @@ export class APIClient {
 	public async postExperiments(
         body: ExperimentSignatures.postExperimentsBodyType,
         url?: string
-    ): Promise<ExperimentSignatures.postExperimentsResponseType | FetchError> {
+    ): Promise<ExperimentSignatures.postExperimentsResponseType> {
         if (!url || url.startsWith(this.experimentClient.baseURL)) {
             return this.experimentClient.postExperiments(body)
         } else {
-            if (!isValidUrl(url, `/experiments`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/experiments`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("post", url, undefined, body, ExperimentValidation.validatePostExperimentsInput, ExperimentValidation.validatePostExperimentsOutput)
         }
     }
@@ -489,14 +418,11 @@ export class APIClient {
 	public async getExperimentsByExperimentId(
         parameters: ExperimentSignatures.getExperimentsByExperimentIdParametersType,
         url?: string
-    ): Promise<ExperimentSignatures.getExperimentsByExperimentIdResponseType | FetchError> {
+    ): Promise<ExperimentSignatures.getExperimentsByExperimentIdResponseType> {
         if (!url || url.startsWith(this.experimentClient.baseURL)) {
             return this.experimentClient.getExperimentsByExperimentId(parameters)
         } else {
-            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, ExperimentValidation.validateGetExperimentsByExperimentIdInput, ExperimentValidation.validateGetExperimentsByExperimentIdOutput)
         }
     }
@@ -504,14 +430,11 @@ export class APIClient {
 	public async deleteExperimentsByExperimentId(
         parameters: ExperimentSignatures.deleteExperimentsByExperimentIdParametersType,
         url?: string
-    ): Promise<ExperimentSignatures.deleteExperimentsByExperimentIdResponseType | FetchError> {
+    ): Promise<ExperimentSignatures.deleteExperimentsByExperimentIdResponseType> {
         if (!url || url.startsWith(this.experimentClient.baseURL)) {
             return this.experimentClient.deleteExperimentsByExperimentId(parameters)
         } else {
-            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, ExperimentValidation.validateDeleteExperimentsByExperimentIdInput, ExperimentValidation.validateDeleteExperimentsByExperimentIdOutput)
         }
     }
@@ -520,14 +443,11 @@ export class APIClient {
         parameters: ExperimentSignatures.patchExperimentsByExperimentIdParametersType, 
         body: ExperimentSignatures.patchExperimentsByExperimentIdBodyType,
         url?: string
-    ): Promise<ExperimentSignatures.patchExperimentsByExperimentIdResponseType | FetchError> {
+    ): Promise<ExperimentSignatures.patchExperimentsByExperimentIdResponseType> {
         if (!url || url.startsWith(this.experimentClient.baseURL)) {
             return this.experimentClient.patchExperimentsByExperimentId(parameters, body)
         } else {
-            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/experiments/${parameters.experiment_id}`)) throw new FetchError("URL is not valid for this operation")
             let finalUrl = url
             if (parameters.changedURL) finalUrl += "?" + new URLSearchParams({ changedURL: parameters.changedURL })
             return this.proxy("patch", finalUrl, parameters, body, ExperimentValidation.validatePatchExperimentsByExperimentIdInput, ExperimentValidation.validatePatchExperimentsByExperimentIdOutput)
@@ -536,14 +456,11 @@ export class APIClient {
 
     // Federation Service API calls
 
-    public async getInstitutions(url?: string): Promise<InstitutionSignatures.getInstitutionsResponseType | FetchError> {
+    public async getInstitutions(url?: string): Promise<InstitutionSignatures.getInstitutionsResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.federationClient.getInstitutions()
         } else {
-            if (!isValidUrl(url, `/institutions`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/institutions`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, undefined, undefined, InstitutionValidation.validateGetInstitutionsInput, InstitutionValidation.validateGetInstitutionsOutput)
         }
     }
@@ -551,14 +468,11 @@ export class APIClient {
 	public async postInstitutions(
         body: InstitutionSignatures.postInstitutionsBodyType,
         url?: string
-    ): Promise<InstitutionSignatures.postInstitutionsResponseType | FetchError> {
+    ): Promise<InstitutionSignatures.postInstitutionsResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.federationClient.postInstitutions(body)
         } else {
-            if (!isValidUrl(url, `/institutions`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/institutions`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("post", url, undefined, body, InstitutionValidation.validatePostInstitutionsInput, InstitutionValidation.validatePostInstitutionsOutput)
         }
     }
@@ -566,14 +480,11 @@ export class APIClient {
 	public async getInstitutionsByInstitutionId(
         parameters: InstitutionSignatures.getInstitutionsByInstitutionIdParametersType,
         url?: string
-    ): Promise<InstitutionSignatures.getInstitutionsByInstitutionIdResponseType | FetchError> {
+    ): Promise<InstitutionSignatures.getInstitutionsByInstitutionIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.federationClient.getInstitutionsByInstitutionId(parameters)
         } else {
-            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("get", url, parameters, undefined, InstitutionValidation.validateGetInstitutionsByInstitutionIdInput, InstitutionValidation.validateGetInstitutionsByInstitutionIdOutput)
         }
     }
@@ -581,14 +492,11 @@ export class APIClient {
 	public async deleteInstitutionsByInstitutionId(
         parameters: InstitutionSignatures.deleteInstitutionsByInstitutionIdParametersType,
         url?: string
-    ): Promise<InstitutionSignatures.deleteInstitutionsByInstitutionIdResponseType | FetchError> {
+    ): Promise<InstitutionSignatures.deleteInstitutionsByInstitutionIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.federationClient.deleteInstitutionsByInstitutionId(parameters)
         } else {
-            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, InstitutionValidation.validateDeleteInstitutionsByInstitutionIdInput, InstitutionValidation.validateDeleteInstitutionsByInstitutionIdOutput)
         }
     }
@@ -597,68 +505,65 @@ export class APIClient {
         parameters: InstitutionSignatures.patchInstitutionsByInstitutionIdParametersType, 
         body: InstitutionSignatures.patchInstitutionsByInstitutionIdBodyType,
         url?: string
-    ): Promise<InstitutionSignatures.patchInstitutionsByInstitutionIdResponseType | FetchError> {
+    ): Promise<InstitutionSignatures.patchInstitutionsByInstitutionIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.federationClient.patchInstitutionsByInstitutionId(parameters, body)
         } else {
-            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) return {
-                type: "validation",
-                error: "URL is not valid for this operation"
-            }
+            if (!isValidUrl(url, `/institutions/${parameters.institution_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("patch", url, parameters, body, InstitutionValidation.validatePatchInstitutionsByInstitutionIdInput, InstitutionValidation.validatePatchInstitutionsByInstitutionIdOutput)
         }
     }
 
     public async headProxy(
         parameters: ProxySignatures.headProxyParametersType
-    ): Promise<ProxySignatures.headProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.headProxyResponseType> {
         return this.federationClient.headProxy(parameters, undefined)
     }
 
 	public async getProxy(
         parameters: ProxySignatures.getProxyParametersType,
         body: ProxySignatures.getProxyBodyType
-    ): Promise<ProxySignatures.getProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.getProxyResponseType> {
         return this.federationClient.getProxy(parameters, body)
     }
 
 	public async putProxy(
         parameters: ProxySignatures.putProxyParametersType,
         body: ProxySignatures.putProxyBodyType
-    ): Promise<ProxySignatures.putProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.putProxyResponseType> {
         return this.federationClient.putProxy(parameters, body)
     }
 
 	public async postProxy(
         parameters: ProxySignatures.postProxyParametersType,
         body: ProxySignatures.postProxyBodyType
-    ): Promise<ProxySignatures.postProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.postProxyResponseType> {
         return this.federationClient.postProxy(parameters, body)
     }
 
 	public async deleteProxy(
         parameters: ProxySignatures.deleteProxyParametersType,
         body: ProxySignatures.deleteProxyBodyType
-    ): Promise<ProxySignatures.deleteProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.deleteProxyResponseType> {
         return this.federationClient.deleteProxy(parameters, body)
     }
 
 	public async optionsProxy(
         parameters: ProxySignatures.optionsProxyParametersType
-    ): Promise<ProxySignatures.optionsProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.optionsProxyResponseType> {
         return this.federationClient.optionsProxy(parameters, undefined)
     }
 
 	public async traceProxy(
         parameters: ProxySignatures.traceProxyParametersType
-    ): Promise<ProxySignatures.traceProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.traceProxyResponseType> {
         return this.federationClient.traceProxy(parameters, undefined)
     }
 
 	public async patchProxy(
         parameters: ProxySignatures.patchProxyParametersType,
         body: ProxySignatures.patchProxyBodyType
-    ): Promise<ProxySignatures.patchProxyResponseType | FetchError> {
+    ): Promise<ProxySignatures.patchProxyResponseType> {
         return this.federationClient.patchProxy(parameters, body)
     }
 
@@ -669,11 +574,8 @@ export class APIClient {
         body: B,
         validateInput: IV,
         validateOutput: OV
-    ): Promise<R | FetchError> {
-        if (!validateInput(parameters, body)) return {
-            type: "validation",
-            error: "Input validation failed!"
-        }
+    ): Promise<R> {
+        if (!validateInput(parameters, body)) throw new FetchError("Input validation failed!")
         let response
         switch(method) {
             case "get":
@@ -701,11 +603,7 @@ export class APIClient {
                 response = await this.federationClient.traceProxy({ URL: url }, body)
                 break
         }
-        if (isFetchError(response)) return response
-        if (!validateOutput(response)) return {
-            type: "validation",
-            error: "Output validation failed!"
-        }
+        if (!validateOutput(response)) throw new FetchError("Output validation failed!")
         return response
     }
 }
