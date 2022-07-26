@@ -281,10 +281,8 @@ export class APIClient {
         url?: string
     ): Promise<DeviceSignatures.getDevicesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.deviceClient.baseURL)) {
-            console.log("using local resolution")
             return this.deviceClient.getDevicesByDeviceId(parameters)
         } else {
-            console.log("using remote resolution")
             if (!isValidUrl(url, `/devices/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
             let finalUrl = url
             if (parameters.flat_group !== undefined) finalUrl += "?" + new URLSearchParams({ flat_group: parameters.flat_group ? "true" : "false" })
