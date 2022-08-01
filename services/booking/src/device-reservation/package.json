@@ -1,0 +1,19 @@
+{
+  "name": "device-reservation",
+  "version": "1.0.0",
+  "description": "Part of booking service. Responsible for low level device reservation.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "npm run build && node build/device-reservation/index.js"
+  },
+  "author": "Marcus Soll",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/amqplib": "^0.8.2",
+    "amqplib": "^0.10.0",
+    "mysql2": "^2.3.3",
+    "typescript": "^4.7.4"
+  }
+}
