@@ -64,6 +64,9 @@ export interface EncodingData extends DefaultData {
 export interface HeaderData extends DefaultData {
     type: "header"
     header: OpenAPIV3_1.HeaderObject
+    name: string
+    schema?: SchemaData | ReferenceData
+    required: boolean
 }
 
 export interface PathItemData extends DefaultData {
@@ -85,6 +88,7 @@ export interface LinkData extends DefaultData {
 export interface ResponseData extends DefaultData {
     type: "response"
     response: OpenAPIV3_1.ResponseObject
+    hasRequiredHeader: boolean
     status?: string
     headers?: Array<HeaderData|ReferenceData>
     content?: Array<MediaTypeData>

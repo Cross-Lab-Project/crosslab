@@ -13,7 +13,7 @@
         {%- for parameter in parameters[location] -%}
             {%- set declaration = declaration + parameter.name + (": " if parameter.required else "?: ") + formatDeclaration(parameter.schema.typeDeclaration) + ", " -%}
         {%- endfor -%}
-        {%- set declaration = declaration | reverse | replace(" ,", "") | reverse -%}
+        {%- set declaration = declaration | reverse | replace(" ,", "", 1) | reverse -%}
         {%- set topdeclaration = topdeclaration + declaration -%}
         {%- if print_location -%}
             {%- set topdeclaration = topdeclaration + " }" -%}
@@ -47,6 +47,20 @@ interface {{ function.name }}Response{{ response.status }} {
 {%- else %}
     status: {{ response.status }}
 {%- endif %}
+{%- if response.headers and response.headers.length > 0 %}
+    headers{{ "?" if not response.hasRequiredHeader }}: {
+        {% for header in response.headers -%}
+        {% if header.schema -%}
+        {{ header.name }}{{ "?" if not header.required }}: {{ formatDeclaration(header.schema.typeDeclaration) }}
+        {% endif -%}
+        {% endfor -%}
+        [key: string]: string | undefined
+    }
+{%- else %}
+    headers?: {
+        [key: string]: string | undefined
+    }
+{%- endif %}
 {%- if response.content and response.content[0] and response.content[0].schema %}
     body: {{ response.content[0].schema.typeDeclaration | safe }}
 {%- else %}
@@ -59,6 +73,9 @@ export type {{ function.name }}ResponseType = {{ responseTypes.slice(3) }}
 {%- else -%}
 export type {{ function.name }}ResponseType = {
     status: number,
+    headers?: {
+        [key: string]: string | undefined
+    },
     body?: any
 }
 {%- endif %}

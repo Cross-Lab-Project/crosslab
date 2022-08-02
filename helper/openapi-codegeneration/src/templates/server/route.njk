@@ -32,7 +32,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- endif %}
     {%- if function.parameters.header and function.parameters.header.length > 0 %}
     {%- for parameter in function.parameters.header %}
-        {{ parameter.name }}: req.headers["{{ parameter.name }}"],
+        {{ parameter.name }}: req.headers["{{ parameter.name }}"] as {{ utils.formatDeclaration(parameter.schema.typeDeclaration) }},
     {%- endfor %}
     {%- endif %}
     {%- if function.parameters.path and function.parameters.path.length > 0 %}
@@ -67,6 +67,14 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
             const errorMsg = "Output validation failed"
             console.error(errorMsg, ({{ function.validateOutput }} as any).errors)
             return res.status(400).send(errorMsg)
+        }
+        if (result.headers) {
+            for (const headerName in result.headers) {
+                const header = result.headers[headerName]
+                if (header) {
+                    res.setHeader(headerName, header)
+                }
+            }
         }
         return res.status(result.status || 200).send(result.body)
     } catch(err) {

@@ -353,12 +353,17 @@ function parseParameterObject(api: OpenAPIV3_1.Document, parameter: OpenAPIV3_1.
  * @param location location of the object in the openapi specification
  * @returns parsed HeaderData | ReferenceData
  */
-function parseHeaderObject(api: OpenAPIV3_1.Document, header: OpenAPIV3_1.HeaderObject | OpenAPIV3_1.ReferenceObject, location?: string): HeaderData | ReferenceData {
+function parseHeaderObject(api: OpenAPIV3_1.Document, header: OpenAPIV3_1.HeaderObject | OpenAPIV3_1.ReferenceObject, name: string, location?: string): HeaderData | ReferenceData {
     if (!isReferenceObject(header)) {
         const headerData: HeaderData = {
             type: "header",
             header: header,
-            location: location
+            name: name,
+            location: location,
+            required: header.required ?? false
+        }
+        if (header.schema) {
+            headerData.schema = parseSchemaObject(api, header.schema, location ? location + "/schema" : undefined )
         }
         eventEmitter.emit("header", headerData)
         return headerData
@@ -461,12 +466,15 @@ function parseResponseObject(api: OpenAPIV3_1.Document, response: OpenAPIV3_1.Re
         const responseData: ResponseData = {
             type: "response",
             response: response,
+            hasRequiredHeader: false,
             location: location
         }
         if (response.headers) {
             responseData.headers = []
             for (const headerName in response.headers) {
-                responseData.headers.push(parseHeaderObject(api, response.headers[headerName], location ? location + `/headers/${headerName}` : undefined ))
+                const header = parseHeaderObject(api, response.headers[headerName], headerName, location ? location + `/headers/${headerName}` : undefined )
+                if (header.required) responseData.hasRequiredHeader = true
+                responseData.headers.push(header)
             }
         }
         if (response.content) {
@@ -946,7 +954,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             openAPIData.components.headers = []
             for (const headerName in api.components.headers) {
                 const header = api.components.headers[headerName]
-                const headerData = parseHeaderObject(api, header, `#/components/headers/${headerName}`)
+                const headerData = parseHeaderObject(api, header, headerName, `#/components/headers/${headerName}`)
                 openAPIData.components.headers.push(headerData)
             }
         }
@@ -1104,6 +1112,19 @@ function getDependencies(
                                 }
                             }
                         }
+                        if (response.headers) {
+                            for (const headerName in response.headers) {
+                                const header = response.headers[headerName]
+                                if (header && header.schema) {
+                                    if (header.schema.validationFunction && _options.validation.response) {
+                                        validationDependencies.push(header.schema.validationFunction)
+                                    }
+                                    if (header.schema.dependencies && _options.types.response) {
+                                        typeDependencies.push(header.schema.dependencies)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             })
@@ -1129,6 +1150,7 @@ function getDependencies(
  */
 function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) {
     const ajv = new Ajv({ code: { source: true, esm: true }, verbose: true, inlineRefs: false })
+    ajv.addFormat("jwt", /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
     addFormats(ajv)
     let mapping: any = {}
     if (openAPIData.validationBlueprints) {

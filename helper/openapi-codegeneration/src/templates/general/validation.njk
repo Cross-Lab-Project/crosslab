@@ -42,16 +42,23 @@ export function {{ function.validateOutput }}(response: ResponseData): response 
     {% for response in function.responses -%}
     {% if not response.status.endsWith("XX") -%}
     if (response.status == {{ response.status }}) {
+        {% if response.headers and response.headers.length > 0 -%}
+        if (response.headers) {
+            {%- for header in response.headers %}
+            if (!{{ header.schema.validationFunction }}(response.headers["{{ header.name }}"])) {
+                ({{ function.validateOutput }} as any).errors = ({{ header.schema.validationFunction }} as any).errors
+                return false
+            }
+            {%- endfor %}
+        }
+        {% endif -%}
         {% if response.content[0].schema.validationFunction -%}
-        if ({{ response.content[0].schema.validationFunction }}(response.body)) {
-            return true
-        } else {
+        if (!{{ response.content[0].schema.validationFunction }}(response.body)) {
             ({{ function.validateOutput }} as any).errors = ({{ response.content[0].schema.validationFunction }} as any).errors
             return false
         }
-        {%- else -%}
+        {% endif -%}
         return true
-        {%- endif %}
     }
     {% endif -%}
     {% endfor -%}

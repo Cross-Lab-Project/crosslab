@@ -21,6 +21,9 @@ export class FetchError implements Error {
 
 export interface ResponseData {
     status: number,
+    headers?: {
+        [key: string]: string | undefined
+    },
     body?: any
 }
 
