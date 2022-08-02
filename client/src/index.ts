@@ -1,4 +1,15 @@
 import {
+    APIClient as AuthClient,
+    SignaturesAuth as AuthSignatures,
+    SignaturesIdentity as IdentitySignatures,
+    SignaturesUsers as UsersSignatures,
+    Types as AuthTypes,
+    ValidationAuth as AuthValidation,
+    ValidationIdentity as IdentityValidation,
+    ValidationUsers as UsersValidation,
+} from "./generated/auth"
+
+import {
     APIClient as BookingClient,
     SignaturesBooking as BookingSignatures,
     Types as BookingTypes,
@@ -29,12 +40,19 @@ import {
     ValidationInstitutions as InstitutionValidation
 } from "./generated/federation"
 
+import {
+    APIClient as UpdateClient,
+    SignaturesUpdate as UpdateSignatures,
+    Types as UpdateTypes,
+    ValidationUpdate as UpdateValidation
+} from "./generated/update"
+
 export {
     FetchError,
     ResponseData,
     UserType,
     HttpMethods
-} from "./generated/booking/types"
+} from "./generated/auth/types"
 
 import {
     FetchError, 
@@ -46,7 +64,9 @@ export {
     BookingTypes,
     DeviceTypes,
     ExperimentTypes,
-    FederationTypes
+    FederationTypes,
+    AuthTypes,
+    UpdateTypes
 }
 
 export { 
@@ -55,7 +75,11 @@ export {
     PeerconnectionSignatures, 
     ExperimentSignatures, 
     InstitutionSignatures, 
-    ProxySignatures 
+    ProxySignatures,
+    AuthSignatures,
+    IdentitySignatures,
+    UsersSignatures,
+    UpdateSignatures
 }
 
 function isValidHttpUrl(string: string) {
@@ -77,30 +101,161 @@ function isValidUrl(url: string, endpoint: string): boolean {
 }
 
 export class APIClient {
+    private authClient: AuthClient
     private bookingClient: BookingClient
     private deviceClient: DeviceClient
     private experimentClient: ExperimentClient
     private federationClient: FederationClient
+    private updateClient: UpdateClient
     
     constructor(
         baseURL: string | {
+            auth: string
             booking: string
             device: string
             experiment: string
             federation: string
+            update: string
         }
     ) {
+        this.authClient = new AuthClient(typeof baseURL === "string" ? baseURL : baseURL.auth)
         this.bookingClient = new BookingClient(typeof baseURL === "string" ? baseURL : baseURL.booking)
         this.deviceClient = new DeviceClient(typeof baseURL === "string" ? baseURL : baseURL.device)
         this.experimentClient = new ExperimentClient(typeof baseURL === "string" ? baseURL : baseURL.experiment)
         this.federationClient = new FederationClient(typeof baseURL === "string" ? baseURL : baseURL.federation)
+        this.updateClient = new UpdateClient(typeof baseURL === "string" ? baseURL : baseURL.update)
     }
 
     set accessToken(accessToken: string) {
+        this.authClient.accessToken = accessToken
         this.bookingClient.accessToken = accessToken
         this.deviceClient.accessToken = accessToken
         this.experimentClient.accessToken = accessToken
         this.federationClient.accessToken = accessToken
+        this.updateClient.accessToken = accessToken
+    }
+
+    // Auth Service authentication API calls
+
+    public async login(
+        username: string,
+        password: string,
+        url?: string
+    ): Promise<AuthSignatures.getAuthResponseType> {
+        const parameters: AuthSignatures.getAuthParametersType = { Authorization: Buffer.from(username + ":" + password).toString("base64") }
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.getAuth(parameters)
+        } else {
+            if (!isValidUrl(url, `/auth`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, parameters, undefined, AuthValidation.validateGetAuthInput, AuthValidation.validateGetAuthOutput)
+        }
+    }
+
+    // Auth Service identity API calls
+
+    public async getIdentity(url?: string): Promise<IdentitySignatures.getIdentityResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.getIdentity()
+        } else {
+            if (!isValidUrl(url, `/identity`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, undefined, undefined, IdentityValidation.validateGetIdentityInput, IdentityValidation.validateGetIdentityOutput)
+        }
+    }
+
+	public async patchIdentity(
+        body: IdentitySignatures.patchIdentityBodyType,
+        url?: string
+    ): Promise<IdentitySignatures.patchIdentityResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.patchIdentity(body)
+        } else {
+            if (!isValidUrl(url, `/identity`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("patch", url, undefined, body, IdentityValidation.validatePatchIdentityInput, IdentityValidation.validatePatchIdentityOutput)
+        }
+    }
+
+    // Auth Service users API calls
+
+    public async getUsers(url?: string): Promise<UsersSignatures.getUsersResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.getUsers()
+        } else {
+            if (!isValidUrl(url, `/users`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, undefined, undefined, UsersValidation.validateGetUsersInput, UsersValidation.validateGetUsersOutput)
+        }
+    }
+
+	public async postUsers(
+        body: UsersSignatures.postUsersBodyType,
+        url?: string
+    ): Promise<UsersSignatures.postUsersResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.postUsers(body)
+        } else {
+            if (!isValidUrl(url, `/users`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("post", url, undefined, body, UsersValidation.validatePostUsersInput, UsersValidation.validatePostUsersOutput)
+        }
+    }
+
+	public async getUsersByUsername(
+        parameters: UsersSignatures.getUsersByUsernameParametersType,
+        url?: string
+    ): Promise<UsersSignatures.getUsersByUsernameResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.getUsersByUsername(parameters)
+        } else {
+            if (!isValidUrl(url, `/users/${parameters.username}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, parameters, undefined, UsersValidation.validateGetUsersByUsernameInput, UsersValidation.validateGetUsersByUsernameOutput)
+        }
+    }
+
+	public async deleteUsersByUsername(
+        parameters: UsersSignatures.deleteUsersByUsernameParametersType,
+        url?: string
+    ): Promise<UsersSignatures.deleteUsersByUsernameResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.deleteUsersByUsername(parameters)
+        } else {
+            if (!isValidUrl(url, `/users/${parameters.username}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("delete", url, parameters, undefined, UsersValidation.validateDeleteUsersByUsernameInput, UsersValidation.validateDeleteUsersByUsernameOutput)
+        }
+    }
+
+	public async patchUsersByUsername(
+        parameters: UsersSignatures.patchUsersByUsernameParametersType, 
+        body: UsersSignatures.patchUsersByUsernameBodyType,
+        url?: string
+    ): Promise<UsersSignatures.patchUsersByUsernameResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.patchUsersByUsername(parameters, body)
+        } else {
+            if (!isValidUrl(url, `/users/${parameters.username}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("patch", url, parameters, undefined, UsersValidation.validatePatchUsersByUsernameInput, UsersValidation.validatePatchUsersByUsernameOutput)
+        }
+    }
+
+	public async putUsersByUsernameRolesByRoleName(
+        parameters: UsersSignatures.putUsersByUsernameRolesByRoleNameParametersType,
+        url?: string
+    ): Promise<UsersSignatures.putUsersByUsernameRolesByRoleNameResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.putUsersByUsernameRolesByRoleName(parameters)
+        } else {
+            if (!isValidUrl(url, `/users/${parameters.username}/roles/${parameters.role_name}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("put", url, parameters, undefined, UsersValidation.validatePutUsersByUsernameRolesByRoleNameInput, UsersValidation.validatePutUsersByUsernameRolesByRoleNameOutput)
+        }
+    }
+
+	public async deleteUsersByUsernameRolesByRoleName(
+        parameters: UsersSignatures.deleteUsersByUsernameRolesByRoleNameParametersType,
+        url?: string
+    ): Promise<UsersSignatures.deleteUsersByUsernameRolesByRoleNameResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.deleteUsersByUsernameRolesByRoleName(parameters)
+        } else {
+            if (!isValidUrl(url, `/users/${parameters.username}/roles/${parameters.role_name}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("delete", url, parameters, undefined, UsersValidation.validateDeleteUsersByUsernameRolesByRoleNameInput, UsersValidation.validateDeleteUsersByUsernameRolesByRoleNameOutput)
+        }
     }
 
     // Booking Service API calls
@@ -603,5 +758,19 @@ export class APIClient {
         }
         if (!validateOutput(response)) throw new FetchError("Output validation failed!")
         return response
+    }
+
+    // Update Service API calls
+
+	public async getUpdate(
+        parameters: UpdateSignatures.getUpdateParametersType,
+        url?: string
+    ): Promise<UpdateSignatures.getUpdateResponseType> {
+        if (!url || url.startsWith(this.federationClient.baseURL)) {
+            return this.updateClient.getUpdate(parameters)
+        } else {
+            if (!isValidUrl(url, `/update`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, parameters, undefined, UpdateValidation.validateGetUpdateInput, UpdateValidation.validateGetUpdateOutput)
+        }
     }
 }
