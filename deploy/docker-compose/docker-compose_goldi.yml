@@ -110,6 +110,19 @@ services:
       - DOZZLE_USERNAME=$DOZZLE_USERNAME
       - DOZZLE_PASSWORD=$DOZZLE_PASSWORD
 
+# Hardware Support ################################################################################
+  vpn-server:
+    image: goldi2/vpn-server
+    volumes:
+      - "/lib/modules:/lib/modules"
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    network_mode: "host"
+    environment:
+      - PEERS=$VPN_PEERS
+      - KEY=$VPN_KEY
+
 volumes:
   conf:
   vhost:

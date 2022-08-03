@@ -38,3 +38,5 @@ jobs:
           DOMAIN: ${{ secrets.DOMAIN }}
           DOZZLE_USERNAME: ${{ secrets.DOZZLE_USERNAME }}
           DOZZLE_PASSWORD: ${{ secrets.DOZZLE_PASSWORD }}
+          VPN_PEERS: ${{ secrets.VPN_PEERS }}
+          VPN_KEY: ${{ secrets.VPN_KEY }}
