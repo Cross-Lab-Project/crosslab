@@ -26,7 +26,8 @@ import {
     ResponseData,
     RequestBodyData,
     OperationMethod,
-    RouteFunction
+    RouteFunction,
+    SecurityMethod
 } from "./types"
 import { TypedEmitter } from "tiny-typed-emitter"
 
@@ -844,9 +845,14 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
         if (!openAPIData.routeFunctions[basePath]) openAPIData.routeFunctions[basePath] = []
         
         let scopes: Array<string> = []
+        const security: SecurityMethod[] = []
         if (operationData.security) {
             const jwt = operationData.security.find(el => Object.keys(el).includes("JWT"))
             if (jwt) scopes = jwt["JWT"]
+            for (const sec of operationData.security) {
+                if (Object.keys(sec).includes("JWT")) security.push("jwt")
+                if (Object.keys(sec).includes("TuiAuth")) security.push("tui")
+            }
         }
         openAPIData.routeFunctions[basePath].push({
             name: formatMethodPath(operationData.path, operationData.method),
@@ -858,6 +864,7 @@ async function parseOpenAPIData(api: OpenAPIV3_1.Document): Promise<OpenAPIData>
             validateOutput: "validate" + formatMethodPath(operationData.path, operationData.method, true) + "Output",
             signature: formatMethodPath(operationData.path, operationData.method) + "Signature",
             scopes: scopes,
+            security: security.length > 0 ? security : "none",
             parameters: parameters ? {
                 cookie: parameters.filter(p => p.in == "cookie"),
                 header: parameters.filter(p => p.in == "header"),
@@ -1151,6 +1158,7 @@ function getDependencies(
 function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) {
     const ajv = new Ajv({ code: { source: true, esm: true }, verbose: true, inlineRefs: false })
     ajv.addFormat("jwt", /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
+    ajv.addFormat("mac_address", /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
     addFormats(ajv)
     let mapping: any = {}
     if (openAPIData.validationBlueprints) {
@@ -1190,6 +1198,8 @@ function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
                 validationDependencies.push(routeFunction.validateOutput)
             }
             fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("server/route.njk", {
+                // secured currently only indicates whether a route is secured by jwt
+                secured: openAPIData.routeFunctions[key].find(rf => rf.security !== "none" && rf.security.includes("jwt")) !== undefined,    // TODO: maybe find better solution
                 basePath: key,
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
@@ -1209,8 +1219,14 @@ function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
             const signatures = []
+            const security: SecurityMethod[] = []
             for (const routeFunction of openAPIData.routeFunctions[key]) {
                 signatures.push(routeFunction.name + "ResponseType")
+                if (Array.isArray(routeFunction.security)) {
+                    for (const sec of routeFunction.security) {
+                        if (!security.includes(sec)) security.push(sec)
+                    }
+                }
             }
             const validationDependencies = []
             for (const routeFunction of openAPIData.routeFunctions[key]) {
@@ -1220,6 +1236,7 @@ function generateRoutes(openAPIData: OpenAPIData, outPath: string) {
             fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render("client/api.njk", {
                 basePath: key,
                 signatures: signatures,
+                security: security,
                 functions: openAPIData.routeFunctions[key],
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : [],
                 validationDependencies: validationDependencies
@@ -1261,6 +1278,7 @@ function generateSignatures(openAPIData: OpenAPIData, outPath: string, isServer:
     if (openAPIData.routeFunctions) {
         for (const key in openAPIData.routeFunctions) {
             fs.writeFileSync(`${outPath}/${key}.ts`, nunjucks.render(isServer ? "server/signatures.njk": "client/signatures.njk", {
+                secured: openAPIData.routeFunctions[key].find(rf => rf.security !== "none" && rf.security.includes("jwt")) !== undefined,    // TODO: maybe find better solution
                 functions: openAPIData.routeFunctions[key],
                 basePath: key,
                 typeDependencies: dependencies.get(key) ? dependencies.get(key)!.typeDependencies : []
@@ -1282,23 +1300,28 @@ function generateIndex(openAPIData: OpenAPIData, outPath: string, isServer: bool
     } else {
         if (openAPIData.routeFunctions) {
             const routeFunctions: RouteFunction[] = []
+            const security: SecurityMethod[] = []
+            const securityBasePath: { [key: string]: SecurityMethod[] } = {}
             for (const key in openAPIData.routeFunctions) {
+                securityBasePath[key] = []
+                for (const routeFunction of openAPIData.routeFunctions[key]) {
+                    if (Array.isArray(routeFunction.security)) {
+                        for (const sec of routeFunction.security) {
+                            if (!security.includes(sec)) security.push(sec)
+                            if (!securityBasePath[key].includes(sec)) securityBasePath[key].push(sec)
+                        }
+                    }
+                }
                 routeFunctions.push(...openAPIData.routeFunctions[key])
             }
             fs.writeFileSync(`${outPath}/index.ts`, nunjucks.render("client/index.njk", {
                 functions: routeFunctions,
+                security: security,
+                securityBasePath: securityBasePath,
                 basePaths: Object.keys(openAPIData.routeFunctions)
             }))
         }
     }
-}
-
-/**
- * generates file fetch.ts which exports the generic fetch function
- * @param outPath path to write file to
- */
- function generateFetch(outPath: string) {
-    fs.writeFileSync(`${outPath}/fetch.ts`, nunjucks.render("client/fetch.njk"))
 }
 
 /**
@@ -1365,7 +1388,6 @@ async function generateClientProject(apiPath: string, options: { outPath: string
 
     await generateTypes(openAPIData, outPath, false)
     generateValidationFunctions(openAPIData, validationPath)
-    generateFetch(outPath)
     generateSignatures(openAPIData, signaturesPath, false)
     generateClient(openAPIData, apisPath)
     generateIndex(openAPIData, outPath, false)

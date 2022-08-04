@@ -3,10 +3,13 @@
 {%- macro generateSignature(function) -%}
 export type {{ function.signature }} = (
     {{- 
-    ("parameters: " + function.name + "ParametersType, " if function.parameters) +
-    ("body: " + function.name + "BodyType, " if function.body.content[0].schema.typeDeclaration or function.isProxyFunction)
+    ("parameters: " + function.name + "ParametersType" if function.parameters) +
+    (", " if function.parameters and (function.body.content[0].schema.typeDeclaration or function.isProxyFunction or (function.security != "none" and ("jwt" in function.security)))) +
+    ("body: " + function.name + "BodyType" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction) +
+    (", " if (function.body.content[0].schema.typeDeclaration or function.isProxyFunction) and function.security != "none" and ("jwt" in function.security)) +
+    ("user: UserType" if function.security != "none" and ("jwt" in function.security))
     -}} 
-    user: UserType) => Promise<{{ function.name }}ResponseType> | {{ function.name }}ResponseType
+    ) => Promise<{{ function.name }}ResponseType> | {{ function.name }}ResponseType
 {%- endmacro -%}
 
 /**
@@ -15,7 +18,7 @@ export type {{ function.signature }} = (
  * and run openapi-codegeneration to regenerate this file.
  */
 import {
-    UserType,
+    {{- "\n\tUserType," if secured }}
     {{ typeDependencies | join(",\n\t") }}
 } from "../types"
 {% for function in functions -%}

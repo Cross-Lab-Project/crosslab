@@ -51,7 +51,9 @@ export * as Validation{{ basePath | capitalize }} from "./validation/{{ basePath
 
 export class APIClient {
     protected _baseURL: string
-    protected _accessToken: string | undefined = undefined
+    {{ "protected _accessToken: string | undefined = undefined" if "jwt" in security }}
+    {{ "protected _username: string | undefined = undefined" if "tui" in security }}
+    {{ "protected _password: string | undefined = undefined" if "tui" in security }}
     
     {%- for basePath in basePaths %}
     protected {{ basePath }}Client: {{ basePath | capitalize }}Client
@@ -75,12 +77,36 @@ export class APIClient {
         return this._baseURL
     }
 
+    {% if "jwt" in security -%}
     public set accessToken(accessToken: string) {
         this._accessToken = accessToken
         {%- for basePath in basePaths %}
+        {%- if "jwt" in securityBasePath[basePath] %}
         this.{{ basePath }}Client.accessToken = accessToken
+        {%- endif %}
         {%- endfor %}
     } 
+    {% endif -%}
+
+    {% if "tui" in security -%}
+    public set username(username: string) {
+        this._username = username
+        {%- for basePath in basePaths %}
+        {%- if "tui" in securityBasePath[basePath] %}
+        this.{{ basePath }}Client.username = username
+        {%- endif %}
+        {%- endfor %}
+    }
+
+    public set password(password: string) {
+        this._password = password
+        {%- for basePath in basePaths %}
+        {%- if "tui" in securityBasePath[basePath] %}
+        this.{{ basePath }}Client.password = password
+        {%- endif %}
+        {%- endfor %}
+    }
+    {% endif -%}
 
 {%- for function in functions %}
 

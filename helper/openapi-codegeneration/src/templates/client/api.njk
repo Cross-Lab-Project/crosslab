@@ -14,20 +14,41 @@
         if (parameters.{{ parameter.name }}) query.push(["{{ parameter.name }}", "" + parameters.{{ parameter.name }}])
         {% endfor -%}
         {% endif -%}
-        return fetch<
-            {{- function.name }}ParametersType,
-            {{- function.name }}BodyType,
-            {{- function.name }}ResponseType>(
-            this._baseURL + `{{ function.path | replace(r/{(.*?)}/g, "$${parameters.$1}") }}`
-                {%- if function.parameters.query -%}
-                + (query ? "?" + new URLSearchParams(query) : "")
-                {%- endif -%},
-            "{{ function.method }}", 
-            {{ "parameters" if function.parameters else "undefined" }}, 
-            {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }}, 
-            {{ function.validateInput }}, 
-            {{ function.validateOutput }}
-        )
+        const url = this._baseURL + `{{ function.path | replace(r/{(.*?)}/g, "$${parameters.$1}") }}`
+            {%- if function.parameters.query -%}
+            + (query.length > 0 ? "?" + new URLSearchParams(query) : "")
+            {%- endif %}
+        {% if "jwt" in function.security -%}
+        const authorization = "Bearer " + this._accessToken
+        {% elif "tui" in function.security -%}
+        const authorization = "Basic " + Buffer.from(this._username + ":" + this._password).toString("base64")
+        {% else -%}
+        const authorization = undefined
+        {% endif -%}
+        if (!{{ function.validateInput }}({{ "parameters" if function.parameters else "undefined" }}, {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }})) {
+            throw new FetchError("Request validation failed")
+        }
+        {% if function.parameters.header and function.parameters.header.length > 0 -%}
+        const headers: { [key: string]: string } = {
+            {%- for header in function.parameters.header %}
+            {{ header.name }}: parameters.{{ header.name }}
+            {%- endfor %}
+        }
+        {% else -%}
+        const headers: { [key: string]: string } = {}
+        {% endif -%}
+        if (authorization && !headers["Authorization"]) headers["Authorization"] = authorization
+        if (!headers["Content-Type"]) headers["Content-Type"] = "application/json"
+        const raw_response = await fetch(url, {
+            method: "{{ function.method }}",
+            {{ "body: JSON.stringify(body)," if function.body.content[0].schema.typeDeclaration or function.isProxyFunction }}
+            headers: headers
+        })
+        const response = await parseResponse(raw_response)
+        if (!{{ function.validateOutput }}(response)) {
+            throw new FetchError("Response validation failed!")
+        }
+        return response as {{ function.name }}ResponseType
     }
 {%- endmacro -%}
 
@@ -36,21 +57,31 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import { fetch } from "../fetch"
+import fetch from "cross-fetch"
+import {
+    parseResponse,
+    FetchError
+} from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}
 } from "../validation/{{ basePath }}"
 import {
 {%- for function in functions %}
+    {% if function.parameters -%}
     {{ function.name + "ParametersType," }}
+    {% endif -%}
+    {% if function.body or function.isProxyFunction -%}
     {{ function.name + "BodyType," }}
+    {% endif -%}
     {{ function.name + "ResponseType," }}
 {%- endfor %}
 } from "../signatures/{{ basePath }}"
 
 export class {{ basePath | capitalize }}Client {
     protected _baseURL: string
-    protected _accessToken: string | undefined = undefined
+    {{ "protected _accessToken: string | undefined = undefined" if "jwt" in security }}
+    {{ "protected _username: string | undefined = undefined" if "tui" in security }}
+    {{ "protected _password: string | undefined = undefined" if "tui" in security }}
 
     constructor(baseURL: string) {
         this._baseURL = baseURL
@@ -64,9 +95,21 @@ export class {{ basePath | capitalize }}Client {
         return this._baseURL
     }
 
+    {% if "jwt" in security -%}
     public set accessToken(accessToken: string) {
         this._accessToken = accessToken
-    } 
+    }
+    {% endif -%}
+
+    {% if "tui" in security -%}
+    public set username(username: string) {
+        this._username = username
+    }
+
+    public set password(password: string) {
+        this._password = password
+    }
+    {% endif -%}
 {% for function in functions -%}
     {{ "\n" }}{{ generateFunction(function) }}
 {% endfor -%}

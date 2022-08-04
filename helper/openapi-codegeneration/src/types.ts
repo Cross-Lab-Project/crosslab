@@ -114,6 +114,8 @@ export interface ValidationBlueprint {
     schemaLocation: string
 }
 
+export type SecurityMethod = "jwt" | "tui"
+
 export interface RouteFunction {
     name: string
     method: OperationMethod
@@ -124,6 +126,7 @@ export interface RouteFunction {
     validateOutput: string
     signature: string
     scopes: Array<string>
+    security: SecurityMethod[] | "none"
     parameters?: {
         cookie?: Array<ParameterData>
         query?: Array<ParameterData>

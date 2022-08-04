@@ -3,16 +3,18 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import express from "express"
+import { Request } from "express"
 
-export type TypedRequest<P,B,Q> = express.Request<P, {}, B, Q, {}>
+export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
 export type UserType = {
-    username: string
+    username: string,
+    role: string,
+    scopes: string[]
 }
 
 export type initServiceOptions = {
-    JWTVerify: (jwt: string | undefined, endpoint_scopes: Array<string>) => unknown    
+    JWTVerify: (jwt: string | undefined, endpoint_scopes: Array<string>) => Promise<UserType> | UserType    
 }
 
 export interface ResponseData {
@@ -21,6 +23,18 @@ export interface ResponseData {
         [key: string]: string | undefined
     },
     body?: any
+}
+
+export function extract_jwt_from_request<P,B,Q>(req: TypedRequest<P,B,Q>, jwtExtractionRegEx: RegExp = /^Bearer (.*)$/): string {
+    const authorization_header = req.header("Authorization")
+    if (authorization_header === undefined) {
+        throw new Error("Authorization Header is not set")
+    }
+    const bearer_token_result = jwtExtractionRegEx.exec(authorization_header);
+    if (bearer_token_result === null || bearer_token_result.length != 2) {
+        throw new Error("the access token in the Authorization Header is malformed")
+    }
+    return bearer_token_result[1]
 }
 
 {{ pregeneratedTypes | safe }}

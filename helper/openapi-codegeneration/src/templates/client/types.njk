@@ -5,7 +5,9 @@
  */
 
 export type UserType = {
-    username: string
+    username: string,
+    role: string,
+    scopes: string[]
 }
 
 export type HttpMethods = "get" | "post" | "patch" | "head" | "options" | "trace" | "delete" | "put"
@@ -25,6 +27,17 @@ export interface ResponseData {
         [key: string]: string | undefined
     },
     body?: any
+}
+
+export async function parseResponse(response: Response): Promise<ResponseData> {
+    let text = null
+    try {
+        text = await response.text()
+        const json = JSON.parse(text)
+        return { status: response.status, body: json }
+    } catch {
+        return { status: response.status, body: text }
+    }
 }
 
 {{ pregeneratedTypes | safe }}
