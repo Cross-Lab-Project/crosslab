@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/openapi-codegen",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "A generator for typescript code from an openapi-specification",
   "repository": {
     "type": "git",
