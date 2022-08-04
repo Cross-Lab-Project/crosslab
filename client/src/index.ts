@@ -42,9 +42,9 @@ import {
 
 import {
     APIClient as UpdateClient,
-    SignaturesUpdate as UpdateSignatures,
+    SignaturesUpdates as UpdateSignatures,
     Types as UpdateTypes,
-    ValidationUpdate as UpdateValidation
+    ValidationUpdates as UpdateValidation
 } from "./generated/update"
 
 export {
@@ -59,6 +59,7 @@ import {
     ResponseData
 } from "./generated/booking/types"
 import { URLSearchParams } from "url"
+import { getAuthResponseType } from "./generated/auth/signatures/auth"
 
 export {
     BookingTypes,
@@ -128,11 +129,18 @@ export class APIClient {
 
     set accessToken(accessToken: string) {
         this.authClient.accessToken = accessToken
-        this.bookingClient.accessToken = accessToken
         this.deviceClient.accessToken = accessToken
         this.experimentClient.accessToken = accessToken
         this.federationClient.accessToken = accessToken
         this.updateClient.accessToken = accessToken
+    }
+
+    set username(username: string) {
+        this.authClient.username = username
+    }
+
+    set password(password: string) {
+        this.authClient.password = password
     }
 
     // Auth Service authentication API calls
@@ -144,10 +152,14 @@ export class APIClient {
     ): Promise<AuthSignatures.getAuthResponseType> {
         const parameters: AuthSignatures.getAuthParametersType = { Authorization: Buffer.from(username + ":" + password).toString("base64") }
         if (!url || url.startsWith(this.authClient.baseURL)) {
-            return this.authClient.getAuth(parameters)
+            const response = await this.authClient.getAuth(parameters)
+            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization : "") : ""
+            return response
         } else {
             if (!isValidUrl(url, `/auth`)) throw new FetchError("URL is not valid for this operation")
-            return this.proxy("get", url, parameters, undefined, AuthValidation.validateGetAuthInput, AuthValidation.validateGetAuthOutput)
+            const response = await this.proxy("get", url, parameters, undefined, AuthValidation.validateGetAuthInput, AuthValidation.validateGetAuthOutput) as getAuthResponseType
+            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization : "") : ""
+            return response
         }
     }
 
@@ -762,15 +774,61 @@ export class APIClient {
 
     // Update Service API calls
 
-	public async getUpdate(
-        parameters: UpdateSignatures.getUpdateParametersType,
-        url?: string
-    ): Promise<UpdateSignatures.getUpdateResponseType> {
+	public async getUpdates(url?: string): Promise<UpdateSignatures.getUpdatesResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
-            return this.updateClient.getUpdate(parameters)
+            return this.updateClient.getUpdates()
         } else {
-            if (!isValidUrl(url, `/update`)) throw new FetchError("URL is not valid for this operation")
-            return this.proxy("get", url, parameters, undefined, UpdateValidation.validateGetUpdateInput, UpdateValidation.validateGetUpdateOutput)
+            if (!isValidUrl(url, `/updates`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, undefined, undefined, UpdateValidation.validateGetUpdatesInput, UpdateValidation.validateGetUpdatesOutput)
+        }
+    }
+
+	public async postUpdates(
+        body: UpdateSignatures.postUpdatesBodyType,
+        url?: string
+    ): Promise<UpdateSignatures.postUpdatesResponseType> {
+        if (!url || url.startsWith(this.federationClient.baseURL)) {
+            return this.updateClient.postUpdates(body)
+        } else {
+            if (!isValidUrl(url, `/updates`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("post", url, undefined, body, UpdateValidation.validatePostUpdatesInput, UpdateValidation.validatePostUpdatesOutput)
+        }
+    }
+
+	public async getUpdatesByMacAddress(
+        parameters: UpdateSignatures.getUpdatesByMacAddressParametersType,
+        url?: string
+    ): Promise<UpdateSignatures.getUpdatesByMacAddressResponseType> {
+        if (!url || url.startsWith(this.federationClient.baseURL)) {
+            return this.updateClient.getUpdatesByMacAddress(parameters)
+        } else {
+            if (!isValidUrl(url, `/updates/${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, parameters, undefined, UpdateValidation.validateGetUpdatesByMacAddressInput, UpdateValidation.validateGetUpdatesByMacAddressOutput)
+        }
+    }
+
+	public async deleteUpdatesByMacAddress(
+        parameters: UpdateSignatures.deleteUpdatesByMacAddressParametersType,
+        url?: string
+    ): Promise<UpdateSignatures.deleteUpdatesByMacAddressResponseType> {
+        if (!url || url.startsWith(this.federationClient.baseURL)) {
+            return this.updateClient.deleteUpdatesByMacAddress(parameters)
+        } else {
+            if (!isValidUrl(url, `/updates//${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("delete", url, parameters, undefined, UpdateValidation.validateDeleteUpdatesByMacAddressInput, UpdateValidation.validateDeleteUpdatesByMacAddressOutput)
+        }
+    }
+
+	public async patchUpdatesByMacAddress(
+        parameters: UpdateSignatures.patchUpdatesByMacAddressParametersType, 
+        body: UpdateSignatures.patchUpdatesByMacAddressBodyType,
+        url?: string
+    ): Promise<UpdateSignatures.patchUpdatesByMacAddressResponseType> {
+        if (!url || url.startsWith(this.federationClient.baseURL)) {
+            return this.updateClient.patchUpdatesByMacAddress(parameters, body)
+        } else {
+            if (!isValidUrl(url, `/updates/${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("patch", url, parameters, body, UpdateValidation.validatePatchUpdatesByMacAddressInput, UpdateValidation.validatePatchUpdatesByMacAddressOutput)
         }
     }
 }

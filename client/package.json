@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "API-Client for all Crosslab APIs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,7 +18,8 @@
     "build-generate": "npm run build-generate-auth && npm run build-generate-booking && npm run build-generate-device && npm run build-generate-experiment && npm run build-generate-federation && npm run build-generate-update",
     "build-compile": "tsc",
     "build": "npm run build-generate && npm run build-compile",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "node dist/test/test.js"
   },
   "files": [
     "dist"
@@ -26,7 +27,7 @@
   "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
-    "@cross-lab-project/openapi-codegen": "^0.0.12",
+    "@cross-lab-project/openapi-codegen": "^0.0.13",
     "@types/node": "^18.0.3",
     "typescript": "^4.7.4"
   },
