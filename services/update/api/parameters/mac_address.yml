@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: path
+name: mac_address
+description: MAC-Address of the device
+required: true
+schema:
+  type: string

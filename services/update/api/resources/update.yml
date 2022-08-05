@@ -1,0 +1,63 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:list
+  summary: Get update for device
+  parameters:
+    - $ref: "../parameters/mac_address.yml"
+    - $ref: "../parameters/current_version.yml"
+  responses:
+    200:
+      description: Device is already up-to-date
+    301:
+      description: New version is available
+      headers:
+        Location:
+          required: true
+          schema:
+            type: string
+            format: uri
+    404:
+      description: Requested update could not be found
+patch:
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:edit
+  summary: Edit update information
+  parameters:
+    - $ref: "../parameters/mac_address.yml"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: "../content/update_information.yml"
+  responses:
+    200:
+      description: Update information edited successfully
+      content:
+        application/json:
+          $ref: "../content/update_information.yml"
+    404:
+      description: Requested update could not be found
+delete:
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:create
+  summary: Delete update information
+  parameters:
+    - $ref: "../parameters/mac_address.yml"
+  responses:
+    204:
+      description: Update information was deleted successfully
+    404:
+      description: Requested update could not be found

@@ -1,0 +1,246 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Simple Update Service (internal)",
+    "description": "This is the OpenAPI description for a simple update server.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Update API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "update_information": {
+        "title": "UpdateInformation",
+        "type": "object",
+        "properties": {
+          "mac_address": {
+            "type": "string",
+            "format": "mac_address"
+          },
+          "newest_version": {
+            "type": "string"
+          },
+          "newest_version_link": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "mac_address",
+          "newest_version",
+          "newest_version_link"
+        ]
+      }
+    },
+    "parameters": {
+      "mac_address": {
+        "in": "path",
+        "name": "mac_address",
+        "description": "MAC-Address of the device",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "current_version": {
+        "in": "query",
+        "name": "current_version",
+        "description": "Current firmware version of the device",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/updates": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:list"
+            ]
+          }
+        ],
+        "summary": "Get update information for all devices",
+        "responses": {
+          "200": {
+            "description": "JSON representation of all update information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/update_information"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:create"
+            ]
+          }
+        ],
+        "summary": "Create new update information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/update_information"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "JSON representation of the new update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/update_information"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/updates/{mac_address}": {
+      "get": {
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:list"
+            ]
+          }
+        ],
+        "summary": "Get update for device",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/mac_address"
+          },
+          {
+            "$ref": "#/components/parameters/current_version"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device is already up-to-date"
+          },
+          "301": {
+            "description": "New version is available",
+            "headers": {
+              "Location": {
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested update could not be found"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:edit"
+            ]
+          }
+        ],
+        "summary": "Edit update information",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/mac_address"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/update_information"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update information edited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/update_information"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested update could not be found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:create"
+            ]
+          }
+        ],
+        "summary": "Delete update information",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/mac_address"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Update information was deleted successfully"
+          },
+          "404": {
+            "description": "Requested update could not be found"
+          }
+        }
+      }
+    }
+  }
+}

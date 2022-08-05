@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: UpdateInformation
+type: object
+properties: 
+  mac_address: 
+    type: string
+    format: mac_address
+  newest_version:
+    type: string
+  newest_version_link:
+    type: string
+    format: uri
+required: 
+  - mac_address
+  - newest_version
+  - newest_version_link

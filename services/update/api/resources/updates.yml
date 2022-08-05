@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:list
+  summary: Get update information for all devices
+  responses:
+    200:
+      description: JSON representation of all update information
+      content:
+        application/json:
+          $ref: "../content/update_information_list.yml"
+post:
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:create
+  summary: Create new update information
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: "../content/update_information.yml"
+  responses:
+    201:
+      description: JSON representation of the new update
+      content:
+        application/json:
+          $ref: "../content/update_information.yml"

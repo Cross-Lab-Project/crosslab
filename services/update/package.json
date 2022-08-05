@@ -1,0 +1,40 @@
+{
+    "name": "@crosslab/service-update",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "openapi-lint": "npx @redocly/openapi-cli lint ./api/openapi.yml",
+        "openapi-bundle": "npx @redocly/openapi-cli bundle ./api/openapi.yml --output dist/openapi.json",
+        "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+        "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
+        "build-generate-code": "npx openapi-codegen server dist/openapi.json",
+        "build-compile": "tsc",
+        "build": "npm run build-generate-code && npm run build-compile",
+        "start": "node dist/index.js"
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "@cross-lab-project/openapi-codegen": "^0.0.13",
+        "@types/body-parser": "^1.19.2",
+        "@types/express": "^4.17.13",
+        "@types/ldapjs": "^2.2.2",
+        "@types/node": "^17.0.41",
+        "@types/node-fetch": "^2.6.1",
+        "@types/ws": "^8.5.3",
+        "typescript": "^4.7.3"
+    },
+    "dependencies": {
+        "ajv-formats": "^2.1.1",
+        "body-parser": "^1.20.0",
+        "express": "^4.18.1",
+        "jose": "^4.8.3",
+        "ldapjs": "^2.3.3",
+        "mysql": "^2.18.1",
+        "node-fetch": "^2.6.7",
+        "sqlite3": "^5.0.8",
+        "typeorm": "^0.3.6",
+        "ws": "^8.8.0"
+    }
+}
