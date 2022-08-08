@@ -42,6 +42,8 @@ patch:
           $ref: "../content/update_information.yml"
     404:
       description: Requested update could not be found
+    400:
+      description: Request is not valid
 delete:
   tags:
     - update

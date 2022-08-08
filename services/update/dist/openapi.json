@@ -205,6 +205,9 @@
               }
             }
           },
+          "400": {
+            "description": "Request is not valid"
+          },
           "404": {
             "description": "Requested update could not be found"
           }

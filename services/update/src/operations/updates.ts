@@ -18,6 +18,7 @@ function formatUpdateInformation(updateInformation: UpdateInformationModel): Upd
 }
 
 function writeUpdateInformation(updateInformationModel: UpdateInformationModel, updateInformation: UpdateInformation) {
+    updateInformationModel.device_id = updateInformation.device_id
     updateInformationModel.newest_version = updateInformation.newest_version
     updateInformationModel.newest_version_link = updateInformation.newest_version_link
 }
@@ -93,6 +94,12 @@ export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (pa
     if (!updateInformation) {
         return {
             status: 404
+        }
+    }
+
+    if (updateInformation.device_id != body.device_id) {
+        return {
+            status: 400
         }
     }
     
