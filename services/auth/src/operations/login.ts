@@ -48,12 +48,12 @@ export async function loginTui(username: string, password: string): Promise<User
         user = userRepository.create()
         user.username = "tui:" + username
         user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
-        // TODO: make sure that token is truly unique
-        user.token = randomBytes(16).toString("hex")
-        user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
-
-        await userRepository.save(user)
     }
+    // TODO: make sure that token is truly unique
+    user.token = randomBytes(16).toString("hex")
+    user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
+
+    await userRepository.save(user)
     return user
 }
 
