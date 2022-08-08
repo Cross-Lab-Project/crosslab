@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script type="module" src="client/index.js"></script>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                  <th>Device ID</th>
+                  <th>Newest Version</th>
+                  <th>Newest Version Link</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><input id="new-id"/></td>
+                  <td><input id="new-version"/></td>
+                  <td><input id="new-link"/></td>
+                  <td><button onclick="add()">add</button></td>
+                </tr>
+              </tfoot>
+        </table>
+        <template id="rowTemplate">
+            <tr>
+                <td><input /></td>
+                <td><input /></td>
+                <td><input /></td>
+              <td><button>change</button><button>delete</button></td>
+            </tr>
+        </template>
+
+        <script>
+            function load(){
+                var tb = document.getElementsByTagName("tbody")[0];
+                tb.innerHTML="";
+                createRow("testID", "1.0.0", "http://www.google.com");
+                createRow("testID2", "3.0.0", "http://www.google.com3");
+            }
+
+            function createRow(id, version, link) {
+                var tb = document.getElementsByTagName("tbody")[0];
+                var rowTemplate = document.querySelector('#rowTemplate').content;
+                var row = document.importNode(rowTemplate, true);
+                var inputs = row.querySelectorAll('input');
+                inputs[0].value=id;
+                inputs[1].value=version;
+                inputs[2].value=link;
+                [changeButton, deleteButton] = row.querySelectorAll('button');
+                changeButton.onclick=()=>{
+                    var newId=inputs[0].value;
+                    var newVersion=inputs[1].value;
+                    var newLink=inputs[2].value;
+                    alert("change "+id +" -> " + newId + " " + newVersion + " " + newLink );
+                }
+                deleteButton.onclick=()=>{
+                    alert('delete '+id);
+                    load()
+                }
+                tb.appendChild(row);
+            }
+
+            function add(){
+                var newId=document.querySelector('#new-id').value;
+                var newVersion=document.querySelector('#new-version').value;
+                var newLink=document.querySelector('#new-link').value;
+                alert("new "+ newId + " " + newVersion + " " + newLink );
+            }
+
+            load();
+        </script>
+    </body>
+</html>
