@@ -149,7 +149,7 @@
           "200": {
             "description": "Device is already up-to-date"
           },
-          "301": {
+          "303": {
             "description": "New version is available",
             "headers": {
               "Location": {

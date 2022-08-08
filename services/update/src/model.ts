@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryColumn } from "typeorm";
 @Entity()
 export class UpdateInformationModel {
     @PrimaryColumn()
-    mac_address!: string
+    device_id!: string
     @Column()
     newest_version!: string
     @Column()

@@ -1,9 +1,9 @@
 import { AppDataSource } from "../data_source"
 import {
     getUpdatesSignature,
-    deleteUpdatesByMacAddressSignature,
-    getUpdatesByMacAddressSignature,
-    patchUpdatesByMacAddressSignature,
+    deleteUpdatesByDeviceIdSignature,
+    getUpdatesByDeviceIdSignature,
+    patchUpdatesByDeviceIdSignature,
     postUpdatesSignature
 } from "../generated/signatures/updates"
 import { UpdateInformation } from "../generated/types"
@@ -11,14 +11,14 @@ import { UpdateInformationModel } from "../model"
 
 function formatUpdateInformation(updateInformation: UpdateInformationModel): UpdateInformation {
     return {
-        mac_address: updateInformation.mac_address,
+        device_id: updateInformation.device_id,
         newest_version: updateInformation.newest_version,
         newest_version_link: updateInformation.newest_version_link
     }
 }
 
 function writeUpdateInformation(updateInformationModel: UpdateInformationModel, updateInformation: UpdateInformation) {
-    updateInformationModel.mac_address = updateInformation.mac_address
+    updateInformationModel.device_id = updateInformation.device_id
     updateInformationModel.newest_version = updateInformation.newest_version
     updateInformationModel.newest_version_link = updateInformation.newest_version_link
 }
@@ -46,9 +46,9 @@ export const postUpdates: postUpdatesSignature = async (body, _user) => {
     }
 }
 
-export const getUpdatesByMacAddress: getUpdatesByMacAddressSignature = async (parameters, _user) => {
+export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parameters) => {
     const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ mac_address: parameters.mac_address })
+    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
 
     if (!updateInformation) {
         return {
@@ -58,7 +58,7 @@ export const getUpdatesByMacAddress: getUpdatesByMacAddressSignature = async (pa
 
     if (parameters.current_version !== updateInformation.newest_version) {
         return {
-            status: 301,
+            status: 303,
             headers: {
                 Location: updateInformation.newest_version_link
             }
@@ -70,9 +70,9 @@ export const getUpdatesByMacAddress: getUpdatesByMacAddressSignature = async (pa
     }
 }
 
-export const deleteUpdatesByMacAddress: deleteUpdatesByMacAddressSignature = async (parameters, _user) => {
+export const deleteUpdatesByDeviceId: deleteUpdatesByDeviceIdSignature = async (parameters, _user) => {
     const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ mac_address: parameters.mac_address })
+    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
     
     if (!updateInformation) {
         return {
@@ -87,9 +87,9 @@ export const deleteUpdatesByMacAddress: deleteUpdatesByMacAddressSignature = asy
     }
 }
 
-export const patchUpdatesByMacAddress: patchUpdatesByMacAddressSignature = async (parameters, body, _user) => {
+export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (parameters, body, _user) => {
     const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ mac_address: parameters.mac_address })
+    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
     
     if (!updateInformation) {
         return {
