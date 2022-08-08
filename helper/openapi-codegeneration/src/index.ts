@@ -1157,7 +1157,7 @@ function getDependencies(
  */
 function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) {
     const ajv = new Ajv({ code: { source: true, esm: true }, verbose: true, inlineRefs: false })
-    ajv.addFormat("jwt", /^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
+    ajv.addFormat("jwt", /^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
     ajv.addFormat("mac_address", /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
     addFormats(ajv)
     let mapping: any = {}
