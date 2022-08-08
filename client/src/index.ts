@@ -136,14 +136,6 @@ export class APIClient {
         this.updateClient.accessToken = accessToken
     }
 
-    set username(username: string) {
-        this.authClient.username = username
-    }
-
-    set password(password: string) {
-        this.authClient.password = password
-    }
-
     // Auth Service login API calls
 
     public async postLogin(
