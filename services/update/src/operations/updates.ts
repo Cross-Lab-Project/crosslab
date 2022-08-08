@@ -20,7 +20,7 @@ function formatUpdateInformation(updateInformation: UpdateInformationModel): Upd
 function writeUpdateInformation(updateInformationModel: UpdateInformationModel, updateInformation: UpdateInformation) {
     updateInformationModel.mac_address = updateInformation.mac_address
     updateInformationModel.newest_version = updateInformation.newest_version
-    updateInformationModel.newest_version_link = updateInformationModel.newest_version_link
+    updateInformationModel.newest_version_link = updateInformation.newest_version_link
 }
 
 export const getUpdates: getUpdatesSignature = async (_user) => {
