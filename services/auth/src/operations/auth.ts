@@ -34,9 +34,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         },
         relations: {
             currentRole: {
-                name: true,
-                scopes: true,
-                users: true
+                scopes: true
             }
         }
     })
