@@ -786,40 +786,40 @@ export class APIClient {
         }
     }
 
-	public async getUpdatesByMacAddress(
-        parameters: UpdateSignatures.getUpdatesByMacAddressParametersType,
+	public async getUpdatesByDeviceId(
+        parameters: UpdateSignatures.getUpdatesByDeviceIdParametersType,
         url?: string
-    ): Promise<UpdateSignatures.getUpdatesByMacAddressResponseType> {
+    ): Promise<UpdateSignatures.getUpdatesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
-            return this.updateClient.getUpdatesByMacAddress(parameters)
+            return this.updateClient.getUpdatesByDeviceId(parameters)
         } else {
-            if (!isValidUrl(url, `/updates/${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
-            return this.proxy("get", url, parameters, undefined, UpdateValidation.validateGetUpdatesByMacAddressInput, UpdateValidation.validateGetUpdatesByMacAddressOutput)
+            if (!isValidUrl(url, `/updates/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("get", url, parameters, undefined, UpdateValidation.validateGetUpdatesByDeviceIdInput, UpdateValidation.validateGetUpdatesByDeviceIdOutput)
         }
     }
 
-	public async deleteUpdatesByMacAddress(
-        parameters: UpdateSignatures.deleteUpdatesByMacAddressParametersType,
+	public async deleteUpdatesByDeviceId(
+        parameters: UpdateSignatures.deleteUpdatesByDeviceIdParametersType,
         url?: string
-    ): Promise<UpdateSignatures.deleteUpdatesByMacAddressResponseType> {
+    ): Promise<UpdateSignatures.deleteUpdatesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
-            return this.updateClient.deleteUpdatesByMacAddress(parameters)
+            return this.updateClient.deleteUpdatesByDeviceId(parameters)
         } else {
-            if (!isValidUrl(url, `/updates//${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
-            return this.proxy("delete", url, parameters, undefined, UpdateValidation.validateDeleteUpdatesByMacAddressInput, UpdateValidation.validateDeleteUpdatesByMacAddressOutput)
+            if (!isValidUrl(url, `/updates//${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("delete", url, parameters, undefined, UpdateValidation.validateDeleteUpdatesByDeviceIdInput, UpdateValidation.validateDeleteUpdatesByDeviceIdOutput)
         }
     }
 
-	public async patchUpdatesByMacAddress(
-        parameters: UpdateSignatures.patchUpdatesByMacAddressParametersType, 
-        body: UpdateSignatures.patchUpdatesByMacAddressBodyType,
+	public async patchUpdatesByDeviceId(
+        parameters: UpdateSignatures.patchUpdatesByDeviceIdParametersType, 
+        body: UpdateSignatures.patchUpdatesByDeviceIdBodyType,
         url?: string
-    ): Promise<UpdateSignatures.patchUpdatesByMacAddressResponseType> {
+    ): Promise<UpdateSignatures.patchUpdatesByDeviceIdResponseType> {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
-            return this.updateClient.patchUpdatesByMacAddress(parameters, body)
+            return this.updateClient.patchUpdatesByDeviceId(parameters, body)
         } else {
-            if (!isValidUrl(url, `/updates/${parameters.mac_address}`)) throw new FetchError("URL is not valid for this operation")
-            return this.proxy("patch", url, parameters, body, UpdateValidation.validatePatchUpdatesByMacAddressInput, UpdateValidation.validatePatchUpdatesByMacAddressOutput)
+            if (!isValidUrl(url, `/updates/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("patch", url, parameters, body, UpdateValidation.validatePatchUpdatesByDeviceIdInput, UpdateValidation.validatePatchUpdatesByDeviceIdOutput)
         }
     }
 }

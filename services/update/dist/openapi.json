@@ -24,9 +24,8 @@
         "title": "UpdateInformation",
         "type": "object",
         "properties": {
-          "mac_address": {
-            "type": "string",
-            "format": "mac_address"
+          "device_id": {
+            "type": "string"
           },
           "newest_version": {
             "type": "string"
@@ -37,17 +36,17 @@
           }
         },
         "required": [
-          "mac_address",
+          "device_id",
           "newest_version",
           "newest_version_link"
         ]
       }
     },
     "parameters": {
-      "mac_address": {
+      "device_id": {
         "in": "path",
-        "name": "mac_address",
-        "description": "MAC-Address of the device",
+        "name": "device_id",
+        "description": "ID of the device",
         "required": true,
         "schema": {
           "type": "string"
@@ -132,23 +131,15 @@
         }
       }
     },
-    "/updates/{mac_address}": {
+    "/updates/{device_id}": {
       "get": {
         "tags": [
           "update"
         ],
-        "security": [
-          {
-            "JWT": [
-              "update",
-              "update:list"
-            ]
-          }
-        ],
         "summary": "Get update for device",
         "parameters": [
           {
-            "$ref": "#/components/parameters/mac_address"
+            "$ref": "#/components/parameters/device_id"
           },
           {
             "$ref": "#/components/parameters/current_version"
@@ -190,7 +181,7 @@
         "summary": "Edit update information",
         "parameters": [
           {
-            "$ref": "#/components/parameters/mac_address"
+            "$ref": "#/components/parameters/device_id"
           }
         ],
         "requestBody": {
@@ -234,7 +225,7 @@
         "summary": "Delete update information",
         "parameters": [
           {
-            "$ref": "#/components/parameters/mac_address"
+            "$ref": "#/components/parameters/device_id"
           }
         ],
         "responses": {

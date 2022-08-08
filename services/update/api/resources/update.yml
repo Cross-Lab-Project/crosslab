@@ -2,13 +2,9 @@
 get:
   tags:
     - update
-  security:
-    - JWT:
-      - update
-      - update:list
   summary: Get update for device
   parameters:
-    - $ref: "../parameters/mac_address.yml"
+    - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/current_version.yml"
   responses:
     200:
@@ -32,7 +28,7 @@ patch:
       - update:edit
   summary: Edit update information
   parameters:
-    - $ref: "../parameters/mac_address.yml"
+    - $ref: "../parameters/device_id.yml"
   requestBody:
     required: true
     content:
@@ -55,7 +51,7 @@ delete:
       - update:create
   summary: Delete update information
   parameters:
-    - $ref: "../parameters/mac_address.yml"
+    - $ref: "../parameters/device_id.yml"
   responses:
     204:
       description: Update information was deleted successfully

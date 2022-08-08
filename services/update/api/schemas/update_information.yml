@@ -2,15 +2,14 @@
 title: UpdateInformation
 type: object
 properties: 
-  mac_address: 
+  device_id: 
     type: string
-    format: mac_address
   newest_version:
     type: string
   newest_version_link:
     type: string
     format: uri
 required: 
-  - mac_address
+  - device_id
   - newest_version
   - newest_version_link

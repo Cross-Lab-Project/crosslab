@@ -22,7 +22,7 @@ components:
 paths:
   /updates:
     $ref: "./resources/updates.yml"
-  /updates/{mac_address}:
+  /updates/{device_id}:
     $ref: "./resources/update.yml"          
 
       

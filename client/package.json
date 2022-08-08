@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "API-Client for all Crosslab APIs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -27,7 +27,7 @@
   "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
-    "@cross-lab-project/openapi-codegen": "^0.0.13",
+    "@cross-lab-project/openapi-codegen": "^0.0.16",
     "@types/node": "^18.0.3",
     "typescript": "^4.7.4"
   },
