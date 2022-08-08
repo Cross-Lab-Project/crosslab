@@ -48,15 +48,7 @@ export async function loginTui(username: string, password: string): Promise<User
         user = userRepository.create()
         user.username = "tui:" + username
         user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
-        // let unused = false
-        // while (!unused) {
-        //     const token = randomBytes(16).toString("hex")
-        //     const otherUser = userRepository.findOneBy({ token: token })
-        //     if (!otherUser) {
-        //         user.token = token
-        //         unused = true
-        //     }
-        // }
+        // TODO: make sure that token is truly unique
         user.token = randomBytes(16).toString("hex")
         user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
 

@@ -5,6 +5,11 @@
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
     "version": "0.0.1"
   },
+  "servers": [
+    {
+      "url": "https://api.goldi-labs.de/"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "TuiAuth": {
@@ -34,6 +39,14 @@
         "required": [
           "username",
           "password"
+        ]
+      },
+      "auth_method": {
+        "title": "AuthMethod",
+        "type": "string",
+        "enum": [
+          "tui",
+          "local"
         ]
       },
       "role": {
@@ -100,7 +113,7 @@
         ],
         "security": [
           {
-            "TuiAuth": []
+            "AccessToken": []
           }
         ],
         "operationId": "auth",
@@ -146,7 +159,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/credentials"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/credentials"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "method": {
+                        "$ref": "#/components/schemas/auth_method"
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
