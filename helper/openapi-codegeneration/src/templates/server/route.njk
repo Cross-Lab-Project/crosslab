@@ -19,8 +19,8 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- endif -%}>, res) => {
     {% if "jwt" in function.security -%}
     let user: UserType
-    const jwt = extract_jwt_from_request(req)
     try {
+        const jwt = extract_jwt_from_request(req)
         user = await options.JWTVerify(jwt, ["{{ function.scopes | join("\",\"") | safe }}"])
     } catch(err) {
         throw("JWT Verification Error!")
