@@ -45,7 +45,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         }
     }
 
-    const activeKeys = await activeKeyRepository.find()
+    const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
 
     if (activeKeys.length != 1) {
         throw new Error("Too many active keys")
@@ -53,7 +53,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
     const activeKey = activeKeys[0]
 
-    console.log(JSON.stringify(user, null, 4))
     const jwt = await sign<UserType>({ username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
 
     user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()

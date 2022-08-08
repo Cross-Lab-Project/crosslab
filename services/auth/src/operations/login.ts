@@ -56,7 +56,6 @@ export async function loginTui(username: string, password: string): Promise<User
     user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
 
     await userRepository.save(user)
-    console.log(JSON.stringify(user, null, 4))
     return user
 }
 
