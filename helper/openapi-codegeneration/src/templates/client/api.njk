@@ -26,6 +26,8 @@
         const authorization = undefined
         {% endif -%}
         if (!{{ function.validateInput }}({{ "parameters" if function.parameters else "undefined" }}, {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }})) {
+            const errorMsg = "Request validation failed"
+            console.error(errorMsg, ({{ function.validateInput }} as any).errors)
             throw new FetchError("Request validation failed")
         }
         {% if function.parameters.header and function.parameters.header.length > 0 -%}
@@ -46,6 +48,8 @@
         })
         const response = await parseResponse(raw_response)
         if (!{{ function.validateOutput }}(response)) {
+            const errorMsg = "Response validation failed"
+            console.error(errorMsg, ({{ function.validateOutput }} as any).errors)
             throw new FetchError("Response validation failed!")
         }
         return response as {{ function.name }}ResponseType
