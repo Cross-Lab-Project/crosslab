@@ -17,28 +17,18 @@ async function sign<P extends JWTPayload>(payload: P, key: KeyModel, expirationT
 }
 
 export const getAuth: getAuthSignature = async (parameters) => {
+    const HOUR = 60 * 60 * 1000
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
     const userRepository = AppDataSource.getRepository(UserModel)
-    const authorizationString = Buffer.from(parameters.Authorization.split(" ")[1], "base64").toString()
+    const token = parameters.Authorization.split(" ")[1]
 
-    if (authorizationString.length !== 2) {
+    if (!token) {
         return {
             status: 200
         }
     }
 
-    const authorizationData = authorizationString[1].split(":")
-
-    if (authorizationData.length !== 2) {
-        return {
-            status: 200
-        }
-    }
-
-    const username = authorizationData[0]
-    const token = authorizationData[1]
-
-    const user = await  userRepository.findOneBy({ username: "tui:" + username })
+    const user = await  userRepository.findOneBy({ token: token })
 
     if (!user || user.token !== token || new Date(user.tokenExpiresOn).getTime() < Date.now() ) {
         return {
@@ -55,6 +45,9 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const activeKey = activeKeys[0]
 
     const jwt = await sign<UserType>({ username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
+    
+    user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
+    userRepository.save(user)
 
     return {
         status: 200,

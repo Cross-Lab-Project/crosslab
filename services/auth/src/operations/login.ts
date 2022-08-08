@@ -48,7 +48,12 @@ export async function loginTui(username: string, password: string): Promise<User
         user = userRepository.create()
         user.username = "tui:" + username
         user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
-        user.token = randomBytes(16).toString("hex")
+        let unused = false
+        while (!unused) {
+            user.token = randomBytes(16).toString("hex")
+            const otherUser = userRepository.findOneBy({ token: user.token })
+            if (!otherUser) unused = true
+        }
         user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
 
         await userRepository.save(user)
@@ -61,8 +66,6 @@ export const postLogin: postLoginSignature = async (body) => {
     if (body.method === "tui") {
         user = await loginTui(body.username, body.password)
     }
-
-    console.log(user)
 
     if (!user) {
         return {

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class ScopeModel {
@@ -29,6 +29,7 @@ export class UserModel {
     @ManyToOne(() => RoleModel)
     currentRole!: RoleModel
     @Column()
+    @Index({ unique: true })
     token!: string
     @Column("datetime")
     tokenExpiresOn!: string
