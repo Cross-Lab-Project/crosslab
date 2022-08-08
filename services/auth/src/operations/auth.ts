@@ -53,6 +53,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
     const activeKey = activeKeys[0]
 
+    console.log(JSON.stringify(user, null, 4))
     const jwt = await sign<UserType>({ username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
 
     user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
