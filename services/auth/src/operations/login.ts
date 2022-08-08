@@ -60,6 +60,7 @@ export async function loginTui(username: string, password: string): Promise<User
 }
 
 export const postLogin: postLoginSignature = async (body) => {
+    console.log("login process started")
     let user
     if (body.method === "tui") {
         user = await loginTui(body.username, body.password)
