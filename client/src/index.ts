@@ -2,10 +2,12 @@ import {
     APIClient as AuthClient,
     SignaturesAuth as AuthSignatures,
     SignaturesIdentity as IdentitySignatures,
+    SignaturesLogin as LoginSignatures,
     SignaturesUsers as UsersSignatures,
     Types as AuthTypes,
-    ValidationAuth as AuthValidation,
+    // ValidationAuth as AuthValidation,
     ValidationIdentity as IdentityValidation,
+    ValidationLogin as LoginValidation,
     ValidationUsers as UsersValidation,
 } from "./generated/auth"
 
@@ -59,7 +61,6 @@ import {
     ResponseData
 } from "./generated/booking/types"
 import { URLSearchParams } from "url"
-import { getAuthResponseType } from "./generated/auth/signatures/auth"
 
 export {
     BookingTypes,
@@ -143,22 +144,20 @@ export class APIClient {
         this.authClient.password = password
     }
 
-    // Auth Service authentication API calls
+    // Auth Service login API calls
 
-    public async login(
-        username: string,
-        password: string,
+    public async postLogin(
+        body: LoginSignatures.postLoginBodyType,
         url?: string
-    ): Promise<AuthSignatures.getAuthResponseType> {
-        const parameters: AuthSignatures.getAuthParametersType = { Authorization: Buffer.from(username + ":" + password).toString("base64") }
+    ): Promise<LoginSignatures.postLoginResponseType> {
         if (!url || url.startsWith(this.authClient.baseURL)) {
-            const response = await this.authClient.getAuth(parameters)
-            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization : "") : ""
+            const response = await this.authClient.postLogin(body)
+            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization.split(" ")[1] : "") : ""
             return response
         } else {
-            if (!isValidUrl(url, `/auth`)) throw new FetchError("URL is not valid for this operation")
-            const response = await this.proxy("get", url, parameters, undefined, AuthValidation.validateGetAuthInput, AuthValidation.validateGetAuthOutput) as getAuthResponseType
-            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization : "") : ""
+            if (!isValidUrl(url, `/login`)) throw new FetchError("URL is not valid for this operation")
+            const response = await this.proxy("post", url, undefined, body, LoginValidation.validatePostLoginInput, LoginValidation.validatePostLoginOutput) as LoginSignatures.postLoginResponseType
+            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization.split(" ")[1] : "") : ""
             return response
         }
     }

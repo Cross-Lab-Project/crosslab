@@ -17,3 +17,7 @@ upstream logs_service {
 upstream auth_service {
     server ${AUTH_SERVICE_URL};
 }
+
+upstream update_service {
+    server ${UPDATE_SERVICE_URL};
+}

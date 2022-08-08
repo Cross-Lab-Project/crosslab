@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: Get user by username
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:list
+  parameters:
+    - $ref: "../parameters/username.yml"
+  responses:
+    200:
+      description: The JSON respresentation of the user
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    404:
+      description: Requested user not found
+patch:
+  summary: Update user by username
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:edit
+  parameters:
+    - $ref: "../parameters/username.yml"
+  requestBody:
+    description: Updated user
+    content:
+      application/json:
+        $ref: "../content/user.yml"
+  responses:
+    200:
+      description: The JSON representation of the updated user
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Request could not be fulfilled
+    404:
+      description: Requested user not found
+delete:
+  summary: Delete user by username
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:create
+  parameters:
+    - $ref: "../parameters/username.yml"
+  responses:
+    204:
+      description: User deleted successfully
+    404:
+      description: Requested user not found

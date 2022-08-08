@@ -12,31 +12,24 @@ components:
       type: http
       scheme: basic
       description: Basic authentication using the TUI username and password.
-
-paths:
-  "/auth":
-    get:
-      security:
-        - TuiAuth: []
-      
-      operationId: auth
-      summary: Authenticate a user
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
       description: |-
-        This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.
-        The return code will always be 200, but the JWT will be empty if the authentication failed.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: Return the JWT which represent the authenticated user.
-          headers:
-            Authorization:
-              required: false
-              schema:
-                type: string
-                format: jwt
-                description: The JWT which represent the authenticated user.
+        As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+paths:
+  /auth:
+    $ref: "./resources/auth.yml"
+  /login:
+    $ref: "./resources/login.yml"
+  /users:
+    $ref: "./resources/users.yml"
+  /users/{username}:
+    $ref: "./resources/user.yml"
+  /users/{username}/roles/{role_name}:
+    $ref: "./resources/user_role.yml"
+  /identity:
+    $ref: "./resources/identity.yml"

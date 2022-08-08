@@ -1,3 +1,4 @@
+import fetch from "node-fetch"
 import { config } from "../config"
 import { AppDataSource } from "../data_source"
 import {
@@ -8,11 +9,31 @@ import {
 } from "../generated/signatures/peerconnections"
 import { Peerconnection, ServiceConfig } from "../generated/types"
 import { DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
-import { CreatePeerConnectionMessage } from "./deviceMessages"
+import { CreatePeerConnectionMessage, SignalingMessage } from "./deviceMessages"
 import { connectedDevices, DeviceBaseURL } from "./devices"
 
 const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
 const closedCallbacks = new Map<string,Array<string>>()
+
+// TODO: generate callback signatures?
+async function handleClosedCallback(peerconnection: PeerconnectionModel) {
+    const urls = closedCallbacks.get(peerconnection.uuid) ?? []
+    for (const url in urls) {
+        fetch(url, {
+            method: "post",
+            body: JSON.stringify({
+                callbackType: "event", 
+                eventType: "peerconnnection-closed",
+                ...(formatPeerconnection(peerconnection))
+            })
+        }).then((res) => {
+            if (res.status == 410) {
+                const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
+                closedCallbacks.set(peerconnection.uuid, closedCallbackURLs.filter(cb_url => cb_url != url))
+            }
+        })
+    }
+}
 
 function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
     return {
@@ -182,6 +203,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
 // TODO: send close message to devices?
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+    const peerconnection = await peerconnectionRepository.findOneByOrFail({ uuid: parameters.peerconnection_id })
     const result = await peerconnectionRepository.softDelete({ uuid: parameters.peerconnection_id })
 
     if (!result.affected) {
@@ -189,6 +211,25 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             status: 404
         }
     }
+
+    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) throw new Error("One of the devices of the peerconnection has no url")
+    const idDeviceA = peerconnection.deviceA.url.split("/").pop()
+    const idDeviceB = peerconnection.deviceB.url.split("/").pop()
+    if (!idDeviceA || !idDeviceB) throw new Error("One of the devices of the peerconnection has no id")
+    const wsDeviceA = connectedDevices.get(idDeviceA)
+    const wsDeviceB = connectedDevices.get(idDeviceB)
+    if (!wsDeviceA || !wsDeviceB) throw new Error("One of the devices of the peerconnection has no websocket")
+    // TODO: send close message
+    wsDeviceA.send(JSON.stringify(<SignalingMessage>{
+        messageType: "signaling",
+        connectionid: peerconnection.uuid
+    }))
+    // TODO: send close message
+    wsDeviceB.send(JSON.stringify(<SignalingMessage>{
+        messageType: "signaling",
+        connectionid: peerconnection.uuid
+    }))
+    handleClosedCallback(peerconnection)
     
     if (result.affected > 1) {
         throw("Deleted Multiple Peerconnection with same uuid")

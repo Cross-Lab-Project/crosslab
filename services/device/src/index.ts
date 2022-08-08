@@ -1,10 +1,12 @@
-import { IncomingMessage } from 'http';
-import { Socket } from 'net';
-import WebSocket from 'ws';
+import { IncomingMessage } from 'http'
+import { Socket } from 'net'
+import WebSocket from 'ws'
 import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
-import { deviceHandling } from './operations/devices';
+import { deviceHandling } from './operations/devices'
+// import { jwtVerify, JWTVerifyGetKey } from 'jose'
+// import fetch from 'node-fetch'
 
 declare global {
     namespace Express {
@@ -15,6 +17,13 @@ declare global {
         }
     }
 }
+
+// const getKey: JWTVerifyGetKey = async (_protectedHeader, _token) => {
+//     const response = await fetch(config.BASE_URL + "/.well-known/openid-configuration")
+//     const endpoint = (await response.json()).jwks_uri
+//     const key = await fetch(config.BASE_URL + endpoint)
+//     return await key.json()
+// }
 
 AppDataSource.initialize()
     .then(() => {
@@ -32,7 +41,11 @@ AppDataSource.initialize()
             }
             next()
         })
-        app.initService({JWTVerify: (_jwt, _scopes) => {return {username: "testuser"}}})
+        app.initService({
+            JWTVerify: async (_jwt, _scopes) => {
+                return { username: "testuser", role: "superadmin", scopes: [] }
+            }
+        })
         const wsServer = new WebSocket.Server({ noServer: true });
         app.wsListeners = new Map()
         app.ws = (path, listener) => app.wsListeners.set(path, listener)

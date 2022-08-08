@@ -4,7 +4,11 @@ import { app } from './generated/index'
 
 AppDataSource.initialize()
     .then(() => {
-        app.initService({JWTVerify: (_jwt, _scopes)=>{return {username: "testuser"}}})
+        app.initService({
+            JWTVerify: async (_jwt, _scopes) => {
+                return { username: "testuser", role: "superadmin", scopes: [] }
+            }
+        })
         app.listen(config.PORT)
     })
     .catch((err) => {

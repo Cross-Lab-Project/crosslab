@@ -102,7 +102,7 @@ async function handleChangedCallback(device: ConcreteDeviceModel | DeviceGroupMo
 }
 
 export function deviceHandling(app: Express.Application) {
-    // TODO: close Peerconnections that have device as participant?
+    // TODO: close Peerconnections that have device as participant when websocket connection is closed?
     app.ws("/devices/ws", (ws) => {
         // authenticate and start heartbeat
         ws.once("message", async (data) => {
@@ -213,7 +213,6 @@ async function resolveDeviceReference(reference: DeviceReferenceModel, flat_grou
         if (!deviceId) return undefined
         const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group }, reference.url)
         if (device.status === 404) return undefined
-        // TODO: check if groups are resolved correctly with flat_group
         return device.body
     }
 
@@ -486,6 +485,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
     }
 
     await deviceRepository.save(device)
+    handleChangedCallback(device)
 
     return {
         status: 200,

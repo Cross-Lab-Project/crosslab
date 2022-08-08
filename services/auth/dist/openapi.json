@@ -1,0 +1,495 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab Simple Authentication Service (internal)",
+    "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "TuiAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Basic authentication using the TUI username and password."
+      },
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "credentials": {
+        "title": "Credentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "role": {
+        "title": "Role",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/role"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "username": {
+        "in": "path",
+        "name": "username",
+        "description": "Username of the user",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "role_name": {
+        "in": "path",
+        "name": "role_name",
+        "description": "Name of the role",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth": {
+      "get": {
+        "tags": [
+          "authentication"
+        ],
+        "security": [
+          {
+            "TuiAuth": []
+          }
+        ],
+        "operationId": "auth",
+        "summary": "Authenticate user",
+        "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the JWT which represent the authenticated user.",
+            "headers": {
+              "Authorization": {
+                "required": false,
+                "schema": {
+                  "type": "string",
+                  "format": "jwt",
+                  "description": "The JWT which represent the authenticated user."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "operationId": "login",
+        "summary": "Login user",
+        "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Return the access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "the access token",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access."
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "User to be created",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The JSON representation of the created user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request could not be fulfilled"
+          }
+        }
+      }
+    },
+    "/users/{username}": {
+      "get": {
+        "summary": "Get user by username",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:list"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON respresentation of the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested user not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user by username",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request could not be fulfilled"
+          },
+          "404": {
+            "description": "Requested user not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user by username",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          },
+          "404": {
+            "description": "Requested user not found"
+          }
+        }
+      }
+    },
+    "/users/{username}/roles/{role_name}": {
+      "put": {
+        "summary": "Add new role to user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          },
+          {
+            "$ref": "#/components/parameters/role_name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Requested user or role not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete role from user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          },
+          {
+            "$ref": "#/components/parameters/role_name"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Role deleted successfully from user"
+          },
+          "404": {
+            "description": "Requested user or role not found"
+          }
+        }
+      }
+    },
+    "/identity": {
+      "get": {
+        "summary": "Get identity of yourself by jwt",
+        "tags": [
+          "identity"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "identity",
+              "identity:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the corresponding user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No user found for jwt"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update identity of yourself by jwt",
+        "tags": [
+          "identity"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "identity",
+              "identity:edit"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "Updated identity",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request could not be fulfilled"
+          },
+          "404": {
+            "description": "No user found for jwt"
+          }
+        }
+      }
+    }
+  }
+}

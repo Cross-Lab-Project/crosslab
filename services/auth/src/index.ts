@@ -1,68 +1,72 @@
-import express from 'express'
-import { generateKeyPair, JWK, exportJWK, SignJWT, KeyLike } from 'jose';
+import { generateKeyPair, JWK, exportJWK, jwtVerify, createRemoteJWKSet } from 'jose';
 import { config } from './config'
+import { AppDataSource, createDefaultScopesAndRoles } from './data_source';
+import { app } from './generated';
+import { ActiveKeyModel, KeyModel } from './model';
 
-const app = express()
+async function generateNewKey(usage = "sig"): Promise<KeyModel> {
+    const keyRepository = AppDataSource.getRepository(KeyModel)
+    const keyPair = await generateKeyPair("RS256");
+    const key = keyRepository.create()
 
-
-async function generateNewKey(usage = "sig") {
-    let keyPair = await generateKeyPair("RS256");
-    let key = {
-        private_key : JSON.stringify(await exportJWK(keyPair.privateKey)),
-        public_key : JSON.stringify(await exportJWK(keyPair.publicKey)),
-        use : usage,
-        alg : "RS256",
-        private_jwk: keyPair.privateKey
-    }
+    key.private_key = JSON.stringify(await exportJWK(keyPair.privateKey)),
+    key.public_key = JSON.stringify(await exportJWK(keyPair.publicKey)),
+    key.use = usage,
+    key.alg = "RS256"
+    await keyRepository.save(key)
 
     return key;
 }
 
-function jwk(key: { private_key: string; public_key: string; use: string; alg: string; }) {
-    let jwk: JWK = JSON.parse(key.public_key);
+function jwk(key: KeyModel) {
+    const jwk: JWK = JSON.parse(key.public_key);
+
     jwk.use = key.use;
     jwk.alg = key.alg;
-    jwk.kid = "1";
+    jwk.kid = key.uuid;
+
     return jwk;
 }
 
-async function sign(payload: any, key: { private_key: string; public_key: string; use: string; alg: string, private_jwk:KeyLike; }, expirationTime: string) {
-    return await new SignJWT(payload)
-        .setProtectedHeader({ alg: key.alg, kid: "1" })
-        .setIssuer(config.SECURITY_ISSUER)
-        .setIssuedAt()
-        .setExpirationTime(expirationTime)
-        .sign(key.private_jwk);
-}
+AppDataSource.initialize()
+    .then(async () => {
+        await createDefaultScopesAndRoles()
+        const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
+        const key = await generateNewKey()
+        const jwks = JSON.stringify({ keys: [jwk(key)] })
 
-async function main() {
-    let key = await generateNewKey();
-    let jwks = JSON.stringify({ keys: [jwk(key)] })
-
-    app.get("/.well-known/jwks.json", (_req, res, _next) => {
-        res.send(jwks);
-    });
-
-    app.get("/.well-known/openid-configuration", (_req, res, _next) => {
-        res.send({"jwks_uri": "/.well-known/jwks.json"});
-    });
-
-
-    app.get('/auth', async (req, res) => {
-        const scopes=req.header('X-Check-Scope')
-        if (scopes!=undefined) {
-            // Check if the authorized user as the specified scope otherwise return 401
-            /*console.log(scopes)
-            res.status(401).send("Unauthorized")
-            return;*/
+        for (const activeKey of await activeKeyRepository.find()) {
+            await activeKeyRepository.delete(activeKey)
         }
-        const jwt = await sign({ scope: ["testscope"], user: "testuser" }, key, "2h");
-        console.log(jwt)
-        res.header('Authorization', "Bearer "+jwt);
-        res.send();
+
+        const activeKey = activeKeyRepository.create()
+        activeKey.key = key
+        activeKey.use = key.use
+        await activeKeyRepository.save(activeKey)
+
+        app.initService({
+            JWTVerify: async (jwt, scopes) => {
+                if (!jwt) throw("No jwt found")
+                if (!config.SECURITY_ISSUER) throw("No security issuer specified")
+                const jwksUri = new URL(config.BASE_URL + "/.well-known/jwks.json")
+                const JWKS = createRemoteJWKSet(jwksUri)
+                try {
+                    const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
+                    console.log(jwtVerifyResult.payload)
+                } catch (err) {
+                    console.log(err)
+                }
+                return { username: "testuser", role: "superadmin", scopes: scopes }
+            }
+        })
+        app.get("/.well-known/jwks.json", (_req, res, _next) => {
+            res.send(jwks);
+        })
+        app.get("/.well-known/openid-configuration", (_req, res, _next) => {
+            res.send({"jwks_uri": "/.well-known/jwks.json"});
+        })
+        app.listen(config.PORT)
     })
-
-    app.listen(config.PORT)
-}
-
-main();
+    .catch((err) => {
+        console.error("Error during Data Source initialization:", err)
+    })

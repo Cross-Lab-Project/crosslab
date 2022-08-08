@@ -21,6 +21,7 @@ import {
 } from "../model"
 import { config } from "../config"
 import { APIClient } from "@cross-lab-project/api-client"
+import { Peerconnection } from "@cross-lab-project/api-client/dist/generated/device/types"
 
 // global constants
 const ExperimentBaseUrl = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/'
@@ -112,7 +113,7 @@ async function writeServiceConfiguration(serviceConfiguration: ServiceConfigurat
 }
 
 async function writeExperiment(experiment: ExperimentModel, object: Experiment) {
-    if (object.status) experiment.status = object.status
+    if (object.status) experiment.status = object.status ?? (experiment.status ?? "created")
     if (object.bookingTime) {
         if (object.bookingTime.startTime) experiment.bookingStart = object.bookingTime.startTime
         if (object.bookingTime.endTime) experiment.bookingEnd = object.bookingTime.endTime
@@ -229,6 +230,69 @@ async function bookExperiment(experiment: ExperimentModel) {
     experimentRepository.save(experiment)
 }
 
+function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
+    if (!experiment.serviceConfigurations || experiment.serviceConfigurations.length === 0) throw new Error("Experiment must have a configuration to be run")
+    if (!experiment.devices || experiment.devices.length === 0) throw new Error("Experiment must have a device to be run") 
+    const peerconnections: (Peerconnection & { devices?: [{role?: string},{role?: string}]})[] = []
+    for (let i = 0; i < experiment.devices.length; i++) {
+        for (let j = i+1; j < experiment.devices.length; j++) {
+            peerconnections.push({
+                devices: [{
+                    ...experiment.devices[i]
+                },{
+                    ...experiment.devices[j]
+                }]
+            })
+        }
+    }
+    for (const serviceConfiguration of experiment.serviceConfigurations) {
+        if (!serviceConfiguration.participants) throw new Error("Service configuration must have participants")
+        if (!serviceConfiguration.configuration) serviceConfiguration.configuration = "{}"
+        for (const participant of serviceConfiguration.participants) {
+            if (!participant.config) participant.config = "{}"
+            for (const peerconnection of peerconnections) {
+                if (!peerconnection.devices) throw new Error("Peerconnection has no devices")
+                for (let i = 0; i < 2; i++) {
+                    if (!peerconnection.devices[i].role) throw new Error("Device has no role")
+                    if (!peerconnection.devices[i].config) peerconnection.devices[i].config = { services: [] }
+                    if (peerconnection.devices[i].role === participant.role) {
+                        peerconnection.devices[i].config?.services?.push({
+                            ...JSON.parse(serviceConfiguration.configuration),
+                            ...JSON.parse(participant.config),
+                            serviceId: participant.serviceId,
+                            serviceType: serviceConfiguration.serviceType
+                        })
+                    }
+                }
+            }
+        }
+    }
+    for (const peerconnection of peerconnections) {
+        const servicesA = peerconnection.devices?.[0].config?.services
+        const servicesB = peerconnection.devices?.[1].config?.services
+
+        if (!servicesA) throw new Error("Device has no service")
+        if (!servicesB) throw new Error("Device has no service")
+
+        for (const serviceA of servicesA) {
+            const serviceB = servicesB.find(s => s.serviceType === serviceA.serviceType)
+            if (!serviceB) throw new Error("Service has no corresponding remote service")
+            serviceA.remoteServiceId = serviceB.serviceId
+            serviceB.remoteServiceId = serviceA.serviceId
+        }
+
+        for (const serviceB of servicesB) {
+            if (serviceB.remoteServiceId) continue
+            const serviceA = servicesA.find(s => s.serviceType === serviceB.serviceType)
+            if (!serviceA) throw new Error("Service has no corresponding remote service")
+            if (serviceA.remoteServiceId) throw new Error("Found service already has corresponding remote service")
+            serviceA.remoteServiceId = serviceB.serviceId
+            serviceB.remoteServiceId = serviceA.serviceId
+        }
+    }
+    return peerconnections
+}
+
 async function runExperiment(experiment: ExperimentModel) {
     // make sure experiment is already booked
     if (experiment.status !== "booked") {
@@ -246,29 +310,19 @@ async function runExperiment(experiment: ExperimentModel) {
     if (response.status !== 200) throw new Error("API call was not successful")
 
     // establish peerconnections between the devices
-    if (experiment.devices) {
-        for (let i = 0; i < experiment.devices.length; i++) {
-            for (let j = i + 1; j < experiment.devices.length; i++) {
-                // TODO: set closedURL
-                const response = await apiClient.postPeerconnections({ closedUrl: undefined }, { 
-                    devices: [{
-                        url: experiment.devices[i].url
-                    }, {
-                        url: experiment.devices[j].url
-                    }] 
-                })
-                if (response.status !== 201) throw new Error("API call was not successful")
-                if (!experiment.connections) experiment.connections = []
-                if (!response.body.url) throw new Error("Created peerconnection does not have a url")
-                // create, save and push new peerconnection
-                const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-                const peerconnection = peerconnectionRepository.create()
-                peerconnection.experiment = experiment
-                peerconnection.url = response.body.url
-                await peerconnectionRepository.save(peerconnection)
-                experiment.connections.push(peerconnection)
-            }
-        } 
+    const peerconnections = buildConnectionPlan(experiment)
+    for (const peerconnection of peerconnections) {
+        // TODO: set closedURL
+        const response = await apiClient.postPeerconnections({ closedUrl: undefined }, peerconnection)
+        if (response.status !== 201) throw new Error("Peerconnection could not be established")
+        if (!experiment.connections) experiment.connections = []
+        if (!response.body.url) throw new Error("Created peerconnection does not have a url")
+        // create, save and push new peerconnection
+        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+        const peerconnectionModel = peerconnectionRepository.create()
+        peerconnectionModel.experiment = experiment
+        peerconnectionModel.url = response.body.url
+        experiment.connections.push(peerconnectionModel)
     }
 
     // set experiment status to running and save experiment

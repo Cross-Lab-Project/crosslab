@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+put:
+  summary: Add new role to user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:edit
+  parameters:
+    - $ref: "../parameters/username.yml"
+    - $ref: "../parameters/role_name.yml"
+  responses:
+    200:
+      description: The JSON representation of the updated user
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    404:
+      description: Requested user or role not found
+delete:
+  summary: Delete role from user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:edit
+  parameters:
+    - $ref: "../parameters/username.yml"
+    - $ref: "../parameters/role_name.yml"
+  responses:
+    204:
+      description: Role deleted successfully from user
+    404:
+      description: Requested user or role not found

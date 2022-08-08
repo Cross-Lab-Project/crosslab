@@ -10,7 +10,7 @@ import {
 
 export const AppDataSource = new DataSource({
     type: "sqlite",
-    database: "experiment.db",
+    database: "db/experiment.db",
     synchronize: true,
     entities: [
         ExperimentModel,

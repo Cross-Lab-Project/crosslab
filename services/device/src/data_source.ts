@@ -3,7 +3,7 @@ import { DeviceOverviewModel, ConcreteDeviceModel, DeviceGroupModel, TimeSlotMod
 
 export const AppDataSource = new DataSource({
     type: "sqlite",
-    database: "device.db",
+    database: "db/device.db",
     synchronize: true,
     entities: [
         DeviceOverviewModel, 

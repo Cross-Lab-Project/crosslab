@@ -27,7 +27,7 @@ export function isCreatePeerConnectionMessage(message: CommandMessage): message 
 }
 
 export interface SignalingMessage extends Message {
-    messagetype: "signaling"
+    messageType: "signaling"
     connectionid: string
 }
 export function isSignalingMessage(message: Message): message is SignalingMessage {

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  summary: Get identity of yourself by jwt
+  tags:
+    - identity
+  security:
+    - JWT:
+      - identity
+      - identity:list
+  responses:
+    200:
+      description: The JSON representation of the corresponding user
+      content: 
+        application/json:
+          $ref: "../content/user.yml"
+    404:
+      description: No user found for jwt
+patch:
+  summary: Update identity of yourself by jwt
+  tags:
+    - identity
+  security:
+    - JWT:
+      - identity
+      - identity:edit
+  requestBody:
+    description: Updated identity
+    content:
+      application/json:
+        $ref: "../content/user.yml"
+  responses:
+    200:
+      description: The JSON representation of the updated user
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Request could not be fulfilled
+    404:
+      description: No user found for jwt
