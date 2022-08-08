@@ -35,7 +35,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {%- endif %}
     {%- if function.parameters.header and function.parameters.header.length > 0 %}
     {%- for parameter in function.parameters.header %}
-        {{ parameter.name }}: req.headers["{{ parameter.name }}"] as {{ utils.formatDeclaration(parameter.schema.typeDeclaration) }},
+        {{ parameter.name }}: req.get("{{ parameter.name }}") as {{ utils.formatDeclaration(parameter.schema.typeDeclaration) }},
     {%- endfor %}
     {%- endif %}
     {%- if function.parameters.path and function.parameters.path.length > 0 %}
