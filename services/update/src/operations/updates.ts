@@ -80,6 +80,8 @@ export const deleteUpdatesByMacAddress: deleteUpdatesByMacAddressSignature = asy
         }
     }
 
+    await updateInformationRepository.delete(updateInformation)
+
     return {
         status: 204
     }
