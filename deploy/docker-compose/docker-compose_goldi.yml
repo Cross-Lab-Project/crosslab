@@ -41,27 +41,43 @@ services:
       - FEDERATION_SERVICE_URL=federation:8080
       - LOGS_SERVICE_URL=logs:8080
       - AUTH_SERVICE_URL=auth:8080
+      - UPDATE_SERVICE_URL=update:8080
   auth:
     image: crosslab/auth-service
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+    volumes:
+      - auth_db:/app/db
   device:
     image: crosslab/device-service
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+    volumes:
+      - device_db:/app/db
   experiment:
     image: crosslab/experiment-service
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+    volumes:
+      - experiment_db:/app/db
   federation:
     image: crosslab/federation-service
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
-  
+    volumes:
+      - federation_db:/app/db
+  update:
+    image: crosslab/update-service
+    environment:
+      SECURITY_ISSUER: https://$DOMAIN
+      SECURITY_AUDIENCE: https://$DOMAIN
+    volumes:
+      - update_db:/app/db
+
 # Frontend ########################################################################################
   frontend:
     image: goldi2/web-frontend
@@ -129,3 +145,8 @@ volumes:
   html:
   certs:
   acme:
+  auth_db:
+  device_db:
+  experiment_db:
+  federation_db:
+  update_db:
