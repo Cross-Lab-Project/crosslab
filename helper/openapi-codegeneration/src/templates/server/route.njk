@@ -23,7 +23,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
         const jwt = extract_jwt_from_request(req)
         user = await options.JWTVerify(jwt, ["{{ function.scopes | join("\",\"") | safe }}"])
     } catch(err) {
-        throw("JWT Verification Error!")
+        return res.status(401).send("JWT Verification Error!")
     }
     {% endif -%}
     {% if function.parameters -%}
