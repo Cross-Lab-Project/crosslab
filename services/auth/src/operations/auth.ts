@@ -20,6 +20,13 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const HOUR = 60 * 60 * 1000
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
     const userRepository = AppDataSource.getRepository(UserModel)
+
+    if (!parameters.Authorization) {
+        return {
+            status: 200
+        }
+    }
+
     const token = parameters.Authorization.split(" ")[1]
 
     if (!token) {
