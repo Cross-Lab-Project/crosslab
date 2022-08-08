@@ -144,12 +144,12 @@ export class APIClient {
     ): Promise<LoginSignatures.postLoginResponseType> {
         if (!url || url.startsWith(this.authClient.baseURL)) {
             const response = await this.authClient.postLogin(body)
-            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization.split(" ")[1] : "") : ""
+            this.accessToken = response.body ? response.body : ""
             return response
         } else {
             if (!isValidUrl(url, `/login`)) throw new FetchError("URL is not valid for this operation")
             const response = await this.proxy("post", url, undefined, body, LoginValidation.validatePostLoginInput, LoginValidation.validatePostLoginOutput) as LoginSignatures.postLoginResponseType
-            this.accessToken = response.headers ? (response.headers.Authorization ? response.headers.Authorization.split(" ")[1] : "") : ""
+            this.accessToken = response.body ? response.body : ""
             return response
         }
     }

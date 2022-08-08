@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "API-Client for all Crosslab APIs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
