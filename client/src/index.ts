@@ -805,7 +805,7 @@ export class APIClient {
         if (!url || url.startsWith(this.federationClient.baseURL)) {
             return this.updateClient.deleteUpdatesByDeviceId(parameters)
         } else {
-            if (!isValidUrl(url, `/updates//${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
+            if (!isValidUrl(url, `/updates/${parameters.device_id}`)) throw new FetchError("URL is not valid for this operation")
             return this.proxy("delete", url, parameters, undefined, UpdateValidation.validateDeleteUpdatesByDeviceIdInput, UpdateValidation.validateDeleteUpdatesByDeviceIdOutput)
         }
     }

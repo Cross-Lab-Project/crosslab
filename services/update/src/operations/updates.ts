@@ -18,7 +18,6 @@ function formatUpdateInformation(updateInformation: UpdateInformationModel): Upd
 }
 
 function writeUpdateInformation(updateInformationModel: UpdateInformationModel, updateInformation: UpdateInformation) {
-    updateInformationModel.device_id = updateInformation.device_id
     updateInformationModel.newest_version = updateInformation.newest_version
     updateInformationModel.newest_version_link = updateInformation.newest_version_link
 }
@@ -96,7 +95,7 @@ export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (pa
             status: 404
         }
     }
-
+    
     writeUpdateInformation(updateInformation, body)
     await updateInformationRepository.save(updateInformation)
     

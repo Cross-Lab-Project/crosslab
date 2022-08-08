@@ -23,7 +23,7 @@
         {% elif "tui" in function.security -%}
         const authorization = "Basic " + Buffer.from(this._username + ":" + this._password).toString("base64")
         {% else -%}
-        const authorization = undefined
+        const authorization = ""
         {% endif -%}
         if (!{{ function.validateInput }}({{ "parameters" if function.parameters else "undefined" }}, {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }})) {
             const errorMsg = "Request validation failed"
@@ -42,7 +42,7 @@
         if (authorization && !headers["Authorization"]) headers["Authorization"] = authorization
         if (!headers["Content-Type"]) headers["Content-Type"] = "application/json"
         const raw_response = await fetch(url, {
-            method: "{{ function.method }}",
+            method: "{{ function.method | upper }}",
             {{ "body: JSON.stringify(body)," if function.body.content[0].schema.typeDeclaration or function.isProxyFunction }}
             headers: headers
         })

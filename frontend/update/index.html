@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <!-- <script type="module" src="client/index.js"></script> -->
+    </head>
+    <body>
+        <form id="login-form">
+            <label for="server">API Server:</label><br>
+            <input type="text" id="server" name="server"><br>
+            <label for="uname">Username:</label><br>
+            <input type="text" id="uname" name="uname"><br>
+            <label for="pwd">Password:</label><br>
+            <input type="password" id="pwd" name="pwd"><br><br>
+            <button type="button" onclick="Actions.login()">Login</button>
+        </form>
+        <br>
+        <table id="update-table" hidden>
+            <thead>
+                <tr>
+                  <th>Device ID</th>
+                  <th>Newest Version</th>
+                  <th>Newest Version Link</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><input id="new-id"/></td>
+                  <td><input id="new-version"/></td>
+                  <td><input id="new-link"/></td>
+                  <td><button onclick="Actions.addEntry()">add</button></td>
+                </tr>
+              </tfoot>
+        </table>
+        <template id="rowTemplate">
+            <tr>
+                <td><input readonly/></td>
+                <td><input /></td>
+                <td><input /></td>
+              <td><button>change</button><button>delete</button></td>
+            </tr>
+        </template>
+    </body>
+</html>
