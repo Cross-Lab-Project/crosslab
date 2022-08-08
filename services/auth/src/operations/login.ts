@@ -49,6 +49,7 @@ export async function loginTui(username: string, password: string): Promise<User
         user.username = "tui:" + username
         user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
     }
+    if (!user.roles) user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
     user.currentRole = user.roles[0]
     // TODO: make sure that token is truly unique
     user.token = randomBytes(16).toString("hex")
