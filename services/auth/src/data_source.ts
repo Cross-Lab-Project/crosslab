@@ -124,6 +124,7 @@ async function createDefaultSuperadmin() {
         user.currentRole = roleSuperadmin
         user.token = ""
         user.tokenExpiresOn = new Date(Date.now() - 1).toISOString()
+        await userRepository.save(user)
     }
 }
 

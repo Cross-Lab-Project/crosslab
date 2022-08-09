@@ -65,9 +65,6 @@ export const getUsers: getUsersSignature = async (_user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
     const users = await userRepository.find({ 
         relations: { 
-            currentRole: {
-                scopes: true
-            },
             roles: {
                 scopes: true
             } 
@@ -107,7 +104,16 @@ export const postUsers: postUsersSignature = async (body, _user) => {
 
 export const getUsersByUsername: getUsersByUsernameSignature = async (parameters, _user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
+    const user = await userRepository.findOne({
+        where: { 
+            username: parameters.username 
+        },
+        relations: {
+            roles: {
+                scopes: true
+            }
+        }
+    })
 
     if (!user) {
         return {
