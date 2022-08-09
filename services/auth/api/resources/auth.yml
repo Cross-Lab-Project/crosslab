@@ -10,11 +10,7 @@ get:
     This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.
     The return code will always be 200, but the JWT will be empty if the authentication failed.
   parameters:
-    - in: header
-      name: Authorization
-      schema:
-        type: string
-      required: true
+    - $ref: "../parameters/authorization.yml"
   responses:
     200:
       description: Return the JWT which represent the authenticated user.

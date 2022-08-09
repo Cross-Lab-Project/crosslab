@@ -64,7 +64,7 @@ async function createRole(name: string, scopes: ScopeModel[]) {
     }
 }
 
-export async function createDefaultScopesAndRoles() {
+async function createDefaultScopesAndRoles() {
     // create default scopes
     const scopeCollection = await createScopes([
         { name: "authorized_proxy", roles: "all" },
@@ -102,3 +102,33 @@ export async function createDefaultScopesAndRoles() {
     await createRole("developer", [...scopeCollection.all, ...scopeCollection.developer])
     await createRole("user", [...scopeCollection.all, ...scopeCollection.user])
 }
+
+async function createDefaultSuperadmin() {
+    const userRepository = AppDataSource.getRepository(UserModel)
+    const roleRepository = AppDataSource.getRepository(RoleModel)
+
+    const roleSuperadmin = await roleRepository.findOneOrFail({
+        where: { 
+            name: "superadmin" 
+        },
+        relations: {
+            users: true
+        }
+    })
+
+    if (roleSuperadmin.users.length === 0) {
+        const user = userRepository.create()
+        user.username = "superadmin"
+        user.password = "superadmin"
+        user.roles = [roleSuperadmin]
+        user.currentRole = roleSuperadmin
+        user.token = ""
+        user.tokenExpiresOn = new Date(Date.now() - 1).toISOString()
+    }
+}
+
+export async function initializeDataSource() {
+    await createDefaultScopesAndRoles()
+    await createDefaultSuperadmin()
+}
+

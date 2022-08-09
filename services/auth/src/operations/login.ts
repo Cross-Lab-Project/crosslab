@@ -65,6 +65,14 @@ export const postLogin: postLoginSignature = async (body) => {
         user = await loginTui(body.username, body.password)
     }
 
+    switch (body.method) {
+        case "local":
+            break
+        case "tui":
+            user = await loginTui(body.username, body.password)
+            break
+    }
+
     if (!user) {
         return {
             status: 401

@@ -5,11 +5,6 @@
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
     "version": "0.0.1"
   },
-  "servers": [
-    {
-      "url": "https://api.goldi-labs.de/"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "TuiAuth": {
@@ -22,6 +17,33 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "description": "As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "parameters": {
+      "authorization": {
+        "in": "header",
+        "name": "Authorization",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "username": {
+        "in": "path",
+        "name": "username",
+        "description": "Username of the user",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "role_name": {
+        "in": "path",
+        "name": "role_name",
+        "description": "Name of the role",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
       }
     },
     "schemas": {
@@ -83,26 +105,6 @@
           }
         }
       }
-    },
-    "parameters": {
-      "username": {
-        "in": "path",
-        "name": "username",
-        "description": "Username of the user",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "role_name": {
-        "in": "path",
-        "name": "role_name",
-        "description": "Name of the role",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
     }
   },
   "paths": {
@@ -121,12 +123,7 @@
         "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+            "$ref": "#/components/parameters/authorization"
           }
         ],
         "responses": {
