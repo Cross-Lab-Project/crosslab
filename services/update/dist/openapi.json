@@ -5,11 +5,6 @@
     "description": "This is the OpenAPI description for a simple update server.",
     "version": "0.0.1"
   },
-  "servers": [
-    {
-      "url": "https://api.goldi-labs.de/"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "JWT": {
