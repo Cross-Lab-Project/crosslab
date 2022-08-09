@@ -3,6 +3,7 @@ import { config } from './config'
 import { AppDataSource, initializeDataSource } from './data_source';
 import { app } from './generated';
 import { ActiveKeyModel, KeyModel } from './model';
+import cors from "cors"
 
 async function generateNewKey(usage = "sig"): Promise<KeyModel> {
     const keyRepository = AppDataSource.getRepository(KeyModel)
@@ -44,9 +45,7 @@ AppDataSource.initialize()
         activeKey.use = key.use
         await activeKeyRepository.save(activeKey)
 
-        app.options("*", (_req, res) => {
-            res.status(200).send()
-        })
+        app.use(cors())
         app.initService({
             JWTVerify: async (jwt, scopes) => {
                 if (!jwt) throw("No jwt found")
