@@ -63,7 +63,16 @@ function isRequiredUser(user?: User): user is Required<User> {
 
 export const getUsers: getUsersSignature = async (_user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
-    const users = await userRepository.find()
+    const users = await userRepository.find({ 
+        relations: { 
+            currentRole: {
+                scopes: true
+            },
+            roles: {
+                scopes: true
+            } 
+        } 
+    })
     
     return {
         status: 200,
