@@ -2,6 +2,7 @@ import { generateKeyPair, JWK, exportJWK, jwtVerify, createRemoteJWKSet } from '
 import { config } from './config'
 import { AppDataSource, initializeDataSource } from './data_source';
 import { app } from './generated';
+import { UserType } from './generated/types';
 import { ActiveKeyModel, KeyModel } from './model';
 
 async function generateNewKey(usage = "sig"): Promise<KeyModel> {
@@ -46,17 +47,17 @@ AppDataSource.initialize()
 
         app.initService({
             JWTVerify: async (jwt, scopes) => {
-                if (!jwt) throw("No jwt found")
-                if (!config.SECURITY_ISSUER) throw("No security issuer specified")
+                if (!jwt) throw new Error("No jwt found")
+                if (!config.SECURITY_ISSUER) throw new Error("No security issuer specified")
                 const jwksUri = new URL(config.BASE_URL + "/.well-known/jwks.json")
                 const JWKS = createRemoteJWKSet(jwksUri)
-                try {
-                    const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
-                    console.log(jwtVerifyResult.payload)
-                } catch (err) {
-                    console.log(err)
+                const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
+                console.log(jwtVerifyResult.payload)
+                const user = jwtVerifyResult.payload as UserType
+                for (const scope of scopes) {
+                    if (!user.scopes.includes(scope)) throw new Error("Missing Scope: " + scope)
                 }
-                return { username: "testuser", role: "superadmin", scopes: scopes }
+                return user
             }
         })
         app.get("/.well-known/jwks.json", (_req, res, _next) => {
