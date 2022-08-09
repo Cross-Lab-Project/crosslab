@@ -44,6 +44,9 @@ AppDataSource.initialize()
         activeKey.use = key.use
         await activeKeyRepository.save(activeKey)
 
+        app.options("*", (_req, res) => {
+            res.status(200).send()
+        })
         app.initService({
             JWTVerify: async (jwt, scopes) => {
                 if (!jwt) throw("No jwt found")
@@ -58,9 +61,6 @@ AppDataSource.initialize()
                 }
                 return { username: "testuser", role: "superadmin", scopes: scopes }
             }
-        })
-        app.options("*", (_req, res) => {
-            res.status(200).send()
         })
         app.get("/.well-known/jwks.json", (_req, res, _next) => {
             res.send(jwks);
