@@ -12,6 +12,9 @@ server {
     #ssl_ciphers          HIGH:!aNULL:!MD5;
     #ssl_protocols        TLSv1.2 TLSv1.3;
 
+    # cors
+    add_header Access-Control-Allow-Origin *;
+
     # API definitions, one per file
     include device_service.conf;
     include experiment_service.conf;
