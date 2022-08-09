@@ -1,6 +1,6 @@
 import { generateKeyPair, JWK, exportJWK, jwtVerify, createRemoteJWKSet } from 'jose';
 import { config } from './config'
-import { AppDataSource, createDefaultScopesAndRoles } from './data_source';
+import { AppDataSource, initializeDataSource } from './data_source';
 import { app } from './generated';
 import { ActiveKeyModel, KeyModel } from './model';
 
@@ -30,7 +30,7 @@ function jwk(key: KeyModel) {
 
 AppDataSource.initialize()
     .then(async () => {
-        await createDefaultScopesAndRoles()
+        await initializeDataSource()
         const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
         const key = await generateNewKey()
         const jwks = JSON.stringify({ keys: [jwk(key)] })
@@ -58,6 +58,9 @@ AppDataSource.initialize()
                 }
                 return { username: "testuser", role: "superadmin", scopes: scopes }
             }
+        })
+        app.options("*", (_req, res) => {
+            res.status(200).send()
         })
         app.get("/.well-known/jwks.json", (_req, res, _next) => {
             res.send(jwks);
