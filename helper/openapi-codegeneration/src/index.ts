@@ -200,7 +200,7 @@ function schemaToTypeDeclaration(schema: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.
         return { typeDeclaration: typeDeclarations.join(" | "), typeDependencies: dependencies }
     }
     if (derefSchema.enum) {
-        return { typeDeclaration: derefSchema.enum.join(" | "), typeDependencies: [] }
+        return { typeDeclaration: '"' + derefSchema.enum.join('" | "') + '"', typeDependencies: [] }
     }
     if ((derefSchema as any).const) {
         if (typeof (derefSchema as any).const === "string")
