@@ -30,3 +30,5 @@ export function BelongsToUs(url: URL): boolean {
     };
     return false;
 };
+
+// app.initService({JWTVerify: (_jwt, _scopes) => {return {username: "testuser"}}})

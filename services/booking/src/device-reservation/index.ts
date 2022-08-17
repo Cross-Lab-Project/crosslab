@@ -85,7 +85,7 @@ async function mainLoop(): Promise<void> {
                             };
 
                             // Check free slot
-                            [rows, fields] = await db.execute("SELECT count(*) AS n FROM reservation WHERE `device`=? AND (`start` < ? OR `end` > ?)", [data.Device.toString(), data.End, data.Start]);
+                            [rows, fields] = await db.execute("SELECT count(*) AS n FROM reservation WHERE `device`=? AND ((`start` < ? AND `start` > ?) OR (`end` > ? AND `end` < ?) OR (`start` = ? AND `end` = ?) OR (`start` < ? AND `end` > ?))", [data.Device.toString(), data.End, data.Start, data.Start, data.End, data.Start, data.End, data.Start, data.End]);
                             if (rows[0].n != 0) {
                                 answer = { Type: data.Type, Device: data.Device, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "Slot already booked" };
                                 break;
@@ -97,9 +97,9 @@ async function mainLoop(): Promise<void> {
                             break;
 
                         case ReservationRequest.Get:
-                            answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "TODO: implement" };
+                            answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "BUG: unknown path in get" };
                             // Get reservation
-                            if(data.ReservationID === undefined) {
+                            if (data.ReservationID === undefined) {
                                 answer = { Type: data.Type, Device: data.Device, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "No reservation ID" };
                                 break;
                             }
@@ -112,9 +112,9 @@ async function mainLoop(): Promise<void> {
                             answer = { Type: data.Type, Device: new URL(rows[0].device), ReservationID: data.ReservationID, Start: rows[0].start, End: rows[0].end, BookingReference: rows[0].bookingreference, Deleted: false, Successful: true, ErrorMessage: "" };
                             break;
                         case ReservationRequest.Delete:
-                            answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "TODO: implement" };
+                            answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "BUG: unknown path in delete" };
                             // Check id
-                            if(data.ReservationID === undefined) {
+                            if (data.ReservationID === undefined) {
                                 answer = { Type: data.Type, Device: data.Device, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "No reservation ID" };
                                 break;
                             }
@@ -125,7 +125,7 @@ async function mainLoop(): Promise<void> {
                                 answer = { Type: data.Type, ReservationID: data.ReservationID, Deleted: true, Successful: false, ErrorMessage: "ID not found" };
                                 break;
                             }
-                            answer = { Type: data.Type, ReservationID: data.ReservationID, Deleted: true, Successful: true, ErrorMessage: ""};
+                            answer = { Type: data.Type, ReservationID: data.ReservationID, Deleted: true, Successful: true, ErrorMessage: "" };
                             break;
                         default:
                             answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "BUG: default switch case - should not happen" };
@@ -134,7 +134,7 @@ async function mainLoop(): Promise<void> {
                 } catch (error) {
                     // Do not jump out here, always send an answer to caller
                     answer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: error.toString() }
-                    if(data.Device !== undefined) {
+                    if (data.Device !== undefined) {
                         answer.Device = data.Device;
                     };
                 };
@@ -151,7 +151,7 @@ async function mainLoop(): Promise<void> {
             } catch (error) {
                 try {
                     let answer: ReservationAnswer = { Type: data.Type, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: error.toString() };
-                    if(data.Device !== undefined) {
+                    if (data.Device !== undefined) {
                         answer.Device = data.Device;
                     }
 

@@ -10,5 +10,8 @@
     "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
   },
   "author": "Johannes Nau",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@cross-lab-project/openapi-codegen": "^0.0.21"
+  }
 }

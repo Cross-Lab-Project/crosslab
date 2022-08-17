@@ -25,12 +25,11 @@ tags:
   - name: device-reservation
     description: The device reservation service handles the actual low-level reservation of devices. Since all requests must be serialised, it must not be scaled horizontally. It exposes no public API, all communication runs through an internal message protocol.
 
-security:
-  - JWT: []
-
 paths:
   /booking/schedule:
     post:
+      security:
+        - JWT: []
       tags:
         - schedule-service
       summary: Returns the free / booked times for given experiment.
@@ -107,6 +106,8 @@ paths:
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/manage:
     put:
+      security:
+        - JWT: []
       tags:
         - booking-frontend
       summary: Books an experiment.
@@ -123,6 +124,11 @@ paths:
                  $ref: '#/components/schemas/Experiment'
                 Time:
                   $ref: '#/components/schemas/Timeslot'
+                Type:
+                  description: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+                  type: string
+                  enum:
+                   - normal
       responses:
         '200':
           description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
@@ -153,6 +159,8 @@ paths:
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/manage/{ID}:
     patch:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -218,6 +226,8 @@ paths:
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
     delete:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -259,6 +269,8 @@ paths:
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
     get:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -283,12 +295,8 @@ paths:
                  - Time
                  - Locked
                 properties:
-                  Experiment:
-                    $ref: '#/components/schemas/Experiment'
                   Booking:
                     $ref: '#/components/schemas/Booking'
-                  Time:
-                    $ref: '#/components/schemas/Timeslot'
                   Locked:
                     type: boolean
                     description: Shows if the booking is in a locked status.
@@ -310,6 +318,8 @@ paths:
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/destroy/{ID}:
     delete:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -345,6 +355,8 @@ paths:
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/lock/{ID}:
     put:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -400,6 +412,8 @@ paths:
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
     delete:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID
@@ -433,6 +447,8 @@ paths:
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/callback/{ID}:
     post:
+      security:
+        - JWT: []
       parameters:
         - in: path
           name: ID

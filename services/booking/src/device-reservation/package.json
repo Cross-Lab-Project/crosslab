@@ -1,6 +1,6 @@
 {
   "name": "device-reservation",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Part of booking service. Responsible for low level device reservation.",
   "main": "index.ts",
   "scripts": {

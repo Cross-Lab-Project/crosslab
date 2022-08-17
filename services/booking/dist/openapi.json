@@ -25,17 +25,17 @@
     },
     {
       "name": "device-reservation",
-      "description": "The device reservation service handles the actual low-level reservation of devices. Since all requests must be serialised, it must not be scaled horizontally. It only does minimal computation, since all requests must be handled as quickly as possible. This means that callers have to prepare the booking on their side (e.g. like the booking-backend). It must only be called by the booking services and not by user."
-    }
-  ],
-  "security": [
-    {
-      "JWT": []
+      "description": "The device reservation service handles the actual low-level reservation of devices. Since all requests must be serialised, it must not be scaled horizontally. It exposes no public API, all communication runs through an internal message protocol."
     }
   ],
   "paths": {
     "/booking/schedule": {
       "post": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "tags": [
           "schedule-service"
         ],
@@ -147,6 +147,11 @@
     },
     "/booking/manage": {
       "put": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "tags": [
           "booking-frontend"
         ],
@@ -166,6 +171,13 @@
                   },
                   "Time": {
                     "$ref": "#/components/schemas/Timeslot"
+                  },
+                  "Type": {
+                    "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
+                    "type": "string",
+                    "enum": [
+                      "normal"
+                    ]
                   }
                 }
               }
@@ -215,6 +227,11 @@
     },
     "/booking/manage/{ID}": {
       "patch": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -312,6 +329,11 @@
         }
       },
       "delete": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -368,6 +390,11 @@
         }
       },
       "get": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -397,14 +424,8 @@
                     "Locked"
                   ],
                   "properties": {
-                    "Experiment": {
-                      "$ref": "#/components/schemas/Experiment"
-                    },
                     "Booking": {
                       "$ref": "#/components/schemas/Booking"
-                    },
-                    "Time": {
-                      "$ref": "#/components/schemas/Timeslot"
                     },
                     "Locked": {
                       "type": "boolean",
@@ -440,6 +461,11 @@
     },
     "/booking/destroy/{ID}": {
       "delete": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -487,6 +513,11 @@
     },
     "/booking/lock/{ID}": {
       "put": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -565,6 +596,11 @@
         }
       },
       "delete": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -609,6 +645,11 @@
     },
     "/booking/callback/{ID}": {
       "post": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
         "parameters": [
           {
             "in": "path",
@@ -630,191 +671,6 @@
           },
           "404": {
             "description": "Callback is no longer needed."
-          },
-          "500": {
-            "description": "Request could not be answered. An error string containing the reason will be returned.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "Error description."
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
-          }
-        }
-      }
-    },
-    "/booking/device/": {
-      "put": {
-        "tags": [
-          "device-reservation"
-        ],
-        "summary": "Adds a reservation for the actual device. Must only be called by the booking service.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "Device",
-                  "Time"
-                ],
-                "properties": {
-                  "Device": {
-                    "$ref": "#/components/schemas/Device"
-                  },
-                  "Time": {
-                    "$ref": "#/components/schemas/Timeslot"
-                  },
-                  "BookingReference": {
-                    "type": "string",
-                    "description": "Reference to the booking this request belongs to."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The reservation was successful, it is guaranteed that the device is now booked.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "ReservationID"
-                  ],
-                  "properties": {
-                    "ReservationID": {
-                      "type": "string",
-                      "format": "uri",
-                      "description": "ID of the reservation."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "No authorisation header found."
-          },
-          "500": {
-            "description": "Request could not be answered. An error string containing the reason will be returned.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "description": "Error description",
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
-          }
-        }
-      }
-    },
-    "/booking/device/{ID}": {
-      "get": {
-        "parameters": [
-          {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Reservation"
-          }
-        ],
-        "tags": [
-          "device-reservation"
-        ],
-        "summary": "Returns the given reservation and - if applicable - the access token.",
-        "responses": {
-          "200": {
-            "description": "Returns the current reservation.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "Device",
-                    "Time"
-                  ],
-                  "properties": {
-                    "Device": {
-                      "$ref": "#/components/schemas/Device"
-                    },
-                    "Time": {
-                      "$ref": "#/components/schemas/Timeslot"
-                    },
-                    "BookingReference": {
-                      "type": "string",
-                      "description": "Reference to the booking this request belongs to."
-                    },
-                    "Token": {
-                      "type": "string",
-                      "description": "Access token to the device. This field only exists when the requested user is the user who did the reservation and the time is between start and end."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "No authorisation header found."
-          },
-          "404": {
-            "description": "Request contains unknown ID"
-          },
-          "500": {
-            "description": "Request could not be answered. An error string containing the reason will be returned.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "description": "Error code"
-                }
-              }
-            }
-          },
-          "503": {
-            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
-          }
-        }
-      },
-      "delete": {
-        "parameters": [
-          {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Reservation"
-          }
-        ],
-        "tags": [
-          "device-reservation"
-        ],
-        "summary": "Deletes the single device reservation.",
-        "responses": {
-          "200": {
-            "description": "Deletion was successful. It is now guaranteed that the device reservation does not exist any more."
-          },
-          "401": {
-            "description": "No authorisation header found."
-          },
-          "404": {
-            "description": "Request contains unknown ID"
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
