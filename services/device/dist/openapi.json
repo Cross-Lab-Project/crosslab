@@ -51,9 +51,6 @@
         "title": "Time Slot",
         "type": "object",
         "properties": {
-          "available": {
-            "type": "boolean"
-          },
           "start": {
             "type": "string",
             "format": "date-time"
@@ -61,31 +58,6 @@
           "end": {
             "type": "string",
             "format": "date-time"
-          },
-          "repeat": {
-            "description": "If specified the time slot is repeated in a fixed offset specified by the freqency",
-            "type": "object",
-            "properties": {
-              "frequency": {
-                "type": "string",
-                "enum": [
-                  "HOURLY",
-                  "DAILY",
-                  "WEEKLY",
-                  "MONTHLY",
-                  "YEARLY"
-                ]
-              },
-              "until": {
-                "description": "Up to this date-time the time slot will be repeated.",
-                "type": "string",
-                "format": "date-time"
-              },
-              "count": {
-                "description": "How often the time slot will be repeated",
-                "type": "integer"
-              }
-            }
           }
         }
       },
@@ -119,6 +91,47 @@
               "experiment": {
                 "type": "string",
                 "format": "uri"
+              }
+            }
+          }
+        ]
+      },
+      "availability_rule": {
+        "title": "Availability Rule",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/time_slot"
+          },
+          {
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "repeat": {
+                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "HOURLY",
+                      "DAILY",
+                      "WEEKLY",
+                      "MONTHLY",
+                      "YEARLY"
+                    ]
+                  },
+                  "until": {
+                    "description": "Up to this date-time the time slot will be repeated.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "count": {
+                    "description": "How often the time slot will be repeated",
+                    "type": "integer"
+                  }
+                }
               }
             }
           }
@@ -362,7 +375,22 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
@@ -825,7 +853,22 @@
               "schema": {
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
@@ -1059,6 +1102,9 @@
               }
             }
           },
+          "400": {
+            "description": "Request could not be fulfilled"
+          },
           "404": {
             "description": "The requested device could not be found"
           }
@@ -1165,24 +1211,10 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "available": {
-                          "type": "boolean",
-                          "description": "if set to false this timeslot will be removed from the available times.",
-                          "default": true
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/availability"
-                  }
-                ]
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/availability_rule"
+                }
               },
               "examples": {
                 "Make the device always unavailable": {
@@ -1225,7 +1257,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed device",
+            "description": "The JSON Representation of the changed availability",
             "content": {
               "application/json": {
                 "schema": {

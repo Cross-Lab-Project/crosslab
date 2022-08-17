@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { DeviceOverviewModel, ConcreteDeviceModel, DeviceGroupModel, TimeSlotModel, DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "./model";
+import { DeviceOverviewModel, ConcreteDeviceModel, DeviceGroupModel, AvailabilityRuleModel, DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "./model";
 
 export const AppDataSource = new DataSource({
     type: "sqlite",
@@ -9,9 +9,10 @@ export const AppDataSource = new DataSource({
         DeviceOverviewModel, 
         ConcreteDeviceModel, 
         DeviceGroupModel, 
-        TimeSlotModel, 
+        AvailabilityRuleModel, 
         DeviceReferenceModel,
         PeerconnectionModel,
-        ServiceConfigModel
+        ServiceConfigModel,
+        AvailabilityRuleModel
     ]
 })

@@ -15,7 +15,7 @@ get:
       description: The JSON Representation of the device
       content:
         application/json:
-          $ref: "../content/device.yml"
+          $ref: "../content/device_response.yml"
     404:
       description: The requested device could not be found
 patch:
@@ -33,13 +33,15 @@ patch:
     description: Update the device
     content:
       application/json:
-        $ref: "../content/device.yml"
+        $ref: "../content/device_body.yml"
   responses:
     200:
       description: The JSON Representation of the changed device
       content:
         application/json:
-          $ref: "../content/device.yml"
+          $ref: "../content/device_response.yml"
+    400:
+      description: Request could not be fulfilled
     404:
       description: The requested device could not be found
   callbacks:

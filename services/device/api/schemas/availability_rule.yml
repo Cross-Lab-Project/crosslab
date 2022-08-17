@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Availability Rule
+type: object
+allOf:
+  - $ref: "./time_slot.yml"
+  - properties: 
+      available:
+        type: boolean
+      repeat:
+        description: If specified the time slot is repeated in a fixed offset specified by the frequency
+        type: object
+        properties:
+          frequency:
+            type: string
+            enum:
+              - HOURLY
+              - DAILY
+              - WEEKLY
+              - MONTHLY
+              - YEARLY
+          until:
+            description: Up to this date-time the time slot will be repeated.
+            type: string
+            format: date-time
+          count:
+            description: How often the time slot will be repeated
+            type: integer

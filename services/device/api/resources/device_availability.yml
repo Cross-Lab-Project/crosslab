@@ -15,7 +15,7 @@ post:
         $ref: "../content/availability_request.yml"
   responses:
     200:
-      description: The JSON Representation of the changed device
+      description: The JSON Representation of the changed availability
       content:
         application/json:
           $ref: "../content/availability.yml"

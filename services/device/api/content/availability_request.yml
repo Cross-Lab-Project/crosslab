@@ -1,15 +1,8 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
-  allOf:
-    - type: array
-      items:
-        type: object
-        properties:
-          available:
-            type: boolean
-            description: if set to false this timeslot will be removed from the available times.
-            default: true
-    - $ref: ../schemas/availability.yml
+  type: array
+  items:
+    $ref: "../schemas/availability_rule.yml"
 examples:
   Make the device always unavailable:
     value:

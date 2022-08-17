@@ -2,7 +2,8 @@ import {
     DeviceOverview,
     ConcreteDevice,
     DeviceGroup,
-    TimeSlot
+    TimeSlot,
+    AvailabilityRule
 } from "../generated/types"
 import {
     getDevicesSignature,
@@ -18,10 +19,12 @@ import {
     DeviceOverviewModel, 
     ConcreteDeviceModel, 
     DeviceGroupModel, 
-    TimeSlotModel, 
+    AvailabilityRuleModel, 
     DeviceReferenceModel,
     PeerconnectionModel,
-    isConcreteDeviceModel
+    isConcreteDeviceModel,
+    TimeSlotModel,
+    isDeviceGroupModel
 } from "../model";
 import { config } from "../config"
 import WebSocket from "ws";
@@ -34,9 +37,10 @@ import {
     SignalingMessage
 } from "./deviceMessages";
 import { randomUUID } from "crypto";
-import { EntityTarget } from "typeorm";
 import fetch from "node-fetch";
 import { APIClient } from "@cross-lab-project/api-client"
+
+const YEAR = 365*24*60*60*1000
 
 export const connectedDevices = new Map<string, WebSocket>();
 export const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
@@ -173,14 +177,8 @@ function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
 
 function formatTimeSlot(timeSlot: TimeSlotModel): TimeSlot {
     return {
-        available: timeSlot.available ?? true,
-        start: timeSlot.start ?? undefined,
-        end: timeSlot.end ?? undefined,
-        repeat: (timeSlot.frequency || timeSlot.until || timeSlot.count) ? {
-            frequency: timeSlot.frequency ?? undefined,
-            until: timeSlot.until ?? undefined,
-            count: timeSlot.count ?? undefined
-        } : undefined
+        start: new Date(timeSlot.start).toISOString(),
+        end: new Date(timeSlot.end).toISOString()
     }
 }
 
@@ -256,49 +254,222 @@ async function formatDeviceGroup(deviceGroup: DeviceGroupModel, flat_group: bool
     }
 }
 
-function writeTimeSlot(timeSlot: TimeSlotModel, object: TimeSlot) {
-    timeSlot.available = object.available ?? true
-    timeSlot.start = object.start
-    timeSlot.end = object.end
+function writeAvailabilityRule(availabilityRule: AvailabilityRuleModel, object: AvailabilityRule) {
+    availabilityRule.available = object.available ?? true
+    availabilityRule.start = object.start ? new Date(object.start).getTime() : undefined
+    availabilityRule.end = object.end ? new Date(object.end).getTime() : undefined
     if (object.repeat) {
-        timeSlot.frequency = object.repeat.frequency
-        timeSlot.until = object.repeat.until
-        timeSlot.count = object.repeat.count
+        availabilityRule.frequency = object.repeat.frequency
+        availabilityRule.until = object.repeat.until ? new Date(object.repeat.until).getTime() : undefined
+        availabilityRule.count = object.repeat.count
     }
 }
 
-async function writeDevice(device: DeviceOverviewModel, object: DeviceOverview) {
+function writeDeviceOverview(device: DeviceOverviewModel, object: DeviceOverview) {
     device.name = object.name
     device.description = object.description
     device.type = object.type
     device.owner = object.owner
+}
 
-    if (isConcreteDevice(object)) {
-        const concreteDevice = device as ConcreteDeviceModel
-        concreteDevice.connected = false
-        concreteDevice.token = undefined
-        if (object.announcedAvailability) {
-            concreteDevice.announcedAvailability = []
-            const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
-            for (const ts of object.announcedAvailability) {
-                const timeSlot = timeSlotRepository.create()
-                writeTimeSlot(timeSlot, ts)
-                // await timeSlotRepository.save(timeSlot)
-                concreteDevice.announcedAvailability.push(timeSlot)
+function sortTimeSlots(availability: TimeSlotModel[]) {
+    availability.sort((a, b) => {
+        if (a.start < b.start) return -1
+        if (a.start > b.start) return 1
+        return 0
+    })
+}
+
+function mergeTimeSlots(availability: TimeSlotModel[]) {
+    for (let i = 0; i < availability.length; i++) {
+        if (i < availability.length - 1) {
+            if (availability[i+1].start <= availability[i].end) {
+                availability = availability.splice(i+1, 1)
+                i--
             }
         }
-        if (object.experiment) concreteDevice.experiment = object.experiment
-    } else if (isDeviceGroup(object)) {
-        const deviceGroup = device as DeviceGroupModel
-        if (object.devices) {
-            deviceGroup.devices = []
-            const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
-            for (const d of object.devices) {
-                const deviceReference = deviceReferenceRepository.create()
-                if (d.url) deviceReference.url = d.url
-                // await deviceReferenceRepository.save(deviceReference)
-                deviceGroup.devices.push(deviceReference)
+    }
+}
+
+function invertTimeSlots(availability: TimeSlotModel[], start: number, end: number) {
+    if (availability.length === 0) return
+
+    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
+
+    // sort by starttime
+    sortTimeSlots(availability)
+
+    // merge timeslots
+    mergeTimeSlots(availability)
+
+    const newAvailability: TimeSlotModel[] = []
+
+    // create first timeslot
+    const firstTimeSlot = timeSlotRepository.create()
+    firstTimeSlot.start = start
+    firstTimeSlot.end = availability[0].start
+
+    if (firstTimeSlot.start !== firstTimeSlot.end) 
+        newAvailability.push(firstTimeSlot)
+
+    // create intermediate timeslots
+    for (let i = 0; i < availability.length; i++) {
+        if (i < availability.length - 1) {
+            const timeSlot = timeSlotRepository.create()
+            timeSlot.start = availability[i].end
+            timeSlot.end = availability[i+1].start
+            newAvailability.push(timeSlot)
+        }
+    }
+    
+    // create last timeslot
+    const lastTimeSlot = timeSlotRepository.create()
+    lastTimeSlot.start = availability[availability.length - 1].end
+    lastTimeSlot.end = end
+
+    if (lastTimeSlot.start !== lastTimeSlot.end) 
+        newAvailability.push(lastTimeSlot)
+
+    availability = newAvailability
+}
+
+function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
+    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
+    const timeSlot = timeSlotRepository.create()
+    timeSlot.start = availabilityRule.start && availabilityRule.start >= start ? availabilityRule.start : start,
+    timeSlot.end = availabilityRule.end && availabilityRule.end <= end ? availabilityRule.end : end
+    
+    if (availabilityRule.frequency && availabilityRule.end) {
+        let frequency = 0
+        switch (availabilityRule.frequency) {
+            case "HOURLY":
+                frequency = 60 * 60 * 1000
+                break
+            case "DAILY":
+                frequency = 24 * 60 * 60 * 1000
+                break
+            case "WEEKLY":
+                frequency = 7 * 24 * 60 * 60 * 1000
+                break
+            case "MONTHLY":
+                frequency = 28 * 7 * 24 * 60 * 60 * 1000 // not very precise since months vary in length
+                break
+            case "YEARLY":
+                frequency = 365 * 7 * 24 * 60 * 60 * 1000 // not taking leap years into account
+                break
+        }
+        if (frequency < (timeSlot.end - timeSlot.start)) {
+            timeSlot.start = start
+            timeSlot.end = end
+        }
+        const until = availabilityRule.until ?? end
+        let count = availabilityRule.count
+        
+        let currentTimeSlot = timeSlotRepository.create()
+        currentTimeSlot.start = availabilityRule.start !== undefined ? availabilityRule.start + frequency : start
+        currentTimeSlot.end = availabilityRule.end + frequency
+
+        while (until < (currentTimeSlot.end - frequency)) {
+            if (until !== undefined) {
+                if (until < currentTimeSlot.start) break
+                if (!availabilityRule.start && until < (currentTimeSlot.end - frequency)) break
             }
+            if (count !== undefined) {
+                if (!count) break
+                count--
+            }
+
+            if (currentTimeSlot.start < start) currentTimeSlot.start = start
+            if (currentTimeSlot.end > end) currentTimeSlot.end = end 
+            availability.push(currentTimeSlot)
+            const newCurrentTimeSlot = timeSlotRepository.create()
+
+            if (availabilityRule.start) {
+                newCurrentTimeSlot.start = currentTimeSlot.start + frequency
+                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
+            } else {
+                newCurrentTimeSlot.start = start
+                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
+            }
+
+            currentTimeSlot = newCurrentTimeSlot
+        }
+    }
+
+    availability.push(timeSlot)
+}
+
+function applyAvailabilityRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
+    if (availabilityRule.available === true || availabilityRule.available === undefined) {
+        // add all new timeslots
+        addTimeSlotsFromRule(availability, availabilityRule, start, end)
+
+        // sort by starttime
+        sortTimeSlots(availability)
+
+        // merge timeslots
+        mergeTimeSlots(availability)
+    } else {
+        // invert availability
+        invertTimeSlots(availability, start, end)
+
+        // add all new timeslots
+        addTimeSlotsFromRule(availability, availabilityRule, start, end)
+
+        // sort by starttime
+        sortTimeSlots(availability)
+
+        // merge timeslots
+        mergeTimeSlots(availability)
+        
+        // invert availability
+        invertTimeSlots(availability, start, end)
+    }
+}
+
+function applyAvailabilityRules(availability: TimeSlotModel[], availabilityRules: AvailabilityRuleModel[], start: number, end: number) {
+    for (const availabilityRule of availabilityRules) {
+        applyAvailabilityRule(availability, availabilityRule, start, end)
+    }
+}
+
+function writeConcreteDevice(device: ConcreteDeviceModel, object: ConcreteDevice & { announcedAvailability?: AvailabilityRule[] }) {
+    writeDeviceOverview(device, object)
+    
+    device.connected = false
+    device.token = undefined
+    device.experiment = object.experiment
+
+    if (object.announcedAvailability) {
+        if (!device.availabilityRules) device.availabilityRules = []
+        const availabilityRuleRepository = AppDataSource.getRepository(AvailabilityRuleModel)
+        for (const availabilityRule of object.announcedAvailability) {
+            const availabilityRuleModel = availabilityRuleRepository.create()
+            writeAvailabilityRule(availabilityRuleModel, availabilityRule)
+            device.availabilityRules.push(availabilityRuleModel)
+        }
+    }
+
+    // TODO: generate announcedAvailability timeslots
+    if (!device.announcedAvailability) device.announcedAvailability = []
+    if (device.availabilityRules) {
+        device.announcedAvailability = []
+        const start = Date.now()
+        const end = start + YEAR
+        applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
+    }
+}
+
+function writeDeviceGroup(device: DeviceGroupModel, object: DeviceGroup) {
+    writeDeviceOverview(device, object)
+
+    if (object.devices) {
+        if (!device.devices) device.devices = []
+        const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
+        for (const deviceReference of object.devices) {
+            const deviceReferenceModel = deviceReferenceRepository.create()
+            deviceReferenceModel.url = deviceReference.url
+            device.devices.push(deviceReferenceModel)
         }
     }
 }
@@ -313,18 +484,19 @@ export const getDevices: getDevicesSignature = async (_user) => {
     }
 }
 
-async function handlePostDevices<M extends DeviceOverviewModel>(device: ConcreteDevice | DeviceGroup, model: EntityTarget<M>): Promise<M> {
-    const deviceRepository = AppDataSource.getRepository(model)
-    const deviceModel = deviceRepository.create()
-    await writeDevice(deviceModel, device)
-    await deviceRepository.save(deviceModel)
-    return deviceModel
-}
-
 export const postDevices: postDevicesSignature = async (parameters, body, _user) => {
-    const device = isConcreteDevice(body) ? 
-        await handlePostDevices(body, ConcreteDeviceModel) : 
-        await handlePostDevices(body, DeviceGroupModel)
+    let device
+    if (isConcreteDevice(body)) {
+        const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
+        device = concreteDeviceRepository.create()
+        writeConcreteDevice(device, body)
+        await concreteDeviceRepository.save(device)
+    } else {
+        const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
+        device = deviceGroupRepository.create()
+        writeDeviceGroup(device, body)
+        await deviceGroupRepository.save(device)
+    }
 
     if (parameters.changedUrl) {
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
@@ -434,9 +606,17 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
         }
     }
 
-    await writeDevice(device, body)
-    // TODO: check if this works as intended
-    await deviceOverviewRepository.save(device) 
+    if (isConcreteDeviceModel(device) && isConcreteDevice(body)) {
+        writeConcreteDevice(device, body)
+        concreteDeviceRepository.save(device)
+    } else if (isDeviceGroupModel(device) && isDeviceGroup(body)) {
+        writeDeviceGroup(device, body)
+        deviceGroupRepository.save(device)
+    } else {
+        return {
+            status: 400
+        }
+    }
 
     if (parameters.changedUrl) {
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
@@ -461,28 +641,22 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         }
     }
 
-    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
+    const availabilityRuleRepository = AppDataSource.getRepository(AvailabilityRuleModel)
 
-    // remove old timeslots
-    if (!device.announcedAvailability) {
-        device.announcedAvailability = []
-    } else {
-        let timeSlot = undefined
-        while (timeSlot = device.announcedAvailability.pop()) {
-            await timeSlotRepository.softDelete({ id: timeSlot.id })
-        }
-    }
-
-    // TODO: check if this suffices or if more steps need to be taken
+    if (!device.availabilityRules) device.availabilityRules = []
     if (body) {
-        // insert new timeslots
-        for (const ts of body) {
-            const timeSlot = timeSlotRepository.create()
-            writeTimeSlot(timeSlot, ts)
-            // await timeSlotRepository.save(timeSlot)
-            device.announcedAvailability.push(timeSlot)
+        // insert new availability rules
+        for (const availabilityRule of body) {
+            const availabilityRuleModel = availabilityRuleRepository.create()
+            writeAvailabilityRule(availabilityRuleModel, availabilityRule)
+            device.availabilityRules.push(availabilityRuleModel)
         }
     }
+
+    device.announcedAvailability = []
+    const start = Date.now()
+    const end = start + YEAR
+    applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
 
     await deviceRepository.save(device)
     handleChangedCallback(device)

@@ -57,6 +57,8 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
     connected?: boolean
     @OneToMany(() => TimeSlotModel, (timeslot) => timeslot.device, { onDelete: "CASCADE", cascade: true })
     announcedAvailability?: TimeSlotModel[]
+    @OneToMany(() => AvailabilityRuleModel, (timeslot) => timeslot.device, { onDelete: "CASCADE", cascade: true })
+    availabilityRules?: AvailabilityRuleModel[]
     @Column()
     experiment?: string
     @Column()
@@ -102,23 +104,23 @@ export class ServiceConfigModel {
     deletedAt?: Date
 }
 
-@Entity({ name: "TimeSlot" })
-export class TimeSlotModel {
+@Entity({ name: "AvailabilityRule" })
+export class AvailabilityRuleModel {
     @PrimaryGeneratedColumn()
     id!: number
     @Column()
     available?: boolean
     @Column({ nullable: true })
-    start?: string
+    start?: number
     @Column({ nullable: true })
-    end?: string
+    end?: number
     @Column({ nullable: true })
     frequency?: "HOURLY" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY"
     @Column({ nullable: true })
-    until?: string
+    until?: number
     @Column({ nullable: true })
     count?: number
-    @ManyToOne(() => ConcreteDeviceModel, (device) => device.announcedAvailability)
+    @ManyToOne(() => ConcreteDeviceModel, (device) => device.availabilityRules)
     device?: ConcreteDeviceModel
     @AfterLoad()
     nullToUndefined() {
@@ -131,6 +133,18 @@ export class TimeSlotModel {
     }
     @DeleteDateColumn()
     deletedAt?: Date
+}
+
+@Entity({ name: "TimeSlot" })
+export class TimeSlotModel {
+    @PrimaryGeneratedColumn()
+    id!: number
+    @Column()
+    start!: number
+    @Column()
+    end!: number
+    @ManyToOne(() => ConcreteDeviceModel, (device) => device.announcedAvailability)
+    device?: ConcreteDeviceModel
 }
 
 @Entity({ name: "Peerconnection" })
