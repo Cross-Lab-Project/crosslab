@@ -132,4 +132,4 @@ dist
 # TypeScript build artifacts
 build/
 .npmrc
-src/generated/
+generated/

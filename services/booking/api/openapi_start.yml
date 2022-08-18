@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: Booking service
+  description: >-
+    This API represents the booking service, which each participating institution hosting one instance of the booking service (e.g. each institution has one *device-reservation* service). All of the booking services connected through **CrossLab** will communicate with each other in order to allow cross-institution bookings.
+
+
+    In this document, two words are used: *reservation* for the management of low-level devices and *bookings* for the experiment booking inkluding one or multiple devices.
+    The booking service itself is build on 4 different microservices, as shown by the different tags used in this documentation. By using different micro service, scaling is easier to realise (especially when using a language like TypeScript which does not support parallel execution). The booking service as a whole should have different data bases:
+     * **Device reservation database**: This database contains the low-level reservation for individual devices. The *schedule-service* will access it read-only and the *device-reservation* will access it read-write.
+     * **Booking database**: This contains the database with all experiment bookings including experiments. It can be accessed read-write by *booking-frontend* and *booking-backend*.
+     * **Callback-Database**: This contains all known callbacks (both registered from other services and one callbacks registered at the booking service). It should only be accessed by booking-backend.
+
+    To facillitate communication between the different services, a message broker will be used.
+  version: 1.0.0
+servers:
+  - url: /v1
+tags:
+  - name: schedule-service
+    description: The schedule service is responsible for showing the schedule of devices. It shares a database with device-reservation, but accesses it read-only. It can be scaled horizontally
+  - name: booking-frontend
+    description: The booking-frontend is tasked with accepting and showing experiment bookings. It itself only does minimal management, most intensive tasks (like the actual reservation of devices) are handled by the booking backend. It communicates with the backend through a message protocol. It should not be scaled horizontally.
+  - name: booking-backend
+    description: The booking backend handles the computation heavy tasks of the booking, like the device selection & reservation and the response to callbacks. It communicates with the frontend through a message protocol. It should be scaled horizontally.
+  - name: device-reservation
+    description: The device reservation service handles the actual low-level reservation of devices. Since all requests must be serialised, it must not be scaled horizontally. It exposes no public API, all communication runs through an internal message protocol.
+
+paths:
