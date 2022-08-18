@@ -28,13 +28,17 @@ mocha.describe("operations.ts", function () {
         });
 
         app.post('/proxy', (req, res) => {
-            console.log("Schedule asked!");
-            let json = JSON.parse(req.body);
-            if (proxy_server_status == 200) {
-                res.send('[{"Device": "http://127.0.0.1:10802/device/remoteFake","Booked": [],"Free": [{"Start": "' + json.Time.Start + '","End": "' + json.Time.End + '"}]}]');
-                return;
-            };
-            res.status(proxy_server_status).send("Faking error" + proxy_server_status);
+            if (req.path.includes("/device/")) {
+                let json = JSON.parse(req.body);
+                if (proxy_server_status == 200) {
+                    res.send('[{"Device": "http://127.0.0.1:10802/device/remoteFake","Booked": [],"Free": [{"Start": "' + json.Time.Start + '","End": "' + json.Time.End + '"}]}]');
+                    return;
+                };
+                res.status(proxy_server_status).send("Faking error" + proxy_server_status);
+            } else {
+                console.log("unknown request to proxy:", req.path);
+                res.status(999).send("unknown request to proxy: " + req.path);
+            }
         });
 
         app.all('*', (req, res) => {
@@ -46,18 +50,16 @@ mocha.describe("operations.ts", function () {
     mocha.after(function () {
         device_server.close();
         device_server = undefined;
-        proxy_server.close();
-        proxy_server = undefined;
     });
 
-    mocha.beforeEach(async function() {
+    mocha.beforeEach(async function () {
         let db = await mysql.createConnection(config.ReservationDSN);
         await db.connect();
         await db.execute("CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`))");
         db.end();
     });
 
-    mocha.afterEach(async function() {
+    mocha.afterEach(async function () {
         let db = await mysql.createConnection(config.ReservationDSN);
         await db.connect();
         await db.execute("DROP TABLE reservation");
