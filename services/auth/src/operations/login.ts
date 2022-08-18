@@ -1,15 +1,16 @@
-import { randomBytes } from "crypto"
 import { AppDataSource } from "../data_source"
 import {
     postLoginSignature
 } from "../generated/signatures/login"
-import { RoleModel, UserModel } from "../model"
+import { RoleModel, TokenModel, UserModel } from "../model"
 import ldap from "ldapjs"
 
-export async function loginTui(username: string, password: string): Promise<UserModel> {
+// TODO: replace 500 return code on wrong credentials
+export async function loginTui(username: string, password: string): Promise<TokenModel> {
     const HOUR = 60 * 60 * 1000
     const userRepository = AppDataSource.getRepository(UserModel)
     const roleRepository = AppDataSource.getRepository(RoleModel)
+    const tokenRepository = AppDataSource.getRepository(TokenModel)
 
     const client = ldap.createClient({
         url: "ldaps://ldapauth.tu-ilmenau.de:636", tlsOptions: {
@@ -43,37 +44,46 @@ export async function loginTui(username: string, password: string): Promise<User
             }
         })
     })
-    let user = await userRepository.findOneBy({ username: "tui:" + username });
+    let user = await userRepository.findOne({ 
+        where: {
+            username: "tui:" + username 
+        },
+        relations: {
+            tokens: true
+        }
+    });
     if (!user) {
         user = userRepository.create()
         user.username = "tui:" + username
         user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
+        user.tokens = []
     }
+    if (!user.tokens) user.tokens = []
     if (!user.roles) user.roles = [await roleRepository.findOneByOrFail({ name: "user" })]
     user.currentRole = user.roles[0]
-    // TODO: make sure that token is truly unique
-    user.token = randomBytes(16).toString("hex")
-    user.tokenExpiresOn = (new Date(Date.now() + HOUR)).toISOString()
+    const token = tokenRepository.create()
+    token.expiresOn = new Date(Date.now() + HOUR).toISOString()
+    user.tokens.push(token)
 
     await userRepository.save(user)
-    return user
+    return token
 }
 
 export const postLogin: postLoginSignature = async (body) => {
-    let user
+    let token
     if (body.method === "tui") {
-        user = await loginTui(body.username, body.password)
+        token = await loginTui(body.username, body.password)
     }
 
     switch (body.method) {
         case "local":
             break
         case "tui":
-            user = await loginTui(body.username, body.password)
+            token = await loginTui(body.username, body.password)
             break
     }
 
-    if (!user) {
+    if (!token) {
         return {
             status: 401
         }
@@ -81,6 +91,6 @@ export const postLogin: postLoginSignature = async (body) => {
 
     return {
         status: 201,
-        body: user.token
+        body: token.token
     }
 }

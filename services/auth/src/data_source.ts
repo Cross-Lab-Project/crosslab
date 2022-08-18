@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { ActiveKeyModel, KeyModel, RoleModel, ScopeModel, UserModel } from "./model";
+import { ActiveKeyModel, KeyModel, RoleModel, ScopeModel, TokenModel, UserModel } from "./model";
 
 export const AppDataSource = new DataSource({
     type: "sqlite",
@@ -10,7 +10,8 @@ export const AppDataSource = new DataSource({
         RoleModel,
         UserModel,
         KeyModel,
-        ActiveKeyModel
+        ActiveKeyModel,
+        TokenModel
     ]
 })
 
@@ -122,8 +123,7 @@ async function createDefaultSuperadmin() {
         user.password = "superadmin"
         user.roles = [roleSuperadmin]
         user.currentRole = roleSuperadmin
-        user.token = ""
-        user.tokenExpiresOn = new Date(Date.now() - 1).toISOString()
+        user.tokens = []
         await userRepository.save(user)
     }
 }

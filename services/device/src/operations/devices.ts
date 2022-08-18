@@ -269,7 +269,6 @@ function writeDeviceOverview(device: DeviceOverviewModel, object: DeviceOverview
     device.name = object.name
     device.description = object.description
     device.type = object.type
-    device.owner = object.owner
 }
 
 function sortTimeSlots(availability: TimeSlotModel[]) {
@@ -484,17 +483,19 @@ export const getDevices: getDevicesSignature = async (_user) => {
     }
 }
 
-export const postDevices: postDevicesSignature = async (parameters, body, _user) => {
+export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     let device
     if (isConcreteDevice(body)) {
         const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
         device = concreteDeviceRepository.create()
         writeConcreteDevice(device, body)
+        device.owner = user.username
         await concreteDeviceRepository.save(device)
     } else {
         const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
         device = deviceGroupRepository.create()
         writeDeviceGroup(device, body)
+        device.owner = user.username
         await deviceGroupRepository.save(device)
     }
 

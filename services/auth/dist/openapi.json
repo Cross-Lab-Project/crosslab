@@ -128,14 +128,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Return the JWT which represent the authenticated user.",
+            "description": "Return the JWT which represents the authenticated user.",
             "headers": {
               "Authorization": {
                 "required": false,
                 "schema": {
                   "type": "string",
                   "format": "jwt",
-                  "description": "The JWT which represent the authenticated user."
+                  "description": "The JWT which represents the authenticated user."
                 }
               }
             }

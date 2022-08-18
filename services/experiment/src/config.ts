@@ -1,6 +1,6 @@
 import { exit } from "process"
 
-function die(reason: string){
+function die(reason: string): string {
     console.error(reason)
     exit(1)
 }

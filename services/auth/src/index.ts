@@ -45,6 +45,12 @@ AppDataSource.initialize()
         activeKey.use = key.use
         await activeKeyRepository.save(activeKey)
 
+        app.get("/.well-known/jwks.json", (_req, res, _next) => {
+            res.send(jwks);
+        })
+        app.get("/.well-known/openid-configuration", (_req, res, _next) => {
+            res.send({"jwks_uri": "/.well-known/jwks.json"});
+        })
         app.initService({
             JWTVerify: async (jwt, scopes) => {
                 if (!jwt) throw new Error("No jwt found")
@@ -52,19 +58,12 @@ AppDataSource.initialize()
                 const jwksUri = new URL(config.BASE_URL + "/.well-known/jwks.json")
                 const JWKS = createRemoteJWKSet(jwksUri)
                 const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
-                console.log(jwtVerifyResult.payload)
                 const user = jwtVerifyResult.payload as UserType
                 for (const scope of scopes) {
                     if (!user.scopes.includes(scope)) throw new Error("Missing Scope: " + scope)
                 }
                 return user
             }
-        })
-        app.get("/.well-known/jwks.json", (_req, res, _next) => {
-            res.send(jwks);
-        })
-        app.get("/.well-known/openid-configuration", (_req, res, _next) => {
-            res.send({"jwks_uri": "/.well-known/jwks.json"});
         })
         app.listen(config.PORT)
     })

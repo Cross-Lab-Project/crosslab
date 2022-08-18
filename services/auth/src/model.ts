@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class ScopeModel {
@@ -28,11 +28,18 @@ export class UserModel {
     roles!: RoleModel[]
     @ManyToOne(() => RoleModel)
     currentRole!: RoleModel
-    @Column()
-    @Index({ unique: true })
+    @OneToMany(() => TokenModel, (token) => token.user, { onDelete: "CASCADE", cascade: true })
+    tokens!: TokenModel[]
+}
+
+@Entity()
+export class TokenModel {
+    @PrimaryGeneratedColumn("uuid")
     token!: string
     @Column("datetime")
-    tokenExpiresOn!: string
+    expiresOn?: string
+    @ManyToOne(() => UserModel, (user) => user.tokens)
+    user!: UserModel
 }
 
 @Entity()
