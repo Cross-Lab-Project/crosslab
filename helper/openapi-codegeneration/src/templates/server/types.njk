@@ -8,6 +8,7 @@ import { Request } from "express"
 export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
 export type UserType = {
+    url: string,
     username: string,
     role: string,
     scopes: string[]
