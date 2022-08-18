@@ -55,7 +55,7 @@ AppDataSource.initialize()
             //     return user
             // }
             JWTVerify(_jwt, _scopes) {
-                return { username: "testuser", role: "superadmin", scopes: [] }
+                return { url: "http://example.com", username: "testuser", role: "superadmin", scopes: [] }
             },
         })
         const wsServer = new WebSocket.Server({ noServer: true });
