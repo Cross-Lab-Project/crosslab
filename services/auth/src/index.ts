@@ -1,8 +1,8 @@
-import { generateKeyPair, JWK, exportJWK, jwtVerify, createRemoteJWKSet } from 'jose';
+import { generateKeyPair, JWK, exportJWK } from 'jose';
 import { config } from './config'
 import { AppDataSource, initializeDataSource } from './data_source';
 import { app } from './generated';
-import { UserType } from './generated/types';
+// import { UserType } from './generated/types';
 import { ActiveKeyModel, KeyModel } from './model';
 
 async function generateNewKey(usage = "sig"): Promise<KeyModel> {
