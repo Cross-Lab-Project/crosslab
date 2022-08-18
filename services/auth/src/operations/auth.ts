@@ -24,6 +24,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const tokenRepository = AppDataSource.getRepository(TokenModel)
 
     if (!parameters.Authorization) {
+        console.log("missing authorization parameter")
         return {
             status: 200
         }
@@ -32,6 +33,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const tokenString = parameters.Authorization.split(" ")[1]
 
     if (!tokenString) {
+        console.log("missing tokenString")
         return {
             status: 200
         }
@@ -51,6 +53,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     })
 
     if (!token) {
+        console.log("missing token")
         return {
             status: 200
         }
@@ -59,6 +62,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const user = token.user
 
     if (!user || token.expiresOn && new Date(token.expiresOn).getTime() < Date.now() ) {
+        console.log("missing user or token is expired")
         return {
             status: 200
         }
