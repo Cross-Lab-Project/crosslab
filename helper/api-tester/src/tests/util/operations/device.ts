@@ -27,7 +27,7 @@ export async function createConcreteDevice(apiClient: APIClient, createdDevices:
     const response = await apiClient.postDevices({ changedUrl: changedUrl }, concreteDevice)
     assert(response.status == 201, "Unexpected response status")
     assert(response.body.type == "device", "Returned device is not of type 'device'")
-    assert(compareConcreteDevices(response.body, concreteDevice, { url: false, connected: false }))
+    assert(compareConcreteDevices(response.body, concreteDevice, { url: false, connected: false, owner: false, announcedAvailability: false }))
 
     // add created concrete device to the list of created devices
     createdDevices.push(response.body)

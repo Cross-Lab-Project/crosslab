@@ -12,6 +12,11 @@ export async function test() {
     const apiClient = new APIClient(config.ENDPOINT)
 
     describe("Experiment Service", async function () {
+        this.beforeAll(async function() {
+            const login_token = await apiClient.postLogin({ username: config.username, password: config.password, method: "tui" })
+            console.log(login_token)
+        })
+
         describe("Basic Experiment Management", async function () {
             const createdDevices: (ConcreteDevice|DeviceGroup)[] = []
             const createdPeerconnections: Peerconnection[] = []
@@ -23,12 +28,13 @@ export async function test() {
                 await deleteExperiments(apiClient, createdExperiments)
             })
 
-            it("should get all experiments", async function () {
+            xit("should get all experiments", async function () {
                 const response = await apiClient.getExperiments()
                 assert(response.status == 200, "Unexpected response status")
             })
 
             it("should create a new experiment", async function () {
+                this.timeout(0)
                 const devices: ConcreteDevice[] = []
                 const websockets: WebSocket[] = []
                 for (let i = 0; i < 3; i++) {
@@ -134,7 +140,7 @@ export async function test() {
             })
         })
 
-        describe("Scenarios", async function () {
+        xdescribe("Scenarios", async function () {
             // TBD
         })
     })
