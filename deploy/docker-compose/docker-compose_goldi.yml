@@ -47,6 +47,7 @@ services:
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+      BASE_URL: https://api.$DOMAIN
     volumes:
       - auth_db:/app/db
   device:
@@ -54,6 +55,7 @@ services:
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+      BASE_URL: https://api.$DOMAIN
     volumes:
       - device_db:/app/db
   experiment:
@@ -61,6 +63,7 @@ services:
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+      BASE_URL: https://api.$DOMAIN
     volumes:
       - experiment_db:/app/db
   federation:
@@ -68,6 +71,7 @@ services:
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+      BASE_URL: https://api.$DOMAIN
     volumes:
       - federation_db:/app/db
   update:
@@ -75,6 +79,7 @@ services:
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
+      BASE_URL: https://api.$DOMAIN
     volumes:
       - update_db:/app/db
 
