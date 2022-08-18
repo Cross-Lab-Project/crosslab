@@ -1,5 +1,5 @@
-import { app } from "../generated";
-import {config} from "../common/config";
+import { app } from "./generated";
+import {config} from "../../common/config";
 
 app.initService({
     JWTVerify: async (_jwt, _scopes) => {

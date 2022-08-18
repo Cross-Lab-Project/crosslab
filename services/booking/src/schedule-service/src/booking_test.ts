@@ -3,8 +3,8 @@ import express from 'express';
 import * as http from 'http';
 import * as mysql from 'mysql2/promise';
 
-import { postBookingSchedule } from "./operations"
-import { config } from "../common/config";
+import { postBookingSchedule } from "./operations/booking"
+import { config } from "../../common/config";
 
 let device_server: http.Server;
 let device_service_status = 200;

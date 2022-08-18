@@ -1,6 +1,6 @@
 import * as mocha from "mocha"
 
-import { Timeslot } from "../generated/types"
+import { Timeslot } from "./generated/types"
 import { timetableAnd, timetableNot, timetableSortInPlace } from "./timetable";
 
 mocha.describe("timetable.ts", function () {

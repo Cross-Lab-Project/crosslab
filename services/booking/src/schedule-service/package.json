@@ -4,7 +4,7 @@
   "description": "Part of booking service. Shows schedule of devices - horizontal scaleable.",
   "main": "index.ts",
   "scripts": {
-    "test": "npm run build && npx nyc mocha build/schedule-service/*_test.js",
+    "test": "npm run build && npx nyc mocha build/schedule-service/src/*_test.js",
     "build": "npx tsc",
     "start": "npm run build && node build/schedule-service/index.js"
   },

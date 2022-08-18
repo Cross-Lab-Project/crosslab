@@ -13,9 +13,9 @@ import { APIClient } from "@cross-lab-project/api-client"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, times } from "lodash"
 
-import { config } from "../common/config"
-import { BelongsToUs } from "../common/auth"
-import { timetableAnd, timetableNot, timetableSortInPlace } from "./timetable"
+import { config } from "../../../common/config"
+import { BelongsToUs } from "../../../common/auth"
+import { timetableAnd, timetableNot, timetableSortInPlace } from "../timetable"
 
 export const postBookingSchedule: postBookingScheduleSignature = async (body, user) => {
     let api: APIClient = new APIClient(config.OwnURL);

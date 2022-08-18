@@ -1,4 +1,4 @@
-import { Timeslot } from "../generated/types"
+import { Timeslot } from "./generated/types"
 
 export function timetableAnd(...t: Timeslot[][]): Timeslot[] {
     let input: Timeslot[] = [];
