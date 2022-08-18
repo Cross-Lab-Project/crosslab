@@ -489,13 +489,13 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
         device = concreteDeviceRepository.create()
         writeConcreteDevice(device, body)
-        device.owner = user.username
+        device.owner = user.url
         await concreteDeviceRepository.save(device)
     } else {
         const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
         device = deviceGroupRepository.create()
         writeDeviceGroup(device, body)
-        device.owner = user.username
+        device.owner = user.url
         await deviceGroupRepository.save(device)
     }
 

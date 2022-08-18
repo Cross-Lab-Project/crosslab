@@ -7,6 +7,8 @@ import { SignJWT, JWTPayload, importJWK } from 'jose';
 import { config } from "../config";
 import { UserType } from "../generated/types";
 
+const BASE_URL = config.BASE_URL.endsWith("/") ? config.BASE_URL : config.BASE_URL + "/"
+
 async function sign<P extends JWTPayload>(payload: P, key: KeyModel, expirationTime: string) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: key.alg, kid: key.uuid })
@@ -24,7 +26,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const tokenRepository = AppDataSource.getRepository(TokenModel)
 
     if (!parameters.Authorization) {
-        console.log("missing authorization parameter")
         return {
             status: 200
         }
@@ -33,7 +34,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const tokenString = parameters.Authorization.split(" ")[1]
 
     if (!tokenString) {
-        console.log("missing tokenString")
         return {
             status: 200
         }
@@ -53,7 +53,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     })
 
     if (!token) {
-        console.log("missing token")
         return {
             status: 200
         }
@@ -62,7 +61,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const user = token.user
 
     if (!user || token.expiresOn && new Date(token.expiresOn).getTime() < Date.now() ) {
-        console.log("missing user or token is expired")
         return {
             status: 200
         }
@@ -76,7 +74,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
     const activeKey = activeKeys[0]
 
-    const jwt = await sign<UserType>({ username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
+    const jwt = await sign<UserType>({ url: BASE_URL + `users/${user.username}`, username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
 
     if (token.expiresOn) token.expiresOn = (new Date(Date.now() + HOUR)).toISOString()
     tokenRepository.save(token)
