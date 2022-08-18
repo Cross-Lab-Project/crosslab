@@ -53,15 +53,24 @@ AppDataSource.initialize()
         })
         app.initService({
             JWTVerify: async (jwt, scopes) => {
+                console.log("checking if jwt exists")
                 if (!jwt) throw new Error("No jwt found")
+                console.log("checking if security issuer exists")
                 if (!config.SECURITY_ISSUER) throw new Error("No security issuer specified")
+                console.log("creating jwksUri")
                 const jwksUri = new URL(config.BASE_URL.endsWith("/") ? config.BASE_URL + ".well-known/jwks.json" : config.BASE_URL + "/.well-known/jwks.json")
+                console.log("creating JWKS")
                 const JWKS = createRemoteJWKSet(jwksUri)
+                console.log("verifying jwt")
                 const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
+                console.log("getting user from jwt")
                 const user = jwtVerifyResult.payload as UserType
+                console.log("checking scopes of jwt")
                 for (const scope of scopes) {
+                    console.log("checking scope", scope)
                     if (!user.scopes.includes(scope)) throw new Error("Missing Scope: " + scope)
                 }
+                console.log("returning user")
                 return user
             }
         })
