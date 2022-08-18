@@ -171,60 +171,60 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
 }
 
 async function bookExperiment(experiment: ExperimentModel) {
-    if (experiment.status === "booked" && experiment.bookingID) {
-        const response = await apiClient.getBookingManageByID({ ID: experiment.bookingID })
-        if (response.status !== 200) {
-            throw new Error("API call was not successful")
-        }
-        if (response.body.Time.Start === experiment.bookingStart && response.body.Time.End === experiment.bookingStart) {
-            // nothing to do since experiment is already booked for this timeframe
-            return
-        }
-    }
+    // if (experiment.status === "booked" && experiment.bookingID) {
+    //     const response = await apiClient.getBookingManageByID({ ID: experiment.bookingID })
+    //     if (response.status !== 200) {
+    //         throw new Error("API call was not successful")
+    //     }
+    //     if (response.body.Time.Start === experiment.bookingStart && response.body.Time.End === experiment.bookingStart) {
+    //         // nothing to do since experiment is already booked for this timeframe
+    //         return
+    //     }
+    // }
 
-    // book devices for requested timeframe or default timeframe of one hour
-    const HOUR = 60 * 60 * 1000
-    const bookingStart = experiment.bookingStart ?? new Date().toISOString()
-    const bookingEnd = experiment.bookingEnd ?? new Date(Date.now() + HOUR).toISOString()
-    const bookingStartDate = new Date(bookingStart)
-    const bookingEndDate = new Date(bookingEnd)
-    const oldBookingID = experiment.bookingID
+    // // book devices for requested timeframe or default timeframe of one hour
+    // const HOUR = 60 * 60 * 1000
+    // const bookingStart = experiment.bookingStart ?? new Date().toISOString()
+    // const bookingEnd = experiment.bookingEnd ?? new Date(Date.now() + HOUR).toISOString()
+    // const bookingStartDate = new Date(bookingStart)
+    // const bookingEndDate = new Date(bookingEnd)
+    // const oldBookingID = experiment.bookingID
 
-    // should this check really be done here or should this also be handled by the booking service?
-    if (bookingStartDate.getTime() > bookingEndDate.getTime()) {
-        // fail because start time is after end time
-        throw new Error("Impossible timeframe")
-    }
+    // // should this check really be done here or should this also be handled by the booking service?
+    // if (bookingStartDate.getTime() > bookingEndDate.getTime()) {
+    //     // fail because start time is after end time
+    //     throw new Error("Impossible timeframe")
+    // }
 
-    if (!experiment.devices || experiment.devices.length === 0) {
-        // fail because experiment has no devices?
-        throw new Error("No devices to be booked")
-    }
+    // if (!experiment.devices || experiment.devices.length === 0) {
+    //     // fail because experiment has no devices?
+    //     throw new Error("No devices to be booked")
+    // }
 
-    // try to book experiment
-    const response = await apiClient.putBookingManage({
-        Experiment: {
-            Devices: experiment.devices ? experiment.devices.map(d => {
-                return { ID: d.url }
-            }) : []
-        },
-        Time: {
-            Start: bookingStart,
-            End: bookingEnd
-        }
-    })
+    // // try to book experiment
+    // const response = await apiClient.putBookingManage({
+    //     Experiment: {
+    //         Devices: experiment.devices ? experiment.devices.map(d => {
+    //             return { ID: d.url }
+    //         }) : []
+    //     },
+    //     Time: {
+    //         Start: bookingStart,
+    //         End: bookingEnd
+    //     }
+    // })
 
-    if (response.status !== 200) throw new Error("API call was not successful")
+    // if (response.status !== 200) throw new Error("API call was not successful")
 
     // save booking id somewhere such that it can be checked later
-    experiment.bookingID = response.body.BookingID
+    // experiment.bookingID = response.body.BookingID
     experiment.status = "booked"
 
-    // delete old booking
-    if (oldBookingID) {
-        const response = await apiClient.deleteBookingManageByID({ ID: oldBookingID })
-        if (response.status !== 200) throw new Error("API call was not successful")
-    }
+    // // delete old booking
+    // if (oldBookingID) {
+    //     const response = await apiClient.deleteBookingManageByID({ ID: oldBookingID })
+    //     if (response.status !== 200) throw new Error("API call was not successful")
+    // }
     
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
     experimentRepository.save(experiment)
@@ -300,14 +300,14 @@ async function runExperiment(experiment: ExperimentModel) {
         throw new Error("Experiment is not booked")
     }
 
-    // check if booking id exists
-    if (!experiment.bookingID) {
-        // fail because booked experiment has no booking id
-        throw new Error("Booked experiment has no booking id")
-    }
+    // // check if booking id exists
+    // if (!experiment.bookingID) {
+    //     // fail because booked experiment has no booking id
+    //     throw new Error("Booked experiment has no booking id")
+    // }
 
-    const response = await apiClient.putBookingLockByID({ ID: experiment.bookingID })
-    if (response.status !== 200) throw new Error("API call was not successful")
+    // const response = await apiClient.putBookingLockByID({ ID: experiment.bookingID })
+    // if (response.status !== 200) throw new Error("API call was not successful")
 
     // establish peerconnections between the devices
     const peerconnections = buildConnectionPlan(experiment)
@@ -367,12 +367,12 @@ async function finishExperiment(experiment: ExperimentModel) {
             break
         }
         case "booked": {
-            // delete booking 
-            if (!experiment.bookingID) {
-                throw new Error("Booked experiment does not have a booking id")
-            }
-            const response = await apiClient.deleteBookingManageByID({ ID: experiment.bookingID })
-            if (response.status !== 200) throw new Error("API call was not successful")
+            // // delete booking 
+            // if (!experiment.bookingID) {
+            //     throw new Error("Booked experiment does not have a booking id")
+            // }
+            // const response = await apiClient.deleteBookingManageByID({ ID: experiment.bookingID })
+            // if (response.status !== 200) throw new Error("API call was not successful")
             break
         }
         case "running": {
@@ -388,16 +388,16 @@ async function finishExperiment(experiment: ExperimentModel) {
                 const response = await apiClient.deletePeerconnectionsByPeerconnectionId({ peerconnection_id: peerconnection.url })
                 console.log(response)
             }
-            // unlock all devices
-            if (!experiment.bookingID) {
-                throw new Error("Running experiment does not have a booking id")
-            }
-            const responseLock = await apiClient.deleteBookingLockByID({ ID: experiment.bookingID })
-            if (responseLock.status !== 200) throw new Error("API call was not successful")
+            // // unlock all devices
+            // if (!experiment.bookingID) {
+            //     throw new Error("Running experiment does not have a booking id")
+            // }
+            // const responseLock = await apiClient.deleteBookingLockByID({ ID: experiment.bookingID })
+            // if (responseLock.status !== 200) throw new Error("API call was not successful")
 
-            // delete booking
-            const responseBooking = await apiClient.deleteBookingManageByID({ ID: experiment.bookingID })
-            if (responseBooking.status !== 200) throw new Error("API call was not successful")
+            // // delete booking
+            // const responseBooking = await apiClient.deleteBookingManageByID({ ID: experiment.bookingID })
+            // if (responseBooking.status !== 200) throw new Error("API call was not successful")
             break
         } 
         case "finished": {
