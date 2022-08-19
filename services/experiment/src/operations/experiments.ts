@@ -426,6 +426,7 @@ export const postExperiments: postExperimentsSignature = async (body, _user) => 
     await writeExperiment(experiment, body)
     const requestedStatus = experiment.status
     experiment.status = "created"
+    await experimentRepository.save(experiment)
 
     if (requestedStatus === "booked") await bookExperiment(experiment)
     if (requestedStatus === "running") await startExperiment(experiment)
