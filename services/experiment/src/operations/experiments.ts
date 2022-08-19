@@ -24,6 +24,7 @@ import { APIClient } from "@cross-lab-project/api-client"
 import { Peerconnection } from "@cross-lab-project/api-client/dist/generated/device/types"
 
 // global constants
+const HOUR = 60 * 60 * 1000
 const ExperimentBaseUrl = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/'
 const apiClient = new APIClient({
     booking: config.BASE_URL_BOOKING,
@@ -117,6 +118,11 @@ async function writeExperiment(experiment: ExperimentModel, object: Experiment) 
     if (object.bookingTime) {
         if (object.bookingTime.startTime) experiment.bookingStart = object.bookingTime.startTime
         if (object.bookingTime.endTime) experiment.bookingEnd = object.bookingTime.endTime
+    } else {
+        const start = Date.now()
+        const end = start + HOUR
+        experiment.bookingStart = experiment.bookingStart ?? new Date(start).toISOString()
+        experiment.bookingEnd = experiment.bookingEnd ?? new Date(end).toISOString()
     }
     if (object.devices) {
         experiment.devices = []
@@ -183,8 +189,7 @@ async function bookExperiment(experiment: ExperimentModel) {
     // }
 
     // // book devices for requested timeframe or default timeframe of one hour
-    // const HOUR = 60 * 60 * 1000
-    // const bookingStart = experiment.bookingStart ?? new Date().toISOString()
+    // const bookingStart = experiment.bookingStart ?? new Date(Date.now()).toISOString()
     // const bookingEnd = experiment.bookingEnd ?? new Date(Date.now() + HOUR).toISOString()
     // const bookingStartDate = new Date(bookingStart)
     // const bookingEndDate = new Date(bookingEnd)
