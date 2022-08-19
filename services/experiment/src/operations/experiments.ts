@@ -233,7 +233,7 @@ async function bookExperiment(experiment: ExperimentModel) {
     // }
     
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    experimentRepository.save(experiment)
+    await experimentRepository.save(experiment)
 }
 
 function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
@@ -278,8 +278,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
         const servicesA = peerconnection.devices?.[0].config?.services
         const servicesB = peerconnection.devices?.[1].config?.services
 
-        if (!servicesA) throw new Error("Device has no service")
-        if (!servicesB) throw new Error("Device has no service")
+        if (!servicesA || servicesA.length === 0) throw new Error("Device has no service")
+        if (!servicesB || servicesB.length === 0) throw new Error("Device has no service")
 
         for (const serviceA of servicesA) {
             const serviceB = servicesB.find(s => s.serviceType === serviceA.serviceType)
@@ -336,7 +336,7 @@ async function runExperiment(experiment: ExperimentModel) {
     // set experiment status to running and save experiment
     experiment.status = "running"
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    experimentRepository.save(experiment)
+    await experimentRepository.save(experiment)
 }
 
 async function startExperiment(experiment: ExperimentModel) {
@@ -424,19 +424,12 @@ export const postExperiments: postExperimentsSignature = async (body, _user) => 
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
     const experiment = experimentRepository.create()
     await writeExperiment(experiment, body)
+    const requestedStatus = experiment.status
+    experiment.status = "created"
 
-    if (experiment.status === "booked") {
-        experiment.status = "created"
-        bookExperiment(experiment)
-    }
-    if (experiment.status === "running") {
-        experiment.status = "created"
-        startExperiment(experiment)
-    }
-    if (experiment.status === "finished") {
-        experiment.status = "created"
-        finishExperiment(experiment)
-    }
+    if (requestedStatus === "booked") await bookExperiment(experiment)
+    if (requestedStatus === "running") await startExperiment(experiment)
+    if (requestedStatus === "finished") await finishExperiment(experiment)
     await experimentRepository.save(experiment)
 
     return {
