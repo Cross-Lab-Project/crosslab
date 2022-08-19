@@ -177,6 +177,7 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
 }
 
 async function bookExperiment(experiment: ExperimentModel) {
+    console.log("booking experiment", experiment.uuid)
     // if (experiment.status === "booked" && experiment.bookingID) {
     //     const response = await apiClient.getBookingManageByID({ ID: experiment.bookingID })
     //     if (response.status !== 200) {
@@ -236,6 +237,7 @@ async function bookExperiment(experiment: ExperimentModel) {
 }
 
 function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
+    console.log("building connection plan for experiment", experiment.uuid)
     if (!experiment.serviceConfigurations || experiment.serviceConfigurations.length === 0) throw new Error("Experiment must have a configuration to be run")
     if (!experiment.devices || experiment.devices.length === 0) throw new Error("Experiment must have a device to be run") 
     const peerconnections: (Peerconnection & { devices?: [{role?: string},{role?: string}]})[] = []
@@ -299,6 +301,7 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
 }
 
 async function runExperiment(experiment: ExperimentModel) {
+    console.log("running experiment", experiment.uuid)
     // make sure experiment is already booked
     if (experiment.status !== "booked") {
         // experiment is not booked
@@ -342,6 +345,7 @@ async function startExperiment(experiment: ExperimentModel) {
     // if booking is for different time then try to book experiment for current time
     // if successful then proceed to start experiment
     // else fail
+    console.log("starting experiment", experiment.uuid, "with current status:", experiment.status)
     switch(experiment.status) {
         case "created": {
             await bookExperiment(experiment)
@@ -364,6 +368,7 @@ async function startExperiment(experiment: ExperimentModel) {
 }
 
 async function finishExperiment(experiment: ExperimentModel) {
+    console.log("finishing experiment", experiment.uuid)
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
 
     switch (experiment.status) {
@@ -420,9 +425,18 @@ export const postExperiments: postExperimentsSignature = async (body, _user) => 
     const experiment = experimentRepository.create()
     await writeExperiment(experiment, body)
 
-    if (experiment.status === "booked") bookExperiment(experiment)
-    if (experiment.status === "running") startExperiment(experiment)
-    if (experiment.status === "finished") finishExperiment(experiment)
+    if (experiment.status === "booked") {
+        experiment.status = "created"
+        bookExperiment(experiment)
+    }
+    if (experiment.status === "running") {
+        experiment.status = "created"
+        startExperiment(experiment)
+    }
+    if (experiment.status === "finished") {
+        experiment.status = "created"
+        finishExperiment(experiment)
+    }
     await experimentRepository.save(experiment)
 
     return {
