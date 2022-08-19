@@ -113,7 +113,7 @@ async function writeServiceConfiguration(serviceConfiguration: ServiceConfigurat
 }
 
 async function writeExperiment(experiment: ExperimentModel, object: Experiment) {
-    if (object.status) experiment.status = object.status ?? (experiment.status ?? "created")
+    experiment.status = object.status ?? (experiment.status ?? "created")
     if (object.bookingTime) {
         if (object.bookingTime.startTime) experiment.bookingStart = object.bookingTime.startTime
         if (object.bookingTime.endTime) experiment.bookingEnd = object.bookingTime.endTime
