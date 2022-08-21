@@ -105,7 +105,7 @@ function formatPath(path: string) {
  * @returns formatted name
  */
 function formatName(name: string) {
-    const split = name.split(/[ _]/)
+    const split = name.split(/[ _-]/)
     return split.map(el => {
         if (el.length > 1) {
             return el.charAt(0).toUpperCase() + el.slice(1)
