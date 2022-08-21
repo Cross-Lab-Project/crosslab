@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
 in: header
-name: Authorization
+name: X-Forwarded-Proto
 schema:
   type: string
+  description: The protocol of the client.

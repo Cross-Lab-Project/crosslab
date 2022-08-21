@@ -27,6 +27,23 @@
           "type": "string"
         }
       },
+      "x_real_ip": {
+        "in": "header",
+        "name": "X-Real-IP",
+        "schema": {
+          "type": "string",
+          "format": "ipv4",
+          "description": "The IP address of the client."
+        }
+      },
+      "x_forwarded_proto": {
+        "in": "header",
+        "name": "X-Forwarded-Proto",
+        "schema": {
+          "type": "string",
+          "description": "The protocol of the client."
+        }
+      },
       "username": {
         "in": "path",
         "name": "username",
@@ -124,6 +141,12 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/authorization"
+          },
+          {
+            "$ref": "#/components/parameters/x_real_ip"
+          },
+          {
+            "$ref": "#/components/parameters/x_forwarded_proto"
           }
         ],
         "responses": {

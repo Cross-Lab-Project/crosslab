@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
 in: header
-name: Authorization
+name: X-Real-IP
 schema:
   type: string
+  format: ipv4
+  description: The IP address of the client.

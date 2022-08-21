@@ -106,7 +106,7 @@ export const getUsersByUsername: getUsersByUsernameSignature = async (parameters
     const userRepository = AppDataSource.getRepository(UserModel)
     const user = await userRepository.findOne({
         where: { 
-            username: parameters.username 
+            username: parameters.Username 
         },
         relations: {
             roles: {
@@ -129,7 +129,7 @@ export const getUsersByUsername: getUsersByUsernameSignature = async (parameters
 
 export const deleteUsersByUsername: deleteUsersByUsernameSignature = async (parameters, _user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
+    const user = await userRepository.findOneBy({ username: parameters.Username })
 
     if (!user) {
         return {
@@ -146,7 +146,7 @@ export const deleteUsersByUsername: deleteUsersByUsernameSignature = async (para
 
 export const patchUsersByUsername: patchUsersByUsernameSignature = async (parameters, body, _user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
+    const user = await userRepository.findOneBy({ username: parameters.Username })
 
     if (!user) {
         return {
@@ -172,8 +172,8 @@ export const patchUsersByUsername: patchUsersByUsernameSignature = async (parame
 export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNameSignature = async (parameters, _user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
     const roleRepository = AppDataSource.getRepository(RoleModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
-    const role = await roleRepository.findOneBy({ name: parameters.role_name })
+    const user = await userRepository.findOneBy({ username: parameters.Username })
+    const role = await roleRepository.findOneBy({ name: parameters.RoleName })
 
     if (!user || !role) {
         return {
@@ -193,8 +193,8 @@ export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNam
 export const deleteUsersByUsernameRolesByRoleName: deleteUsersByUsernameRolesByRoleNameSignature = async (parameters, _user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
     const roleRepository = AppDataSource.getRepository(RoleModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
-    const role = await roleRepository.findOneBy({ name: parameters.role_name })
+    const user = await userRepository.findOneBy({ username: parameters.Username })
+    const role = await roleRepository.findOneBy({ name: parameters.RoleName })
 
     if (!user || !role) {
         return {
@@ -202,10 +202,10 @@ export const deleteUsersByUsernameRolesByRoleName: deleteUsersByUsernameRolesByR
         }
     }
 
-    let index = user.roles.findIndex(r => r.name === parameters.role_name)
+    let index = user.roles.findIndex(r => r.name === parameters.RoleName)
     while (index !== -1) {
         user.roles.splice(index, 1)
-        index = user.roles.findIndex(r => r.name === parameters.role_name)
+        index = user.roles.findIndex(r => r.name === parameters.RoleName)
     }
 
     return {

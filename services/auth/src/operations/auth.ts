@@ -25,6 +25,33 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const userRepository = AppDataSource.getRepository(UserModel)
     const tokenRepository = AppDataSource.getRepository(TokenModel)
 
+    const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
+
+    if (activeKeys.length != 1) {
+        throw new Error("Too many active keys")
+    }
+
+    const activeKey = activeKeys[0]
+
+
+    if (parameters.XRealIP?.startsWith("172.")) {
+        console.warn(`IP ${parameters.XRealIP} is from local network, authenticated by default`)
+
+        const jwt = await sign<UserType>({
+            url: BASE_URL + `users/SERVICE`,
+            username: 'SERVICE USER',
+            role: 'SERVICE ROLE',
+            scopes: ['service']
+        }, activeKey.key, "2h")
+
+        return {
+            status: 200,
+            headers: {
+                Authorization: "Bearer " + jwt
+            }
+        }
+    }
+
     if (!parameters.Authorization) {
         return {
             status: 200
@@ -41,7 +68,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
     const token = await tokenRepository.findOne({
         where: {
-            token: tokenString 
+            token: tokenString
         },
         relations: {
             user: {
@@ -60,19 +87,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
     const user = token.user
 
-    if (!user || token.expiresOn && new Date(token.expiresOn).getTime() < Date.now() ) {
+    if (!user || token.expiresOn && new Date(token.expiresOn).getTime() < Date.now()) {
         return {
             status: 200
         }
     }
-
-    const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
-
-    if (activeKeys.length != 1) {
-        throw new Error("Too many active keys")
-    }
-
-    const activeKey = activeKeys[0]
 
     const jwt = await sign<UserType>({ url: BASE_URL + `users/${user.username}`, username: user.username, role: user.currentRole.name, scopes: user.currentRole.scopes.map(s => s.name) }, activeKey.key, "2h")
 

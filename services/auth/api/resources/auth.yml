@@ -11,6 +11,8 @@ get:
     The return code will always be 200, but the JWT will be empty if the authentication failed.
   parameters:
     - $ref: "../parameters/authorization.yml"
+    - $ref: "../parameters/x_real_ip.yml"
+    - $ref: "../parameters/x_forwarded_proto.yml"
   responses:
     200:
       description: Return the JWT which represents the authenticated user.
