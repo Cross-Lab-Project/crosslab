@@ -11,7 +11,7 @@
         {% if function.parameters.query -%}
         let query: [string,string][] = []
         {% for parameter in function.parameters.query -%}
-        if (parameters.{{ parameter.name }}) query.push(["{{ parameter.name }}", "" + parameters.{{ parameter.name }}])
+        if (parameters.{{ parameter.codeName }}) query.push(["{{ parameter.codeName }}", "" + parameters.{{ parameter.codeName }}])
         {% endfor -%}
         {% endif -%}
         const url = this._baseURL + `{{ function.path | replace(r/{(.*?)}/g, "$${parameters.$1}") }}`

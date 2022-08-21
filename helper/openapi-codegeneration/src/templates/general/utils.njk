@@ -11,7 +11,7 @@
         {%- endif -%}
         {%- set declaration = "" -%}
         {%- for parameter in parameters[location] -%}
-            {%- set declaration = declaration + parameter.name + (": " if parameter.required else "?: ") + formatDeclaration(parameter.schema.typeDeclaration) + ", " -%}
+            {%- set declaration = declaration + parameter.codeName + (": " if parameter.required else "?: ") + formatDeclaration(parameter.schema.typeDeclaration) + ", " -%}
         {%- endfor -%}
         {%- set declaration = declaration | reverse | replace(" ,", "", 1) | reverse -%}
         {%- set topdeclaration = topdeclaration + declaration -%}

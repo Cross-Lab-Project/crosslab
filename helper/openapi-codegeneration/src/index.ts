@@ -325,6 +325,7 @@ function parseParameterObject(api: OpenAPIV3_1.Document, parameter: OpenAPIV3_1.
             type: "parameter",
             in: parameter.in,
             name: parameter.name,
+            codeName: formatName(parameter.name),
             parameter: parameter,
             required: parameter.required ?? false,
             location: location

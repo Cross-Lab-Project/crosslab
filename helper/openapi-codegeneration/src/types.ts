@@ -20,6 +20,7 @@ export interface SchemaData extends DefaultData {
 export interface ParameterData extends DefaultData {
     type: "parameter"
     name: string
+    codeName: string
     in: string // "path" | "query" | "header" | "cookie"
     parameter: OpenAPIV3_1.ParameterObject | OpenAPIV3_1.ReferenceObject
     required: boolean
