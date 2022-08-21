@@ -16,9 +16,9 @@ services:
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
-      - crosslab:
-          aliases:
-            - api.$DOMAIN
+      crosslab:
+        aliases:
+          - "api.$DOMAIN"
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -46,6 +46,8 @@ services:
       - LOGS_SERVICE_URL=logs:8080
       - AUTH_SERVICE_URL=auth:8080
       - UPDATE_SERVICE_URL=update:8080
+    networks:
+      crosslab:
   auth:
     image: crosslab/auth-service
     environment:
@@ -54,6 +56,8 @@ services:
       BASE_URL: https://api.$DOMAIN
     volumes:
       - auth_db:/app/db
+    networks:
+      crosslab:
   device:
     image: crosslab/device-service
     environment:
@@ -62,6 +66,8 @@ services:
       BASE_URL: https://api.$DOMAIN
     volumes:
       - device_db:/app/db
+    networks:
+      crosslab:
   experiment:
     image: crosslab/experiment-service
     environment:
@@ -70,6 +76,8 @@ services:
       BASE_URL: https://api.$DOMAIN
     volumes:
       - experiment_db:/app/db
+    networks:
+      crosslab:
   federation:
     image: crosslab/federation-service
     environment:
@@ -78,6 +86,8 @@ services:
       BASE_URL: https://api.$DOMAIN
     volumes:
       - federation_db:/app/db
+    networks:
+      crosslab:
   update:
     image: crosslab/update-service
     environment:
@@ -86,6 +96,8 @@ services:
       BASE_URL: https://api.$DOMAIN
     volumes:
       - update_db:/app/db
+    networks:
+      crosslab:
 
 # Frontend ########################################################################################
   frontend:
@@ -95,6 +107,9 @@ services:
       - VIRTUAL_PORT=8080
       - VIRTUAL_PATH=/
       - LETSENCRYPT_HOST=www.$DOMAIN
+    
+    networks:
+      crosslab:
   gift:
     image: goldi2/gift
     environment:
@@ -103,6 +118,8 @@ services:
       - VIRTUAL_PATH=/gift
       - VIRTUAL_DEST=/
       - LETSENCRYPT_HOST=www.$DOMAIN
+    networks:
+      crosslab:
 
   sane:
     image: goldi2/sane
@@ -113,6 +130,8 @@ services:
       - VIRTUAL_DEST=/
       - LETSENCRYPT_HOST=www.$DOMAIN
       - BASE_PATH=/SANE/
+    networks:
+      crosslab:
 
   beast:
     image: goldi2/beast
@@ -122,6 +141,8 @@ services:
       - VIRTUAL_PATH=/BEAST
       - VIRTUAL_DEST=/
       - LETSENCRYPT_HOST=www.$DOMAIN
+    networks:
+      crosslab:
   
 # Logging #########################################################################################
   logs:
@@ -134,6 +155,8 @@ services:
       - LETSENCRYPT_HOST=logs.$DOMAIN
       - DOZZLE_USERNAME=$DOZZLE_USERNAME
       - DOZZLE_PASSWORD=$DOZZLE_PASSWORD
+    networks:
+      crosslab:
 
 # Hardware Support ################################################################################
   vpn-server:
