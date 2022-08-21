@@ -15,6 +15,10 @@ services:
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - crosslab:
+          aliases:
+            - api.$DOMAIN
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -44,8 +48,6 @@ services:
       - UPDATE_SERVICE_URL=update:8080
   auth:
     image: crosslab/auth-service
-    extra_hosts:
-      api.$DOMAIN: host-gateway
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
@@ -54,8 +56,6 @@ services:
       - auth_db:/app/db
   device:
     image: crosslab/device-service
-    extra_hosts:
-      api.$DOMAIN: host-gateway
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
@@ -64,8 +64,6 @@ services:
       - device_db:/app/db
   experiment:
     image: crosslab/experiment-service
-    extra_hosts:
-      api.$DOMAIN: host-gateway
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
@@ -74,8 +72,6 @@ services:
       - experiment_db:/app/db
   federation:
     image: crosslab/federation-service
-    extra_hosts:
-      api.$DOMAIN: host-gateway
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
@@ -84,8 +80,6 @@ services:
       - federation_db:/app/db
   update:
     image: crosslab/update-service
-    extra_hosts:
-      api.$DOMAIN: host-gateway
     environment:
       SECURITY_ISSUER: https://$DOMAIN
       SECURITY_AUDIENCE: https://$DOMAIN
@@ -153,6 +147,9 @@ services:
     environment:
       - PEERS=$VPN_PEERS
       - KEY=$VPN_KEY
+
+networks:
+  crosslab:
 
 volumes:
   conf:
