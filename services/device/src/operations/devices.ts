@@ -78,7 +78,7 @@ async function handleSignalingMessage(device: ConcreteDeviceModel, message: Sign
 
     if (peerDeviceId) {
         const peerDeviceWs = connectedDevices.get(peerDeviceId)
-        peerDeviceWs?.send(message)
+        peerDeviceWs?.send(JSON.stringify(message))
     }
 }
 
@@ -278,14 +278,17 @@ function writeDeviceOverview(device: DeviceOverviewModel, object: DeviceOverview
 }
 
 function sortTimeSlots(availability: TimeSlotModel[]) {
+    // console.log("availability before sort:", JSON.stringify(availability, null, 4))
     availability.sort((a, b) => {
         if (a.start < b.start) return -1
         if (a.start > b.start) return 1
         return 0
     })
+    // console.log("availability after sort:", JSON.stringify(availability, null, 4))
 }
 
 function mergeTimeSlots(availability: TimeSlotModel[]) {
+    // console.log("availability before merge:", JSON.stringify(availability, null, 4))
     for (let i = 0; i < availability.length; i++) {
         if (i < availability.length - 1) {
             if (availability[i+1].start <= availability[i].end) {
@@ -294,10 +297,12 @@ function mergeTimeSlots(availability: TimeSlotModel[]) {
             }
         }
     }
+    // console.log("availability after merge:", JSON.stringify(availability, null, 4))
 }
 
 function invertTimeSlots(availability: TimeSlotModel[], start: number, end: number) {
     if (availability.length === 0) return
+    // console.log("availability before invert:", JSON.stringify(availability, null, 4))
 
     const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
 
@@ -336,9 +341,11 @@ function invertTimeSlots(availability: TimeSlotModel[], start: number, end: numb
         newAvailability.push(lastTimeSlot)
 
     availability = newAvailability
+    // console.log("availability after invert:", JSON.stringify(availability, null, 4))
 }
 
 function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
+    // console.log("availability before adding timeslots from rule:", JSON.stringify(availability, null, 4))
     const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
     const timeSlot = timeSlotRepository.create()
     timeSlot.start = availabilityRule.start && availabilityRule.start >= start ? availabilityRule.start : start,
@@ -402,6 +409,7 @@ function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: A
     }
 
     availability.push(timeSlot)
+    // console.log("availability after adding timeslots from rule:", JSON.stringify(availability, null, 4))
 }
 
 function applyAvailabilityRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {

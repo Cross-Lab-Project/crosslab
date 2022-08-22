@@ -192,6 +192,10 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             status: 404
         }
     }
+    
+    if (result.affected > 1) {
+        throw new Error("Deleted Multiple Peerconnection with same uuid")
+    }
 
     if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) throw new Error("One of the devices of the peerconnection has no url")
     const idDeviceA = peerconnection.deviceA.url.split("/").pop()
@@ -209,10 +213,6 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
         connectionUrl: PeerconnectionBaseURL + peerconnection.uuid
     }))
     handleClosedCallback(peerconnection)
-    
-    if (result.affected > 1) {
-        throw("Deleted Multiple Peerconnection with same uuid")
-    }
 
     return {
         status: 204
