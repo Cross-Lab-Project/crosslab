@@ -1,3 +1,5 @@
+import * as dayjs from 'dayjs';
+
 export const ErrorTimeoutText = "Operation timed out, please retry later";
 
 export enum ReservationRequest {
@@ -10,8 +12,8 @@ export class ReservationMessage {
     Type: ReservationRequest
     AnswerQueue: string
     Device?: URL
-    Start?: Date
-    End?: Date
+    Start?: dayjs.Dayjs
+    End?: dayjs.Dayjs
     BookingReference?: URL
     ReservationID?: bigint
 
@@ -59,12 +61,12 @@ export class ReservationMessage {
 
         if (data.Start !== undefined && data.End !== undefined) {
             try {
-                r.Start = new Date(data.Start);
+                r.Start = dayjs(data.Start);
             } catch (err) {
                 throw new Error("Can not parse Start as Date:" + err.toString());
             }
             try {
-                r.End = new Date(data.End);
+                r.End = dayjs(data.End);
             } catch (err) {
                 throw new Error("Can not parse End as Date:" + err.toString());
             }
@@ -101,8 +103,8 @@ export class ReservationMessage {
 export class ReservationAnswer {
     Type: ReservationRequest
     Device?: URL
-    Start?: Date
-    End?: Date
+    Start?: dayjs.Dayjs
+    End?: dayjs.Dayjs
     BookingReference?: URL
     ReservationID: bigint
     Deleted: boolean

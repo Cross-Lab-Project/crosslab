@@ -85,14 +85,14 @@ async function mainLoop(): Promise<void> {
                             };
 
                             // Check free slot
-                            [rows, fields] = await db.execute("SELECT count(*) AS n FROM reservation WHERE `device`=? AND ((`start` < ? AND `start` > ?) OR (`end` > ? AND `end` < ?) OR (`start` = ? AND `end` = ?) OR (`start` < ? AND `end` > ?))", [data.Device.toString(), data.End, data.Start, data.Start, data.End, data.Start, data.End, data.Start, data.End]);
+                            [rows, fields] = await db.execute("SELECT count(*) AS n FROM reservation WHERE `device`=? AND ((`start` < ? AND `start` > ?) OR (`end` > ? AND `end` < ?) OR (`start` = ? AND `end` = ?) OR (`start` < ? AND `end` > ?))", [data.Device.toString(), data.End.toDate(), data.Start.toDate(), data.Start.toDate(), data.End.toDate(), data.Start.toDate(), data.End.toDate(), data.Start.toDate(), data.End.toDate()]);
                             if (rows[0].n != 0) {
                                 answer = { Type: data.Type, Device: data.Device, ReservationID: -1n, Deleted: false, Successful: false, ErrorMessage: "Slot already booked" };
                                 break;
                             };
 
                             // Do reservation
-                            const added: any = await db.execute("INSERT INTO reservation (`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?)", [data.Device.toString(), data.Start, data.End, data.BookingReference.toString()]);
+                            const added: any = await db.execute("INSERT INTO reservation (`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?)", [data.Device.toString(), data.Start.toDate(), data.End.toDate(), data.BookingReference.toString()]);
                             answer = { Type: data.Type, Device: data.Device, Start: data.Start, End: data.End, BookingReference: data.BookingReference, ReservationID: BigInt(added[0].insertId), Deleted: false, Successful: true, ErrorMessage: "" };
                             break;
 

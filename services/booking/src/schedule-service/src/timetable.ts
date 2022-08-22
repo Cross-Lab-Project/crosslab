@@ -1,4 +1,9 @@
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
 import { Timeslot } from "./generated/types"
+
+dayjs.extend(isSameOrBefore);
 
 export function timetableAnd(...t: Timeslot[][]): Timeslot[] {
     let input: Timeslot[] = [];
@@ -20,9 +25,9 @@ export function timetableAnd(...t: Timeslot[][]): Timeslot[] {
     let current = input[0];
 
     for(let i = 1; i < input.length; i++) {
-        if(input[i].Start <= current.End) {
+        if(dayjs(input[i].Start).isSameOrBefore(dayjs(current.End))) {
             // combine
-            if(input[i].End > current.End) {
+            if(dayjs(input[i].End).isAfter(dayjs(current.End))) {
                 current.End = input[i].End;
             }
         } else {
@@ -38,7 +43,7 @@ export function timetableAnd(...t: Timeslot[][]): Timeslot[] {
     return r;
 };
 
-export function timetableNot(t: Timeslot[], start: Date, end: Date): Timeslot[] {
+export function timetableNot(t: Timeslot[], start: dayjs.Dayjs, end: dayjs.Dayjs): Timeslot[] {
     if (t.length === 0) {
         return [{ Start: start.toISOString(), End: end.toISOString() }]
     }
@@ -53,14 +58,14 @@ export function timetableNot(t: Timeslot[], start: Date, end: Date): Timeslot[] 
 
     // Remove unneeded time slots
     while (input.length != 0) {
-        if (new Date(input[0].End) > start) {
+        if (dayjs(input[0].End).isAfter(start)) {
             break;
         }
         input.shift();
     }
 
     while (input.length != 0) {
-        if (new Date(input[input.length - 1].Start) < end) {
+        if (dayjs(input[input.length - 1].Start).isBefore(dayjs(end))) {
             break;
         }
         input.pop();
@@ -74,7 +79,7 @@ export function timetableNot(t: Timeslot[], start: Date, end: Date): Timeslot[] 
     let r: Timeslot[] = [];
 
     // i = 0
-    if (new Date(input[0].Start) > start) {
+    if (dayjs(input[0].Start).isAfter(start)) {
         r.push({ Start: start.toISOString(), End: input[0].Start })
     }
 
@@ -84,7 +89,7 @@ export function timetableNot(t: Timeslot[], start: Date, end: Date): Timeslot[] 
     }
 
     // i = len
-    if (new Date(input[input.length - 1].End) < end) {
+    if (dayjs(input[input.length - 1].End).isBefore(dayjs(end))) {
         r.push({ Start: input[input.length - 1].End, End: end.toISOString() })
     }
     return r
@@ -93,10 +98,10 @@ export function timetableNot(t: Timeslot[], start: Date, end: Date): Timeslot[] 
 
 export function timetableSortInPlace(t: Timeslot[]): void {
     t.sort((a, b): number => {
-        if (new Date(a.Start) > new Date(b.Start)) {
+        if (dayjs(a.Start).isAfter(dayjs(b.Start))) {
             return 1
         };
-        if (new Date(a.Start) < new Date(b.Start)) {
+        if (dayjs((a.Start)).isBefore(dayjs(b.Start))) {
             return -1
         };
         return 0;
