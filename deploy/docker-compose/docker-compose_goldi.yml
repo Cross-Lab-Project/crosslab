@@ -19,6 +19,7 @@ services:
       crosslab:
         aliases:
           - "api.$DOMAIN"
+    restart: on-failure
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -31,6 +32,7 @@ services:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: on-failure
 
 # API #############################################################################################
   gateway:
@@ -48,6 +50,7 @@ services:
       - UPDATE_SERVICE_URL=update:8080
     networks:
       crosslab:
+    restart: on-failure
   auth:
     image: crosslab/auth-service
     environment:
@@ -58,6 +61,7 @@ services:
       - auth_db:/app/db
     networks:
       crosslab:
+    restart: on-failure
   device:
     image: crosslab/device-service
     environment:
@@ -68,6 +72,7 @@ services:
       - device_db:/app/db
     networks:
       crosslab:
+    restart: on-failure
   experiment:
     image: crosslab/experiment-service
     environment:
@@ -78,6 +83,7 @@ services:
       - experiment_db:/app/db
     networks:
       crosslab:
+    restart: on-failure
   federation:
     image: crosslab/federation-service
     environment:
@@ -88,6 +94,7 @@ services:
       - federation_db:/app/db
     networks:
       crosslab:
+    restart: on-failure
   update:
     image: crosslab/update-service
     environment:
@@ -98,6 +105,7 @@ services:
       - update_db:/app/db
     networks:
       crosslab:
+    restart: on-failure
 
 # Frontend ########################################################################################
   frontend:
@@ -110,6 +118,7 @@ services:
     
     networks:
       crosslab:
+    restart: on-failure
   gift:
     image: goldi2/gift
     environment:
@@ -120,6 +129,7 @@ services:
       - LETSENCRYPT_HOST=www.$DOMAIN
     networks:
       crosslab:
+    restart: on-failure
 
   sane:
     image: goldi2/sane
@@ -132,6 +142,7 @@ services:
       - BASE_PATH=/SANE/
     networks:
       crosslab:
+    restart: on-failure
 
   beast:
     image: goldi2/beast
@@ -143,6 +154,7 @@ services:
       - LETSENCRYPT_HOST=www.$DOMAIN
     networks:
       crosslab:
+    restart: on-failure
   
 # Logging #########################################################################################
   logs:
@@ -157,6 +169,7 @@ services:
       - DOZZLE_PASSWORD=$DOZZLE_PASSWORD
     networks:
       crosslab:
+    restart: on-failure
 
 # Hardware Support ################################################################################
   vpn-server:
@@ -170,6 +183,7 @@ services:
     environment:
       - PEERS=$VPN_PEERS
       - KEY=$VPN_KEY
+    restart: on-failure
 
 networks:
   crosslab:
