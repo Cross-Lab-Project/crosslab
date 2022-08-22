@@ -18,13 +18,6 @@ declare global {
     }
 }
 
-// const getKey: JWTVerifyGetKey = async (_protectedHeader, _token) => {
-//     const response = await fetch(config.BASE_URL + "/.well-known/openid-configuration")
-//     const endpoint = (await response.json()).jwks_uri
-//     const key = await fetch(config.BASE_URL + endpoint)
-//     return await key.json()
-// }
-
 AppDataSource.initialize()
     .then(() => {
         app.use((req, _res, next) => {

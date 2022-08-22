@@ -18,7 +18,7 @@ export function isCommandMessage(message: Message): message is CommandMessage {
 export interface CreatePeerConnectionMessage extends CommandMessage {
     command: "createPeerConnection"
     connectiontype: string
-    id: string
+    url: string
     services: ServiceConfig[]
     tiebreaker: boolean
 }
@@ -28,7 +28,7 @@ export function isCreatePeerConnectionMessage(message: CommandMessage): message 
 
 export interface SignalingMessage extends Message {
     messageType: "signaling"
-    connectionid: string
+    connectionUrl: string
 }
 export function isSignalingMessage(message: Message): message is SignalingMessage {
     return message.messageType === "signaling"
@@ -36,10 +36,18 @@ export function isSignalingMessage(message: Message): message is SignalingMessag
 
 export interface AuthenticationMessage extends Message {
     messageType: "authenticate"
-    id: string
+    url: string
     token?: string
     authenticated?: boolean 
 }
 export function isAuthenticationMessage(message: Message): message is AuthenticationMessage {
     return message.messageType === "authenticate"
+}
+
+export interface CloseMessage extends Message {
+    messageType: "close"
+    connectionUrl: string
+}
+export function isCloseMessage(message: Message): message is CloseMessage {
+    return message.messageType === "close"
 }

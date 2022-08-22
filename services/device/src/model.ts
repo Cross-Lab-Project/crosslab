@@ -80,26 +80,10 @@ export class DeviceReferenceModel {
     id!: number
     @Column()
     url?: string
-    @OneToMany(() => ServiceConfigModel, (serviceConfig) => serviceConfig.device, { onDelete: "CASCADE", cascade: true })
-    config?: ServiceConfigModel[]
+    @Column()
+    config?: string
     @ManyToOne(() => DeviceGroupModel, (deviceGroup) => deviceGroup.devices)
     group?: DeviceGroupModel
-    @DeleteDateColumn()
-    deletedAt?: Date
-}
-
-@Entity({ name: "ServiceConfig" })
-export class ServiceConfigModel {
-    @PrimaryGeneratedColumn("uuid")
-    uuid!: string
-    @Column()
-    serviceType?: string
-    @Column()
-    serviceId?: string
-    @Column()
-    remoteServiceId?: string
-    @ManyToOne(() => DeviceReferenceModel, (device) => device.config)
-    device?: DeviceReferenceModel
     @DeleteDateColumn()
     deletedAt?: Date
 }

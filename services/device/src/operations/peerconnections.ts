@@ -8,11 +8,11 @@ import {
 	deletePeerconnectionsByPeerconnectionIdSignature
 } from "../generated/signatures/peerconnections"
 import { Peerconnection, ServiceConfig } from "../generated/types"
-import { DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
-import { CreatePeerConnectionMessage, SignalingMessage } from "./deviceMessages"
+import { DeviceReferenceModel, PeerconnectionModel } from "../model"
+import { CloseMessage, CreatePeerConnectionMessage } from "./deviceMessages"
 import { connectedDevices, DeviceBaseURL } from "./devices"
 
-const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
+export const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
 const closedCallbacks = new Map<string,Array<string>>()
 
 // TODO: generate callback signatures?
@@ -35,18 +35,15 @@ async function handleClosedCallback(peerconnection: PeerconnectionModel) {
     }
 }
 
-function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
-    return {
-        serviceType: serviceConfig.serviceType,
-        serviceId: serviceConfig.serviceId,
-        remoteServiceId: serviceConfig.remoteServiceId
-    }
+function formatServiceConfig(serviceConfig?: string): ServiceConfig[] {
+    if (!serviceConfig) return []
+    return JSON.parse(serviceConfig)
 }
 
 function formatDevice(device: DeviceReferenceModel) {
     return {
         url: device.url,
-        config: device.config ? { services: device.config.map(formatServiceConfig) } : undefined
+        config: device.config ? { services: formatServiceConfig(device.config) } : undefined
     }
 }
 
@@ -55,15 +52,6 @@ function formatPeerconnection(peerconnection: PeerconnectionModel): Peerconnecti
         devices: [formatDevice(peerconnection.deviceA), formatDevice(peerconnection.deviceB)],
         url: PeerconnectionBaseURL + peerconnection.uuid
     }
-}
-
-function writeServiceConfig(serviceConfig: ServiceConfigModel, object: ServiceConfig) {
-    if (object.serviceType)
-        serviceConfig.serviceType = object.serviceType
-    if (object.serviceId)
-        serviceConfig.serviceId = object.serviceId
-    if (object.remoteServiceId)
-        serviceConfig.remoteServiceId = object.remoteServiceId
 }
 
 async function writeConfiguredDeviceReference(
@@ -79,14 +67,7 @@ async function writeConfiguredDeviceReference(
         configuredDeviceReference.url = object.url
     if (object.config) {
         if (object.config.services) {
-            const serviceConfigRepository = AppDataSource.getRepository(ServiceConfigModel)
-            configuredDeviceReference.config = []
-            for (const config of object.config.services) {
-                const serviceConfig = serviceConfigRepository.create()
-                writeServiceConfig(serviceConfig, config)
-                // await serviceConfigRepository.save(serviceConfig)
-                configuredDeviceReference.config.push(serviceConfig)
-            }
+            configuredDeviceReference.config = JSON.stringify(object.config.services)
         }
     }
 }
@@ -135,6 +116,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
     }
     const idDeviceA = peerconnection.deviceA.url.split("/").at(-1)
     const idDeviceB = peerconnection.deviceB.url.split("/").at(-1)
+
+    await peerconnectionRepository.save(peerconnection)
     
     if (peerconnection.deviceA.url.startsWith(DeviceBaseURL) && peerconnection.deviceB.url.startsWith(DeviceBaseURL)) {
         // connection between local devices
@@ -149,16 +132,14 @@ export const postPeerconnections: postPeerconnectionsSignature = async (paramete
             messageType: "command",
             command: "createPeerConnection",
             connectiontype: "webrtc",
-            id: peerconnection.uuid
+            url: PeerconnectionBaseURL + peerconnection.uuid
         }
-        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceA.config?.map(formatServiceConfig), tiebreaker: true}))
-        wsDeviceB.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
+        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: formatServiceConfig(peerconnection.deviceA.config), tiebreaker: true}))
+        wsDeviceB.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: formatServiceConfig(peerconnection.deviceB.config), tiebreaker: false}))
     } else {
         // connection containing at least one remote device
         throw("Peerconnections using remote devices are currently not supported!")
     }
-
-    await peerconnectionRepository.save(peerconnection)
 
     if (parameters.closedUrl) {
         const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
@@ -220,14 +201,14 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     const wsDeviceB = connectedDevices.get(idDeviceB)
     if (!wsDeviceA || !wsDeviceB) throw new Error("One of the devices of the peerconnection has no websocket")
     // TODO: send close message
-    wsDeviceA.send(JSON.stringify(<SignalingMessage>{
-        messageType: "signaling",
-        connectionid: peerconnection.uuid
+    wsDeviceA.send(JSON.stringify(<CloseMessage>{
+        messageType: "close",
+        connectionUrl: PeerconnectionBaseURL + peerconnection.uuid
     }))
     // TODO: send close message
-    wsDeviceB.send(JSON.stringify(<SignalingMessage>{
-        messageType: "signaling",
-        connectionid: peerconnection.uuid
+    wsDeviceB.send(JSON.stringify(<CloseMessage>{
+        messageType: "close",
+        connectionUrl: PeerconnectionBaseURL + peerconnection.uuid
     }))
     handleClosedCallback(peerconnection)
     

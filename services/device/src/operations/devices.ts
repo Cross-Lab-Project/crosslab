@@ -52,10 +52,13 @@ const apiClient = new APIClient({
     federation: config.BASE_URL_FEDERATION
 });
 
+// TODO: rework with new http route for signaling
 async function handleSignalingMessage(device: ConcreteDeviceModel, message: SignalingMessage) {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+    const peerconnectionId = message.connectionUrl.split("/").pop()
+    if (!peerconnectionId) throw new Error("Given peerconnection url contains no valid id")
     const peerconnection = await peerconnectionRepository.findOneOrFail({ 
-        where: { uuid: message.connectionid }, 
+        where: { uuid: peerconnectionId }, 
         relations: { deviceA: true, deviceB: true } 
     })
 
@@ -117,7 +120,10 @@ export function deviceHandling(app: Express.Application) {
                 ws.close(1002, "Not authenticated")
                 return
             }
-            const device = await deviceRepository.findOneOrFail({ where: { uuid: message.id } })
+            if (!message.url.startsWith(DeviceBaseURL)) throw new Error("Non local device trying to establish websocket connection")
+            const deviceId = message.url.split("/").pop()
+            if (!deviceId) throw new Error("Url in websocket authentication message does not contain device id")
+            const device = await deviceRepository.findOneOrFail({ where: { uuid: deviceId } })
             if (device.token != message.token) {
                 ws.close(1002, "Not authenticated")
                 return
@@ -129,7 +135,7 @@ export function deviceHandling(app: Express.Application) {
 
             ws.send(JSON.stringify(<AuthenticationMessage>{
                 messageType: "authenticate",
-                id: message.id,
+                url: message.url,
                 authenticated: true
             }))
 
@@ -449,7 +455,6 @@ function writeConcreteDevice(device: ConcreteDeviceModel, object: ConcreteDevice
         }
     }
 
-    // TODO: generate announcedAvailability timeslots
     if (!device.announcedAvailability) device.announcedAvailability = []
     if (device.availabilityRules) {
         device.announcedAvailability = []
