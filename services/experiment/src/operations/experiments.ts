@@ -297,6 +297,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
             serviceB.remoteServiceId = serviceA.serviceId
         }
     }
+
+    console.log("connection plan", peerconnections)
     return peerconnections
 }
 
