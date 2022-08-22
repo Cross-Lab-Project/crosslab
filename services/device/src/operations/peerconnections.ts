@@ -199,14 +199,12 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     if (!idDeviceA || !idDeviceB) throw new Error("One of the devices of the peerconnection has no id")
     const wsDeviceA = connectedDevices.get(idDeviceA)
     const wsDeviceB = connectedDevices.get(idDeviceB)
-    if (!wsDeviceA || !wsDeviceB) throw new Error("One of the devices of the peerconnection has no websocket")
-    // TODO: send close message
-    wsDeviceA.send(JSON.stringify(<CloseMessage>{
+    // if (!wsDeviceA || !wsDeviceB) throw new Error("One of the devices of the peerconnection has no websocket")
+    if (wsDeviceA) wsDeviceA.send(JSON.stringify(<CloseMessage>{
         messageType: "close",
         connectionUrl: PeerconnectionBaseURL + peerconnection.uuid
     }))
-    // TODO: send close message
-    wsDeviceB.send(JSON.stringify(<CloseMessage>{
+    if (wsDeviceB) wsDeviceB.send(JSON.stringify(<CloseMessage>{
         messageType: "close",
         connectionUrl: PeerconnectionBaseURL + peerconnection.uuid
     }))
