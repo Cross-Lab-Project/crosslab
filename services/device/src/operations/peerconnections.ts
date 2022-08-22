@@ -91,12 +91,8 @@ export const getPeerconnections: getPeerconnectionsSignature = async (_user) => 
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnections = await peerconnectionRepository.find({ 
         relations: {
-            deviceA: { 
-                config: true
-            },
-            deviceB: { 
-                config: true
-            },
+            deviceA: true,
+            deviceB: true,
         }
     })
 
@@ -160,12 +156,8 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
             uuid: parameters.peerconnection_id 
         },
         relations: {
-            deviceA: { 
-                config: true
-            },
-            deviceB: { 
-                config: true
-            },
+            deviceA: true,
+            deviceB: true,
         }
     })
 
