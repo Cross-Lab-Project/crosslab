@@ -129,6 +129,8 @@ export class TimeSlotModel {
     end!: number
     @ManyToOne(() => ConcreteDeviceModel, (device) => device.announcedAvailability)
     device?: ConcreteDeviceModel
+    @DeleteDateColumn()
+    deletedAt?: Date
 }
 
 @Entity({ name: "Peerconnection" })
