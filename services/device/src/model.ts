@@ -80,7 +80,7 @@ export class DeviceReferenceModel {
     id!: number
     @Column()
     url?: string
-    @Column()
+    @Column({ nullable: true })
     config?: string
     @ManyToOne(() => DeviceGroupModel, (deviceGroup) => deviceGroup.devices)
     group?: DeviceGroupModel

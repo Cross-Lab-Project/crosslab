@@ -68,11 +68,7 @@ async function writeConfiguredDeviceReference(
     if (object.config && object) {
         if (object.config.services) {
             configuredDeviceReference.config = JSON.stringify(object.config.services)
-        } else {
-            configuredDeviceReference.config = undefined
         }
-    } else {
-        configuredDeviceReference.config = undefined
     }
 }
 
