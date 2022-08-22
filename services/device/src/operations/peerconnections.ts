@@ -176,7 +176,15 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
 // TODO: send close message to devices?
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const peerconnection = await peerconnectionRepository.findOneByOrFail({ uuid: parameters.peerconnection_id })
+    const peerconnection = await peerconnectionRepository.findOneOrFail({ 
+        where: {
+            uuid: parameters.peerconnection_id 
+        },
+        relations: {
+            deviceA: true,
+            deviceB: true,
+        }
+    })
     const result = await peerconnectionRepository.softDelete({ uuid: parameters.peerconnection_id })
 
     if (!result.affected) {
