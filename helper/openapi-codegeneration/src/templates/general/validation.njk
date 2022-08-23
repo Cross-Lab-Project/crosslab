@@ -9,10 +9,10 @@ export function {{ function.validateInput }}(
         {%- if function.parameters[location] and function.parameters[location].length > 0 %}
         {%- for parameter in function.parameters[location] %}
         {%- if parameter.required %}
-        if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.codeName }})) return false
+        if (!{{ parameter.schema.validationFunction }}(parameters["{{ parameter.name }}"])) return false
         {%- else %}
-        if (parameters.{{ parameter.codeName }} !== undefined) {
-            if (!{{ parameter.schema.validationFunction }}(parameters.{{ parameter.codeName }})) {
+        if (parameters["{{ parameter.name }}"] !== undefined) {
+            if (!{{ parameter.schema.validationFunction }}(parameters["{{ parameter.name }}"])) {
                 ({{ function.validateInput }} as any).errors = ({{ parameter.schema.validationFunction }} as any).errors
                 return false
             }

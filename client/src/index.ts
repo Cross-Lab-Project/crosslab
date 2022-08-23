@@ -103,6 +103,7 @@ function isValidUrl(url: string, endpoint: string): boolean {
 }
 
 export class APIClient {
+    private _accessToken: string
     private authClient: AuthClient
     private bookingClient: BookingClient
     private deviceClient: DeviceClient
@@ -118,7 +119,8 @@ export class APIClient {
             experiment: string
             federation: string
             update: string
-        }
+        },
+        accessToken?: string
     ) {
         this.authClient = new AuthClient(typeof baseURL === "string" ? baseURL : baseURL.auth)
         this.bookingClient = new BookingClient(typeof baseURL === "string" ? baseURL : baseURL.booking)
@@ -126,14 +128,20 @@ export class APIClient {
         this.experimentClient = new ExperimentClient(typeof baseURL === "string" ? baseURL : baseURL.experiment)
         this.federationClient = new FederationClient(typeof baseURL === "string" ? baseURL : baseURL.federation)
         this.updateClient = new UpdateClient(typeof baseURL === "string" ? baseURL : baseURL.update)
+        this._accessToken = accessToken ?? ""
     }
 
     set accessToken(accessToken: string) {
+        this._accessToken = accessToken
         this.authClient.accessToken = accessToken
         this.deviceClient.accessToken = accessToken
         this.experimentClient.accessToken = accessToken
         this.federationClient.accessToken = accessToken
         this.updateClient.accessToken = accessToken
+    }
+
+    get accessToken() {
+        return this._accessToken
     }
 
     // Auth Service login API calls
@@ -144,12 +152,12 @@ export class APIClient {
     ): Promise<LoginSignatures.postLoginResponseType> {
         if (!url || url.startsWith(this.authClient.baseURL)) {
             const response = await this.authClient.postLogin(body)
-            this.accessToken = response.body ? response.body : ""
+            if (response.body) this.accessToken = response.body
             return response
         } else {
             if (!isValidUrl(url, `/login`)) throw new FetchError("URL is not valid for this operation")
             const response = await this.proxy("post", url, undefined, body, LoginValidation.validatePostLoginInput, LoginValidation.validatePostLoginOutput) as LoginSignatures.postLoginResponseType
-            this.accessToken = response.body ? response.body : ""
+            if (response.body) this.accessToken = response.body
             return response
         }
     }
