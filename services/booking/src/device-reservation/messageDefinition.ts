@@ -68,19 +68,15 @@ export class ReservationMessage {
 
 
         if (data.Start !== undefined || data.End !== undefined) {
-            if (data.Start === undefined || data.End === undefined) {
-                throw new Error("Start and End must both be present or both be not present")
-            }
             r.Start = dayjs(data.Start);
             if (!r.Start.isValid()) {
                 throw new Error("Can not parse Start " + data.Start + " as Date");
             }
+        }
+        if (data.Start !== undefined || data.End !== undefined) {
             r.End = dayjs(data.End);
             if (!r.End.isValid()) {
                 throw new Error("Can not parse End " + data.End + " as Date");
-            }
-            if (r.End.isSameOrBefore(r.Start)) {
-                throw new Error("End " + data.End + " is before Start " + data.Start);
             }
         }
 

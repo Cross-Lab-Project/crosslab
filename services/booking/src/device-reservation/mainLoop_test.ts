@@ -433,23 +433,6 @@ mocha.describe("mainLoop.ts", function () {
         }
     });
 
-    mocha.it("mainLoop.ts broken invalid", async () => {
-        let m = new ReservationMessage(ReservationRequest.New, receiveQueue);
-        m.BookingReference = new URL("http://localhost/unitTest");
-        m.Device = new URL("http://localhost/device/superDevice");
-        m.Start = dayjs("2022-06-27T02:15:00Z");
-        m.End = dayjs("2022-06-27T00:45:00Z");
-
-        channel.sendToQueue(sendQueue, Buffer.from(JSON.stringify(m)))
-        await sleep(1000);
-
-        let a = await channel.get(receiveQueue, { noAck: true });
-        if (a) {
-            throw new Error("Got answer")
-        }
-
-    });
-
     mocha.it("mainLoop.ts new missing values", async () => {
         let m = new ReservationMessage(ReservationRequest.New, receiveQueue);
         m.Device = new URL("http://localhost/device/superDevice");
@@ -468,7 +451,7 @@ mocha.describe("mainLoop.ts", function () {
         let data = JSON.parse(a.content.toString());
 
         if (data.Successful) {
-            throw new Error("Reservation (4) was successful but shouldn't");
+            throw new Error("Reservation (1) was successful but shouldn't");
         }
 
         m = new ReservationMessage(ReservationRequest.New, receiveQueue);
@@ -488,7 +471,7 @@ mocha.describe("mainLoop.ts", function () {
         data = JSON.parse(a.content.toString());
 
         if (data.Successful) {
-            throw new Error("Reservation (4) was successful but shouldn't");
+            throw new Error("Reservation (2) was successful but shouldn't");
         }
 
         m = new ReservationMessage(ReservationRequest.New, receiveQueue);
@@ -508,7 +491,7 @@ mocha.describe("mainLoop.ts", function () {
         data = JSON.parse(a.content.toString());
 
         if (data.Successful) {
-            throw new Error("Reservation (4) was successful but shouldn't");
+            throw new Error("Reservation (3) was successful but shouldn't");
         }
 
         m = new ReservationMessage(ReservationRequest.New, receiveQueue);

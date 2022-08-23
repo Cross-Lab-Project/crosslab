@@ -385,8 +385,6 @@ mocha.describe("messageDefinition.ts", function () {
         }
 
         let bad: string[] = [
-            '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T01:00:00.000Z","ReservationID":"100"}',
-            '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","End":"2022-06-27T03:00:00.000-0100","ReservationID":"100"}',
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"","End":"2022-06-27T03:00:00.000-0100","ReservationID":"100"}',
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T01:00:00.000Z","End":"","ReservationID":"100"}',
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"XXXX","End":"2022-06-27T03:00:00.000-0100","ReservationID":"100"}',
@@ -397,7 +395,6 @@ mocha.describe("messageDefinition.ts", function () {
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T95:00:00.000Z","End":"2022-06-27T03:00:00.000-0100","ReservationID":"100"}',
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T01:00:00:00Z","End":"2022-06-27T03:00:00:00-0100","ReservationID":"100"}',
             '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T01:00:00Z","End":"2022-06-27T03:00:00:00-0100","ReservationID":"100"}',
-            '{"Type":"New","AnswerQueue":"answer","BookingReference":"http://localhost/unitTest","Device":"http://localhost/device/superDevice","Start":"2022-06-27T02:00:00.000Z","End":"2022-06-27T01:00:00.000Z","ReservationID":"100"}'
         ]
         for (let i = 0; i < bad.length; i++) {
             let fail = false;
