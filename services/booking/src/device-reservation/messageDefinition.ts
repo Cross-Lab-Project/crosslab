@@ -1,11 +1,15 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 export const ErrorTimeoutText = "Operation timed out, please retry later";
+
+dayjs.extend(isSameOrBefore);
 
 export enum ReservationRequest {
     New,
     Get,
-    Delete
+    Delete,
+    Stop, // Needed for testing
 };
 
 export class ReservationMessage {
@@ -26,6 +30,10 @@ export class ReservationMessage {
 
         if (data.Type === undefined) {
             throw new Error("ReservationMessage must have Type");
+        }
+
+        if (typeof (data.Type) == "number") {
+            data.Type = ReservationRequest[data.Type]
         }
 
         if (!Object.keys(ReservationRequest).includes(data.Type)) {
@@ -59,16 +67,20 @@ export class ReservationMessage {
 
 
 
-        if (data.Start !== undefined && data.End !== undefined) {
-            try {
-                r.Start = dayjs(data.Start);
-            } catch (err) {
-                throw new Error("Can not parse Start as Date:" + err.toString());
+        if (data.Start !== undefined || data.End !== undefined) {
+            if (data.Start === undefined || data.End === undefined) {
+                throw new Error("Start and End must both be present or both be not present")
             }
-            try {
-                r.End = dayjs(data.End);
-            } catch (err) {
-                throw new Error("Can not parse End as Date:" + err.toString());
+            r.Start = dayjs(data.Start);
+            if (!r.Start.isValid()) {
+                throw new Error("Can not parse Start " + data.Start + " as Date");
+            }
+            r.End = dayjs(data.End);
+            if (!r.End.isValid()) {
+                throw new Error("Can not parse End " + data.End + " as Date");
+            }
+            if (r.End.isSameOrBefore(r.Start)) {
+                throw new Error("End " + data.End + " is before Start " + data.Start);
             }
         }
 
@@ -84,6 +96,12 @@ export class ReservationMessage {
         }
 
         if (data.ReservationID !== undefined) {
+            if(typeof(data.ReservationID) !== "string" && typeof(data.ReservationID) !== "number" && typeof(data.ReservationID) !== "bigint") {
+                throw new Error("Invalid type for ReservationID: " + typeof(data.ReservationID));
+            }
+            if(data.ReservationID === "") {
+                throw new Error("ReservationID can not be empty string");
+            }
             try {
                 r.ReservationID = BigInt(data.ReservationID);
             } catch (err) {

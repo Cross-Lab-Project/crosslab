@@ -14,6 +14,8 @@ let proxy_schedule_short_body = false;
 let proxy_schedule_wrong_device = false;
 
 mocha.describe("operations.ts", function () {
+    this.timeout(10000);
+    
     mocha.before(function () {
         // Config
         config.OwnURL = "http://localhost:10801";
@@ -117,8 +119,6 @@ mocha.describe("operations.ts", function () {
     });
 
     mocha.it("postBookingSchedule (no error case)", async function () {
-        this.timeout(10000);
-
         let correctFree = [{ Start: "2022-06-25T00:00:00Z", End: "2022-06-27T00:10:00Z" }, { Start: "2022-06-27T00:30:00Z", End: "2022-06-27T01:00:00Z" }, { Start: "2022-06-27T02:00:00Z", End: "2022-06-28T23:59:59Z" }]
         let correctBooked = [{ Start: "2022-06-27T00:10:00Z", End: "2022-06-27T00:30:00Z" }, { Start: "2022-06-27T01:00:00Z", End: "2022-06-27T02:00:00Z" }]
 
