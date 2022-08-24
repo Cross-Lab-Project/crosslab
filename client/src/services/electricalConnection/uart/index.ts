@@ -1,0 +1,1 @@
+export { ConstructableUARTInterface } from "./connectionInterface";

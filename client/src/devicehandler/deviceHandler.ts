@@ -1,0 +1,98 @@
+import {
+  isCommandMessage,
+  isCreatePeerConnectionMessage,
+  CreatePeerConnectionMessage,
+  isSignalingMessage,
+  SignalingMessage,
+} from "./deviceMessages";
+import { PeerConnection } from "./peer/connection";
+import { Service } from "./service";
+import WebSocket from "isomorphic-ws";
+import { WebRTCPeerConnection } from "./peer/webrtc-connection";
+
+export class DeviceHandler {
+  ws!: WebSocket;
+  connections = new Map<string, PeerConnection>();
+  services = new Map<string, Service>();
+
+  async connect(connectOptions: { endpoint: string; id: string; token: string }) {
+    this.ws = new WebSocket(connectOptions.endpoint);
+    const p = new Promise<void>((resolve) => {
+      this.ws.onopen = () => {
+        resolve();
+        this.ws.send(
+          JSON.stringify({
+            messageType: "authenticate",
+            url: connectOptions.id,
+            token: connectOptions.token,
+          })
+        );
+      };
+    });
+
+    this.ws.onmessage = (event) => {
+      const message = JSON.parse(event.data as string);
+
+      if (isCommandMessage(message)) {
+        if (isCreatePeerConnectionMessage(message)) {
+          this.handleCreatePeerConnectionMessage(message);
+        }
+      }
+      if (isSignalingMessage(message)) {
+        this.handleSignalingMessage(message);
+      }
+    };
+
+    this.ws.onclose = (event) => {
+      console.log("ws closed", event);
+    };
+
+    this.ws.onerror = (event) => {
+      console.log("ws error", event);
+    };
+
+    await p;
+  }
+
+  addService(service: Service) {
+    this.services.set(service.serviceId, service);
+  }
+
+  private handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
+    if (this.connections.has(message.url)) {
+      throw Error("Can not create a connection. Connection Id is already present");
+    }
+    const connection = new WebRTCPeerConnection({});
+    connection.tiebreaker = message.tiebreaker;
+    this.connections.set(message.url, connection);
+    for (const serviceConfig of message.services) {
+      const service = this.services.get(serviceConfig.serviceId);
+      if (service === undefined) {
+        throw Error("No Service for the service config was found");
+      }
+      service.setupConnection(connection, serviceConfig);
+    }
+    connection.on("signalingMessage", (msg) => {
+      this.ws.send(
+        JSON.stringify(<SignalingMessage>{
+          ...msg,
+          messageType: "signaling",
+          connectionUrl: message.url,
+        })
+      );
+    });
+    connection.connect();
+  }
+
+  private handleSignalingMessage(message: SignalingMessage) {
+    const connection = this.connections.get(message.connectionUrl);
+    if (connection === undefined) {
+      throw Error("No Connection for the signaling message was found");
+    }
+    connection.handleSignalingMessage(message);
+  }
+
+  getServiceMeta() {
+    return Array.from(this.services).map((service) => service[1].getMeta());
+  }
+}

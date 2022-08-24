@@ -61,6 +61,12 @@ import {
     ResponseData
 } from "./generated/booking/types"
 import { URLSearchParams } from "url"
+import { DeviceHandler } from "./devicehandler/deviceHandler"
+
+export {DeviceHandler}
+export * as Services from "./services";
+
+
 
 export {
     BookingTypes,
