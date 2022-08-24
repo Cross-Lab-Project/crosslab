@@ -1,14 +1,13 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ServiceConfiguration } from "../../devicehandler/deviceMessages";
-import { DataChannel } from "../../devicehandler/peer/channel";
-import { PeerConnection } from "../../devicehandler/peer/connection";
-import { Service, Prosumer } from "../../devicehandler/service";
+import { Prosumer, Service, ServiceConfiguration } from "@cross-lab-project/soa-client"
 
 import {
   ConnectionInterface,
   ConnectionInterfaceConfiguration,
   ConstructableConnectionInterface,
 } from "./connectionInterface";
+import { DataChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
+import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
 
 interface ConnectionInterfaceConfigurationUpstream extends ConnectionInterfaceConfiguration {
   interfaceType: string;
