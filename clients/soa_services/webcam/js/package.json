@@ -1,0 +1,29 @@
+{
+  "name": "@cross-lab-project/soa-service-webcam",
+  "version": "0.0.1",
+  "description": "SOA-Service Webcam",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  },
+  "scripts": {
+    "build-compile": "tsc",
+    "build": "npm run build-compile",
+    "watch": "tsc -w",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@cross-lab-project/soa-client": "^0.0.9",
+    "tiny-typed-emitter": "^2.1.0"
+  }
+}

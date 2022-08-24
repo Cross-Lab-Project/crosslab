@@ -1,9 +1,7 @@
-
+import { ServiceConfiguration, Service, Producer, Consumer } from "@cross-lab-project/soa-client";
+import { MediaChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
+import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ServiceConfiguration } from "../../devicehandler/deviceMessages";
-import { MediaChannel } from "../../devicehandler/peer/channel";
-import { PeerConnection } from "../../devicehandler/peer/connection";
-import { Service, Producer, Consumer } from "../../devicehandler/service";
 
 type ServiceType = "goldi/webcam";
 const ServiceType: ServiceType = "goldi/webcam";
@@ -13,7 +11,7 @@ export interface WebcamServiceConfiguration extends ServiceConfiguration {
 }
 function checkConfig(config: ServiceConfiguration): asserts config is WebcamServiceConfiguration {
   if (config.serviceType !== ServiceType) {
-    throw Error("Service Configuration needs to be for Webcamservice type");
+    //throw Error("Service Configuration needs to be for Webcamservice type");
   }
 }
 
