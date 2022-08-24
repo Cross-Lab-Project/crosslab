@@ -11,7 +11,7 @@ bundlePolicy: "max-compat", // transport every stream over a seperate connection
 import { TypedEmitter } from "tiny-typed-emitter";
 
 import { PeerConnection, PeerConnectionEvents, ServiceConfig } from "./connection";
-import { assert } from "../../utils";
+import { assert } from "../utils";
 import { SignalingMessage } from "../deviceMessages";
 import { Channel, MediaChannel } from "./channel";
 import * as sdpTransform from "sdp-transform";

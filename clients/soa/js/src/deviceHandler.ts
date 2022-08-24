@@ -7,7 +7,6 @@ import {
 } from "./deviceMessages";
 import { PeerConnection } from "./peer/connection";
 import { Service } from "./service";
-import WebSocket from "isomorphic-ws";
 import { WebRTCPeerConnection } from "./peer/webrtc-connection";
 
 export class DeviceHandler {
