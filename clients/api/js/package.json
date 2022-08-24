@@ -9,12 +9,12 @@
     "url": "https://github.com/Cross-Lab-Project/crosslab.git"
   },
   "scripts": {
-    "build-generate-auth": "npx openapi-codegen client ../services/auth/dist/openapi.json ./src/generated/auth",
-    "build-generate-booking": "npx openapi-codegen client ../services/booking/dist/openapi.json ./src/generated/booking",
-    "build-generate-device": "npx openapi-codegen client ../services/device/dist/openapi.json ./src/generated/device",
-    "build-generate-experiment": "npx openapi-codegen client ../services/experiment/dist/openapi.json ./src/generated/experiment",
-    "build-generate-federation": "npx openapi-codegen client ../services/federation/dist/openapi.json ./src/generated/federation",
-    "build-generate-update": "npx openapi-codegen client ../services/update/dist/openapi.json ./src/generated/update",
+    "build-generate-auth": "npx openapi-codegen client ../../../services/auth/dist/openapi.json ./src/generated/auth",
+    "build-generate-booking": "npx openapi-codegen client ../../../services/booking/dist/openapi.json ./src/generated/booking",
+    "build-generate-device": "npx openapi-codegen client ../../../services/device/dist/openapi.json ./src/generated/device",
+    "build-generate-experiment": "npx openapi-codegen client ../../../services/experiment/dist/openapi.json ./src/generated/experiment",
+    "build-generate-federation": "npx openapi-codegen client ../../../services/federation/dist/openapi.json ./src/generated/federation",
+    "build-generate-update": "npx openapi-codegen client ../../../services/update/dist/openapi.json ./src/generated/update",
     "build-generate": "npm run build-generate-auth && npm run build-generate-booking && npm run build-generate-device && npm run build-generate-experiment && npm run build-generate-federation && npm run build-generate-update",
     "build-compile": "tsc",
     "build": "npm run build-generate && npm run build-compile",
