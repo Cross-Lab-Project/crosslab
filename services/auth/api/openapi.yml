@@ -6,6 +6,10 @@ info:
     This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.
   version: 0.0.1
 
+servers:
+  - url: https://api.goldi-labs.de
+  - url: http://localhost
+
 components:
   securitySchemes:
     TuiAuth:
@@ -25,6 +29,8 @@ paths:
     $ref: "./resources/auth.yml"
   /login:
     $ref: "./resources/login.yml"
+  /device_token:
+    $ref: "./resources/device_token.yml"
   /users:
     $ref: "./resources/users.yml"
   /users/{username}:

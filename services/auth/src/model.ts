@@ -11,7 +11,6 @@ export class RoleModel {
     @PrimaryColumn()
     name!: string
     @ManyToMany(() => UserModel, user => user.roles)
-    @JoinTable()
     users!: UserModel[]
     @ManyToMany(() => ScopeModel)
     @JoinTable()
@@ -23,11 +22,10 @@ export class UserModel {
     @PrimaryColumn()
     username!: string
     @Column({ nullable: true })
-    password!: string
+    password?: string
     @ManyToMany(() => RoleModel, role => role.users)
+    @JoinTable()
     roles!: RoleModel[]
-    @ManyToOne(() => RoleModel)
-    currentRole!: RoleModel
     @OneToMany(() => TokenModel, (token) => token.user, { onDelete: "CASCADE", cascade: true })
     tokens!: TokenModel[]
 }
@@ -36,10 +34,13 @@ export class UserModel {
 export class TokenModel {
     @PrimaryGeneratedColumn("uuid")
     token!: string
-    @Column("datetime")
+    @Column("datetime", { nullable: true })
     expiresOn?: string
     @ManyToOne(() => UserModel, (user) => user.tokens)
     user!: UserModel
+    @ManyToMany(() => ScopeModel)
+    @JoinTable()
+    scopes!: ScopeModel[]
 }
 
 @Entity()

@@ -17,28 +17,45 @@ export const AppDataSource = new DataSource({
 
 interface Scope {
     name: string,
-    roles: ("user"|"developer")[]|"all"
+    roles: ("user"|"developer"|"auth_service"|"device_service"|"experiment_service"|"federation_service"|"update_service")[]|"all"
 }
 
 interface ScopeCollection {
     all: ScopeModel[]
     user: ScopeModel[]
     developer: ScopeModel[]
+    auth_service: ScopeModel[]
+    device_service: ScopeModel[]
+    experiment_service: ScopeModel[]
+    federation_service: ScopeModel[]
+    update_service: ScopeModel[]
 }
 
 async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
     const scopeCollection: ScopeCollection = { 
         all: [],
         user: [],
-        developer: []
+        developer: [],
+        auth_service: [],
+        device_service: [],
+        experiment_service: [],
+        federation_service: [],
+        update_service: []
     }
     const scopeRepository = AppDataSource.getRepository(ScopeModel)
     for (const scope of scopes) {
         const scopeModel = scopeRepository.create()
         scopeModel.name = scope.name
         await scopeRepository.save(scopeModel)
+        scopeCollection.all.push(scopeModel)
         if (scope.roles === "all") {
-            scopeCollection.all.push(scopeModel)
+            scopeCollection.developer.push(scopeModel)
+            scopeCollection.user.push(scopeModel)
+            scopeCollection.auth_service.push(scopeModel)
+            scopeCollection.device_service.push(scopeModel)
+            scopeCollection.experiment_service.push(scopeModel)
+            scopeCollection.federation_service.push(scopeModel)
+            scopeCollection.update_service.push(scopeModel)
         } else {
             for (const role of scope.roles.filter((v,i,s) => s.indexOf(v) === i)) {
                 switch (role) {
@@ -47,6 +64,21 @@ async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
                         break
                     case "user":
                         scopeCollection.user.push(scopeModel)
+                        break
+                    case "auth_service":
+                        scopeCollection.auth_service.push(scopeModel)
+                        break
+                    case "device_service":
+                        scopeCollection.device_service.push(scopeModel)
+                        break
+                    case "experiment_service":
+                        scopeCollection.experiment_service.push(scopeModel)
+                        break
+                    case "federation_service":
+                        scopeCollection.federation_service.push(scopeModel)
+                        break
+                    case "update_service":
+                        scopeCollection.update_service.push(scopeModel)
                         break
                 }
             }
@@ -57,11 +89,15 @@ async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
 
 async function createRole(name: string, scopes: ScopeModel[]) {
     const roleRepository = AppDataSource.getRepository(RoleModel)
-    if ((await roleRepository.findOneBy({ name: name })) === null) {
+    const existingRole = await roleRepository.findOneBy({ name: name })
+    if (existingRole === null) {
         const role = roleRepository.create()
         role.name = name
         role.scopes = scopes
         await roleRepository.save(role)
+    } else {
+        existingRole.scopes = scopes
+        await roleRepository.save(existingRole)
     }
 }
 
@@ -95,16 +131,23 @@ async function createDefaultScopesAndRoles() {
         { name: "users", roles: "all" },
         { name: "users:create", roles: "all" },
         { name: "users:edit", roles: "all" },
-        { name: "users:list", roles: "all" }
+        { name: "users:list", roles: "all" },
+        { name: "device_token", roles: "all" },
+        { name: "device_token:create", roles: "all"}
     ])
 
     // create default roles
     await createRole("superadmin", scopeCollection.all)
-    await createRole("developer", [...scopeCollection.all, ...scopeCollection.developer])
-    await createRole("user", [...scopeCollection.all, ...scopeCollection.user])
+    await createRole("developer", scopeCollection.developer)
+    await createRole("user", scopeCollection.user)
+    await createRole("auth_service", scopeCollection.auth_service)
+    await createRole("device_service", scopeCollection.device_service)
+    await createRole("experiment_service", scopeCollection.experiment_service)
+    await createRole("federation_service", scopeCollection.federation_service)
+    await createRole("update_service", scopeCollection.update_service)
 }
 
-async function createDefaultSuperadmin() {
+async function createDefaultSuperadminUser() {
     const userRepository = AppDataSource.getRepository(UserModel)
     const roleRepository = AppDataSource.getRepository(RoleModel)
 
@@ -122,7 +165,29 @@ async function createDefaultSuperadmin() {
         user.username = "superadmin"
         user.password = "superadmin"
         user.roles = [roleSuperadmin]
-        user.currentRole = roleSuperadmin
+        user.tokens = []
+        await userRepository.save(user)
+    }
+}
+
+async function createDefaultServiceUser(service: "auth_service"|"device_service"|"experiment_service"|"federation_service"|"update_service") {
+    const userRepository = AppDataSource.getRepository(UserModel)
+    const roleRepository = AppDataSource.getRepository(RoleModel)
+
+    const roleAuthService = await roleRepository.findOneOrFail({
+        where: { 
+            name: service
+        },
+        relations: {
+            users: true,
+            scopes: true
+        }
+    })
+
+    if (roleAuthService.users.length === 0) {
+        const user = userRepository.create()
+        user.username = service.replace("_","")
+        user.roles = [roleAuthService]
         user.tokens = []
         await userRepository.save(user)
     }
@@ -130,6 +195,11 @@ async function createDefaultSuperadmin() {
 
 export async function initializeDataSource() {
     await createDefaultScopesAndRoles()
-    await createDefaultSuperadmin()
+    await createDefaultSuperadminUser()
+    await createDefaultServiceUser("auth_service")
+    await createDefaultServiceUser("device_service")
+    await createDefaultServiceUser("experiment_service")
+    await createDefaultServiceUser("federation_service")
+    await createDefaultServiceUser("update_service")
 }
 

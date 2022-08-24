@@ -5,6 +5,14 @@
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
     "version": "0.0.1"
   },
+  "servers": [
+    {
+      "url": "https://api.goldi-labs.de"
+    },
+    {
+      "url": "http://localhost"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "TuiAuth": {
@@ -210,6 +218,45 @@
           },
           "401": {
             "description": "Unauthorized access."
+          }
+        }
+      }
+    },
+    "/device_token": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device_token",
+              "device_token:create"
+            ]
+          }
+        ],
+        "operationId": "device_token",
+        "summary": "Authenticate user",
+        "description": "This endpoint will generate a new device token linked to the requesting user.",
+        "responses": {
+          "200": {
+            "description": "Return the token which represents the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not authorized."
+          },
+          "403": {
+            "description": "User does not have access rights."
+          },
+          "404": {
+            "description": "No user found for jwt"
           }
         }
       }
