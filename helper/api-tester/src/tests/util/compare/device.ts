@@ -1,6 +1,6 @@
 import { ConcreteDevice, DeviceGroup, Peerconnection, ServiceConfig, TimeSlot } from "@cross-lab-project/api-client/dist/generated/device/types";
 import { fail } from "assert"
-import { CompareOptions, isCompareOption, updateCompareOptions } from "./common.js"
+import { CompareOptions, isCompareOption, updateCompareOptions } from "./common"
 
 export function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
     const devices: ConcreteDevice[] = []

@@ -17,7 +17,6 @@ export const exampleDevices: ExampleDevices = {
             type: "device",
             name: "Test Concrete Device",
             description: "A concrete device created solely for testing purposes",
-            owner: "https://api.example.com/groups/goldi",
             announcedAvailability: [{ available: true }]
         }
     },
@@ -25,8 +24,7 @@ export const exampleDevices: ExampleDevices = {
         basic: {
             type: "group",
             name: "Test Device Group",
-            description: "A device group created solely for testing purposes",
-            owner: "https://api.example.com/groups/goldi"
+            description: "A device group created solely for testing purposes"
         }
     }
 }

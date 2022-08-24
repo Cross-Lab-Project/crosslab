@@ -1,8 +1,9 @@
 import { APIClient } from "@cross-lab-project/api-client"
 import { ConcreteDevice, DeviceGroup, Peerconnection } from "@cross-lab-project/api-client/dist/generated/device/types"
-import assert, { fail } from "assert"
-import { config } from "../config.js"
-import { createConcreteDevice, createDeviceGroup, createPeerconnection, deleteDevices, deletePeerconnections, getDevice, getPeerconnection, getToken, openWebsocketConnection, patchDevice, postAvailability } from "./util/operations/device.js"
+import assert from "assert"
+import { config } from "../config"
+import { CompareOptionsConcreteDevice } from "./util/compare/device"
+import { createConcreteDevice, createDeviceGroup, createPeerconnection, deleteDevices, deletePeerconnections, getDevice, getPeerconnection, getToken, openWebsocketConnection, patchDevice, postAvailability } from "./util/operations/device"
 
 export async function test() {
     const apiClient = new APIClient(config.ENDPOINT)
@@ -10,6 +11,10 @@ export async function test() {
     describe("Device Service", async function() {
         const createdDevices: (ConcreteDevice|DeviceGroup)[] = []
         const createdPeerconnections: (Peerconnection)[] = []
+
+        this.beforeAll(async function() {
+            await apiClient.postLogin({ username: config.USERNAME, password: config.PASSWORD, method: "tui" })
+        })
 
         describe("Basic Device Management", async function () {
             this.afterEach(async function() {
@@ -48,12 +53,18 @@ export async function test() {
             // NOTE: Here callbacks could be tested as well
             it("should update the information of a concrete device", async function () {
                 const device = await createConcreteDevice(apiClient, createdDevices)
-                await patchDevice(apiClient, device, {
+                const compareOptions: Partial<CompareOptionsConcreteDevice> = {
+                    announcedAvailability: false
+                }
+                const patchedDevice = await patchDevice(apiClient, device, {
                     name: "(New) " + device.name,
                     description: "(New) " + device.description,
-                    owner: device.owner + "/new",
                     announcedAvailability: [{ available: false }] 
+                }, {
+                    compareOptions: compareOptions
                 })
+                assert(patchedDevice.announcedAvailability, "Patched device is missing announcedAvailability")
+                assert(patchedDevice.announcedAvailability.length === 0, "Patched device's announcedAvailability should be empty")
             })
 
             it("should update the information of a device group", async function () {
@@ -64,7 +75,6 @@ export async function test() {
                 await patchDevice(apiClient, device, {
                     name: "(New) " + device.name,
                     description: "(New) " + device.description,
-                    owner: device.owner + "/new",
                     devices: createdDevices.slice(0,3)
                 })
             })
@@ -76,7 +86,7 @@ export async function test() {
 
             it("should update the availability of a concrete device", async function () {
                 const device = await createConcreteDevice(apiClient, createdDevices)
-                await postAvailability(apiClient, device, [
+                const newTimeSlots = await postAvailability(apiClient, device, [
                     { 
                         available: true,
                         start: new Date().toISOString()
@@ -86,6 +96,8 @@ export async function test() {
                         start: new Date().toISOString()
                     }
                 ])
+                assert(newTimeSlots, "Patched device is missing announcedAvailability")
+                assert(newTimeSlots.length === 0, "Patched device's announcedAvailability should be empty")
             })
 
             it("should get all created devices by id", async function () {

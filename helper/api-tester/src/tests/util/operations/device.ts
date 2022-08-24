@@ -1,13 +1,14 @@
 import { APIClient } from "@cross-lab-project/api-client"
 import { postDevicesByDeviceIdAvailabilityBodyType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
 import { ConcreteDevice, DeviceGroup, Peerconnection, TimeSlot } from "@cross-lab-project/api-client/dist/generated/device/types"
-import assert, { fail } from "assert"
+import assert from "assert"
 import { WebSocket } from "ws"
-import { config } from "../../../config.js"
-import { exampleDevices } from "../../../example_data/devices.js"
-import { getId } from "../common.js"
-import { compareConcreteDevices, compareDeviceGroups, CompareOptionsPeerconnection, comparePeerconnections, compareTimeSlots } from "../compare/device.js"
-import { AuthenticationMessage, isAuthenticationMessage, isMessage } from "../deviceMessages.js"
+import { config } from "../../../config"
+import { exampleDevices } from "../../../example_data/devices"
+import { getId } from "../common"
+import { CompareOptions } from "../compare/common"
+import { compareConcreteDevices, compareDeviceGroups, CompareOptionsPeerconnection, comparePeerconnections } from "../compare/device"
+import { AuthenticationMessage, isAuthenticationMessage, isMessage } from "../deviceMessages"
 
 export async function createConcreteDevice(apiClient: APIClient, createdDevices: (ConcreteDevice|DeviceGroup)[], values?: Partial<ConcreteDevice>, changedUrl?: string): Promise<ConcreteDevice> {
     // prepare concrete device for posting
@@ -27,7 +28,7 @@ export async function createConcreteDevice(apiClient: APIClient, createdDevices:
     const response = await apiClient.postDevices({ changedUrl: changedUrl }, concreteDevice)
     assert(response.status == 201, "Unexpected response status")
     assert(response.body.type == "device", "Returned device is not of type 'device'")
-    assert(compareConcreteDevices(response.body, concreteDevice, { url: false, connected: false, owner: false, announcedAvailability: false }))
+    assert(compareConcreteDevices(response.body, concreteDevice, { url: false, connected: false, owner: false, announcedAvailability: false }), "Comparison failed")
 
     // add created concrete device to the list of created devices
     createdDevices.push(response.body)
@@ -51,7 +52,7 @@ export async function createDeviceGroup(apiClient: APIClient, createdDevices: (C
     const response = await apiClient.postDevices({ changedUrl: changedUrl }, deviceGroup)
     assert(response.status == 201, "Unexpected response status")
     assert(response.body.type == "group", "Returned device is not of type 'group'")
-    assert(compareDeviceGroups(response.body, deviceGroup, { url: false }))
+    assert(compareDeviceGroups(response.body, deviceGroup, { url: false, owner: false }), "Comparison failed")
 
     // add created device group to the list of created devices
     createdDevices.push(response.body)
@@ -64,7 +65,7 @@ export async function createPeerconnection(apiClient: APIClient, createdPeerconn
     compareOptions.url = false
     const response = await apiClient.postPeerconnections({ closedUrl: closedUrl }, peerconnection)
     assert(response.status == 201, "Unexpected response status")
-    assert(comparePeerconnections(response.body, peerconnection, compareOptions))
+    assert(comparePeerconnections(response.body, peerconnection, compareOptions), "Comparison failed")
 
     createdPeerconnections.push(response.body)
 
@@ -90,7 +91,7 @@ export async function deletePeerconnections(apiClient: APIClient, peerconnection
 }
 
 // TODO: maybe add option when a failure is expected
-export async function patchDevice<T extends ConcreteDevice|DeviceGroup>(apiClient: APIClient, device: T, values?: Partial<T>, changedUrl?: string): Promise<T> {
+export async function patchDevice<T extends ConcreteDevice|DeviceGroup>(apiClient: APIClient, device: T, values?: Partial<T>, options?: { compareOptions?: CompareOptions<T>, changedUrl?: string }): Promise<T> {
     // prepare device for patching
     if (values) {
         if (values.announcedAvailability) device.announcedAvailability = values.announcedAvailability
@@ -105,11 +106,11 @@ export async function patchDevice<T extends ConcreteDevice|DeviceGroup>(apiClien
     }
 
     // patch device and check that it was updated correctly
-    const response = await apiClient.patchDevicesByDeviceId({ device_id: getId(device), changedUrl: changedUrl }, device)
+    const response = await apiClient.patchDevicesByDeviceId({ device_id: getId(device), changedUrl: options?.changedUrl }, device)
     assert(response.status == 200, "Unexpected response status")
     assert(response.body.type == device.type, "Type of returned device differs from type of device")
-    if (response.body.type == "device" && device.type == "device") assert(compareConcreteDevices(response.body, device))
-    if (response.body.type == "group" && device.type == "group") assert(compareDeviceGroups(response.body, device))
+    if (response.body.type == "device" && device.type == "device") assert(compareConcreteDevices(response.body, device, options?.compareOptions), "Comparison failed")
+    if (response.body.type == "group" && device.type == "group") assert(compareDeviceGroups(response.body, device, options?.compareOptions), "Comparison failed")
 
     return response.body as T
 }
@@ -126,11 +127,6 @@ export async function getToken(apiClient: APIClient, device: ConcreteDevice): Pr
 export async function postAvailability(apiClient: APIClient, device: ConcreteDevice, availability: postDevicesByDeviceIdAvailabilityBodyType): Promise<TimeSlot[]> {
     const response = await apiClient.postDevicesByDeviceIdAvailability({ device_id: getId(device) }, availability)
     assert(response.status == 200, "Unexpected response status")
-    if (!availability) availability = []
-    assert(response.body.length == availability.length, "Amount of received timeslots differs from amount of sent timeslots")
-    for (let i = 0; i < availability.length; i++) {
-        assert(compareTimeSlots(response.body[i], availability[i]))
-    }
 
     return response.body
 }
@@ -139,8 +135,8 @@ export async function getDevice<T extends ConcreteDevice|DeviceGroup>(apiClient:
     const response = await apiClient.getDevicesByDeviceId({ device_id: getId(device), flat_group: flat_group })
     assert(response.status == 200, "Unexpected response status")
     assert(response.body.type == device.type, "Type of returned device differs from type of device")
-    if (response.body.type == "device" && device.type == "device") assert(compareConcreteDevices(response.body, device))
-    if (response.body.type == "group" && device.type == "group") assert(compareDeviceGroups(response.body, device, undefined, flat_group))
+    if (response.body.type == "device" && device.type == "device") assert(compareConcreteDevices(response.body, device), "Comparison failed")
+    if (response.body.type == "group" && device.type == "group") assert(compareDeviceGroups(response.body, device, undefined, flat_group), "Comparison failed")
 
     return response.body as T
 }
@@ -148,7 +144,7 @@ export async function getDevice<T extends ConcreteDevice|DeviceGroup>(apiClient:
 export async function getPeerconnection(apiClient: APIClient, peerconnection: Peerconnection, options?: Partial<CompareOptionsPeerconnection> | boolean): Promise<Peerconnection> {
     const response = await apiClient.getPeerconnectionsByPeerconnectionId({ peerconnection_id: getId(peerconnection) })
     assert(response.status == 200, "Unexpected response status")
-    assert(comparePeerconnections(response.body, peerconnection, options))
+    assert(comparePeerconnections(response.body, peerconnection, options), "Comparison failed")
 
     return response.body
 }
@@ -161,14 +157,14 @@ export async function openWebsocketConnection(apiClient: APIClient, device: Conc
             clearTimeout(timeout)
             console.log(`Websocket connection opened for Device ${device.url}`)
             const authMessage: AuthenticationMessage = {
-                id: getId(device),
+                url: device.url!,
                 messageType: "authenticate",
                 token: await getToken(apiClient, device)
             }
             ws.send(JSON.stringify(authMessage))
             ws.on("message", (msg) => {
-                console.log(`Device ${device.url} received: ${msg}`)
                 const message = JSON.parse(msg.toString())
+                console.log(`Device ${device.url} received: ${JSON.stringify(message, null, 4)}`)
                 if (isMessage(message) && isAuthenticationMessage(message)) {
                     if (message.authenticated) resolve(ws)
                     else reject("Websocket connection not authenticated")

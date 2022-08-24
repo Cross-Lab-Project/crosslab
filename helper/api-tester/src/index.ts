@@ -1,13 +1,13 @@
-import * as federation from "./tests/federation.spec.js"
-import * as device from "./tests/devices.spec.js"
-import * as experiment from "./tests/experiment.spec.js"
-import * as auth from "./tests/auth.spec.js"
+import * as federation from "./tests/federation.spec"
+import * as device from "./tests/devices.spec"
+import * as experiment from "./tests/experiment.spec"
+import * as auth from "./tests/auth.spec"
 
 async function main() {
-    // device.test()
+    auth.test()
     // federation.test()
-    experiment.test()
-    // auth.test()
+    device.test()
+    // experiment.test()
 }
 
 main()

@@ -1,12 +1,12 @@
 import { APIClient } from "@cross-lab-project/api-client"
 import { Institution } from "@cross-lab-project/api-client/dist/generated/federation/types"
 import assert, { fail } from "assert"
-import { config } from "../config.js"
-import { exampleInstitutions } from "../example_data/federation.js"
-import { startTestServer, stopTestServer } from "../test_server/index.js"
-import { getId } from "./util/common.js"
-import { compareInstitutions } from "./util/compare/federation.js"
-import { createInstitution, deleteInstitutions } from "./util/operations/federation.js"
+import { config } from "../config"
+import { exampleInstitutions } from "../example_data/federation"
+import { startTestServer, stopTestServer } from "../test_server/index"
+import { getId } from "./util/common"
+import { compareInstitutions } from "./util/compare/federation"
+import { createInstitution, deleteInstitutions } from "./util/operations/federation"
 
 async function sleep(time: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, time))

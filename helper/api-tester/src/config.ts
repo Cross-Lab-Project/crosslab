@@ -1,3 +1,5 @@
 export const config = {
-    ENDPOINT: "http://localhost"
+    ENDPOINT: "http://api.localhost",
+    USERNAME: "username",
+    PASSWORD: "password"
 }
