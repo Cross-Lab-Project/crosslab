@@ -31,4 +31,9 @@ export function BelongsToUs(url: URL): boolean {
     return false;
 };
 
+export function GetIDFromURL(url: string): string {
+    let split = url.split("/");
+    return split[split.length-1];
+}
+
 // app.initService({JWTVerify: (_jwt, _scopes) => {return {username: "testuser"}}})

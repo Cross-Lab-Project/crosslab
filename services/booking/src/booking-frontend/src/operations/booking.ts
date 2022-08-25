@@ -16,9 +16,9 @@ import {
 import * as mysql from 'mysql2/promise';
 import * as amqplib from 'amqplib';
 
-import { config } from "../common/config"
-import { BelongsToUs } from "../common/auth"
-import { DeviceBookingRequest } from "./messageDefinition";
+import { config } from "../../../common/config"
+import { BelongsToUs } from "../../../common/auth"
+import { DeviceBookingRequest } from "../messageDefinition";
 
 export const putBookingManage: putBookingManageSignature = async (body, user) => {
     let connection = await amqplib.connect(config.AmqpUrl);

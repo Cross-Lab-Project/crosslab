@@ -8,42 +8,60 @@ import {
 
 import { APIClient } from "@cross-lab-project/api-client"
 import * as mysql from 'mysql2/promise';
-import { cloneDeep } from "lodash"
+import { cloneDeep, startCase } from "lodash"
 import dayjs from 'dayjs';
 
 
 import { config } from "../../../common/config"
-import { BelongsToUs } from "../../../common/auth"
+import { BelongsToUs, GetIDFromURL } from "../../../common/auth"
 import { timetableAnd, timetableNot, timetableSortInPlace } from "../timetable"
 
+// TODO: Missing availability since it is not yet well defined
 export const postBookingSchedule: postBookingScheduleSignature = async (body, user) => {
     let api: APIClient = new APIClient(config.OwnURL);
 
     const laterReq = new Map<string, [number[], number[], postBookingScheduleBodyType]>(); // Device in request, device list, request
 
-    let timetables: Timeslot[][][] = []; // Device in request, device list, actual reserved time slots
+    let timetables: Timeslot[][][] = []; // Booked: Device in request, device list, actual reserved time slots
     let availability: Timeslot[][][] = []; // Device in request, device list, actual reserved time slots
 
     // Collect all timetables
     for (let device = 0; device < body.Experiment.Devices.length; device++) {
         // Resolve device
-        timetables.push([])
-        let r = await api.getDevices(body.Experiment.Devices[device].ID);
+        timetables.push([]);
+        availability.push([]);
+        let r = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(body.Experiment.Devices[device].ID), flat_group: true }, body.Experiment.Devices[device].ID);
         if (r.status !== 200) {
-            if (r.status === 503) {
-                return {
-                    status: 503
-                };
-            };
+            // TODO: Remove later if errors are well specified
+            //if (r.status === 503) {
+            //    return {
+            //        status: 503
+            //    };
+            //};
             return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + r.status };
         };
-        let realDevices = r.body;
+
+        if (r.body.url != body.Experiment.Devices[device].ID) {
+            return { status: 500, body: "API returned bad result (requested device" + body.Experiment.Devices[device].ID + ", got " + r.body.url + ")" };
+        }
+
+        let realDevices: string[] = [];
+        if (r.body.type === "device") {
+            realDevices.push(r.body.url)
+        } else {
+            // group
+            for (let i = 0; i < r.body.devices.length; i++) {
+                realDevices.push(r.body.devices[i].url);
+            }
+        }
 
         // Process devices
         for (let i = 0; i < realDevices.length; i++) {
-            // We can not assume a name
             timetables[device].push([]);
-            let d: URL = new URL(realDevices[i].url);
+            availability[device].push([]);
+
+            // Get timetable
+            let d: URL = new URL(realDevices[i]);
             let t: Timeslot[] = [];
             if (!BelongsToUs(d)) {
                 // This is not our device
@@ -64,7 +82,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
                 let lr = laterReq.get(d.origin);
                 lr[0].push(device);
                 lr[1].push(i);
-                lr[2].Experiment.Devices.push({ ID: realDevices[i].url });
+                lr[2].Experiment.Devices.push({ ID: realDevices[i] });
                 laterReq.set(d.origin, lr);
                 t = [];
             } else {
@@ -73,6 +91,22 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             }
 
             timetables[device][i] = t;
+
+            // Get availability
+            let a = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(realDevices[device])}, realDevices[device]);
+            if (r.status !== 200) {
+                // TODO: Remove later if errors are well specified
+                //if (r.status === 503) {
+                //    return {
+                //        status: 503
+                //    };
+                //};
+                return { status: 500, body: "Device request " + realDevices[device] + " returned status code" + a.status };
+            };
+            if(a.body.type == "group") {
+                return { status: 500, body: "Device request " + realDevices[device] + " is group but shouldn't" };
+            }
+            availability[device][i] = timetableAnd(a.body.announcedAvailability.map((e) => { return {Start: e.start, End: e.end} }));
         }
     };
 
@@ -107,9 +141,15 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
 
     // Build Response
     for (let device = 0; device < body.Experiment.Devices.length; device++) {
+        // Get free times
         let free: Timeslot[][] = []
         for (let i = 0; i < timetables[device].length; i++) {
-            free.push(timetableNot(timetables[device][i], dayjs(body.Time.Start), dayjs(body.Time.End)));
+            // Add availability
+            let notAvailable: Timeslot[] = timetableNot(availability[device][i], dayjs(body.Time.Start), dayjs(body.Time.End))
+            let notFree: Timeslot[] = timetableAnd(notAvailable, timetables[device][i]);
+
+            // Now push free
+            free.push(timetableNot(notFree, dayjs(body.Time.Start), dayjs(body.Time.End)));
         }
         let freeCombined = timetableAnd(...free);
         response.push({

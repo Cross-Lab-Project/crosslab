@@ -2,7 +2,6 @@ import * as mocha from "mocha";
 import dayjs from "dayjs";
 
 import { ReservationMessage, ReservationRequest } from "./messageDefinition";
-import { format } from "mysql2";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
