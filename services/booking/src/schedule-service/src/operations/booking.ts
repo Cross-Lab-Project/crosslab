@@ -3,13 +3,14 @@ import {
 } from "../generated/types"
 import {
     postBookingScheduleBodyType,
+    postBookingScheduleResponseType,
     postBookingScheduleSignature,
 } from "../generated/signatures/booking"
 
 import { APIClient } from "@cross-lab-project/api-client"
 import { getDevicesByDeviceIdResponseType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
 import * as mysql from 'mysql2/promise';
-import { cloneDeep, startCase } from "lodash"
+import { cloneDeep, map } from "lodash"
 import dayjs from 'dayjs';
 
 
@@ -103,9 +104,17 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         }
     };
 
+    const lrpromise = new Map<string, [number[], number[], postBookingScheduleBodyType, Promise<postBookingScheduleResponseType>]>(); // Device in request, device list, request
     for (let k of laterReq.keys()) {
         let lr = laterReq.get(k);
-        let req = await api.postBookingSchedule(lr[2], k + "/booking/schedule");
+        let req = api.postBookingSchedule(lr[2], k + "/booking/schedule");
+
+        lrpromise.set(k, [lr[0], lr[1], lr[2], req]);
+    }
+
+    for (let k of laterReq.keys()) {
+        let lr = lrpromise.get(k);
+        let req = await lr[3];
         if (req.status != 200) {
             if (req.status == 503) {
                 return { status: 503 };
