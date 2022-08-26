@@ -131,6 +131,9 @@ export function {{ function.validateOutput }}(response: ResponseData): response 
     }
     {% endif -%}
     {% endfor %}
+
+    ({{ function.validateOutput }} as any).errors = `Response status ${response.status} is unexpected`
+
     return false
 }
 {% endmacro -%}

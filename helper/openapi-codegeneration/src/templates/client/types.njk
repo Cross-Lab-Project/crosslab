@@ -12,12 +12,10 @@ export type UserType = {
 
 export type HttpMethods = "get" | "post" | "patch" | "head" | "options" | "trace" | "delete" | "put"
 
-export class FetchError implements Error {
-    public name: string = "FetchError"
-    public message: string
-
-    constructor(message?: string) {
-        this.message = message ? message : "An error occurred during fetch"
+export class FetchError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "FetchError"
     }
 }
 

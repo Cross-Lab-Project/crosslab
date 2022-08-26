@@ -25,14 +25,63 @@ export interface ResponseData {
     body?: any
 }
 
+export abstract class ErrorWithStatus extends Error {
+    public status: number | undefined
+
+    constructor(message: string, status?: number) {
+        super(message)
+        this.status = status
+        this.name = "ErrorWithStatus"
+    }
+}
+
+export class VerificationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "VerificationError"
+    }
+}
+
+export class JWTVerificationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "JWTVerificationError"
+    }
+}
+
+export class MissingParameterError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MissingParameterError"
+    }
+}
+
+export class MalformedParameterError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedParameterError"
+    }
+}
+
+export class MalformedBodyError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedBodyError"
+    }
+}
+
+/**
+ * @throws {MissingParameterError} Thrown when Authorization header is not set.
+ * @throws {MalformedParameterError} Thrown when Authorization header does not have format "Bearer TOKEN".
+ */
 export function extract_jwt_from_request<P,B,Q>(req: TypedRequest<P,B,Q>, jwtExtractionRegEx: RegExp = /^Bearer (.*)$/): string {
     const authorization_header = req.header("Authorization")
     if (authorization_header === undefined) {
-        throw new Error("Authorization Header is not set")
+        throw new MissingParameterError("Authorization header is not set", 401)
     }
     const bearer_token_result = jwtExtractionRegEx.exec(authorization_header);
     if (bearer_token_result === null || bearer_token_result.length != 2) {
-        throw new Error("the access token in the Authorization Header is malformed")
+        throw new MalformedParameterError("Authorization header is malformed", 401)
     }
     return bearer_token_result[1]
 }

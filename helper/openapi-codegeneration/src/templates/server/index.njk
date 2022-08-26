@@ -31,11 +31,12 @@ app.initService = (options) => {
     // catch errors
     const errorHandling: express.ErrorRequestHandler = (err, req, res, _next) => {
         const status = err.status || 500
-        const msg = err.error || err.message
+        const message = err.error || err.message
+        const error = err.name || "Error"
         console.error(
-            `Error ${status} (${msg}) on ${req.method} ${req.url} with payload ${req.body}.`
+            `${error} ${status} "${message}" on ${req.method} ${req.url} with payload ${req.body}.`
         )
-        res.status(status).send({ status, error: msg })
+        res.status(status).send({ error, message })
     }
     app.use(errorHandling)
 }

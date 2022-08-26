@@ -1337,7 +1337,7 @@ async function generateServerProject(apiPath: string, options: { outPath: string
     const operationTemplatesPath = outPath + "/operations_templates"
     const signaturesPath = outPath + "/signatures"
     const validationPath = outPath + "/validation"
-    if (fs.existsSync(outPath)) fs.rmdirSync(outPath, { recursive: true })
+    if (fs.existsSync(outPath)) fs.rmSync(outPath, { recursive: true })
     fs.mkdirSync(outPath, { recursive: true })
     fs.mkdirSync(routesPath)
     fs.mkdirSync(operationTemplatesPath)

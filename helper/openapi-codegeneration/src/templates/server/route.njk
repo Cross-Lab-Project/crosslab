@@ -16,14 +16,15 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {{- " " + utils.parametersTypeDeclaration(function.parameters,false,["query"]) | safe -}}
     {%- else -%}
     {{- " {}" -}}
-    {%- endif -%}>, res) => {
+    {%- endif -%}>, res, next) => {
     {% if "jwt" in function.security -%}
     let user: UserType
     try {
         const jwt = extract_jwt_from_request(req)
         user = await options.JWTVerify(jwt, ["{{ function.scopes | join("\",\"") | safe }}"])
-    } catch(err) {
-        return res.status(401).send("JWT Verification Error!")
+    } catch (error) {
+        next(error)
+        return
     }
     {% endif -%}
     {% if function.parameters -%}
@@ -53,24 +54,20 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
     {% if function.body or function.isProxyFunction -%}
     const body = req.body
     {% endif -%}
-    if (!{{ function.validateInput }}(
-        {{- "parameters, " if function.parameters else "undefined, " -}}
-        {{- "body" if function.body else "undefined" -}}
-        )) {
-        const errorMsg = "Input validation failed"
-        console.error(errorMsg, ({{ function.validateInput }} as any).errors)
-        return res.status(400).send(errorMsg)
-    }
     try {
+        if (!{{ function.validateInput }}(
+            {{- "parameters, " if function.parameters else "undefined, " -}}
+            {{- "body" if function.body else "undefined" -}}
+            )) {
+            new VerificationError("Request validation failed", 400)
+        }
         const result = await {{ basePath }}.{{ function.name }}(
         {{- "parameters, " if function.parameters and (function.body or function.isProxyFunction or (function.security != "none" and ("jwt" in function.security))) else ("parameters" if function.parameters)-}}
         {{- "body, " if (function.body or function.isProxyFunction) and (function.security != "none" and ("jwt" in function.security)) else ("body" if function.body or function.isProxyFunction) -}}
         {{- "user" if function.security != "none" and ("jwt" in function.security) -}}
         )
         if (!{{ function.validateOutput }}(result)) {
-            const errorMsg = "Output validation failed"
-            console.error(errorMsg, ({{ function.validateOutput }} as any).errors)
-            return res.status(400).send(errorMsg)
+            new VerificationError("Response validation failed", 500)
         }
         if (result.headers) {
             for (const headerName in result.headers) {
@@ -81,13 +78,10 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
             }
         }
         return res.status(result.status || 200).send(result.body)
-    } catch(err) {
-        console.error(`Server Error: ${err}`)
-        return res.status(500).send({
-            status: 500,
-            error: "Server Error"
-        })
+    } catch (error) {
+        next(error)
     }
+    return
 })
 {% endmacro -%}
 
@@ -100,8 +94,9 @@ import express from "express"
 import * as {{ basePath }} from "../../operations/{{ basePath }}"
 import {
     initServiceOptions,
-    TypedRequest
-    {{- ",\n\tUserType" if secured }}
+    TypedRequest,
+    VerificationError
+    {{- ",\n\UserType" if secured }}
     {{- ",\n\textract_jwt_from_request" if secured }}
 } from "../types"
 import {
