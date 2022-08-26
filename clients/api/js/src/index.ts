@@ -3,11 +3,15 @@ import {
     SignaturesAuth as AuthSignatures,
     SignaturesIdentity as IdentitySignatures,
     SignaturesLogin as LoginSignatures,
+    SignaturesLogout as LogoutSignatures,
+    SignaturesDevice_token as DeviceTokenSignatures,
     SignaturesUsers as UsersSignatures,
     Types as AuthTypes,
     // ValidationAuth as AuthValidation,
     ValidationIdentity as IdentityValidation,
     ValidationLogin as LoginValidation,
+    ValidationLogout as LogoutValidation,
+    ValidationDevice_token as DeviceTokenValidation,
     ValidationUsers as UsersValidation,
 } from "./generated/auth"
 
@@ -124,12 +128,24 @@ export class APIClient {
         },
         accessToken?: string
     ) {
-        this.authClient = new AuthClient(typeof baseURL === "string" ? baseURL : baseURL.auth)
-        this.bookingClient = new BookingClient(typeof baseURL === "string" ? baseURL : baseURL.booking)
-        this.deviceClient = new DeviceClient(typeof baseURL === "string" ? baseURL : baseURL.device)
-        this.experimentClient = new ExperimentClient(typeof baseURL === "string" ? baseURL : baseURL.experiment)
-        this.federationClient = new FederationClient(typeof baseURL === "string" ? baseURL : baseURL.federation)
-        this.updateClient = new UpdateClient(typeof baseURL === "string" ? baseURL : baseURL.update)
+        this.authClient = new AuthClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.auth.endsWith("/") ? baseURL.auth.slice(0,-1) : baseURL.auth))
+        this.bookingClient = new BookingClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.booking.endsWith("/") ? baseURL.booking.slice(0,-1) : baseURL.booking))
+        this.deviceClient = new DeviceClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.device.endsWith("/") ? baseURL.device.slice(0,-1) : baseURL.device))
+        this.experimentClient = new ExperimentClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.experiment.endsWith("/") ? baseURL.experiment.slice(0,-1) : baseURL.experiment))
+        this.federationClient = new FederationClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.federation.endsWith("/") ? baseURL.federation.slice(0,-1) : baseURL.federation))
+        this.updateClient = new UpdateClient(typeof baseURL === "string" ? 
+            (baseURL.endsWith("/") ? baseURL.slice(0,-1) : baseURL) : 
+            (baseURL.update.endsWith("/") ? baseURL.update.slice(0,-1) : baseURL.update))
         this._accessToken = accessToken ?? ""
     }
 
@@ -161,6 +177,31 @@ export class APIClient {
             const response = await this.proxy("post", url, undefined, body, LoginValidation.validatePostLoginInput, LoginValidation.validatePostLoginOutput) as LoginSignatures.postLoginResponseType
             if (response.body) this.accessToken = response.body
             return response
+        }
+    }
+
+    // Auth Service logout API calls
+
+    public async postLogout(
+        body: LogoutSignatures.postLogoutBodyType,
+        url?: string
+    ): Promise<LogoutSignatures.postLogoutResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.postLogout(body)
+        } else {
+            if (!isValidUrl(url, `/logout`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("post", url, undefined, body, LogoutValidation.validatePostLogoutInput, LogoutValidation.validatePostLogoutOutput)
+        }
+    }
+
+    // Auth Service device_token API calls
+
+    public async postDeviceToken(url?: string): Promise<DeviceTokenSignatures.postDeviceTokenResponseType> {
+        if (!url || url.startsWith(this.authClient.baseURL)) {
+            return this.authClient.postDeviceToken()
+        } else {
+            if (!isValidUrl(url, `/logout`)) throw new FetchError("URL is not valid for this operation")
+            return this.proxy("post", url, undefined, undefined, DeviceTokenValidation.validatePostDeviceTokenInput, DeviceTokenValidation.validatePostDeviceTokenOutput)
         }
     }
 
