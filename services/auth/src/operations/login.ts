@@ -1,33 +1,39 @@
+import { AuthenticationError, LdapAuthenticationError } from "../types/errors"
 import {
     postLoginSignature
 } from "../generated/signatures/login"
 import { loginTui } from "../methods/login"
 
+/**
+ * This function implements the functionality for handling POST on /login endpoint.
+ * @throws {LdapBindError} Can throw errors from {@link loginTui}.
+ * @throws {LdapError} Can throw errors from {@link loginTui}.
+ * @throws {AuthenticationError} Thrown when the authentication was unsuccessful.
+ */
 export const postLogin: postLoginSignature = async (body) => {
     console.log(`postLogin called for ${body.username} using method ${body.method}`)
+
     let token
-
-    switch (body.method) {
-        case "local":
-            break
-        case "tui":
-            try {
+    try {
+        switch (body.method) {
+            case "local":
+                break
+            case "tui":
                 token = await loginTui(body.username, body.password)
-            } catch (err) {
-                console.error(`postLogin failed for ${body.username} using method ${body.method}`)
-                throw err
-            }
-            break
-    }
-
-    if (!token) {
-        console.error(`postLogin failed for ${body.username} using method ${body.method}`)
-        return {
-            status: 401
+                break
         }
+    } catch (error) {
+        // LdapAuthenticationError -> AuthenticationError
+        if (error instanceof LdapAuthenticationError) {
+            throw new AuthenticationError(`Invalid login credentials`, 401)
+        }
+
+        throw error
     }
 
-    console.error(`postLogin succeeded for ${body.username} using method ${body.method}`)
+    if (!token) throw new AuthenticationError(`Authentication failed`, 401)
+
+    console.log(`postLogin succeeded`)
 
     return {
         status: 201,

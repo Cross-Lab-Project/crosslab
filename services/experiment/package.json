@@ -11,20 +11,23 @@
         "build-generate-code": "npx openapi-codegen server dist/openapi.json",
         "build-compile": "tsc",
         "build": "npm run build-generate-code && npm run build-compile",
-        "start": "node dist/index.js"
+        "start": "node dist/index.js",
+        "dev": "npx nodemon src/index.ts"
     },
     "author": "Johannes Nau",
     "license": "UNLICENSED",
     "devDependencies": {
-        "@cross-lab-project/openapi-codegen": "^0.0.18",
+        "@cross-lab-project/openapi-codegen": "^0.0.27",
         "@types/body-parser": "^1.19.2",
         "@types/express": "^4.17.13",
-        "@types/node": "^17.0.41",
+        "@types/node": "^18.0.3",
         "@types/node-fetch": "^2.6.1",
-        "typescript": "^4.7.3"
+        "nodemon": "^2.0.19",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.7.4"
     },
     "dependencies": {
-        "@cross-lab-project/api-client": "^0.0.6",
+        "@cross-lab-project/api-client": "^0.0.16",
         "ajv-formats": "^2.1.1",
         "body-parser": "^1.20.0",
         "express": "^4.18.1",

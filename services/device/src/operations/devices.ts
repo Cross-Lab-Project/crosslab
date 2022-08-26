@@ -12,7 +12,8 @@ import {
     deleteDevicesByDeviceIdSignature,
     patchDevicesByDeviceIdSignature,
     postDevicesByDeviceIdAvailabilitySignature,
-    getDevicesByDeviceIdTokenSignature
+    getDevicesByDeviceIdTokenSignature,
+    postDevicesByDeviceIdSignalingSignature
 } from "../generated/signatures/devices"
 import { AppDataSource } from "../data_source"
 import { 
@@ -35,7 +36,7 @@ import {
     isSignalingMessage, 
     Message,
     SignalingMessage
-} from "./deviceMessages";
+} from "../types/deviceMessages";
 import { randomUUID } from "crypto";
 import fetch from "node-fetch";
 import { APIClient } from "@cross-lab-project/api-client"
@@ -44,13 +45,15 @@ const YEAR = 365*24*60*60*1000
 
 export const connectedDevices = new Map<string, WebSocket>();
 export const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
-const changedCallbacks = new Map<string,Array<string>>();
+const changedCallbacks = new Map<string,Array<string>>()
 const apiClient = new APIClient({
+    auth: config.BASE_URL_AUTH,
     booking: config.BASE_URL_BOOKING,
     device: config.BASE_URL,
-    experiment: config.BASE_URL_EXPERIMENT,
-    federation: config.BASE_URL_FEDERATION
-});
+    experiment: config.BASE_URL,
+    federation: config.BASE_URL_FEDERATION,
+    update: config.BASE_URL_UPDATE
+})
 
 // TODO: rework with new http route for signaling
 async function handleSignalingMessage(device: ConcreteDeviceModel, message: SignalingMessage) {
@@ -215,6 +218,7 @@ async function resolveDeviceReference(reference: DeviceReferenceModel, flat_grou
     if (reference.url) {
         const deviceId = reference.url.split("/").at(-1)
         if (!deviceId) return undefined
+        console.log("resolving device", reference.url, config.BASE_URL)
         const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group }, reference.url)
         if (device.status === 404) return undefined
         return device.body
@@ -278,17 +282,18 @@ function writeDeviceOverview(device: DeviceOverviewModel, object: DeviceOverview
 }
 
 function sortTimeSlots(availability: TimeSlotModel[]) {
-    // console.log("availability before sort:", JSON.stringify(availability, null, 4))
+    console.log("availability before sort:", JSON.stringify(availability, null, 4))
     availability.sort((a, b) => {
         if (a.start < b.start) return -1
         if (a.start > b.start) return 1
         return 0
     })
-    // console.log("availability after sort:", JSON.stringify(availability, null, 4))
+    console.log("availability after sort:", JSON.stringify(availability, null, 4))
+    return availability
 }
 
 function mergeTimeSlots(availability: TimeSlotModel[]) {
-    // console.log("availability before merge:", JSON.stringify(availability, null, 4))
+    console.log("availability before merge:", JSON.stringify(availability, null, 4))
     for (let i = 0; i < availability.length; i++) {
         if (i < availability.length - 1) {
             if (availability[i+1].start <= availability[i].end) {
@@ -297,20 +302,21 @@ function mergeTimeSlots(availability: TimeSlotModel[]) {
             }
         }
     }
-    // console.log("availability after merge:", JSON.stringify(availability, null, 4))
+    console.log("availability after merge:", JSON.stringify(availability, null, 4))
+    return availability
 }
 
 function invertTimeSlots(availability: TimeSlotModel[], start: number, end: number) {
-    if (availability.length === 0) return
-    // console.log("availability before invert:", JSON.stringify(availability, null, 4))
+    if (availability.length === 0) return []
+    console.log("availability before invert:", JSON.stringify(availability, null, 4))
 
     const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
 
     // sort by starttime
-    sortTimeSlots(availability)
+    availability = sortTimeSlots(availability)
 
     // merge timeslots
-    mergeTimeSlots(availability)
+    availability = mergeTimeSlots(availability)
 
     const newAvailability: TimeSlotModel[] = []
 
@@ -341,11 +347,12 @@ function invertTimeSlots(availability: TimeSlotModel[], start: number, end: numb
         newAvailability.push(lastTimeSlot)
 
     availability = newAvailability
-    // console.log("availability after invert:", JSON.stringify(availability, null, 4))
+    console.log("availability after invert:", JSON.stringify(availability, null, 4))
+    return availability
 }
 
 function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
-    // console.log("availability before adding timeslots from rule:", JSON.stringify(availability, null, 4))
+    console.log("availability before adding timeslots from rule:", JSON.stringify(availability, null, 4))
     const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
     const timeSlot = timeSlotRepository.create()
     timeSlot.start = availabilityRule.start && availabilityRule.start >= start ? availabilityRule.start : start,
@@ -409,41 +416,48 @@ function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: A
     }
 
     availability.push(timeSlot)
-    // console.log("availability after adding timeslots from rule:", JSON.stringify(availability, null, 4))
+    console.log("availability after adding timeslots from rule:", JSON.stringify(availability, null, 4))
+    return availability
 }
 
 function applyAvailabilityRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
     if (availabilityRule.available === true || availabilityRule.available === undefined) {
+        console.log("applying availability rule for available = true")
+
         // add all new timeslots
-        addTimeSlotsFromRule(availability, availabilityRule, start, end)
+        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
 
         // sort by starttime
-        sortTimeSlots(availability)
+        availability = sortTimeSlots(availability)
 
         // merge timeslots
-        mergeTimeSlots(availability)
+        availability = mergeTimeSlots(availability)
     } else {
+        console.log("applying availability rule for available = false")
+
         // invert availability
-        invertTimeSlots(availability, start, end)
+        availability = invertTimeSlots(availability, start, end)
 
         // add all new timeslots
-        addTimeSlotsFromRule(availability, availabilityRule, start, end)
+        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
 
         // sort by starttime
-        sortTimeSlots(availability)
+        availability = sortTimeSlots(availability)
 
         // merge timeslots
-        mergeTimeSlots(availability)
+        availability = mergeTimeSlots(availability)
         
         // invert availability
-        invertTimeSlots(availability, start, end)
+        availability = invertTimeSlots(availability, start, end)
     }
+    return availability
 }
 
 function applyAvailabilityRules(availability: TimeSlotModel[], availabilityRules: AvailabilityRuleModel[], start: number, end: number) {
     for (const availabilityRule of availabilityRules) {
-        applyAvailabilityRule(availability, availabilityRule, start, end)
+        availability = applyAvailabilityRule(availability, availabilityRule, start, end)
     }
+    return availability
 }
 
 function writeConcreteDevice(device: ConcreteDeviceModel, object: ConcreteDevice & { announcedAvailability?: AvailabilityRule[] }) {
@@ -468,7 +482,7 @@ function writeConcreteDevice(device: ConcreteDeviceModel, object: ConcreteDevice
         device.announcedAvailability = []
         const start = Date.now()
         const end = start + YEAR
-        applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
+        device.announcedAvailability = applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
     }
 }
 
@@ -487,8 +501,11 @@ function writeDeviceGroup(device: DeviceGroupModel, object: DeviceGroup) {
 }
 
 export const getDevices: getDevicesSignature = async (_user) => {
+    console.log(`getDevices called`)
     const deviceRepository = AppDataSource.getRepository(DeviceOverviewModel)
     const devices = await deviceRepository.find()
+
+    console.log(`getDevices succeeded`)
 
     return {
         status: 200,
@@ -497,6 +514,7 @@ export const getDevices: getDevicesSignature = async (_user) => {
 }
 
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
+    console.log(`postDevices called`)
     let device
     if (isConcreteDevice(body)) {
         const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
@@ -517,6 +535,8 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
+
+    console.log(`postDevices succeeded`)
 
     return {
         status: 201,
@@ -551,18 +571,22 @@ async function getDeviceModelByUUID(uuid: string): Promise<ConcreteDeviceModel|D
 }
 
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parameters, _user) => {
+    console.log(`getDevicesByDeviceId called`)
     const device = await getDeviceModelByUUID(parameters.device_id)
 
     if (!device) {
+        console.error(`getDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
     } else if (isConcreteDeviceModel(device)) {
+        console.log(`getDevicesByDeviceId succeeded`)
         return {
             status: 200,
             body: formatConcreteDevice(device)
         }
     } else {
+        console.log(`getDevicesByDeviceId succeeded`)
         return {
             status: 200,
             body: await formatDeviceGroup(device, parameters.flat_group)
@@ -571,11 +595,13 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parame
 }
 
 export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (parameters, _user) => {
+    console.log(`deleteDevicesByDeviceId called`)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
     const device = await getDeviceModelByUUID(parameters.device_id)
 
     if (!device) {
+        console.error(`deleteDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
@@ -585,12 +611,15 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     if (isConcreteDeviceModel(device)) await concreteDeviceRepository.softRemove(device)
     else await deviceGroupRepository.softRemove(device)
 
+    console.log(`deleteDevicesByDeviceId succeeded`)
+
     return {
         status: 204
     }
 }
 
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (parameters, body, _user) => {
+    console.log(`patchDevicesByDeviceId called`)
     const deviceOverviewRepository = AppDataSource.getRepository(DeviceOverviewModel)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
@@ -598,6 +627,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
     const deviceOverview = await deviceOverviewRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!deviceOverview) {
+        console.error(`patchDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
@@ -608,36 +638,44 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
         await deviceGroupRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
+        console.error(`patchDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
     }
 
     if (!body) {
+        console.log(`patchDevicesByDeviceId succeeded: no changes applied due to empty body`)
         return {
             status: 200,
             body: isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device)
         }
     }
 
-    if (isConcreteDeviceModel(device) && isConcreteDevice(body)) {
+    // TODO: check if this is really necessary or if it may need to be rewritten
+    if (isConcreteDeviceModel(device) && !isDeviceGroup(body)) {
         writeConcreteDevice(device, body)
         concreteDeviceRepository.save(device)
-    } else if (isDeviceGroupModel(device) && isDeviceGroup(body)) {
+    } else if (isDeviceGroupModel(device) && !isConcreteDevice(body)) {
         writeDeviceGroup(device, body)
         deviceGroupRepository.save(device)
     } else {
+        console.error(`patchDevicesByDeviceId failed: trying to update ${device.type} to ${body.type}`)
         return {
             status: 400
         }
     }
 
     if (parameters.changedUrl) {
+        console.log(`patchDevicesByDeviceId: registering changed-callback for ${parameters.changedUrl}`)
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
+    // TODO: maybe move this above setting the callback
     handleChangedCallback(device)
+
+    console.log(`patchDevicesByDeviceId succeeded`)
 
     return {
         status: 200,
@@ -646,10 +684,12 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (pa
 }
 
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature = async (parameters, body, _user) => {
+    console.log(`postDevicesByDeviceIdAvailability called`)
     const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
+        console.error(`postDevicesByDeviceIdAvailability failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
@@ -670,10 +710,12 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
     device.announcedAvailability = []
     const start = Date.now()
     const end = start + YEAR
-    applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
+    device.announcedAvailability = applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
 
     await deviceRepository.save(device)
     handleChangedCallback(device)
+
+    console.log(`postDevicesByDeviceIdAvailability succeeded`)
 
     return {
         status: 200,
@@ -682,10 +724,12 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
 }
 
 export const getDevicesByDeviceIdToken: getDevicesByDeviceIdTokenSignature = async (parameters, _user) => {
+    console.log(`getDevicesByDeviceIdToken called`)
     const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
 
     if (!device) {
+        console.error(`getDevicesByDeviceIdToken failed: could not find device ${parameters.device_id}`)
         return {
             status: 404
         }
@@ -699,8 +743,21 @@ export const getDevicesByDeviceIdToken: getDevicesByDeviceIdTokenSignature = asy
         await deviceRepository.save(device)
     }, 30000)
 
+    console.log(`getDevicesByDeviceIdToken succeeded`)
+
     return {
         status: 200,
         body: device.token
+    }
+}
+
+// TODO: add final implementation
+export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature = async (_parameters, _user) => {
+    console.log(`postDevicesByDeviceIdSignaling called`)
+    
+    console.log(`postDevicesByDeviceIdSignaling succeeded`)
+    
+    return {
+        status: 200
     }
 }

@@ -23,3 +23,5 @@ get:
             type: string
             format: jwt
             description: The JWT which represents the authenticated user.
+    500:
+      description: Server Error.

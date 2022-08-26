@@ -3,7 +3,12 @@ import {
     postDeviceTokenSignature
 } from "../generated/signatures/device_token"
 import { TokenModel, UserModel } from "../model"
+import { MissingEntityError } from "../types/errors"
 
+/**
+ * This function implements the functionality for handling POST on /device_token endpoint.
+ * @throws {MissingEntityError} Could not find user.
+ */
 export const postDeviceToken: postDeviceTokenSignature = async (user) => {
     console.log(`postDeviceToken called`)
     const userRepository = AppDataSource.getRepository(UserModel)
@@ -17,13 +22,7 @@ export const postDeviceToken: postDeviceTokenSignature = async (user) => {
         }
     })
 
-    // TODO: check if 404 is truly the best response status
-    if (!userModel) {
-        console.error(`postDeviceToken failed: could not find user ${user.username}`)
-        return {
-            status: 404
-        }
-    }
+    if (!userModel) throw new MissingEntityError(`Could not find user ${user.username}`, 404)
 
     const tokenRepository = AppDataSource.getRepository(TokenModel)
     const token = tokenRepository.create()

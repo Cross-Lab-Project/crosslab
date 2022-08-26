@@ -133,7 +133,8 @@ async function createDefaultScopesAndRoles() {
         { name: "users:edit", roles: "all" },
         { name: "users:list", roles: "all" },
         { name: "device_token", roles: "all" },
-        { name: "device_token:create", roles: "all"}
+        { name: "device_token:create", roles: "all"},
+        { name: "logout", roles: "all"}
     ])
 
     // create default roles

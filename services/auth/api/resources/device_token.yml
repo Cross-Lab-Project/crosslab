@@ -18,8 +18,10 @@ post:
           schema:
             type: string
     401:
-      description: User is not authorized.
+      description: Unauthorized.
     403:
-      description: User does not have access rights.
+      description: Forbidden.
     404:
-      description: No user found for jwt
+      description: Resource not found.
+    500:
+      description: Server Error.

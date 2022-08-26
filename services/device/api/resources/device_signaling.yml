@@ -1,20 +1,17 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
-get:
-  summary: Get new token for device
+post:
+  summary: Send signaling message to device
   tags:
     - device
   security:
     - JWT:
         - device
-        - device:connect
+        - device:signal
   parameters:
     - $ref: "../parameters/device_id.yml"
+    - $ref: "../parameters/peerconnection_url.yml"
   responses:
     200:
-      description: The newly generated token of the device
-      content:
-        application/json:
-          schema:
-            type: string
+      description: The signaling message was delivered successfully
     404:
       description: The requested device could not be found

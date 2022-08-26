@@ -26,4 +26,8 @@ post:
             description: the access token
             type: string
     401:
-      description: Unauthorized access.
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    500:
+      description: Server Error.

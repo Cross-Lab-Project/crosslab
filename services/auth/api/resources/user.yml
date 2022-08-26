@@ -15,8 +15,14 @@ get:
       content:
         application/json:
           $ref: "../content/user.yml"
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: Requested user not found
+      description: Resource not found.
+    500:
+      description: Server Error.
 patch:
   summary: Update user by username
   tags:
@@ -39,9 +45,15 @@ patch:
         application/json:
           $ref: "../content/user.yml"
     400:
-      description: Request could not be fulfilled
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: Requested user not found
+      description: Resource not found.
+    500:
+      description: Server Error.
 delete:
   summary: Delete user by username
   tags:
@@ -55,5 +67,13 @@ delete:
   responses:
     204:
       description: User deleted successfully
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: Requested user not found
+      description: Resource not found.
+    500:
+      description: Server Error.

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  summary: View a registered device.
+  summary: View a registered device
   tags:
     - device
   parameters:
@@ -19,7 +19,7 @@ get:
     404:
       description: The requested device could not be found
 patch:
-  summary: Update an existing device.
+  summary: Update an existing device
   tags:
     - device
   security:
@@ -71,6 +71,6 @@ delete:
     - $ref: "../parameters/device_id.yml"
   responses:
     204:
-      description: The device was deleted.
+      description: The device was deleted
     404:
       description: The requested device could not be found

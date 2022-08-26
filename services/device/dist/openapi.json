@@ -284,6 +284,19 @@
           "default": false
         }
       },
+      "peerconnection_url": {
+        "in": "query",
+        "name": "peerconnection_url",
+        "description": "URL of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
       "closed_url": {
         "name": "closedUrl",
         "in": "query",
@@ -297,7 +310,7 @@
       "peerconnection_id": {
         "in": "path",
         "name": "peerconnection_id",
-        "description": "UUID of the device",
+        "description": "UUID of the peerconnection",
         "required": true,
         "schema": {
           "type": "string",
@@ -336,7 +349,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all devices.",
+            "description": "The list of all devices",
             "content": {
               "application/json": {
                 "schema": {
@@ -679,7 +692,7 @@
     },
     "/devices/{device_id}": {
       "get": {
-        "summary": "View a registered device.",
+        "summary": "View a registered device",
         "tags": [
           "device"
         ],
@@ -826,7 +839,7 @@
         }
       },
       "patch": {
-        "summary": "Update an existing device.",
+        "summary": "Update an existing device",
         "tags": [
           "device"
         ],
@@ -1180,7 +1193,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The device was deleted."
+            "description": "The device was deleted"
           },
           "404": {
             "description": "The requested device could not be found"
@@ -1190,7 +1203,7 @@
     },
     "/devices/{device_id}/availability": {
       "post": {
-        "summary": "Update the device availability.",
+        "summary": "Update the device availability",
         "tags": [
           "device"
         ],
@@ -1274,7 +1287,7 @@
     },
     "/devices/{device_id}/token": {
       "get": {
-        "summary": "Get new token for device.",
+        "summary": "Get new token for device",
         "tags": [
           "device"
         ],
@@ -1293,7 +1306,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The newly generated token of the device.",
+            "description": "The newly generated token of the device",
             "content": {
               "application/json": {
                 "schema": {
@@ -1301,6 +1314,38 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "The requested device could not be found"
+          }
+        }
+      }
+    },
+    "/devices/{device_id}/signaling": {
+      "post": {
+        "summary": "Send signaling message to device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:signal"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/peerconnection_url"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The signaling message was delivered successfully"
           },
           "404": {
             "description": "The requested device could not be found"

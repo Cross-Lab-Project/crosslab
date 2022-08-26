@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+post:
+  tags:
+    - authentication
+  security:
+    - JWT:
+      - logout
+  operationId: logout
+  summary: Logout user
+  description: |-
+    This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            token:
+              type: string
+              description: The token to be invalidated
+  responses:
+    200:
+      description: Successfully logged out the user.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

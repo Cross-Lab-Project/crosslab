@@ -27,11 +27,13 @@ import { Peerconnection } from "@cross-lab-project/api-client/dist/generated/dev
 const HOUR = 60 * 60 * 1000
 const ExperimentBaseUrl = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/'
 const apiClient = new APIClient({
+    auth: config.BASE_URL_AUTH,
     booking: config.BASE_URL_BOOKING,
     device: config.BASE_URL_DEVICE,
     experiment: config.BASE_URL,
-    federation: config.BASE_URL_FEDERATION
-});
+    federation: config.BASE_URL_FEDERATION,
+    update: config.BASE_URL_UPDATE
+})
 
 function formatDevice(device: DeviceModel) {
     return {
@@ -257,48 +259,59 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
         if (!serviceConfiguration.configuration) serviceConfiguration.configuration = "{}"
         for (const participant of serviceConfiguration.participants) {
             if (!participant.config) participant.config = "{}"
-            for (const peerconnection of peerconnections) {
+            for (const peerconnection  of peerconnections) {
                 if (!peerconnection.devices) throw new Error("Peerconnection has no devices")
                 for (let i = 0; i < 2; i++) {
                     if (!peerconnection.devices[i].role) throw new Error("Device has no role")
                     if (!peerconnection.devices[i].config) peerconnection.devices[i].config = { services: [] }
                     if (peerconnection.devices[i].role === participant.role) {
+                        const peerdevice = i === 0 ? peerconnection.devices[1] : peerconnection.devices[0]
+                        const peerparticipant = serviceConfiguration.participants.find(p => p.role === peerdevice.role)
+                        if (!peerparticipant) throw new Error("Peer device is not participating in service")
+                        if (!peerparticipant) throw new Error("ServiceId is missing in participant")
                         peerconnection.devices[i].config?.services?.push({
                             ...JSON.parse(serviceConfiguration.configuration),
                             ...JSON.parse(participant.config),
                             serviceId: participant.serviceId,
-                            serviceType: serviceConfiguration.serviceType
+                            serviceType: serviceConfiguration.serviceType,
+                            remoteServiceId: peerparticipant.serviceId
                         })
                     }
                 }
             }
         }
     }
-    for (const peerconnection of peerconnections) {
-        const servicesA = peerconnection.devices?.[0].config?.services
-        const servicesB = peerconnection.devices?.[1].config?.services
+    // for (const peerconnection of peerconnections) {
+    //     const servicesA = peerconnection.devices?.[0].config?.services
+    //     const servicesB = peerconnection.devices?.[1].config?.services
 
-        if (!servicesA || servicesA.length === 0) throw new Error("Device has no service")
-        if (!servicesB || servicesB.length === 0) throw new Error("Device has no service")
+    //     if (!servicesA || servicesA.length === 0) throw new Error("Device has no service")
+    //     if (!servicesB || servicesB.length === 0) throw new Error("Device has no service")
 
-        for (const serviceA of servicesA) {
-            const serviceB = servicesB.find(s => s.serviceType === serviceA.serviceType)
-            if (!serviceB) throw new Error("Service has no corresponding remote service")
-            serviceA.remoteServiceId = serviceB.serviceId
-            serviceB.remoteServiceId = serviceA.serviceId
-        }
+    //     for (const serviceA of servicesA) {
+    //         const serviceB = servicesB.find(s => s.serviceType === serviceA.serviceType)
+    //         if (!serviceB) throw new Error("Service has no corresponding remote service")
+    //         serviceA.remoteServiceId = serviceB.serviceId
+    //         serviceB.remoteServiceId = serviceA.serviceId
+    //     }
 
-        for (const serviceB of servicesB) {
-            if (serviceB.remoteServiceId) continue
-            const serviceA = servicesA.find(s => s.serviceType === serviceB.serviceType)
-            if (!serviceA) throw new Error("Service has no corresponding remote service")
-            if (serviceA.remoteServiceId) throw new Error("Found service already has corresponding remote service")
-            serviceA.remoteServiceId = serviceB.serviceId
-            serviceB.remoteServiceId = serviceA.serviceId
-        }
-    }
+    //     for (const serviceB of servicesB) {
+    //         if (serviceB.remoteServiceId) continue
+    //         const serviceA = servicesA.find(s => s.serviceType === serviceB.serviceType)
+    //         if (!serviceA) {
+    //             console.log("connection plan", JSON.stringify(peerconnections, null, 4))
+    //             throw new Error("Service has no corresponding remote service")
+    //         }
+    //         if (serviceA.remoteServiceId) {
+    //             console.log("connection plan", JSON.stringify(peerconnections, null, 4))
+    //             throw new Error("Found service already has corresponding remote service")
+    //         }
+    //         serviceA.remoteServiceId = serviceB.serviceId
+    //         serviceB.remoteServiceId = serviceA.serviceId
+    //     }
+    // }
 
-    console.log("connection plan", peerconnections)
+    console.log("connection plan", JSON.stringify(peerconnections, null, 4))
     return peerconnections
 }
 

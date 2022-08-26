@@ -1,17 +1,22 @@
 import {
     getIdentitySignature,
-	patchIdentitySignature
+    patchIdentitySignature
 } from "../generated/signatures/identity"
 import { AppDataSource } from "../data_source"
 import { UserModel } from "../model"
 import { formatUser, writeUser } from "../methods/users"
+import { MissingEntityError } from "../types/errors"
 
+/**
+ * This function implements the functionality for handling GET on /identity endpoint.
+ * @throws {MissingEntityError} Could not find user.
+ */
 export const getIdentity: getIdentitySignature = async (user) => {
     console.log(`getIdentity called`)
     const userRepository = AppDataSource.getRepository(UserModel)
     const userModel = await userRepository.findOne({
-        where: { 
-            username: user.username 
+        where: {
+            username: user.username
         },
         relations: {
             roles: {
@@ -20,13 +25,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
         }
     })
 
-    // TODO: check if 404 is truly the best response status
-    if (!userModel) {
-        console.error(`getIdentity failed: could not find user ${user.username}`)
-        return {
-            status: 404
-        }
-    }
+    if (!userModel) throw new MissingEntityError(`Could not find user ${user.username}`, 404)
 
     console.log(`getIdentity succeeded`)
 
@@ -36,31 +35,23 @@ export const getIdentity: getIdentitySignature = async (user) => {
     }
 }
 
+/**
+ * This function implements the functionality for handling PATCH on /identity endpoint.
+ * @throws {MissingEntityError} Could not find user.
+ * @throws {InvalidValueError} Can throw errors from {@link writeUser}.
+ */
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
     console.log(`patchIdentity called`)
     const userRepository = AppDataSource.getRepository(UserModel)
     const userModel = await userRepository.findOneBy({ username: user.username })
 
-    // TODO: check if 404 is truly the best response status
-    if (!userModel) {
-        console.error(`patchIdentity failed: could not find user ${user.username}`)
-        return {
-            status: 404
-        }
-    }
+    if (!userModel) throw new MissingEntityError(`Could not find user ${user.username}`, 404)
 
-    try {
-        await writeUser(userModel, body ?? {})
-    } catch {
-        console.error(`patchIdentity failed: could not apply requested changes`)
-        return {
-            status: 400
-        }
-    }
+    await writeUser(userModel, body ?? {})
     await userRepository.save(userModel)
 
     console.log(`patchIdentity succeeded`)
-    
+
     return {
         status: 200,
         body: formatUser(userModel)

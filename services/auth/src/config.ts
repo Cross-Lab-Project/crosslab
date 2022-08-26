@@ -7,8 +7,8 @@ function die(reason: string): string{
 
 const DEFAULT_BASE_URL = "http://localhost:3000"
 
-function parseWhitelist(whitelist: string): string[] {
-    return whitelist.replace(/\s+/g, '').split(",")
+function parseAllowlist(allowlist: string): string[] {
+    return allowlist.replace(/\s+/g, '').split(",")
 }
 
 export const config = {
@@ -21,5 +21,5 @@ export const config = {
     BASE_URL_FEDERATION: process.env.BASE_URL_FEDERATION ?? (process.env.BASE_URL ?? DEFAULT_BASE_URL),
     SECURITY_ISSUER: process.env.SECURITY_ISSUER ?? die("the environment variable SECURITY_ISSUER is not define!"),
     SECURITY_AUDIENCE: process.env.SECURITY_AUDIENCE ?? die("the environment variable SECURITY_AUDIENCE is not define!"),
-    WHITELISTED: process.env.WHITELIST ? parseWhitelist(process.env.WHITELIST) : []
+    ALLOWLIST: process.env.ALLOWLIST ? parseAllowlist(process.env.ALLOWLIST) : []
 }

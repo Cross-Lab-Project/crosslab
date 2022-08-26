@@ -9,7 +9,7 @@ get:
         - device:list
   responses:
     200:
-      description: The list of all devices.
+      description: The list of all devices
       content:
         application/json:
           $ref: "../content/device_list.yml"

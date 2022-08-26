@@ -170,6 +170,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -217,7 +220,63 @@
             }
           },
           "401": {
-            "description": "Unauthorized access."
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "logout"
+            ]
+          }
+        ],
+        "operationId": "logout",
+        "summary": "Logout user",
+        "description": "This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The token to be invalidated"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged out the user."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -250,13 +309,16 @@
             }
           },
           "401": {
-            "description": "User is not authorized."
+            "description": "Unauthorized."
           },
           "403": {
-            "description": "User does not have access rights."
+            "description": "Forbidden."
           },
           "404": {
-            "description": "No user found for jwt"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -288,6 +350,18 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -326,7 +400,19 @@
             }
           },
           "400": {
-            "description": "Request could not be fulfilled"
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -361,8 +447,17 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested user not found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -406,10 +501,19 @@
             }
           },
           "400": {
-            "description": "Request could not be fulfilled"
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
           },
           "404": {
-            "description": "Requested user not found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -435,8 +539,20 @@
           "204": {
             "description": "User deleted successfully"
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested user not found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -474,8 +590,17 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested user or role not found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -504,8 +629,17 @@
           "204": {
             "description": "Role deleted successfully from user"
           },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested user or role not found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -535,8 +669,17 @@
               }
             }
           },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "No user found for jwt"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -575,10 +718,19 @@
             }
           },
           "400": {
-            "description": "Request could not be fulfilled"
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
           },
           "404": {
-            "description": "No user found for jwt"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }

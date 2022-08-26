@@ -1,10 +1,9 @@
 # Build Image
 FROM node:lts-alpine AS build
+ARG ENV
 WORKDIR /app
 COPY . /app/
-RUN npm ci
-RUN npm run build
-RUN npm ci --only=production
+RUN chmod u+x build.sh && ./build.sh
  
 # Production Image
 FROM node:lts-alpine

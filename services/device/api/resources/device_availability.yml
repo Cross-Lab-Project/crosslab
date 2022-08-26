@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
-  summary: Update the device availability.
+  summary: Update the device availability
   tags:
     - device
   security:

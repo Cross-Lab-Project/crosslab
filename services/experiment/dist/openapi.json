@@ -5,6 +5,11 @@
     "description": "This is the OpenAPI description of the internal CrossLab Experiment Service REST API.",
     "version": "0.0.1"
   },
+  "servers": [
+    {
+      "url": "https://api.goldi-labs.de"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "JWT": {

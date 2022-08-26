@@ -4,9 +4,6 @@
         "moduleResolution": "Node",
         "allowSyntheticDefaultImports": true,
         "target": "ES2021",
-        "lib": [
-            "ES2021"
-        ],
         "esModuleInterop": true,
         "outDir": "dist",
         "rootDir": "src",
