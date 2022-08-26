@@ -7,6 +7,7 @@ import {
 } from "../generated/signatures/booking"
 
 import { APIClient } from "@cross-lab-project/api-client"
+import { getDevicesByDeviceIdResponseType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, startCase } from "lodash"
 import dayjs from 'dayjs';
@@ -14,7 +15,7 @@ import dayjs from 'dayjs';
 
 import { config } from "../../../common/config"
 import { BelongsToUs, GetIDFromURL } from "../../../common/auth"
-import { timetableAnd, timetableNot, timetableSortInPlace } from "../timetable"
+import { timetableAnd, timetableNot } from "../timetable"
 
 // TODO: Missing availability since it is not yet well defined
 export const postBookingSchedule: postBookingScheduleSignature = async (body, user) => {
@@ -23,11 +24,14 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
     const laterReq = new Map<string, [number[], number[], postBookingScheduleBodyType]>(); // Device in request, device list, request
 
     let timetables: Timeslot[][][] = []; // Booked: Device in request, device list, actual reserved time slots
-    let availability: Timeslot[][][] = []; // Device in request, device list, actual reserved time slots
+    let availability: Promise<getDevicesByDeviceIdResponseType>[][] = []; // Device in request, device list
+    let realDevices: string[][] = []; // Device in request, device list
+
 
     // Collect all timetables
     for (let device = 0; device < body.Experiment.Devices.length; device++) {
         // Resolve device
+        realDevices.push([]);
         timetables.push([]);
         availability.push([]);
         let r = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(body.Experiment.Devices[device].ID), flat_group: true }, body.Experiment.Devices[device].ID);
@@ -38,6 +42,10 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             //        status: 503
             //    };
             //};
+            if (r.status === 404) {
+                return { status: 404, body: [body.Experiment.Devices[device].ID] };
+            }
+            //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
             return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + r.status };
         };
 
@@ -45,23 +53,21 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             return { status: 500, body: "API returned bad result (requested device" + body.Experiment.Devices[device].ID + ", got " + r.body.url + ")" };
         }
 
-        let realDevices: string[] = [];
         if (r.body.type === "device") {
-            realDevices.push(r.body.url)
+            realDevices[device].push(r.body.url)
         } else {
             // group
             for (let i = 0; i < r.body.devices.length; i++) {
-                realDevices.push(r.body.devices[i].url);
+                realDevices[device].push(r.body.devices[i].url);
             }
         }
 
         // Process devices
-        for (let i = 0; i < realDevices.length; i++) {
+        for (let i = 0; i < realDevices[device].length; i++) {
             timetables[device].push([]);
-            availability[device].push([]);
 
             // Get timetable
-            let d: URL = new URL(realDevices[i]);
+            let d: URL = new URL(realDevices[device][i]);
             let t: Timeslot[] = [];
             if (!BelongsToUs(d)) {
                 // This is not our device
@@ -82,7 +88,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
                 let lr = laterReq.get(d.origin);
                 lr[0].push(device);
                 lr[1].push(i);
-                lr[2].Experiment.Devices.push({ ID: realDevices[i] });
+                lr[2].Experiment.Devices.push({ ID: realDevices[device][i] });
                 laterReq.set(d.origin, lr);
                 t = [];
             } else {
@@ -93,20 +99,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             timetables[device][i] = t;
 
             // Get availability
-            let a = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(realDevices[device])}, realDevices[device]);
-            if (r.status !== 200) {
-                // TODO: Remove later if errors are well specified
-                //if (r.status === 503) {
-                //    return {
-                //        status: 503
-                //    };
-                //};
-                return { status: 500, body: "Device request " + realDevices[device] + " returned status code" + a.status };
-            };
-            if(a.body.type == "group") {
-                return { status: 500, body: "Device request " + realDevices[device] + " is group but shouldn't" };
-            }
-            availability[device][i] = timetableAnd(a.body.announcedAvailability.map((e) => { return {Start: e.start, End: e.end} }));
+            availability[device].push(api.getDevicesByDeviceId({ device_id: GetIDFromURL(realDevices[device][i]) }, realDevices[device][i]));
         }
     };
 
@@ -145,7 +138,25 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         let free: Timeslot[][] = []
         for (let i = 0; i < timetables[device].length; i++) {
             // Add availability
-            let notAvailable: Timeslot[] = timetableNot(availability[device][i], dayjs(body.Time.Start), dayjs(body.Time.End))
+            let a = await availability[device][i];
+            if (a.status !== 200) {
+                // TODO: Remove later if errors are well specified
+                //if (r.status === 503) {
+                //    return {
+                //        status: 503
+                //    };
+                //};
+                if (a.status === 404) {
+                    return { status: 404, body: [realDevices[device][i]] };
+                }
+                //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
+                return { status: 500, body: "Device request " + realDevices[device][i] + " returned status code" + a.status };
+            };
+            if (a.body.type == "group") {
+                return { status: 500, body: "Device request " + realDevices[device][i] + " is group but shouldn't" };
+            }
+            let available: Timeslot[] = timetableAnd(a.body.announcedAvailability.map((e) => { return { Start: e.start, End: e.end } }));
+            let notAvailable: Timeslot[] = timetableNot(available, dayjs(body.Time.Start), dayjs(body.Time.End))
             let notFree: Timeslot[] = timetableAnd(notAvailable, timetables[device][i]);
 
             // Now push free

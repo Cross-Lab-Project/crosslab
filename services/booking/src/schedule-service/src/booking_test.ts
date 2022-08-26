@@ -38,6 +38,8 @@ mocha.describe("operations.ts", function () {
                         return;
                     }
                     res.send('{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}]}');
+                case 404:
+                    res.status(404).send();
                     return;
                 default:
                     res.status(proxy_server_status).send("Undefined error" + proxy_server_status);
@@ -51,6 +53,9 @@ mocha.describe("operations.ts", function () {
                 case 200:
                     res.send('{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}]}');
                     return;
+                case 404:
+                    res.status(404).send();
+                    return;
                 default:
                     res.status(proxy_server_status).send("Undefined error" + proxy_server_status);
                     return;
@@ -60,11 +65,14 @@ mocha.describe("operations.ts", function () {
         app.get('/devices/10000000-0000-0000-0000-000000000000', (req, res) => {
             switch (device_service_status) {
                 case 200:
-                    if(device_single_is_group) {
+                    if (device_single_is_group) {
                         res.send('{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}]}');
-                        return;    
+                        return;
                     }
                     res.send('{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}]}');
+                    return;
+                case 404:
+                    res.status(404).send();
                     return;
                 default:
                     res.status(proxy_server_status).send("Undefined error" + proxy_server_status);
@@ -381,6 +389,15 @@ mocha.describe("operations.ts", function () {
         r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (proxy overloaded): " + r.status);
+        }
+
+        // Device not found
+        device_service_status = 404;
+        proxy_server_status = 200;
+
+        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        if (r.status !== 404) {
+            throw Error("Response error (proxy 404): " + r.status);
         }
 
         // Schedule not found
