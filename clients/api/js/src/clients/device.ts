@@ -6,12 +6,12 @@ import {
     ValidationDevices,
     ValidationPeerconnections,
 } from '../generated/device'
-import { isErrorResponse } from '../generated/device/types'
 import {
     AuthenticationMessage,
     isAuthenticationMessage,
+    isErrorResponse,
     isMessage,
-} from '../types/deviceMessages'
+} from '../generated/device/types'
 import { UnsuccessfulRequestError, WebSocketAuthenticationError } from '../types/errors'
 import { appendToUrl, validateUrl } from '../util'
 import { ProxyClient } from './proxy'
@@ -324,7 +324,7 @@ export class DeviceClient {
         return new Promise<WebSocket>((resolve, reject) => {
             ws.on('open', async () => {
                 const authMessage: AuthenticationMessage = {
-                    url: url,
+                    deviceUrl: url,
                     messageType: 'authenticate',
                     token: token,
                 }
