@@ -15,6 +15,37 @@
       }
     },
     "schemas": {
+      "authentication_message": {
+        "title": "Authentication Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "authenticate"
+              },
+              "deviceUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "token": {
+                "type": "string"
+              },
+              "authenticated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "messageType",
+              "deviceUrl"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
       "device_overview": {
         "title": "Device Overview",
         "type": "object",
@@ -166,32 +197,43 @@
           }
         ]
       },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
+      "message": {
+        "title": "Message",
         "type": "object",
         "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the peerconnection",
-            "format": "uri",
-            "readOnly": true
-          },
-          "devices": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "description": "URL of the device",
-                  "format": "uri"
-                }
-              }
-            }
+          "messageType": {
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "messageType"
+        ],
+        "additionalProperties": true,
+        "x-typeguard": true
+      },
+      "command_message": {
+        "title": "Command Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "command"
+              },
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "messageType",
+              "command"
+            ]
+          }
+        ],
+        "x-typeguard": true
       },
       "service_config": {
         "title": "Service Config",
@@ -210,6 +252,165 @@
         },
         "additionalProperties": true
       },
+      "create_peerconnection_message": {
+        "title": "Create Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "createPeerconnection"
+              },
+              "connectionType": {
+                "type": "string",
+                "enum": [
+                  "webrtc",
+                  "websocket"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_config"
+                }
+              },
+              "tiebreaker": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "connectionType",
+              "connectionUrl",
+              "services",
+              "tiebreaker"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "close_peerconnection_message": {
+        "title": "Close Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "closePeerconnection"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "command",
+              "connectionUrl"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "signaling_message": {
+        "title": "Signaling Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "signaling"
+              },
+              "signalingType": {
+                "type": "string",
+                "enum": [
+                  "offer",
+                  "answer",
+                  "candidate"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "messageType",
+              "signalingType",
+              "connectionUrl",
+              "content"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_reference": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        }
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the peerconnection",
+            "format": "uri",
+            "readOnly": true
+          },
+          "devices": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/device_reference"
+            }
+          }
+        }
+      },
+      "configured_device_reference": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_config"
+                }
+              }
+            }
+          }
+        }
+      },
       "peerconnection": {
         "title": "Peerconnection",
         "allOf": [
@@ -224,25 +425,7 @@
                 "minItems": 2,
                 "maxItems": 2,
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "URL of the device",
-                      "format": "uri"
-                    },
-                    "config": {
-                      "type": "object",
-                      "properties": {
-                        "services": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/service_config"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/configured_device_reference"
                 }
               }
             }
@@ -1286,8 +1469,8 @@
       }
     },
     "/devices/{device_id}/token": {
-      "get": {
-        "summary": "Get new token for device",
+      "post": {
+        "summary": "Create new token for device",
         "tags": [
           "device"
         ],
@@ -1306,7 +1489,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The newly generated token of the device",
+            "description": "The newly generated token for the device",
             "content": {
               "application/json": {
                 "schema": {
@@ -1343,6 +1526,26 @@
             "$ref": "#/components/parameters/peerconnection_url"
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/create_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/close_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/signaling_message"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "The signaling message was delivered successfully"

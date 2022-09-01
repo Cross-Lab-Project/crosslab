@@ -1,14 +1,13 @@
-import { AuthenticationError, LdapAuthenticationError } from "../types/errors"
-import {
-    postLoginSignature
-} from "../generated/signatures/login"
-import { loginTui } from "../methods/login"
+import { AuthenticationError, LdapAuthenticationError } from '../types/errors'
+import { postLoginSignature } from '../generated/signatures/login'
+import { loginTui } from '../methods/login'
 
 /**
- * This function implements the functionality for handling POST on /login endpoint.
+ * This function implements the functionality for handling POST requests on /login endpoint.
+ * @param body The body of the request.
  * @throws {LdapBindError} Can throw errors from {@link loginTui}.
  * @throws {LdapError} Can throw errors from {@link loginTui}.
- * @throws {AuthenticationError} Thrown when the authentication was unsuccessful.
+ * @throws {AuthenticationError} Thrown if the authentication was unsuccessful.
  */
 export const postLogin: postLoginSignature = async (body) => {
     console.log(`postLogin called for ${body.username} using method ${body.method}`)
@@ -16,9 +15,9 @@ export const postLogin: postLoginSignature = async (body) => {
     let token
     try {
         switch (body.method) {
-            case "local":
+            case 'local':
                 break
-            case "tui":
+            case 'tui':
                 token = await loginTui(body.username, body.password)
                 break
         }
@@ -37,6 +36,6 @@ export const postLogin: postLoginSignature = async (body) => {
 
     return {
         status: 201,
-        body: token.token
+        body: token.token,
     }
 }

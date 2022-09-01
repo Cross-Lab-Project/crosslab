@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
-get:
-  summary: Get new token for device
+post:
+  summary: Create new token for device
   tags:
     - device
   security:
@@ -11,7 +11,7 @@ get:
     - $ref: "../parameters/device_id.yml"
   responses:
     200:
-      description: The newly generated token of the device
+      description: The newly generated token for the device
       content:
         application/json:
           schema:

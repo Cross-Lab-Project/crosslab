@@ -1,10 +1,14 @@
-import { ActiveKeyModel, KeyModel, TokenModel, UserModel } from "../model"
-import { SignJWT, JWTPayload, importJWK } from 'jose';
-import { config } from "../config";
-import { AppDataSource } from "../data_source";
-import { MissingEntityError } from "../types/errors";
-import { MalformedParameterError, MissingParameterError, UserType } from "../generated/types";
-import { allowlist } from "..";
+import { ActiveKeyModel, KeyModel, TokenModel, UserModel } from '../model'
+import { SignJWT, JWTPayload, importJWK } from 'jose'
+import { config } from '../config'
+import { AppDataSource } from '../data_source'
+import { MissingEntityError } from '../types/errors'
+import {
+    MalformedParameterError,
+    MissingParameterError,
+    UserType,
+} from '../generated/types'
+import { allowlist } from '..'
 
 /**
  * Try to find user associated to allowlisted IP.
@@ -15,21 +19,27 @@ import { allowlist } from "..";
 export async function getAllowlistedUser(ip: string): Promise<UserModel> {
     const userRepository = AppDataSource.getRepository(UserModel)
 
-    console.warn(`IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`);
+    console.warn(
+        `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
+    )
     const user = await userRepository.findOne({
         where: {
-            username: allowlist[ip]
+            username: allowlist[ip],
         },
         relations: {
             roles: {
-                scopes: true
-            }
-        }
-    });
+                scopes: true,
+            },
+        },
+    })
 
-    if (!user) throw new MissingEntityError(`User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`, 500)
+    if (!user)
+        throw new MissingEntityError(
+            `User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`,
+            500
+        )
 
-    return user;
+    return user
 }
 
 /**
@@ -39,14 +49,18 @@ export async function getAllowlistedUser(ip: string): Promise<UserModel> {
  * @param expirationTime Expiration time of the JWT.
  * @returns The signed JWT.
  */
-export async function sign<P extends JWTPayload>(payload: P, key: KeyModel, expirationTime: string) {
+export async function sign<P extends JWTPayload>(
+    payload: P,
+    key: KeyModel,
+    expirationTime: string
+) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: key.alg, kid: key.uuid })
         .setIssuer(config.SECURITY_ISSUER)
         .setIssuedAt()
         .setAudience(config.SECURITY_AUDIENCE)
         .setExpirationTime(expirationTime)
-        .sign(await importJWK(JSON.parse(key.private_key), key.alg));
+        .sign(await importJWK(JSON.parse(key.private_key), key.alg))
 }
 
 /**
@@ -55,14 +69,26 @@ export async function sign<P extends JWTPayload>(payload: P, key: KeyModel, expi
  * @param activeKey Active key used for signing the token.
  * @returns The signed token.
  */
-export async function signUserToken(user: UserModel, activeKey: ActiveKeyModel): Promise<string> {
-    const BASE_URL = config.BASE_URL.endsWith("/") ? config.BASE_URL : config.BASE_URL + "/"
+export async function signUserToken(
+    user: UserModel,
+    activeKey: ActiveKeyModel
+): Promise<string> {
+    const BASE_URL = config.BASE_URL.endsWith('/')
+        ? config.BASE_URL
+        : config.BASE_URL + '/'
 
-    return await sign<UserType>({
-        url: BASE_URL + `/users/${user.username}`,
-        username: user.username,
-        scopes: user.roles.map(r => r.scopes.map(s => s.name)).flat(1).filter((v, i, s) => s.indexOf(v) === i)
-    }, activeKey.key, "2h");
+    return await sign<UserType>(
+        {
+            url: BASE_URL + `/users/${user.username}`,
+            username: user.username,
+            scopes: user.roles
+                .map((r) => r.scopes.map((s) => s.name))
+                .flat(1)
+                .filter((v, i, s) => s.indexOf(v) === i),
+        },
+        activeKey.key,
+        '2h'
+    )
 }
 
 /**
@@ -75,7 +101,7 @@ export function getTokenStringFromAuthorization(authorization?: string): string 
         throw new MissingParameterError(`Authorization parameter is missing`, 401)
     }
 
-    const splitAuthorization = authorization.split(" ")
+    const splitAuthorization = authorization.split(' ')
 
     if (splitAuthorization.length !== 2) {
         throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
@@ -94,19 +120,22 @@ export async function getTokenByTokenString(tokenString: string): Promise<TokenM
 
     const token = await tokenRepository.findOne({
         where: {
-            token: tokenString
+            token: tokenString,
         },
         relations: {
             user: {
                 roles: {
-                    scopes: true
-                }
-            }
-        }
+                    scopes: true,
+                },
+            },
+        },
     })
 
     if (!token) {
-        throw new MissingEntityError(`No matching token found for provided tokenString`, 404)
+        throw new MissingEntityError(
+            `No matching token found for provided tokenString`,
+            404
+        )
     }
 
     return token

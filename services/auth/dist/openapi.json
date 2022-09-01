@@ -219,6 +219,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
           "401": {
             "description": "Unauthorized."
           },
@@ -307,6 +310,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
           },
           "401": {
             "description": "Unauthorized."
@@ -539,9 +545,6 @@
           "204": {
             "description": "User deleted successfully"
           },
-          "400": {
-            "description": "Bad Request."
-          },
           "401": {
             "description": "Unauthorized."
           },
@@ -668,6 +671,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
           },
           "401": {
             "description": "Unauthorized."

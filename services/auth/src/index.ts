@@ -1,10 +1,10 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { config } from './config'
-import { AppDataSource, initializeDataSource } from './data_source';
-import { app } from './generated';
-import { ActiveKeyModel } from './model';
-import { resolveAllowlistEntry, generateNewKey, jwk, isUserType } from './methods/utils';
-import { JWTVerificationError } from './generated/types';
+import { AppDataSource, initializeDataSource } from './data_source'
+import { app } from './generated'
+import { ActiveKeyModel } from './model'
+import { resolveAllowlistEntry, generateNewKey, jwk, isUserType } from './methods/utils'
+import { JWTVerificationError } from './generated/types'
 
 export let allowlist: { [key: string]: string } = {}
 
@@ -21,7 +21,7 @@ AppDataSource.initialize()
                 console.error(error)
             }
         }
-        
+
         // Create new active key
         const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
         const key = await generateNewKey()
@@ -34,30 +34,40 @@ AppDataSource.initialize()
         activeKey.use = key.use
         await activeKeyRepository.save(activeKey)
 
-        app.get("/.well-known/jwks.json", (_req, res, _next) => {
-            res.send(jwks);
+        app.get('/.well-known/jwks.json', (_req, res, _next) => {
+            res.send(jwks)
         })
-        app.get("/.well-known/openid-configuration", (_req, res, _next) => {
-            res.send({"jwks_uri": "/.well-known/jwks.json"});
+        app.get('/.well-known/openid-configuration', (_req, res, _next) => {
+            res.send({ jwks_uri: '/.well-known/jwks.json' })
         })
         app.initService({
             JWTVerify: async (jwt, scopes) => {
-                if (!jwt) throw new JWTVerificationError("No JWT provided", 401) 
-                if (!config.SECURITY_ISSUER) throw new JWTVerificationError("No security issuer specified", 500)
-                const jwksUri = new URL(config.BASE_URL.endsWith("/") ? config.BASE_URL + ".well-known/jwks.json" : config.BASE_URL + "/.well-known/jwks.json")
+                if (!jwt) throw new JWTVerificationError('No JWT provided', 401)
+                if (!config.SECURITY_ISSUER)
+                    throw new JWTVerificationError('No security issuer specified', 500)
+                const jwksUri = new URL(
+                    config.BASE_URL.endsWith('/')
+                        ? config.BASE_URL + '.well-known/jwks.json'
+                        : config.BASE_URL + '/.well-known/jwks.json'
+                )
                 const JWKS = createRemoteJWKSet(jwksUri)
-                const jwtVerifyResult = await jwtVerify(jwt, JWKS, { issuer: config.SECURITY_ISSUER, audience: config.SECURITY_AUDIENCE })
-                if (!isUserType(jwtVerifyResult.payload)) throw new JWTVerificationError("Payload is malformed", 500)
+                const jwtVerifyResult = await jwtVerify(jwt, JWKS, {
+                    issuer: config.SECURITY_ISSUER,
+                    audience: config.SECURITY_AUDIENCE,
+                })
+                if (!isUserType(jwtVerifyResult.payload))
+                    throw new JWTVerificationError('Payload is malformed', 500)
                 const user = jwtVerifyResult.payload
                 for (const scope of scopes) {
-                    if (!user.scopes.includes(scope)) throw new JWTVerificationError("Missing Scope: " + scope, 403)
+                    if (!user.scopes.includes(scope))
+                        throw new JWTVerificationError('Missing Scope: ' + scope, 403)
                 }
                 return user
-            }
+            },
         })
         app.listen(config.PORT)
-        console.log("Initialization finished")
+        console.log('Initialization finished')
     })
     .catch((error) => {
-        console.error("Error during Data Source initialization:", error)
+        console.error('Error during Data Source initialization:', error)
     })

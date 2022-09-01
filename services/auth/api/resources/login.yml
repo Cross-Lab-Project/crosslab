@@ -25,6 +25,8 @@ post:
           schema:
             description: the access token
             type: string
+    400:
+      description: Bad Request.
     401:
       description: Unauthorized.
     403:

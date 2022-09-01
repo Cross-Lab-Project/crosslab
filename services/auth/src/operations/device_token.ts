@@ -1,12 +1,11 @@
-import { AppDataSource } from "../data_source"
-import {
-    postDeviceTokenSignature
-} from "../generated/signatures/device_token"
-import { TokenModel, UserModel } from "../model"
-import { MissingEntityError } from "../types/errors"
+import { AppDataSource } from '../data_source'
+import { postDeviceTokenSignature } from '../generated/signatures/device_token'
+import { TokenModel, UserModel } from '../model'
+import { MissingEntityError } from '../types/errors'
 
 /**
- * This function implements the functionality for handling POST on /device_token endpoint.
+ * This function implements the functionality for handling POST requests on /device_token endpoint.
+ * @param user The user submitting the request.
  * @throws {MissingEntityError} Could not find user.
  */
 export const postDeviceToken: postDeviceTokenSignature = async (user) => {
@@ -15,14 +14,15 @@ export const postDeviceToken: postDeviceTokenSignature = async (user) => {
 
     const userModel = await userRepository.findOne({
         where: {
-            username: user.username
+            username: user.username,
         },
         relations: {
-            tokens: true
-        }
+            tokens: true,
+        },
     })
 
-    if (!userModel) throw new MissingEntityError(`Could not find user ${user.username}`, 404)
+    if (!userModel)
+        throw new MissingEntityError(`Could not find user ${user.username}`, 404)
 
     const tokenRepository = AppDataSource.getRepository(TokenModel)
     const token = tokenRepository.create()
@@ -34,6 +34,6 @@ export const postDeviceToken: postDeviceTokenSignature = async (user) => {
 
     return {
         status: 200,
-        body: token.token
+        body: token.token,
     }
 }

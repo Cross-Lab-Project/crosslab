@@ -1,4 +1,13 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryColumn,
+    PrimaryGeneratedColumn,
+} from 'typeorm'
 
 @Entity()
 export class ScopeModel {
@@ -10,7 +19,7 @@ export class ScopeModel {
 export class RoleModel {
     @PrimaryColumn()
     name!: string
-    @ManyToMany(() => UserModel, user => user.roles)
+    @ManyToMany(() => UserModel, (user) => user.roles)
     users!: UserModel[]
     @ManyToMany(() => ScopeModel)
     @JoinTable()
@@ -23,18 +32,21 @@ export class UserModel {
     username!: string
     @Column({ nullable: true })
     password?: string
-    @ManyToMany(() => RoleModel, role => role.users)
+    @ManyToMany(() => RoleModel, (role) => role.users)
     @JoinTable()
     roles!: RoleModel[]
-    @OneToMany(() => TokenModel, (token) => token.user, { onDelete: "CASCADE", cascade: true })
+    @OneToMany(() => TokenModel, (token) => token.user, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     tokens!: TokenModel[]
 }
 
 @Entity()
 export class TokenModel {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     token!: string
-    @Column("datetime", { nullable: true })
+    @Column('datetime', { nullable: true })
     expiresOn?: string
     @ManyToOne(() => UserModel, (user) => user.tokens)
     user!: UserModel
@@ -45,15 +57,15 @@ export class TokenModel {
 
 @Entity()
 export class KeyModel {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
     use!: string
     @Column()
     alg!: string
-    @Column("text")
+    @Column('text')
     public_key!: string
-    @Column("text")
+    @Column('text')
     private_key!: string
 }
 

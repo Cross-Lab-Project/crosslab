@@ -1,39 +1,33 @@
-import { AppDataSource } from "../data_source"
-import { Institution } from "../generated/types"
-import { InstitutionModel } from "../model"
-import { deleteInstitutionsByInstitutionIdSignature, getInstitutionsByInstitutionIdSignature, getInstitutionsSignature, patchInstitutionsByInstitutionIdSignature, postInstitutionsSignature } from "../generated/signatures/institutions"
-import { config } from "../config"
+import { AppDataSource } from '../data_source'
+import { InstitutionModel } from '../model'
+import {
+    deleteInstitutionsByInstitutionIdSignature,
+    getInstitutionsByInstitutionIdSignature,
+    getInstitutionsSignature,
+    patchInstitutionsByInstitutionIdSignature,
+    postInstitutionsSignature,
+} from '../generated/signatures/institutions'
+import { formatInstitution } from '../methods/format'
+import { writeInstitution } from '../methods/write'
 
-const InstitutionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'institutions/'
-
-function formatInstitution(i: InstitutionModel): Institution {
-    return { 
-        name: i.name, 
-        api: i.api, 
-        url: InstitutionBaseURL+i.uuid,
-        homepage: i.homepage,
-        federatedApi: i.federatedApi
-    }
-}
-
-function writeInstitution(institution: InstitutionModel, object: Partial<Institution>) {
-    if (object.name) institution.name = object.name
-    if (object.api) institution.api = object.api
-    if (object.apiToken) institution.apiToken = object.apiToken
-    if (object.homepage) institution.homepage = object.homepage
-    if (object.federatedApi) institution.federatedApi = object.federatedApi
-}
-
-
+/**
+ * This function implements the functionality for handling GET requests on /institutions endpoint.
+ * @param _user The user submitting the request.
+ */
 export const getInstitutions: getInstitutionsSignature = async (_user) => {
     const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
     const institutions = await InstitutionRepository.find()
     return {
         status: 200,
-        body: institutions.map(formatInstitution)
+        body: institutions.map(formatInstitution),
     }
 }
 
+/**
+ * This function implements the functionality for handling POST requests on /institutions endpoint.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
 export const postInstitutions: postInstitutionsSignature = async (body, _user) => {
     const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
     const institution = InstitutionRepository.create()
@@ -41,52 +35,80 @@ export const postInstitutions: postInstitutionsSignature = async (body, _user) =
     await InstitutionRepository.save(institution)
     return {
         status: 201,
-        body: formatInstitution(institution)
+        body: formatInstitution(institution),
     }
 }
 
-export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature = async (parameters, _user) => {
-    const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.institution_id })
-    if (institution == null) {
+/**
+ * This function implements the functionality for handling GET requests on /institutions/{institution_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature =
+    async (parameters, _user) => {
+        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const institution = await InstitutionRepository.findOneBy({
+            uuid: parameters.institution_id,
+        })
+        if (institution == null) {
+            return {
+                status: 404,
+            }
+        }
         return {
-            status: 404
+            status: 200,
+            body: formatInstitution(institution),
         }
     }
-    return {
-        status: 200,
-        body: formatInstitution(institution)
-    }
-}
 
-export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature = async (parameters, body, _user) => {
-    const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = await InstitutionRepository.findOneBy({ uuid: parameters.institution_id })
-    if (institution == null) {
+/**
+ * This function implements the functionality for handling PATCH requests on /institutions/{institution_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
+export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature =
+    async (parameters, body, _user) => {
+        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const institution = await InstitutionRepository.findOneBy({
+            uuid: parameters.institution_id,
+        })
+        if (institution == null) {
+            return {
+                status: 404,
+            }
+        }
+        if (body) writeInstitution(institution, body)
+        InstitutionRepository.save(institution)
         return {
-            status: 404
+            status: 200,
+            body: formatInstitution(institution),
         }
     }
-    if (body) writeInstitution(institution, body)
-    InstitutionRepository.save(institution)
-    return {
-        status: 200,
-        body: formatInstitution(institution)
-    }
-}
 
-export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature = async (parameters, _user) => {
-    const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const result = await InstitutionRepository.softDelete({ uuid: parameters.institution_id })
-    if (result.affected == 0) {
+/**
+ * This function implements the functionality for handling DELETE requests on /institutions/{institution_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature =
+    async (parameters, _user) => {
+        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const result = await InstitutionRepository.softDelete({
+            uuid: parameters.institution_id,
+        })
+
+        if (!result.affected) {
+            return {
+                status: 404,
+            }
+        }
+
+        if (result.affected > 1) {
+            // TBD
+        }
+
         return {
-            status: 404
+            status: 204,
         }
     }
-    //if (result.affected > 1) {
-        // CRITICAL ERROR
-    //}
-    return {
-        status: 204,
-    }
-}

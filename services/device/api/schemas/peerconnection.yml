@@ -9,16 +9,4 @@ allOf:
         minItems: 2
         maxItems: 2
         items:
-          type: object
-          properties:
-            url:
-              type: string
-              description: URL of the device
-              format: uri
-            config:
-              type: object
-              properties:
-                services:
-                  type: array
-                  items:
-                    $ref: './service_config.yml'
+          $ref: "./configured_device_reference.yml"

@@ -1,134 +1,90 @@
 import {
-    DeviceOverview,
-    ConcreteDevice,
-    DeviceGroup,
-    TimeSlot,
-    AvailabilityRule
-} from "../generated/types"
-import {
     getDevicesSignature,
     postDevicesSignature,
     getDevicesByDeviceIdSignature,
     deleteDevicesByDeviceIdSignature,
     patchDevicesByDeviceIdSignature,
     postDevicesByDeviceIdAvailabilitySignature,
-    getDevicesByDeviceIdTokenSignature,
-    postDevicesByDeviceIdSignalingSignature
-} from "../generated/signatures/devices"
-import { AppDataSource } from "../data_source"
-import { 
-    DeviceOverviewModel, 
-    ConcreteDeviceModel, 
-    DeviceGroupModel, 
-    AvailabilityRuleModel, 
-    DeviceReferenceModel,
-    PeerconnectionModel,
+    postDevicesByDeviceIdTokenSignature,
+    postDevicesByDeviceIdSignalingSignature,
+} from '../generated/signatures/devices'
+import { AppDataSource } from '../data_source'
+import {
+    DeviceOverviewModel,
+    ConcreteDeviceModel,
+    DeviceGroupModel,
+    AvailabilityRuleModel,
     isConcreteDeviceModel,
-    TimeSlotModel,
-    isDeviceGroupModel
-} from "../model";
-import { config } from "../config"
-import WebSocket from "ws";
-import { 
+    isDeviceGroupModel,
+} from '../model'
+import { randomUUID } from 'crypto'
+import { apiClient, YEAR } from '../globals'
+import { InvalidValueError, MissingEntityError } from '../types/errors'
+import {
+    deviceUrlFromId,
+    getDeviceModelByUUID,
+    isConcreteDevice,
+    isDeviceGroup,
+} from '../methods/utils'
+import { config } from '../config'
+import {
+    isMessage,
+    isAuthenticationMessage,
     AuthenticationMessage,
-    isAuthenticationMessage, 
-    isMessage, 
-    isSignalingMessage, 
-    Message,
-    SignalingMessage
-} from "../types/deviceMessages";
-import { randomUUID } from "crypto";
-import fetch from "node-fetch";
-import { APIClient } from "@cross-lab-project/api-client"
+} from '../generated/types'
+import { applyAvailabilityRules } from '../methods/availability'
+import { handleChangedCallback, changedCallbacks } from '../methods/callbacks'
+import {
+    formatDeviceOverview,
+    formatConcreteDevice,
+    formatDeviceGroup,
+    formatTimeSlot,
+} from '../methods/format'
+import { handleDeviceMessage } from '../methods/messageHandling'
+import {
+    writeConcreteDevice,
+    writeDeviceGroup,
+    writeAvailabilityRule,
+} from '../methods/write'
+import WebSocket from 'ws'
 
-const YEAR = 365*24*60*60*1000
+export const connectedDevices = new Map<string, WebSocket>()
 
-export const connectedDevices = new Map<string, WebSocket>();
-export const DeviceBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'devices/'
-const changedCallbacks = new Map<string,Array<string>>()
-const apiClient = new APIClient({
-    auth: config.BASE_URL_AUTH,
-    booking: config.BASE_URL_BOOKING,
-    device: config.BASE_URL,
-    experiment: config.BASE_URL,
-    federation: config.BASE_URL_FEDERATION,
-    update: config.BASE_URL_UPDATE
-})
-
-// TODO: rework with new http route for signaling
-async function handleSignalingMessage(device: ConcreteDeviceModel, message: SignalingMessage) {
-    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const peerconnectionId = message.connectionUrl.split("/").pop()
-    if (!peerconnectionId) throw new Error("Given peerconnection url contains no valid id")
-    const peerconnection = await peerconnectionRepository.findOneOrFail({ 
-        where: { uuid: peerconnectionId }, 
-        relations: { deviceA: true, deviceB: true } 
-    })
-
-    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) {
-        throw("Peerconnection is missing an url for one of the devices")
-    }
-
-    let peerDeviceId
-    if (peerconnection.deviceA.url === DeviceBaseURL + device.uuid) {
-        peerDeviceId = peerconnection.deviceB.url.split("/").at(-1)
-    } else if (peerconnection.deviceB.url === DeviceBaseURL + device.uuid) {
-        peerDeviceId = peerconnection.deviceA.url.split("/").at(-1)
-    } else {
-        console.error("Device not part of Peerconnection")
-        return
-    }
-
-    if (peerDeviceId) {
-        const peerDeviceWs = connectedDevices.get(peerDeviceId)
-        peerDeviceWs?.send(JSON.stringify(message))
-    }
-}
-
-function handleDeviceMessage(device: ConcreteDeviceModel, message: Message) {
-    if (isSignalingMessage(message)) {
-        handleSignalingMessage(device, message)
-    }
-}
-
-// TODO: generate callback signatures?
-async function handleChangedCallback(device: ConcreteDeviceModel | DeviceGroupModel) {
-    const urls = changedCallbacks.get(device.uuid) ?? []
-    for (const url in urls) {
-        fetch(url, {
-            method: "post",
-            body: JSON.stringify({
-                callbackType: "event", 
-                eventType: "device-changed",
-                ...(isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device))
-            })
-        }).then((res) => {
-            if (res.status == 410) {
-                const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
-                changedCallbacks.set(device.uuid, changedCallbackURLs.filter(cb_url => cb_url != url))
-            }
-        })
-    }
-}
-
+/**
+ * This function adds the /devices/ws endpoint, including its functionality, to an express application.
+ * @param app The express application to add the /devices/ws endpoint to.
+ */
 export function deviceHandling(app: Express.Application) {
     // TODO: close Peerconnections that have device as participant when websocket connection is closed?
-    app.ws("/devices/ws", (ws) => {
+    app.ws('/devices/ws', (ws) => {
         // authenticate and start heartbeat
-        ws.once("message", async (data) => {
+        ws.once('message', async (data) => {
             // device authentication and connection
             const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-            const message = JSON.parse(data.toString("utf8"))
+            const message = JSON.parse(data.toString('utf8'))
             if (!(isMessage(message) && isAuthenticationMessage(message))) {
-                ws.close(1002, "Not authenticated")
+                ws.close(1002, 'Received message is not an authentication message')
                 return
             }
-            if (!message.url.startsWith(DeviceBaseURL)) throw new Error("Non local device trying to establish websocket connection")
-            const deviceId = message.url.split("/").pop()
-            if (!deviceId) throw new Error("Url in websocket authentication message does not contain device id")
-            const device = await deviceRepository.findOneOrFail({ where: { uuid: deviceId } })
+            if (!message.deviceUrl.startsWith(config.BASE_URL)) {
+                ws.close(1002, 'Device is registered at a different institution')
+                return
+            }
+            const deviceId = message.deviceUrl.split('/').pop()
+            if (!deviceId) {
+                ws.close(
+                    1002,
+                    'Url in authentication message does not contain a device id'
+                )
+                return
+            }
+            const device = await deviceRepository.findOne({ where: { uuid: deviceId } })
+            if (!device) {
+                ws.close(1002, `Device ${deviceId} not found`)
+                return
+            }
             if (device.token != message.token) {
-                ws.close(1002, "Not authenticated")
+                ws.close(1002, 'Provided token does not match the token of the device')
                 return
             }
             device.connected = true
@@ -136,15 +92,19 @@ export function deviceHandling(app: Express.Application) {
             handleChangedCallback(device)
             connectedDevices.set(device.uuid, ws)
 
-            ws.send(JSON.stringify(<AuthenticationMessage>{
-                messageType: "authenticate",
-                url: message.url,
-                authenticated: true
-            }))
+            ws.send(
+                JSON.stringify(<AuthenticationMessage>{
+                    messageType: 'authenticate',
+                    deviceUrl: message.url,
+                    authenticated: true,
+                })
+            )
 
             // heartbeat implementation
-            let isAlive = true;
-            ws.on('pong', () => { isAlive = true });
+            let isAlive = true
+            ws.on('pong', () => {
+                isAlive = true
+            })
             const interval = setInterval(async function ping() {
                 if (isAlive === false) {
                     device.connected = false
@@ -153,21 +113,25 @@ export function deviceHandling(app: Express.Application) {
                     connectedDevices.delete(device.uuid)
                     return ws.terminate()
                 }
-                isAlive = false;
-                ws.ping();
-            }, 30000);
+                isAlive = false
+                ws.ping()
+            }, 30000)
 
             // close handler: stop heartbeat and disconnect device
-            ws.on("close", async () => {
-                clearInterval(interval);
+            ws.on('close', async (code, reason) => {
+                clearInterval(interval)
                 connectedDevices.delete(device.uuid)
-            });
+
+                if (code === 1002) {
+                    console.error(`WebSocketConnctionError "${reason}"`)
+                }
+            })
 
             // message handler: handle incoming messages from devices
-            ws.on("message", async (data) => {
-                const message = JSON.parse(data.toString("utf8"))
+            ws.on('message', async (data) => {
+                const message = JSON.parse(data.toString('utf8'))
                 if (!isMessage(message)) {
-                    ws.close(1002, "Malformed Message")
+                    ws.close(1002, 'Malformed Message')
                     return
                 }
                 handleDeviceMessage(device, message)
@@ -176,330 +140,10 @@ export function deviceHandling(app: Express.Application) {
     })
 }
 
-function isConcreteDevice(device: DeviceOverview): device is ConcreteDevice {
-    return device.type == "device"
-}
-
-function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
-    return device.type == "group"
-}
-
-function formatTimeSlot(timeSlot: TimeSlotModel): TimeSlot {
-    return {
-        start: new Date(timeSlot.start).toISOString(),
-        end: new Date(timeSlot.end).toISOString()
-    }
-}
-
-function formatDeviceOverview(device: DeviceOverviewModel): DeviceOverview {
-    return {
-        url: DeviceBaseURL + device.uuid,
-        name: device.name,
-        description: device.description,
-        type: device.type,
-        owner: device.owner
-    }
-}
-
-function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
-    return {
-        url: DeviceBaseURL + device.uuid,
-        name: device.name,
-        description: device.description,
-        type: device.type,
-        owner: device.owner,
-        announcedAvailability: device.announcedAvailability ? device.announcedAvailability.map(formatTimeSlot) : undefined,
-        connected: device.connected !== undefined ? device.connected : undefined,
-        experiment: device.experiment ? device.experiment : undefined
-    }
-}
-
-async function resolveDeviceReference(reference: DeviceReferenceModel, flat_group: boolean = false): Promise<ConcreteDevice|DeviceGroup|undefined> {
-    if (reference.url) {
-        const deviceId = reference.url.split("/").at(-1)
-        if (!deviceId) return undefined
-        console.log("resolving device", reference.url, config.BASE_URL)
-        const device = await apiClient.getDevicesByDeviceId({ device_id: deviceId, flat_group: flat_group }, reference.url)
-        if (device.status === 404) return undefined
-        return device.body
-    }
-
-    return undefined
-}
-
-function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
-    const devices: ConcreteDevice[] = []
-
-    if (deviceGroup.devices) {
-        for (const device of deviceGroup.devices) {
-            if (!device.type) continue
-            if (device.type == "device") devices.push(device)
-            if (device.type == "group") devices.push(...flattenDeviceGroup(device))
-        }
-    }
-
-    return devices
-}
-
-async function formatDeviceGroup(deviceGroup: DeviceGroupModel, flat_group: boolean = false): Promise<DeviceGroup> {
-    const devices: (ConcreteDevice|DeviceGroup)[] = []
-    if (deviceGroup.devices) {
-        for (const d of deviceGroup.devices) {
-            const resolvedDevice = await resolveDeviceReference(d, flat_group)
-            if (resolvedDevice) {
-                if (resolvedDevice.type == "device") devices.push(resolvedDevice)
-                if (resolvedDevice.type == "group" && !flat_group) devices.push(resolvedDevice)
-                if (resolvedDevice.type == "group" && flat_group) devices.push(...flattenDeviceGroup(resolvedDevice))
-            }
-        }
-    }
-
-    return {
-        url: DeviceBaseURL + deviceGroup.uuid,
-        name: deviceGroup.name,
-        description: deviceGroup.description,
-        type: deviceGroup.type,
-        owner: deviceGroup.owner,
-        devices: devices.filter((v,i,s) => s.findIndex(d => d.url == v.url) == i)
-    }
-}
-
-function writeAvailabilityRule(availabilityRule: AvailabilityRuleModel, object: AvailabilityRule) {
-    availabilityRule.available = object.available ?? true
-    availabilityRule.start = object.start ? new Date(object.start).getTime() : undefined
-    availabilityRule.end = object.end ? new Date(object.end).getTime() : undefined
-    if (object.repeat) {
-        availabilityRule.frequency = object.repeat.frequency
-        availabilityRule.until = object.repeat.until ? new Date(object.repeat.until).getTime() : undefined
-        availabilityRule.count = object.repeat.count
-    }
-}
-
-function writeDeviceOverview(device: DeviceOverviewModel, object: DeviceOverview) {
-    device.name = object.name
-    device.description = object.description
-    device.type = object.type
-}
-
-function sortTimeSlots(availability: TimeSlotModel[]) {
-    console.log("availability before sort:", JSON.stringify(availability, null, 4))
-    availability.sort((a, b) => {
-        if (a.start < b.start) return -1
-        if (a.start > b.start) return 1
-        return 0
-    })
-    console.log("availability after sort:", JSON.stringify(availability, null, 4))
-    return availability
-}
-
-function mergeTimeSlots(availability: TimeSlotModel[]) {
-    console.log("availability before merge:", JSON.stringify(availability, null, 4))
-    for (let i = 0; i < availability.length; i++) {
-        if (i < availability.length - 1) {
-            if (availability[i+1].start <= availability[i].end) {
-                availability = availability.splice(i+1, 1)
-                i--
-            }
-        }
-    }
-    console.log("availability after merge:", JSON.stringify(availability, null, 4))
-    return availability
-}
-
-function invertTimeSlots(availability: TimeSlotModel[], start: number, end: number) {
-    if (availability.length === 0) return []
-    console.log("availability before invert:", JSON.stringify(availability, null, 4))
-
-    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
-
-    // sort by starttime
-    availability = sortTimeSlots(availability)
-
-    // merge timeslots
-    availability = mergeTimeSlots(availability)
-
-    const newAvailability: TimeSlotModel[] = []
-
-    // create first timeslot
-    const firstTimeSlot = timeSlotRepository.create()
-    firstTimeSlot.start = start
-    firstTimeSlot.end = availability[0].start
-
-    if (firstTimeSlot.start !== firstTimeSlot.end) 
-        newAvailability.push(firstTimeSlot)
-
-    // create intermediate timeslots
-    for (let i = 0; i < availability.length; i++) {
-        if (i < availability.length - 1) {
-            const timeSlot = timeSlotRepository.create()
-            timeSlot.start = availability[i].end
-            timeSlot.end = availability[i+1].start
-            newAvailability.push(timeSlot)
-        }
-    }
-    
-    // create last timeslot
-    const lastTimeSlot = timeSlotRepository.create()
-    lastTimeSlot.start = availability[availability.length - 1].end
-    lastTimeSlot.end = end
-
-    if (lastTimeSlot.start !== lastTimeSlot.end) 
-        newAvailability.push(lastTimeSlot)
-
-    availability = newAvailability
-    console.log("availability after invert:", JSON.stringify(availability, null, 4))
-    return availability
-}
-
-function addTimeSlotsFromRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
-    console.log("availability before adding timeslots from rule:", JSON.stringify(availability, null, 4))
-    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
-    const timeSlot = timeSlotRepository.create()
-    timeSlot.start = availabilityRule.start && availabilityRule.start >= start ? availabilityRule.start : start,
-    timeSlot.end = availabilityRule.end && availabilityRule.end <= end ? availabilityRule.end : end
-    
-    if (availabilityRule.frequency && availabilityRule.end) {
-        let frequency = 0
-        switch (availabilityRule.frequency) {
-            case "HOURLY":
-                frequency = 60 * 60 * 1000
-                break
-            case "DAILY":
-                frequency = 24 * 60 * 60 * 1000
-                break
-            case "WEEKLY":
-                frequency = 7 * 24 * 60 * 60 * 1000
-                break
-            case "MONTHLY":
-                frequency = 28 * 7 * 24 * 60 * 60 * 1000 // not very precise since months vary in length
-                break
-            case "YEARLY":
-                frequency = 365 * 7 * 24 * 60 * 60 * 1000 // not taking leap years into account
-                break
-        }
-        if (frequency < (timeSlot.end - timeSlot.start)) {
-            timeSlot.start = start
-            timeSlot.end = end
-        }
-        const until = availabilityRule.until ?? end
-        let count = availabilityRule.count
-        
-        let currentTimeSlot = timeSlotRepository.create()
-        currentTimeSlot.start = availabilityRule.start !== undefined ? availabilityRule.start + frequency : start
-        currentTimeSlot.end = availabilityRule.end + frequency
-
-        while (until < (currentTimeSlot.end - frequency)) {
-            if (until !== undefined) {
-                if (until < currentTimeSlot.start) break
-                if (!availabilityRule.start && until < (currentTimeSlot.end - frequency)) break
-            }
-            if (count !== undefined) {
-                if (!count) break
-                count--
-            }
-
-            if (currentTimeSlot.start < start) currentTimeSlot.start = start
-            if (currentTimeSlot.end > end) currentTimeSlot.end = end 
-            availability.push(currentTimeSlot)
-            const newCurrentTimeSlot = timeSlotRepository.create()
-
-            if (availabilityRule.start) {
-                newCurrentTimeSlot.start = currentTimeSlot.start + frequency
-                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
-            } else {
-                newCurrentTimeSlot.start = start
-                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
-            }
-
-            currentTimeSlot = newCurrentTimeSlot
-        }
-    }
-
-    availability.push(timeSlot)
-    console.log("availability after adding timeslots from rule:", JSON.stringify(availability, null, 4))
-    return availability
-}
-
-function applyAvailabilityRule(availability: TimeSlotModel[], availabilityRule: AvailabilityRuleModel, start: number, end: number) {
-    if (availabilityRule.available === true || availabilityRule.available === undefined) {
-        console.log("applying availability rule for available = true")
-
-        // add all new timeslots
-        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
-
-        // sort by starttime
-        availability = sortTimeSlots(availability)
-
-        // merge timeslots
-        availability = mergeTimeSlots(availability)
-    } else {
-        console.log("applying availability rule for available = false")
-
-        // invert availability
-        availability = invertTimeSlots(availability, start, end)
-
-        // add all new timeslots
-        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
-
-        // sort by starttime
-        availability = sortTimeSlots(availability)
-
-        // merge timeslots
-        availability = mergeTimeSlots(availability)
-        
-        // invert availability
-        availability = invertTimeSlots(availability, start, end)
-    }
-    return availability
-}
-
-function applyAvailabilityRules(availability: TimeSlotModel[], availabilityRules: AvailabilityRuleModel[], start: number, end: number) {
-    for (const availabilityRule of availabilityRules) {
-        availability = applyAvailabilityRule(availability, availabilityRule, start, end)
-    }
-    return availability
-}
-
-function writeConcreteDevice(device: ConcreteDeviceModel, object: ConcreteDevice & { announcedAvailability?: AvailabilityRule[] }) {
-    writeDeviceOverview(device, object)
-    
-    device.connected = false
-    device.token = undefined
-    device.experiment = object.experiment
-
-    if (object.announcedAvailability) {
-        if (!device.availabilityRules) device.availabilityRules = []
-        const availabilityRuleRepository = AppDataSource.getRepository(AvailabilityRuleModel)
-        for (const availabilityRule of object.announcedAvailability) {
-            const availabilityRuleModel = availabilityRuleRepository.create()
-            writeAvailabilityRule(availabilityRuleModel, availabilityRule)
-            device.availabilityRules.push(availabilityRuleModel)
-        }
-    }
-
-    if (!device.announcedAvailability) device.announcedAvailability = []
-    if (device.availabilityRules) {
-        device.announcedAvailability = []
-        const start = Date.now()
-        const end = start + YEAR
-        device.announcedAvailability = applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
-    }
-}
-
-function writeDeviceGroup(device: DeviceGroupModel, object: DeviceGroup) {
-    writeDeviceOverview(device, object)
-
-    if (object.devices) {
-        if (!device.devices) device.devices = []
-        const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
-        for (const deviceReference of object.devices) {
-            const deviceReferenceModel = deviceReferenceRepository.create()
-            deviceReferenceModel.url = deviceReference.url
-            device.devices.push(deviceReferenceModel)
-        }
-    }
-}
-
+/**
+ * This function implements the functionality for handling GET requests on /devices endpoint.
+ * @param _user The user submitting the request.
+ */
 export const getDevices: getDevicesSignature = async (_user) => {
     console.log(`getDevices called`)
     const deviceRepository = AppDataSource.getRepository(DeviceOverviewModel)
@@ -509,10 +153,16 @@ export const getDevices: getDevicesSignature = async (_user) => {
 
     return {
         status: 200,
-        body: devices.map(formatDeviceOverview)
+        body: devices.map(formatDeviceOverview),
     }
 }
 
+/**
+ * This function implements the functionality for handling POST requests on /devices endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param user The user submitting the request.
+ */
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     console.log(`postDevices called`)
     let device
@@ -540,200 +190,223 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
 
     return {
         status: 201,
-        body: isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device)
+        body: isConcreteDeviceModel(device)
+            ? formatConcreteDevice(device)
+            : await formatDeviceGroup(device),
     }
 }
 
-async function getDeviceModelByUUID(uuid: string): Promise<ConcreteDeviceModel|DeviceGroupModel|undefined> {
-    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-    const concreteDevice = await concreteDeviceRepository.findOne({ 
-        where: { 
-            uuid: uuid 
-        },
-        relations: {
-            announcedAvailability: true
-        }
-    })
-    const deviceGroup = await deviceGroupRepository.findOne({ 
-        where: { 
-            uuid: uuid
-        },
-        relations: {
-            devices: true
-        }
-    })
-
-    if (concreteDevice && deviceGroup) throw("Multiple devices found for same uuid!")
-    if (concreteDevice) return concreteDevice
-    if (deviceGroup) return deviceGroup
-    return undefined
-}
-
-export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (parameters, _user) => {
+/**
+ * This function implements the functionality for handling GET requests on /devices/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ */
+export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
+    parameters,
+    _user
+) => {
     console.log(`getDevicesByDeviceId called`)
     const device = await getDeviceModelByUUID(parameters.device_id)
 
-    if (!device) {
-        console.error(`getDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    } else if (isConcreteDeviceModel(device)) {
+    if (!device)
+        throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
+
+    if (isConcreteDeviceModel(device)) {
         console.log(`getDevicesByDeviceId succeeded`)
         return {
             status: 200,
-            body: formatConcreteDevice(device)
+            body: formatConcreteDevice(device),
         }
     } else {
         console.log(`getDevicesByDeviceId succeeded`)
         return {
             status: 200,
-            body: await formatDeviceGroup(device, parameters.flat_group)
+            body: await formatDeviceGroup(device, parameters.flat_group),
         }
     }
 }
 
-export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (parameters, _user) => {
+/**
+ * This function implements the functionality for handling DELETE requests on /devices/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ */
+export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
+    parameters,
+    _user
+) => {
     console.log(`deleteDevicesByDeviceId called`)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
     const device = await getDeviceModelByUUID(parameters.device_id)
 
-    if (!device) {
-        console.error(`deleteDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    }
+    if (!device)
+        throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    
     if (isConcreteDeviceModel(device)) await concreteDeviceRepository.softRemove(device)
     else await deviceGroupRepository.softRemove(device)
 
     console.log(`deleteDevicesByDeviceId succeeded`)
 
     return {
-        status: 204
+        status: 204,
     }
 }
 
-export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (parameters, body, _user) => {
+/**
+ * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ * @throws {InvalidValueError} Thrown if client tries to update the type of the device.
+ */
+export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
+    parameters,
+    body,
+    _user
+) => {
     console.log(`patchDevicesByDeviceId called`)
     const deviceOverviewRepository = AppDataSource.getRepository(DeviceOverviewModel)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
 
-    const deviceOverview = await deviceOverviewRepository.findOneBy({ uuid: parameters.device_id })
+    const deviceOverview = await deviceOverviewRepository.findOneBy({
+        uuid: parameters.device_id,
+    })
 
-    if (!deviceOverview) {
-        console.error(`patchDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    }
+    if (!deviceOverview)
+        throw new MissingEntityError(
+            `Could not find device overview for ${parameters.device_id}`,
+            404
+        )
 
-    const device = deviceOverview.type === "device" ? 
-        await concreteDeviceRepository.findOneBy({ uuid: parameters.device_id }) :
-        await deviceGroupRepository.findOneBy({ uuid: parameters.device_id })
+    const device =
+        deviceOverview.type === 'device'
+            ? await concreteDeviceRepository.findOneBy({ uuid: parameters.device_id })
+            : await deviceGroupRepository.findOneBy({ uuid: parameters.device_id })
 
-    if (!device) {
-        console.error(`patchDevicesByDeviceId failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    }
+    if (!device)
+        throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
     if (!body) {
-        console.log(`patchDevicesByDeviceId succeeded: no changes applied due to empty body`)
+        console.log(
+            `patchDevicesByDeviceId succeeded: no changes applied due to empty body`
+        )
         return {
             status: 200,
-            body: isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device)
+            body: isConcreteDeviceModel(device)
+                ? formatConcreteDevice(device)
+                : await formatDeviceGroup(device),
         }
     }
 
-    // TODO: check if this is really necessary or if it may need to be rewritten
-    if (isConcreteDeviceModel(device) && !isDeviceGroup(body)) {
+    // TODO: check if this is really necessary or if it may need to be rewritten (make type not optional?)
+    if (isConcreteDeviceModel(device) && isConcreteDevice(body)) {
         writeConcreteDevice(device, body)
         concreteDeviceRepository.save(device)
-    } else if (isDeviceGroupModel(device) && !isConcreteDevice(body)) {
+    } else if (isDeviceGroupModel(device) && isDeviceGroup(body)) {
         writeDeviceGroup(device, body)
         deviceGroupRepository.save(device)
     } else {
-        console.error(`patchDevicesByDeviceId failed: trying to update ${device.type} to ${body.type}`)
-        return {
-            status: 400
-        }
+        throw new InvalidValueError(
+            `Trying to update device type from ${device.type} to ${body.type}`,
+            400
+        )
     }
 
+    handleChangedCallback(device)
     if (parameters.changedUrl) {
-        console.log(`patchDevicesByDeviceId: registering changed-callback for ${parameters.changedUrl}`)
+        console.log(
+            `patchDevicesByDeviceId: registering changed-callback for ${parameters.changedUrl}`
+        )
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
-    // TODO: maybe move this above setting the callback
-    handleChangedCallback(device)
 
     console.log(`patchDevicesByDeviceId succeeded`)
 
     return {
         status: 200,
-        body: isConcreteDeviceModel(device) ? formatConcreteDevice(device) : await formatDeviceGroup(device)
+        body: isConcreteDeviceModel(device)
+            ? formatConcreteDevice(device)
+            : await formatDeviceGroup(device),
     }
 }
 
-export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature = async (parameters, body, _user) => {
-    console.log(`postDevicesByDeviceIdAvailability called`)
+/**
+ * This function implements the functionality for handling POST requests on /devices/{device_id}/availability endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ */
+export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature =
+    async (parameters, body, _user) => {
+        console.log(`postDevicesByDeviceIdAvailability called`)
+        const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
+        const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
+        apiClient.addAvailabilityRules
+
+        if (!device)
+            throw new MissingEntityError(
+                `Could not find device ${parameters.device_id}`,
+                404
+            )
+
+        const availabilityRuleRepository =
+            AppDataSource.getRepository(AvailabilityRuleModel)
+
+        if (!device.availabilityRules) device.availabilityRules = []
+        if (body) {
+            // insert new availability rules
+            for (const availabilityRule of body) {
+                const availabilityRuleModel = availabilityRuleRepository.create()
+                writeAvailabilityRule(availabilityRuleModel, availabilityRule)
+                device.availabilityRules.push(availabilityRuleModel)
+            }
+        }
+
+        device.announcedAvailability = []
+        const start = Date.now()
+        const end = start + YEAR
+        device.announcedAvailability = applyAvailabilityRules(
+            device.announcedAvailability,
+            device.availabilityRules,
+            start,
+            end
+        )
+
+        await deviceRepository.save(device)
+        handleChangedCallback(device)
+
+        console.log(`postDevicesByDeviceIdAvailability succeeded`)
+
+        return {
+            status: 200,
+            body: device.announcedAvailability.map(formatTimeSlot),
+        }
+    }
+
+/**
+ * This function implements the functionality for handling POST requests on /devices/{device_id}/token endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ */
+export const postDevicesByDeviceIdToken: postDevicesByDeviceIdTokenSignature = async (
+    parameters,
+    _user
+) => {
+    console.log(`postDevicesByDeviceIdToken called`)
     const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
 
-    if (!device) {
-        console.error(`postDevicesByDeviceIdAvailability failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    }
-
-    const availabilityRuleRepository = AppDataSource.getRepository(AvailabilityRuleModel)
-
-    if (!device.availabilityRules) device.availabilityRules = []
-    if (body) {
-        // insert new availability rules
-        for (const availabilityRule of body) {
-            const availabilityRuleModel = availabilityRuleRepository.create()
-            writeAvailabilityRule(availabilityRuleModel, availabilityRule)
-            device.availabilityRules.push(availabilityRuleModel)
-        }
-    }
-
-    device.announcedAvailability = []
-    const start = Date.now()
-    const end = start + YEAR
-    device.announcedAvailability = applyAvailabilityRules(device.announcedAvailability, device.availabilityRules, start, end)
-
-    await deviceRepository.save(device)
-    handleChangedCallback(device)
-
-    console.log(`postDevicesByDeviceIdAvailability succeeded`)
-
-    return {
-        status: 200,
-        body: device.announcedAvailability.map(formatTimeSlot)
-    }
-}
-
-export const getDevicesByDeviceIdToken: getDevicesByDeviceIdTokenSignature = async (parameters, _user) => {
-    console.log(`getDevicesByDeviceIdToken called`)
-    const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
-
-    if (!device) {
-        console.error(`getDevicesByDeviceIdToken failed: could not find device ${parameters.device_id}`)
-        return {
-            status: 404
-        }
-    }
+    if (!device)
+        throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
     device.token = randomUUID()
     await deviceRepository.save(device)
@@ -741,23 +414,72 @@ export const getDevicesByDeviceIdToken: getDevicesByDeviceIdTokenSignature = asy
     setTimeout(async () => {
         device.token = undefined
         await deviceRepository.save(device)
-    }, 30000)
+    }, 300000)
 
-    console.log(`getDevicesByDeviceIdToken succeeded`)
+    console.log(`postDevicesByDeviceIdToken succeeded`)
 
     return {
         status: 200,
-        body: device.token
+        body: device.token,
     }
 }
 
-// TODO: add final implementation
-export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature = async (_parameters, _user) => {
-    console.log(`postDevicesByDeviceIdSignaling called`)
-    
-    console.log(`postDevicesByDeviceIdSignaling succeeded`)
-    
-    return {
-        status: 200
+/**
+ * This function implements the functionality for handling POST requests on /devices/{device_id}/signaling endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database or if websocket for device is not found.
+ * @throws {InvalidValueError} Thrown if type of device is not "device" or if device is not part of the peerconnection.
+ */
+export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature =
+    async (parameters, body, _user) => {
+        console.log(`postDevicesByDeviceIdSignaling called`)
+
+        // Get device
+        const device = await getDeviceModelByUUID(parameters.device_id)
+        if (!device)
+            throw new MissingEntityError(
+                `Could not find device ${parameters.device_id}`,
+                404
+            )
+
+        // Make sure device is a concrete device
+        if (device.type !== 'device')
+            throw new InvalidValueError(
+                `Cannot send signaling message to device with type ${device.type}`,
+                400
+            )
+
+        // Retrieve peerconnection and make sure the device is taking part in it
+        const peerconnection = await apiClient.getPeerconnection(
+            parameters.peerconnection_url
+        )
+        if (!peerconnection.devices)
+            throw new MissingEntityError(`Peerconnection does not have any devices`, 404)
+        const deviceA = peerconnection.devices[0]
+        const deviceB = peerconnection.devices[1]
+
+        if (
+            !(deviceA.url === deviceUrlFromId(device.uuid)) &&
+            !(deviceB.url === deviceUrlFromId(device.uuid))
+        ) {
+            throw new InvalidValueError(`Device is not part of the peerconnection`, 400)
+        }
+
+        const ws = connectedDevices.get(parameters.device_id)
+
+        if (!ws)
+            throw new MissingEntityError(
+                `Could not find websocket connection for device ${parameters.device_id}`,
+                404
+            )
+
+        ws.send(JSON.stringify(body))
+
+        console.log(`postDevicesByDeviceIdSignaling succeeded`)
+
+        return {
+            status: 200,
+        }
     }
-}

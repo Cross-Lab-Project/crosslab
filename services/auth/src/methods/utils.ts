@@ -1,9 +1,13 @@
-import { generateKeyPair, exportJWK, JWK } from "jose"
-import { AppDataSource } from "../data_source"
-import { UserModel, KeyModel } from "../model"
-import dns from "dns"
-import { UserType } from "../generated/types"
-import { DNSResolveError, MalformedAllowlistEntryError, MissingEntityError } from "../types/errors"
+import { generateKeyPair, exportJWK, JWK } from 'jose'
+import { AppDataSource } from '../data_source'
+import { UserModel, KeyModel, RoleModel } from '../model'
+import dns from 'dns'
+import { User, UserType } from '../generated/types'
+import {
+    DNSResolveError,
+    MalformedAllowlistEntryError,
+    MissingEntityError,
+} from '../types/errors'
 
 /**
  * This function tries to resolve an entry of the allowlist.
@@ -14,25 +18,30 @@ export async function resolveAllowlistEntry(entry: string): Promise<[string, str
     console.log(`resolveAllowlistEntry called for "${entry}"`)
     const userRepository = AppDataSource.getRepository(UserModel)
 
-    let url: string = ""
-    let username: string = ""
+    let url: string = ''
+    let username: string = ''
 
     // Split provided entry into its url and username components
-    if (entry.includes(":")) {
-        const split = entry.split(":")
+    if (entry.includes(':')) {
+        const split = entry.split(':')
         if (split.length === 2) {
-            [url, username] = split
+            ;[url, username] = split
         } else {
-            throw new MalformedAllowlistEntryError(`Allowlist entry "${entry}" does not conform to format "url:username"`)
+            throw new MalformedAllowlistEntryError(
+                `Allowlist entry "${entry}" does not conform to format "url:username"`
+            )
         }
     }
     if (!url) throw new MalformedAllowlistEntryError(`Could not extract url from entry`)
-    if (!username) throw new MalformedAllowlistEntryError(`Could not extract username from allowlist entry`)
+    if (!username)
+        throw new MalformedAllowlistEntryError(
+            `Could not extract username from allowlist entry`
+        )
 
     // Resolve the ip of the provided url
     const ip = await new Promise<string>((res) => {
         dns.resolve4(url, (err, addresses) => {
-            if (err) res("")
+            if (err) res('')
             res(addresses[0])
         })
     })
@@ -41,13 +50,13 @@ export async function resolveAllowlistEntry(entry: string): Promise<[string, str
     // Search the user with the provided username
     const user = await userRepository.findOne({
         where: {
-            username: username
+            username: username,
         },
         relations: {
             roles: {
-                scopes: true
-            }
-        }
+                scopes: true,
+            },
+        },
     })
     if (!user) throw new MissingEntityError(`Could not find user ${username}`)
 
@@ -61,18 +70,18 @@ export async function resolveAllowlistEntry(entry: string): Promise<[string, str
  * @param usage The usage of the key (default: "sig")
  * @returns The newly generated key.
  */
-export async function generateNewKey(usage: string = "sig"): Promise<KeyModel> {
+export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
     const keyRepository = AppDataSource.getRepository(KeyModel)
-    const keyPair = await generateKeyPair("RS256")
+    const keyPair = await generateKeyPair('RS256')
     const key = keyRepository.create()
 
     key.private_key = JSON.stringify(await exportJWK(keyPair.privateKey))
     key.public_key = JSON.stringify(await exportJWK(keyPair.publicKey))
     key.use = usage
-    key.alg = "RS256"
+    key.alg = 'RS256'
     await keyRepository.save(key)
 
-    return key;
+    return key
 }
 
 /**
@@ -81,28 +90,60 @@ export async function generateNewKey(usage: string = "sig"): Promise<KeyModel> {
  * @returns The parsed JWK.
  */
 export function jwk(key: KeyModel) {
-    const jwk: JWK = JSON.parse(key.public_key);
+    const jwk: JWK = JSON.parse(key.public_key)
 
-    jwk.use = key.use;
-    jwk.alg = key.alg;
-    jwk.kid = key.uuid;
+    jwk.use = key.use
+    jwk.alg = key.alg
+    jwk.kid = key.uuid
 
-    return jwk;
+    return jwk
 }
 
 /**
- * This function checks if an object is UserType.
+ * This function checks if an object is an {@link UserType}.
  * @param object The object to be checked.
- * @returns True if the object is Usertype, else false.
+ * @returns True if the object is an {@link Usertype}, else false.
  */
 export function isUserType(object: any): object is UserType {
-    if (typeof object !== "object") return false
+    if (typeof object !== 'object') return false
     if (!object.url) return false
-    if (typeof object.url !== "string") return false
+    if (typeof object.url !== 'string') return false
     if (!object.username) return false
-    if (typeof object.username !== "string") return false
+    if (typeof object.username !== 'string') return false
     if (!object.scopes) return false
     if (!Array.isArray(object.scopes)) return false
-    if ((object.scopes as any[]).findIndex(s => typeof s !== "string") !== -1) return false
-    return typeof object === "object" && object.url && typeof object.url === "string" && object.username && typeof object.username === "string"
+    if ((object.scopes as any[]).findIndex((s) => typeof s !== 'string') !== -1)
+        return false
+    return (
+        typeof object === 'object' &&
+        object.url &&
+        typeof object.url === 'string' &&
+        object.username &&
+        typeof object.username === 'string'
+    )
+}
+
+/**
+ * This function checks if a user has values for all possible properties.
+ * @param user The user to be checked.
+ * @returns True if user has values for all possible properties, else false.
+ */
+export function isRequiredUser(user?: User): user is Required<User> {
+    return (
+        user !== undefined &&
+        user.username !== undefined &&
+        user.password !== undefined &&
+        user.roles !== undefined
+    )
+}
+
+/**
+ * This function adds a role to an user.
+ * @param user The UserModel the role should be added to.
+ * @param role The RoleModel to be added.
+ */
+export function addRole(user: UserModel, role: RoleModel) {
+    if (!user.roles.find((r) => r.name === role.name)) {
+        user.roles.push(role)
+    }
 }

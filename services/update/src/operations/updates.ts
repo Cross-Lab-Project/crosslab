@@ -1,58 +1,63 @@
-import { AppDataSource } from "../data_source"
+import { AppDataSource } from '../data_source'
 import {
     getUpdatesSignature,
     deleteUpdatesByDeviceIdSignature,
     getUpdatesByDeviceIdSignature,
     patchUpdatesByDeviceIdSignature,
-    postUpdatesSignature
-} from "../generated/signatures/updates"
-import { UpdateInformation } from "../generated/types"
-import { UpdateInformationModel } from "../model"
+    postUpdatesSignature,
+} from '../generated/signatures/updates'
+import { formatUpdateInformation } from '../methods/format'
+import { writeUpdateInformation } from '../methods/write'
+import { UpdateInformationModel } from '../model'
 
-function formatUpdateInformation(updateInformation: UpdateInformationModel): UpdateInformation {
-    return {
-        device_id: updateInformation.device_id,
-        newest_version: updateInformation.newest_version,
-        newest_version_link: updateInformation.newest_version_link
-    }
-}
-
-function writeUpdateInformation(updateInformationModel: UpdateInformationModel, updateInformation: UpdateInformation) {
-    updateInformationModel.device_id = updateInformation.device_id
-    updateInformationModel.newest_version = updateInformation.newest_version
-    updateInformationModel.newest_version_link = updateInformation.newest_version_link
-}
-
+/**
+ * This function implements the functionality for handling POST requests on /updates endpoint.
+ * @param _user The user submitting the request.
+ */
 export const getUpdates: getUpdatesSignature = async (_user) => {
-    const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
+    const updateInformationRepository =
+        AppDataSource.getRepository(UpdateInformationModel)
     const updateInformationArray = await updateInformationRepository.find()
 
     return {
         status: 200,
-        body: updateInformationArray.map(formatUpdateInformation)
+        body: updateInformationArray.map(formatUpdateInformation),
     }
 }
 
+/**
+ * This function implements the functionality for handling POST requests on /updates endpoint.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
 export const postUpdates: postUpdatesSignature = async (body, _user) => {
-    const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
+    const updateInformationRepository =
+        AppDataSource.getRepository(UpdateInformationModel)
     const updateInformation = updateInformationRepository.create()
 
     writeUpdateInformation(updateInformation, body)
     await updateInformationRepository.save(updateInformation)
-    
+
     return {
         status: 201,
-        body: formatUpdateInformation(updateInformation)
+        body: formatUpdateInformation(updateInformation),
     }
 }
 
+/**
+ * This function implements the functionality for handling GET requests on /updates/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ */
 export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parameters) => {
-    const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
+    const updateInformationRepository =
+        AppDataSource.getRepository(UpdateInformationModel)
+    const updateInformation = await updateInformationRepository.findOneBy({
+        device_id: parameters.device_id,
+    })
 
     if (!updateInformation) {
         return {
-            status: 404
+            status: 404,
         }
     }
 
@@ -60,54 +65,78 @@ export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parame
         return {
             status: 303,
             headers: {
-                Location: updateInformation.newest_version_link
-            }
+                Location: updateInformation.newest_version_link,
+            },
         }
     }
 
     return {
-        status: 200
+        status: 200,
     }
 }
 
-export const deleteUpdatesByDeviceId: deleteUpdatesByDeviceIdSignature = async (parameters, _user) => {
-    const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
-    
+/**
+ * This function implements the functionality for handling DELETE requests on /updates/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const deleteUpdatesByDeviceId: deleteUpdatesByDeviceIdSignature = async (
+    parameters,
+    _user
+) => {
+    const updateInformationRepository =
+        AppDataSource.getRepository(UpdateInformationModel)
+    const updateInformation = await updateInformationRepository.findOneBy({
+        device_id: parameters.device_id,
+    })
+
     if (!updateInformation) {
         return {
-            status: 404
+            status: 404,
         }
     }
 
     await updateInformationRepository.delete(updateInformation)
 
     return {
-        status: 204
+        status: 204,
     }
 }
 
-export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (parameters, body, _user) => {
-    const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({ device_id: parameters.device_id })
-    
+/**
+ * This function implements the functionality for handling PATCH requests on /updates/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
+export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (
+    parameters,
+    body,
+    _user
+) => {
+    const updateInformationRepository =
+        AppDataSource.getRepository(UpdateInformationModel)
+    const updateInformation = await updateInformationRepository.findOneBy({
+        device_id: parameters.device_id,
+    })
+
     if (!updateInformation) {
         return {
-            status: 404
+            status: 404,
         }
     }
 
     if (updateInformation.device_id != body.device_id) {
         return {
-            status: 400
+            status: 400,
         }
     }
-    
+
     writeUpdateInformation(updateInformation, body)
     await updateInformationRepository.save(updateInformation)
-    
+
     return {
         status: 200,
-        body: formatUpdateInformation(updateInformation)
+        body: formatUpdateInformation(updateInformation),
     }
 }

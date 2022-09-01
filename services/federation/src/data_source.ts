@@ -1,9 +1,9 @@
-import { DataSource } from "typeorm";
-import { InstitutionModel } from "./model";
+import { DataSource } from 'typeorm'
+import { InstitutionModel } from './model'
 
 export const AppDataSource = new DataSource({
-    type: "sqlite",
-    database: "db/institution.db",
+    type: 'sqlite',
+    database: 'db/institution.db',
     synchronize: true,
-    entities: [InstitutionModel]
+    entities: [InstitutionModel],
 })

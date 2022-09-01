@@ -1,15 +1,24 @@
-import { AppDataSource } from "../data_source"
-import { getAuthSignature } from "../generated/signatures/auth"
-import { ActiveKeyModel, TokenModel } from "../model"
-import { allowlist } from "..";
-import { getAllowlistedUser, getTokenByTokenString, getTokenStringFromAuthorization, signUserToken } from "../methods/auth";
-import { ExpiredError, InconsistentDatabaseError, MissingEntityError } from "../types/errors";
+import { AppDataSource } from '../data_source'
+import { getAuthSignature } from '../generated/signatures/auth'
+import { ActiveKeyModel, TokenModel } from '../model'
+import { allowlist } from '..'
+import {
+    getAllowlistedUser,
+    getTokenByTokenString,
+    getTokenStringFromAuthorization,
+    signUserToken,
+} from '../methods/auth'
+import {
+    ExpiredError,
+    InconsistentDatabaseError,
+    MissingEntityError,
+} from '../types/errors'
 
 /**
- * This function implements the functionality for handling GET on /auth endpoint.
- * @throws {MissingEntityError} Could not find token. | Can throw errors from {@link getAllowlistedUser}.
- * @throws {InconsistentDatabaseError} Only one active key allowed in database.
- * Currently all errors are caught since only 200 response 
+ * This function implements the functionality for handling GET requests on /auth endpoint.
+ * @param parameters The parameters of the request.
+ * @throws {MissingEntityError} Thrown if token is not found in database. | Can throw errors from {@link getAllowlistedUser}. (currently all caught)
+ * @throws {InconsistentDatabaseError} Thrown if multiple active keys are found.
  */
 export const getAuth: getAuthSignature = async (parameters) => {
     console.log(`getAuth called`)
@@ -20,14 +29,14 @@ export const getAuth: getAuthSignature = async (parameters) => {
     // Get active key
     const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
     if (activeKeys.length != 1) {
-        throw new InconsistentDatabaseError("Too many active keys", 500)
+        throw new InconsistentDatabaseError('Too many active keys', 500)
     }
     const activeKey = activeKeys[0]
 
     // Allowlisted Auth
     try {
-        if (parameters["X-Real-IP"] && allowlist[parameters["X-Real-IP"]]) {
-            const user = await getAllowlistedUser(parameters["X-Real-IP"]);
+        if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
+            const user = await getAllowlistedUser(parameters['X-Real-IP'])
 
             console.log(`signing jwt for user ${user.username}`)
             const jwt = await signUserToken(user, activeKey)
@@ -37,8 +46,8 @@ export const getAuth: getAuthSignature = async (parameters) => {
             return {
                 status: 200,
                 headers: {
-                    Authorization: "Bearer " + jwt
-                }
+                    Authorization: 'Bearer ' + jwt,
+                },
             }
         }
     } catch (error) {
@@ -61,7 +70,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         const jwt = await signUserToken(user, activeKey)
 
         // Update token expiration time
-        if (token.expiresOn) token.expiresOn = (new Date(Date.now() + HOUR)).toISOString()
+        if (token.expiresOn) token.expiresOn = new Date(Date.now() + HOUR).toISOString()
         tokenRepository.save(token)
 
         console.log(`getAuth succeeded`)
@@ -69,13 +78,13 @@ export const getAuth: getAuthSignature = async (parameters) => {
         return {
             status: 200,
             headers: {
-                Authorization: "Bearer " + jwt
-            }
+                Authorization: 'Bearer ' + jwt,
+            },
         }
     } catch (error) {
         console.error(`getAuth failed: ${error}`)
         return {
-            status: 200
+            status: 200,
         }
     }
 }

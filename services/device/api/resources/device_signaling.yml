@@ -10,6 +10,15 @@ post:
   parameters:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/peerconnection_url.yml"
+  requestBody:
+    content:
+      application/json:
+        schema:
+          anyOf:
+            - $ref: "../schemas/messages/create_peerconnection_message.yml"
+            - $ref: "../schemas/messages/close_peerconnection_message.yml"
+            - $ref: "../schemas/messages/signaling_message.yml"
+    required: true
   responses:
     200:
       description: The signaling message was delivered successfully

@@ -1,16 +1,16 @@
-import { DataSource } from "typeorm";
-import { 
-    DeviceModel, 
-    ExperimentModel, 
-    ParticipantModel, 
-    PeerconnectionModel, 
-    RoleModel, 
-    ServiceConfigurationModel 
-} from "./model";
+import { DataSource } from 'typeorm'
+import {
+    DeviceModel,
+    ExperimentModel,
+    ParticipantModel,
+    PeerconnectionModel,
+    RoleModel,
+    ServiceConfigurationModel,
+} from './model'
 
 export const AppDataSource = new DataSource({
-    type: "sqlite",
-    database: "db/experiment.db",
+    type: 'sqlite',
+    database: 'db/experiment.db',
     synchronize: true,
     entities: [
         ExperimentModel,
@@ -18,6 +18,6 @@ export const AppDataSource = new DataSource({
         ServiceConfigurationModel,
         PeerconnectionModel,
         ParticipantModel,
-        RoleModel
-    ]
+        RoleModel,
+    ],
 })

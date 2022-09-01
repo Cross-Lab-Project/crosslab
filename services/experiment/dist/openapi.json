@@ -45,6 +45,20 @@
         "type": "string",
         "description": "Name for an experiment role."
       },
+      "device": {
+        "title": "Device",
+        "type": "object",
+        "properties": {
+          "device": {
+            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "$ref": "#/components/schemas/name"
+          }
+        }
+      },
       "role": {
         "type": "object",
         "properties": {
@@ -54,6 +68,23 @@
           },
           "description": {
             "type": "string"
+          }
+        }
+      },
+      "participant": {
+        "title": "Participant",
+        "type": "object",
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/name"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
           }
         }
       },
@@ -74,20 +105,7 @@
             "type": "array",
             "description": "List of participants for the service",
             "items": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "$ref": "#/components/schemas/name"
-                },
-                "serviceId": {
-                  "type": "string"
-                },
-                "config": {
-                  "type": "object",
-                  "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-                  "additionalProperties": true
-                }
-              }
+              "$ref": "#/components/schemas/participant"
             }
           }
         }
@@ -117,17 +135,7 @@
                 "type": "array",
                 "description": "Devices associated with the experiment",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "device": {
-                      "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "role": {
-                      "$ref": "#/components/schemas/name"
-                    }
-                  }
+                  "$ref": "#/components/schemas/device"
                 }
               },
               "roles": {

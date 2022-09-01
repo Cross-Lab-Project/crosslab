@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Message
+type: object
+properties: 
+  messageType:
+    type: string
+required:
+  - messageType
+additionalProperties: true
+x-typeguard: true
