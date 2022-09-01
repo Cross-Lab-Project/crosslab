@@ -30,6 +30,7 @@ import {
     SecurityMethod
 } from "./types"
 import { TypedEmitter } from "tiny-typed-emitter"
+import { userTypeSchema } from "./schemas/userType"
 
 /**
  * definition of possible events
@@ -1369,6 +1370,14 @@ async function generateServerProject(apiPath: string, options: { outPath: string
         exit(1)
     })
 
+    if (!parsedAPI.components) {
+        parsedAPI.components = { schemas: { "user_type": userTypeSchema } }
+    } else if (!parsedAPI.components.schemas) {
+        parsedAPI.components.schemas = { "user_type": userTypeSchema }
+    } else {
+        parsedAPI.components.schemas["user_type"] = userTypeSchema
+    }
+
     const openAPIData = await parseOpenAPIData(parsedAPI)
 
     await generateTypes(openAPIData, outPath, true)
@@ -1402,6 +1411,14 @@ async function generateClientProject(apiPath: string, options: { outPath: string
         console.log(err)
         exit(1)
     })
+
+    if (!parsedAPI.components) {
+        parsedAPI.components = { schemas: { "user_type": userTypeSchema } }
+    } else if (!parsedAPI.components.schemas) {
+        parsedAPI.components.schemas = { "user_type": userTypeSchema }
+    } else {
+        parsedAPI.components.schemas["user_type"] = userTypeSchema
+    }
 
     const openAPIData = await parseOpenAPIData(parsedAPI)
 

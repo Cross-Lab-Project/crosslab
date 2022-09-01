@@ -13,12 +13,6 @@ import {
 
 export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
-export type UserType = {
-    url: string,
-    username: string,
-    scopes: string[]
-}
-
 export type initServiceOptions = {
     JWTVerify: (jwt: string | undefined, endpoint_scopes: Array<string>) => Promise<UserType> | UserType    
 }
