@@ -39,11 +39,22 @@
         {% endif -%}
         if (authorization && !headers["Authorization"]) headers["Authorization"] = authorization
         if (!headers["Content-Type"]) headers["Content-Type"] = "application/json"
-        const raw_response = await fetch(url, {
-            method: "{{ function.method | upper }}",
-            {{ "body: JSON.stringify(body)," if function.body.content[0].schema.typeDeclaration or function.isProxyFunction }}
-            headers: headers
-        })
+        let raw_response
+        try {
+            raw_response = await fetch(url, {
+                method: "{{ function.method | upper }}",
+                {{ "body: JSON.stringify(body)," if function.body.content[0].schema.typeDeclaration or function.isProxyFunction }}
+                headers: headers
+            })
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new FetchError(error.message)
+            } else if (typeof error === "string") {
+                throw new FetchError(error)
+            } else {
+                throw new FetchError("Something went wrong while trying to fetch the request")
+            }
+        }
         const response = await parseResponse(raw_response)
         if (!{{ function.validateOutput }}(response)) {
             throw new ValidationError("Response validation failed", ({{ function.validateOutput }} as any).errors)
@@ -60,7 +71,8 @@
 import fetch from "cross-fetch"
 import {
     parseResponse,
-    ValidationError
+    ValidationError,
+    FetchError
 } from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}

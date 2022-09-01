@@ -25,6 +25,16 @@ export class ValidationError extends Error {
     }
 }
 
+/**
+ * This error class should be used if an error occurs while fetching a request.
+ */
+export class FetchError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = "FetchError"
+    }
+}
+
 export interface ResponseData {
     status: number,
     headers?: {
