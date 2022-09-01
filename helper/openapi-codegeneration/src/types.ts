@@ -15,6 +15,7 @@ export interface SchemaData extends DefaultData {
     typeDeclaration?: string
     dependencies?: Array<string>
     validationFunction?: string
+    typeguard?: boolean
 }
 
 export interface ParameterData extends DefaultData {

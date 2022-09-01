@@ -4,6 +4,12 @@
  * and run openapi-codegeneration to regenerate this file.
  */
 
+import {
+{%- for typeguard in typeguards %}
+    {{ typeguard.validation }},
+{%- endfor %}
+} from "./validation/validation"
+
 export type UserType = {
     url: string,
     username: string,
@@ -71,3 +77,9 @@ export async function parseResponse(response: Response): Promise<ResponseData> {
 }
 
 {{ pregeneratedTypes | safe }}
+{% for typeguard in typeguards -%}
+export function is{{ typeguard.name }}(obj: any): obj is {{ typeguard.name }} {
+    return {{ typeguard.validation }}(obj)
+}
+
+{% endfor %}

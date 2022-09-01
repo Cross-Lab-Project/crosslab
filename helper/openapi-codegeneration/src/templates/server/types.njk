@@ -5,6 +5,12 @@
  */
 import { Request } from "express"
 
+import {
+{%- for typeguard in typeguards %}
+    {{ typeguard.validation }},
+{%- endfor %}
+} from "./validation/validation"
+
 export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
 export type UserType = {
@@ -103,3 +109,9 @@ export function extract_jwt_from_request<P,B,Q>(req: TypedRequest<P,B,Q>, jwtExt
 }
 
 {{ pregeneratedTypes | safe }}
+{% for typeguard in typeguards -%}
+export function is{{ typeguard.name }}(obj: any): obj is {{ typeguard.name }} {
+    return {{ typeguard.validation }}(obj)
+}
+
+{% endfor %}

@@ -298,6 +298,9 @@ function parseSchemaObject(api: OpenAPIV3_1.Document, schema: OpenAPIV3_1.Schema
         if (schema.title) {
             schemaData.name = formatName(schema.title)
         }
+        if ((schema as any)["x-typeguard"] === true) {
+            schemaData.typeguard = true
+        }
         eventEmitter.emit("schema", schemaData)
         return schemaData
     } else {
@@ -1001,7 +1004,21 @@ async function generateTypes(openAPIData: OpenAPIData, outPath: string, isServer
 
     fs.writeFileSync(`${outPath}/types.ts`, nunjucks.render(
         isServer ? "server/types.njk" : "client/types.njk", {
-        pregeneratedTypes: ts
+        pregeneratedTypes: ts,
+        typeguards: openAPIData.components ? 
+            openAPIData.components.schemas ?
+                openAPIData.components.schemas.map(s => {
+                    if (s.typeguard) {
+                        return {
+                            name: s.name,
+                            validation: s.validationFunction
+                        }
+                    } else {
+                        return undefined
+                    }
+                }).filter(s => s !== undefined)
+                : []
+            : []
     }))
 }
 
@@ -1160,6 +1177,7 @@ function generateValidationFunctions(openAPIData: OpenAPIData, outPath: string) 
     const ajv = new Ajv({ code: { source: true, esm: true }, verbose: true, inlineRefs: false })
     ajv.addFormat("jwt", /^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
     ajv.addFormat("mac_address", /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
+    ajv.addKeyword("x-typeguard")
     addFormats(ajv)
     let mapping: any = {}
     if (openAPIData.validationBlueprints) {
