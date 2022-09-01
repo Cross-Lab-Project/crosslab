@@ -18,6 +18,8 @@ export type {{ function.signature }} = (
  * and run openapi-codegeneration to regenerate this file.
  */
 import {
+    SuccessResponse,
+    ErrorResponse,
     {{- "\n\tUserType," if secured }}
     {{ typeDependencies | join(",\n\t") }}
 } from "../types"

@@ -6,6 +6,8 @@
  * and run openapi-codegeneration to regenerate this file.
  */
 import {
+    SuccessResponse,
+    ErrorResponse,
     {{ typeDependencies | join(",\n\t") }}
 } from "../types"
 {% for function in functions -%}

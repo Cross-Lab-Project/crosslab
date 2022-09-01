@@ -59,7 +59,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
             {{- "parameters, " if function.parameters else "undefined, " -}}
             {{- "body" if function.body else "undefined" -}}
             )) {
-            new VerificationError("Request validation failed", 400)
+            new ValidationError("Request validation failed", 400)
         }
         const result = await {{ basePath }}.{{ function.name }}(
         {{- "parameters, " if function.parameters and (function.body or function.isProxyFunction or (function.security != "none" and ("jwt" in function.security))) else ("parameters" if function.parameters)-}}
@@ -67,7 +67,7 @@ router.{{ function.method }}("{{ function.path | replace("/" + basePath,"/") | r
         {{- "user" if function.security != "none" and ("jwt" in function.security) -}}
         )
         if (!{{ function.validateOutput }}(result)) {
-            new VerificationError("Response validation failed", 500)
+            new ValidationError("Response validation failed", 500)
         }
         if (result.headers) {
             for (const headerName in result.headers) {
@@ -95,7 +95,7 @@ import * as {{ basePath }} from "../../operations/{{ basePath }}"
 import {
     initServiceOptions,
     TypedRequest,
-    VerificationError
+    ValidationError
     {{- ",\n\UserType" if secured }}
     {{- ",\n\textract_jwt_from_request" if secured }}
 } from "../types"

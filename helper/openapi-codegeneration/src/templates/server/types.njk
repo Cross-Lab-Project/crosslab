@@ -25,6 +25,22 @@ export interface ResponseData {
     body?: any
 }
 
+export interface SuccessResponse extends ResponseData {
+    success?: true
+}
+
+export interface ErrorResponse extends ResponseData {
+    success?: false
+}
+
+export function isSuccessResponse(response: ResponseData): response is SuccessResponse {
+    return response.status < 400
+}
+
+export function isErrorResponse(response: ResponseData): response is ErrorResponse {
+    return response.status >= 400
+}
+
 export abstract class ErrorWithStatus extends Error {
     public status: number | undefined
 
@@ -35,10 +51,10 @@ export abstract class ErrorWithStatus extends Error {
     }
 }
 
-export class VerificationError extends ErrorWithStatus {
+export class ValidationError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
-        this.name = "VerificationError"
+        this.name = "ValidationError"
     }
 }
 
@@ -71,8 +87,8 @@ export class MalformedBodyError extends ErrorWithStatus {
 }
 
 /**
- * @throws {MissingParameterError} Thrown when Authorization header is not set.
- * @throws {MalformedParameterError} Thrown when Authorization header does not have format "Bearer TOKEN".
+ * @throws {MissingParameterError} Thrown if Authorization header is not set.
+ * @throws {MalformedParameterError} Thrown if Authorization header does not have format "Bearer TOKEN".
  */
 export function extract_jwt_from_request<P,B,Q>(req: TypedRequest<P,B,Q>, jwtExtractionRegEx: RegExp = /^Bearer (.*)$/): string {
     const authorization_header = req.header("Authorization")

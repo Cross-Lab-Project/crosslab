@@ -26,9 +26,7 @@
         const authorization = ""
         {% endif -%}
         if (!{{ function.validateInput }}({{ "parameters" if function.parameters else "undefined" }}, {{ "body" if function.body.content[0].schema.typeDeclaration or function.isProxyFunction else "undefined" }})) {
-            const error = new FetchError("Request validation failed! " + ({{ function.validateInput }} as any).errors)
-            console.error(`${error.name}: ${error.message}`)
-            throw error
+            throw new ValidationError("Request validation failed", ({{ function.validateInput }} as any).errors)
         }
         {% if function.parameters.header and function.parameters.header.length > 0 -%}
         const headers: { [key: string]: string } = {
@@ -48,9 +46,7 @@
         })
         const response = await parseResponse(raw_response)
         if (!{{ function.validateOutput }}(response)) {
-            const error = new FetchError("Response validation failed! " + ({{ function.validateOutput }} as any).errors)
-            console.error(`${error.name}: ${error.message}`)
-            throw error
+            throw new ValidationError("Response validation failed", ({{ function.validateOutput }} as any).errors)
         }
         return response as {{ function.name }}ResponseType
     }
@@ -64,7 +60,7 @@
 import fetch from "cross-fetch"
 import {
     parseResponse,
-    FetchError
+    ValidationError
 } from "../types"
 import {
     {{ validationDependencies | join(",\n\t") }}

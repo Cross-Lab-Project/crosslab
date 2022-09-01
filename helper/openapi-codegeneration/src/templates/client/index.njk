@@ -43,10 +43,20 @@ import {
 
 export * as Types from "./types"
 {%- for basePath in basePaths %}
-export * as Signatures{{ basePath | capitalize }} from "./signatures/{{ basePath }}"
+{%- set basePathParts = basePath.split("_") -%}
+{%- set list = [] -%}
+{%- for part in basePathParts -%}
+{%- set list = (list.push(part | capitalize), list) -%}
+{%- endfor %}
+export * as Signatures{{ list | join }} from "./signatures/{{ basePath }}"
 {%- endfor %}
 {%- for basePath in basePaths %}
-export * as Validation{{ basePath | capitalize }} from "./validation/{{ basePath }}"
+{%- set basePathParts = basePath.split("_") -%}
+{%- set list = [] -%}
+{%- for part in basePathParts -%}
+{%- set list = (list.push(part | capitalize), list) -%}
+{%- endfor %}
+export * as Validation{{ list | join }} from "./validation/{{ basePath }}"
 {%- endfor %}
 
 export class APIClient {

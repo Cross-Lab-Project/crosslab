@@ -12,10 +12,16 @@ export type UserType = {
 
 export type HttpMethods = "get" | "post" | "patch" | "head" | "options" | "trace" | "delete" | "put"
 
-export class FetchError extends Error {
-    constructor(message: string) {
+/**
+ * This error class should be used if an error occurs during validation of a request/response.
+ */
+export class ValidationError extends Error {
+    public errors: any
+
+    constructor(message: string, errors: any) {
         super(message)
-        this.name = "FetchError"
+        this.name = "ValidationError"
+        this.errors = errors
     }
 }
 
@@ -25,6 +31,22 @@ export interface ResponseData {
         [key: string]: string | undefined
     },
     body?: any
+}
+
+export interface SuccessResponse extends ResponseData {
+    success?: true
+}
+
+export interface ErrorResponse extends ResponseData {
+    success?: false
+}
+
+export function isSuccessResponse(response: ResponseData): response is SuccessResponse {
+    return response.status < 400
+}
+
+export function isErrorResponse(response: ResponseData): response is ErrorResponse {
+    return response.status >= 400
 }
 
 export async function parseResponse(response: Response): Promise<ResponseData> {

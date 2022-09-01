@@ -62,10 +62,16 @@ export type {{ function.name }}BodyType = any
 {%- else %}
 export type {{ function.name }}BodyType = undefined
 {%- endif %}
-{% set responseTypes = "" -%}
+{% set successResponseTypes = "" -%}
+{% set errorResponseTypes = "" -%}
 {% for response in function.responses -%}
-{% set responseTypes = responseTypes  + " | " + function.name + "Response" + response.status -%}
-interface {{ function.name }}Response{{ response.status }} {
+{% if response.status < 400 -%}
+{% set successResponseTypes = successResponseTypes  + " | " + function.name + "Response" + response.status -%}
+interface {{ function.name }}Response{{ response.status }} extends SuccessResponse {
+{% else -%}
+{% set errorResponseTypes = errorResponseTypes  + " | " + function.name + "Response" + response.status -%}
+interface {{ function.name }}Response{{ response.status }} extends ErrorResponse {
+{% endif -%}
 {%- if response.status.endsWith("XX") %}
     status: {{ function.genericResponseStatuses[response.status] | join(" | ") }}
 {%- else %}
@@ -92,15 +98,23 @@ interface {{ function.name }}Response{{ response.status }} {
 {%- endif %}
 }
 {% endfor -%}
-{%- if responseTypes.length > 0 -%}
-export type {{ function.name }}ResponseType = {{ responseTypes.slice(3) }}
+{%- if successResponseTypes.length > 0 -%}
+export type {{ function.name }}SuccessResponseType = {{ successResponseTypes.slice(3) }}
 {%- else -%}
-export type {{ function.name }}ResponseType = {
-    status: number,
-    headers?: {
-        [key: string]: string | undefined
-    },
-    body?: any
-}
+export type {{ function.name }}SuccessResponseType = SuccessResponse
+{%- endif %}
+{% if errorResponseTypes.length > 0 -%}
+export type {{ function.name }}ErrorResponseType = {{ errorResponseTypes.slice(3) }}
+{%- else -%}
+export type {{ function.name }}ErrorResponseType = ErrorResponse
+{%- endif %}
+{% if successResponseTypes.length > 0 and errorResponseTypes.length > 0 -%}
+export type {{ function.name }}ResponseType = {{ function.name }}SuccessResponseType | {{ function.name }}ErrorResponseType
+{%- elif successResponseTypes.length > 0 -%}
+export type {{ function.name }}ResponseType = {{ function.name }}SuccessResponseType 
+{%- elif errorResponseTypes.length > 0 -%}
+export type {{ function.name }}ResponseType = {{ function.name }}ErrorResponseType
+{%- else -%}
+export type {{ function.name }}ResponseType = SuccessResponse | ErrorResponse
 {%- endif %}
 {%- endmacro -%}
