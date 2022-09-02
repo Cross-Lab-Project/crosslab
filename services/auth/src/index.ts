@@ -3,8 +3,8 @@ import { config } from './config'
 import { AppDataSource, initializeDataSource } from './data_source'
 import { app } from './generated'
 import { ActiveKeyModel } from './model'
-import { resolveAllowlistEntry, generateNewKey, jwk, isUserType } from './methods/utils'
-import { JWTVerificationError } from './generated/types'
+import { resolveAllowlistEntry, generateNewKey, jwk } from './methods/utils'
+import { isUserType, JWTVerificationError } from './generated/types'
 
 export let allowlist: { [key: string]: string } = {}
 
@@ -56,7 +56,7 @@ AppDataSource.initialize()
                     audience: config.SECURITY_AUDIENCE,
                 })
                 if (!isUserType(jwtVerifyResult.payload))
-                    throw new JWTVerificationError('Payload is malformed', 500)
+                    throw new JWTVerificationError('Payload is malformed', 401)
                 const user = jwtVerifyResult.payload
                 for (const scope of scopes) {
                     if (!user.scopes.includes(scope))

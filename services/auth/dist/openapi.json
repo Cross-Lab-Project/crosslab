@@ -171,6 +171,18 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
           "500": {
             "description": "Server Error."
           }
@@ -228,6 +240,9 @@
           "403": {
             "description": "Forbidden."
           },
+          "404": {
+            "description": "Resource not found."
+          },
           "500": {
             "description": "Server Error."
           }
@@ -268,6 +283,9 @@
         "responses": {
           "200": {
             "description": "Successfully logged out the user."
+          },
+          "400": {
+            "description": "Bad Request."
           },
           "401": {
             "description": "Unauthorized."
@@ -356,6 +374,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
           },
           "401": {
             "description": "Unauthorized."
@@ -453,6 +474,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
           "401": {
             "description": "Unauthorized."
           },
@@ -545,6 +569,9 @@
           "204": {
             "description": "User deleted successfully"
           },
+          "400": {
+            "description": "Bad Request."
+          },
           "401": {
             "description": "Unauthorized."
           },
@@ -593,6 +620,9 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
           "401": {
             "description": "Unauthorized."
           },
@@ -631,6 +661,9 @@
         "responses": {
           "204": {
             "description": "Role deleted successfully from user"
+          },
+          "400": {
+            "description": "Bad Request."
           },
           "401": {
             "description": "Unauthorized."

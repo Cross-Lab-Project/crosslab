@@ -9,6 +9,7 @@ import {
 import { formatUpdateInformation } from '../methods/format'
 import { writeUpdateInformation } from '../methods/write'
 import { UpdateInformationModel } from '../model'
+import { InvalidChangeError, MissingEntityError } from '../types/errors'
 
 /**
  * This function implements the functionality for handling POST requests on /updates endpoint.
@@ -56,9 +57,10 @@ export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parame
     })
 
     if (!updateInformation) {
-        return {
-            status: 404,
-        }
+        throw new MissingEntityError(
+            `Could not find update for device ${parameters.device_id}`,
+            404
+        )
     }
 
     if (parameters.current_version !== updateInformation.newest_version) {
@@ -91,9 +93,10 @@ export const deleteUpdatesByDeviceId: deleteUpdatesByDeviceIdSignature = async (
     })
 
     if (!updateInformation) {
-        return {
-            status: 404,
-        }
+        throw new MissingEntityError(
+            `Could not find update for device ${parameters.device_id}`,
+            404
+        )
     }
 
     await updateInformationRepository.delete(updateInformation)
@@ -121,15 +124,14 @@ export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (
     })
 
     if (!updateInformation) {
-        return {
-            status: 404,
-        }
+        throw new MissingEntityError(
+            `Could not find update for device ${parameters.device_id}`,
+            404
+        )
     }
 
     if (updateInformation.device_id != body.device_id) {
-        return {
-            status: 400,
-        }
+        throw new InvalidChangeError(`Cannot change device id of update`, 400)
     }
 
     writeUpdateInformation(updateInformation, body)

@@ -19,7 +19,7 @@ import {
 } from '../model'
 import { randomUUID } from 'crypto'
 import { apiClient, YEAR } from '../globals'
-import { InvalidValueError, MissingEntityError } from '../types/errors'
+import { ForbiddenOperationError, InvalidChangeError, MissingEntityError, MissingPropertyError, UnrelatedPeerconnectionError } from '../types/errors'
 import {
     deviceUrlFromId,
     getDeviceModelByUUID,
@@ -111,6 +111,7 @@ export function deviceHandling(app: Express.Application) {
                     await deviceRepository.save(device)
                     handleChangedCallback(device)
                     connectedDevices.delete(device.uuid)
+                    clearInterval(interval)
                     return ws.terminate()
                 }
                 isAlive = false
@@ -261,7 +262,7 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
  * @param body The body of the request.
  * @param _user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
- * @throws {InvalidValueError} Thrown if client tries to update the type of the device.
+ * @throws {InvalidChangeError} Thrown if client tries to update the type of the device.
  */
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     parameters,
@@ -311,7 +312,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
         writeDeviceGroup(device, body)
         deviceGroupRepository.save(device)
     } else {
-        throw new InvalidValueError(
+        throw new InvalidChangeError(
             `Trying to update device type from ${device.type} to ${body.type}`,
             400
         )
@@ -446,8 +447,8 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
 
         // Make sure device is a concrete device
         if (device.type !== 'device')
-            throw new InvalidValueError(
-                `Cannot send signaling message to device with type ${device.type}`,
+            throw new ForbiddenOperationError(
+                `Cannot send signaling message to device with type ${device.type}`, 
                 400
             )
 
@@ -456,7 +457,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
             parameters.peerconnection_url
         )
         if (!peerconnection.devices)
-            throw new MissingEntityError(`Peerconnection does not have any devices`, 404)
+            throw new MissingPropertyError(`Peerconnection does not have any devices`, 404)
         const deviceA = peerconnection.devices[0]
         const deviceB = peerconnection.devices[1]
 
@@ -464,7 +465,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
             !(deviceA.url === deviceUrlFromId(device.uuid)) &&
             !(deviceB.url === deviceUrlFromId(device.uuid))
         ) {
-            throw new InvalidValueError(`Device is not part of the peerconnection`, 400)
+            throw new UnrelatedPeerconnectionError(`Device is not part of the peerconnection`, 400)
         }
 
         const ws = connectedDevices.get(parameters.device_id)

@@ -1,9 +1,10 @@
 import { SignalingMessage, Message, isSignalingMessage } from '../generated/types'
 import { apiClient } from '../globals'
 import { ConcreteDeviceModel } from '../model'
+import { MissingPropertyError, UnrelatedPeerconnectionError } from '../types/errors'
 import { deviceUrlFromId } from './utils'
 
-// TODO: rework with new http route for signaling
+// TODO: rework with new http route for signaling and 
 /**
  * This function handles a signaling message for a device.
  * @param device The device for which to handle the signaling message.
@@ -15,7 +16,7 @@ async function handleSignalingMessage(
 ) {
     const peerconnection = await apiClient.getPeerconnection(message.connectionUrl)
 
-    if (!peerconnection.devices) throw new Error('Peerconnection has no devices')
+    if (!peerconnection.devices) throw new MissingPropertyError('Peerconnection has no devices')
 
     const deviceA = peerconnection.devices[0]
     const deviceB = peerconnection.devices[1]
@@ -26,10 +27,10 @@ async function handleSignalingMessage(
     } else if (deviceB.url === deviceUrlFromId(device.uuid)) {
         peerDeviceUrl = deviceA.url
     } else {
-        throw new Error('Device is not taking part in peerconnection.')
+        throw new UnrelatedPeerconnectionError('Device is not taking part in peerconnection.')
     }
 
-    if (!peerDeviceUrl) throw new Error('Peer device is missing its url')
+    if (!peerDeviceUrl) throw new MissingPropertyError('Peer device is missing its url')
 
     await apiClient.sendSignalingMessage(peerDeviceUrl, message.connectionUrl, message)
 }

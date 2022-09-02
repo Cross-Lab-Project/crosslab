@@ -13,6 +13,16 @@ get:
       content:
         application/json:
           $ref: "../content/device_list.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
 post:
   summary: Create a new device
   tags:
@@ -34,6 +44,16 @@ post:
       content:
         application/json:
           $ref: "../content/device_response.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
   callbacks:
     changed:
       "{$request.query.changedUrl}":

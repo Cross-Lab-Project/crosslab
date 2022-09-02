@@ -2,7 +2,7 @@ import { generateKeyPair, exportJWK, JWK } from 'jose'
 import { AppDataSource } from '../data_source'
 import { UserModel, KeyModel, RoleModel } from '../model'
 import dns from 'dns'
-import { User, UserType } from '../generated/types'
+import { User } from '../generated/types'
 import {
     DNSResolveError,
     MalformedAllowlistEntryError,
@@ -97,30 +97,6 @@ export function jwk(key: KeyModel) {
     jwk.kid = key.uuid
 
     return jwk
-}
-
-/**
- * This function checks if an object is an {@link UserType}.
- * @param object The object to be checked.
- * @returns True if the object is an {@link Usertype}, else false.
- */
-export function isUserType(object: any): object is UserType {
-    if (typeof object !== 'object') return false
-    if (!object.url) return false
-    if (typeof object.url !== 'string') return false
-    if (!object.username) return false
-    if (typeof object.username !== 'string') return false
-    if (!object.scopes) return false
-    if (!Array.isArray(object.scopes)) return false
-    if ((object.scopes as any[]).findIndex((s) => typeof s !== 'string') !== -1)
-        return false
-    return (
-        typeof object === 'object' &&
-        object.url &&
-        typeof object.url === 'string' &&
-        object.username &&
-        typeof object.username === 'string'
-    )
 }
 
 /**

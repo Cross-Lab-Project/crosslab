@@ -3,6 +3,7 @@ import { Peerconnection } from '@cross-lab-project/api-client/dist/generated/dev
 import { config } from '../config'
 import { AppDataSource } from '../data_source'
 import { ExperimentModel, PeerconnectionModel } from '../model'
+import { InvalidStateError, MissingPropertyError, ServiceConfigurationError } from '../types/errors'
 
 const apiClient = new APIClient(config.BASE_URL)
 
@@ -72,9 +73,9 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
         !experiment.serviceConfigurations ||
         experiment.serviceConfigurations.length === 0
     )
-        throw new Error('Experiment must have a configuration to be run')
+        throw new MissingPropertyError('Experiment must have a configuration to be run', 400)
     if (!experiment.devices || experiment.devices.length === 0)
-        throw new Error('Experiment must have a device to be run')
+        throw new MissingPropertyError('Experiment must have a device to be run', 400)
     const peerconnections: (Peerconnection & {
         devices?: [{ role?: string }, { role?: string }]
     })[] = []
@@ -94,16 +95,16 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     }
     for (const serviceConfiguration of experiment.serviceConfigurations) {
         if (!serviceConfiguration.participants)
-            throw new Error('Service configuration must have participants')
+            throw new MissingPropertyError('Service configuration must have participants', 400)
         if (!serviceConfiguration.configuration) serviceConfiguration.configuration = '{}'
         for (const participant of serviceConfiguration.participants) {
             if (!participant.config) participant.config = '{}'
             for (const peerconnection of peerconnections) {
                 if (!peerconnection.devices)
-                    throw new Error('Peerconnection has no devices')
+                    throw new MissingPropertyError('Peerconnection has no devices', 400)
                 for (let i = 0; i < 2; i++) {
                     if (!peerconnection.devices[i].role)
-                        throw new Error('Device has no role')
+                        throw new MissingPropertyError('Device has no role', 400)
                     if (!peerconnection.devices[i].config)
                         peerconnection.devices[i].config = { services: [] }
                     if (peerconnection.devices[i].role === participant.role) {
@@ -115,9 +116,9 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
                             (p) => p.role === peerdevice.role
                         )
                         if (!peerparticipant)
-                            throw new Error('Peer device is not participating in service')
+                            throw new ServiceConfigurationError('Peer device is not participating in service', 400)
                         if (!peerparticipant)
-                            throw new Error('ServiceId is missing in participant')
+                            throw new MissingPropertyError('ServiceId is missing in participant', 400)
                         peerconnection.devices[i].config?.services?.push({
                             ...JSON.parse(serviceConfiguration.configuration),
                             ...JSON.parse(participant.config),
@@ -134,12 +135,12 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     //     const servicesA = peerconnection.devices?.[0].config?.services
     //     const servicesB = peerconnection.devices?.[1].config?.services
 
-    //     if (!servicesA || servicesA.length === 0) throw new Error("Device has no service")
-    //     if (!servicesB || servicesB.length === 0) throw new Error("Device has no service")
+    //     if (!servicesA || servicesA.length === 0) throw new Error("Device has no service") // TODO: find better error
+    //     if (!servicesB || servicesB.length === 0) throw new Error("Device has no service") // TODO: find better error
 
     //     for (const serviceA of servicesA) {
     //         const serviceB = servicesB.find(s => s.serviceType === serviceA.serviceType)
-    //         if (!serviceB) throw new Error("Service has no corresponding remote service")
+    //         if (!serviceB) throw new Error("Service has no corresponding remote service") // TODO: find better error
     //         serviceA.remoteServiceId = serviceB.serviceId
     //         serviceB.remoteServiceId = serviceA.serviceId
     //     }
@@ -149,11 +150,11 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     //         const serviceA = servicesA.find(s => s.serviceType === serviceB.serviceType)
     //         if (!serviceA) {
     //             console.log("connection plan", JSON.stringify(peerconnections, null, 4))
-    //             throw new Error("Service has no corresponding remote service")
+    //             throw new Error("Service has no corresponding remote service") // TODO: find better error
     //         }
     //         if (serviceA.remoteServiceId) {
     //             console.log("connection plan", JSON.stringify(peerconnections, null, 4))
-    //             throw new Error("Found service already has corresponding remote service")
+    //             throw new Error("Found service already has corresponding remote service") // TODO: find better error
     //         }
     //         serviceA.remoteServiceId = serviceB.serviceId
     //         serviceB.remoteServiceId = serviceA.serviceId
@@ -169,7 +170,7 @@ async function runExperiment(experiment: ExperimentModel) {
     // make sure experiment is already booked
     if (experiment.status !== 'booked') {
         // experiment is not booked
-        throw new Error('Experiment is not booked')
+        throw new InvalidStateError(`Experiment status is "${experiment.status}", expected "booked"`, 400)
     }
 
     // // check if booking id exists
@@ -192,7 +193,7 @@ async function runExperiment(experiment: ExperimentModel) {
         )
         if (!experiment.connections) experiment.connections = []
         if (!peerconnection.url)
-            throw new Error('Created peerconnection does not have a url')
+            throw new MissingPropertyError('Created peerconnection does not have a url', 502)
         // create, save and push new peerconnection
         const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
         const peerconnectionModel = peerconnectionRepository.create()
@@ -235,7 +236,7 @@ export async function startExperiment(experiment: ExperimentModel) {
         }
         case 'finished': {
             // fail because experiment is already finished
-            throw new Error('Cannot start finished experiment')
+            throw new InvalidStateError('Cannot start finished experiment') 
         }
     }
 }
@@ -260,15 +261,10 @@ export async function finishExperiment(experiment: ExperimentModel) {
         }
         case 'running': {
             // delete all peerconnections
-            if (!experiment.connections || experiment.connections.length === 0) {
-                throw new Error('Running experiment does not have any peerconnections')
-            }
-            for (const peerconnection of experiment.connections) {
-                const peerconnection_id = peerconnection.url.split('/').pop()
-                if (!peerconnection_id) {
-                    throw new Error('Peerconnection does not have an id')
+            if (experiment.connections) {
+                for (const peerconnection of experiment.connections) {
+                    await apiClient.deletePeerconnection(peerconnection.url)
                 }
-                await apiClient.deletePeerconnection(peerconnection.url)
             }
             // // unlock all devices
             // if (!experiment.bookingID) {

@@ -31,5 +31,7 @@ post:
       description: Unauthorized.
     403:
       description: Forbidden.
+    404:
+      description: Resource not found.
     500:
       description: Server Error.

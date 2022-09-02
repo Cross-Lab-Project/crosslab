@@ -9,14 +9,15 @@ import {
 } from '../generated/signatures/institutions'
 import { formatInstitution } from '../methods/format'
 import { writeInstitution } from '../methods/write'
+import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
 
 /**
  * This function implements the functionality for handling GET requests on /institutions endpoint.
  * @param _user The user submitting the request.
  */
 export const getInstitutions: getInstitutionsSignature = async (_user) => {
-    const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institutions = await InstitutionRepository.find()
+    const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+    const institutions = await institutionRepository.find()
     return {
         status: 200,
         body: institutions.map(formatInstitution),
@@ -29,10 +30,10 @@ export const getInstitutions: getInstitutionsSignature = async (_user) => {
  * @param _user The user submitting the request.
  */
 export const postInstitutions: postInstitutionsSignature = async (body, _user) => {
-    const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = InstitutionRepository.create()
+    const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+    const institution = institutionRepository.create()
     writeInstitution(institution, body)
-    await InstitutionRepository.save(institution)
+    await institutionRepository.save(institution)
     return {
         status: 201,
         body: formatInstitution(institution),
@@ -46,14 +47,15 @@ export const postInstitutions: postInstitutionsSignature = async (body, _user) =
  */
 export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature =
     async (parameters, _user) => {
-        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-        const institution = await InstitutionRepository.findOneBy({
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const institution = await institutionRepository.findOneBy({
             uuid: parameters.institution_id,
         })
-        if (institution == null) {
-            return {
-                status: 404,
-            }
+        if (!institution) {
+            throw new MissingEntityError(
+                `Could not find institution ${parameters.institution_id}`,
+                404
+            )
         }
         return {
             status: 200,
@@ -69,17 +71,18 @@ export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSigna
  */
 export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature =
     async (parameters, body, _user) => {
-        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-        const institution = await InstitutionRepository.findOneBy({
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const institution = await institutionRepository.findOneBy({
             uuid: parameters.institution_id,
         })
-        if (institution == null) {
-            return {
-                status: 404,
-            }
+        if (!institution) {
+            throw new MissingEntityError(
+                `Could not find institution ${parameters.institution_id}`,
+                404
+            )
         }
         if (body) writeInstitution(institution, body)
-        InstitutionRepository.save(institution)
+        await institutionRepository.save(institution)
         return {
             status: 200,
             body: formatInstitution(institution),
@@ -93,19 +96,23 @@ export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdS
  */
 export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature =
     async (parameters, _user) => {
-        const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-        const result = await InstitutionRepository.softDelete({
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+        const result = await institutionRepository.softDelete({
             uuid: parameters.institution_id,
         })
 
         if (!result.affected) {
-            return {
-                status: 404,
-            }
+            throw new MissingEntityError(
+                `Could not find institution ${parameters.institution_id}`,
+                404
+            )
         }
 
         if (result.affected > 1) {
-            // TBD
+            throw new InconsistentDatabaseError(
+                `More than one institution with id ${parameters.institution_id} deleted`,
+                500
+            )
         }
 
         return {

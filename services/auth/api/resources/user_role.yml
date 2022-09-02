@@ -16,6 +16,8 @@ put:
       content:
         application/json:
           $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
     401:
       description: Unauthorized.
     403:
@@ -38,6 +40,8 @@ delete:
   responses:
     204:
       description: Role deleted successfully from user
+    400:
+      description: Bad Request.
     401:
       description: Unauthorized.
     403:

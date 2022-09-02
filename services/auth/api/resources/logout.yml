@@ -22,6 +22,8 @@ post:
   responses:
     200:
       description: Successfully logged out the user.
+    400:
+      description: Bad Request.
     401:
       description: Unauthorized.
     403:

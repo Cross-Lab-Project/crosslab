@@ -14,6 +14,7 @@ import {
     finishExperiment,
     startExperiment,
 } from '../methods/experimentStatus'
+import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
 
 /**
  * This function implements the functionality for handling GET requests on /experiments endpoint.
@@ -76,9 +77,10 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     })
 
     if (!experiment) {
-        return {
-            status: 404,
-        }
+        throw new MissingEntityError(
+            `Could not find experiment ${parameters.experiment_id}`,
+            404
+        )
     }
 
     return {
@@ -100,13 +102,17 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
         })
 
         if (!result.affected) {
-            return {
-                status: 404,
-            }
+            throw new MissingEntityError(
+                `Could not find experiment ${parameters.experiment_id}`,
+                404
+            )
         }
 
         if (result.affected > 1) {
-            // TBD
+            throw new InconsistentDatabaseError(
+                `More than one experiment with id ${parameters.experiment_id} deleted`,
+                500
+            )
         }
 
         return {
@@ -128,9 +134,10 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
         })
 
         if (!experiment) {
-            return {
-                status: 404,
-            }
+            throw new MissingEntityError(
+                `Could not find experiment ${parameters.experiment_id}`,
+                404
+            )
         }
 
         if (body) await writeExperiment(experiment, body)

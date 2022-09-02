@@ -2,15 +2,15 @@ import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
-import { UserType } from './generated/types'
+import { JWTVerificationError, isUserType } from './generated/types'
 
 AppDataSource.initialize()
     .then(() => {
         app.initService({
             JWTVerify: async (jwt, scopes) => {
-                if (!jwt) throw new Error('No jwt found')
+                if (!jwt) throw new JWTVerificationError('No JWT provided', 401)
                 if (!config.SECURITY_ISSUER)
-                    throw new Error('No security issuer specified')
+                    throw new JWTVerificationError('No security issuer specified', 500)
                 const jwksUri = new URL(
                     config.BASE_URL.endsWith('/')
                         ? config.BASE_URL + '.well-known/jwks.json'
@@ -21,10 +21,12 @@ AppDataSource.initialize()
                     issuer: config.SECURITY_ISSUER,
                     audience: config.SECURITY_AUDIENCE,
                 })
-                const user = jwtVerifyResult.payload as UserType
+                if (!isUserType(jwtVerifyResult.payload))
+                    throw new JWTVerificationError('Payload is malformed', 401)
+                const user = jwtVerifyResult.payload
                 for (const scope of scopes) {
                     if (!user.scopes.includes(scope))
-                        throw new Error('Missing Scope: ' + scope)
+                        throw new JWTVerificationError('Missing Scope: ' + scope, 403)
                 }
                 return user
             },

@@ -12,6 +12,8 @@ import {
     putProxySignature,
     traceProxySignature,
 } from '../generated/signatures/proxy'
+import { MissingParameterError } from '../generated/types'
+import { InvalidValueError } from '../types/errors'
 
 type proxySignature =
     | getProxySignature
@@ -29,11 +31,7 @@ type proxySignature =
  */
 const proxy: (method: string) => proxySignature =
     (method: string) => async (parameters, body, _user) => {
-        if (!parameters.URL)
-            return {
-                status: 400,
-                body: 'Missing URL Parameter',
-            }
+        if (!parameters.URL) throw new MissingParameterError(`Missing URL Parameter`, 400)
 
         const basePathMatch = parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
 
@@ -55,10 +53,10 @@ const proxy: (method: string) => proxySignature =
         })
 
         if (response.status < 100 || response.status >= 600) {
-            return {
-                status: 500,
-                body: 'Server Error',
-            }
+            throw new InvalidValueError(
+                `Response has invalid status of ${response.status}`,
+                500
+            ) // TODO: maybe find better error
         }
 
         try {

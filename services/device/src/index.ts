@@ -6,10 +6,10 @@ import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
 import {
+    isUserType,
     JWTVerificationError,
     MalformedParameterError,
     MissingParameterError,
-    UserType,
 } from './generated/types'
 import { deviceHandling } from './operations/devices'
 
@@ -53,7 +53,7 @@ function extract_jwt_from_request(
  * @returns The user to which the JWT belongs.
  */
 async function JWTVerify(jwt: string | undefined, scopes: string[]) {
-    if (!jwt) throw new JWTVerificationError('No jwt found', 401)
+    if (!jwt) throw new JWTVerificationError('No JWT provided', 401)
     if (!config.SECURITY_ISSUER)
         throw new JWTVerificationError('No security issuer specified', 500)
     const jwksUri = new URL(
@@ -66,7 +66,9 @@ async function JWTVerify(jwt: string | undefined, scopes: string[]) {
         issuer: config.SECURITY_ISSUER,
         audience: config.SECURITY_AUDIENCE,
     })
-    const user = jwtVerifyResult.payload as UserType
+    if (!isUserType(jwtVerifyResult.payload))
+        throw new JWTVerificationError('Payload is malformed', 401)
+    const user = jwtVerifyResult.payload
     for (const scope of scopes) {
         if (!user.scopes.includes(scope))
             throw new JWTVerificationError('Missing Scope: ' + scope, 403)

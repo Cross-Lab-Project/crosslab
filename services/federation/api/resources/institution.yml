@@ -15,8 +15,16 @@ get:
       content:
         application/json:
           $ref: '../content/institution.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested institution could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.
 patch:
   summary: Update an institution.
   tags:
@@ -38,8 +46,16 @@ patch:
       content:
         application/json:
           $ref: '../content/institution.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested institution could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.
 delete:
   summary: Delete a institution
   tags:
@@ -53,5 +69,13 @@ delete:
   responses:
     204:
       description: The institution was delete.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested institution could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.
