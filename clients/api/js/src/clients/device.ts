@@ -252,7 +252,7 @@ export class DeviceClient {
         }
         const response = (
             url.startsWith(this._url)
-                ? await this.apiClient.getDevices()
+                ? await this.apiClient.postDevicesByDeviceIdToken(parameters)
                 : await this.proxyClient.proxy(
                       'post',
                       url,
@@ -348,7 +348,6 @@ export class DeviceClient {
     public async connectDevice(url: string): Promise<WebSocket> {
         validateUrl(url, '/devices/{}')
         const response = await this.getToken(url)
-        if (response.status !== 200) throw new Error() // TODO: better error handling in general
         const token = response.body
         return await this.openWebsocketConnection(url, token)
     }

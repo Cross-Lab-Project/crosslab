@@ -418,11 +418,11 @@ export class APIClient {
     /**
      * This function attempts to establish a websocket connection for a device.
      * @param url The url of the device.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {FetchError} Thrown if fetch fails (getToken).
+     * @throws {ValidationError} Thrown if the request/response validation fails (getToken).
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request (getToken).
      * @throws {WebSocketAuthenticationError} Thrown if the authentication of the websocket connection fails.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400 (getToken).
      * @returns The newly established websocket connection.
      */
     public async connectDevice(url: string): Promise<WebSocket> {
