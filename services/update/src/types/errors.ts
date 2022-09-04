@@ -16,6 +16,6 @@ export class MissingEntityError extends ErrorWithStatus {
 export class InvalidChangeError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
-        this.name = "InvalidChangeError"
+        this.name = 'InvalidChangeError'
     }
 }

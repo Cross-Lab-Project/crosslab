@@ -7,6 +7,7 @@ import {
     DeviceOverview,
     ConcreteDevice,
     DeviceGroup,
+    VirtualDevice,
 } from '../generated/types'
 import { YEAR } from '../globals'
 import {
@@ -17,6 +18,7 @@ import {
     AvailabilityRuleModel,
     ConcreteDeviceModel,
     DeviceGroupModel,
+    VirtualDeviceModel,
 } from '../model'
 import { applyAvailabilityRules } from './availability'
 
@@ -45,6 +47,20 @@ export function writeAvailabilityRule(
             : undefined
         availabilityRuleModel.count = availabilityRule.repeat.count
     }
+}
+
+/**
+ * This function writes the data of a {@link DeviceOverview} to a {@link DeviceOverviewModel}.
+ * @param deviceOverviewModel The {@link DeviceOverviewModel} the data should be written to.
+ * @param deviceOverview The {@link DeviceOverview} providing the data to be written.
+ */
+export function writeDeviceOverview(
+    deviceOverviewModel: DeviceOverviewModel,
+    deviceOverview: DeviceOverview
+) {
+    deviceOverviewModel.name = deviceOverview.name
+    deviceOverviewModel.description = deviceOverview.description
+    deviceOverviewModel.type = deviceOverview.type
 }
 
 /**
@@ -113,17 +129,15 @@ export function writeDeviceGroup(
 }
 
 /**
- * This function writes the data of a {@link DeviceOverview} to a {@link DeviceOverviewModel}.
- * @param deviceOverviewModel The {@link DeviceOverviewModel} the data should be written to.
- * @param deviceOverview The {@link DeviceOverview} providing the data to be written.
+ * This function writes the data of a {@link VirtualDevice} to a {@link VirtualDeviceModel}.
+ * @param virtualDeviceModel The {@link VirtualDeviceModel} the data should be written to.
+ * @param virtualDevice The {@link VirtualDevice} providing the data to be written.
  */
-export function writeDeviceOverview(
-    deviceOverviewModel: DeviceOverviewModel,
-    deviceOverview: DeviceOverview
+export function writeVirtualDevice(
+    virtualDeviceModel: VirtualDeviceModel,
+    virtualDevice: VirtualDevice
 ) {
-    deviceOverviewModel.name = deviceOverview.name
-    deviceOverviewModel.description = deviceOverview.description
-    deviceOverviewModel.type = deviceOverview.type
+    writeDeviceOverview(virtualDeviceModel, virtualDevice)
 }
 
 // Peerconnections

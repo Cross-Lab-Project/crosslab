@@ -8,6 +8,7 @@ import {
     DeviceOverview,
     TimeSlot,
     DeviceGroup,
+    VirtualDevice,
 } from '../generated/types'
 import {
     ServiceConfigModel,
@@ -17,6 +18,7 @@ import {
     DeviceOverviewModel,
     TimeSlotModel,
     DeviceGroupModel,
+    VirtualDeviceModel,
 } from '../model'
 import {
     deviceUrlFromId,
@@ -77,7 +79,7 @@ export function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevic
 /**
  * This function formats a {@link DeviceGroupModel} to a {@link DeviceGroup}.
  * @param deviceGroup The {@link DeviceGroupModel} to be formatted.
- * @param flat_group If true then the formatted {@link DeviceGroup} will only contain concrete devices.
+ * @param flat_group If true then the formatted {@link DeviceGroup} will contain no further device groups.
  * @returns The resulting {@link DeviceGroup}.
  */
 export async function formatDeviceGroup(
@@ -105,6 +107,16 @@ export async function formatDeviceGroup(
         type: deviceGroup.type,
         owner: deviceGroup.owner,
         devices: devices.filter((v, i, s) => s.findIndex((d) => d.url == v.url) == i),
+    }
+}
+
+export function formatVirtualDevice(virtualDevice: VirtualDeviceModel): VirtualDevice {
+    return {
+        url: deviceUrlFromId(virtualDevice.uuid),
+        name: virtualDevice.name,
+        description: virtualDevice.description,
+        type: 'virtual',
+        owner: virtualDevice.owner,
     }
 }
 

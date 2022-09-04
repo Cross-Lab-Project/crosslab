@@ -295,7 +295,7 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific device.
      * @param url The url of the device.
-     * @param flat_group If true resolved device groups will only contain concrete devices.
+     * @param flat_group If true resolved device groups will contain no further device groups.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.

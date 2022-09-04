@@ -3,6 +3,7 @@ schema:
   anyOf:
     - $ref: '../schemas/device_concrete.yml'
     - $ref: '../schemas/device_group.yml'
+    - $ref: '../schemas/device_virtual.yml'
 examples:
   microcontroller:
     value:

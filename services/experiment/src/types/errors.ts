@@ -53,7 +53,7 @@ export class InconsistentDatabaseError extends ErrorWithStatus {
 /**
  * This error class should be used if an object is missing a needed property.
  */
- export class MissingPropertyError extends ErrorWithStatus {
+export class MissingPropertyError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'MissingPropertyError'

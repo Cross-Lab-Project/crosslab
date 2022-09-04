@@ -11,7 +11,4 @@ schema:
       enum:
         - device-changed
     device:
-      anyOf:
-        - $ref: "../schemas/device_concrete.yml"
-        - $ref: "../schemas/device_group.yml"
-        - $ref: '../schemas/device_virtual.yml'
+      $ref: "../schemas/device_concrete.yml"

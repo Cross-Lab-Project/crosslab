@@ -10,3 +10,4 @@ allOf:
         maxItems: 2
         items:
           $ref: "./configured_device_reference.yml"
+x-typeguard: true

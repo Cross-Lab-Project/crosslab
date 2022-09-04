@@ -86,6 +86,21 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -122,6 +137,21 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
@@ -156,8 +186,20 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested update could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -201,10 +243,19 @@
             }
           },
           "400": {
-            "description": "Request is not valid"
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
           },
           "404": {
-            "description": "Requested update could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
@@ -230,8 +281,20 @@
           "204": {
             "description": "Update information was deleted successfully"
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "Requested update could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }

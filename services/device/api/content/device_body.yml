@@ -10,6 +10,7 @@ schema:
               items:
                 $ref: "../schemas/availability_rule.yml"
     - $ref: '../schemas/device_group.yml'
+    - $ref: '../schemas/device_virtual.yml'
 examples:
   microcontroller:
     value:

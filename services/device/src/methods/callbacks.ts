@@ -4,11 +4,7 @@ import {
     isConcreteDeviceModel,
     PeerconnectionModel,
 } from '../model'
-import {
-    formatConcreteDevice,
-    formatDeviceGroup,
-    formatPeerconnectionOverview,
-} from './format'
+import { formatConcreteDevice, formatDeviceGroup, formatPeerconnection } from './format'
 
 export const changedCallbacks = new Map<string, Array<string>>()
 export const closedCallbacks = new Map<string, Array<string>>()
@@ -55,7 +51,7 @@ export async function handleClosedCallback(peerconnection: PeerconnectionModel) 
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnnection-closed',
-                ...formatPeerconnectionOverview(peerconnection),
+                ...formatPeerconnection(peerconnection),
             }),
         }).then((res) => {
             if (res.status == 410) {

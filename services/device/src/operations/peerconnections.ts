@@ -39,7 +39,6 @@ export const getPeerconnections: getPeerconnectionsSignature = async (_user) => 
     }
 }
 
-// TODO: rewrite to fit better with federated first approach
 /**
  * This function implements the functionality for handling POST requests on /peerconnections endpoint.
  * @param parameters The parameters of the request.
@@ -177,7 +176,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
 
         if (result.affected > 1) {
             throw new InconsistentDatabaseError(
-                'deletePeerconnectionsByPeerconnectionId failed: Deleted Multiple Peerconnection with same uuid',
+                'Deleted Multiple Peerconnection with same uuid',
                 500
             )
         }

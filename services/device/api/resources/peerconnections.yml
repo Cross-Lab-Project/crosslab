@@ -59,10 +59,11 @@ post:
       '{$request.query.closedUrl}':
         post:
           requestBody:
-            description: test
             content:
               application/json:
                 $ref: '../content/peerconnection_event.yml'
           responses:
-            201:
+            2XX:
               description: The event was successfully processed.
+            410:
+              description: The callback is no longer required.

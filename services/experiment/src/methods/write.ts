@@ -6,6 +6,7 @@ import {
     Device,
     Participant,
 } from '../generated/types'
+import { apiClient } from '../globals'
 import {
     DeviceModel,
     RoleModel,
@@ -14,6 +15,7 @@ import {
     ServiceConfigurationModel,
     ExperimentModel,
 } from '../model'
+import { MissingPropertyError } from '../types/errors'
 
 const HOUR = 60 * 60 * 1000
 
@@ -22,10 +24,14 @@ const HOUR = 60 * 60 * 1000
  * @param deviceModel The {@link DeviceModel} the data should be written to.
  * @param device The {@link Device} providing the data to be written.
  */
-function writeDevice(deviceModel: DeviceModel, device: Device) {
-    //{ device?: string, role?: string }
+async function writeDevice(deviceModel: DeviceModel, device: Device) {
+    if (!device.device)
+        throw new MissingPropertyError('Device is missing property "url"', 400)
+    const resolvedDevice = await apiClient.getDevice(device.device)
     if (device.device) deviceModel.url = device.device
     if (device.role) deviceModel.role = device.role
+    if (resolvedDevice.type == 'virtual') deviceModel.isVirtual = true
+    else deviceModel.isVirtual = false
 }
 
 /**
@@ -117,7 +123,7 @@ export async function writeExperiment(
         const deviceRepository = AppDataSource.getRepository(DeviceModel)
         for (const d of experiment.devices) {
             const device = deviceRepository.create()
-            writeDevice(device, d)
+            await writeDevice(device, d)
             experimentModel.devices.push(device)
         }
     }

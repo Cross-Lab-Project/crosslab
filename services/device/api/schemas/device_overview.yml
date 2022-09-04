@@ -19,6 +19,7 @@ properties:
     enum:
       - device
       - group
+      - virtual
   owner:
     type: string
     format: uri

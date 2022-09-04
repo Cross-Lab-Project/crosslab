@@ -62,6 +62,8 @@ export class DeviceModel {
     url!: string
     @Column()
     role?: string
+    @Column()
+    isVirtual?: boolean
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
     experiment?: ExperimentModel
 }

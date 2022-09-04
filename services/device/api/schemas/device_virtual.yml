@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Virtual Device
+allOf:
+  - $ref: ./device_overview.yml
+  - type: object
+    properties:
+      type:
+        const: virtual

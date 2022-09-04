@@ -7,6 +7,7 @@ import {
     postDevicesByDeviceIdAvailabilitySignature,
     postDevicesByDeviceIdTokenSignature,
     postDevicesByDeviceIdSignalingSignature,
+    postDevicesByDeviceIdSignature,
 } from '../generated/signatures/devices'
 import { AppDataSource } from '../data_source'
 import {
@@ -16,10 +17,18 @@ import {
     AvailabilityRuleModel,
     isConcreteDeviceModel,
     isDeviceGroupModel,
+    VirtualDeviceModel,
+    isVirtualDeviceModel,
 } from '../model'
 import { randomUUID } from 'crypto'
 import { apiClient, YEAR } from '../globals'
-import { ForbiddenOperationError, InvalidChangeError, MissingEntityError, MissingPropertyError, UnrelatedPeerconnectionError } from '../types/errors'
+import {
+    ForbiddenOperationError,
+    InvalidChangeError,
+    MissingEntityError,
+    MissingPropertyError,
+    UnrelatedPeerconnectionError,
+} from '../types/errors'
 import {
     deviceUrlFromId,
     getDeviceModelByUUID,
@@ -39,12 +48,14 @@ import {
     formatConcreteDevice,
     formatDeviceGroup,
     formatTimeSlot,
+    formatVirtualDevice,
 } from '../methods/format'
 import { handleDeviceMessage } from '../methods/messageHandling'
 import {
     writeConcreteDevice,
     writeDeviceGroup,
     writeAvailabilityRule,
+    writeVirtualDevice,
 } from '../methods/write'
 import WebSocket from 'ws'
 
@@ -173,15 +184,24 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         writeConcreteDevice(device, body)
         device.owner = user.url
         await concreteDeviceRepository.save(device)
-    } else {
+    } else if (isDeviceGroup(body)) {
         const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
         device = deviceGroupRepository.create()
         writeDeviceGroup(device, body)
         device.owner = user.url
         await deviceGroupRepository.save(device)
+    } else {
+        const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
+        device = virtualDeviceRepository.create()
+        writeVirtualDevice(device, body)
+        device.owner = user.url
+        await virtualDeviceRepository.save(device)
     }
 
     if (parameters.changedUrl) {
+        console.log(
+            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+        )
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
@@ -193,7 +213,9 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         status: 201,
         body: isConcreteDeviceModel(device)
             ? formatConcreteDevice(device)
-            : await formatDeviceGroup(device),
+            : isDeviceGroupModel(device)
+            ? await formatDeviceGroup(device)
+            : formatVirtualDevice(device),
     }
 }
 
@@ -213,18 +235,64 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (isConcreteDeviceModel(device)) {
-        console.log(`getDevicesByDeviceId succeeded`)
-        return {
-            status: 200,
-            body: formatConcreteDevice(device),
-        }
-    } else {
-        console.log(`getDevicesByDeviceId succeeded`)
-        return {
-            status: 200,
-            body: await formatDeviceGroup(device, parameters.flat_group),
-        }
+    console.log(`getDevicesByDeviceId succeeded`)
+    return {
+        status: 200,
+        body: isConcreteDeviceModel(device)
+            ? formatConcreteDevice(device)
+            : isDeviceGroupModel(device)
+            ? await formatDeviceGroup(device)
+            : formatVirtualDevice(device),
+    }
+}
+
+/**
+ * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param user The user submitting the request.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
+ * @throws {ForbiddenOperationError} Thrown if device is not of type "virtual".
+ */
+export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
+    parameters,
+    user
+) => {
+    console.log(`postDevicesByDeviceId called`)
+    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
+    const virtualDevice = await getDeviceModelByUUID(parameters.device_id)
+
+    if (!virtualDevice)
+        throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
+
+    if (!isVirtualDeviceModel)
+        throw new ForbiddenOperationError(
+            `Cannot create new instance of device ${parameters.device_id} since it has type "${virtualDevice.type}"`,
+            400
+        )
+
+    const device = concreteDeviceRepository.create()
+    writeConcreteDevice(device, {
+        ...virtualDevice,
+        type: 'device',
+        announcedAvailability: [{ available: true }],
+    })
+    device.owner = user.url
+    await concreteDeviceRepository.save(device)
+
+    if (parameters.changedUrl) {
+        console.log(
+            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+        )
+        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
+        changedCallbackURLs.push(parameters.changedUrl)
+        changedCallbacks.set(device.uuid, changedCallbackURLs)
+    }
+
+    console.log(`postDevicesByDeviceId succeeded`)
+
+    return {
+        status: 201,
+        body: formatConcreteDevice(device),
     }
 }
 
@@ -241,13 +309,17 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     console.log(`deleteDevicesByDeviceId called`)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
+    const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
     const device = await getDeviceModelByUUID(parameters.device_id)
 
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (isConcreteDeviceModel(device)) await concreteDeviceRepository.softRemove(device)
-    else await deviceGroupRepository.softRemove(device)
+    if (isConcreteDeviceModel(device))
+        await concreteDeviceRepository.softDelete(device.uuid)
+    else if (isDeviceGroupModel(device))
+        await deviceGroupRepository.softDelete(device.uuid)
+    else await virtualDeviceRepository.softDelete(device.uuid)
 
     console.log(`deleteDevicesByDeviceId succeeded`)
 
@@ -304,7 +376,6 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
         }
     }
 
-    // TODO: check if this is really necessary or if it may need to be rewritten (make type not optional?)
     if (isConcreteDeviceModel(device) && isConcreteDevice(body)) {
         writeConcreteDevice(device, body)
         concreteDeviceRepository.save(device)
@@ -321,7 +392,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     handleChangedCallback(device)
     if (parameters.changedUrl) {
         console.log(
-            `patchDevicesByDeviceId: registering changed-callback for ${parameters.changedUrl}`
+            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
         )
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
@@ -448,7 +519,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
         // Make sure device is a concrete device
         if (device.type !== 'device')
             throw new ForbiddenOperationError(
-                `Cannot send signaling message to device with type ${device.type}`, 
+                `Cannot send signaling message to device with type ${device.type}`,
                 400
             )
 
@@ -457,7 +528,10 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
             parameters.peerconnection_url
         )
         if (!peerconnection.devices)
-            throw new MissingPropertyError(`Peerconnection does not have any devices`, 404)
+            throw new MissingPropertyError(
+                `Peerconnection does not have any devices`,
+                404
+            )
         const deviceA = peerconnection.devices[0]
         const deviceB = peerconnection.devices[1]
 
@@ -465,7 +539,10 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
             !(deviceA.url === deviceUrlFromId(device.uuid)) &&
             !(deviceB.url === deviceUrlFromId(device.uuid))
         ) {
-            throw new UnrelatedPeerconnectionError(`Device is not part of the peerconnection`, 400)
+            throw new UnrelatedPeerconnectionError(
+                `Device is not part of the peerconnection`,
+                400
+            )
         }
 
         const ws = connectedDevices.get(parameters.device_id)

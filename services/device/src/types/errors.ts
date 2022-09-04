@@ -13,7 +13,7 @@ export class MissingEntityError extends ErrorWithStatus {
 /**
  * This error class should be used if an object is missing a needed property.
  */
- export class MissingPropertyError extends ErrorWithStatus {
+export class MissingPropertyError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'MissingPropertyError'
@@ -23,7 +23,7 @@ export class MissingEntityError extends ErrorWithStatus {
 /**
  * This error class should be used if a device is not related to a peerconnection.
  */
- export class UnrelatedPeerconnectionError extends ErrorWithStatus {
+export class UnrelatedPeerconnectionError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'UnrelatedPeerconnectionError'
@@ -33,7 +33,7 @@ export class MissingEntityError extends ErrorWithStatus {
 /**
  * This error class should be used if an object is missing a needed property.
  */
- export class ForbiddenOperationError extends ErrorWithStatus {
+export class ForbiddenOperationError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'ForbiddenOperationError'
@@ -66,6 +66,6 @@ export class InconsistentDatabaseError extends ErrorWithStatus {
 export class InvalidChangeError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
-        this.name = "InvalidChangeError"
+        this.name = 'InvalidChangeError'
     }
 }

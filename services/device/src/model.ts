@@ -15,13 +15,19 @@ import {
 export function isConcreteDeviceModel(
     device: DeviceOverviewModel
 ): device is ConcreteDeviceModel {
-    return device.type == 'device'
+    return device.type === 'device'
 }
 
 export function isDeviceGroupModel(
     device: DeviceOverviewModel
 ): device is DeviceGroupModel {
-    return device.type == 'group'
+    return device.type === 'group'
+}
+
+export function isVirtualDeviceModel(
+    device: DeviceOverviewModel
+): device is VirtualDeviceModel {
+    return device.type === 'virtual'
 }
 
 @Entity({ name: 'Device' })
@@ -36,7 +42,7 @@ export abstract class DeviceOverviewModel {
     @Column()
     description?: string
     @Column()
-    type?: 'device' | 'group'
+    type?: 'device' | 'group' | 'virtual'
     @Column()
     owner?: string
     @DeleteDateColumn()
@@ -74,6 +80,12 @@ export class DeviceGroupModel extends DeviceOverviewModel {
         cascade: true,
     })
     devices?: DeviceReferenceModel[]
+}
+
+@ChildEntity('virtual')
+export class VirtualDeviceModel extends DeviceOverviewModel {
+    @Column()
+    type?: 'virtual'
 }
 
 @Entity({ name: 'ServiceConfig' })

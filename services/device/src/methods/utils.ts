@@ -1,8 +1,18 @@
 import { config } from '../config'
 import { AppDataSource } from '../data_source'
-import { DeviceOverview, ConcreteDevice, DeviceGroup } from '../generated/types'
+import {
+    DeviceOverview,
+    ConcreteDevice,
+    DeviceGroup,
+    VirtualDevice,
+} from '../generated/types'
 import { apiClient } from '../globals'
-import { DeviceReferenceModel, ConcreteDeviceModel, DeviceGroupModel } from '../model'
+import {
+    DeviceReferenceModel,
+    ConcreteDeviceModel,
+    DeviceGroupModel,
+    VirtualDeviceModel,
+} from '../model'
 import { InconsistentDatabaseError } from '../types/errors'
 
 /**
@@ -54,13 +64,13 @@ export function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
 /**
  * This function resolves a reference to a device.
  * @param reference The reference to be resolved.
- * @param flat_group If true then the resolved device group will only contain concrete devices.
+ * @param flat_group If true then the resolved device group will contain no further device groups.
  * @returns The resolved device.
  */
 export async function resolveDeviceReference(
     reference: DeviceReferenceModel,
     flat_group: boolean = false
-): Promise<ConcreteDevice | DeviceGroup | undefined> {
+): Promise<ConcreteDevice | DeviceGroup | VirtualDevice | undefined> {
     if (reference.url) {
         const deviceId = reference.url.split('/').at(-1)
         if (!deviceId) return undefined
@@ -98,9 +108,10 @@ export function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
  */
 export async function getDeviceModelByUUID(
     uuid: string
-): Promise<ConcreteDeviceModel | DeviceGroupModel | undefined> {
+): Promise<ConcreteDeviceModel | DeviceGroupModel | VirtualDeviceModel | undefined> {
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
+    const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
     const concreteDevice = await concreteDeviceRepository.findOne({
         where: {
             uuid: uuid,
@@ -117,10 +128,20 @@ export async function getDeviceModelByUUID(
             devices: true,
         },
     })
+    const virtualDevice = await virtualDeviceRepository.findOne({
+        where: {
+            uuid: uuid,
+        },
+    })
 
-    if (concreteDevice && deviceGroup)
+    if (
+        (concreteDevice && deviceGroup) ||
+        (concreteDevice && virtualDevice) ||
+        (deviceGroup && virtualDevice)
+    )
         throw new InconsistentDatabaseError('Multiple devices found for same uuid')
     if (concreteDevice) return concreteDevice
     if (deviceGroup) return deviceGroup
+    if (virtualDevice) return virtualDevice
     return undefined
 }
