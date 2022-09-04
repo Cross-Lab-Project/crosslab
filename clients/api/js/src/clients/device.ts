@@ -143,6 +143,38 @@ export class DeviceClient {
         return response
     }
 
+    public async createDeviceInstance(
+        url: string,
+        changedUrl?: string
+    ): Promise<SignaturesDevices.postDevicesByDeviceIdSuccessResponseType> {
+        const [device_id] = validateUrl(url, '/devices/{}')
+        const parameters: SignaturesDevices.postDevicesByDeviceIdParametersType = {
+            device_id,
+            changedUrl,
+        }
+        const response = (
+            url.startsWith(this._url)
+                ? await this.apiClient.postDevicesByDeviceId(parameters)
+                : await this.proxyClient.proxy(
+                      'patch',
+                      url,
+                      parameters,
+                      undefined,
+                      ValidationDevices.validatePostDevicesByDeviceIdInput,
+                      ValidationDevices.validatePostDevicesByDeviceIdOutput
+                  )
+        ) as SignaturesDevices.postDevicesByDeviceIdResponseType
+
+        if (isErrorResponse(response)) {
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`,
+                response
+            )
+        }
+
+        return response
+    }
+
     public async patchDevice(
         url: string,
         device: SignaturesDevices.patchDevicesByDeviceIdBodyType,

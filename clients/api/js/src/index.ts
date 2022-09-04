@@ -329,6 +329,23 @@ export class APIClient {
     }
 
     /**
+     * This function attempts to create a new instance of a virtual device.
+     * @param url The url of the virtual device to be instanciated.
+     * @param changedURL The url to be called when changes are made to the created device instance.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The newly created device instance.
+     */
+    public async createDeviceInstance(
+        url: string,
+        changedURL?: string
+    ): Promise<SignaturesDevices.postDevicesByDeviceIdSuccessResponseType['body']> {
+        return (await this.deviceClient.createDeviceInstance(url, changedURL)).body
+    }
+
+    /**
      * This function attempts to patch the information of a device.
      * @param url The url of the device.
      * @param device The information to be used for patching the device.
@@ -545,6 +562,55 @@ export class APIClient {
         experiment: SignaturesExperiments.postExperimentsBodyType
     ): Promise<SignaturesExperiments.postExperimentsSuccessResponseType['body']> {
         return (await this.experimentClient.createExperiment(url, experiment)).body
+    }
+
+    /**
+     * This function attempts to book an experiment.
+     * @param url The url of the experiment.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The booked experiment.
+     */
+    public async bookExperiment(
+        url: string
+    ): Promise<
+        SignaturesExperiments.patchExperimentsByExperimentIdSuccessResponseType['body']
+    > {
+        const experiment = await this.getExperiment(url)
+        return this.patchExperiment(url, { ...experiment, status: 'booked' })
+    }
+
+    /**
+     * This function attempts to start an experiment.
+     * @param url The url of the experiment.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The running experiment.
+     */
+    public async startExperiment(
+        url: string
+    ): Promise<
+        SignaturesExperiments.patchExperimentsByExperimentIdSuccessResponseType['body']
+    > {
+        const bookedExperiment = await this.bookExperiment(url)
+        return this.patchExperiment(url, { ...bookedExperiment, status: 'running' })
+    }
+
+    /**
+     * This function attempts to finish an experiment.
+     * @param url The url of the experiment.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async finishExperiment(url: string): Promise<void> {
+        const experiment = await this.getExperiment(url)
+        await this.patchExperiment(url, { ...experiment, status: 'finished' })
     }
 
     /**
