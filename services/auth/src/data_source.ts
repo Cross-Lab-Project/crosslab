@@ -1,3 +1,4 @@
+import { hash } from 'bcryptjs'
 import { DataSource } from 'typeorm'
 import {
     ActiveKeyModel,
@@ -174,7 +175,7 @@ async function createDefaultSuperadminUser() {
     if (roleSuperadmin.users.length === 0) {
         const user = userRepository.create()
         user.username = 'superadmin'
-        user.password = 'superadmin'
+        user.password = await hash('superadmin', 10)
         user.roles = [roleSuperadmin]
         user.tokens = []
         await userRepository.save(user)

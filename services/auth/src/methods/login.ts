@@ -1,7 +1,8 @@
 import { Client as LdapClient } from 'ldapts'
 import { AppDataSource } from '../data_source'
-import { LdapAuthenticationError, LdapBindError, LdapError } from '../types/errors'
+import { AuthenticationError, InconsistentDatabaseError, LdapAuthenticationError, LdapBindError, LdapError } from '../types/errors'
 import { RoleModel, TokenModel, UserModel } from '../model'
+import { compare } from 'bcryptjs'
 
 /**
  * This function creates a token for a user.
@@ -107,6 +108,30 @@ export async function loginTui(
         console.log(`User tui:${username} not found, creating new user`)
         user = await createUserTUI(username)
     }
+
+    return await createUserToken(user)
+}
+
+/**
+ * This function attempts to login with the provided credentials.
+ * @param username Username of the client.
+ * @param password Password of the client.
+ * @throws {AuthenticationError} Thrown if credentials are invalid.
+ * @throws {InconsistentDatabaseError} Thrown if user found in database has no password.
+ * @returns A token on successful login.
+ */
+export async function loginLocal(username: string, password: string): Promise<TokenModel | undefined> {
+    const userRepository = AppDataSource.getRepository(UserModel)
+    const user = await userRepository.findOne({
+        where: {
+            username: username
+        }
+    })
+
+    if (!user) throw new AuthenticationError(`Invalid login credentials`, 401)
+    if (!user.password) throw new InconsistentDatabaseError(`User has no password`, 500)
+
+    if (!await compare(password, user.password)) throw new AuthenticationError(`Invalid login credentials`, 401)
 
     return await createUserToken(user)
 }

@@ -1,6 +1,6 @@
 import { AuthenticationError, LdapAuthenticationError } from '../types/errors'
 import { postLoginSignature } from '../generated/signatures/login'
-import { loginTui } from '../methods/login'
+import { loginLocal, loginTui } from '../methods/login'
 
 /**
  * This function implements the functionality for handling POST requests on /login endpoint.
@@ -16,6 +16,7 @@ export const postLogin: postLoginSignature = async (body) => {
     try {
         switch (body.method) {
             case 'local':
+                token = await loginLocal(body.username, body.password)
                 break
             case 'tui':
                 token = await loginTui(body.username, body.password)
