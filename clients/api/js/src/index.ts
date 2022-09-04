@@ -100,7 +100,8 @@ export class APIClient {
         password: string,
         method: 'local' | 'tui'
     ): Promise<void> {
-        await this.authClient.login(username, password, method)
+        const response = await this.authClient.login(username, password, method)
+        this.accessToken = response.body
     }
 
     // logout
