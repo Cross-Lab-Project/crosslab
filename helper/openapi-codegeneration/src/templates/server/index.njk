@@ -34,7 +34,7 @@ app.initService = (options) => {
         const message = err.error || err.message
         const error = err.name || "Error"
         console.error(
-            `${error} ${status} "${message}" on ${req.method} ${req.url} with payload ${req.body}.`
+            `${error} ${status} "${message}" on ${req.method} ${req.url}.`
         )
         res.status(status).send({ error, message })
     }
