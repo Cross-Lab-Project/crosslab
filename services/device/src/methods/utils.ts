@@ -75,7 +75,11 @@ export async function resolveDeviceReference(
         const deviceId = reference.url.split('/').at(-1)
         if (!deviceId) return undefined
         console.log('resolving device', reference.url, config.BASE_URL)
-        return await apiClient.getDevice(reference.url, flat_group)
+        try {
+            return await apiClient.getDevice(reference.url, flat_group)
+        } catch (error) {
+            return undefined
+        }
     }
 
     return undefined

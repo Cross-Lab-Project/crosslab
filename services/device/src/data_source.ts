@@ -8,6 +8,7 @@ import {
     PeerconnectionModel,
     TimeSlotModel,
     ServiceConfigModel,
+    VirtualDeviceModel,
 } from './model'
 
 export const AppDataSource = new DataSource({
@@ -17,6 +18,7 @@ export const AppDataSource = new DataSource({
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,
+        VirtualDeviceModel,
         DeviceGroupModel,
         AvailabilityRuleModel,
         ServiceConfigModel,

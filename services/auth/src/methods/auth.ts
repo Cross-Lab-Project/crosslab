@@ -73,7 +73,7 @@ export async function signUserToken(
     user: UserModel,
     activeKey: ActiveKeyModel
 ): Promise<string> {
-    const BASE_URL = config.BASE_URL.endsWith('/')
+    const BASE_URL = !config.BASE_URL.endsWith('/')
         ? config.BASE_URL
         : config.BASE_URL + '/'
 
