@@ -88,24 +88,6 @@ export class VirtualDeviceModel extends DeviceOverviewModel {
     type?: 'virtual'
 }
 
-@Entity({ name: 'ServiceConfig' })
-export class ServiceConfigModel {
-    @PrimaryGeneratedColumn()
-    id!: number
-    @Column()
-    serviceType?: string
-    @Column()
-    serviceId?: string
-    @Column()
-    remoteServiceId?: string
-    @Column()
-    config?: string
-    @ManyToOne(() => DeviceReferenceModel, (deviceReference) => deviceReference.config)
-    device?: DeviceReferenceModel
-    @DeleteDateColumn()
-    deletedAt?: Date
-}
-
 @Entity({ name: 'DeviceReference' })
 export class DeviceReferenceModel {
     @PrimaryGeneratedColumn()
@@ -178,6 +160,24 @@ export abstract class PeerconnectionModel {
     @OneToOne(() => DeviceReferenceModel, { onDelete: 'CASCADE', cascade: true })
     @JoinColumn()
     deviceB!: DeviceReferenceModel
+    @DeleteDateColumn()
+    deletedAt?: Date
+}
+
+@Entity({ name: 'ServiceConfig' })
+export class ServiceConfigModel {
+    @PrimaryGeneratedColumn()
+    id!: number
+    @Column()
+    serviceType?: string
+    @Column()
+    serviceId?: string
+    @Column()
+    remoteServiceId?: string
+    @Column()
+    config?: string
+    @ManyToOne(() => DeviceReferenceModel, (deviceReference) => deviceReference.config)
+    device?: DeviceReferenceModel
     @DeleteDateColumn()
     deletedAt?: Date
 }

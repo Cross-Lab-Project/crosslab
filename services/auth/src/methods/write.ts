@@ -1,4 +1,4 @@
-import { hash } from 'bcrypt'
+import { hash } from 'bcryptjs'
 import { AppDataSource } from '../data_source'
 import { User } from '../generated/types'
 import { UserModel, RoleModel } from '../model'
