@@ -9,10 +9,10 @@ services:
       - "80:80"
       # - "443:443"
     volumes:
-      - conf:/etc/nginx/conf.d
-      - vhost:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - certs:/etc/nginx/certs:ro
+      - crosslab_conf:/etc/nginx/conf.d
+      - crosslab_vhost:/etc/nginx/vhost.d
+      - crosslab_html:/usr/share/nginx/html
+      - crosslab_certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       crosslab:
@@ -46,10 +46,10 @@ services:
       SECURITY_ISSUER: https://localhost
       SECURITY_AUDIENCE: https://localhost
       BASE_URL: http://api.localhost
-      WHITELISTED: auth,device,experiment,federation,update
+      ALLOWLIST: auth:authservice,device:deviceservice,experiment:experimentservice,federation:federationservice,update:updateservice
     volumes:
-      - auth_service_node_modules_dev:/app/node_modules
-      - auth_service_database_dev:/app/db
+      - crosslab_auth_service_node_modules_dev:/app/node_modules
+      - crosslab_auth_service_database_dev:/app/db
       - ../../../services/auth:/app
     networks:
       crosslab:
@@ -61,8 +61,8 @@ services:
       SECURITY_AUDIENCE: https://localhost
       BASE_URL: http://api.localhost
     volumes:
-      - device_service_node_modules_dev:/app/node_modules
-      - device_service_database_dev:/app/db
+      - crosslab_device_service_node_modules_dev:/app/node_modules
+      - crosslab_device_service_database_dev:/app/db
       - ../../../services/device:/app
     networks:
       crosslab:
@@ -74,8 +74,8 @@ services:
       SECURITY_AUDIENCE: https://localhost
       BASE_URL: http://api.localhost
     volumes:
-      - experiment_service_node_modules_dev:/app/node_modules
-      - experiment_service_database_dev:/app/db
+      - crosslab_experiment_service_node_modules_dev:/app/node_modules
+      - crosslab_experiment_service_database_dev:/app/db
       - ../../../services/experiment:/app
     networks:
       crosslab:
@@ -87,8 +87,8 @@ services:
       SECURITY_AUDIENCE: https://localhost
       BASE_URL: http://api.localhost
     volumes:
-      - federation_service_node_modules_dev:/app/node_modules
-      - federation_service_database_dev:/app/db
+      - crosslab_federation_service_node_modules_dev:/app/node_modules
+      - crosslab_federation_service_database_dev:/app/db
       - ../../../services/federation:/app
     networks:
       crosslab:
@@ -100,8 +100,8 @@ services:
       SECURITY_AUDIENCE: https://localhost
       BASE_URL: http://api.localhost
     volumes:
-      - update_service_node_modules_dev:/app/node_modules
-      - update_service_database_dev:/app/db
+      - crosslab_update_service_node_modules_dev:/app/node_modules
+      - crosslab_update_service_database_dev:/app/db
       - ../../../services/update:/app
     networks:
       crosslab:
@@ -119,20 +119,20 @@ services:
       crosslab:
 
 volumes:
-  conf:
-  vhost:
-  html:
-  certs:
-  auth_service_node_modules_dev:
-  auth_service_database_dev:
-  device_service_node_modules_dev:
-  device_service_database_dev:
-  experiment_service_node_modules_dev:
-  experiment_service_database_dev:
-  federation_service_node_modules_dev:
-  federation_service_database_dev:
-  update_service_node_modules_dev:
-  update_service_database_dev:
+  crosslab_conf:
+  crosslab_vhost:
+  crosslab_html:
+  crosslab_certs:
+  crosslab_auth_service_node_modules_dev:
+  crosslab_auth_service_database_dev:
+  crosslab_device_service_node_modules_dev:
+  crosslab_device_service_database_dev:
+  crosslab_experiment_service_node_modules_dev:
+  crosslab_experiment_service_database_dev:
+  crosslab_federation_service_node_modules_dev:
+  crosslab_federation_service_database_dev:
+  crosslab_update_service_node_modules_dev:
+  crosslab_update_service_database_dev:
 
 networks:
   crosslab:
