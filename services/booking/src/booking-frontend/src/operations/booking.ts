@@ -18,7 +18,7 @@ import * as amqplib from 'amqplib';
 
 import { config } from "../../../common/config"
 import { BelongsToUs } from "../../../common/auth"
-import { DeviceBookingRequest } from "../messageDefinition";
+import { DeviceBookingRequest } from "../../../booking-backend/src/messageDefinition";
 
 export const putBookingManage: putBookingManageSignature = async (body, user) => {
     let connection = await amqplib.connect(config.AmqpUrl);
@@ -29,7 +29,7 @@ export const putBookingManage: putBookingManageSignature = async (body, user) =>
         body.Type = "normal";
     }
 
-    channel.assertQueue("device-booking", {
+    await channel.assertQueue("device-booking", {
         durable: true
     });
 
@@ -56,7 +56,6 @@ export const putBookingManage: putBookingManageSignature = async (body, user) =>
         }
         
         let r = new URL(config.OwnURL)
-
 
         return {
             status: 200,

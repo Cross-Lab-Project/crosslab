@@ -22,7 +22,7 @@ export async function mainLoop(): Promise<void> {
             let connection = await amqplib.connect(config.AmqpUrl);
             let channel = await connection.createChannel();
 
-            channel.assertQueue("device-reservation", {
+            await channel.assertQueue("device-reservation", {
                 durable: true
             });
 
@@ -30,7 +30,7 @@ export async function mainLoop(): Promise<void> {
                 let msg = await channel.get("device-reservation", { noAck: false });
 
                 if (typeof (msg) === 'boolean') {
-                    sleep(20);
+                    await sleep(20);
                     continue;
                 }
 
@@ -159,7 +159,9 @@ export async function mainLoop(): Promise<void> {
 
                     // Send answer
                     try {
-                        channel.assertQueue(data.AnswerQueue, {});
+                        await channel.assertQueue(data.AnswerQueue, {
+                            durable: false
+                        });
                         channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
                         channel.ack(msg);
                     } catch (error) {
@@ -172,7 +174,7 @@ export async function mainLoop(): Promise<void> {
                             answer.Device = data.Device;
                         }
 
-                        channel.assertQueue(data.AnswerQueue, {});
+                        await channel.assertQueue(data.AnswerQueue, {});
                         channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
                         channel.ack(msg);
                     } catch (e) {

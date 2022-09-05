@@ -69,7 +69,7 @@ mocha.describe("operations.ts", function () {
                         res.send('{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}]}');
                         return;
                     }
-                    res.send('{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}]}');
+                    res.send('{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [{"start":"1999-01-01T00:00:00Z", "end": "1999-12-31T23:59:59Z"},{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}]}');
                     return;
                 case 404:
                     res.status(404).send();
@@ -331,6 +331,39 @@ mocha.describe("operations.ts", function () {
             }
         }
     });
+
+    mocha.it("postBookingSchedule (completely free)", async function () {
+        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "1999-06-25T00:00:00Z", End: "1999-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        if (r.status !== 200) {
+            throw Error("Response error: " + r.body.status);
+        }
+        if (r.body.length != 1) {
+            throw Error("Body has wrong length, should 1, is " + r.body.length);
+        }
+
+        if (r.body[0].Device !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+            throw Error("Device is " + r.body[0].Device);
+        }
+
+        if (r.body[0].Booked.length !== 0) {
+            console.log(r.body[0].Booked);
+            throw Error("Device " + 0 + " Booked has length " + r.body[0].Booked.length);
+        }
+
+        if (r.body[0].Free.length !== 1) {
+            console.log(r.body[0].Free);
+            throw Error("Device " + 0 + " Free has length " + r.body[0].Free.length);
+        }
+
+        if (!dayjs(r.body[0].Free[0].Start).isSame(dayjs("1999-06-25T00:00:00Z"))) {
+            throw Error("Device " + 0 + " Free.Start is wrong, should 1999-06-25T00:00:00Z is " + r.body[0].Free[0].Start);
+        }
+
+        if (!dayjs(r.body[0].Free[0].End).isSame(dayjs("1999-06-28T23:59:59Z"))) {
+            throw Error("Device " + 0 + " Free.End is wrong, should 1999-06-28T23:59:59Z is " + r.body[0].Free[0].End);
+        }
+    });
+
     mocha.it("postBookingSchedule (remote error case)", async function () {
         this.timeout(10000);
 

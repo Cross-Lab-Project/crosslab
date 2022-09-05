@@ -44,7 +44,7 @@ mocha.describe("mainLoop.ts", function () {
         channel = await connection.createChannel();
 
         await channel.assertQueue(receiveQueue, {
-            durable: true,
+            durable: false,
         });
 
         await channel.assertQueue(sendQueue, {
