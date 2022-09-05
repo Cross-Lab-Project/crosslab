@@ -8,6 +8,7 @@ import {
 } from "../generated/signatures/booking"
 
 import { APIClient } from "@cross-lab-project/api-client"
+import { ConcreteDevice, DeviceGroup, VirtualDevice } from "@cross-lab-project/api-client/dist/generated/device/types"
 import { getDevicesByDeviceIdResponseType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, map } from "lodash"
@@ -25,7 +26,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
     const laterReq = new Map<string, [number[], number[], postBookingScheduleBodyType]>(); // Device in request, device list, request
 
     let timetables: Timeslot[][][] = []; // Booked: Device in request, device list, actual reserved time slots
-    let availability: Promise<getDevicesByDeviceIdResponseType>[][] = []; // Device in request, device list
+    let availability: Promise<ConcreteDevice | DeviceGroup | VirtualDevice>[][] = []; // Device in request, device list
     let realDevices: string[][] = []; // Device in request, device list
 
 
@@ -35,31 +36,44 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         realDevices.push([]);
         timetables.push([]);
         availability.push([]);
-        let r = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(body.Experiment.Devices[device].ID), flat_group: true }, body.Experiment.Devices[device].ID);
-        if (r.status !== 200) {
-            // TODO: Remove later if errors are well specified
-            //if (r.status === 503) {
-            //    return {
-            //        status: 503
-            //    };
-            //};
-            if (r.status === 404) {
-                return { status: 404, body: [body.Experiment.Devices[device].ID] };
-            }
-            //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
-            return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + r.status };
-        };
+        let r: ConcreteDevice | DeviceGroup | VirtualDevice;
+        try {
+        r = await api.getDevice(body.Experiment.Devices[device].ID, true );
+        } catch (err) {
+            // Bad status code
+            if (r.status !== undefined) {
+                if (r.status === 503) {
+                    return {
+                        status: 503
+                    };
+                };
+                if (r.status === 404) {
+                    return { status: 404, body: [body.Experiment.Devices[device].ID] };
+                }
+                //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
+                return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + r.status };
+            };
 
-        if (r.body.url != body.Experiment.Devices[device].ID) {
+            // any other error
+            throw err;
+        }
+
+        if (r.url != body.Experiment.Devices[device].ID) {
             return { status: 500, body: "API returned bad result (requested device" + body.Experiment.Devices[device].ID + ", got " + r.body.url + ")" };
         }
 
-        if (r.body.type === "device") {
-            realDevices[device].push(r.body.url)
+        if (r.type === "device") {
+            realDevices[device].push(r.url)
+        } else if (r.type === "virtual") {
+            // TODO
+            // For now, just add free time
+            realDevices[device].push(r.url)
+            timetables[device].push([]);
+            continue
         } else {
             // group
-            for (let i = 0; i < r.body.devices.length; i++) {
-                realDevices[device].push(r.body.devices[i].url);
+            for (let i = 0; i < r.devices.length; i++) {
+                realDevices[device].push(r.devices[i].url);
             }
         }
 
@@ -100,7 +114,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             timetables[device][i] = t;
 
             // Get availability
-            availability[device].push(api.getDevicesByDeviceId({ device_id: GetIDFromURL(realDevices[device][i]) }, realDevices[device][i]));
+            availability[device].push(api.getDevice(realDevices[device][i], false));
         }
     };
 

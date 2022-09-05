@@ -128,6 +128,20 @@
               }
             }
           },
+          "422": {
+            "description": "Request contains virtual devices and can thus not be processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "List of unknown device IDs.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
