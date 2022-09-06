@@ -29,7 +29,7 @@
     }
   ],
   "paths": {
-    "/booking/schedule": {
+    "/schedule": {
       "post": {
         "security": [
           {
@@ -115,15 +115,12 @@
             "description": "No authorisation header found."
           },
           "404": {
-            "description": "Request contains unknown type IDs. Those will be listed in response.",
+            "description": "Request contains unknown type IDs. The first unknown ID will be returned.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "description": "List of unknown device IDs.",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "description": "First unknown device ID."
                 }
               }
             }
@@ -133,11 +130,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "description": "List of unknown device IDs.",
-                  "items": {
-                    "type": "string"
-                  }
+                  "type": "string",
+                  "description": "First virtual device ID."
                 }
               }
             }
@@ -159,7 +153,7 @@
         }
       }
     },
-    "/booking/manage": {
+    "/booking": {
       "put": {
         "security": [
           {
@@ -239,7 +233,7 @@
         }
       }
     },
-    "/booking/manage/{ID}": {
+    "/booking/{ID}": {
       "patch": {
         "security": [
           {
@@ -374,18 +368,7 @@
             "description": "Request contains unknown booking ID."
           },
           "423": {
-            "description": "The booking is currently locked, deletion not possible.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "description": "List of locked devices.",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
+            "description": "The booking is currently locked, deletion not possible."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -473,7 +456,7 @@
         }
       }
     },
-    "/booking/destroy/{ID}": {
+    "/booking/{ID}/destroy": {
       "delete": {
         "security": [
           {
@@ -525,7 +508,7 @@
         }
       }
     },
-    "/booking/lock/{ID}": {
+    "/booking/{ID}/lock": {
       "put": {
         "security": [
           {
@@ -657,7 +640,7 @@
         }
       }
     },
-    "/booking/callback/{ID}": {
+    "/booking_callback/{ID}": {
       "post": {
         "security": [
           {

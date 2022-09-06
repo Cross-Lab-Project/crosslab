@@ -1,4 +1,4 @@
-  /booking/lock/{ID}:
+  /booking/{ID}/lock:
     put:
       security:
         - JWT: []
@@ -90,7 +90,7 @@
         '503':
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/callback/{ID}:
+  /booking_callback/{ID}:
     post:
       security:
         - JWT: []

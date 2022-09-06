@@ -1,4 +1,4 @@
-  /booking/manage:
+  /booking:
     put:
       security:
         - JWT: []
@@ -51,7 +51,7 @@
         '503':
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/manage/{ID}:
+  /booking/{ID}:
     patch:
       security:
         - JWT: []
@@ -143,13 +143,6 @@
         '423':
           description: >-
             The booking is currently locked, deletion not possible.
-          content:
-            application/json:
-              schema:
-                type: array
-                description: List of locked devices.
-                items:
-                  type: string
         '500':
           description: >-
             Request could not be answered. An error string containing the reason
@@ -210,7 +203,7 @@
         '503':
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/destroy/{ID}:
+  /booking/{ID}/destroy:
     delete:
       security:
         - JWT: []

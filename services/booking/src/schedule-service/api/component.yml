@@ -1,4 +1,4 @@
-  /booking/schedule:
+  /schedule:
     post:
       security:
         - JWT: []
@@ -56,23 +56,19 @@
         '401':
           description: No authorisation header found.
         '404':
-          description: Request contains unknown type IDs. Those will be listed in response.
+          description: Request contains unknown type IDs. The first unknown ID will be returned.
           content:
             application/json:
               schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
+                type: string
+                description: First unknown device ID.
         '422':
           description: Request contains virtual devices and can thus not be processed.
           content:
             application/json:
               schema:
-                type: array
-                description: List of unknown device IDs.
-                items:
-                  type: string
+                type: string
+                description: First virtual device ID.
         '500':
           description: >-
             Request could not be answered. An error string containing the reason
