@@ -1,5 +1,6 @@
 import { WebSocket } from 'ws'
 import { AuthClient } from './clients/auth'
+import { BookingClient } from './clients/booking'
 import { DeviceClient } from './clients/device'
 import { ExperimentClient } from './clients/experiment'
 import { FederationClient } from './clients/federation'
@@ -15,6 +16,7 @@ import {
     ValidationError,
     FetchError,
 } from './generated/auth/types'
+import { SignaturesBooking, SignaturesSchedule } from './generated/booking'
 import { SignaturesDevices, SignaturesPeerconnections } from './generated/device'
 import { SignaturesExperiments } from './generated/experiment'
 import { SignaturesInstitutions } from './generated/federation'
@@ -40,6 +42,7 @@ export class APIClient {
     private _url: string
     private _accessToken: string
     private authClient: AuthClient
+    private bookingClient: BookingClient
     private deviceClient: DeviceClient
     private experimentClient: ExperimentClient
     private federationClient: FederationClient
@@ -49,6 +52,7 @@ export class APIClient {
         this._url = url
         this._accessToken = accessToken ?? ''
         this.authClient = new AuthClient(url, accessToken)
+        this.bookingClient = new BookingClient(url, accessToken)
         this.deviceClient = new DeviceClient(url, accessToken)
         this.experimentClient = new ExperimentClient(url, accessToken)
         this.federationClient = new FederationClient(url, accessToken)
@@ -62,6 +66,7 @@ export class APIClient {
     set url(url: string) {
         this._url = url
         this.authClient.url = url
+        this.bookingClient.url = url
         this.deviceClient.url = url
         this.experimentClient.url = url
         this.federationClient.url = url
@@ -75,6 +80,7 @@ export class APIClient {
     set accessToken(accessToken: string) {
         this._accessToken = accessToken
         this.authClient.accessToken = accessToken
+        this.bookingClient.accessToken = accessToken
         this.deviceClient.accessToken = accessToken
         this.experimentClient.accessToken = accessToken
         this.federationClient.accessToken = accessToken
@@ -272,6 +278,131 @@ export class APIClient {
      */
     public async removeRoleFromUser(url: string, role: string): Promise<void> {
         await this.authClient.removeRoleFromUser(url, role)
+    }
+
+    // Booking Service API Calls
+
+    // schedule-service
+
+    /**
+     * This function attempts to retrieve the schedule for an experiment.
+     * @param url The url of the booking service to be used.
+     * @param experiment The experiment to retrieve the schedule for.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The schedule of the experiment.
+     */
+    public async getSchedule(
+        url: string,
+        experiment: SignaturesSchedule.postScheduleBodyType
+    ): Promise<SignaturesSchedule.postScheduleSuccessResponseType['body']> {
+        return (await this.bookingClient.getSchedule(url, experiment)).body
+    }
+
+    // booking-frontend
+
+    /**
+     * This function attempts to book an experiment using the booking service.
+     * @param url The url of the booking service to be used.
+     * @param experiment The experiment to be booked.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The booking id.
+     */
+    public async bookExperiment(
+        url: string,
+        experiment: SignaturesBooking.putBookingBodyType
+    ): Promise<SignaturesBooking.putBookingSuccessResponseType['body']> {
+        return (await this.bookingClient.bookExperiment(url, experiment)).body
+    }
+
+    /**
+     * This function attempts to retrieve a specific booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The requested booking.
+     */
+    public async getBooking(
+        url: string
+    ): Promise<SignaturesBooking.getBookingByIDSuccessResponseType['body']> {
+        return (await this.bookingClient.getBooking(url)).body
+    }
+
+    /**
+     * This function attempts to cancel a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async cancelBooking(url: string): Promise<void> {
+        await this.bookingClient.cancelBooking(url)
+    }
+
+    /**
+     * This function attempts to add devices to a booking.
+     * @param url The url of the booking.
+     * @param devices The devices to be added.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The booking id.
+     */
+    public async addDevicesToBooking(
+        url: string,
+        devices: SignaturesBooking.patchBookingByIDBodyType
+    ): Promise<SignaturesBooking.patchBookingByIDSuccessResponseType['body']> {
+        return (await this.bookingClient.patchBooking(url, devices)).body
+    }
+
+    /**
+     * This function attempts to delete a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async deleteBooking(url: string): Promise<void> {
+        await this.bookingClient.deleteBooking(url)
+    }
+
+    // booking-backend
+
+    /**
+     * This function attempts to lock the devices of a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The locked booking.
+     */
+    public async lockBooking(
+        url: string
+    ): Promise<SignaturesBooking.putBookingByIDLockSuccessResponseType['body']> {
+        return (await this.bookingClient.lockBooking(url)).body
+    }
+
+    /**
+     * This function attempts to unlock the devices of a booking.
+     * @param url The url of the booking
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async unlockBooking(url: string): Promise<void> {
+        await this.bookingClient.unlockBooking(url)
     }
 
     // Device Service API Calls
@@ -566,7 +697,7 @@ export class APIClient {
     }
 
     /**
-     * This function attempts to book an experiment.
+     * This function attempts to book an experiment using the experiment service.
      * @param url The url of the experiment.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
@@ -574,7 +705,7 @@ export class APIClient {
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The booked experiment.
      */
-    public async bookExperiment(
+    public async reserveExperiment(
         url: string
     ): Promise<
         SignaturesExperiments.patchExperimentsByExperimentIdSuccessResponseType['body']
@@ -597,7 +728,7 @@ export class APIClient {
     ): Promise<
         SignaturesExperiments.patchExperimentsByExperimentIdSuccessResponseType['body']
     > {
-        const bookedExperiment = await this.bookExperiment(url)
+        const bookedExperiment = await this.reserveExperiment(url)
         return this.patchExperiment(url, { ...bookedExperiment, status: 'running' })
     }
 
