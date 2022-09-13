@@ -70,10 +70,9 @@ async function JWTVerify(jwt: string | undefined, scopes: string[]) {
         throw new JWTVerificationError('Payload is malformed', 401)
     const user = jwtVerifyResult.payload
     for (const scope of scopes) {
-        if (!user.scopes.includes(scope))
-            throw new JWTVerificationError('Missing Scope: ' + scope, 403)
+        if (user.scopes.includes(scope)) return user
     }
-    return user
+    throw new JWTVerificationError('Missing Scope: on of ' + scopes, 403)
 }
 
 AppDataSource.initialize()
