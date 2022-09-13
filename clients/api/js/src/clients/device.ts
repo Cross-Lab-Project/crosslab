@@ -1,4 +1,3 @@
-import { WebSocket } from 'ws'
 import {
     APIClient,
     SignaturesDevices,
@@ -6,13 +5,8 @@ import {
     ValidationDevices,
     ValidationPeerconnections,
 } from '../generated/device'
-import {
-    AuthenticationMessage,
-    isAuthenticationMessage,
-    isErrorResponse,
-    isMessage,
-} from '../generated/device/types'
-import { UnsuccessfulRequestError, WebSocketAuthenticationError } from '../types/errors'
+import { isErrorResponse } from '../generated/device/types'
+import { UnsuccessfulRequestError } from '../types/errors'
 import { appendToUrl, validateUrl } from '../util'
 import { ProxyClient } from './proxy'
 
@@ -341,47 +335,6 @@ export class DeviceClient {
         }
 
         return response
-    }
-
-    private async openWebsocketConnection(
-        url: string,
-        token: string
-    ): Promise<WebSocket> {
-        const requestUrl = appendToUrl(this._url, '/devices/ws').replace('http', 'ws')
-        const ws = new WebSocket(requestUrl, {
-            headers: {
-                Authorization: 'Bearer ' + this._accessToken,
-            },
-        })
-        return new Promise<WebSocket>((resolve, reject) => {
-            ws.on('open', async () => {
-                const authMessage: AuthenticationMessage = {
-                    deviceUrl: url,
-                    messageType: 'authenticate',
-                    token: token,
-                }
-                ws.send(JSON.stringify(authMessage))
-                ws.once('message', (msg) => {
-                    const message = JSON.parse(msg.toString())
-                    if (isMessage(message) && isAuthenticationMessage(message)) {
-                        if (message.authenticated) resolve(ws)
-                        else
-                            reject(
-                                new WebSocketAuthenticationError(
-                                    'Websocket connection not authenticated'
-                                )
-                            )
-                    }
-                })
-            })
-        })
-    }
-
-    public async connectDevice(url: string): Promise<WebSocket> {
-        validateUrl(url, '/devices/{}')
-        const response = await this.getToken(url)
-        const token = response.body
-        return await this.openWebsocketConnection(url, token)
     }
 
     // peerconnections

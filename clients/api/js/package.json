@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "API-Client for all Crosslab APIs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +16,7 @@
     "build-generate-federation": "npx openapi-codegen client ../../../services/federation/dist/openapi.json ./src/generated/federation",
     "build-generate-update": "npx openapi-codegen client ../../../services/update/dist/openapi.json ./src/generated/update",
     "build-generate": "npm run build-generate-auth && npm run build-generate-booking && npm run build-generate-device && npm run build-generate-experiment && npm run build-generate-federation && npm run build-generate-update",
-    "build-compile": "npm run format && tsc",
+    "build-compile": "tsc",
     "build": "npm run build-generate && npm run build-compile",
     "prepare": "npm run build",
     "test": "node dist/test/test.js",
@@ -30,13 +30,10 @@
   "devDependencies": {
     "@cross-lab-project/openapi-codegen": "^0.0.31",
     "@types/node": "^18.0.3",
-    "@types/ws": "^8.5.3",
     "typescript": "^4.7.4",
     "prettier": "^2.7.1"
   },
   "dependencies": {
-    "cross-fetch": "^3.1.5",
-    "ws": "^8.8.1",
-    "isomorphic-ws": "^5.0.0"
+    "cross-fetch": "^3.1.5"
   }
 }
