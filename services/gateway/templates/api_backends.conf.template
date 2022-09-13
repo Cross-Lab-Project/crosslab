@@ -10,10 +10,6 @@ upstream federation_service {
     server ${FEDERATION_SERVICE_URL};
 }
 
-upstream logs_service {
-    server ${LOGS_SERVICE_URL};
-}
-
 upstream auth_service {
     server ${AUTH_SERVICE_URL};
 }
