@@ -103,15 +103,6 @@ AppDataSource.initialize()
         server.on(
             'upgrade',
             async (request: IncomingMessage, socket: Socket, head: Buffer) => {
-                try {
-                    const jwt = extract_jwt_from_request(request)
-                    await JWTVerify(jwt, ['device', 'device:connect'])
-                } catch (err) {
-                    console.error(
-                        'JWT Verification failed: Websocket connection cannot be established'
-                    )
-                    return
-                }
                 const listener = app.wsListeners.get(request.url ?? '')
                 if (listener) {
                     wsServer.handleUpgrade(request, socket, head, (socket) =>
