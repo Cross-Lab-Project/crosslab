@@ -21,17 +21,17 @@ log.trace = log.debug;
 
 interface RTCSignalingCandidateMessage extends SignalingMessage {
   signalingType: "candidate";
-  candidate: RTCIceCandidate;
+  content: RTCIceCandidate;
 }
 
 interface RTCSignalingOfferMessage extends SignalingMessage {
   signalingType: "offer";
-  offer: RTCSessionDescriptionInit;
+  content: RTCSessionDescriptionInit;
 }
 
 interface RTCSignalingAnswerMessage extends SignalingMessage {
   signalingType: "answer";
-  answer: RTCSessionDescriptionInit;
+  content: RTCSessionDescriptionInit;
 }
 
 export type RTCSignalingMessage =
@@ -196,22 +196,22 @@ export class WebRTCPeerConnection
 
   private async handleOffer(msg: RTCSignalingOfferMessage) {
     //assert(this.state === ConnectionState.WaitingForCall);
-    await this.makeAnswer(msg.offer);
+    await this.makeAnswer(msg.content);
     this.state = ConnectionState.ICE;
     await this.sendIceCandidate();
   }
 
   private async handleAnswer(msg: RTCSignalingAnswerMessage) {
     //assert(this.state === ConnectionState.WaitingForAnswer);
-    await this.acceptAnswer(msg.answer);
+    await this.acceptAnswer(msg.content);
     this.state = ConnectionState.ICE;
     await this.sendIceCandidate();
   }
 
   private async handleIceCandidate(msg: RTCSignalingCandidateMessage) {
     //assert(this.state === ConnectionState.ICE);
-    if (msg.candidate !== null) {
-      await this.addIceCandidate(msg.candidate);
+    if (msg.content !== null) {
+      await this.addIceCandidate(msg.content);
     }
   }
 
@@ -246,7 +246,7 @@ export class WebRTCPeerConnection
     log.trace("WebRTCPeerConnection.makeAnswer updated offer", { offer });
     this.emit("signalingMessage", <RTCSignalingOfferMessage>{
       signalingType: "offer",
-      offer,
+      content: offer,
     });
   }
 
@@ -277,7 +277,7 @@ export class WebRTCPeerConnection
     answer = { type: answer.type, sdp: this.modifySDP(answer.sdp!) }; // TODO: Check if sdp is really optional
     this.emit("signalingMessage", <RTCSignalingAnswerMessage>{
       signalingType: "answer",
-      answer,
+      content: answer,
     });
   }
 
@@ -295,7 +295,7 @@ export class WebRTCPeerConnection
       for (const candidate of this.candidateQueue) {
         this.emit("signalingMessage", <RTCSignalingCandidateMessage>{
           signalingType: "candidate",
-          candidate,
+          content: candidate,
         });
       }
       this.candidateQueue = [];

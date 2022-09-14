@@ -23,14 +23,14 @@ export interface ServiceConfiguration {
 export interface CreatePeerConnectionMessage extends CommandMessage {
   command: "createPeerConnection";
   connectiontype: string;
-  url: string;
+  connectionUrl: string;
   services: ServiceConfiguration[];
   tiebreaker: boolean;
 }
 export function isCreatePeerConnectionMessage(
   message: CommandMessage
 ): message is CreatePeerConnectionMessage {
-  return message.command === "createPeerConnection";
+  return message.command === "createPeerconnection";
 }
 
 export interface SignalingMessage extends Message {

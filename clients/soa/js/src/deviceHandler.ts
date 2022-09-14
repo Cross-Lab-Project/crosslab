@@ -22,7 +22,7 @@ export class DeviceHandler {
         this.ws.send(
           JSON.stringify({
             messageType: "authenticate",
-            url: connectOptions.id,
+            deviceUrl: connectOptions.id,
             token: connectOptions.token,
           })
         );
@@ -58,12 +58,12 @@ export class DeviceHandler {
   }
 
   private handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
-    if (this.connections.has(message.url)) {
+    if (this.connections.has(message.connectionUrl)) {
       throw Error("Can not create a connection. Connection Id is already present");
     }
     const connection = new WebRTCPeerConnection({});
     connection.tiebreaker = message.tiebreaker;
-    this.connections.set(message.url, connection);
+    this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
       const service = this.services.get(serviceConfig.serviceId);
       if (service === undefined) {
@@ -76,7 +76,7 @@ export class DeviceHandler {
         JSON.stringify(<SignalingMessage>{
           ...msg,
           messageType: "signaling",
-          connectionUrl: message.url,
+          connectionUrl: message.connectionUrl,
         })
       );
     });
