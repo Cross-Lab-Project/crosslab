@@ -28,7 +28,6 @@ services:
       - DEVICE_SERVICE_URL=device:8080
       - EXPERIMENT_SERVICE_URL=experiment:8080
       - FEDERATION_SERVICE_URL=federation:8080
-      - LOGS_SERVICE_URL=logs:8080
       - AUTH_SERVICE_URL=auth:8080
       - UPDATE_SERVICE_URL=update:8080
     networks:
