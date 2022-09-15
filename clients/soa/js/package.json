@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/soa-client",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "SOA-Client for all Crosslab",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
