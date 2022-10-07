@@ -186,7 +186,7 @@ services:
     environment:
       - VIRTUAL_HOST=www.$DOMAIN
       - VIRTUAL_PORT=8080
-      - VIRTUAL_PATH=/wide
+      - VIRTUAL_PATH=/wide/
       - VIRTUAL_DEST=/
       - LETSENCRYPT_HOST=www.$DOMAIN
     networks:
