@@ -1,4 +1,5 @@
 import { AuthClient } from './clients/auth'
+import { BookingClient } from './clients/booking'
 import { DeviceClient } from './clients/device'
 import { ExperimentClient } from './clients/experiment'
 import { FederationClient } from './clients/federation'
@@ -14,6 +15,7 @@ import {
     ValidationError,
     FetchError,
 } from './generated/auth/types'
+import { SignaturesBooking, SignaturesSchedule } from './generated/booking'
 import { SignaturesDevices, SignaturesPeerconnections } from './generated/device'
 import { SignaturesExperiments } from './generated/experiment'
 import { SignaturesInstitutions } from './generated/federation'
@@ -39,6 +41,7 @@ export class APIClient {
     private _url: string
     private _accessToken: string
     private authClient: AuthClient
+    private bookingClient: BookingClient
     private deviceClient: DeviceClient
     private experimentClient: ExperimentClient
     private federationClient: FederationClient
@@ -48,6 +51,7 @@ export class APIClient {
         this._url = url
         this._accessToken = accessToken ?? ''
         this.authClient = new AuthClient(url, accessToken)
+        this.bookingClient = new BookingClient(url, accessToken)
         this.deviceClient = new DeviceClient(url, accessToken)
         this.experimentClient = new ExperimentClient(url, accessToken)
         this.federationClient = new FederationClient(url, accessToken)
@@ -167,17 +171,18 @@ export class APIClient {
 
     /**
      * This function attempts to retrieve the list of all users.
-     * @param url The url of the authentication service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the authentication service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all users.
      */
-    public async getUsers(
-        url: string
-    ): Promise<SignaturesUsers.getUsersSuccessResponseType['body']> {
-        return (await this.authClient.getUsers(url)).body
+    public async getUsers(options?: {
+        url?: string
+    }): Promise<SignaturesUsers.getUsersSuccessResponseType['body']> {
+        return (await this.authClient.getUsers(options ? options.url : undefined)).body
     }
 
     /**
@@ -197,8 +202,9 @@ export class APIClient {
 
     /**
      * This function attempts to create a new user.
-     * @param url The url of the authentication service to be called.
      * @param user The information to be used for creating the new user.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the authentication service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -206,10 +212,17 @@ export class APIClient {
      * @returns The newly created user.
      */
     public async createUser(
-        url: string,
-        user: SignaturesUsers.postUsersBodyType
+        user: SignaturesUsers.postUsersBodyType,
+        options?: {
+            url?: string
+        }
     ): Promise<SignaturesUsers.postUsersSuccessResponseType['body']> {
-        return (await this.authClient.createUser(url, user)).body
+        return (
+            await this.authClient.createUser(
+                options ? options.url ?? this._url : this._url,
+                user
+            )
+        ).body
     }
 
     /**
@@ -273,29 +286,173 @@ export class APIClient {
         await this.authClient.removeRoleFromUser(url, role)
     }
 
+    // Booking Service API Calls
+
+    // schedule-service
+
+    /**
+     * This function attempts to retrieve the schedule for an experiment.
+     * @param experiment The experiment to retrieve the schedule for.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the booking service to be called.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The schedule of the experiment.
+     */
+    public async getSchedule(
+        experiment: SignaturesSchedule.postScheduleBodyType,
+        options?: {
+            url?: string
+        }
+    ): Promise<SignaturesSchedule.postScheduleSuccessResponseType['body']> {
+        return (
+            await this.bookingClient.getSchedule(
+                options ? options.url ?? this._url : this._url,
+                experiment
+            )
+        ).body
+    }
+
+    // booking-frontend
+
+    /**
+     * This function attempts to book an experiment using the booking service.
+     * @param experiment The experiment to be booked.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the booking service to be called.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The booking id.
+     */
+    public async bookExperiment(
+        experiment: SignaturesBooking.putBookingBodyType,
+        options?: {
+            url?: string
+        }
+    ): Promise<SignaturesBooking.putBookingSuccessResponseType['body']> {
+        return (
+            await this.bookingClient.bookExperiment(
+                options ? options.url ?? this._url : this._url,
+                experiment
+            )
+        ).body
+    }
+
+    /**
+     * This function attempts to retrieve a specific booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The requested booking.
+     */
+    public async getBooking(
+        url: string
+    ): Promise<SignaturesBooking.getBookingByIDSuccessResponseType['body']> {
+        return (await this.bookingClient.getBooking(url)).body
+    }
+
+    /**
+     * This function attempts to cancel a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async cancelBooking(url: string): Promise<void> {
+        await this.bookingClient.cancelBooking(url)
+    }
+
+    /**
+     * This function attempts to add devices to a booking.
+     * @param url The url of the booking.
+     * @param devices The devices to be added.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The booking id.
+     */
+    public async addDevicesToBooking(
+        url: string,
+        devices: SignaturesBooking.patchBookingByIDBodyType
+    ): Promise<SignaturesBooking.patchBookingByIDSuccessResponseType['body']> {
+        return (await this.bookingClient.patchBooking(url, devices)).body
+    }
+
+    /**
+     * This function attempts to delete a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async deleteBooking(url: string): Promise<void> {
+        await this.bookingClient.deleteBooking(url)
+    }
+
+    // booking-backend
+
+    /**
+     * This function attempts to lock the devices of a booking.
+     * @param url The url of the booking.
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @returns The locked booking.
+     */
+    public async lockBooking(
+        url: string
+    ): Promise<SignaturesBooking.putBookingByIDLockSuccessResponseType['body']> {
+        return (await this.bookingClient.lockBooking(url)).body
+    }
+
+    /**
+     * This function attempts to unlock the devices of a booking.
+     * @param url The url of the booking
+     * @throws {FetchError} Thrown if fetch fails.
+     * @throws {ValidationError} Thrown if the request/response validation fails.
+     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     */
+    public async unlockBooking(url: string): Promise<void> {
+        await this.bookingClient.unlockBooking(url)
+    }
+
     // Device Service API Calls
 
     // devices
 
     /**
      * This function attempts to retrieve the list of all devices.
-     * @param url The url of the device service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the device service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all devices.
      */
-    public async getDevices(
-        url: string
-    ): Promise<SignaturesDevices.getDevicesSuccessResponseType['body']> {
-        return (await this.deviceClient.getDevices(url)).body
+    public async getDevices(options?: {
+        url?: string
+    }): Promise<SignaturesDevices.getDevicesSuccessResponseType['body']> {
+        return (await this.deviceClient.getDevices(options ? options.url : undefined))
+            .body
     }
 
     /**
      * This function attempts to retrieve a specific device.
      * @param url The url of the device.
-     * @param flat_group If true resolved device groups will contain no further device groups.
+     * @param [options] Further options that may be specified.
+     * @param [options.flat_group] If true resolved device groups will contain no further device groups.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -304,16 +461,24 @@ export class APIClient {
      */
     public async getDevice(
         url: string,
-        flat_group?: boolean
+        options?: {
+            flat_group?: boolean
+        }
     ): Promise<SignaturesDevices.getDevicesByDeviceIdSuccessResponseType['body']> {
-        return (await this.deviceClient.getDevice(url, flat_group)).body
+        return (
+            await this.deviceClient.getDevice(
+                url,
+                options ? options.flat_group : undefined
+            )
+        ).body
     }
 
     /**
      * This function attempts to create a new device.
-     * @param url The url of the device service to be called.
      * @param device The information to be used for creating the new device.
-     * @param changedUrl The url to be called when changes are made to the device.
+     * @param [options] Further options that may be specified.
+     * @param [options.changedUrl] The url to be called when changes are made to the device.
+     * @param [options.url] The url of the device service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -321,17 +486,26 @@ export class APIClient {
      * @returns The newly created device.
      */
     public async createDevice(
-        url: string,
         device: SignaturesDevices.postDevicesBodyType,
-        changedUrl?: string
+        options?: {
+            changedUrl?: string
+            url?: string
+        }
     ): Promise<SignaturesDevices.postDevicesSuccessResponseType['body']> {
-        return (await this.deviceClient.createDevice(url, device, changedUrl)).body
+        return (
+            await this.deviceClient.createDevice(
+                options ? options.url ?? this._url : this._url,
+                device,
+                options ? options.changedUrl : undefined
+            )
+        ).body
     }
 
     /**
      * This function attempts to create a new instance of a virtual device.
      * @param url The url of the virtual device to be instanciated.
-     * @param changedURL The url to be called when changes are made to the created device instance.
+     * @param [options] Further options that may be specified.
+     * @param [options.changedURL] The url to be called when changes are made to the created device instance.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -340,16 +514,24 @@ export class APIClient {
      */
     public async createDeviceInstance(
         url: string,
-        changedURL?: string
+        options?: {
+            changedURL?: string
+        }
     ): Promise<SignaturesDevices.postDevicesByDeviceIdSuccessResponseType['body']> {
-        return (await this.deviceClient.createDeviceInstance(url, changedURL)).body
+        return (
+            await this.deviceClient.createDeviceInstance(
+                url,
+                options ? options.changedURL : undefined
+            )
+        ).body
     }
 
     /**
      * This function attempts to patch the information of a device.
      * @param url The url of the device.
      * @param device The information to be used for patching the device.
-     * @param changedUrl The url to be called when changes are made to the device.
+     * @param [options] Further options that may be specified.
+     * @param [options.changedUrl] The url to be called when changes are made to the device.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -359,9 +541,17 @@ export class APIClient {
     public async patchDevice(
         url: string,
         device: SignaturesDevices.patchDevicesByDeviceIdBodyType,
-        changedUrl?: string
+        options?: {
+            changedUrl?: string
+        }
     ): Promise<SignaturesDevices.patchDevicesByDeviceIdSuccessResponseType['body']> {
-        return (await this.deviceClient.patchDevice(url, device, changedUrl)).body
+        return (
+            await this.deviceClient.patchDevice(
+                url,
+                device,
+                options ? options.changedUrl : undefined
+            )
+        ).body
     }
 
     /**
@@ -436,17 +626,20 @@ export class APIClient {
 
     /**
      * This function attempts to retrieve the list of all peerconnections.
-     * @param url The url of the device service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the device service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all peerconnections.
      */
-    public async getPeerconnections(
-        url: string
-    ): Promise<SignaturesPeerconnections.getPeerconnectionsSuccessResponseType['body']> {
-        return (await this.deviceClient.getPeerconnections(url)).body
+    public async getPeerconnections(options?: {
+        url?: string
+    }): Promise<SignaturesPeerconnections.getPeerconnectionsSuccessResponseType['body']> {
+        return (
+            await this.deviceClient.getPeerconnections(options ? options.url : undefined)
+        ).body
     }
 
     /**
@@ -468,9 +661,10 @@ export class APIClient {
 
     /**
      * This function attempts to create a new peerconnection.
-     * @param url The url of the device service to be called.
      * @param peerconnection The information to be used for creating the peerconnection.
-     * @param closedUrl The url to be called when the peerconnection closes.
+     * @param [options] Further options that may be specified.
+     * @param [options.closedUrl] The url to be called when the peerconnection closes.
+     * @param [options.url] The url of the device service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -478,12 +672,18 @@ export class APIClient {
      * @returns The newly created peerconnection.
      */
     public async createPeerconnection(
-        url: string,
         peerconnection: SignaturesPeerconnections.postPeerconnectionsBodyType,
-        closedUrl?: string
+        options?: {
+            closedUrl?: string
+            url?: string
+        }
     ): Promise<SignaturesPeerconnections.postPeerconnectionsSuccessResponseType['body']> {
         return (
-            await this.deviceClient.createPeerconnection(url, peerconnection, closedUrl)
+            await this.deviceClient.createPeerconnection(
+                options ? options.url ?? this._url : this._url,
+                peerconnection,
+                options ? options.closedUrl : undefined
+            )
         ).body
     }
 
@@ -503,17 +703,20 @@ export class APIClient {
 
     /**
      * This function attempts to retrieve the list of all experiments.
-     * @param url The url of the experiment service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the experiment service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all experiments.
      */
-    public async getExperiments(
-        url: string
-    ): Promise<SignaturesExperiments.getExperimentsSuccessResponseType['body']> {
-        return (await this.experimentClient.getExperiments(url)).body
+    public async getExperiments(options?: {
+        url?: string
+    }): Promise<SignaturesExperiments.getExperimentsSuccessResponseType['body']> {
+        return (
+            await this.experimentClient.getExperiments(options ? options.url : undefined)
+        ).body
     }
 
     /**
@@ -535,8 +738,9 @@ export class APIClient {
 
     /**
      * This function attempts to create a new experiment.
-     * @param url The url of the experiment service to be called.
      * @param experiment The information to be used for creating the experiment.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the experiment service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -544,10 +748,17 @@ export class APIClient {
      * @returns The newly created experiment.
      */
     public async createExperiment(
-        url: string,
-        experiment: SignaturesExperiments.postExperimentsBodyType
+        experiment: SignaturesExperiments.postExperimentsBodyType,
+        options?: {
+            url?: string
+        }
     ): Promise<SignaturesExperiments.postExperimentsSuccessResponseType['body']> {
-        return (await this.experimentClient.createExperiment(url, experiment)).body
+        return (
+            await this.experimentClient.createExperiment(
+                options ? options.url ?? this._url : this._url,
+                experiment
+            )
+        ).body
     }
 
     /**
@@ -603,7 +814,8 @@ export class APIClient {
      * This function attempts to patch an experiment.
      * @param url The url of the experiment.
      * @param experiment The information to be used for patching the experiment.
-     * @param changedURL The url to be called when changes are made to the experiment.
+     * @param [options] Further options that may be specified.
+     * @param [options.changedURL] The url to be called when changes are made to the experiment.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -613,12 +825,19 @@ export class APIClient {
     public async patchExperiment(
         url: string,
         experiment: SignaturesExperiments.patchExperimentsByExperimentIdBodyType,
-        changedURL?: string
+        options?: {
+            changedURL?: string
+        }
     ): Promise<
         SignaturesExperiments.patchExperimentsByExperimentIdSuccessResponseType['body']
     > {
-        return (await this.experimentClient.patchExperiment(url, experiment, changedURL))
-            .body
+        return (
+            await this.experimentClient.patchExperiment(
+                url,
+                experiment,
+                options ? options.changedURL : undefined
+            )
+        ).body
     }
 
     /**
@@ -639,17 +858,20 @@ export class APIClient {
 
     /**
      * This function attempts to get the list of all institutions.
-     * @param url The url of the federation service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the federation service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all institutions.
      */
-    public async getInstitutions(
-        url: string
-    ): Promise<SignaturesInstitutions.getInstitutionsSuccessResponseType['body']> {
-        return (await this.federationClient.getInstitutions(url)).body
+    public async getInstitutions(options?: {
+        url?: string
+    }): Promise<SignaturesInstitutions.getInstitutionsSuccessResponseType['body']> {
+        return (
+            await this.federationClient.getInstitutions(options ? options.url : undefined)
+        ).body
     }
 
     /**
@@ -671,8 +893,9 @@ export class APIClient {
 
     /**
      * This function attempts to create a new institution.
-     * @param url The url of the federation service to be called.
      * @param institution The information to be used for creating the institution.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the federation service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -680,10 +903,17 @@ export class APIClient {
      * @returns The newly created institution.
      */
     public async createInstitution(
-        url: string,
-        institution: SignaturesInstitutions.postInstitutionsBodyType
+        institution: SignaturesInstitutions.postInstitutionsBodyType,
+        options?: {
+            url?: string
+        }
     ): Promise<SignaturesInstitutions.postInstitutionsSuccessResponseType['body']> {
-        return (await this.federationClient.createInstitution(url, institution)).body
+        return (
+            await this.federationClient.createInstitution(
+                options ? options.url ?? this._url : this._url,
+                institution
+            )
+        ).body
     }
 
     /**
@@ -742,23 +972,26 @@ export class APIClient {
 
     /**
      * This function attempts to retrieve the list of all updates.
-     * @param url The url of the update service to be called.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the update service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all updates.
      */
-    public async getUpdates(
-        url: string
-    ): Promise<SignaturesUpdates.getUpdatesSuccessResponseType['body']> {
-        return (await this.updateClient.getUpdates(url)).body
+    public async getUpdates(options?: {
+        url?: string
+    }): Promise<SignaturesUpdates.getUpdatesSuccessResponseType['body']> {
+        return (await this.updateClient.getUpdates(options ? options.url : undefined))
+            .body
     }
 
     /**
      * This function attempts to retrieve a specific update.
      * @param url The url of the update.
-     * @param current_version The current local version.
+     * @param [options] Further options that may be specified.
+     * @param [options.current_version] The current local version.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -767,9 +1000,14 @@ export class APIClient {
      */
     public async getUpdate(
         url: string,
-        current_version?: string
+        options?: {
+            current_version?: string
+        }
     ): Promise<string | null> {
-        const response = await this.updateClient.getUpdate(url, current_version)
+        const response = await this.updateClient.getUpdate(
+            url,
+            options ? options.current_version : undefined
+        )
         if (response.status === 303) {
             return response.headers.Location
         }
@@ -778,8 +1016,9 @@ export class APIClient {
 
     /**
      * This function attempts to create a new update.
-     * @param url The url of the update service to be called.
      * @param update The information to be used for creating the update.
+     * @param [options] Further options that may be specified.
+     * @param [options.url] The url of the update service to be called.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
@@ -787,10 +1026,17 @@ export class APIClient {
      * @returns The newly created update.
      */
     public async createUpdate(
-        url: string,
-        update: SignaturesUpdates.postUpdatesBodyType
+        update: SignaturesUpdates.postUpdatesBodyType,
+        options?: {
+            url?: string
+        }
     ): Promise<SignaturesUpdates.postUpdatesSuccessResponseType['body']> {
-        return (await this.updateClient.createUpdate(url, update)).body
+        return (
+            await this.updateClient.createUpdate(
+                options ? options.url ?? this._url : this._url,
+                update
+            )
+        ).body
     }
 
     /**
