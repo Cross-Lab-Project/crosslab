@@ -25,10 +25,9 @@ AppDataSource.initialize()
                     throw new JWTVerificationError('Payload is malformed', 401)
                 const user = jwtVerifyResult.payload
                 for (const scope of scopes) {
-                    if (!user.scopes.includes(scope))
-                        throw new JWTVerificationError('Missing Scope: ' + scope, 403)
+                    if (user.scopes.includes(scope)) return user
                 }
-                return user
+                throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403)
             },
         })
         app.listen(config.PORT)

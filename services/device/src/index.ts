@@ -5,12 +5,7 @@ import WebSocket from 'ws'
 import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
-import {
-    isUserType,
-    JWTVerificationError,
-    MalformedParameterError,
-    MissingParameterError,
-} from './generated/types'
+import { isUserType, JWTVerificationError } from './generated/types'
 import { deviceHandling } from './operations/devices'
 
 declare global {
@@ -21,28 +16,6 @@ declare global {
             wsListeners: Map<string, (socket: WebSocket) => void>
         }
     }
-}
-
-/**
- * @throws {MissingParameterError} Thrown if Authorization header is not set.
- * @throws {MalformedParameterError} Thrown if Authorization header does not have format "Bearer TOKEN".
- */
-function extract_jwt_from_request(
-    req: IncomingMessage,
-    jwtExtractionRegEx: RegExp = /^Bearer (.*)$/
-): string {
-    const authorization_header = req.headers.authorization
-    if (authorization_header === undefined) {
-        throw new MissingParameterError('Authorization Header is not set', 400)
-    }
-    const bearer_token_result = jwtExtractionRegEx.exec(authorization_header)
-    if (bearer_token_result === null || bearer_token_result.length != 2) {
-        throw new MalformedParameterError(
-            'the access token in the Authorization Header is malformed',
-            400
-        )
-    }
-    return bearer_token_result[1]
 }
 
 /**
@@ -72,7 +45,7 @@ async function JWTVerify(jwt: string | undefined, scopes: string[]) {
     for (const scope of scopes) {
         if (user.scopes.includes(scope)) return user
     }
-    throw new JWTVerificationError('Missing Scope: on of ' + scopes, 403)
+    throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403)
 }
 
 AppDataSource.initialize()

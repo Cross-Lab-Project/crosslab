@@ -86,7 +86,7 @@ export async function formatDeviceGroup(
     deviceGroup: DeviceGroupModel,
     flat_group: boolean = false
 ): Promise<DeviceGroup> {
-    const devices: (ConcreteDevice|DeviceGroup|VirtualDevice)[] = []
+    const devices: (ConcreteDevice | DeviceGroup | VirtualDevice)[] = []
     if (deviceGroup.devices) {
         for (const d of deviceGroup.devices) {
             const resolvedDevice = await resolveDeviceReference(d, flat_group)

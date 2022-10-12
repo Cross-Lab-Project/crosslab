@@ -130,13 +130,12 @@ async function runExperiment(experiment: ExperimentModel) {
     // establish peerconnections between the devices
     const peerconnectionPlans = buildConnectionPlan(experiment)
     for (const peerconnectionPlan of peerconnectionPlans) {
-        const peerconnection = await apiClient.createPeerconnection(
-            apiClient.url,
-            peerconnectionPlan,
-            config.BASE_URL +
+        const peerconnection = await apiClient.createPeerconnection(peerconnectionPlan, {
+            closedUrl:
+                config.BASE_URL +
                 (config.BASE_URL.endsWith('/') ? '' : '/') +
-                'experiments/callbacks'
-        )
+                'experiments/callbacks',
+        })
         if (!experiment.connections) experiment.connections = []
         if (!peerconnection.url)
             throw new MissingPropertyError(

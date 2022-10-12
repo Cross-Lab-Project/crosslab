@@ -93,7 +93,7 @@ export class ServiceConfigurationModel {
     )
     participants?: ParticipantModel[]
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.serviceConfigurations)
-    experiment?: ExperimentModel[]
+    experiment?: ExperimentModel
 }
 
 @Entity({ name: 'Participant' })

@@ -22,7 +22,7 @@ export async function test() {
                 name: "Example Concrete Device",
                 description: "An example for a concrete device"
             }
-            const device = await apiClient.createDevice(apiClient.url, {
+            const device = await apiClient.createDevice({
                 ...deviceInit, 
                 announcedAvailability: [
                     {
@@ -40,7 +40,7 @@ export async function test() {
                 name: "Example Virtual Device",
                 description: "An example for a virtual device"
             }
-            const device = await apiClient.createDevice(apiClient.url, deviceInit)
+            const device = await apiClient.createDevice(deviceInit)
             console.log(JSON.stringify(device, null, 4))
             createdDevices.push(device)
         })
@@ -52,7 +52,7 @@ export async function test() {
                 description: "An example for a device group",
                 devices: createdDevices
             }
-            const device = await apiClient.createDevice(apiClient.url, deviceInit)
+            const device = await apiClient.createDevice(deviceInit)
             console.log(JSON.stringify(device, null, 4))
             createdDevices.push(device)
         })

@@ -19,7 +19,7 @@
     "typescript": "^4.8.2"
   },
   "dependencies": {
-    "@cross-lab-project/api-client": "^0.0.21",
+    "@cross-lab-project/api-client": "^0.0.24",
     "ajv-formats": "^2.1.1"
   }
 }
