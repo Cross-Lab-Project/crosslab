@@ -3,7 +3,9 @@ FROM node:lts-alpine AS build
 ARG ENV
 WORKDIR /app
 COPY . /app/
-RUN chmod u+x build.sh && ./build.sh
+RUN npm ci
+RUN npm run build
+RUN if [ "$ENV" != "DEV" ]; then npm ci --omit=dev; fi;
  
 # Production Image
 FROM node:lts-alpine

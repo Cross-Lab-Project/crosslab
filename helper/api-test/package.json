@@ -8,7 +8,8 @@
     "build-docker": "./docker/build-docker-dev-images.sh",
     "build-docker-win": ".\\docker\\build-docker-dev-images.bat",
     "stop-docker": "docker-compose -f docker/docker-compose.yml down",
-    "reset-docker": "docker-compose -f docker/docker-compose.yml down && docker volume rm $(docker volume ls -f 'name=crosslab_' --format '{{.Name}}')",
+    "reset-docker": "./docker/reset-docker-dev.sh",
+    "reset-docker-win": ".\\docker\\reset-docker-dev.bat",
     "test": "ts-mocha -p tsconfig.json src/index.ts"
   },
   "author": "Eduard Valeev",

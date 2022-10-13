@@ -1,8 +1,8 @@
-cd ../../services/auth && npm install && npm run build
-cd ../../services/device && npm install && npm run build
-cd ../../services/experiment && npm install && npm run build
-cd ../../services/federation && npm install && npm run build
-cd ../../services/update && npm install && npm run build
+cd ../../services/auth && npm ci && npm run build
+cd ../../services/device && npm ci && npm run build
+cd ../../services/experiment && npm ci && npm run build
+cd ../../services/federation && npm ci && npm run build
+cd ../../services/update && npm ci && npm run build
 docker build --build-arg "ENV=DEV" ../../services/auth -t crosslab/auth-service-dev
 docker build --build-arg "ENV=DEV" ../../services/device -t crosslab/device-service-dev
 docker build --build-arg "ENV=DEV" ../../services/experiment -t crosslab/experiment-service-dev
