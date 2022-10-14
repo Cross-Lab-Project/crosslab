@@ -275,6 +275,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         ...virtualDevice,
         type: 'device',
         announcedAvailability: [{ available: true }],
+        services: []
     })
     device.owner = user.url
     await concreteDeviceRepository.save(device)

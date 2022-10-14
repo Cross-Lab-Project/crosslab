@@ -9,6 +9,7 @@ import {
     TimeSlotModel,
     ServiceConfigModel,
     VirtualDeviceModel,
+    ServiceModel,
 } from './model'
 
 export const AppDataSource = new DataSource({
@@ -25,5 +26,6 @@ export const AppDataSource = new DataSource({
         DeviceReferenceModel,
         PeerconnectionModel,
         TimeSlotModel,
+        ServiceModel
     ],
 })

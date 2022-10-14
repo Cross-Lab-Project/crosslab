@@ -69,6 +69,11 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
     experiment?: string
     @Column()
     token?: string
+    @OneToMany(() => ServiceModel, (serviceDescription) => serviceDescription.device, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
+    services?: ServiceModel[]
 }
 
 @ChildEntity('group')
@@ -180,4 +185,14 @@ export class ServiceConfigModel {
     device?: DeviceReferenceModel
     @DeleteDateColumn()
     deletedAt?: Date
+}
+
+@Entity({ name: 'ServiceDescription'})
+export class ServiceModel {
+    @PrimaryGeneratedColumn()
+    id!: number
+    @Column()
+    description!: string
+    @ManyToOne(() => ConcreteDeviceModel, (concreteDevice) => concreteDevice.services)
+    device?: ConcreteDeviceModel
 }

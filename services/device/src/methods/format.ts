@@ -73,6 +73,7 @@ export function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevic
             : undefined,
         connected: device.connected !== undefined ? device.connected : undefined,
         experiment: device.experiment ? device.experiment : undefined,
+        services: device.services ? device.services.map(sd => JSON.parse(sd.description)) : undefined
     }
 }
 

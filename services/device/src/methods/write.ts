@@ -19,6 +19,7 @@ import {
     ConcreteDeviceModel,
     DeviceGroupModel,
     VirtualDeviceModel,
+    ServiceModel,
 } from '../model'
 import { applyAvailabilityRules } from './availability'
 
@@ -77,6 +78,17 @@ export function writeConcreteDevice(
     concreteDeviceModel.connected = false
     concreteDeviceModel.token = undefined
     concreteDeviceModel.experiment = concreteDevice.experiment
+
+    if (concreteDevice.services) {
+        if (!concreteDeviceModel.services)
+            concreteDeviceModel.services = []
+        const serviceRepository = AppDataSource.getRepository(ServiceModel)
+        for (const service of concreteDevice.services) {
+            const serviceModel = serviceRepository.create()
+            serviceModel.description = JSON.stringify(service)
+            concreteDeviceModel.services.push(serviceModel)
+        }
+    }
 
     if (concreteDevice.announcedAvailability) {
         if (!concreteDeviceModel.availabilityRules)
