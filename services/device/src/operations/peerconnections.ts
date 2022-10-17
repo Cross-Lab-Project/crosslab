@@ -78,8 +78,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnection.deviceA.config
-            ? peerconnection.deviceA.config.map(formatServiceConfig)
+        services: peerconnection.deviceB.config
+            ? peerconnection.deviceB.config.map(formatServiceConfig)
             : [],
         tiebreaker: false,
     }
