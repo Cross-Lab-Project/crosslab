@@ -1,5 +1,9 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { Prosumer, Service, ServiceConfiguration } from "@cross-lab-project/soa-client"
+import {
+  Prosumer,
+  Service,
+  ServiceConfiguration,
+} from "@cross-lab-project/soa-client";
 
 import {
   ConnectionInterface,
@@ -9,7 +13,8 @@ import {
 import { DataChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
 import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
 
-interface ConnectionInterfaceConfigurationUpstream extends ConnectionInterfaceConfiguration {
+interface ConnectionInterfaceConfigurationUpstream
+  extends ConnectionInterfaceConfiguration {
   interfaceType: string;
   interfaceId: string;
   busId: string;
@@ -63,9 +68,14 @@ export class ElectricalConnectionService
   }
 
   getMeta() {
-    const interfaceDescriptions = Array.from(this.interfaceConstructors).map((constructors) => {
-      return { ...constructors[1].getDescription(), interfaceType: constructors[1].interfaceType };
-    });
+    const interfaceDescriptions = Array.from(this.interfaceConstructors).map(
+      (constructors) => {
+        return {
+          ...constructors[1].getDescription(),
+          interfaceType: constructors[1].interfaceType,
+        };
+      }
+    );
     return {
       serviceType: ServiceType,
       serviceId: this.serviceId,
@@ -74,14 +84,19 @@ export class ElectricalConnectionService
     };
   }
 
-  addInterface(electricalInterfaceConstructor: ConstructableConnectionInterface): void {
+  addInterface(
+    electricalInterfaceConstructor: ConstructableConnectionInterface
+  ): void {
     this.interfaceConstructors.set(
       electricalInterfaceConstructor.interfaceType,
       electricalInterfaceConstructor
     );
   }
 
-  setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
+  setupConnection(
+    connection: PeerConnection,
+    serviceConfig: ServiceConfiguration
+  ): void {
     checkConfig(serviceConfig);
 
     const channel = new DataChannel();
@@ -92,7 +107,9 @@ export class ElectricalConnectionService
 
     for (const interfaceConfig of serviceConfig.interfaces) {
       // find interface or create a new interface
-      let electricalInterface = this.interfaces.get(interfaceConfig.interfaceId);
+      let electricalInterface = this.interfaces.get(
+        interfaceConfig.interfaceId
+      );
       if (electricalInterface === undefined) {
         const electricalInterfaceConstructor = this.interfaceConstructors.get(
           interfaceConfig.interfaceType
@@ -100,7 +117,8 @@ export class ElectricalConnectionService
         if (electricalInterfaceConstructor === undefined) {
           throw Error("No Interface for the interface config was found");
         }
-        electricalInterface = electricalInterfaceConstructor.create(interfaceConfig);
+        electricalInterface =
+          electricalInterfaceConstructor.create(interfaceConfig);
         this.interfaces.set(interfaceConfig.interfaceId, electricalInterface);
         this.emit("newInterface", { connectionInterface: electricalInterface });
       }
@@ -137,18 +155,22 @@ export class ElectricalConnectionService
     });*/
   }
 
-  handleData(data: string): void {
-    const message: ElectricalServiceMessage = JSON.parse(data);
-    const electricalInterfaceIds = this.interfacesByBusId.get(message.busId);
-    if (electricalInterfaceIds === undefined) {
-      throw Error("BusId not found");
-    }
-    for (const electricalInterfaceId of electricalInterfaceIds) {
-      const electricalInterface = this.interfaces.get(electricalInterfaceId);
-      if (electricalInterface === undefined) {
-        throw Error("ElectricalInterface not found");
+  handleData(data: string | Blob | ArrayBuffer | ArrayBufferView): void {
+    if (typeof data === "string") {
+      const message: ElectricalServiceMessage = JSON.parse(data);
+      const electricalInterfaceIds = this.interfacesByBusId.get(message.busId);
+      if (electricalInterfaceIds === undefined) {
+        throw Error("BusId not found");
       }
-      electricalInterface.downstreamData(message.data);
+      for (const electricalInterfaceId of electricalInterfaceIds) {
+        const electricalInterface = this.interfaces.get(electricalInterfaceId);
+        if (electricalInterface === undefined) {
+          throw Error("ElectricalInterface not found");
+        }
+        electricalInterface.downstreamData(message.data);
+      }
+    } else {
+      throw Error("Data is not a string");
     }
   }
 }

@@ -1,8 +1,8 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ServiceConfiguration } from "../../devicehandler/deviceMessages";
-import { DataChannel } from "../../devicehandler/peer/channel";
-import { PeerConnection } from "../../devicehandler/peer/connection";
-import { Service, ServiceDirection, Producer, Consumer } from "../../devicehandler/service";
+
+import { Producer, Consumer, Service, ServiceConfiguration,ServiceDirection } from "@cross-lab-project/soa-client"
+import { DataChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
+import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
 
 type ServiceType = "goldi/file";
 const ServiceType: ServiceType = "goldi/file";
@@ -12,7 +12,7 @@ export interface FileServiceConfiguration extends ServiceConfiguration {
 }
 function checkConfig(config: ServiceConfiguration): asserts config is FileServiceConfiguration {
   if (config.serviceType !== ServiceType) {
-    throw Error("Service Configuration needs to be for FileService type");
+    //throw Error("Service Configuration needs to be for FileService type");
   }
 }
 
@@ -79,7 +79,8 @@ export class FileService__Producer extends FileService {
   async sendFile(file: File) {
     if (this.channel !== undefined) {
       await this.channel.ready();
-      this.channel.send(JSON.stringify(file));
+      this.channel.send(JSON.stringify({fileType: 'hex', length: file.content.length}));
+      this.channel.send(file.content);
     }
   }
 }
@@ -94,20 +95,13 @@ export class FileService__Consumer extends FileService {
     connection.receive(serviceConfig, "data", channel);
   }
 
-  handleData(data: string) {
-    const file: File = JSON.parse(data);
-    switch (file.fileType) {
-      case FileType["Hex"]: {
-        this.emit("receiveHex", { file: file.content });
-        break;
-      }
-      case FileType["Elf"]: {
-        this.emit("receiveElf", { file: file.content });
-        break;
-      }
-      default: {
-        throw Error("No supported FileType found");
-      }
+  private header: any;
+  handleData(data: string | Blob | ArrayBuffer | ArrayBufferView) {
+    if (typeof data === "string") {
+      this.header = JSON.parse(data);
+    } else {
+      console.log(this.header)
+      throw Error("FileService__Consumer not implemented");
     }
   }
 }

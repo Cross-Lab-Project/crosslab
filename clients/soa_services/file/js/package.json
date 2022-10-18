@@ -1,7 +1,7 @@
 {
-  "name": "@cross-lab-project/soa-service-webcam",
-  "version": "0.0.3",
-  "description": "SOA-Service Webcam",
+  "name": "@cross-lab-project/soa-service-file",
+  "version": "0.0.5",
+  "description": "SOA-Service File",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
