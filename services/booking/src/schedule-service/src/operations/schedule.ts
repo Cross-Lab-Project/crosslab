@@ -2,13 +2,13 @@ import {
     Timeslot,
 } from "../generated/types"
 import {
-    postBookingScheduleBodyType,
-    postBookingScheduleResponseType,
-    postBookingScheduleSignature,
-} from "../generated/signatures/booking"
+    postScheduleBodyType,
+    postScheduleSuccessResponseType,
+    postScheduleSignature,
+} from "../generated/signatures/schedule"
 
 import { APIClient } from "@cross-lab-project/api-client"
-import { ConcreteDevice, DeviceGroup, VirtualDevice } from "@cross-lab-project/api-client/dist/generated/device/types"
+import { ConcreteDevice, DeviceGroup, InstantiableCloudDevice, InstantiableBrowserDevice } from "@cross-lab-project/api-client/dist/generated/device/types"
 import { getDevicesByDeviceIdResponseType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, map } from "lodash"
@@ -20,13 +20,13 @@ import { BelongsToUs, GetIDFromURL } from "../../../common/auth"
 import { timetableAnd, timetableNot } from "../timetable"
 
 // TODO: Missing availability since it is not yet well defined
-export const postBookingSchedule: postBookingScheduleSignature = async (body, user) => {
+export const postSchedule: postScheduleSignature = async (body, user) => {
     let api: APIClient = new APIClient(config.OwnURL);
 
-    const laterReq = new Map<string, [number[], number[], postBookingScheduleBodyType]>(); // Device in request, device list, request
+    const laterReq = new Map<string, [number[], number[], postScheduleBodyType]>(); // Device in request, device list, request
 
     let timetables: Timeslot[][][] = []; // Booked: Device in request, device list, actual reserved time slots
-    let availability: Promise<ConcreteDevice | DeviceGroup | VirtualDevice>[][] = []; // Device in request, device list
+    let availability: Promise<ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice>[][] = []; // Device in request, device list
     let realDevices: string[][] = []; // Device in request, device list
 
 
@@ -36,22 +36,22 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         realDevices.push([]);
         timetables.push([]);
         availability.push([]);
-        let r: ConcreteDevice | DeviceGroup | VirtualDevice;
+        let r: ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice;
         try {
-        r = await api.getDevice(body.Experiment.Devices[device].ID, true );
+            r = await api.getDevice(body.Experiment.Devices[device].ID, { flat_group: true });
         } catch (err) {
             // Bad status code
-            if (r.status !== undefined) {
-                if (r.status === 503) {
+            if (err.response !== undefined && err.response.status !== undefined) {
+                if (err.response.status === 503) {
                     return {
                         status: 503
                     };
                 };
-                if (r.status === 404) {
-                    return { status: 404, body: [body.Experiment.Devices[device].ID] };
+                if (err.response.status === 404) {
+                    return { status: 404, body: body.Experiment.Devices[device].ID };
                 }
                 //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
-                return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + r.status };
+                return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + err.response.status };
             };
 
             // any other error
@@ -59,12 +59,12 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         }
 
         if (r.url != body.Experiment.Devices[device].ID) {
-            return { status: 500, body: "API returned bad result (requested device" + body.Experiment.Devices[device].ID + ", got " + r.body.url + ")" };
+            return { status: 500, body: "API returned bad result (requested device" + body.Experiment.Devices[device].ID + ", got " + r.url + ")" };
         }
 
         if (r.type === "device") {
             realDevices[device].push(r.url)
-        } else if (r.type === "virtual") {
+        } else if (r.type === "cloud instantiable" || r.type === "edge instantiable") {
             // TODO
             // For now, just add free time
             realDevices[device].push(r.url)
@@ -93,7 +93,7 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
                     };
                 }
                 if (laterReq.get(d.origin) === undefined) {
-                    let req: postBookingScheduleBodyType = cloneDeep(body);
+                    let req: postScheduleBodyType = cloneDeep(body);
                     req.onlyOwn = true;
                     req.Experiment.Devices = [];
                     req.Combined = false;
@@ -114,38 +114,43 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
             timetables[device][i] = t;
 
             // Get availability
-            availability[device].push(api.getDevice(realDevices[device][i], false));
+            availability[device].push(api.getDevice(realDevices[device][i], { flat_group: false }));
         }
     };
 
-    const lrpromise = new Map<string, [number[], number[], postBookingScheduleBodyType, Promise<postBookingScheduleResponseType>]>(); // Device in request, device list, request
+    const lrpromise = new Map<string, [number[], number[], postScheduleBodyType, Promise<postScheduleSuccessResponseType['body']>]>(); // Device in request, device list, request
     for (let k of laterReq.keys()) {
         let lr = laterReq.get(k);
-        let req = api.postBookingSchedule(lr[2], k + "/booking/schedule");
+        let req = api.getSchedule(lr[2], { url: k + "/booking/schedule" });
 
         lrpromise.set(k, [lr[0], lr[1], lr[2], req]);
     }
 
     for (let k of laterReq.keys()) {
         let lr = lrpromise.get(k);
-        let req = await lr[3];
-        if (req.status != 200) {
-            if (req.status == 503) {
-                return { status: 503 };
-            }
-            if (req.status == 404) {
-                return { status: 404, body: req.body };
-            }
-            return { status: 500, body: "Institution " + k + " returned status code" + req.status };
+        let req: postScheduleSuccessResponseType['body'];
+        try {
+            req = await lr[3];
+        } catch (err) {
+            if (err.response !== undefined && err.response.status !== undefined) {
+                if (err.response.status == 503) {
+                    return { status: 503 };
+                }
+                if (err.response.status == 404) {
+                    return { status: 404, body: err.response.body };
+                }
+                return { status: 500, body: "Institution " + k + " returned status code " + err.response.status };
+            };
+            throw err;
         }
-        if (req.body.length != lr[2].Experiment.Devices.length) {
-            return { status: 500, body: "Institution " + k + " returned bad result (requested " + lr[2].Experiment.Devices.length + " devices, got " + req.body.length + ")" };
+        if (req.length != lr[2].Experiment.Devices.length) {
+            return { status: 500, body: "Institution " + k + " returned bad result (requested " + lr[2].Experiment.Devices.length + " devices, got " + req.length + ")" };
         }
-        for (let i = 0; i < req.body.length; i++) {
-            if (req.body[i].Device != lr[2].Experiment.Devices[i].ID) {
-                return { status: 500, body: "Institution " + k + " returned bad result (requested device" + lr[2].Experiment.Devices[i].ID + ", got " + req.body[i].Device + ")" };
+        for (let i = 0; i < req.length; i++) {
+            if (req[i].Device != lr[2].Experiment.Devices[i].ID) {
+                return { status: 500, body: "Institution " + k + " returned bad result (requested device" + lr[2].Experiment.Devices[i].ID + ", got " + req[i].Device + ")" };
             }
-            timetables[lr[i][0]][lr[i][1]] = req.body[i].Booked;
+            timetables[lr[i][0]][lr[i][1]] = req[i].Booked;
         }
     }
 
@@ -161,24 +166,35 @@ export const postBookingSchedule: postBookingScheduleSignature = async (body, us
         let free: Timeslot[][] = []
         for (let i = 0; i < timetables[device].length; i++) {
             // Add availability
-            let a = await availability[device][i];
-            if (a.status !== 200) {
-                // TODO: Remove later if errors are well specified
-                //if (r.status === 503) {
-                //    return {
-                //        status: 503
-                //    };
-                //};
-                if (a.status === 404) {
-                    return { status: 404, body: [realDevices[device][i]] };
-                }
-                //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
-                return { status: 500, body: "Device request " + realDevices[device][i] + " returned status code" + a.status };
-            };
-            if (a.body.type == "group") {
+            let a: ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice;
+            try {
+                a = await availability[device][i];
+            } catch (err) {
+                if (err.status !== undefined) {
+                    // TODO: Remove later if errors are well specified
+                    if (err.status === 503) {
+                        return {
+                            status: 503
+                        };
+                    };
+                    if (err.status === 404) {
+                        return { status: 404, body: realDevices[device][i] };
+                    }
+                    //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
+                    return { status: 500, body: "Device request " + realDevices[device][i] + " returned status code" + err.status };
+                };
+                throw err;
+            }
+            if (a.type == "group") {
                 return { status: 500, body: "Device request " + realDevices[device][i] + " is group but shouldn't" };
             }
-            let available: Timeslot[] = timetableAnd(a.body.announcedAvailability.map((e) => { return { Start: e.start, End: e.end } }));
+
+            let available: Timeslot[];
+            if (a.type == "cloud instantiable" || a.type == "edge instantiable") {
+                available = [{ Start: body.Time.Start, End: body.Time.End }]
+            } else {
+                available = timetableAnd(a.announcedAvailability.map((e) => { return { Start: e.start, End: e.end } }));
+            }
             let notAvailable: Timeslot[] = timetableNot(available, dayjs(body.Time.Start), dayjs(body.Time.End))
             let notFree: Timeslot[] = timetableAnd(notAvailable, timetables[device][i]);
 

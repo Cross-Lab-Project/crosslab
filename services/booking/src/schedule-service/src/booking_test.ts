@@ -4,7 +4,7 @@ import * as http from 'http';
 import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 
-import { postBookingSchedule, getTimetables } from "./operations/booking"
+import { postSchedule, getTimetables } from "./operations/schedule"
 import { config } from "../../common/config";
 
 let device_server: http.Server;
@@ -106,7 +106,7 @@ mocha.describe("operations.ts", function () {
                         res.status(proxy_server_status).send("Faking error" + proxy_server_status);
                         return;
                     case 404:
-                        res.status(proxy_server_status).send("[\"http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000\"]");
+                        res.status(proxy_server_status).send("\"http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000\"");
                         return;
                     default:
                         res.status(proxy_server_status).send("Undefined error" + proxy_server_status);
@@ -187,7 +187,7 @@ mocha.describe("operations.ts", function () {
         let correctFree = [{ Start: "2022-06-25T00:00:00Z", End: "2022-06-27T00:10:00Z" }, { Start: "2022-06-27T00:30:00Z", End: "2022-06-27T01:00:00Z" }, { Start: "2022-06-27T02:00:00Z", End: "2022-06-27T06:00:00Z" }, { Start: "2022-06-27T07:00:00Z", End: "2022-06-28T23:59:59Z" }]
         let correctBooked = [{ Start: "2022-06-27T00:10:00Z", End: "2022-06-27T00:30:00Z" }, { Start: "2022-06-27T01:00:00Z", End: "2022-06-27T02:00:00Z" }, { Start: "2022-06-27T06:00:00Z", End: "2022-06-27T07:00:00Z" }]
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 200) {
             throw Error("Response error: " + r.body.status);
         }
@@ -239,7 +239,7 @@ mocha.describe("operations.ts", function () {
             }
         }
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: true, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: true, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 200) {
             throw Error("Response error: " + r.body.status);
         }
@@ -285,7 +285,7 @@ mocha.describe("operations.ts", function () {
             }
         }
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 200) {
             throw Error("Response error: " + r.body.status);
         }
@@ -333,7 +333,7 @@ mocha.describe("operations.ts", function () {
     });
 
     mocha.it("postBookingSchedule (completely free)", async function () {
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "1999-06-25T00:00:00Z", End: "1999-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "1999-06-25T00:00:00Z", End: "1999-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 200) {
             throw Error("Response error: " + r.body.status);
         }
@@ -372,7 +372,7 @@ mocha.describe("operations.ts", function () {
         device_service_status = 503;
         proxy_server_status = 200;
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (device overloaded): " + r.status);
         }
@@ -384,7 +384,7 @@ mocha.describe("operations.ts", function () {
         proxy_server_status = 200;
         proxy_device_service_status = 503;
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (device overloaded): " + r.status);
         }
@@ -396,7 +396,7 @@ mocha.describe("operations.ts", function () {
         proxy_device_service_status = 200;
         device_wrong_device = true;
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 500) {
             throw Error("Response error (device wrong device): " + r.status);
         }
@@ -408,7 +408,7 @@ mocha.describe("operations.ts", function () {
         device_wrong_device = false;
         device_single_is_group = true;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 500) {
             throw Error("Response error (device is group): " + r.status);
         }
@@ -419,7 +419,7 @@ mocha.describe("operations.ts", function () {
         proxy_device_service_status = 200;
         device_single_is_group = false;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (proxy overloaded): " + r.status);
         }
@@ -428,7 +428,7 @@ mocha.describe("operations.ts", function () {
         device_service_status = 404;
         proxy_server_status = 200;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 404) {
             throw Error("Response error (proxy 404): " + r.status);
         }
@@ -437,7 +437,7 @@ mocha.describe("operations.ts", function () {
         device_service_status = 200;
         proxy_server_status = 404;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 404) {
             throw Error("Response error (proxy 404): " + r.status);
         }
@@ -448,7 +448,7 @@ mocha.describe("operations.ts", function () {
         proxy_server_status = 200;
         proxy_device_service_status = 500;
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (device generic error): " + r.status);
         }
@@ -461,7 +461,7 @@ mocha.describe("operations.ts", function () {
         proxy_server_status = 200;
         proxy_device_service_status = 200;
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 503) {
             throw Error("Response error (device generic error): " + r.status);
         }
@@ -472,7 +472,7 @@ mocha.describe("operations.ts", function () {
         proxy_server_status = 500;
         proxy_device_service_status = 200;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 500) {
             throw Error("Response error (proxy 500): " + r.status);
         }
@@ -482,7 +482,7 @@ mocha.describe("operations.ts", function () {
         proxy_server_status = 200;
         proxy_schedule_short_body = true;
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 500) {
             throw Error("Response error (wrong number of devices): " + r.status);
         }
@@ -493,7 +493,7 @@ mocha.describe("operations.ts", function () {
         proxy_schedule_short_body = false;
         proxy_schedule_wrong_device = true
 
-        r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", role: "", scopes: [""] });
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 500) {
             throw Error("Response error (wrong devices): " + r.status);
         }
@@ -502,7 +502,7 @@ mocha.describe("operations.ts", function () {
     mocha.it("postBookingSchedule (bad requests)", async function () {
         this.timeout(10000);
 
-        let r = await postBookingSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: true }, { username: "test", role: "", scopes: [""] });
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: true }, { username: "test", url: "localhost/user/test", scopes: [""] });
         if (r.status !== 400) {
             throw Error("Response error (onlyOwn wrong usage): " + r.status);
         }

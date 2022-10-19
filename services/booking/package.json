@@ -13,6 +13,6 @@
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "dependencies": {
-    "@cross-lab-project/openapi-codegen": "^0.0.21"
+    "@cross-lab-project/openapi-codegen": "^0.0.34"
   }
 }

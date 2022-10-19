@@ -4,7 +4,7 @@ import {config} from "../../common/config";
 
 app.initService({
     JWTVerify: async (_jwt, _scopes) => {
-        return { username: "testuser", role: "superadmin", scopes: [] }
+        return { username: "testuser", url: "localhost/user/testuser", scopes: [] }
     }
 })
 

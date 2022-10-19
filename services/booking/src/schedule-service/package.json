@@ -4,14 +4,14 @@
   "description": "Part of booking service. Shows schedule of devices - horizontal scaleable.",
   "main": "index.ts",
   "scripts": {
-    "test": "npm run build && npx nyc --include=\"build/schedule-service/src/operations/booking.js\" --include=\"build/schedule-service/src/timetable.js\" mocha build/schedule-service/src/*_test.js",
+    "test": "npm run build && npx nyc --include=\"build/schedule-service/src/operations/schedule.js\" --include=\"build/schedule-service/src/timetable.js\" mocha build/schedule-service/src/*_test.js",
     "build": "npx tsc",
     "start": "npm run build && node build/schedule-service/index.js"
   },
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
-    "@cross-lab-project/api-client": "^0.0.21",
+    "@cross-lab-project/api-client": "^0.0.25",
     "@cross-lab-project/openapi-codegen": "^0.0.34",
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.14.182",
@@ -22,7 +22,7 @@
     "typescript": "^4.7.4"
   },
   "devDependencies": {
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^10.0.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0"
   }
