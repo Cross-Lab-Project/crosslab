@@ -7,7 +7,6 @@ import { ExperimentModel, PeerconnectionModel } from '../model'
 import {
     InvalidStateError,
     MissingPropertyError,
-    ServiceConfigurationError,
 } from '../types/errors'
 import { experimentUrlFromId } from './utils'
 
@@ -45,11 +44,14 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
             'Experiment must have a configuration to be run',
             400
         )
+
     if (!experiment.devices || experiment.devices.length === 0)
         throw new MissingPropertyError('Experiment must have a device to be run', 400)
+
     const peerconnections: (Peerconnection & {
         devices?: [{ role?: string }, { role?: string }]
     })[] = []
+
     for (let i = 0; i < experiment.devices.length; i++) {
         for (let j = i + 1; j < experiment.devices.length; j++) {
             peerconnections.push({
@@ -64,6 +66,7 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
             })
         }
     }
+
     for (const serviceConfiguration of experiment.serviceConfigurations) {
         if (!serviceConfiguration.participants)
             throw new MissingPropertyError(
@@ -90,11 +93,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
                             (p) => p.role === peerdevice.role
                         )
                         if (!peerparticipant)
-                            throw new ServiceConfigurationError(
-                                'Peer device is not participating in service',
-                                400
-                            )
-                        if (!peerparticipant)
+                            continue
+                        if (!participant.serviceId || !peerparticipant.serviceId)
                             throw new MissingPropertyError(
                                 'ServiceId is missing in participant',
                                 400
@@ -113,7 +113,14 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     }
 
     console.log('connection plan', JSON.stringify(peerconnections, null, 4))
-    return peerconnections
+    return peerconnections.filter((pc) => {
+        if (!pc.devices) return false
+        if (!pc.devices[0] || !pc.devices[1]) return false
+        if (!pc.devices[0].config || !pc.devices[1].config) return false
+        if (!pc.devices[0].config.services || !pc.devices[1].config.services) return false
+        if (pc.devices[0].config.services.length === 0 || pc.devices[1].config.services.length === 0) return false
+        return true
+    })
 }
 
 async function runExperiment(experiment: ExperimentModel) {
