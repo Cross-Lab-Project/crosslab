@@ -222,6 +222,11 @@ services:
       - KEY=$VPN_KEY
     restart: on-failure
 
+# Coturn ##########################################################################################
+  coturn:
+    image: coturn/coturn
+    network_mode: "host"
+
 networks:
   crosslab:
 
