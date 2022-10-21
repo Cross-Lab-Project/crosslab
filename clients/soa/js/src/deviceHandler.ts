@@ -61,7 +61,7 @@ export class DeviceHandler {
     if (this.connections.has(message.connectionUrl)) {
       throw Error("Can not create a connection. Connection Id is already present");
     }
-    const connection = new WebRTCPeerConnection({iceServers: [{urls: "stun:stun.l.google.com:19302"}]});
+    const connection = new WebRTCPeerConnection({iceServers: [{urls: "stun:stun.goldi-labs.de:3478"},{urls:"turn:turn.goldi-labs.de:3478"}]});
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
