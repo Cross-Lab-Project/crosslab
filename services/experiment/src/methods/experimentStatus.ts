@@ -120,8 +120,8 @@ function updateServiceConfig(
     device.config = device.config ?? {}
     device.config.services = device.config.services ?? []
     device.config?.services?.push({
-        ...serviceConfig.configuration,
-        ...participant.config,
+        ...JSON.parse(serviceConfig.configuration),
+        ...JSON.parse(participant.config),
         serviceId: participant.serviceId,
         serviceType: serviceConfig.serviceType,
         remoteServiceId: remoteParticipant.serviceId,
