@@ -3,11 +3,13 @@ import { config } from '../config'
 import { AppDataSource } from '../data_source'
 import { MalformedBodyError } from '../generated/types'
 import { apiClient } from '../globals'
-import { ExperimentModel, PeerconnectionModel } from '../model'
 import {
-    InvalidStateError,
-    MissingPropertyError,
-} from '../types/errors'
+    DeviceModel,
+    ExperimentModel,
+    PeerconnectionModel,
+    ServiceConfigurationModel,
+} from '../model'
+import { InvalidStateError, MissingPropertyError } from '../types/errors'
 import { experimentUrlFromId } from './utils'
 
 export async function bookExperiment(experiment: ExperimentModel) {
@@ -34,6 +36,20 @@ export async function bookExperiment(experiment: ExperimentModel) {
     await experimentRepository.save(experiment)
 }
 
+function sortServiceParticipantsByDeviceId(
+    serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] }
+) {
+    const swap = serviceConfig.devices[0] > serviceConfig.devices[1]
+    return {
+        ...serviceConfig,
+        participants: swap
+            ? [serviceConfig.participants![1], serviceConfig.participants![0]]
+            : [serviceConfig.participants![0], serviceConfig.participants![1]],
+        devices: swap
+            ? [serviceConfig.devices[1], serviceConfig.devices[0]]
+            : [serviceConfig.devices[0], serviceConfig.devices[1]],
+    }
+}
 function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     console.log('building connection plan for experiment', experiment.uuid)
     if (
@@ -48,79 +64,137 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     if (!experiment.devices || experiment.devices.length === 0)
         throw new MissingPropertyError('Experiment must have a device to be run', 400)
 
-    const peerconnections: (Peerconnection & {
-        devices?: [{ role?: string }, { role?: string }]
-    })[] = []
+    const pairwiseServiceConfigurations: typeof experiment['serviceConfigurations'] =
+        toPairwiseServiceConfig(experiment)
 
-    for (let i = 0; i < experiment.devices.length; i++) {
-        for (let j = i + 1; j < experiment.devices.length; j++) {
-            peerconnections.push({
+    const deviceMappedServiceConfigs: any[] = mapRoleConfigToDevices(
+        pairwiseServiceConfigurations,
+        experiment
+    )
+
+    const sortedDeviceMappedServiceConfigs = deviceMappedServiceConfigs.map(
+        sortServiceParticipantsByDeviceId
+    )
+
+    const peerconnections: Record<string, Pick<Required<Peerconnection>, 'devices'>> = {}
+    for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
+        const lookupKey = `${serviceConfig.devices[0]}::${serviceConfig.devices[1]}`
+        if (!(lookupKey in peerconnections)) {
+            peerconnections[lookupKey] = {
                 devices: [
-                    {
-                        ...experiment.devices[i],
-                    },
-                    {
-                        ...experiment.devices[j],
-                    },
+                    { url: serviceConfig.devices[0].url },
+                    { url: serviceConfig.devices[1].url },
                 ],
-            })
+            }
         }
+        const peerconnection = peerconnections[lookupKey]
+
+        updateServiceConfig(
+            peerconnection.devices[0],
+            serviceConfig,
+            serviceConfig.participants[0],
+            serviceConfig.participants[1]
+        )
+        updateServiceConfig(
+            peerconnection.devices[1],
+            serviceConfig,
+            serviceConfig.participants[1],
+            serviceConfig.participants[0]
+        )
     }
 
-    for (const serviceConfiguration of experiment.serviceConfigurations) {
-        if (!serviceConfiguration.participants)
+    const peerconnectionsArray = Object.values(peerconnections)
+
+    console.log(JSON.stringify(peerconnectionsArray))
+
+    console.log('connection plan', JSON.stringify(peerconnections, null, 4))
+    return peerconnectionsArray
+}
+
+function updateServiceConfig(
+    device: any,
+    serviceConfig: any,
+    participant: any,
+    remoteParticipant: any
+) {
+    device.config = device.config ?? {}
+    device.config.services = device.config.services ?? []
+    device.config?.services?.push({
+        ...serviceConfig.configuration,
+        ...participant.config,
+        serviceId: participant.serviceId,
+        serviceType: serviceConfig.serviceType,
+        remoteServiceId: remoteParticipant.serviceId,
+    })
+}
+
+function mapRoleConfigToDevices(
+    pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'],
+    experiment: ExperimentModel
+) {
+    if (!experiment.devices || experiment.devices.length === 0) {
+        throw new MissingPropertyError('Experiment must have a device to be run', 400)
+    }
+    const deviceMappedServiceConfigs: (ServiceConfigurationModel & {
+        devices: DeviceModel[]
+    })[] = []
+    for (const serviceConfig of pairwiseServiceConfigurations) {
+        if (!serviceConfig.participants || serviceConfig.participants.length !== 2) {
             throw new MissingPropertyError(
-                'Service configuration must have participants',
+                'pairwiseServiceConfigurations must have exactly two participants',
                 400
             )
-        if (!serviceConfiguration.configuration) serviceConfiguration.configuration = '{}'
-        for (const participant of serviceConfiguration.participants) {
-            if (!participant.config) participant.config = '{}'
-            for (const peerconnection of peerconnections) {
-                if (!peerconnection.devices)
-                    throw new MissingPropertyError('Peerconnection has no devices', 400)
-                for (let i = 0; i < 2; i++) {
-                    if (!peerconnection.devices[i].role)
-                        throw new MissingPropertyError('Device has no role', 400)
-                    if (!peerconnection.devices[i].config)
-                        peerconnection.devices[i].config = { services: [] }
-                    if (peerconnection.devices[i].role === participant.role) {
-                        const peerdevice =
-                            i === 0
-                                ? peerconnection.devices[1]
-                                : peerconnection.devices[0]
-                        const peerparticipant = serviceConfiguration.participants.find(
-                            (p) => p.role === peerdevice.role
-                        )
-                        if (!peerparticipant)
-                            continue
-                        if (!participant.serviceId || !peerparticipant.serviceId)
-                            throw new MissingPropertyError(
-                                'ServiceId is missing in participant',
-                                400
-                            )
-                        peerconnection.devices[i].config?.services?.push({
-                            ...JSON.parse(serviceConfiguration.configuration),
-                            ...JSON.parse(participant.config),
-                            serviceId: participant.serviceId,
-                            serviceType: serviceConfiguration.serviceType,
-                            remoteServiceId: peerparticipant.serviceId,
-                        })
-                    }
+        }
+        const devicesA = experiment.devices
+            .filter((d) => d.role === serviceConfig.participants![0].role)
+            .map((d) => d)
+        const devicesB = experiment.devices
+            .filter((d) => d.role === serviceConfig.participants![1].role)
+            .map((d) => d)
+        for (const deviceA of devicesA) {
+            for (const deviceB of devicesB) {
+                if (deviceA !== deviceB) {
+                    deviceMappedServiceConfigs.push({
+                        ...serviceConfig,
+                        devices: [deviceA, deviceB],
+                    })
+                } else {
+                    // TODO: Handle same device
                 }
             }
         }
     }
+    return deviceMappedServiceConfigs
+}
 
-    console.log('connection plan', JSON.stringify(peerconnections, null, 4))
-    return peerconnections.filter((pc) => {
-        if (!pc.devices) return false
-        if (!pc.devices[0] || !pc.devices[1]) return false
-        if (!pc.devices[0].config || !pc.devices[1].config) return false
-        if (!pc.devices[0].config.services || !pc.devices[1].config.services) return false
-        if (pc.devices[0].config.services.length === 0 || pc.devices[1].config.services.length === 0) return false
-        return true
-    })
+function toPairwiseServiceConfig(experiment: ExperimentModel) {
+    if (!experiment.serviceConfigurations) {
+        throw new MissingPropertyError(
+            'Experiment must have a configuration to be run',
+            400
+        )
+    }
+    const pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'] =
+        []
+
+    for (const serviceConfig of experiment.serviceConfigurations) {
+        const participants = serviceConfig.participants
+        if (participants) {
+            for (let i = 0; i < participants.length; i++) {
+                for (let j = i + 1; j < participants.length; j++) {
+                    const participantA = participants[i]
+                    const participantB = participants[j]
+                    // TODO: Check for Service Direction
+                    pairwiseServiceConfigurations.push({
+                        ...serviceConfig,
+                        participants: [participantA, participantB],
+                    })
+                }
+            }
+        }
+    }
+    console.log('connection plan', JSON.stringify(pairwiseServiceConfigurations, null, 4))
+    return pairwiseServiceConfigurations
 }
 
 async function runExperiment(experiment: ExperimentModel) {
