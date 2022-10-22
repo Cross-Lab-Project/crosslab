@@ -224,7 +224,7 @@ export class WebRTCPeerConnection
   private async makeOffer() {
     log.trace("WebRTCPeerConnection.makeOffer called");
     let offer = await this.pc.createOffer();
-    log.trace("WebRTCPeerConnection.makeAnswer created offer", { offer });
+    log.trace("WebRTCPeerConnection.makeOffer created offer", { offer });
     await this.pc.setLocalDescription(offer);
     await new Promise<void>((resolve) => {
       if (this.pc.iceGatheringState === "complete") {
@@ -243,7 +243,7 @@ export class WebRTCPeerConnection
     }
     offer=_offer;
     offer = { type: offer.type, sdp: this.modifySDP(offer.sdp!) }; // TODO: Check if sdp is really optional
-    log.trace("WebRTCPeerConnection.makeAnswer updated offer", { offer });
+    log.trace("WebRTCPeerConnection.makeOffer updated offer", { offer });
     this.emit("signalingMessage", <RTCSignalingOfferMessage>{
       signalingType: "offer",
       content: offer,
