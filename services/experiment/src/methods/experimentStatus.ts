@@ -67,6 +67,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     const pairwiseServiceConfigurations: typeof experiment['serviceConfigurations'] =
         toPairwiseServiceConfig(experiment)
 
+    console.log(JSON.stringify(pairwiseServiceConfigurations))
+
     const deviceMappedServiceConfigs: any[] = mapRoleConfigToDevices(
         pairwiseServiceConfigurations,
         experiment
@@ -75,6 +77,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     const sortedDeviceMappedServiceConfigs = deviceMappedServiceConfigs.map(
         sortServiceParticipantsByDeviceId
     )
+
+    console.log(JSON.stringify(sortedDeviceMappedServiceConfigs))
 
     const peerconnections: Record<string, Pick<Required<Peerconnection>, 'devices'>> = {}
     for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
@@ -107,7 +111,7 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
 
     console.log(JSON.stringify(peerconnectionsArray))
 
-    console.log('connection plan', JSON.stringify(peerconnections, null, 4))
+    console.log('connection plan', JSON.stringify(peerconnectionsArray, null, 4))
     return peerconnectionsArray
 }
 
