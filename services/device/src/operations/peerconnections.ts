@@ -73,7 +73,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         services: peerconnection.deviceA.config
             ? peerconnection.deviceA.config.map(formatServiceConfig)
             : [],
-        tiebreaker: true,
+        tiebreaker: false,
     }
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
@@ -81,7 +81,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         services: peerconnection.deviceB.config
             ? peerconnection.deviceB.config.map(formatServiceConfig)
             : [],
-        tiebreaker: false,
+        tiebreaker: true,
     }
 
     apiClient.sendSignalingMessage(
