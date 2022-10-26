@@ -51,6 +51,11 @@ patch:
       content:
         application/json:
           $ref: "../content/experiment.yml"
+    202:
+      description: The JSON Representation of the changed experiment, that will be set to running eventually
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
     400:
       description: Bad Request.
     401:

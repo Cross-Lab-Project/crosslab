@@ -52,6 +52,15 @@
           "description": "The protocol of the client."
         }
       },
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "Url of the device",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
       "username": {
         "in": "path",
         "name": "username",
@@ -314,6 +323,11 @@
               "device_token",
               "device_token:create"
             ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_url"
           }
         ],
         "operationId": "device_token",

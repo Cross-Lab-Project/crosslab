@@ -92,6 +92,37 @@ export async function signUserToken(
 }
 
 /**
+ * This function signs a token for the device for the use of the microservice architecture.
+ * @param deviceUrl The url of the device for which the token should be signed.
+ * @param user User for which the token should be signed.
+ * @param activeKey Active key used for signing the token.
+ * @returns The signed token.
+ */
+export async function signDeviceToken(
+    deviceUrl: string,
+    user: UserModel,
+    activeKey: ActiveKeyModel
+): Promise<string> {
+    const BASE_URL = !config.BASE_URL.endsWith('/')
+        ? config.BASE_URL
+        : config.BASE_URL + '/'
+
+    return await sign<UserType>(
+        {
+            url: BASE_URL + `/users/${user.username}`,
+            username: user.username,
+            device: deviceUrl,
+            scopes: user.roles
+                .map((r) => r.scopes.map((s) => s.name))
+                .flat(1)
+                .filter((v, i, s) => s.indexOf(v) === i),
+        },
+        activeKey.key,
+        '2h'
+    )
+}
+
+/**
  * This function parses the string representation of a token from the Authorization parameter
  * @param authorization Authorization parameter from request.
  * @returns String representation of the token.

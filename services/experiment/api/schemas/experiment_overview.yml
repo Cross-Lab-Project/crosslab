@@ -12,5 +12,6 @@ properties:
     enum:
       - created
       - booked
+      - setup
       - running
       - finished

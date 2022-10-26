@@ -17,8 +17,10 @@ import {
     AvailabilityRuleModel,
     isConcreteDeviceModel,
     isDeviceGroupModel,
-    VirtualDeviceModel,
-    isVirtualDeviceModel,
+    InstantiableBrowserDeviceModel,
+    InstantiableCloudDeviceModel,
+    isInstantiableBrowserDeviceModel,
+    isInstantiableCloudDeviceModel,
 } from '../model'
 import { randomUUID } from 'crypto'
 import { apiClient, YEAR } from '../globals'
@@ -34,6 +36,7 @@ import {
     getDeviceModelByUUID,
     isConcreteDevice,
     isDeviceGroup,
+    isInstantiableBrowserDevice,
 } from '../methods/utils'
 import { config } from '../config'
 import {
@@ -48,14 +51,16 @@ import {
     formatConcreteDevice,
     formatDeviceGroup,
     formatTimeSlot,
-    formatVirtualDevice,
+    formatInstantiableBrowserDevice,
+    formatInstantiableCloudDevice,
 } from '../methods/format'
 import { handleDeviceMessage } from '../methods/messageHandling'
 import {
     writeConcreteDevice,
     writeDeviceGroup,
     writeAvailabilityRule,
-    writeVirtualDevice,
+    writeInstantiableBrowserDevice,
+    writeInstantiableCloudDevice,
 } from '../methods/write'
 import WebSocket from 'ws'
 
@@ -190,12 +195,22 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         writeDeviceGroup(device, body)
         device.owner = user.url
         await deviceGroupRepository.save(device)
-    } else {
-        const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
-        device = virtualDeviceRepository.create()
-        writeVirtualDevice(device, body)
+    } else if (isInstantiableBrowserDevice(body)) {
+        const instantiableBrowserDeviceRepository = AppDataSource.getRepository(
+            InstantiableBrowserDeviceModel
+        )
+        device = instantiableBrowserDeviceRepository.create()
+        writeInstantiableBrowserDevice(device, body)
         device.owner = user.url
-        await virtualDeviceRepository.save(device)
+        await instantiableBrowserDeviceRepository.save(device)
+    } else {
+        const instantiableCloudDeviceRepository = AppDataSource.getRepository(
+            InstantiableCloudDeviceModel
+        )
+        device = instantiableCloudDeviceRepository.create()
+        writeInstantiableCloudDevice(device, body)
+        device.owner = user.url
+        await instantiableCloudDeviceRepository.save(device)
     }
 
     if (parameters.changedUrl) {
@@ -215,7 +230,9 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
             ? formatConcreteDevice(device)
             : isDeviceGroupModel(device)
             ? await formatDeviceGroup(device)
-            : formatVirtualDevice(device),
+            : isInstantiableBrowserDeviceModel(device)
+            ? formatInstantiableBrowserDevice(device)
+            : formatInstantiableCloudDevice(device),
     }
 }
 
@@ -242,7 +259,9 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
             ? formatConcreteDevice(device)
             : isDeviceGroupModel(device)
             ? await formatDeviceGroup(device)
-            : formatVirtualDevice(device),
+            : isInstantiableBrowserDeviceModel(device)
+            ? formatInstantiableBrowserDevice(device)
+            : formatInstantiableCloudDevice(device),
     }
 }
 
@@ -251,7 +270,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
  * @param parameters The parameters of the request.
  * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
- * @throws {ForbiddenOperationError} Thrown if device is not of type "virtual".
+ * @throws {ForbiddenOperationError} Thrown if device is not instantiable.
  */
 export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     parameters,
@@ -259,41 +278,51 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
 ) => {
     console.log(`postDevicesByDeviceId called`)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const virtualDevice = await getDeviceModelByUUID(parameters.device_id)
+    const instantiableDevice = await getDeviceModelByUUID(parameters.device_id)
 
-    if (!virtualDevice)
+    if (!instantiableDevice)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (!isVirtualDeviceModel)
+    if (
+        !isInstantiableBrowserDeviceModel(instantiableDevice) &&
+        !isInstantiableCloudDeviceModel(instantiableDevice)
+    )
         throw new ForbiddenOperationError(
-            `Cannot create new instance of device ${parameters.device_id} since it has type "${virtualDevice.type}"`,
+            `Cannot create new instance of device ${parameters.device_id} since it has type "${instantiableDevice.type}"`,
             400
         )
 
-    const device = concreteDeviceRepository.create()
-    writeConcreteDevice(device, {
-        ...virtualDevice,
+    const concreteDevice = concreteDeviceRepository.create()
+    writeConcreteDevice(concreteDevice, {
+        ...instantiableDevice,
         type: 'device',
         announcedAvailability: [{ available: true }],
-        services: []
+        services: [],
     })
-    device.owner = user.url
-    await concreteDeviceRepository.save(device)
+    concreteDevice.owner = user.url
+    await concreteDeviceRepository.save(concreteDevice)
 
     if (parameters.changedUrl) {
         console.log(
-            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+            `registering changed-callback for device ${concreteDevice.uuid} to ${parameters.changedUrl}`
         )
-        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
+        const changedCallbackURLs = changedCallbacks.get(concreteDevice.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(device.uuid, changedCallbackURLs)
+        changedCallbacks.set(concreteDevice.uuid, changedCallbackURLs)
     }
+
+    const instance = formatConcreteDevice(concreteDevice)
+    if (!instance.url) throw new MissingPropertyError("Created instance of device does not have an url", 500)
+    const deviceToken = await apiClient.getDeviceToken(instance.url) // TODO: error handling
 
     console.log(`postDevicesByDeviceId succeeded`)
 
     return {
         status: 201,
-        body: formatConcreteDevice(device),
+        body: {
+            instance,
+            deviceToken
+        }
     }
 }
 
@@ -310,7 +339,12 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     console.log(`deleteDevicesByDeviceId called`)
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-    const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
+    const instantiableBrowserDeviceRepository = AppDataSource.getRepository(
+        InstantiableBrowserDeviceModel
+    )
+    const instantiableCloudDeviceRepository = AppDataSource.getRepository(
+        InstantiableCloudDeviceModel
+    )
     const device = await getDeviceModelByUUID(parameters.device_id)
 
     if (!device)
@@ -320,7 +354,9 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
         await concreteDeviceRepository.softDelete(device.uuid)
     else if (isDeviceGroupModel(device))
         await deviceGroupRepository.softDelete(device.uuid)
-    else await virtualDeviceRepository.softDelete(device.uuid)
+    else if (isInstantiableBrowserDeviceModel(device))
+        await instantiableBrowserDeviceRepository.softDelete(device.uuid)
+    else await instantiableCloudDeviceRepository.softDelete(device.uuid)
 
     console.log(`deleteDevicesByDeviceId succeeded`)
 

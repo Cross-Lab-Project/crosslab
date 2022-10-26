@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: query
+name: device_url
+description: Url of the device
+required: true
+schema:
+  type: string

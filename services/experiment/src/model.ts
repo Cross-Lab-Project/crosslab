@@ -14,7 +14,7 @@ export class ExperimentModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    status!: 'created' | 'booked' | 'running' | 'finished'
+    status!: 'created' | 'booked' | 'running' | 'finished' | 'setup'
     @Column()
     bookingStart?: string
     @Column()
@@ -62,10 +62,13 @@ export class DeviceModel {
     url!: string
     @Column()
     role?: string
-    @Column()
-    isVirtual?: boolean
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
     experiment?: ExperimentModel
+    @Column('simple-json')
+    additionalProperties?: {
+        instanceUrl?: string,
+        deviceToken?: string
+    }
 }
 
 @Entity({ name: 'Peerconnection' })
@@ -74,6 +77,10 @@ export class PeerconnectionModel {
     uuid!: string
     @Column()
     url!: string
+    @Column()
+    deviceA!: string
+    @Column()
+    deviceB!: string
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.connections)
     experiment?: ExperimentModel
 }

@@ -70,14 +70,16 @@
             "enum": [
               "device",
               "group",
-              "virtual"
+              "edge instantiable",
+              "cloud instantiable"
             ]
           },
           "owner": {
             "type": "string",
             "format": "uri"
           }
-        }
+        },
+        "x-typeguard": true
       },
       "time_slot": {
         "title": "Time Slot",
@@ -133,7 +135,8 @@
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       },
       "availability_rule": {
         "title": "Availability Rule",
@@ -203,10 +206,11 @@
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       },
-      "device_virtual": {
-        "title": "Virtual Device",
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -215,11 +219,37 @@
             "type": "object",
             "properties": {
               "type": {
-                "const": "virtual"
+                "const": "cloud instantiable"
+              },
+              "instantiate_url": {
+                "type": "string",
+                "format": "uri"
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "code_url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ],
+        "x-typeguard": true
       },
       "message": {
         "title": "Message",
@@ -632,7 +662,10 @@
                     "$ref": "#/components/schemas/device_group"
                   },
                   {
-                    "$ref": "#/components/schemas/device_virtual"
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -756,7 +789,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -914,7 +950,10 @@
                                 "$ref": "#/components/schemas/device_group"
                               },
                               {
-                                "$ref": "#/components/schemas/device_virtual"
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -973,7 +1012,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -1149,7 +1191,10 @@
                     "$ref": "#/components/schemas/device_group"
                   },
                   {
-                    "$ref": "#/components/schemas/device_virtual"
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -1273,7 +1318,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -1431,7 +1479,10 @@
                                 "$ref": "#/components/schemas/device_group"
                               },
                               {
-                                "$ref": "#/components/schemas/device_virtual"
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -1519,7 +1570,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/device_concrete"
+                  "type": "object",
+                  "properties": {
+                    "instance": {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    "deviceToken": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }

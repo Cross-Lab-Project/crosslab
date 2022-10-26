@@ -111,7 +111,7 @@ post:
       description: The JSON Representation of the created instance of the virtual device
       content:
         application/json:
-          $ref: "../content/device_concrete.yml"
+          $ref: "../content/device_instantiated.yml"
     400:
       description: Bad Request.
     401:

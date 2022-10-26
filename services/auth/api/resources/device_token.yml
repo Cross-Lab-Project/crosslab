@@ -6,6 +6,8 @@ post:
     - JWT: 
       - device_token
       - device_token:create
+  parameters:
+    - $ref: "../parameters/device_url.yml"
   operationId: device_token
   summary: Authenticate user
   description: |-

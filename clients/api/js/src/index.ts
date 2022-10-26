@@ -154,17 +154,18 @@ export class APIClient {
     // device token
 
     /**
-     * This function attempts to retrieve a device token for the client.
+     * This function attempts to generate a device token for the given device.
+     * @param device_url The url of the device the token should be generated for.
      * @throws {FetchError} Thrown if fetch fails.
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly generated device token.
      */
-    public async getDeviceToken(): Promise<
-        SignaturesDeviceToken.postDeviceTokenSuccessResponseType['body']
-    > {
-        return (await this.authClient.getDeviceToken()).body
+    public async getDeviceToken(
+        device_url: string
+    ): Promise<SignaturesDeviceToken.postDeviceTokenSuccessResponseType['body']> {
+        return (await this.authClient.getDeviceToken(device_url)).body
     }
 
     // users
@@ -510,7 +511,7 @@ export class APIClient {
      * @throws {ValidationError} Thrown if the request/response validation fails.
      * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
      * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
-     * @returns The newly created device instance.
+     * @returns The newly created device instance along with its device token.
      */
     public async createDeviceInstance(
         url: string,

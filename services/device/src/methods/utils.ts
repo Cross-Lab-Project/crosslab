@@ -4,14 +4,16 @@ import {
     DeviceOverview,
     ConcreteDevice,
     DeviceGroup,
-    VirtualDevice,
+    InstantiableCloudDevice,
+    InstantiableBrowserDevice,
 } from '../generated/types'
 import { apiClient } from '../globals'
 import {
     DeviceReferenceModel,
     ConcreteDeviceModel,
     DeviceGroupModel,
-    VirtualDeviceModel,
+    InstantiableBrowserDeviceModel,
+    InstantiableCloudDeviceModel,
 } from '../model'
 import { InconsistentDatabaseError } from '../types/errors'
 
@@ -62,6 +64,28 @@ export function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
 }
 
 /**
+ * This function checks if a {@link DeviceOverview} is a {@link InstantiableCloudDevice}.
+ * @param device The {@link DeviceOverview} to be checked.
+ * @returns True if the {@link DeviceOverview} is a {@link InstantiableCloudDevice}, else false.
+ */
+export function isInstantiableCloudDevice(
+    device: DeviceOverview
+): device is InstantiableCloudDevice {
+    return device.type == 'cloud instantiable'
+}
+
+/**
+ * This function checks if a {@link DeviceOverview} is a {@link InstantiableBrowserDevice}.
+ * @param device The {@link DeviceOverview} to be checked.
+ * @returns True if the {@link DeviceOverview} is a {@link InstantiableBrowserDevice}, else false.
+ */
+export function isInstantiableBrowserDevice(
+    device: DeviceOverview
+): device is InstantiableBrowserDevice {
+    return device.type == 'edge instantiable'
+}
+
+/**
  * This function resolves a reference to a device.
  * @param reference The reference to be resolved.
  * @param flat_group If true then the resolved device group will contain no further device groups.
@@ -70,7 +94,13 @@ export function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
 export async function resolveDeviceReference(
     reference: DeviceReferenceModel,
     flat_group: boolean = false
-): Promise<ConcreteDevice | DeviceGroup | VirtualDevice | undefined> {
+): Promise<
+    | ConcreteDevice
+    | DeviceGroup
+    | InstantiableCloudDevice
+    | InstantiableBrowserDevice
+    | undefined
+> {
     if (reference.url) {
         const deviceId = reference.url.split('/').at(-1)
         if (!deviceId) return undefined
@@ -97,6 +127,8 @@ export function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
         for (const device of deviceGroup.devices) {
             if (!device.type) continue
             if (device.type == 'device') devices.push(device)
+            if (device.type == 'edge instantiable') devices.push(device)
+            if (device.type == 'cloud instantiable') devices.push(device)
             if (device.type == 'group') devices.push(...flattenDeviceGroup(device))
         }
     }
@@ -112,10 +144,21 @@ export function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
  */
 export async function getDeviceModelByUUID(
     uuid: string
-): Promise<ConcreteDeviceModel | DeviceGroupModel | VirtualDeviceModel | undefined> {
+): Promise<
+    | ConcreteDeviceModel
+    | DeviceGroupModel
+    | InstantiableBrowserDeviceModel
+    | InstantiableCloudDeviceModel
+    | undefined
+> {
     const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
     const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-    const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
+    const instantiableBrowserDeviceRepository = AppDataSource.getRepository(
+        InstantiableBrowserDeviceModel
+    )
+    const instantiableCloudDeviceRepository = AppDataSource.getRepository(
+        InstantiableCloudDeviceModel
+    )
     const concreteDevice = await concreteDeviceRepository.findOne({
         where: {
             uuid: uuid,
@@ -132,7 +175,12 @@ export async function getDeviceModelByUUID(
             devices: true,
         },
     })
-    const virtualDevice = await virtualDeviceRepository.findOne({
+    const instantiableBrowserDevice = await instantiableBrowserDeviceRepository.findOne({
+        where: {
+            uuid: uuid,
+        },
+    })
+    const instantiableCloudDevice = await instantiableCloudDeviceRepository.findOne({
         where: {
             uuid: uuid,
         },
@@ -140,12 +188,17 @@ export async function getDeviceModelByUUID(
 
     if (
         (concreteDevice && deviceGroup) ||
-        (concreteDevice && virtualDevice) ||
-        (deviceGroup && virtualDevice)
+        (concreteDevice && instantiableBrowserDevice) ||
+        (concreteDevice && instantiableCloudDevice) ||
+        (deviceGroup && instantiableBrowserDevice) ||
+        (deviceGroup && instantiableCloudDevice) ||
+        (instantiableBrowserDevice && instantiableCloudDevice)
     )
         throw new InconsistentDatabaseError('Multiple devices found for same uuid')
+
     if (concreteDevice) return concreteDevice
     if (deviceGroup) return deviceGroup
-    if (virtualDevice) return virtualDevice
+    if (instantiableBrowserDevice) return instantiableBrowserDevice
+    if (instantiableCloudDevice) return instantiableCloudDevice
     return undefined
 }

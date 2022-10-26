@@ -19,7 +19,9 @@ properties:
     enum:
       - device
       - group
-      - virtual
+      - edge instantiable
+      - cloud instantiable
   owner:
     type: string
     format: uri
+x-typeguard: true

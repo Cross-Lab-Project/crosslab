@@ -89,6 +89,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         peerconnectionUrlFromId(peerconnection.uuid),
         createPeerConnectionMessageA
     )
+
     apiClient.sendSignalingMessage(
         peerconnection.deviceB.url,
         peerconnectionUrlFromId(peerconnection.uuid),

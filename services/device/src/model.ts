@@ -24,10 +24,16 @@ export function isDeviceGroupModel(
     return device.type === 'group'
 }
 
-export function isVirtualDeviceModel(
+export function isInstantiableCloudDeviceModel(
     device: DeviceOverviewModel
-): device is VirtualDeviceModel {
-    return device.type === 'virtual'
+): device is InstantiableCloudDeviceModel {
+    return device.type === 'cloud instantiable'
+}
+
+export function isInstantiableBrowserDeviceModel(
+    device: DeviceOverviewModel
+): device is InstantiableBrowserDeviceModel {
+    return device.type === 'edge instantiable'
 }
 
 @Entity({ name: 'Device' })
@@ -42,7 +48,7 @@ export abstract class DeviceOverviewModel {
     @Column()
     description?: string
     @Column()
-    type?: 'device' | 'group' | 'virtual'
+    type?: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
     @Column()
     owner?: string
     @DeleteDateColumn()
@@ -87,10 +93,20 @@ export class DeviceGroupModel extends DeviceOverviewModel {
     devices?: DeviceReferenceModel[]
 }
 
-@ChildEntity('virtual')
-export class VirtualDeviceModel extends DeviceOverviewModel {
+@ChildEntity('cloud instantiable')
+export class InstantiableCloudDeviceModel extends DeviceOverviewModel {
     @Column()
-    type?: 'virtual'
+    type?: 'cloud instantiable'
+    @Column()
+    instantiateUrl?: string
+}
+
+@ChildEntity('edge instantiable')
+export class InstantiableBrowserDeviceModel extends DeviceOverviewModel {
+    @Column()
+    type?: 'edge instantiable'
+    @Column()
+    codeUrl?: string
 }
 
 @Entity({ name: 'DeviceReference' })
@@ -187,7 +203,7 @@ export class ServiceConfigModel {
     deletedAt?: Date
 }
 
-@Entity({ name: 'ServiceDescription'})
+@Entity({ name: 'ServiceDescription' })
 export class ServiceModel {
     @PrimaryGeneratedColumn()
     id!: number

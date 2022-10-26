@@ -1,34 +1,26 @@
-import { Peerconnection } from '@cross-lab-project/api-client/dist/generated/device/types'
-import { config } from '../config'
+import { ConfiguredDeviceReference, Peerconnection } from '@cross-lab-project/api-client/dist/generated/device/types'
 import { AppDataSource } from '../data_source'
-import { MalformedBodyError } from '../generated/types'
-import { apiClient } from '../globals'
+// import { MalformedBodyError } from '../generated/types'
+import { apiClient, callbackUrl } from '../globals'
 import {
     DeviceModel,
     ExperimentModel,
+    ParticipantModel,
     PeerconnectionModel,
     ServiceConfigurationModel,
 } from '../model'
-import { InvalidStateError, MissingPropertyError } from '../types/errors'
+import { DeviceNotConnectedError, InvalidStateError, MissingPropertyError } from '../types/errors'
+import { createPeerconnection, getDevice, instantiateDevice } from './api'
 import { experimentUrlFromId } from './utils'
 
 export async function bookExperiment(experiment: ExperimentModel) {
     console.log('booking experiment', experiment.uuid)
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
 
-    // create instances for virtual devices
     if (!experiment.devices || experiment.devices.length === 0)
         throw new MissingPropertyError(
             `Experiment ${experimentUrlFromId(experiment.uuid)} has no devices`
         )
-    for (const device of experiment.devices) {
-        if (device.isVirtual) {
-            const instance = await apiClient.createDeviceInstance(device.url)
-            if (!instance.url)
-                throw new MalformedBodyError(`Returned device instance has no url`, 502)
-            device.url = instance.url
-        }
-    }
 
     // TODO: book experiment (booking client missing)
 
@@ -50,6 +42,15 @@ function sortServiceParticipantsByDeviceId(
             : [serviceConfig.devices[0], serviceConfig.devices[1]],
     }
 }
+
+function getUrlOrInstanceUrl(device: DeviceModel): string {
+    if (device.additionalProperties && device.additionalProperties.instanceUrl) {
+        return device.additionalProperties.instanceUrl
+    } else {
+        return device.url
+    }
+}
+
 function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     console.log('building connection plan for experiment', experiment.uuid)
     if (
@@ -67,7 +68,7 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
     const pairwiseServiceConfigurations: typeof experiment['serviceConfigurations'] =
         toPairwiseServiceConfig(experiment)
 
-    const deviceMappedServiceConfigs: any[] = mapRoleConfigToDevices(
+    const deviceMappedServiceConfigs = mapRoleConfigToDevices(
         pairwiseServiceConfigurations,
         experiment
     )
@@ -82,8 +83,8 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
         if (!(lookupKey in peerconnections)) {
             peerconnections[lookupKey] = {
                 devices: [
-                    { url: serviceConfig.devices[0].url },
-                    { url: serviceConfig.devices[1].url },
+                    { url: getUrlOrInstanceUrl(serviceConfig.devices[0]) },
+                    { url: getUrlOrInstanceUrl(serviceConfig.devices[1]) },
                 ],
             }
         }
@@ -112,16 +113,16 @@ function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
 }
 
 function updateServiceConfig(
-    device: any,
-    serviceConfig: any,
-    participant: any,
-    remoteParticipant: any
+    device: ConfiguredDeviceReference,
+    serviceConfig: ServiceConfigurationModel,
+    participant: ParticipantModel,
+    remoteParticipant: ParticipantModel
 ) {
     device.config = device.config ?? {}
     device.config.services = device.config.services ?? []
     device.config?.services?.push({
-        ...JSON.parse(serviceConfig.configuration),
-        ...JSON.parse(participant.config),
+        ...JSON.parse(serviceConfig.configuration ?? "{}"),
+        ...JSON.parse(participant.config ?? "{}"),
         serviceId: participant.serviceId,
         serviceType: serviceConfig.serviceType,
         remoteServiceId: remoteParticipant.serviceId,
@@ -197,6 +198,40 @@ function toPairwiseServiceConfig(experiment: ExperimentModel) {
     return pairwiseServiceConfigurations
 }
 
+async function createPeerconnections(experiment: ExperimentModel) {
+    // establish peerconnections between the devices
+    const peerconnectionPlans = buildConnectionPlan(experiment)
+    for (const peerconnectionPlan of peerconnectionPlans) {
+        // TODO: error handling
+        const peerconnection = await createPeerconnection(peerconnectionPlan, { closedUrl: callbackUrl })
+        if (!experiment.connections) experiment.connections = []
+        if (!peerconnection.url)
+            throw new MissingPropertyError(
+                'Created peerconnection does not have a url',
+                502
+            )
+        if (!peerconnection.devices)
+            throw new MissingPropertyError(
+                'Created peerconnection does not have devices',
+                502
+            )
+        if (!peerconnection.devices[0].url || !peerconnection.devices[1].url)
+            throw new MissingPropertyError(
+                'Created peerconnection has a device without an url',
+                502
+            )
+
+        // create, save and push new peerconnection
+        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+        const peerconnectionModel = peerconnectionRepository.create()
+        peerconnectionModel.experiment = experiment
+        peerconnectionModel.url = peerconnection.url
+        peerconnectionModel.deviceA = peerconnection.devices[0].url
+        peerconnectionModel.deviceB = peerconnection.devices[1].url
+        experiment.connections.push(peerconnectionModel)
+    }
+}
+
 async function runExperiment(experiment: ExperimentModel) {
     console.log('running experiment', experiment.uuid)
     // make sure experiment is already booked
@@ -208,31 +243,45 @@ async function runExperiment(experiment: ExperimentModel) {
         )
     }
 
-    // establish peerconnections between the devices
-    const peerconnectionPlans = buildConnectionPlan(experiment)
-    for (const peerconnectionPlan of peerconnectionPlans) {
-        const peerconnection = await apiClient.createPeerconnection(peerconnectionPlan, {
-            closedUrl:
-                config.BASE_URL +
-                (config.BASE_URL.endsWith('/') ? '' : '/') +
-                'experiments/callbacks',
-        })
-        if (!experiment.connections) experiment.connections = []
-        if (!peerconnection.url)
-            throw new MissingPropertyError(
-                'Created peerconnection does not have a url',
-                502
-            )
-        // create, save and push new peerconnection
-        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-        const peerconnectionModel = peerconnectionRepository.create()
-        peerconnectionModel.experiment = experiment
-        peerconnectionModel.url = peerconnection.url
-        experiment.connections.push(peerconnectionModel)
+    // make sure the experiment contains devices
+    if (!experiment.devices || experiment.devices.length === 0) {
+        throw new MissingPropertyError(`Experiment does not contain any devices`, 400)
     }
 
-    // set experiment status to running and save experiment
-    experiment.status = 'running'
+    let containsInstantiableDevices = false
+
+    // make sure the concrete devices of the experiment are connected
+    for (const device of experiment.devices) {
+        const resolvedDevice = await getDevice(device.url) // TODO: error handling
+        if (resolvedDevice.type === "device" && !resolvedDevice.connected) {
+            throw new DeviceNotConnectedError(`Cannot start experiment since device ${device.url} is not connected`, 502) // NOTE: maybe there is a more fitting error code
+        }
+
+        // instantiate devices if necessary
+        if (resolvedDevice.type === "cloud instantiable" || resolvedDevice.type === "edge instantiable") {
+            containsInstantiableDevices = true
+            if (!resolvedDevice.url) throw new MissingPropertyError("Device is missing its url", 500) // NOTE: error code?
+            const { instance, deviceToken } = await instantiateDevice(resolvedDevice.url, { changedURL: callbackUrl })
+            if (!instance.url) throw new MissingPropertyError("Device instance is missing its url", 500) // NOTE: error code?
+            if (!device.additionalProperties) device.additionalProperties = {}
+            device.additionalProperties.instanceUrl = instance.url
+            device.additionalProperties.deviceToken = deviceToken
+        }
+    }
+
+    // TODO: lock devices
+    // if (!experiment.bookingID) throw new MissingPropertyError(`Experiment ${experimentUrlFromId(experiment.uuid)} is missing a bookingID`)
+    // await apiClient.lockBooking(experiment.bookingID)
+
+
+    if (containsInstantiableDevices) {
+        experiment.status = 'setup'
+    } else {
+        await createPeerconnections(experiment)
+        experiment.status = 'running'
+    }
+
+    // save experiment
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
     await experimentRepository.save(experiment)
 }

@@ -117,8 +117,10 @@ export class AuthClient {
 
     // device token
 
-    public async getDeviceToken(): Promise<SignaturesDeviceToken.postDeviceTokenSuccessResponseType> {
-        const response = await this.apiClient.postDeviceToken()
+    public async getDeviceToken(
+        device_url: string
+    ): Promise<SignaturesDeviceToken.postDeviceTokenSuccessResponseType> {
+        const response = await this.apiClient.postDeviceToken({ device_url })
 
         if (isErrorResponse(response)) {
             throw new UnsuccessfulRequestError(

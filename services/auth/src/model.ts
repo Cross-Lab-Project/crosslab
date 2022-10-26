@@ -48,6 +48,8 @@ export class TokenModel {
     token!: string
     @Column('datetime', { nullable: true })
     expiresOn?: string
+    @Column({ nullable: true })
+    device?: string
     @ManyToOne(() => UserModel, (user) => user.tokens)
     user!: UserModel
     @ManyToMany(() => ScopeModel)

@@ -7,7 +7,8 @@ import {
     DeviceOverview,
     ConcreteDevice,
     DeviceGroup,
-    VirtualDevice,
+    InstantiableBrowserDevice,
+    InstantiableCloudDevice,
 } from '../generated/types'
 import { YEAR } from '../globals'
 import {
@@ -18,7 +19,8 @@ import {
     AvailabilityRuleModel,
     ConcreteDeviceModel,
     DeviceGroupModel,
-    VirtualDeviceModel,
+    InstantiableBrowserDeviceModel,
+    InstantiableCloudDeviceModel,
     ServiceModel,
 } from '../model'
 import { applyAvailabilityRules } from './availability'
@@ -80,8 +82,7 @@ export function writeConcreteDevice(
     concreteDeviceModel.experiment = concreteDevice.experiment
 
     if (concreteDevice.services) {
-        if (!concreteDeviceModel.services)
-            concreteDeviceModel.services = []
+        if (!concreteDeviceModel.services) concreteDeviceModel.services = []
         const serviceRepository = AppDataSource.getRepository(ServiceModel)
         for (const service of concreteDevice.services) {
             const serviceModel = serviceRepository.create()
@@ -141,15 +142,29 @@ export function writeDeviceGroup(
 }
 
 /**
- * This function writes the data of a {@link VirtualDevice} to a {@link VirtualDeviceModel}.
- * @param virtualDeviceModel The {@link VirtualDeviceModel} the data should be written to.
- * @param virtualDevice The {@link VirtualDevice} providing the data to be written.
+ * This function writes the data of a {@link instantiableBrowserDevice} to a {@link InstantiableBrowserDeviceModel}.
+ * @param instantiableBrowserDeviceModel The {@link InstantiableBrowserDeviceModel} the data should be written to.
+ * @param instantiableBrowserDevice The {@link instantiableBrowserDevice} providing the data to be written.
  */
-export function writeVirtualDevice(
-    virtualDeviceModel: VirtualDeviceModel,
-    virtualDevice: VirtualDevice
+export function writeInstantiableBrowserDevice(
+    instantiableBrowserDeviceModel: InstantiableBrowserDeviceModel,
+    instantiableBrowserDevice: InstantiableBrowserDevice
 ) {
-    writeDeviceOverview(virtualDeviceModel, virtualDevice)
+    writeDeviceOverview(instantiableBrowserDeviceModel, instantiableBrowserDevice)
+    instantiableBrowserDeviceModel.codeUrl = instantiableBrowserDevice.code_url
+}
+
+/**
+ * This function writes the data of a {@link InstantiableCloudDevice} to a {@link InstantiableCloudDeviceModel}.
+ * @param instantiableCloudDeviceModel The {@link InstantiableCloudDeviceModel} the data should be written to.
+ * @param instantiableCloudDevice The {@link InstantiableCloudDevice} providing the data to be written.
+ */
+export function writeInstantiableCloudDevice(
+    instantiableCloudDeviceModel: InstantiableCloudDeviceModel,
+    instantiableCloudDevice: InstantiableCloudDevice
+) {
+    writeDeviceOverview(instantiableCloudDeviceModel, instantiableCloudDevice)
+    instantiableCloudDeviceModel.instantiateUrl = instantiableCloudDevice.instantiate_url
 }
 
 // Peerconnections

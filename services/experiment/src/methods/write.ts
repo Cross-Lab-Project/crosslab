@@ -6,7 +6,6 @@ import {
     Device,
     Participant,
 } from '../generated/types'
-import { apiClient } from '../globals'
 import {
     DeviceModel,
     RoleModel,
@@ -27,11 +26,8 @@ const HOUR = 60 * 60 * 1000
 async function writeDevice(deviceModel: DeviceModel, device: Device) {
     if (!device.device)
         throw new MissingPropertyError('Device is missing property "url"', 400)
-    const resolvedDevice = await apiClient.getDevice(device.device)
     if (device.device) deviceModel.url = device.device
     if (device.role) deviceModel.role = device.role
-    if (resolvedDevice.type == 'virtual') deviceModel.isVirtual = true
-    else deviceModel.isVirtual = false
 }
 
 /**

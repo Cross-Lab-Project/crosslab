@@ -8,7 +8,8 @@ import {
     DeviceOverview,
     TimeSlot,
     DeviceGroup,
-    VirtualDevice,
+    InstantiableBrowserDevice,
+    InstantiableCloudDevice,
 } from '../generated/types'
 import {
     ServiceConfigModel,
@@ -18,7 +19,8 @@ import {
     DeviceOverviewModel,
     TimeSlotModel,
     DeviceGroupModel,
-    VirtualDeviceModel,
+    InstantiableBrowserDeviceModel,
+    InstantiableCloudDeviceModel,
 } from '../model'
 import {
     deviceUrlFromId,
@@ -73,7 +75,9 @@ export function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevic
             : undefined,
         connected: device.connected !== undefined ? device.connected : undefined,
         experiment: device.experiment ? device.experiment : undefined,
-        services: device.services ? device.services.map(sd => JSON.parse(sd.description)) : undefined
+        services: device.services
+            ? device.services.map((sd) => JSON.parse(sd.description))
+            : undefined,
     }
 }
 
@@ -87,7 +91,12 @@ export async function formatDeviceGroup(
     deviceGroup: DeviceGroupModel,
     flat_group: boolean = false
 ): Promise<DeviceGroup> {
-    const devices: (ConcreteDevice | DeviceGroup | VirtualDevice)[] = []
+    const devices: (
+        | ConcreteDevice
+        | DeviceGroup
+        | InstantiableBrowserDevice
+        | InstantiableCloudDevice
+    )[] = []
     if (deviceGroup.devices) {
         for (const d of deviceGroup.devices) {
             const resolvedDevice = await resolveDeviceReference(d, flat_group)
@@ -111,13 +120,39 @@ export async function formatDeviceGroup(
     }
 }
 
-export function formatVirtualDevice(virtualDevice: VirtualDeviceModel): VirtualDevice {
+/**
+ * This function formats a {@link InstantiableBrowserDeviceModel} to a {@link InstantiableBrowserDevice}.
+ * @param instantiableBrowserDevice The {@link InstantiableBrowserDeviceModel} to be formatted.
+ * @returns The resulting {@link InstantiableBrowserDevice}.
+ */
+export function formatInstantiableBrowserDevice(
+    instantiableBrowserDevice: InstantiableBrowserDeviceModel
+): InstantiableBrowserDevice {
     return {
-        url: deviceUrlFromId(virtualDevice.uuid),
-        name: virtualDevice.name,
-        description: virtualDevice.description,
-        type: 'virtual',
-        owner: virtualDevice.owner,
+        url: deviceUrlFromId(instantiableBrowserDevice.uuid),
+        name: instantiableBrowserDevice.name,
+        description: instantiableBrowserDevice.description,
+        type: 'edge instantiable',
+        owner: instantiableBrowserDevice.owner,
+        code_url: instantiableBrowserDevice.codeUrl,
+    }
+}
+
+/**
+ * This function formats a {@link InstantiableCloudDeviceModel} to a {@link instantiableCloudDevice}.
+ * @param instantiableCloudDevice The {@link InstantiableCloudDeviceModel} to be formatted.
+ * @returns The resulting {@link instantiableCloudDevice}.
+ */
+export function formatInstantiableCloudDevice(
+    instantiableCloudDevice: InstantiableCloudDeviceModel
+): InstantiableCloudDevice {
+    return {
+        url: deviceUrlFromId(instantiableCloudDevice.uuid),
+        name: instantiableCloudDevice.name,
+        description: instantiableCloudDevice.description,
+        type: 'cloud instantiable',
+        owner: instantiableCloudDevice.owner,
+        instantiate_url: instantiableCloudDevice.instantiateUrl,
     }
 }
 

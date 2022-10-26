@@ -42,6 +42,11 @@ post:
       content:
         application/json:
           $ref: '../content/experiment.yml'
+    202:
+      description: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
     400:
       description: Bad Request.
     401:
