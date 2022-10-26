@@ -5,12 +5,12 @@ import {
     Device
 } from "../generated/types"
 import {
-    putBookingManageSignature,
-    getBookingManageByIDSignature,
-    deleteBookingManageByIDSignature,
-    patchBookingManageByIDSignature,
-    deleteBookingDestroyByIDSignature,
-    putBookingManageBodyType
+    postBookingSignature,
+    getBookingByIDSignature,
+    deleteBookingByIDSignature,
+    patchBookingByIDSignature,
+    deleteBookingByIDDestroySignature,
+    postBookingBodyType
 } from "../generated/signatures/booking"
 
 import * as mysql from 'mysql2/promise';
@@ -20,7 +20,7 @@ import { config } from "../../../common/config"
 import { BelongsToUs } from "../../../common/auth"
 import { DeviceBookingRequest } from "../../../booking-backend/src/messageDefinition";
 
-export const putBookingManage: putBookingManageSignature = async (body, user) => {
+export const postBooking: postBookingSignature = async (body, user) => {
     let connection = await amqplib.connect(config.AmqpUrl);
     let channel = await connection.createChannel();
 
@@ -82,7 +82,7 @@ export const putBookingManage: putBookingManageSignature = async (body, user) =>
     }
 }
 
-export const getBookingManageByID: getBookingManageByIDSignature = async (parameters, user) => {
+export const getBookingByID: getBookingByIDSignature = async (parameters, user) => {
     // add your implementation here
     return {
         status: 200,
@@ -90,14 +90,14 @@ export const getBookingManageByID: getBookingManageByIDSignature = async (parame
     }
 }
 
-export const deleteBookingManageByID: deleteBookingManageByIDSignature = async (parameters, user) => {
+export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, user) => {
     // add your implementation here
     return {
         status: 200,
     }
 }
 
-export const patchBookingManageByID: patchBookingManageByIDSignature = async (parameters, body, user) => {
+export const patchBookingByID: patchBookingByIDSignature = async (parameters, body, user) => {
     // add your implementation here
     return {
         status: 200,
@@ -105,7 +105,7 @@ export const patchBookingManageByID: patchBookingManageByIDSignature = async (pa
     }
 }
 
-export const deleteBookingDestroyByID: deleteBookingDestroyByIDSignature = async (parameters, user) => {
+export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (parameters, user) => {
     // add your implementation here
     return {
         status: 200

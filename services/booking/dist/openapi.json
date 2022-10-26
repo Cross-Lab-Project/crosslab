@@ -154,7 +154,7 @@
       }
     },
     "/booking": {
-      "put": {
+      "post": {
         "security": [
           {
             "JWT": []
