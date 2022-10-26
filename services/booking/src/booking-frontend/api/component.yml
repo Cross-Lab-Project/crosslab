@@ -1,5 +1,5 @@
   /booking:
-    put:
+    post:
       security:
         - JWT: []
       tags:
