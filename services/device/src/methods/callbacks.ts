@@ -1,10 +1,5 @@
-import {
-    ConcreteDeviceModel,
-    DeviceGroupModel,
-    isConcreteDeviceModel,
-    PeerconnectionModel,
-} from '../model'
-import { formatConcreteDevice, formatDeviceGroup, formatPeerconnection } from './format'
+import { DeviceOverviewModel, PeerconnectionModel } from '../model'
+import { formatDevice, formatPeerconnection } from './database/format'
 
 export const changedCallbacks = new Map<string, Array<string>>()
 export const closedCallbacks = new Map<string, Array<string>>()
@@ -13,9 +8,7 @@ export const closedCallbacks = new Map<string, Array<string>>()
  * This function handles a "device-changed" callback.
  * @param device The device for which to handle the callback.
  */
-export async function handleChangedCallback(
-    device: ConcreteDeviceModel | DeviceGroupModel
-) {
+export async function handleChangedCallback(device: DeviceOverviewModel) {
     const urls = changedCallbacks.get(device.uuid) ?? []
     for (const url in urls) {
         fetch(url, {
@@ -23,9 +16,7 @@ export async function handleChangedCallback(
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'device-changed',
-                ...(isConcreteDeviceModel(device)
-                    ? formatConcreteDevice(device)
-                    : await formatDeviceGroup(device)),
+                ...formatDevice(device),
             }),
         }).then((res) => {
             if (res.status == 410) {

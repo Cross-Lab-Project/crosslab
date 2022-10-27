@@ -35,9 +35,16 @@ async function handleSignalingMessage(
     if (!peerDeviceUrl) throw new MissingPropertyError('Peer device is missing its url')
 
     try {
-        await apiClient.sendSignalingMessage(peerDeviceUrl, message.connectionUrl, message)
+        await apiClient.sendSignalingMessage(
+            peerDeviceUrl,
+            message.connectionUrl,
+            message
+        )
     } catch (error) {
-        console.error("Something went wrong while trying to send the signaling message:", error)
+        console.error(
+            'Something went wrong while trying to send the signaling message:',
+            error
+        )
     }
 }
 

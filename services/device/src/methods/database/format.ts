@@ -10,7 +10,7 @@ import {
     DeviceGroup,
     InstantiableBrowserDevice,
     InstantiableCloudDevice,
-} from '../generated/types'
+} from '../../generated/types'
 import {
     ServiceConfigModel,
     DeviceReferenceModel,
@@ -21,15 +21,46 @@ import {
     DeviceGroupModel,
     InstantiableBrowserDeviceModel,
     InstantiableCloudDeviceModel,
-} from '../model'
+    isConcreteDeviceModel,
+    isDeviceGroupModel,
+    isInstantiableBrowserDeviceModel,
+    isInstantiableCloudDeviceModel,
+} from '../../model'
+import { InvalidValueError } from '../../types/errors'
+import { DeviceModel, DeviceFromModel, Device } from '../../types/helper'
 import {
     deviceUrlFromId,
     flattenDeviceGroup,
     peerconnectionUrlFromId,
     resolveDeviceReference,
-} from './utils'
+} from '../utils'
 
 // Devices
+
+/**
+ * This function attempts to format a given device model to its corresponding device type.
+ * @param deviceModel The device model to be formatted.
+ * @throws {InvalidValueError} Thrown if the given device model does not match any known device type.
+ * @returns The formatted device model.
+ */
+export async function formatDevice<T extends DeviceModel>(
+    deviceModel: T
+): Promise<DeviceFromModel<T>> {
+    if (isConcreteDeviceModel(deviceModel)) {
+        return formatConcreteDevice(deviceModel) as DeviceFromModel<T>
+    } else if (isDeviceGroupModel(deviceModel)) {
+        return (await formatDeviceGroup(deviceModel)) as DeviceFromModel<T>
+    } else if (isInstantiableBrowserDeviceModel(deviceModel)) {
+        return formatInstantiableBrowserDevice(deviceModel) as DeviceFromModel<T>
+    } else if (isInstantiableCloudDeviceModel(deviceModel)) {
+        return formatInstantiableCloudDevice(deviceModel) as DeviceFromModel<T>
+    } else {
+        throw new InvalidValueError(
+            'The device model to be formatted does not match any known device type',
+            500
+        )
+    }
+}
 
 /**
  * This function formats a {@link TimeSlotModel} to a {@link TimeSlot}.
@@ -63,7 +94,7 @@ export function formatDeviceOverview(device: DeviceOverviewModel): DeviceOvervie
  * @param device The {@link ConcreteDeviceModel} to be formatted.
  * @returns The resulting {@link ConcreteDevice}.
  */
-export function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
+function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevice {
     return {
         url: deviceUrlFromId(device.uuid),
         name: device.name,
@@ -87,16 +118,11 @@ export function formatConcreteDevice(device: ConcreteDeviceModel): ConcreteDevic
  * @param flat_group If true then the formatted {@link DeviceGroup} will contain no further device groups.
  * @returns The resulting {@link DeviceGroup}.
  */
-export async function formatDeviceGroup(
+async function formatDeviceGroup(
     deviceGroup: DeviceGroupModel,
     flat_group: boolean = false
 ): Promise<DeviceGroup> {
-    const devices: (
-        | ConcreteDevice
-        | DeviceGroup
-        | InstantiableBrowserDevice
-        | InstantiableCloudDevice
-    )[] = []
+    const devices: (Device)[] = []
     if (deviceGroup.devices) {
         for (const d of deviceGroup.devices) {
             const resolvedDevice = await resolveDeviceReference(d, flat_group)
@@ -125,14 +151,14 @@ export async function formatDeviceGroup(
  * @param instantiableBrowserDevice The {@link InstantiableBrowserDeviceModel} to be formatted.
  * @returns The resulting {@link InstantiableBrowserDevice}.
  */
-export function formatInstantiableBrowserDevice(
+function formatInstantiableBrowserDevice(
     instantiableBrowserDevice: InstantiableBrowserDeviceModel
 ): InstantiableBrowserDevice {
     return {
         url: deviceUrlFromId(instantiableBrowserDevice.uuid),
         name: instantiableBrowserDevice.name,
         description: instantiableBrowserDevice.description,
-        type: 'edge instantiable',
+        type: instantiableBrowserDevice.type,
         owner: instantiableBrowserDevice.owner,
         code_url: instantiableBrowserDevice.codeUrl,
     }
@@ -143,14 +169,14 @@ export function formatInstantiableBrowserDevice(
  * @param instantiableCloudDevice The {@link InstantiableCloudDeviceModel} to be formatted.
  * @returns The resulting {@link instantiableCloudDevice}.
  */
-export function formatInstantiableCloudDevice(
+function formatInstantiableCloudDevice(
     instantiableCloudDevice: InstantiableCloudDeviceModel
 ): InstantiableCloudDevice {
     return {
         url: deviceUrlFromId(instantiableCloudDevice.uuid),
         name: instantiableCloudDevice.name,
         description: instantiableCloudDevice.description,
-        type: 'cloud instantiable',
+        type: instantiableCloudDevice.type,
         owner: instantiableCloudDevice.owner,
         instantiate_url: instantiableCloudDevice.instantiateUrl,
     }

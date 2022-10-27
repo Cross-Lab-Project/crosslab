@@ -13,31 +13,18 @@ import { AppDataSource } from '../data_source'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
-    DeviceGroupModel,
     AvailabilityRuleModel,
-    isConcreteDeviceModel,
-    isDeviceGroupModel,
-    InstantiableBrowserDeviceModel,
-    InstantiableCloudDeviceModel,
-    isInstantiableBrowserDeviceModel,
-    isInstantiableCloudDeviceModel,
+    isInstantiableDeviceModel,
 } from '../model'
 import { randomUUID } from 'crypto'
 import { apiClient, YEAR } from '../globals'
 import {
     ForbiddenOperationError,
-    InvalidChangeError,
     MissingEntityError,
     MissingPropertyError,
     UnrelatedPeerconnectionError,
 } from '../types/errors'
-import {
-    deviceUrlFromId,
-    getDeviceModelByUUID,
-    isConcreteDevice,
-    isDeviceGroup,
-    isInstantiableBrowserDevice,
-} from '../methods/utils'
+import { deviceUrlFromId } from '../methods/utils'
 import { config } from '../config'
 import {
     isMessage,
@@ -47,22 +34,20 @@ import {
 import { applyAvailabilityRules } from '../methods/availability'
 import { handleChangedCallback, changedCallbacks } from '../methods/callbacks'
 import {
+    formatDevice,
     formatDeviceOverview,
-    formatConcreteDevice,
-    formatDeviceGroup,
     formatTimeSlot,
-    formatInstantiableBrowserDevice,
-    formatInstantiableCloudDevice,
-} from '../methods/format'
+} from '../methods/database/format'
 import { handleDeviceMessage } from '../methods/messageHandling'
-import {
-    writeConcreteDevice,
-    writeDeviceGroup,
-    writeAvailabilityRule,
-    writeInstantiableBrowserDevice,
-    writeInstantiableCloudDevice,
-} from '../methods/write'
+import { writeAvailabilityRule, writeDevice } from '../methods/database/write'
 import WebSocket from 'ws'
+import {
+    createDeviceModelFromDevice,
+    createDeviceModel,
+} from '../methods/database/create'
+import { deleteDeviceModel } from '../methods/database/delete'
+import { saveDeviceModel } from '../methods/database/save'
+import { findDeviceModelByUUID } from '../methods/database/find'
 
 export const connectedDevices = new Map<string, WebSocket>()
 
@@ -182,36 +167,10 @@ export const getDevices: getDevicesSignature = async (_user) => {
  */
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     console.log(`postDevices called`)
-    let device
-    if (isConcreteDevice(body)) {
-        const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-        device = concreteDeviceRepository.create()
-        writeConcreteDevice(device, body)
-        device.owner = user.url
-        await concreteDeviceRepository.save(device)
-    } else if (isDeviceGroup(body)) {
-        const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-        device = deviceGroupRepository.create()
-        writeDeviceGroup(device, body)
-        device.owner = user.url
-        await deviceGroupRepository.save(device)
-    } else if (isInstantiableBrowserDevice(body)) {
-        const instantiableBrowserDeviceRepository = AppDataSource.getRepository(
-            InstantiableBrowserDeviceModel
-        )
-        device = instantiableBrowserDeviceRepository.create()
-        writeInstantiableBrowserDevice(device, body)
-        device.owner = user.url
-        await instantiableBrowserDeviceRepository.save(device)
-    } else {
-        const instantiableCloudDeviceRepository = AppDataSource.getRepository(
-            InstantiableCloudDeviceModel
-        )
-        device = instantiableCloudDeviceRepository.create()
-        writeInstantiableCloudDevice(device, body)
-        device.owner = user.url
-        await instantiableCloudDeviceRepository.save(device)
-    }
+
+    const device = createDeviceModelFromDevice(body)
+    device.owner = user.url
+    await saveDeviceModel(device)
 
     if (parameters.changedUrl) {
         console.log(
@@ -226,13 +185,7 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
 
     return {
         status: 201,
-        body: isConcreteDeviceModel(device)
-            ? formatConcreteDevice(device)
-            : isDeviceGroupModel(device)
-            ? await formatDeviceGroup(device)
-            : isInstantiableBrowserDeviceModel(device)
-            ? formatInstantiableBrowserDevice(device)
-            : formatInstantiableCloudDevice(device),
+        body: await formatDevice(device),
     }
 }
 
@@ -247,7 +200,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     _user
 ) => {
     console.log(`getDevicesByDeviceId called`)
-    const device = await getDeviceModelByUUID(parameters.device_id)
+    const device = await findDeviceModelByUUID(parameters.device_id)
 
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
@@ -255,13 +208,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     console.log(`getDevicesByDeviceId succeeded`)
     return {
         status: 200,
-        body: isConcreteDeviceModel(device)
-            ? formatConcreteDevice(device)
-            : isDeviceGroupModel(device)
-            ? await formatDeviceGroup(device)
-            : isInstantiableBrowserDeviceModel(device)
-            ? formatInstantiableBrowserDevice(device)
-            : formatInstantiableCloudDevice(device),
+        body: await formatDevice(device),
     }
 }
 
@@ -277,30 +224,28 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     user
 ) => {
     console.log(`postDevicesByDeviceId called`)
-    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const instantiableDevice = await getDeviceModelByUUID(parameters.device_id)
+    const instantiableDevice = await findDeviceModelByUUID(parameters.device_id)
 
     if (!instantiableDevice)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (
-        !isInstantiableBrowserDeviceModel(instantiableDevice) &&
-        !isInstantiableCloudDeviceModel(instantiableDevice)
-    )
+    if (!isInstantiableDeviceModel(instantiableDevice))
         throw new ForbiddenOperationError(
-            `Cannot create new instance of device ${parameters.device_id} since it has type "${instantiableDevice.type}"`,
+            `Cannot create new instance of device ${deviceUrlFromId(
+                instantiableDevice.uuid
+            )} since it has type "${instantiableDevice.type}"`,
             400
         )
 
-    const concreteDevice = concreteDeviceRepository.create()
-    writeConcreteDevice(concreteDevice, {
+    const concreteDevice = createDeviceModel('device')
+    writeDevice(concreteDevice, {
         ...instantiableDevice,
         type: 'device',
         announcedAvailability: [{ available: true }],
         services: [],
     })
     concreteDevice.owner = user.url
-    await concreteDeviceRepository.save(concreteDevice)
+    await saveDeviceModel(concreteDevice)
 
     if (parameters.changedUrl) {
         console.log(
@@ -311,9 +256,17 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         changedCallbacks.set(concreteDevice.uuid, changedCallbackURLs)
     }
 
-    const instance = formatConcreteDevice(concreteDevice)
-    if (!instance.url) throw new MissingPropertyError("Created instance of device does not have an url", 500)
+    const instance = await formatDevice(concreteDevice)
+    if (!instance.url)
+        throw new MissingPropertyError(
+            'Created instance of device does not have an url',
+            500
+        )
     const deviceToken = await apiClient.getDeviceToken(instance.url) // TODO: error handling
+    if (!instantiableDevice.instances) instantiableDevice.instances = []
+    instantiableDevice.instances.push(concreteDevice)
+
+    await saveDeviceModel(instantiableDevice)
 
     console.log(`postDevicesByDeviceId succeeded`)
 
@@ -321,8 +274,8 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         status: 201,
         body: {
             instance,
-            deviceToken
-        }
+            deviceToken,
+        },
     }
 }
 
@@ -337,26 +290,12 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     _user
 ) => {
     console.log(`deleteDevicesByDeviceId called`)
-    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-    const instantiableBrowserDeviceRepository = AppDataSource.getRepository(
-        InstantiableBrowserDeviceModel
-    )
-    const instantiableCloudDeviceRepository = AppDataSource.getRepository(
-        InstantiableCloudDeviceModel
-    )
-    const device = await getDeviceModelByUUID(parameters.device_id)
+    const device = await findDeviceModelByUUID(parameters.device_id)
 
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (isConcreteDeviceModel(device))
-        await concreteDeviceRepository.softDelete(device.uuid)
-    else if (isDeviceGroupModel(device))
-        await deviceGroupRepository.softDelete(device.uuid)
-    else if (isInstantiableBrowserDeviceModel(device))
-        await instantiableBrowserDeviceRepository.softDelete(device.uuid)
-    else await instantiableCloudDeviceRepository.softDelete(device.uuid)
+    await deleteDeviceModel(device)
 
     console.log(`deleteDevicesByDeviceId succeeded`)
 
@@ -379,24 +318,8 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     _user
 ) => {
     console.log(`patchDevicesByDeviceId called`)
-    const deviceOverviewRepository = AppDataSource.getRepository(DeviceOverviewModel)
-    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
 
-    const deviceOverview = await deviceOverviewRepository.findOneBy({
-        uuid: parameters.device_id,
-    })
-
-    if (!deviceOverview)
-        throw new MissingEntityError(
-            `Could not find device overview for ${parameters.device_id}`,
-            404
-        )
-
-    const device =
-        deviceOverview.type === 'device'
-            ? await concreteDeviceRepository.findOneBy({ uuid: parameters.device_id })
-            : await deviceGroupRepository.findOneBy({ uuid: parameters.device_id })
+    const device = await findDeviceModelByUUID(parameters.device_id)
 
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
@@ -407,24 +330,15 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
         )
         return {
             status: 200,
-            body: isConcreteDeviceModel(device)
-                ? formatConcreteDevice(device)
-                : await formatDeviceGroup(device),
+            body: await formatDevice(device),
         }
     }
 
-    if (isConcreteDeviceModel(device) && isConcreteDevice(body)) {
-        writeConcreteDevice(device, body)
-        concreteDeviceRepository.save(device)
-    } else if (isDeviceGroupModel(device) && isDeviceGroup(body)) {
-        writeDeviceGroup(device, body)
-        deviceGroupRepository.save(device)
-    } else {
-        throw new InvalidChangeError(
-            `Trying to update device type from ${device.type} to ${body.type}`,
-            400
-        )
+    if (!device.type) {
+        throw new MissingPropertyError(`Device model is missing a type`)
     }
+
+    writeDevice(device, body)
 
     handleChangedCallback(device)
     if (parameters.changedUrl) {
@@ -440,9 +354,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 
     return {
         status: 200,
-        body: isConcreteDeviceModel(device)
-            ? formatConcreteDevice(device)
-            : await formatDeviceGroup(device),
+        body: await formatDevice(device),
     }
 }
 
@@ -546,7 +458,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
         console.log(`postDevicesByDeviceIdSignaling called`)
 
         // Get device
-        const device = await getDeviceModelByUUID(parameters.device_id)
+        const device = await findDeviceModelByUUID(parameters.device_id)
         if (!device)
             throw new MissingEntityError(
                 `Could not find device ${parameters.device_id}`,

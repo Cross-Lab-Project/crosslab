@@ -36,6 +36,14 @@ export function isInstantiableBrowserDeviceModel(
     return device.type === 'edge instantiable'
 }
 
+export function isInstantiableDeviceModel(
+    device: DeviceOverviewModel
+): device is InstantiableBrowserDeviceModel | InstantiableCloudDeviceModel {
+    return (
+        isInstantiableBrowserDeviceModel(device) || isInstantiableCloudDeviceModel(device)
+    )
+}
+
 @Entity({ name: 'Device' })
 @TableInheritance({
     column: { type: 'varchar', name: 'type', enum: ['device', 'group'] },
@@ -80,6 +88,11 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
         cascade: true,
     })
     services?: ServiceModel[]
+    @ManyToOne(
+        () => InstantiableDeviceOverviewModel,
+        (instantiableDevice) => instantiableDevice.instances
+    )
+    instanceOf?: InstantiableDeviceOverviewModel
 }
 
 @ChildEntity('group')
@@ -93,8 +106,17 @@ export class DeviceGroupModel extends DeviceOverviewModel {
     devices?: DeviceReferenceModel[]
 }
 
+@ChildEntity()
+export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewModel {
+    @OneToMany(() => ConcreteDeviceModel, (concreteDevice) => concreteDevice.instanceOf, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
+    instances?: ConcreteDeviceModel[]
+}
+
 @ChildEntity('cloud instantiable')
-export class InstantiableCloudDeviceModel extends DeviceOverviewModel {
+export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
     type?: 'cloud instantiable'
     @Column()
@@ -102,7 +124,7 @@ export class InstantiableCloudDeviceModel extends DeviceOverviewModel {
 }
 
 @ChildEntity('edge instantiable')
-export class InstantiableBrowserDeviceModel extends DeviceOverviewModel {
+export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
     type?: 'edge instantiable'
     @Column()

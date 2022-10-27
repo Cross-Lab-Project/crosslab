@@ -1,7 +1,7 @@
 import { ConfiguredDeviceReference, Peerconnection } from '@cross-lab-project/api-client/dist/generated/device/types'
 import { AppDataSource } from '../data_source'
 // import { MalformedBodyError } from '../generated/types'
-import { apiClient, callbackUrl } from '../globals'
+import { callbackUrl } from '../globals'
 import {
     DeviceModel,
     ExperimentModel,
@@ -10,9 +10,15 @@ import {
     ServiceConfigurationModel,
 } from '../model'
 import { DeviceNotConnectedError, InvalidStateError, MissingPropertyError } from '../types/errors'
-import { createPeerconnection, getDevice, instantiateDevice } from './api'
+import { createPeerconnection, deletePeerconnection, getDevice, instantiateDevice } from './api'
 import { experimentUrlFromId } from './utils'
+import { bookExperiment as _bookExperiment } from './api'
+// import { putBookingBodyType } from '@cross-lab-project/api-client/dist/generated/booking/signatures/booking'
 
+/**
+ * This function attempts to book an experiment.
+ * @param experiment The experiment to be booked.
+ */
 export async function bookExperiment(experiment: ExperimentModel) {
     console.log('booking experiment', experiment.uuid)
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
@@ -22,7 +28,28 @@ export async function bookExperiment(experiment: ExperimentModel) {
             `Experiment ${experimentUrlFromId(experiment.uuid)} has no devices`
         )
 
-    // TODO: book experiment (booking client missing)
+    // TODO: book experiment
+    // const currentTime = new Date()
+    // const startTime = new Date(experiment.bookingStart ?? currentTime)
+    // const endTime = new Date(experiment.bookingEnd ?? startTime.getTime() + 60*60*1000)
+
+    // const bookingTemplate: putBookingBodyType = {
+    //     Experiment: {
+    //         Devices: experiment.devices.map(d => { 
+    //             return { ID: d.url }
+    //         })
+    //     },
+    //     Time: {
+    //         Start: startTime.toISOString(),
+    //         End: endTime.toISOString()
+    //     },
+    //     Type: 'normal'
+    // }
+
+    // const { BookingID: bookingId } = await _bookExperiment(bookingTemplate)
+    // experiment.bookingStart = startTime.toISOString()
+    // experiment.bookingEnd = startTime.toISOString()
+    // experiment.bookingID = bookingId 
 
     experiment.status = 'booked'
     await experimentRepository.save(experiment)
@@ -232,15 +259,24 @@ async function createPeerconnections(experiment: ExperimentModel) {
     }
 }
 
-async function runExperiment(experiment: ExperimentModel) {
+/**
+ * This function attempts to run an experiment.
+ * @param experiment The experiment to be run.
+ * @throws {InvalidStateError} Thrown when the status of the experiment is already "finished".
+ */
+export async function runExperiment(experiment: ExperimentModel) {
     console.log('running experiment', experiment.uuid)
-    // make sure experiment is already booked
-    if (experiment.status !== 'booked') {
-        // experiment is not booked
+    // make sure experiment is not already finished
+    if (experiment.status === "finished") {
         throw new InvalidStateError(
-            `Experiment status is "${experiment.status}", expected "booked"`,
+            `Experiment status is already "finished"`,
             400
         )
+    }
+
+    // TODO: make sure experiment is booked and that the booking is valid
+    if (experiment.status === "created") {
+        bookExperiment(experiment)
     }
 
     // make sure the experiment contains devices
@@ -248,7 +284,11 @@ async function runExperiment(experiment: ExperimentModel) {
         throw new MissingPropertyError(`Experiment does not contain any devices`, 400)
     }
 
-    let containsInstantiableDevices = false
+    /**
+     * This variable determines if the experiment needs to go into the state "setup".
+     * The state "setup" is only needed if the experiment contains instantiable devices.
+     */
+    let needsSetup = false
 
     // make sure the concrete devices of the experiment are connected
     for (const device of experiment.devices) {
@@ -259,7 +299,7 @@ async function runExperiment(experiment: ExperimentModel) {
 
         // instantiate devices if necessary
         if (resolvedDevice.type === "cloud instantiable" || resolvedDevice.type === "edge instantiable") {
-            containsInstantiableDevices = true
+            needsSetup = true
             if (!resolvedDevice.url) throw new MissingPropertyError("Device is missing its url", 500) // NOTE: error code?
             const { instance, deviceToken } = await instantiateDevice(resolvedDevice.url, { changedURL: callbackUrl })
             if (!instance.url) throw new MissingPropertyError("Device instance is missing its url", 500) // NOTE: error code?
@@ -270,11 +310,12 @@ async function runExperiment(experiment: ExperimentModel) {
     }
 
     // TODO: lock devices
-    // if (!experiment.bookingID) throw new MissingPropertyError(`Experiment ${experimentUrlFromId(experiment.uuid)} is missing a bookingID`)
-    // await apiClient.lockBooking(experiment.bookingID)
 
-
-    if (containsInstantiableDevices) {
+    if (needsSetup) {
+        // TODO: instantiate cloud instantiable devices
+        // TODO: add callback to all devices for changes
+        // TODO: once all devices are connected start creating peerconnections
+        // TODO: maybe add timeout for devices to connect
         experiment.status = 'setup'
     } else {
         await createPeerconnections(experiment)
@@ -286,34 +327,10 @@ async function runExperiment(experiment: ExperimentModel) {
     await experimentRepository.save(experiment)
 }
 
-export async function startExperiment(experiment: ExperimentModel) {
-    console.log(
-        'starting experiment',
-        experiment.uuid,
-        'with current status:',
-        experiment.status
-    )
-    switch (experiment.status) {
-        case 'created': {
-            await bookExperiment(experiment)
-            await runExperiment(experiment)
-            break
-        }
-        case 'booked': {
-            await runExperiment(experiment)
-            break
-        }
-        case 'running': {
-            // nothing to do since experiment is already running
-            break
-        }
-        case 'finished': {
-            // fail because experiment is already finished
-            throw new InvalidStateError('Cannot start finished experiment', 400)
-        }
-    }
-}
-
+/**
+ * This function attempts to finish an experiment.
+ * @param experiment The experiment to be finished.
+ */
 export async function finishExperiment(experiment: ExperimentModel) {
     console.log('finishing experiment', experiment.uuid)
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
@@ -331,7 +348,7 @@ export async function finishExperiment(experiment: ExperimentModel) {
             // delete all peerconnections
             if (experiment.connections) {
                 for (const peerconnection of experiment.connections) {
-                    await apiClient.deletePeerconnection(peerconnection.url)
+                    await deletePeerconnection(peerconnection.url)
                 }
             }
             // TODO: unlock all devices (booking client missing)

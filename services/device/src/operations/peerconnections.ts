@@ -11,9 +11,12 @@ import {
 } from '../generated/types'
 import { apiClient } from '../globals'
 import { closedCallbacks, handleClosedCallback } from '../methods/callbacks'
-import { formatPeerconnectionOverview, formatServiceConfig } from '../methods/format'
+import {
+    formatPeerconnectionOverview,
+    formatServiceConfig,
+} from '../methods/database/format'
 import { peerconnectionUrlFromId } from '../methods/utils'
-import { writePeerconnection } from '../methods/write'
+import { writePeerconnection } from '../methods/database/write'
 import { PeerconnectionModel } from '../model'
 import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
 

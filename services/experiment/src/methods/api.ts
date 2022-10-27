@@ -83,3 +83,62 @@ export async function createPeerconnection(...args: Parameters<typeof apiClient.
         throw error
     }
 }
+
+/**
+ * This function wraps the bookExperiment() function of the api-client and throws server-specific errors.
+ * @param args The arguments of the bookExperiment() function.
+ * @throws {InternalRequestError} Thrown if an error occurs during the request.
+ * @returns The id of the created booking.
+ */
+export async function bookExperiment(...args: Parameters<typeof apiClient.bookExperiment>) {
+    try {
+        return await apiClient.bookExperiment(args[0], args[1])
+    } catch (error) {
+        handleInternalRequestError(error)
+        throw error
+    }
+}
+
+/**
+ * This function wraps the lockBooking() function of the api-client and throws server-specific errors.
+ * @param args The arguments of the lockBooking() function.
+ * @throws {InternalRequestError} Thrown if an error occurs during the request.
+ * @returns The locked booking.
+ */
+export async function lockBooking(...args: Parameters<typeof apiClient.lockBooking>) {
+    try {
+        return await apiClient.lockBooking(args[0])
+    } catch (error) {
+        handleInternalRequestError(error)
+        throw error
+    }
+}
+
+/**
+ * This function wraps the getBooking() function of the api-client and throws server-specific errors.
+ * @param args The arguments of the getBooking() function.
+ * @throws {InternalRequestError} Thrown if an error occurs during the request.
+ * @returns The requested booking.
+ */
+export async function getBooking(...args: Parameters<typeof apiClient.getBooking>) {
+    try {
+        return await apiClient.getBooking(args[0])
+    } catch (error) {
+        handleInternalRequestError(error)
+        throw error
+    }
+}
+
+/**
+ * This function wraps the deletePeerconnection() function of the api-client and throws server-specific errors.
+ * @param args The arguments of the deletePeerconnection() function.
+ * @throws {InternalRequestError} Thrown if an error occurs during the request.
+ */
+export async function deletePeerconnection(...args: Parameters<typeof apiClient.deletePeerconnection>) {
+    try {
+        return await apiClient.deletePeerconnection(args[0])
+    } catch (error) {
+        handleInternalRequestError(error)
+        throw error
+    }
+}

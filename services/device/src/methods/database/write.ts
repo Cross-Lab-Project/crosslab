@@ -1,4 +1,4 @@
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from '../../data_source'
 import {
     ServiceConfig,
     ConfiguredDeviceReference,
@@ -9,8 +9,12 @@ import {
     DeviceGroup,
     InstantiableBrowserDevice,
     InstantiableCloudDevice,
-} from '../generated/types'
-import { YEAR } from '../globals'
+    isConcreteDevice,
+    isDeviceGroup,
+    isInstantiableBrowserDevice,
+    isInstantiableCloudDevice,
+} from '../../generated/types'
+import { YEAR } from '../../globals'
 import {
     ServiceConfigModel,
     DeviceReferenceModel,
@@ -22,10 +26,49 @@ import {
     InstantiableBrowserDeviceModel,
     InstantiableCloudDeviceModel,
     ServiceModel,
-} from '../model'
-import { applyAvailabilityRules } from './availability'
+    isConcreteDeviceModel,
+    isDeviceGroupModel,
+    isInstantiableBrowserDeviceModel,
+    isInstantiableCloudDeviceModel,
+} from '../../model'
+import { InvalidValueError } from '../../types/errors'
+import { DeviceModel, WriteDeviceFromModel } from '../../types/helper'
+import { applyAvailabilityRules } from '../availability'
 
 // Devices
+
+/**
+ * This function attempts to write the data of a device to a device model.
+ * @param deviceModel The device model the data should be written to.
+ * @param device The device providing the data to be written.
+ * @throws {InvalidValueError} Thrown when the given device model and device do not
+ * match any known device type or they have a different type from one another.
+ */
+export function writeDevice<T extends DeviceModel>(
+    deviceModel: T,
+    device: WriteDeviceFromModel<T>
+) {
+    if (isConcreteDeviceModel(deviceModel) && isConcreteDevice(device)) {
+        writeConcreteDevice(deviceModel, device)
+    } else if (isDeviceGroupModel(deviceModel) && isDeviceGroup(device)) {
+        writeDeviceGroup(deviceModel, device)
+    } else if (
+        isInstantiableBrowserDeviceModel(deviceModel) &&
+        isInstantiableBrowserDevice(device)
+    ) {
+        writeInstantiableBrowserDevice(deviceModel, device)
+    } else if (
+        isInstantiableCloudDeviceModel(deviceModel) &&
+        isInstantiableCloudDevice(device)
+    ) {
+        writeInstantiableCloudDevice(deviceModel, device)
+    } else {
+        throw new InvalidValueError(
+            'The device model and device to be written do not match any known device type or they have a different type from one another',
+            500
+        )
+    }
+}
 
 /**
  * This function writes the data of an {@link AvailabilityRule} to an {@link AvailabilityRuleModel}.
