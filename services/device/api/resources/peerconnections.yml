@@ -33,6 +33,7 @@ post:
       - peerconnection:create
   parameters:
     - $ref: '../parameters/closed_url.yml'
+    - $ref: '../parameters/status_changed_url.yml'
   requestBody:
     required: true
     content:
@@ -41,6 +42,11 @@ post:
   responses:
     201:
       description: The peer connection was created. A JSON representation of the new peer connection is returned.
+      content:
+        application/json:
+          $ref: '../content/peerconnection.yml'
+    202:
+      description: The device service will attempt to create the peerconnection as soon as possible.
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
@@ -61,7 +67,19 @@ post:
           requestBody:
             content:
               application/json:
-                $ref: '../content/peerconnection_event.yml'
+                $ref: '../content/peerconnection_closed_event.yml'
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required.
+    status-changed:
+      '{$request.query.statusChangedUrl}':
+        post:
+          requestBody:
+            content:
+              application/json:
+                $ref: '../content/peerconnection_status_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.

@@ -69,3 +69,13 @@ export class InvalidChangeError extends ErrorWithStatus {
         this.name = 'InvalidChangeError'
     }
 }
+
+/**
+ * This error class should be used if a required device is not connection.
+ */
+ export class DeviceNotConnectedError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "DeviceNotConnectedError"
+    }
+}

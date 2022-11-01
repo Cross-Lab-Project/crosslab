@@ -9,8 +9,8 @@ import {
     PeerconnectionModel,
     ServiceConfigurationModel,
 } from '../model'
-import { DeviceNotConnectedError, InvalidStateError, MissingPropertyError } from '../types/errors'
-import { createPeerconnection, deletePeerconnection, getDevice, instantiateDevice } from './api'
+import { DeviceNotConnectedError, InvalidBookingError, InvalidStateError, MissingPropertyError } from '../types/errors'
+import { createPeerconnection, deletePeerconnection, getDevice, instantiateDevice, lockBooking, startCloudDeviceInstance } from './api'
 import { experimentUrlFromId } from './utils'
 import { bookExperiment as _bookExperiment } from './api'
 // import { putBookingBodyType } from '@cross-lab-project/api-client/dist/generated/booking/signatures/booking'
@@ -19,7 +19,7 @@ import { bookExperiment as _bookExperiment } from './api'
  * This function attempts to book an experiment.
  * @param experiment The experiment to be booked.
  */
-export async function bookExperiment(experiment: ExperimentModel) {
+async function bookExperiment(experiment: ExperimentModel) {
     console.log('booking experiment', experiment.uuid)
     const experimentRepository = AppDataSource.getRepository(ExperimentModel)
 
@@ -70,6 +70,12 @@ function sortServiceParticipantsByDeviceId(
     }
 }
 
+/**
+ * This function returns the instance url of a device if defined,
+ * otherwise it returns the url of the device.
+ * @param device 
+ * @returns The instance url or the url of the device.
+ */
 function getUrlOrInstanceUrl(device: DeviceModel): string {
     if (device.additionalProperties && device.additionalProperties.instanceUrl) {
         return device.additionalProperties.instanceUrl
@@ -274,14 +280,19 @@ export async function runExperiment(experiment: ExperimentModel) {
         )
     }
 
-    // TODO: make sure experiment is booked and that the booking is valid
-    if (experiment.status === "created") {
-        bookExperiment(experiment)
-    }
-
     // make sure the experiment contains devices
     if (!experiment.devices || experiment.devices.length === 0) {
         throw new MissingPropertyError(`Experiment does not contain any devices`, 400)
+    }
+
+    // book experiment if status is "created"
+    if (experiment.status === "created") {
+        await bookExperiment(experiment)
+    }
+
+    // make sure the experiment has a booking
+    if (!experiment.bookingID) {
+        throw new MissingPropertyError(`Experiment does not have a booking`, 400)
     }
 
     /**
@@ -297,7 +308,7 @@ export async function runExperiment(experiment: ExperimentModel) {
             throw new DeviceNotConnectedError(`Cannot start experiment since device ${device.url} is not connected`, 502) // NOTE: maybe there is a more fitting error code
         }
 
-        // instantiate devices if necessary
+        // handle instantiable devices
         if (resolvedDevice.type === "cloud instantiable" || resolvedDevice.type === "edge instantiable") {
             needsSetup = true
             if (!resolvedDevice.url) throw new MissingPropertyError("Device is missing its url", 500) // NOTE: error code?
@@ -306,16 +317,30 @@ export async function runExperiment(experiment: ExperimentModel) {
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
+
+            // instantiate cloud instantiable devices
+            if (resolvedDevice.type === "cloud instantiable") {
+                await startCloudDeviceInstance(resolvedDevice, instance.url, deviceToken)
+            }
         }
     }
 
     // TODO: lock devices
+    try {
+        const { Booking: booking, Time: _timeslot, Tokens: _deviceTokenMapping } = await lockBooking(experiment.bookingID)
+        if (booking.Status !== "active") {
+            throw new InvalidBookingError(`The booking ${experiment.bookingID} is invalid for the experiment ${experimentUrlFromId(experiment.uuid)}`)
+        }
+    } catch (error) {
+        // TODO: error handling
+        throw error
+    }
 
     if (needsSetup) {
-        // TODO: instantiate cloud instantiable devices
-        // TODO: add callback to all devices for changes
-        // TODO: once all devices are connected start creating peerconnections
-        // TODO: maybe add timeout for devices to connect
+        // TODO: instantiate cloud instantiable devices - done above
+        // TODO: add callback to all devices/instances for changes
+        // TODO: create peerconnections
+        await createPeerconnections(experiment)
         experiment.status = 'setup'
     } else {
         await createPeerconnections(experiment)
@@ -341,7 +366,9 @@ export async function finishExperiment(experiment: ExperimentModel) {
             break
         }
         case 'booked': {
-            // TODO: delete booking (booking client missing)
+            // TODO: delete booking (what to do if "booked" but no booking?)
+            // if (experiment.bookingID)
+            //     await deleteBooking(experiment.bookingID)
             break
         }
         case 'running': {
@@ -352,7 +379,12 @@ export async function finishExperiment(experiment: ExperimentModel) {
                 }
             }
             // TODO: unlock all devices (booking client missing)
+            // if (experiment.bookingID)
+            //     await unlockDevices(experiment.bookingID)
+
             // TODO: delete booking (booking client missing)
+            // if (experiment.bookingID)
+            //     await deleteBooking(experiment.bookingID)
             break
         }
         case 'finished': {

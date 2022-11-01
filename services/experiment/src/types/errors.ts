@@ -82,3 +82,13 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
         this.internalError = error
     }
 }
+
+/**
+ * This error class should be used if a booking is invalid.
+ */
+export class InvalidBookingError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "InvalidBookingError"
+    }
+}

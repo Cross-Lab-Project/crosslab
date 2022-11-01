@@ -7,18 +7,17 @@ import {
 } from '../generated/signatures/peerconnections'
 import {
     ClosePeerconnectionMessage,
-    CreatePeerconnectionMessage,
 } from '../generated/types'
-import { apiClient } from '../globals'
-import { closedCallbacks, handleClosedCallback } from '../methods/callbacks'
+import { apiClient, peerconnectionsCallbackUrl, pendingPeerconnections } from '../globals'
+import { closedCallbacks, sendClosedCallback, statusChangedCallbacks } from '../methods/callbacks'
 import {
     formatPeerconnectionOverview,
-    formatServiceConfig,
 } from '../methods/database/format'
 import { peerconnectionUrlFromId } from '../methods/utils'
 import { writePeerconnection } from '../methods/database/write'
 import { PeerconnectionModel } from '../model'
-import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
+import { InconsistentDatabaseError, InvalidValueError, MissingEntityError, MissingPropertyError } from '../types/errors'
+import { startSignaling } from '../methods/signaling'
 
 /**
  * This function implements the functionality for handling GET requests on /peerconnections endpoint.
@@ -64,40 +63,45 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 
     await peerconnectionRepository.save(peerconnection)
 
-    const common = <CreatePeerconnectionMessage>{
-        messageType: 'command',
-        command: 'createPeerconnection',
-        connectionType: 'webrtc',
-        connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
+    const deviceA = await apiClient.getDevice(peerconnection.deviceA.url)
+    const deviceB = await apiClient.getDevice(peerconnection.deviceB.url)
+
+    if (deviceA.type !== "device" || deviceB.type !== "device") {
+        throw new InvalidValueError(`Cannot establish a peerconnection between devices of type "${deviceA.type}" and "${deviceB.type}"`, 400)
     }
 
-    const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
-        ...common,
-        services: peerconnection.deviceA.config
-            ? peerconnection.deviceA.config.map(formatServiceConfig)
-            : [],
-        tiebreaker: false,
+    if (!deviceA.url || !deviceB.url) {
+        throw new MissingPropertyError(`One of the resolved devices does not have an url`, 500) // NOTE: error code
     }
 
-    const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
-        ...common,
-        services: peerconnection.deviceB.config
-            ? peerconnection.deviceB.config.map(formatServiceConfig)
-            : [],
-        tiebreaker: true,
+    if (deviceA.connected && deviceB.connected) {
+        // peerconnection can be started directly
+        await startSignaling(peerconnection)
+    } else {
+        // need to wait for devices to connect
+        // register changed callbacks for devices to get notified when they connect
+        const n_deviceA = await apiClient.patchDevice(deviceA.url, {}, { changedUrl: peerconnectionsCallbackUrl })
+        const n_deviceB = await apiClient.patchDevice(deviceB.url, {}, { changedUrl: peerconnectionsCallbackUrl })
+
+        // check that devices still have the correct type
+        if (n_deviceA.type !== "device" || n_deviceB.type !== "device") {
+            throw new InvalidValueError(`The type of device ${deviceA.type !== "device" ? deviceA.url : deviceB.url} is not "device" anymore`, 400)
+        }
+
+        // set timeout for checking if devices are connected
+        const timeout = setTimeout(() => {
+            console.log("devices did not connect")
+            peerconnection.status = "failed"
+            peerconnectionRepository.save(peerconnection)
+        }, 30000)
+
+        pendingPeerconnections.push({ 
+            peerconnection: peerconnection,
+            deviceA: n_deviceA,
+            deviceB: n_deviceB,
+            timeout: timeout   
+        })
     }
-
-    apiClient.sendSignalingMessage(
-        peerconnection.deviceA.url,
-        peerconnectionUrlFromId(peerconnection.uuid),
-        createPeerConnectionMessageA
-    )
-
-    apiClient.sendSignalingMessage(
-        peerconnection.deviceB.url,
-        peerconnectionUrlFromId(peerconnection.uuid),
-        createPeerConnectionMessageB
-    )
 
     if (parameters.closedUrl) {
         console.log(
@@ -108,10 +112,19 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         closedCallbacks.set(peerconnection.uuid, closedCallbackURLs)
     }
 
+    if (parameters.statusChangedUrl) {
+        console.log(
+            `postPeerconnections: registering status-changed-callback for ${parameters.statusChangedUrl}`
+        )
+        const statusChangedCallbackURLs = statusChangedCallbacks.get(peerconnection.uuid) ?? []
+        statusChangedCallbackURLs.push(parameters.statusChangedUrl)
+        statusChangedCallbacks.set(peerconnection.uuid, statusChangedCallbackURLs)
+    }
+
     console.log(`postPeerconnections succeeded`)
 
     return {
-        status: 201,
+        status: peerconnection.status === "connected" ? 201 : 202,
         body: formatPeerconnectionOverview(peerconnection),
     }
 }
@@ -180,7 +193,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
 
         if (result.affected > 1) {
             throw new InconsistentDatabaseError(
-                'Deleted Multiple Peerconnection with same uuid',
+                'Deleted Multiple Peerconnections with same uuid',
                 500
             )
         }
@@ -202,7 +215,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             closePeerconnectionMessage
         )
 
-        handleClosedCallback(peerconnection)
+        sendClosedCallback(peerconnection)
 
         console.log(`deletePeerconnectionsByPeerconnectionId succeeded`)
 

@@ -6,6 +6,7 @@ import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
 import { isUserType, JWTVerificationError } from './generated/types'
+import { peerconnectionsCallbackHandling } from './methods/callbacks'
 import { deviceHandling } from './operations/devices'
 
 declare global {
@@ -67,6 +68,7 @@ AppDataSource.initialize()
         app.initService({
             JWTVerify: JWTVerify,
         })
+        peerconnectionsCallbackHandling(app)
         const wsServer = new WebSocket.Server({ noServer: true })
         app.wsListeners = new Map()
         app.ws = (path, listener) => app.wsListeners.set(path, listener)

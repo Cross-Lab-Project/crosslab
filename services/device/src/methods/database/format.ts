@@ -241,6 +241,7 @@ export function formatPeerconnectionOverview(
             formatDeviceReference(peerconnection.deviceB),
         ],
         url: peerconnectionUrlFromId(peerconnection.uuid),
+        status: peerconnection.status
     }
 }
 
@@ -258,5 +259,6 @@ export function formatPeerconnection(
             formatConfiguredDeviceReference(peerconnection.deviceB),
         ],
         url: peerconnectionUrlFromId(peerconnection.uuid),
+        status: peerconnection.status
     }
 }

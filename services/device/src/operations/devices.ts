@@ -32,7 +32,7 @@ import {
     AuthenticationMessage,
 } from '../generated/types'
 import { applyAvailabilityRules } from '../methods/availability'
-import { handleChangedCallback, changedCallbacks } from '../methods/callbacks'
+import { sendChangedCallback, changedCallbacks } from '../methods/callbacks'
 import {
     formatDevice,
     formatDeviceOverview,
@@ -90,7 +90,7 @@ export function deviceHandling(app: Express.Application) {
             }
             device.connected = true
             await deviceRepository.save(device)
-            handleChangedCallback(device)
+            sendChangedCallback(device)
             connectedDevices.set(device.uuid, ws)
 
             ws.send(
@@ -110,7 +110,7 @@ export function deviceHandling(app: Express.Application) {
                 if (isAlive === false) {
                     device.connected = false
                     await deviceRepository.save(device)
-                    handleChangedCallback(device)
+                    sendChangedCallback(device)
                     connectedDevices.delete(device.uuid)
                     clearInterval(interval)
                     return ws.terminate()
@@ -340,7 +340,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 
     writeDevice(device, body)
 
-    handleChangedCallback(device)
+    sendChangedCallback(device)
     if (parameters.changedUrl) {
         console.log(
             `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
@@ -402,7 +402,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         )
 
         await deviceRepository.save(device)
-        handleChangedCallback(device)
+        sendChangedCallback(device)
 
         console.log(`postDevicesByDeviceIdAvailability succeeded`)
 

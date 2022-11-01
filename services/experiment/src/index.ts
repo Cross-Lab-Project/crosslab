@@ -3,7 +3,7 @@ import { AppDataSource } from './data_source'
 import { app } from './generated/index'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { isUserType, JWTVerificationError } from './generated/types'
-import { callbackHandling } from './methods/callback'
+import { callbackHandling } from './methods/callbacks'
 
 AppDataSource.initialize()
     .then(() => {

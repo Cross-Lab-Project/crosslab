@@ -481,6 +481,16 @@
                 "items": {
                   "$ref": "#/components/schemas/configured_device_reference"
                 }
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the peerconnection.",
+                "enum": [
+                  "waiting-for-devices",
+                  "connected",
+                  "failed",
+                  "closed"
+                ]
               }
             }
           }
@@ -540,6 +550,16 @@
         "in": "query",
         "required": false,
         "description": "An URL that will be called once the peer connection is closed.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "status_changed_url": {
+        "name": "statusChangedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called if the status of the peerconnection changes.\n",
         "schema": {
           "type": "string",
           "format": "uri"
@@ -1913,6 +1933,9 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/closed_url"
+          },
+          {
+            "$ref": "#/components/parameters/status_changed_url"
           }
         ],
         "requestBody": {
@@ -1928,6 +1951,16 @@
         "responses": {
           "201": {
             "description": "The peer connection was created. A JSON representation of the new peer connection is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The device service will attempt to create the peerconnection as soon as possible.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1972,6 +2005,46 @@
                             "type": "string",
                             "enum": [
                               "peerconnection-closed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          },
+          "status-changed": {
+            "{$request.query.statusChangedUrl}": {
+              "post": {
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-status-changed"
                             ]
                           },
                           "peerconnection": {
