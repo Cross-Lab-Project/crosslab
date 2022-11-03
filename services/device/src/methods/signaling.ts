@@ -1,10 +1,10 @@
-import { AppDataSource } from "../data_source"
-import { CreatePeerconnectionMessage } from "../generated/types"
-import { apiClient } from "../globals"
-import { PeerconnectionModel } from "../model"
-import { sendStatusChangedCallback } from "./callbacks"
-import { formatServiceConfig } from "./database/format"
-import { peerconnectionUrlFromId } from "./utils"
+import { AppDataSource } from '../data_source'
+import { CreatePeerconnectionMessage } from '../generated/types'
+import { apiClient } from '../globals'
+import { PeerconnectionModel } from '../model'
+import { sendStatusChangedCallback } from './callbacks'
+import { formatServiceConfig } from './database/format'
+import { peerconnectionUrlFromId } from './utils'
 
 /**
  * This function starts the signaling process for a peerconnection.
@@ -48,7 +48,7 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
     )
 
     // NOTE: this behaviour should maybe be changed later on
-    peerconnection.status = "connected"
+    peerconnection.status = 'connected'
     await AppDataSource.getRepository(PeerconnectionModel).save(peerconnection)
 
     sendStatusChangedCallback(peerconnection)

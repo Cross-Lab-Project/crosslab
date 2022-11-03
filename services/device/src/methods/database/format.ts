@@ -122,7 +122,7 @@ async function formatDeviceGroup(
     deviceGroup: DeviceGroupModel,
     flat_group: boolean = false
 ): Promise<DeviceGroup> {
-    const devices: (Device)[] = []
+    const devices: Device[] = []
     if (deviceGroup.devices) {
         for (const d of deviceGroup.devices) {
             const resolvedDevice = await resolveDeviceReference(d, flat_group)
@@ -241,7 +241,7 @@ export function formatPeerconnectionOverview(
             formatDeviceReference(peerconnection.deviceB),
         ],
         url: peerconnectionUrlFromId(peerconnection.uuid),
-        status: peerconnection.status
+        status: peerconnection.status,
     }
 }
 
@@ -259,6 +259,6 @@ export function formatPeerconnection(
             formatConfiguredDeviceReference(peerconnection.deviceB),
         ],
         url: peerconnectionUrlFromId(peerconnection.uuid),
-        status: peerconnection.status
+        status: peerconnection.status,
     }
 }

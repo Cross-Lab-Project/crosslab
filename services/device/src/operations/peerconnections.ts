@@ -5,18 +5,23 @@ import {
     getPeerconnectionsByPeerconnectionIdSignature,
     deletePeerconnectionsByPeerconnectionIdSignature,
 } from '../generated/signatures/peerconnections'
-import {
-    ClosePeerconnectionMessage,
-} from '../generated/types'
+import { ClosePeerconnectionMessage } from '../generated/types'
 import { apiClient, peerconnectionsCallbackUrl, pendingPeerconnections } from '../globals'
-import { closedCallbacks, sendClosedCallback, statusChangedCallbacks } from '../methods/callbacks'
 import {
-    formatPeerconnectionOverview,
-} from '../methods/database/format'
+    closedCallbacks,
+    sendClosedCallback,
+    statusChangedCallbacks,
+} from '../methods/callbacks'
+import { formatPeerconnectionOverview } from '../methods/database/format'
 import { peerconnectionUrlFromId } from '../methods/utils'
 import { writePeerconnection } from '../methods/database/write'
 import { PeerconnectionModel } from '../model'
-import { InconsistentDatabaseError, InvalidValueError, MissingEntityError, MissingPropertyError } from '../types/errors'
+import {
+    InconsistentDatabaseError,
+    InvalidValueError,
+    MissingEntityError,
+    MissingPropertyError,
+} from '../types/errors'
 import { startSignaling } from '../methods/signaling'
 
 /**
@@ -66,12 +71,18 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     const deviceA = await apiClient.getDevice(peerconnection.deviceA.url)
     const deviceB = await apiClient.getDevice(peerconnection.deviceB.url)
 
-    if (deviceA.type !== "device" || deviceB.type !== "device") {
-        throw new InvalidValueError(`Cannot establish a peerconnection between devices of type "${deviceA.type}" and "${deviceB.type}"`, 400)
+    if (deviceA.type !== 'device' || deviceB.type !== 'device') {
+        throw new InvalidValueError(
+            `Cannot establish a peerconnection between devices of type "${deviceA.type}" and "${deviceB.type}"`,
+            400
+        )
     }
 
     if (!deviceA.url || !deviceB.url) {
-        throw new MissingPropertyError(`One of the resolved devices does not have an url`, 500) // NOTE: error code
+        throw new MissingPropertyError(
+            `One of the resolved devices does not have an url`,
+            500
+        ) // NOTE: error code
     }
 
     if (deviceA.connected && deviceB.connected) {
@@ -80,26 +91,39 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     } else {
         // need to wait for devices to connect
         // register changed callbacks for devices to get notified when they connect
-        const n_deviceA = await apiClient.patchDevice(deviceA.url, {}, { changedUrl: peerconnectionsCallbackUrl })
-        const n_deviceB = await apiClient.patchDevice(deviceB.url, {}, { changedUrl: peerconnectionsCallbackUrl })
+        const n_deviceA = await apiClient.patchDevice(
+            deviceA.url,
+            {},
+            { changedUrl: peerconnectionsCallbackUrl }
+        )
+        const n_deviceB = await apiClient.patchDevice(
+            deviceB.url,
+            {},
+            { changedUrl: peerconnectionsCallbackUrl }
+        )
 
         // check that devices still have the correct type
-        if (n_deviceA.type !== "device" || n_deviceB.type !== "device") {
-            throw new InvalidValueError(`The type of device ${deviceA.type !== "device" ? deviceA.url : deviceB.url} is not "device" anymore`, 400)
+        if (n_deviceA.type !== 'device' || n_deviceB.type !== 'device') {
+            throw new InvalidValueError(
+                `The type of device ${
+                    deviceA.type !== 'device' ? deviceA.url : deviceB.url
+                } is not "device" anymore`,
+                400
+            )
         }
 
         // set timeout for checking if devices are connected
         const timeout = setTimeout(() => {
-            console.log("devices did not connect")
-            peerconnection.status = "failed"
+            console.log('devices did not connect')
+            peerconnection.status = 'failed'
             peerconnectionRepository.save(peerconnection)
         }, 30000)
 
-        pendingPeerconnections.push({ 
+        pendingPeerconnections.push({
             peerconnection: peerconnection,
             deviceA: n_deviceA,
             deviceB: n_deviceB,
-            timeout: timeout   
+            timeout: timeout,
         })
     }
 
@@ -116,7 +140,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         console.log(
             `postPeerconnections: registering status-changed-callback for ${parameters.statusChangedUrl}`
         )
-        const statusChangedCallbackURLs = statusChangedCallbacks.get(peerconnection.uuid) ?? []
+        const statusChangedCallbackURLs =
+            statusChangedCallbacks.get(peerconnection.uuid) ?? []
         statusChangedCallbackURLs.push(parameters.statusChangedUrl)
         statusChangedCallbacks.set(peerconnection.uuid, statusChangedCallbackURLs)
     }
@@ -124,7 +149,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     console.log(`postPeerconnections succeeded`)
 
     return {
-        status: peerconnection.status === "connected" ? 201 : 202,
+        status: peerconnection.status === 'connected' ? 201 : 202,
         body: formatPeerconnectionOverview(peerconnection),
     }
 }

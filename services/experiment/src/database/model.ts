@@ -66,7 +66,7 @@ export class DeviceModel {
     experiment?: ExperimentModel
     @Column('simple-json')
     additionalProperties?: {
-        instanceUrl?: string,
+        instanceUrl?: string
         deviceToken?: string
     }
 }
@@ -75,12 +75,10 @@ export class DeviceModel {
 export class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
-    @Column()
+    @Column({ unique: true })
     url!: string
     @Column()
-    deviceA!: string
-    @Column()
-    deviceB!: string
+    status?: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.connections)
     experiment?: ExperimentModel
 }
@@ -92,7 +90,7 @@ export class ServiceConfigurationModel {
     @Column()
     serviceType?: string
     @Column()
-    configuration?: string // save JSON as string
+    configuration?: string // TODO: save JSON as string (simple-json)
     @OneToMany(
         () => ParticipantModel,
         (participant) => participant.serviceConfiguration,
@@ -112,7 +110,7 @@ export class ParticipantModel {
     @Column()
     serviceId?: string
     @Column()
-    config?: string // save JSON as string
+    config?: string // TODO: save JSON as string (simple-json)
     @ManyToOne(
         () => ServiceConfigurationModel,
         (serviceConfiguration) => serviceConfiguration.participants

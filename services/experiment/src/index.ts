@@ -1,9 +1,9 @@
 import { config } from './config'
-import { AppDataSource } from './data_source'
+import { AppDataSource } from './database/data_source'
 import { app } from './generated/index'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { isUserType, JWTVerificationError } from './generated/types'
-import { callbackHandling } from './methods/callbacks'
+import { callbackHandling } from './util/callbacks'
 
 AppDataSource.initialize()
     .then(() => {

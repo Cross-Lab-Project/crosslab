@@ -46,7 +46,11 @@ export function isInstantiableDeviceModel(
 
 @Entity({ name: 'Device' })
 @TableInheritance({
-    column: { type: 'varchar', name: 'type', enum: ['device', 'group', 'cloud instantiable', 'edge instantiable'] },
+    column: {
+        type: 'varchar',
+        name: 'type',
+        enum: ['device', 'group', 'cloud instantiable', 'edge instantiable'],
+    },
 })
 export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn('uuid')
@@ -198,7 +202,7 @@ export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    status!: 'waiting-for-devices'|'connected'|'failed'|'closed'
+    status!: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
     @OneToOne(() => DeviceReferenceModel, { onDelete: 'CASCADE', cascade: true })
     @JoinColumn()
     deviceA!: DeviceReferenceModel

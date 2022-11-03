@@ -1,5 +1,11 @@
 import express from 'express'
-import { MalformedBodyError, isConcreteDevice, isDeviceGroup, isInstantiableBrowserDevice, isInstantiableCloudDevice } from '../generated/types'
+import {
+    MalformedBodyError,
+    isConcreteDevice,
+    isDeviceGroup,
+    isInstantiableBrowserDevice,
+    isInstantiableCloudDevice,
+} from '../generated/types'
 import { pendingPeerconnections } from '../globals'
 import { DeviceOverviewModel, PeerconnectionModel } from '../model'
 import { InvalidValueError } from '../types/errors'
@@ -14,12 +20,14 @@ export const statusChangedCallbacks = new Map<string, Array<string>>()
  * This function adds the endpoint for incoming callbacks registered by the peerconnection service.
  * @param app The express application the callback endpoint should be added to.
  */
-export function peerconnectionsCallbackHandling(app: express.Application) { // TODO: adapt callback handling after codegen update
+export function peerconnectionsCallbackHandling(app: express.Application) {
+    // TODO: adapt callback handling after codegen update
     app.post('/peerconnections/callbacks', (req, res) => {
         const callback = req.body
-        if (typeof callback !== "object") throw new MalformedBodyError("Body of callback is not an object", 400)
+        if (typeof callback !== 'object')
+            throw new MalformedBodyError('Body of callback is not an object', 400)
         const callbackType = getCallbackType(callback)
-        
+
         switch (callbackType) {
             case 'event':
                 return res.status(handleEventCallback(callback)).send()
@@ -39,17 +47,14 @@ export function peerconnectionsCallbackHandling(app: express.Application) { // T
  * @returns The type of the incoming callback.
  */
 function getCallbackType(callback: any) {
-    if (typeof callback.callbackType !== "string") {
+    if (typeof callback.callbackType !== 'string') {
         throw new MalformedBodyError(
-            'Property "callbackType" needs to be of type string', 
+            'Property "callbackType" needs to be of type string',
             400
         )
     }
     if (!callback.callbackType) {
-        throw new MalformedBodyError(
-            'Callbacks require property "callbackType"',
-            400
-        )
+        throw new MalformedBodyError('Callbacks require property "callbackType"', 400)
     }
     return callback.callbackType as string
 }
@@ -61,16 +66,16 @@ function getCallbackType(callback: any) {
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-function handleEventCallback(callback: any): 200|410 {
+function handleEventCallback(callback: any): 200 | 410 {
     if (!callback.eventType) {
         throw new MalformedBodyError(
             'Callbacks of type "event" require property "eventType"',
             400
         )
     }
-    if (typeof callback.eventType !== "string") {
+    if (typeof callback.eventType !== 'string') {
         throw new MalformedBodyError(
-            'Property "callbackType" needs to be of type "string"', 
+            'Property "callbackType" needs to be of type "string"',
             400
         )
     }
@@ -92,7 +97,7 @@ function handleEventCallback(callback: any): 200|410 {
  * @throws {InvalidValueError} Thrown if the device is not of type "device".
  * @returns The status code for the response to the incoming callback.
  */
-function handleDeviceChangedEventCallback(callback: any): 200|410 {
+function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
     if (!callback.device) {
         throw new MalformedBodyError(
             'Event-callbacks of type "device-changed" require property "device"',
@@ -100,21 +105,16 @@ function handleDeviceChangedEventCallback(callback: any): 200|410 {
         )
     }
     const device = callback.device
-    if (!isConcreteDevice(device) && 
+    if (
+        !isConcreteDevice(device) &&
         !isDeviceGroup(device) &&
         !isInstantiableBrowserDevice(device) &&
-        !isInstantiableCloudDevice(device)) 
-    {
-        throw new MalformedBodyError(
-            'Property "device" is not a valid device',
-            400
-        )
+        !isInstantiableCloudDevice(device)
+    ) {
+        throw new MalformedBodyError('Property "device" is not a valid device', 400)
     }
     if (!device.url) {
-        throw new MalformedBodyError(
-            'Property "device" is missing url',
-            400
-        )
+        throw new MalformedBodyError('Property "device" is missing url', 400)
     }
     if (!isConcreteDevice(device)) {
         throw new InvalidValueError(
@@ -122,7 +122,9 @@ function handleDeviceChangedEventCallback(callback: any): 200|410 {
             400 // NOTE: error code
         )
     }
-    const pendingConnections = pendingPeerconnections.filter((pc) => pc.deviceA.url === device.url || pc.deviceB.url === device.url)
+    const pendingConnections = pendingPeerconnections.filter(
+        (pc) => pc.deviceA.url === device.url || pc.deviceB.url === device.url
+    )
     if (pendingConnections.length === 0) {
         return 410
     }
@@ -157,7 +159,7 @@ export async function sendChangedCallback(device: DeviceOverviewModel) {
                 ...formatDevice(device),
             }),
         })
-        
+
         if (res.status === 410) {
             const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
             changedCallbacks.set(
@@ -183,7 +185,7 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
                 ...formatPeerconnection(peerconnection),
             }),
         })
-        
+
         if (res.status === 410) {
             const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
             closedCallbacks.set(
@@ -206,12 +208,13 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnection-status-changed',
-                ...formatPeerconnection(peerconnection)
+                ...formatPeerconnection(peerconnection),
             }),
         })
 
         if (res.status === 410) {
-            const statusCallbackURLs = statusChangedCallbacks.get(peerconnection.uuid) ?? []
+            const statusCallbackURLs =
+                statusChangedCallbacks.get(peerconnection.uuid) ?? []
             statusChangedCallbacks.set(
                 peerconnection.uuid,
                 statusCallbackURLs.filter((cb_url) => cb_url != url)

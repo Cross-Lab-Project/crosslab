@@ -66,14 +66,14 @@ export class MissingPropertyError extends ErrorWithStatus {
 export class DeviceNotConnectedError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
-        this.name = "DeviceNotConnectedError"
+        this.name = 'DeviceNotConnectedError'
     }
 }
 
 /**
  * This error class should be used as a wrapper for errors thrown by the api-client.
  */
- export class InternalRequestError extends ErrorWithStatus {
+export class InternalRequestError extends ErrorWithStatus {
     public internalError: Error
 
     constructor(message: string, error: Error, status?: number) {
@@ -89,6 +89,6 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
 export class InvalidBookingError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
-        this.name = "InvalidBookingError"
+        this.name = 'InvalidBookingError'
     }
 }

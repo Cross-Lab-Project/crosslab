@@ -5,28 +5,28 @@ import {
     patchExperimentsByExperimentIdSignature,
     getExperimentsSignature,
 } from '../generated/signatures/experiments'
-import { AppDataSource } from '../data_source'
-import { ExperimentModel } from '../model'
-import { formatExperiment } from '../methods/format'
-import { writeExperiment } from '../methods/write'
-import {
-    bookExperiment,
-    finishExperiment,
-    startExperiment,
-} from '../methods/experimentStatus'
+import { formatExperimentModel } from '../database/methods/format'
+import { writeExperimentModel } from '../database/methods/write'
+import { bookExperiment, finishExperiment, runExperiment } from '../util/experimentStatus'
 import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
+import {
+    findAllExperimentModels,
+    findExperimentModelById,
+} from '../database/methods/find'
+import { createExperimentModel } from '../database/methods/create'
+import { saveExperimentModel } from '../database/methods/save'
+import { deleteExperimentModelById } from '../database/methods/delete'
 
 /**
  * This function implements the functionality for handling GET requests on /experiments endpoint.
  * @param _user The user submitting the request.
  */
 export const getExperiments: getExperimentsSignature = async (_user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiments = await experimentRepository.find()
+    const experiments = await findAllExperimentModels()
 
     return {
         status: 200,
-        body: experiments.map(formatExperiment),
+        body: experiments.map(formatExperimentModel),
     }
 }
 
@@ -36,21 +36,18 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
  * @param _user The user submitting the request.
  */
 export const postExperiments: postExperimentsSignature = async (body, _user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = experimentRepository.create()
-    await writeExperiment(experiment, body)
-    const requestedStatus = experiment.status
-    experiment.status = 'created'
-    await experimentRepository.save(experiment)
+    const experimentModel = createExperimentModel(body)
+    const requestedStatus = body.status
+    await saveExperimentModel(experimentModel)
 
-    if (requestedStatus === 'booked') await bookExperiment(experiment)
-    if (requestedStatus === 'running') await startExperiment(experiment)
-    if (requestedStatus === 'finished') await finishExperiment(experiment)
-    await experimentRepository.save(experiment)
+    if (requestedStatus === 'booked') await bookExperiment(experimentModel)
+    if (requestedStatus === 'running') await runExperiment(experimentModel)
+    if (requestedStatus === 'finished') await finishExperiment(experimentModel)
+    await saveExperimentModel(experimentModel) // NOTE: truly needed?
 
     return {
         status: 201,
-        body: formatExperiment(experiment),
+        body: formatExperimentModel(experimentModel),
     }
 }
 
@@ -63,29 +60,18 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     parameters,
     _user
 ) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = await experimentRepository.findOne({
-        where: {
-            uuid: parameters.experiment_id,
-        },
-        relations: {
-            devices: true,
-            connections: true,
-            roles: true,
-            serviceConfigurations: true,
-        },
-    })
+    const experimentModel = await findExperimentModelById(parameters.experiment_id)
 
-    if (!experiment) {
+    if (!experimentModel) {
         throw new MissingEntityError(
-            `Could not find experiment ${parameters.experiment_id}`,
+            `Could not find experiment model ${parameters.experiment_id}`,
             404
         )
     }
 
     return {
         status: 200,
-        body: formatExperiment(experiment),
+        body: formatExperimentModel(experimentModel),
     }
 }
 
@@ -96,10 +82,7 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
  */
 export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature =
     async (parameters, _user) => {
-        const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-        const result = await experimentRepository.softDelete({
-            uuid: parameters.experiment_id,
-        })
+        const result = await deleteExperimentModelById(parameters.experiment_id)
 
         if (!result.affected) {
             throw new MissingEntityError(
@@ -128,27 +111,24 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
     async (parameters, body, _user) => {
-        const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-        const experiment = await experimentRepository.findOneBy({
-            uuid: parameters.experiment_id,
-        })
+        const experimentModel = await findExperimentModelById(parameters.experiment_id)
 
-        if (!experiment) {
+        if (!experimentModel) {
             throw new MissingEntityError(
-                `Could not find experiment ${parameters.experiment_id}`,
+                `Could not find experiment model ${parameters.experiment_id}`,
                 404
             )
         }
 
-        if (body) await writeExperiment(experiment, body)
+        if (body) writeExperimentModel(experimentModel, body)
 
-        if (experiment.status === 'booked') bookExperiment(experiment)
-        if (experiment.status === 'running') startExperiment(experiment)
-        if (experiment.status === 'finished') finishExperiment(experiment)
-        await experimentRepository.save(experiment)
+        if (experimentModel.status === 'booked') await bookExperiment(experimentModel)
+        if (experimentModel.status === 'running') await runExperiment(experimentModel)
+        if (experimentModel.status === 'finished') await finishExperiment(experimentModel)
+        await saveExperimentModel(experimentModel)
 
         return {
             status: 200,
-            body: formatExperiment(experiment),
+            body: formatExperimentModel(experimentModel),
         }
     }

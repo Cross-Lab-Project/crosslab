@@ -4,7 +4,7 @@ import {
     Role,
     Device,
     Participant,
-} from '../generated/types'
+} from '../../generated/types'
 import {
     DeviceModel,
     RoleModel,
@@ -12,14 +12,14 @@ import {
     ServiceConfigurationModel,
     ExperimentModel,
 } from '../model'
-import { experimentUrlFromId } from './utils'
+import { experimentUrlFromId } from '../../util/url'
 
 /**
  * This function formats a {@link DeviceModel} to a {@link Device}.
  * @param deviceModel The {@link DeviceModel} to be formatted.
  * @returns The resulting {@link Device}.
  */
-function formatDevice(deviceModel: DeviceModel): Device {
+function formatDeviceModel(deviceModel: DeviceModel): Device {
     return {
         device: deviceModel.url,
         role: deviceModel.role,
@@ -31,7 +31,7 @@ function formatDevice(deviceModel: DeviceModel): Device {
  * @param roleModel The {@link RoleModel} to be formatted.
  * @returns The resulting {@link Role}.
  */
-function formatRole(roleModel: RoleModel): Role {
+function formatRoleModel(roleModel: RoleModel): Role {
     return {
         name: roleModel.name,
         description: roleModel.description,
@@ -43,7 +43,7 @@ function formatRole(roleModel: RoleModel): Role {
  * @param participantModel The {@link ParticipantModel} to be formatted.
  * @returns The resulting {@link Participant}.
  */
-function formatParticipant(participantModel: ParticipantModel): Participant {
+function formatParticipantModel(participantModel: ParticipantModel): Participant {
     return {
         role: participantModel.role,
         serviceId: participantModel.serviceId,
@@ -56,7 +56,7 @@ function formatParticipant(participantModel: ParticipantModel): Participant {
  * @param serviceConfigurationModel The {@link ServiceConfigurationModel} to be formatted.
  * @returns The resulting {@link ServiceConfiguration}.
  */
-function formatServiceConfiguration(
+function formatServiceConfigurationModel(
     serviceConfigurationModel: ServiceConfigurationModel
 ): ServiceConfiguration {
     return {
@@ -65,7 +65,7 @@ function formatServiceConfiguration(
             ? JSON.parse(serviceConfigurationModel.configuration)
             : undefined,
         participants: serviceConfigurationModel.participants
-            ? serviceConfigurationModel.participants.map(formatParticipant)
+            ? serviceConfigurationModel.participants.map(formatParticipantModel)
             : undefined,
     }
 }
@@ -75,7 +75,7 @@ function formatServiceConfiguration(
  * @param experimentModel The {@link ExperimentModel} to be formatted.
  * @returns The resulting {@link Experiment}.
  */
-export function formatExperiment(experimentModel: ExperimentModel): Experiment {
+export function formatExperimentModel(experimentModel: ExperimentModel): Experiment {
     return {
         url: experimentUrlFromId(experimentModel.uuid),
         bookingTime: {
@@ -84,14 +84,16 @@ export function formatExperiment(experimentModel: ExperimentModel): Experiment {
         },
         status: experimentModel.status,
         devices: experimentModel.devices
-            ? experimentModel.devices.map(formatDevice)
+            ? experimentModel.devices.map(formatDeviceModel)
             : undefined,
-        roles: experimentModel.roles ? experimentModel.roles.map(formatRole) : undefined,
+        roles: experimentModel.roles
+            ? experimentModel.roles.map(formatRoleModel)
+            : undefined,
         connections: experimentModel.connections
             ? experimentModel.connections.map((c) => c.url)
             : undefined,
         serviceConfigurations: experimentModel.serviceConfigurations
-            ? experimentModel.serviceConfigurations.map(formatServiceConfiguration)
+            ? experimentModel.serviceConfigurations.map(formatServiceConfigurationModel)
             : undefined,
     }
 }

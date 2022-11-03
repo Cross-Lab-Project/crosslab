@@ -3,10 +3,13 @@ import {
     InvalidUrlError,
     UnsuccessfulRequestError,
     FetchError,
+    APIClient,
 } from '@cross-lab-project/api-client'
 import { InstantiableCloudDevice } from '@cross-lab-project/api-client/dist/generated/device/types'
-import { apiClient } from '../globals'
+import { config } from '../config'
 import { InternalRequestError, MissingPropertyError } from '../types/errors'
+
+const apiClient: APIClient = new APIClient(config.BASE_URL)
 
 /**
  * TODO: add more information on request/response
@@ -28,11 +31,7 @@ function handleInternalRequestError(error: unknown) {
             500
         )
     else if (error instanceof InvalidUrlError)
-        throw new InternalRequestError(
-            `The provided url is malformed`,
-            error,
-            400
-        )
+        throw new InternalRequestError(`The provided url is malformed`, error, 400)
     else if (error instanceof UnsuccessfulRequestError)
         throw new InternalRequestError(
             `The request was unsuccessful`,
@@ -62,7 +61,9 @@ export async function getDevice(...args: Parameters<typeof apiClient.getDevice>)
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The created instance of the device and its device token.
  */
-export async function instantiateDevice(...args: Parameters<typeof apiClient.createDeviceInstance>) {
+export async function instantiateDevice(
+    ...args: Parameters<typeof apiClient.createDeviceInstance>
+) {
     try {
         return await apiClient.createDeviceInstance(args[0], args[1])
     } catch (error) {
@@ -77,7 +78,9 @@ export async function instantiateDevice(...args: Parameters<typeof apiClient.cre
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The created peerconnection.
  */
-export async function createPeerconnection(...args: Parameters<typeof apiClient.createPeerconnection>) {
+export async function createPeerconnection(
+    ...args: Parameters<typeof apiClient.createPeerconnection>
+) {
     try {
         return await apiClient.createPeerconnection(args[0], args[1])
     } catch (error) {
@@ -92,7 +95,9 @@ export async function createPeerconnection(...args: Parameters<typeof apiClient.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The id of the created booking.
  */
-export async function bookExperiment(...args: Parameters<typeof apiClient.bookExperiment>) {
+export async function bookExperiment(
+    ...args: Parameters<typeof apiClient.bookExperiment>
+) {
     try {
         return await apiClient.bookExperiment(args[0], args[1])
     } catch (error) {
@@ -136,7 +141,9 @@ export async function getBooking(...args: Parameters<typeof apiClient.getBooking
  * @param args The arguments of the deletePeerconnection() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
-export async function deletePeerconnection(...args: Parameters<typeof apiClient.deletePeerconnection>) {
+export async function deletePeerconnection(
+    ...args: Parameters<typeof apiClient.deletePeerconnection>
+) {
     try {
         return await apiClient.deletePeerconnection(args[0])
     } catch (error) {
@@ -148,27 +155,44 @@ export async function deletePeerconnection(...args: Parameters<typeof apiClient.
 /**
  * This function attempts to start the instance of a cloud instantiable device.
  * @param device The cloud instantiable device for which to start the instance.
- * @param instanceUrl The url of the instance to be started.
+ * @param deviceUrl The url the instance should connect to as a device.
  * @param token The token used for authentication by the instance.
+ * @param experimentUrl The url of the experiment the instance should take part in.
  */
-export async function startCloudDeviceInstance(device: InstantiableCloudDevice, instanceUrl: string, token: string) {
+export async function startCloudDeviceInstance(
+    device: InstantiableCloudDevice,
+    deviceUrl: string,
+    token: string,
+    experimentUrl: string
+) {
     try {
-        if (!device.instantiate_url) throw new MissingPropertyError("Resolved instantiable cloud device does not have an instantiate url", 500) // NOTE: error code?
-        await fetch(device.instantiate_url, {
-            method: "POST",
-            body: JSON.stringify({
-                instance_url: instanceUrl,
-                token: token
-            }),
-            headers: [["Content-Type", "application/json"], ["Authorization", apiClient.accessToken]]
-        })
+        if (!device.instantiate_url)
+            throw new MissingPropertyError(
+                'Resolved instantiable cloud device does not have an instantiate url',
+                500
+            ) // NOTE: error code?
+        await fetch(
+            device.instantiate_url +
+                new URLSearchParams([
+                    ['device_url', deviceUrl],
+                    ['token', token],
+                    ['experiment_url', experimentUrl],
+                ]),
+            {
+                method: 'POST',
+                headers: [
+                    ['Content-Type', 'application/json'],
+                    ['Authorization', apiClient.accessToken],
+                ],
+            }
+        )
     } catch (error) {
         if (error instanceof Error) {
             throw new FetchError(error.message)
-        } else if (typeof error === "string") {
+        } else if (typeof error === 'string') {
             throw new FetchError(error)
         } else {
-            throw new FetchError("Something went wrong while trying to fetch the request")
+            throw new FetchError('Something went wrong while trying to fetch the request')
         }
     }
 }
