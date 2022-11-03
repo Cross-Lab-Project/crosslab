@@ -1,0 +1,14 @@
+{
+    "name": "@crosslab/openapi-spec",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "openapi-lint": "node generate.js && npx @redocly/openapi-cli lint ./openapi.yml",
+        "openapi-bundle": "node generate.js && npx @redocly/openapi-cli bundle ./openapi.yml --output dist/openapi.json",
+        "watch-openapi": "npx chokidar-cli './**/*.yml' -c 'npm run openapi-bundle'",
+        "watch-rapidoc": "npx browser-sync start --server --startPath 'rapidoc.html' --files 'dist/openapi.json'"
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED"
+}

@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  summary: Get identity of yourself by jwt
+  summary: Get identity of yourself
   tags:
     - identity
   security:
@@ -24,7 +24,7 @@ get:
     500:
       description: Server Error.
 patch:
-  summary: Update identity of yourself by jwt
+  summary: Update identity of yourself
   tags:
     - identity
   security:

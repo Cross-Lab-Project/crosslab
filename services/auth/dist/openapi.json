@@ -135,6 +135,7 @@
   "paths": {
     "/auth": {
       "get": {
+        "x-internal": true,
         "tags": [
           "authentication"
         ],
@@ -682,7 +683,7 @@
     },
     "/identity": {
       "get": {
-        "summary": "Get identity of yourself by jwt",
+        "summary": "Get identity of yourself",
         "tags": [
           "identity"
         ],
@@ -723,7 +724,7 @@
         }
       },
       "patch": {
-        "summary": "Update identity of yourself by jwt",
+        "summary": "Update identity of yourself",
         "tags": [
           "identity"
         ],
