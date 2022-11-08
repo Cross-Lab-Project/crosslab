@@ -29,5 +29,6 @@ jobs:
         run: tox
       - uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           flags: python_api_client
-          files: ./clients/api/python/coverage.xml
+          working-directory: clients/api/python
