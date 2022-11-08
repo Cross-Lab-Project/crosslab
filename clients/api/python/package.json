@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "generate": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../../../services/openapi/dist/openapi.json -t ./template python -o ./src/crosslab_api_client",
-    "watch-templates": "nodemon --watch template -e njk --exec \"npm run generate\""
+    "generate-test": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../../../services/openapi/dist/openapi.json -t ./test_template python -o ./tests",
+    "watch-templates": "nodemon --watch template -e njk --exec \"npm run generate\"",
+    "watch-test-templates": "nodemon --watch test_template -e njk --exec \"npm run generate-test\""
   },
   "author": "Johannes Nau",
   "license": "UNLICENSED",

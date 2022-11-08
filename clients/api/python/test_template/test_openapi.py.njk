@@ -1,0 +1,129 @@
+import re
+import pytest
+from aioresponses import aioresponses
+import asyncio
+import json
+import datetime
+
+from crosslab_api_client import APIClient
+from crosslab_api_client.schemas import *
+
+BASE_URL = 'https://api.example.com'
+
+def normalize_result(_dict):
+    if isinstance(_dict, dict):
+        for key, value in list(_dict.items()):
+            if value is None:
+                del _dict[key]
+            else:
+                try:
+                    value=value.replace('Z', '+00:00')
+                    value=value.replace('.0+', '.000+')
+                    value=value.replace('.00+', '.000+')
+                    _dict[key]=datetime.fromisoformat(value).replace(tzinfo=None).isoformat()
+                except:
+                    normalize_result(value)
+    elif isinstance(_dict, list):
+        for v_i in _dict:
+            if isinstance(v_i, dict):
+                normalize_result(v_i)
+    return _dict
+
+{%- macro _make_request(method_name, request_body_param, url) -%}
+resp = await client.{{method_name | lowerCamelCase}}(
+    {%- if url %}url={{url}},{% endif %}
+    {%- if request_body_param%} body={{request_body_param}}, {% endif -%}
+    **parameters)
+{%- endmacro -%}
+
+{%- macro make_request_and_assert(method_name, request_body_param, status, response_transformer, url) -%}
+async with APIClient(BASE_URL) as client:
+    {%- if status>=400 %}
+    with pytest.raises(Exception):
+        {{_make_request(method_name, request_body_param, url)}}
+    {%- else %}
+    {{_make_request(method_name, request_body_param, url)}}
+        {%- if response_transformer %}
+    assert normalize_result({{response_transformer}}(resp)) == normalize_result(response_{{status}}_dict)
+        {%- endif -%}
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro set_mock_response(status, method_name, method, full_url, response) -%}
+    {%- if response.content["application/json"].schema -%}
+response_{{status}}_dict = json.loads(r'{{response.content["application/json"].schema | jsf | dump}}')
+aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{status}}, payload=response_{{status}}_dict)
+    {%- else -%}
+aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{status}})
+    {%- endif %}
+{%- endmacro %}
+
+{%- macro create_parameter_set(details) -%}
+    {%- set optional_params = [] %}
+    {%- set required_params = [] %}
+    {%- for param in details.parameters -%}
+        {%- if param.in != 'path' -%}
+            {%- set paramType = 'UNKNOWN' %}
+            {%- if param.schema.type == 'string' -%}
+                {%- set paramType = '"test_string"' %}
+            {%- elif param.schema.type == 'boolean' -%}
+                {%- set paramType = 'True' %}
+            {%- endif -%}
+            {%- if param.required -%}
+                {%- set required_params = (required_params.push('"'+param.name+'" : '+paramType), required_params) %}
+            {%- else -%}
+                {%- set optional_params = (optional_params.push('"'+param.name+'" : '+paramType), optional_params) %}
+            {%- endif -%}
+        {%- endif -%}
+    {%- endfor -%}
+    [{%- for optional_arg_group in optional_params | permuteOptionalArgs -%}
+        {
+        {%- for param in required_params -%}
+            {{param}}
+        {%- endfor -%}
+        {%- for param in optional_arg_group -%}
+            {{param}}
+        {%- endfor -%}
+        },
+    {%- endfor -%}]
+{%- endmacro -%}
+
+{% for path, methods in paths -%}
+    {%- for method, details in methods -%}
+        {%- set method_name = (method+"_"+( path | formatPath))%}
+@pytest.mark.asyncio
+async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
+        {%- set request_body_param="" %}
+    url=r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
+    url_variant=r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c') | replaceRegEx('^\/', '')}}'
+    full_url=BASE_URL+r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
+        {% if details.requestBody %}
+            {%- if details.requestBody.content["application/json"].schema %}
+    request_dict = json.loads(r'{{details.requestBody.content["application/json"].schema | jsf | dump}}')
+    request = {{transformerFromDict('python', method_name+'_request_body') | await }}(request_dict)
+                {%- set request_body_param="request" -%}
+            {%- endif %}
+        {% endif %}
+    parameter_list={{create_parameter_set(details)}}
+        {%- for status, response in details.responses %}
+            {%- set response_transformer = transformerToDict('python', method_name+'_response_body_'+status) | await %}
+            {%- if not details | hasPathParameter %}
+    for parameters in parameter_list:
+        {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
+        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, url) | indent(8) }}
+            {%- endif %}
+        
+    for parameters in parameter_list:
+        {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
+        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "url") | indent(8) }}
+
+    for parameters in parameter_list:
+        {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
+        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "url_variant") | indent(8) }}
+
+    for parameters in parameter_list:
+        {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
+        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "full_url") | indent(8) }}
+        {% endfor %}
+    {% endfor -%}
+{%- endfor -%}

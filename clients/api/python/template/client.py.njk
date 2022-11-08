@@ -1,7 +1,8 @@
 import aiohttp
 import re
-from typing import Optional, Any, Dict, List, Set, Tuple, Union
-from crosslab_api_client.schemas import *
+from typing import Optional, Any, Dict, List, Tuple, Union
+from crosslab_api_client.schemas import *  # noqa: F403
+
 
 class APIClient:
     BASE_URL: Optional[str] = None
@@ -20,10 +21,19 @@ class APIClient:
     async def __aexit__(self, *err):
         await self.http_session.close()
 
-    async def _fetch(self, url, method: str = 'GET', params: Optional[Dict[str, Union[List[str], str]]] = None, body: Any = None, asText=False) -> Tuple[int, Any]:
+    async def _fetch(
+        self,
+        url,
+        method: str = "GET",
+        params: Optional[Dict[str, Union[List[str], str]]] = None,
+        body: Any = None,
+        asText=False,
+    ) -> Tuple[int, Any]:
         fun = {"get": self.http_session.get,
                "post": self.http_session.post,
-               "patch": self.http_session.patch}.get(method)
+               "patch": self.http_session.patch,
+               "put": self.http_session.put,
+               "delete": self.http_session.delete}.get(method)
 
         if fun is None:
             raise Exception("")
@@ -50,7 +60,7 @@ class APIClient:
             else:
                 return resp.status, await resp.json()
 
-    {% for path, methods in paths -%}
+    {%- for path, methods in paths -%}
     {%- for method, details in methods -%}
 
         {%- set method_name = (method+"_"+( path | formatPath))%}
@@ -84,47 +94,49 @@ class APIClient:
                 {%- set query_params = (query_params.push(param.name), query_params) %}
             {%- endif -%}
         {%- endfor -%}
-    
-    async def {{ method_name | lowerCamelCase }}({{ params | join(', ') }}):
+        {%- if not details | hasPathParameter -%}
+            {%- set params = (params.push('url: str = "'+path+'"'), params) %}
+        {%- endif %}
+
+    async def {{ method_name | lowerCamelCase }}({{ params | join(', ') }}):  # noqa: E501
         """
         {{details.summary}}
         {% if details.description %}
         {{details.description | indent(8)}}
         {%- endif -%}
-        """
-        {% if not details | hasPathParameter -%}
-        url = "{{path}}"
-        {% endif -%}
-        if not self.BASE_URL: raise Exception("No base url set")
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
 
         # match path to url schema
-        m=re.search(r'^('+re.escape(self.BASE_URL)+r')?/?{{ path
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?{{ path
                                                         | replaceRegEx('^/', '')
                                                         | replaceRegEx('^(.*?)([^{}]*)$', '($1)($2)?')
-                                                        | replaceRegEx('\{.*?\}', '[^\?]*')
+                                                        | replaceRegEx('\{.*?\}', '[^\?]*?')
                                                         | replaceRegEx('\/', '\\\/')
-                                                      }}$',url)
+                                                      }}$', url)
         if m is None:
             raise Exception("Invalid url")
-        url = '/'+m.group(2)+'{{path | replaceRegEx('^(.*?)([^{}]*)$', '$2')}}'
-        if url.startswith('//'):
-            url = url[1:]
+        valid_url = '/'+m.group(2)+'{{path | replaceRegEx('^(.*?)([^{}]*)$', '$2')}}'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
 
         {% if details.requestBody -%}
         # transform body
-        transformedBody={{transformerToDict('python', method_name+'_request_body') | await}}(body) if body else None
+        transformedBody = {{transformerToDict('python', method_name+'_request_body') | await}}(body) if body else None
 
         {% endif %}
         {%- if query_params | length > 0 -%}
         # build query params
-        query_params = {}
+        query_params: Dict[str, Union[List[str], str]] = {}
         {% for param in query_params -%}
-        query_params['{{param}}'] = {{param}}
+        if {{param}}:
+            query_params['{{param}}'] = {{param}}
         {%- endfor %}
 
         {% endif -%}
         # make http call
-        status, resp=await self._fetch(url, method="{{method}}"{% if details.requestBody -%}, body=transformedBody{% endif %})
+        status, resp = await self._fetch(valid_url, method="{{method}}"{% if details.requestBody -%} , body=transformedBody{% endif %} {%- if query_params | length > 0 -%}, params=query_params{%- endif -%})
            
         # transform response
         {%- for status, response in details.responses -%}
@@ -140,6 +152,5 @@ class APIClient:
             {%- endif -%}
         {%- endfor %}
         raise Exception(f"Unexpected status code: {status}")
-
-    {% endfor -%}
     {%- endfor -%}
+{%- endfor %}

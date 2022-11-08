@@ -1,10 +1,11 @@
-src/crosslab_api_client/client.py
-src/crosslab_api_client/schemas.py
 venv
 
 node_modules
 __pycache__
 .pytest_cache
+.mypy_cache
+.tox
 build
+.coverage
 
 *.egg-info
