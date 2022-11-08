@@ -9,7 +9,7 @@ on:
       - ".github/workflows/clients-api-python-test.yml"
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,5 +29,5 @@ jobs:
         run: tox
       - uses: codecov/codecov-action@v3
         with:
-          flags: Python API Client
+          flags: python_api_client
           files: ./clients/api/python/coverage.xml
