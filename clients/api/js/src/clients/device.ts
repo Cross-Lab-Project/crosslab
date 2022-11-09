@@ -268,26 +268,26 @@ export class DeviceClient {
         return response
     }
 
-    public async getToken(
+    public async getWebsocketToken(
         url: string
-    ): Promise<SignaturesDevices.postDevicesByDeviceIdTokenSuccessResponseType> {
+    ): Promise<SignaturesDevices.postDevicesByDeviceIdWebsocketSuccessResponseType> {
         url = appendToUrl(url, '/token')
         const [device_id] = validateUrl(url, '/devices/{}/token')
-        const parameters: SignaturesDevices.postDevicesByDeviceIdTokenParametersType = {
+        const parameters: SignaturesDevices.postDevicesByDeviceIdWebsocketParametersType = {
             device_id,
         }
         const response = (
             url.startsWith(this._url)
-                ? await this.apiClient.postDevicesByDeviceIdToken(parameters)
+                ? await this.apiClient.postDevicesByDeviceIdWebsocket(parameters)
                 : await this.proxyClient.proxy(
                       'post',
                       url,
                       parameters,
                       undefined,
-                      ValidationDevices.validatePostDevicesByDeviceIdTokenInput,
-                      ValidationDevices.validatePostDevicesByDeviceIdTokenOutput
+                      ValidationDevices.validatePostDevicesByDeviceIdWebsocketInput,
+                      ValidationDevices.validatePostDevicesByDeviceIdWebsocketOutput
                   )
-        ) as SignaturesDevices.postDevicesByDeviceIdTokenResponseType
+        ) as SignaturesDevices.postDevicesByDeviceIdWebsocketResponseType
 
         if (isErrorResponse(response)) {
             throw new UnsuccessfulRequestError(

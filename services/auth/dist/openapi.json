@@ -5,14 +5,6 @@
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
     "version": "0.0.1"
   },
-  "servers": [
-    {
-      "url": "https://api.goldi-labs.de"
-    },
-    {
-      "url": "http://localhost"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "TuiAuth": {
@@ -312,7 +304,7 @@
         }
       }
     },
-    "/device_token": {
+    "/device_authentication_token": {
       "post": {
         "tags": [
           "authentication"
@@ -332,10 +324,10 @@
         ],
         "operationId": "device_token",
         "summary": "Authenticate user",
-        "description": "This endpoint will generate a new device token linked to the requesting user.",
+        "description": "This endpoint will generate a new device authentication token.",
         "responses": {
           "200": {
-            "description": "Return the token which represents the device.",
+            "description": "The new device authentication token.",
             "content": {
               "application/json": {
                 "schema": {

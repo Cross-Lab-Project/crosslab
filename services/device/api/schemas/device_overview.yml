@@ -24,4 +24,5 @@ properties:
   owner:
     type: string
     format: uri
+    readOnly: true
 x-typeguard: true

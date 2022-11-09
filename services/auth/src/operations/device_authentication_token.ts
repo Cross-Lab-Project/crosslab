@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data_source'
-import { postDeviceTokenSignature } from '../generated/signatures/device_token'
+import { postDeviceAuthenticationTokenSignature } from '../generated/signatures/device_authentication_token'
 import { getDevice } from '../methods/api'
 import { TokenModel, UserModel } from '../model'
 import { MissingEntityError, OwnershipError } from '../types/errors'
@@ -10,8 +10,8 @@ import { MissingEntityError, OwnershipError } from '../types/errors'
  * @param user The user submitting the request.
  * @throws {MissingEntityError} Could not find user.
  */
-export const postDeviceToken: postDeviceTokenSignature = async (parameters, user) => {
-    console.log(`postDeviceToken called`)
+export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignature = async (parameters, user) => {
+    console.log(`postDeviceAuthenticationToken called`)
     const userRepository = AppDataSource.getRepository(UserModel)
 
     const userModel = await userRepository.findOne({
@@ -37,7 +37,7 @@ export const postDeviceToken: postDeviceTokenSignature = async (parameters, user
     userModel.tokens.push(token)
     await userRepository.save(userModel)
 
-    console.log(`postDeviceToken succeeded`)
+    console.log(`postDeviceAuthenticationToken succeeded`)
 
     return {
         status: 200,

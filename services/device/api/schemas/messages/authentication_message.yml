@@ -6,14 +6,10 @@ allOf:
     properties:
       messageType:
         const: authenticate
-      deviceUrl:
-        type: string
-        format: uri
       token:
         type: string
       authenticated: 
         type: boolean
     required:
       - messageType
-      - deviceUrl
 x-typeguard: true

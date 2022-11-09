@@ -5,7 +5,7 @@ import {
     deleteDevicesByDeviceIdSignature,
     patchDevicesByDeviceIdSignature,
     postDevicesByDeviceIdAvailabilitySignature,
-    postDevicesByDeviceIdTokenSignature,
+    postDevicesByDeviceIdWebsocketSignature,
     postDevicesByDeviceIdSignalingSignature,
     postDevicesByDeviceIdSignature,
 } from '../generated/signatures/devices'
@@ -25,7 +25,6 @@ import {
     UnrelatedPeerconnectionError,
 } from '../types/errors'
 import { deviceUrlFromId } from '../methods/utils'
-import { config } from '../config'
 import {
     isMessage,
     isAuthenticationMessage,
@@ -57,7 +56,7 @@ export const connectedDevices = new Map<string, WebSocket>()
  */
 export function deviceHandling(app: Express.Application) {
     // TODO: close Peerconnections that have device as participant when websocket connection is closed?
-    app.ws('/devices/ws', (ws) => {
+    app.ws('/devices/websocket', (ws) => {
         // authenticate and start heartbeat
         ws.once('message', async (data) => {
             // device authentication and connection
@@ -67,21 +66,12 @@ export function deviceHandling(app: Express.Application) {
                 ws.close(1002, 'Received message is not an authentication message')
                 return
             }
-            if (!message.deviceUrl.startsWith(config.BASE_URL)) {
-                ws.close(1002, 'Device is registered at a different institution')
-                return
+            if (!message.token) {
+                ws.close(1002, 'Authentication message does not contain a valid websocket token')
             }
-            const deviceId = message.deviceUrl.split('/').pop()
-            if (!deviceId) {
-                ws.close(
-                    1002,
-                    'Url in authentication message does not contain a device id'
-                )
-                return
-            }
-            const device = await deviceRepository.findOne({ where: { uuid: deviceId } })
+            const device = await deviceRepository.findOne({ where: { token: message.token } })
             if (!device) {
-                ws.close(1002, `Device ${deviceId} not found`)
+                ws.close(1002, 'No device found with matching websocket token')
                 return
             }
             if (device.token != message.token) {
@@ -96,7 +86,6 @@ export function deviceHandling(app: Express.Application) {
             ws.send(
                 JSON.stringify(<AuthenticationMessage>{
                     messageType: 'authenticate',
-                    deviceUrl: message.url,
                     authenticated: true,
                 })
             )
@@ -418,7 +407,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
  * @param _user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
-export const postDevicesByDeviceIdToken: postDevicesByDeviceIdTokenSignature = async (
+export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature = async (
     parameters,
     _user
 ) => {

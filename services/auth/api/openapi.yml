@@ -27,8 +27,8 @@ paths:
     $ref: "./resources/login.yml"
   /logout:
     $ref: "./resources/logout.yml"
-  /device_token:
-    $ref: "./resources/device_token.yml"
+  /device_authentication_token:
+    $ref: "./resources/device_authentication_token.yml"
   /users:
     $ref: "./resources/users.yml"
   /users/{username}:

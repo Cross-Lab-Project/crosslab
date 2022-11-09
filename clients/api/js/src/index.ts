@@ -5,33 +5,85 @@ import { ExperimentClient } from './clients/experiment'
 import { FederationClient } from './clients/federation'
 import { UpdateClient } from './clients/update'
 import {
-    SignaturesDeviceToken,
+    SignaturesDeviceAuthenticationToken,
     SignaturesIdentity,
     SignaturesUsers,
 } from './generated/auth'
 import {
     HttpMethods,
     ResponseData,
-    ValidationError,
-    FetchError,
 } from './generated/auth/types'
-import { SignaturesBooking, SignaturesSchedule } from './generated/booking'
-import { SignaturesDevices, SignaturesPeerconnections } from './generated/device'
-import { SignaturesExperiments } from './generated/experiment'
-import { SignaturesInstitutions } from './generated/federation'
-import { SignaturesUpdates } from './generated/update'
 import {
+    Types as BookingServiceTypes,
+    SignaturesBooking,
+    SignaturesSchedule,
+    ValidationBooking,
+    ValidationSchedule
+} from './generated/booking'
+import { 
+    Types as DeviceServiceTypes,
+    SignaturesDevices, 
+    SignaturesPeerconnections,
+    ValidationDevices,
+    ValidationPeerconnections
+} from './generated/device'
+import { 
+    Types as ExperimentServiceTypes,
+    SignaturesExperiments,
+    ValidationExperiments
+} from './generated/experiment'
+import { 
+    Types as FederationServiceTypes,
+    SignaturesInstitutions,
+    ValidationInstitutions
+} from './generated/federation'
+import { 
+    Types as UpdateServiceTypes,
+    SignaturesUpdates,
+    ValidationUpdates
+} from './generated/update'
+
+export {
     UnsuccessfulRequestError,
     InvalidUrlError,
-    WebSocketAuthenticationError,
 } from './types/errors'
 
 export {
     ValidationError,
-    UnsuccessfulRequestError,
-    InvalidUrlError,
-    WebSocketAuthenticationError,
-    FetchError,
+    FetchError
+} from './generated/auth/types'
+
+const BookingServiceSignatures = {...SignaturesBooking, ...SignaturesSchedule}
+const BookingServiceValidation = {...ValidationBooking, ...ValidationSchedule}
+
+const DeviceServiceSignatures = {...SignaturesDevices, ...SignaturesPeerconnections}
+const DeviceServiceValidation = {...ValidationDevices, ...ValidationPeerconnections}
+
+const ExperimentServiceSignatures = SignaturesExperiments
+const ExperimentServiceValidation = ValidationExperiments
+
+const FederationServiceSignatures = SignaturesInstitutions
+const FederationServiceValidation = ValidationInstitutions
+
+const UpdateServiceSignatures = SignaturesUpdates
+const UpdateServiceValidation = ValidationUpdates
+
+export {
+    BookingServiceTypes,
+    BookingServiceSignatures,
+    BookingServiceValidation,
+    DeviceServiceTypes,
+    DeviceServiceSignatures,
+    DeviceServiceValidation,
+    ExperimentServiceTypes,
+    ExperimentServiceSignatures,
+    ExperimentServiceValidation,
+    FederationServiceTypes,
+    FederationServiceSignatures,
+    FederationServiceValidation,
+    UpdateServiceTypes,
+    UpdateServiceSignatures,
+    UpdateServiceValidation
 }
 
 /**
@@ -93,10 +145,11 @@ export class APIClient {
      * @param username The username of the client.
      * @param password The password of the client.
      * @param method The method to be used for the login request.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Authentication Service
      */
     public async login(
         username: string,
@@ -111,10 +164,11 @@ export class APIClient {
 
     /**
      * This function attempts to logout the client.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Authentication Service
      */
     public async logout(): Promise<void> {
         await this.authClient.logout()
@@ -124,11 +178,12 @@ export class APIClient {
 
     /**
      * This function attempts to get the user associated with the access token of the client (their identity).
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The identity (user) of the client.
+     * @category Authentication Service
      */
     public async getIdentity(): Promise<
         SignaturesIdentity.getIdentitySuccessResponseType['body']
@@ -139,11 +194,12 @@ export class APIClient {
     /**
      * This function attempts to patch the user associated with the access token of the client (their identity).
      * @param identity The user information to use for patching.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched identity (user) of the client.
+     * @category Authentication Service
      */
     public async patchIdentity(
         identity: SignaturesIdentity.patchIdentityBodyType
@@ -156,15 +212,16 @@ export class APIClient {
     /**
      * This function attempts to generate a device token for the given device.
      * @param device_url The url of the device the token should be generated for.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly generated device token.
+     * @category Authentication Service
      */
     public async getDeviceToken(
         device_url: string
-    ): Promise<SignaturesDeviceToken.postDeviceTokenSuccessResponseType['body']> {
+    ): Promise<SignaturesDeviceAuthenticationToken.postDeviceAuthenticationTokenSuccessResponseType['body']> {
         return (await this.authClient.getDeviceToken(device_url)).body
     }
 
@@ -174,11 +231,12 @@ export class APIClient {
      * This function attempts to retrieve the list of all users.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the authentication service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all users.
+     * @category Authentication Service
      */
     public async getUsers(options?: {
         url?: string
@@ -189,11 +247,12 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific user.
      * @param url The url of the user.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested user.
+     * @category Authentication Service
      */
     public async getUser(
         url: string
@@ -206,11 +265,12 @@ export class APIClient {
      * @param user The information to be used for creating the new user.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the authentication service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created user.
+     * @category Authentication Service
      */
     public async createUser(
         user: SignaturesUsers.postUsersBodyType,
@@ -230,11 +290,12 @@ export class APIClient {
      * This function attempts to patch an user.
      * @param url The url of the user.
      * @param user The user information to be used for patching the user.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched user.
+     * @category Authentication Service
      */
     public async patchUser(
         url: string,
@@ -246,10 +307,11 @@ export class APIClient {
     /**
      * This function attempts to delete an user.
      * @param url The url of the user.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Authentication Service
      */
     public async deleteUser(url: string): Promise<void> {
         await this.authClient.deleteUser(url)
@@ -259,11 +321,12 @@ export class APIClient {
      * This function attempts to add a role to an user.
      * @param url The url of the user.
      * @param role The name of the role.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched user.
+     * @category Authentication Service
      */
     public async addRoleToUser(
         url: string,
@@ -278,10 +341,11 @@ export class APIClient {
      * This function attempts to remove a role from an user.
      * @param url The url of the user.
      * @param role The name of the role.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Authentication Service
      */
     public async removeRoleFromUser(url: string, role: string): Promise<void> {
         await this.authClient.removeRoleFromUser(url, role)
@@ -296,11 +360,12 @@ export class APIClient {
      * @param experiment The experiment to retrieve the schedule for.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the booking service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The schedule of the experiment.
+     * @category Booking Service
      */
     public async getSchedule(
         experiment: SignaturesSchedule.postScheduleBodyType,
@@ -323,11 +388,12 @@ export class APIClient {
      * @param experiment The experiment to be booked.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the booking service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The booking id.
+     * @category Booking Service
      */
     public async bookExperiment(
         experiment: SignaturesBooking.putBookingBodyType,
@@ -346,11 +412,12 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific booking.
      * @param url The url of the booking.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested booking.
+     * @category Booking Service
      */
     public async getBooking(
         url: string
@@ -361,10 +428,11 @@ export class APIClient {
     /**
      * This function attempts to cancel a booking.
      * @param url The url of the booking.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Booking Service
      */
     public async cancelBooking(url: string): Promise<void> {
         await this.bookingClient.cancelBooking(url)
@@ -374,11 +442,12 @@ export class APIClient {
      * This function attempts to add devices to a booking.
      * @param url The url of the booking.
      * @param devices The devices to be added.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The booking id.
+     * @category Booking Service
      */
     public async addDevicesToBooking(
         url: string,
@@ -390,10 +459,11 @@ export class APIClient {
     /**
      * This function attempts to delete a booking.
      * @param url The url of the booking.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Booking Service
      */
     public async deleteBooking(url: string): Promise<void> {
         await this.bookingClient.deleteBooking(url)
@@ -404,11 +474,12 @@ export class APIClient {
     /**
      * This function attempts to lock the devices of a booking.
      * @param url The url of the booking.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The locked booking.
+     * @category Booking Service
      */
     public async lockBooking(
         url: string
@@ -419,10 +490,11 @@ export class APIClient {
     /**
      * This function attempts to unlock the devices of a booking.
      * @param url The url of the booking
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Booking Service
      */
     public async unlockBooking(url: string): Promise<void> {
         await this.bookingClient.unlockBooking(url)
@@ -436,11 +508,12 @@ export class APIClient {
      * This function attempts to retrieve the list of all devices.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the device service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all devices.
+     * @category Device Service
      */
     public async getDevices(options?: {
         url?: string
@@ -454,11 +527,12 @@ export class APIClient {
      * @param url The url of the device.
      * @param [options] Further options that may be specified.
      * @param [options.flat_group] If true resolved device groups will contain no further device groups.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested device.
+     * @category Device Service
      */
     public async getDevice(
         url: string,
@@ -480,11 +554,12 @@ export class APIClient {
      * @param [options] Further options that may be specified.
      * @param [options.changedUrl] The url to be called when changes are made to the device.
      * @param [options.url] The url of the device service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created device.
+     * @category Device Service
      */
     public async createDevice(
         device: SignaturesDevices.postDevicesBodyType,
@@ -507,11 +582,12 @@ export class APIClient {
      * @param url The url of the virtual device to be instanciated.
      * @param [options] Further options that may be specified.
      * @param [options.changedURL] The url to be called when changes are made to the created device instance.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created device instance along with its device token.
+     * @category Device Service
      */
     public async createDeviceInstance(
         url: string,
@@ -533,11 +609,12 @@ export class APIClient {
      * @param device The information to be used for patching the device.
      * @param [options] Further options that may be specified.
      * @param [options.changedUrl] The url to be called when changes are made to the device.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched device.
+     * @category Device Service
      */
     public async patchDevice(
         url: string,
@@ -558,10 +635,11 @@ export class APIClient {
     /**
      * This function attempts to delete a device.
      * @param url The url of the device.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Device Service
      */
     public async deleteDevice(url: string): Promise<void> {
         await this.deviceClient.deleteDevice(url)
@@ -571,11 +649,12 @@ export class APIClient {
      * This function attempts to add new availability rules to a device.
      * @param url The url of the device.
      * @param availabilityRules The availability rules to be added.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched availability of the device.
+     * @category Device Service
      */
     public async addAvailabilityRules(
         url: string,
@@ -589,16 +668,17 @@ export class APIClient {
     /**
      * This function attempts to get a token for a device (for websocket authentication).
      * @param url The url of the device.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly generated token.
+     * @category Device Service
      */
-    public async getToken(
+    public async getWebsocketToken(
         url: string
-    ): Promise<SignaturesDevices.postDevicesByDeviceIdTokenSuccessResponseType['body']> {
-        return (await this.deviceClient.getToken(url)).body
+    ): Promise<SignaturesDevices.postDevicesByDeviceIdWebsocketSuccessResponseType['body']> {
+        return (await this.deviceClient.getWebsocketToken(url)).body
     }
 
     /**
@@ -606,10 +686,11 @@ export class APIClient {
      * @param url The url of the device.
      * @param peerconnection_url The url of the peerconnection for which the signaling takes place.
      * @param signalingMessage The signaling message.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Device Service
      */
     public async sendSignalingMessage(
         url: string,
@@ -629,11 +710,12 @@ export class APIClient {
      * This function attempts to retrieve the list of all peerconnections.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the device service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all peerconnections.
+     * @category Device Service
      */
     public async getPeerconnections(options?: {
         url?: string
@@ -646,11 +728,12 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific peerconnection.
      * @param url The url of the peerconnection.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested peerconnection.
+     * @category Device Service
      */
     public async getPeerconnection(
         url: string
@@ -666,11 +749,12 @@ export class APIClient {
      * @param [options] Further options that may be specified.
      * @param [options.closedUrl] The url to be called when the peerconnection closes.
      * @param [options.url] The url of the device service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created peerconnection.
+     * @category Device Service
      */
     public async createPeerconnection(
         peerconnection: SignaturesPeerconnections.postPeerconnectionsBodyType,
@@ -691,10 +775,11 @@ export class APIClient {
     /**
      * This function attempts to delete a peerconnection.
      * @param url The url of the peerconnection.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Device Service
      */
     public async deletePeerconnection(url: string): Promise<void> {
         await this.deviceClient.deletePeerconnection(url)
@@ -706,11 +791,12 @@ export class APIClient {
      * This function attempts to retrieve the list of all experiments.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the experiment service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all experiments.
+     * @category Experiment Service
      */
     public async getExperiments(options?: {
         url?: string
@@ -723,11 +809,12 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific experiment.
      * @param url The url of the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested experiment.
+     * @category Experiment Service
      */
     public async getExperiment(
         url: string
@@ -742,11 +829,12 @@ export class APIClient {
      * @param experiment The information to be used for creating the experiment.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the experiment service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created experiment.
+     * @category Experiment Service
      */
     public async createExperiment(
         experiment: SignaturesExperiments.postExperimentsBodyType,
@@ -765,11 +853,12 @@ export class APIClient {
     /**
      * This function attempts to book an experiment using the experiment service.
      * @param url The url of the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The booked experiment.
+     * @category Experiment Service
      */
     public async reserveExperiment(
         url: string
@@ -783,11 +872,12 @@ export class APIClient {
     /**
      * This function attempts to start an experiment.
      * @param url The url of the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The running experiment.
+     * @category Experiment Service
      */
     public async startExperiment(
         url: string
@@ -801,10 +891,11 @@ export class APIClient {
     /**
      * This function attempts to finish an experiment.
      * @param url The url of the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Experiment Service
      */
     public async finishExperiment(url: string): Promise<void> {
         const experiment = await this.getExperiment(url)
@@ -817,11 +908,12 @@ export class APIClient {
      * @param experiment The information to be used for patching the experiment.
      * @param [options] Further options that may be specified.
      * @param [options.changedURL] The url to be called when changes are made to the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched experiment.
+     * @category Experiment Service
      */
     public async patchExperiment(
         url: string,
@@ -844,10 +936,11 @@ export class APIClient {
     /**
      * This function attempts to delete an experiment.
      * @param url The url of the experiment.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Experiment Service
      */
     public async deleteExperiment(url: string): Promise<void> {
         await this.experimentClient.deleteExperiment(url)
@@ -861,11 +954,12 @@ export class APIClient {
      * This function attempts to get the list of all institutions.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the federation service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all institutions.
+     * @category Federation Service
      */
     public async getInstitutions(options?: {
         url?: string
@@ -878,11 +972,12 @@ export class APIClient {
     /**
      * This function attempts to retrieve a specific institution.
      * @param url The url of the institution.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The requested institution.
+     * @category Federation Service
      */
     public async getInstitution(
         url: string
@@ -897,11 +992,12 @@ export class APIClient {
      * @param institution The information to be used for creating the institution.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the federation service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created institution.
+     * @category Federation Service
      */
     public async createInstitution(
         institution: SignaturesInstitutions.postInstitutionsBodyType,
@@ -921,11 +1017,12 @@ export class APIClient {
      * This function attempts to patch an institution.
      * @param url The url of the institution.
      * @param institution The information to be used for patching the institution.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched institution.
+     * @category Federation Service
      */
     public async patchInstitution(
         url: string,
@@ -939,10 +1036,11 @@ export class APIClient {
     /**
      * This function attempts to delete an institution.
      * @param url The url of the institution.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Federation Service
      */
     public async deleteInstitution(url: string): Promise<void> {
         await this.federationClient.deleteInstitution(url)
@@ -955,11 +1053,12 @@ export class APIClient {
      * @param method The http method to be used.
      * @param url The url to be called.
      * @param body The body of the request.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns Response to the proxied request.
+     * @category Federation Service
      */
     public async proxy(
         method: HttpMethods,
@@ -975,11 +1074,12 @@ export class APIClient {
      * This function attempts to retrieve the list of all updates.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the update service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The list of all updates.
+     * @category Update Service
      */
     public async getUpdates(options?: {
         url?: string
@@ -993,11 +1093,12 @@ export class APIClient {
      * @param url The url of the update.
      * @param [options] Further options that may be specified.
      * @param [options.current_version] The current local version.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The url for fetching the update or null when no update is needed.
+     * @category Update Service
      */
     public async getUpdate(
         url: string,
@@ -1020,11 +1121,12 @@ export class APIClient {
      * @param update The information to be used for creating the update.
      * @param [options] Further options that may be specified.
      * @param [options.url] The url of the update service to be called.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The newly created update.
+     * @category Update Service
      */
     public async createUpdate(
         update: SignaturesUpdates.postUpdatesBodyType,
@@ -1044,11 +1146,12 @@ export class APIClient {
      * This function attempts to patch an update.
      * @param url The url of the update.
      * @param update The information to be used for patching the update.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
      * @returns The patched update.
+     * @category Update Service
      */
     public async patchUpdate(
         url: string,
@@ -1060,10 +1163,11 @@ export class APIClient {
     /**
      * This function attempts to delete an update.
      * @param url The url of the update.
-     * @throws {FetchError} Thrown if fetch fails.
-     * @throws {ValidationError} Thrown if the request/response validation fails.
-     * @throws {InvalidUrlError} Thrown if the provided url is not valid for this request.
-     * @throws {UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @throws {@link generated/auth/types.FetchError} Thrown if fetch fails.
+     * @throws {@link generated/auth/types.ValidationError} Thrown if the request/response validation fails.
+     * @throws {@link types/errors.InvalidUrlError} Thrown if the provided url is not valid for this request.
+     * @throws {@link types/errors.UnsuccessfulRequestError} Thrown if response is validated but has status greater than or equal to 400.
+     * @category Update Service
      */
     public async deleteUpdate(url: string): Promise<void> {
         await this.updateClient.deleteUpdate(url)

@@ -1,6 +1,6 @@
 import {
     APIClient,
-    SignaturesDeviceToken,
+    SignaturesDeviceAuthenticationToken,
     SignaturesIdentity,
     SignaturesLogin,
     SignaturesLogout,
@@ -119,8 +119,8 @@ export class AuthClient {
 
     public async getDeviceToken(
         device_url: string
-    ): Promise<SignaturesDeviceToken.postDeviceTokenSuccessResponseType> {
-        const response = await this.apiClient.postDeviceToken({ device_url })
+    ): Promise<SignaturesDeviceAuthenticationToken.postDeviceAuthenticationTokenSuccessResponseType> {
+        const response = await this.apiClient.postDeviceAuthenticationToken({ device_url })
 
         if (isErrorResponse(response)) {
             throw new UnsuccessfulRequestError(

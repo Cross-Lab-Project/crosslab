@@ -7,7 +7,7 @@ import { InvalidUrlError } from './types/errors'
  * @param string The string to be checked.
  * @returns True if the string is a valid http url.
  */
-function isValidHttpUrl(string: string) {
+export function isValidHttpUrl(string: string) {
     let url
 
     try {
@@ -29,7 +29,7 @@ function isValidHttpUrl(string: string) {
  * // returns ["username", "role_name"]
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function parsePathParameters(url: string, endpoint: string): string[] {
+export function parsePathParameters(url: string, endpoint: string): string[] {
     const parameterRegex = '([a-zA-Z0-9-]+)'
     const regex = new RegExp(
         endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$'

@@ -1,20 +1,17 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  summary: Create new websocket token for device
   tags:
-    - authentication
+    - device
   security:
-    - JWT: 
-      - device_token
-      - device_token:create
+    - JWT:
+        - device
+        - device:connect
   parameters:
-    - $ref: "../parameters/device_url.yml"
-  operationId: device_token
-  summary: Authenticate user
-  description: |-
-    This endpoint will generate a new device token linked to the requesting user.
+    - $ref: "../parameters/device_id.yml"
   responses:
     200:
-      description: Return the token which represents the device.
+      description: The newly generated websocket token for the device
       content:
         application/json:
           schema:
