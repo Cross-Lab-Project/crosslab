@@ -1,5 +1,11 @@
-import { Experiment } from '@cross-lab-project/api-client/dist/generated/experiment/types'
-import { Device, Participant, Role, ServiceConfiguration } from '../../generated/types'
+import {
+    Device,
+    Experiment,
+    Participant,
+    Role,
+    ServiceConfiguration,
+} from '../../generated/types'
+import { RequestHandler } from '../../util/requestHandler'
 import {
     DeviceModel,
     ExperimentModel,
@@ -30,9 +36,13 @@ import {
  * @param device The device providing the data for the model.
  * @returns The created device model.
  */
-export function createDeviceModel(device: Device): DeviceModel {
+export function createDeviceModel(
+    requestHandler: RequestHandler,
+    device: Device
+): DeviceModel {
+    requestHandler.log('debug', `Attempting to create a new device model from ${device}`)
     const deviceModel = deviceRepository.create()
-    writeDeviceModel(deviceModel, device)
+    requestHandler.executeSync(writeDeviceModel, deviceModel, device)
     return deviceModel
 }
 
@@ -41,9 +51,10 @@ export function createDeviceModel(device: Device): DeviceModel {
  * @param role The role providing the data for the model.
  * @returns The created role model.
  */
-export function createRoleModel(role: Role): RoleModel {
+export function createRoleModel(requestHandler: RequestHandler, role: Role): RoleModel {
+    requestHandler.log('debug', `Attempting to create a new role model from ${role}`)
     const roleModel = roleRepository.create()
-    writeRoleModel(roleModel, role)
+    requestHandler.executeSync(writeRoleModel, roleModel, role)
     return roleModel
 }
 
@@ -53,10 +64,19 @@ export function createRoleModel(role: Role): RoleModel {
  * @returns The created peerconnection model.
  */
 export function createPeerconnectionModel(
+    requestHandler: RequestHandler,
     peerconnectionUrl: string
 ): PeerconnectionModel {
+    requestHandler.log(
+        'debug',
+        `Attempting to create a new peerconnection model from "${peerconnectionUrl}"`
+    )
     const peerconnectionModel = peerconnectionRepository.create()
-    writePeerconnectionModel(peerconnectionModel, peerconnectionUrl)
+    requestHandler.executeSync(
+        writePeerconnectionModel,
+        peerconnectionModel,
+        peerconnectionUrl
+    )
     return peerconnectionModel
 }
 
@@ -65,9 +85,16 @@ export function createPeerconnectionModel(
  * @param participant The participant providing the data for the model.
  * @returns The created participant model.
  */
-export function createParticipantModel(participant: Participant): ParticipantModel {
+export function createParticipantModel(
+    requestHandler: RequestHandler,
+    participant: Participant
+): ParticipantModel {
+    requestHandler.log(
+        'debug',
+        `Attempting to create a new participant model from ${participant}`
+    )
     const participantModel = participantRepository.create()
-    writeParticipantModel(participantModel, participant)
+    requestHandler.executeSync(writeParticipantModel, participantModel, participant)
     return participantModel
 }
 
@@ -77,10 +104,19 @@ export function createParticipantModel(participant: Participant): ParticipantMod
  * @returns The created service configuration model.
  */
 export function createServiceConfigurationModel(
+    requestHandler: RequestHandler,
     serviceConfiguration: ServiceConfiguration
 ): ServiceConfigurationModel {
+    requestHandler.log(
+        'debug',
+        `Attempting to create a new service configuration model from ${serviceConfiguration}`
+    )
     const serviceConfigurationModel = serviceConfigurationRepository.create()
-    writeServiceConfigurationModel(serviceConfigurationModel, serviceConfiguration)
+    requestHandler.executeSync(
+        writeServiceConfigurationModel,
+        serviceConfigurationModel,
+        serviceConfiguration
+    )
     return serviceConfigurationModel
 }
 
@@ -90,9 +126,16 @@ export function createServiceConfigurationModel(
  * @param experiment The experiment providing the data for the model.
  * @returns The created experiment model.
  */
-export function createExperimentModel(experiment: Experiment): ExperimentModel {
+export function createExperimentModel(
+    requestHandler: RequestHandler,
+    experiment: Experiment
+): ExperimentModel {
+    requestHandler.log(
+        'debug',
+        `Attempting to create a new experiment model from ${experiment}`
+    )
     const experimentModel = experimentRepository.create()
-    writeExperimentModel(experimentModel, experiment)
+    requestHandler.executeSync(writeExperimentModel, experimentModel, experiment)
     experimentModel.status = 'created'
     return experimentModel
 }

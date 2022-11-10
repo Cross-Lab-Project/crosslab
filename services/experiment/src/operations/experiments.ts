@@ -4,6 +4,7 @@ import {
     deleteExperimentsByExperimentIdSignature,
     patchExperimentsByExperimentIdSignature,
     getExperimentsSignature,
+    getExperimentsSuccessResponseType,
 } from '../generated/signatures/experiments'
 import { formatExperimentModel } from '../database/methods/format'
 import { writeExperimentModel } from '../database/methods/write'
@@ -16,43 +17,62 @@ import {
 import { createExperimentModel } from '../database/methods/create'
 import { saveExperimentModel } from '../database/methods/save'
 import { deleteExperimentModelById } from '../database/methods/delete'
+import { RequestHandler } from '../util/requestHandler'
 
 /**
- * This function implements the functionality for handling GET requests on /experiments endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /experiments endpoint.
  * @param _user The user submitting the request.
  */
 export const getExperiments: getExperimentsSignature = async (_user) => {
-    const experiments = await findAllExperimentModels()
+    const requestHandler: RequestHandler = new RequestHandler('getExperiments')
+    requestHandler.log('info', `Handling GET request on endpoint /experiments`)
 
-    return {
+    const experiments = await requestHandler.executeAsync(findAllExperimentModels)
+
+    const result: getExperimentsSuccessResponseType = {
         status: 200,
-        body: experiments.map(formatExperimentModel),
+        body: experiments.map((e) => requestHandler.executeSync(formatExperimentModel, e)),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled GET request on endpoint /experiments`
+    )
+    return result
 }
 
 /**
- * This function implements the functionality for handling POST requests on /experiments endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /experiments endpoint.
  * @param body The body of the request.
  * @param _user The user submitting the request.
  */
 export const postExperiments: postExperimentsSignature = async (body, _user) => {
-    const experimentModel = createExperimentModel(body)
-    const requestedStatus = body.status
-    await saveExperimentModel(experimentModel)
+    const requestHandler: RequestHandler = new RequestHandler('postExperiments')
+    requestHandler.log('info', `Handling POST request on endpoint /experiments`)
 
-    if (requestedStatus === 'booked') await bookExperiment(experimentModel)
-    if (requestedStatus === 'running') await runExperiment(experimentModel)
-    if (requestedStatus === 'finished') await finishExperiment(experimentModel)
-    await saveExperimentModel(experimentModel) // NOTE: truly needed?
+    const experimentModel = requestHandler.executeSync(createExperimentModel, body)
+    const requestedStatus = body.status
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+
+    if (requestedStatus === 'booked')
+        await requestHandler.executeAsync(bookExperiment, experimentModel)
+    if (requestedStatus === 'running')
+        await requestHandler.executeAsync(runExperiment, experimentModel)
+    if (requestedStatus === 'finished')
+        await requestHandler.executeAsync(finishExperiment, experimentModel)
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel) // NOTE: truly needed?
 
     return {
         status: 201,
-        body: formatExperimentModel(experimentModel),
+        body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
 }
 
 /**
- * This function implements the functionality for handling GET requests on /experiments/{experiment_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /experiments/{experiment_id} endpoint.
  * @param parameters The parameters of the request.
  * @param _user The user submitting the request.
  */
@@ -60,10 +80,19 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     parameters,
     _user
 ) => {
-    const experimentModel = await findExperimentModelById(parameters.experiment_id)
+    const requestHandler: RequestHandler = new RequestHandler('getExperimentsByExperimentId')
+    requestHandler.log(
+        'info',
+        `Handling GET request on endpoint /experiments/${parameters.experiment_id}`
+    )
+
+    const experimentModel = await requestHandler.executeAsync(
+        findExperimentModelById,
+        parameters.experiment_id
+    )
 
     if (!experimentModel) {
-        throw new MissingEntityError(
+        requestHandler.throw(MissingEntityError,
             `Could not find experiment model ${parameters.experiment_id}`,
             404
         )
@@ -71,64 +100,87 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
 
     return {
         status: 200,
-        body: formatExperimentModel(experimentModel),
+        body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
 }
 
 /**
- * This function implements the functionality for handling DELETE requests on /experiments/{experiment_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /experiments/{experiment_id} endpoint.
  * @param parameters The parameters of the request.
  * @param _user The user submitting the request.
  */
 export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature =
     async (parameters, _user) => {
-        const result = await deleteExperimentModelById(parameters.experiment_id)
-
+        const requestHandler: RequestHandler = new RequestHandler('deleteExperimentsByExperimentId')
+        requestHandler.log(
+            'info',
+            `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`
+        )
+    
+        const result = await requestHandler.executeAsync(
+            deleteExperimentModelById,
+            parameters.experiment_id
+        )
+    
         if (!result.affected) {
-            throw new MissingEntityError(
-                `Could not find experiment ${parameters.experiment_id}`,
+            requestHandler.throw(MissingEntityError,
+                `Could not find experiment model ${parameters.experiment_id}`,
                 404
             )
         }
-
+    
         if (result.affected > 1) {
-            throw new InconsistentDatabaseError(
-                `More than one experiment with id ${parameters.experiment_id} deleted`,
+            requestHandler.throw(InconsistentDatabaseError,
+                `More than one experiment model with id ${parameters.experiment_id} deleted`,
                 500
             )
         }
-
+    
         return {
             status: 204,
         }
     }
 
 /**
- * This function implements the functionality for handling PATCH requests on /experiment/{experiment_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /experiment/{experiment_id} endpoint.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
  * @param _user The user submitting the request.
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
     async (parameters, body, _user) => {
-        const experimentModel = await findExperimentModelById(parameters.experiment_id)
+        const requestHandler: RequestHandler = new RequestHandler('patchExperimentsByExperimentId')
+        requestHandler.log(
+            'info',
+            `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`
+        )
+
+        const experimentModel = await requestHandler.executeAsync(
+            findExperimentModelById,
+            parameters.experiment_id
+        )
 
         if (!experimentModel) {
-            throw new MissingEntityError(
+            requestHandler.throw(MissingEntityError,
                 `Could not find experiment model ${parameters.experiment_id}`,
                 404
             )
         }
 
-        if (body) writeExperimentModel(experimentModel, body)
+        if (body) requestHandler.executeSync(writeExperimentModel, experimentModel, body)
 
-        if (experimentModel.status === 'booked') await bookExperiment(experimentModel)
-        if (experimentModel.status === 'running') await runExperiment(experimentModel)
-        if (experimentModel.status === 'finished') await finishExperiment(experimentModel)
-        await saveExperimentModel(experimentModel)
+        if (experimentModel.status === 'booked')
+            await requestHandler.executeAsync(bookExperiment, experimentModel)
+        if (experimentModel.status === 'running')
+            await requestHandler.executeAsync(runExperiment, experimentModel)
+        if (experimentModel.status === 'finished')
+            await requestHandler.executeAsync(finishExperiment, experimentModel)
+        await requestHandler.executeAsync(saveExperimentModel, experimentModel)
 
         return {
             status: 200,
-            body: formatExperimentModel(experimentModel),
+            body: requestHandler.executeSync(formatExperimentModel, experimentModel),
         }
     }

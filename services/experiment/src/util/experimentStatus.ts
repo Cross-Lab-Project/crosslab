@@ -15,18 +15,24 @@ import { bookExperiment as _bookExperiment } from './api'
 import { saveExperimentModel } from '../database/methods/save'
 import { establishPeerconnections } from './peerconnection'
 import { callbackUrl } from './callbacks'
+import { RequestHandler } from './requestHandler'
 
 /**
  * This function attempts to book an experiment.
  * @param experimentModel The experiment to be booked.
  */
-export async function bookExperiment(experimentModel: ExperimentModel) {
-    console.log('booking experiment', experimentModel.uuid)
+export async function bookExperiment(
+    requestHandler: RequestHandler,
+    experimentModel: ExperimentModel
+) {
+    const experimentUrl = requestHandler.executeSync(
+        experimentUrlFromId,
+        experimentModel.uuid
+    )
+    requestHandler.log('info', `Attempting to book experiment "${experimentUrl}"`)
 
     if (!experimentModel.devices || experimentModel.devices.length === 0)
-        throw new MissingPropertyError(
-            `Experiment ${experimentUrlFromId(experimentModel.uuid)} has no devices`
-        )
+        requestHandler.throw(MissingPropertyError, `Experiment ${experimentUrl} has no devices`)
 
     // TODO: book experiment
     // const currentTime = new Date()
@@ -52,7 +58,8 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     // experimentModel.bookingID = bookingId
 
     experimentModel.status = 'booked'
-    await saveExperimentModel(experimentModel)
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+    requestHandler.log('info', `Successfully booked experiment "${experimentUrl}"`)
 }
 
 /**
@@ -60,26 +67,33 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
  * @param experimentModel The experiment to be run.
  * @throws {InvalidStateError} Thrown when the status of the experiment is already "finished".
  */
-export async function runExperiment(experimentModel: ExperimentModel) {
-    console.log('running experiment', experimentModel.uuid)
+export async function runExperiment(
+    requestHandler: RequestHandler,
+    experimentModel: ExperimentModel
+) {
+    const experimentUrl = requestHandler.executeSync(
+        experimentUrlFromId,
+        experimentModel.uuid
+    )
+    requestHandler.log('info', `Attempting to run experiment "${experimentUrl}"`)
     // make sure experiment is not already finished
     if (experimentModel.status === 'finished') {
-        throw new InvalidStateError(`Experiment status is already "finished"`, 400)
+        requestHandler.throw(InvalidStateError, `Experiment status is already "finished"`, 400)
     }
 
     // make sure the experiment contains devices
     if (!experimentModel.devices || experimentModel.devices.length === 0) {
-        throw new MissingPropertyError(`Experiment does not contain any devices`, 400)
+        requestHandler.throw(MissingPropertyError, `Experiment does not contain any devices`, 400)
     }
 
     // book experiment if status is "created"
     if (experimentModel.status === 'created') {
-        await bookExperiment(experimentModel)
+        await bookExperiment(requestHandler, experimentModel)
     }
 
     // make sure the experiment has a booking
     if (!experimentModel.bookingID) {
-        throw new MissingPropertyError(`Experiment does not have a booking`, 400)
+        requestHandler.throw(MissingPropertyError, `Experiment does not have a booking`, 400)
     }
 
     /**
@@ -90,11 +104,11 @@ export async function runExperiment(experimentModel: ExperimentModel) {
 
     // make sure the concrete devices of the experiment are connected
     for (const device of experimentModel.devices) {
-        const resolvedDevice = await getDevice(device.url) // TODO: error handling
+        const resolvedDevice = await requestHandler.executeAsync(getDevice, device.url) // TODO: error handling
         if (resolvedDevice.type === 'device' && !resolvedDevice.connected) {
-            throw new DeviceNotConnectedError(
+            requestHandler.throw(DeviceNotConnectedError,
                 `Cannot start experiment since device ${device.url} is not connected`,
-                502
+                500
             ) // NOTE: maybe there is a more fitting error code
         }
 
@@ -105,24 +119,30 @@ export async function runExperiment(experimentModel: ExperimentModel) {
         ) {
             needsSetup = true
             if (!resolvedDevice.url)
-                throw new MissingPropertyError('Device is missing its url', 500) // NOTE: error code?
-            const { instance, deviceToken } = await instantiateDevice(
+                requestHandler.throw(MissingPropertyError, 'Device is missing its url', 500) // NOTE: error code?
+            const { instance, deviceToken } = await requestHandler.executeAsync(
+                instantiateDevice,
                 resolvedDevice.url,
                 { changedURL: callbackUrl }
             )
             if (!instance.url)
-                throw new MissingPropertyError('Device instance is missing its url', 500) // NOTE: error code?
+                requestHandler.throw(MissingPropertyError, 'Device instance is missing its url', 500) // NOTE: error code?
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
 
             // instantiate cloud instantiable devices
+            const experimentUrl = requestHandler.executeSync(
+                experimentUrlFromId,
+                experimentModel.uuid
+            )
             if (resolvedDevice.type === 'cloud instantiable') {
-                await startCloudDeviceInstance(
+                await requestHandler.executeAsync(
+                    startCloudDeviceInstance,
                     resolvedDevice,
                     instance.url,
                     deviceToken,
-                    experimentUrlFromId(experimentModel.uuid)
+                    experimentUrl
                 )
             }
         }
@@ -142,23 +162,31 @@ export async function runExperiment(experimentModel: ExperimentModel) {
     // TODO: add callback to all devices/instances for changes
 
     if (needsSetup) {
-        await establishPeerconnections(experimentModel)
+        await establishPeerconnections(requestHandler, experimentModel)
         experimentModel.status = 'setup'
     } else {
-        await establishPeerconnections(experimentModel)
+        await establishPeerconnections(requestHandler, experimentModel)
         experimentModel.status = 'running'
     }
 
     // save experiment
-    await saveExperimentModel(experimentModel)
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+    requestHandler.log('info', `Successfully running experiment "${experimentUrl}"`)
 }
 
 /**
  * This function attempts to finish an experiment.
  * @param experimentModel The experiment to be finished.
  */
-export async function finishExperiment(experimentModel: ExperimentModel) {
-    console.log('finishing experiment', experimentModel.uuid)
+export async function finishExperiment(
+    requestHandler: RequestHandler,
+    experimentModel: ExperimentModel
+) {
+    const experimentUrl = requestHandler.executeSync(
+        experimentUrlFromId,
+        experimentModel.uuid
+    )
+    requestHandler.log('info', `Attempting to finish experiment "${experimentUrl}"`)
 
     switch (experimentModel.status) {
         case 'created': {
@@ -175,7 +203,7 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
             // delete all peerconnections
             if (experimentModel.connections) {
                 for (const peerconnection of experimentModel.connections) {
-                    await deletePeerconnection(peerconnection.url)
+                    await requestHandler.executeAsync(deletePeerconnection, peerconnection.url)
                 }
             }
             // TODO: unlock all devices (booking client missing)
@@ -194,5 +222,6 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
     }
 
     experimentModel.status = 'finished'
-    await saveExperimentModel(experimentModel)
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+    requestHandler.log('info', `Successfully finished experiment "${experimentUrl}"`)
 }

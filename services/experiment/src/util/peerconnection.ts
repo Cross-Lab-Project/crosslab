@@ -5,38 +5,52 @@ import { MissingPropertyError } from '../types/errors'
 import { createPeerconnection } from './api'
 import { callbackUrl } from './callbacks'
 import { buildConnectionPlan } from './connectionPlan'
+import { RequestHandler } from './requestHandler'
 
 /**
  * This function attempts to establish the peerconnections for an experiment model according to its connection plan.
  * @param experimentModel The experiment model for which to establish the peerconnections.
  */
-export async function establishPeerconnections(experimentModel: ExperimentModel) {
-    const peerconnectionPlans = buildConnectionPlan(experimentModel)
+export async function establishPeerconnections(
+    requestHandler: RequestHandler,
+    experimentModel: ExperimentModel
+) {
+    const peerconnectionPlans = requestHandler.executeSync(
+        buildConnectionPlan,
+        experimentModel
+    )
     for (const peerconnectionPlan of peerconnectionPlans) {
         // TODO: error handling
-        const peerconnection = await createPeerconnection(peerconnectionPlan, {
-            closedUrl: callbackUrl,
-        })
+        const peerconnection = await requestHandler.executeAsync(
+            createPeerconnection,
+            peerconnectionPlan,
+            {
+                closedUrl: callbackUrl,
+            }
+        )
         if (!experimentModel.connections) experimentModel.connections = []
         if (!peerconnection.url)
-            throw new MissingPropertyError(
+            requestHandler.throw(MissingPropertyError,
                 'Created peerconnection does not have a url',
-                502
+                500
             )
         if (!peerconnection.devices)
-            throw new MissingPropertyError(
+            requestHandler.throw(MissingPropertyError,
                 'Created peerconnection does not have devices',
-                502
+                500
             )
         if (!peerconnection.devices[0].url || !peerconnection.devices[1].url)
-            throw new MissingPropertyError(
+            requestHandler.throw(MissingPropertyError,
                 'Created peerconnection has a device without an url',
-                502
+                500
             )
 
         // create, push and save new peerconnection
-        const peerconnectionModel = createPeerconnectionModel(peerconnection.url)
+        const peerconnectionModel = requestHandler.executeSync(
+            createPeerconnectionModel,
+            peerconnection.url
+        )
         experimentModel.connections.push(peerconnectionModel)
-        await saveExperimentModel(experimentModel)
+        await requestHandler.executeAsync(saveExperimentModel, experimentModel)
     }
 }

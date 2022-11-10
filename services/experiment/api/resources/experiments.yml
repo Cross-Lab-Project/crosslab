@@ -57,5 +57,3 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
-    502:
-      description: Bad Gateway.

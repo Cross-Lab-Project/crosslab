@@ -1,7 +1,4 @@
-import {
-    Peerconnection,
-    ConfiguredDeviceReference,
-} from '@cross-lab-project/api-client/dist/generated/device/types'
+import { DeviceServiceTypes } from '@cross-lab-project/api-client'
 import {
     ExperimentModel,
     ServiceConfigurationModel,
@@ -9,54 +6,76 @@ import {
     ParticipantModel,
 } from '../database/model'
 import { MissingPropertyError } from '../types/errors'
-import { getUrlOrInstanceUrl } from './url'
+import { RequestHandler } from './requestHandler'
+import { experimentUrlFromId, getUrlOrInstanceUrl } from './url'
 
-export function buildConnectionPlan(experiment: ExperimentModel): Peerconnection[] {
+export function buildConnectionPlan(
+    requestHandler: RequestHandler,
+    experiment: ExperimentModel
+): DeviceServiceTypes.Peerconnection[] {
+    const experimentUrl = requestHandler.executeSync(experimentUrlFromId, experiment.uuid)
+    requestHandler.log('info', `Building connection plan for experiment ${experimentUrl}`)
     console.log('building connection plan for experiment', experiment.uuid)
     if (
         !experiment.serviceConfigurations ||
         experiment.serviceConfigurations.length === 0
     )
-        throw new MissingPropertyError(
+        requestHandler.throw(MissingPropertyError,
             'Experiment must have a configuration to be run',
             400
         )
 
     if (!experiment.devices || experiment.devices.length === 0)
-        throw new MissingPropertyError('Experiment must have a device to be run', 400)
+        requestHandler.throw(MissingPropertyError, 'Experiment must have a device to be run', 400)
 
     const pairwiseServiceConfigurations: typeof experiment['serviceConfigurations'] =
-        toPairwiseServiceConfig(experiment)
+        toPairwiseServiceConfig(requestHandler, experiment)
 
     const deviceMappedServiceConfigs = mapRoleConfigToDevices(
+        requestHandler,
         pairwiseServiceConfigurations,
         experiment
     )
 
-    const sortedDeviceMappedServiceConfigs = deviceMappedServiceConfigs.map(
-        sortServiceParticipantsByDeviceId
+    const sortedDeviceMappedServiceConfigs = deviceMappedServiceConfigs.map((dmsc) =>
+        sortServiceParticipantsByDeviceId(requestHandler, dmsc)
     )
 
-    const peerconnections: Record<string, Pick<Required<Peerconnection>, 'devices'>> = {}
+    const peerconnections: Record<
+        string,
+        Pick<Required<DeviceServiceTypes.Peerconnection>, 'devices'>
+    > = {}
     for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
         const lookupKey = `${serviceConfig.devices[0].url}::${serviceConfig.devices[1].url}`
         if (!(lookupKey in peerconnections)) {
             peerconnections[lookupKey] = {
                 devices: [
-                    { url: getUrlOrInstanceUrl(serviceConfig.devices[0]) },
-                    { url: getUrlOrInstanceUrl(serviceConfig.devices[1]) },
+                    {
+                        url: requestHandler.executeSync(
+                            getUrlOrInstanceUrl,
+                            serviceConfig.devices[0]
+                        ),
+                    },
+                    {
+                        url: requestHandler.executeSync(
+                            getUrlOrInstanceUrl,
+                            serviceConfig.devices[1]
+                        ),
+                    },
                 ],
             }
         }
         const peerconnection = peerconnections[lookupKey]
 
         updateServiceConfig(
+            requestHandler,
             peerconnection.devices[0],
             serviceConfig,
             serviceConfig.participants[0],
             serviceConfig.participants[1]
         )
         updateServiceConfig(
+            requestHandler,
             peerconnection.devices[1],
             serviceConfig,
             serviceConfig.participants[1],
@@ -73,6 +92,7 @@ export function buildConnectionPlan(experiment: ExperimentModel): Peerconnection
 }
 
 function sortServiceParticipantsByDeviceId(
+    _requestHandler: RequestHandler,
     serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] }
 ) {
     const swap = serviceConfig.devices[0] > serviceConfig.devices[1]
@@ -88,7 +108,8 @@ function sortServiceParticipantsByDeviceId(
 }
 
 function updateServiceConfig(
-    device: ConfiguredDeviceReference,
+    _requestHandler: RequestHandler,
+    device: DeviceServiceTypes.ConfiguredDeviceReference,
     serviceConfig: ServiceConfigurationModel,
     participant: ParticipantModel,
     remoteParticipant: ParticipantModel
@@ -105,18 +126,19 @@ function updateServiceConfig(
 }
 
 function mapRoleConfigToDevices(
+    requestHandler: RequestHandler,
     pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'],
     experiment: ExperimentModel
 ) {
     if (!experiment.devices || experiment.devices.length === 0) {
-        throw new MissingPropertyError('Experiment must have a device to be run', 400)
+        requestHandler.throw(MissingPropertyError, 'Experiment must have a device to be run', 400)
     }
     const deviceMappedServiceConfigs: (ServiceConfigurationModel & {
         devices: DeviceModel[]
     })[] = []
     for (const serviceConfig of pairwiseServiceConfigurations) {
         if (!serviceConfig.participants || serviceConfig.participants.length !== 2) {
-            throw new MissingPropertyError(
+            requestHandler.throw(MissingPropertyError,
                 'pairwiseServiceConfigurations must have exactly two participants',
                 400
             )
@@ -143,9 +165,12 @@ function mapRoleConfigToDevices(
     return deviceMappedServiceConfigs
 }
 
-function toPairwiseServiceConfig(experiment: ExperimentModel) {
+function toPairwiseServiceConfig(
+    requestHandler: RequestHandler,
+    experiment: ExperimentModel
+) {
     if (!experiment.serviceConfigurations) {
-        throw new MissingPropertyError(
+        requestHandler.throw(MissingPropertyError,
             'Experiment must have a configuration to be run',
             400
         )

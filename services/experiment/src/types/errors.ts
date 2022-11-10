@@ -1,11 +1,25 @@
 import { ErrorWithStatus } from '../generated/types'
+import { RequestHandler } from '../util/requestHandler'
+
+/**
+ * This is an abstract error class to be used to define further errors.
+ */
+export abstract class RequestError extends ErrorWithStatus {
+    public requestHandler: RequestHandler
+
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(message, status)
+        this.name = "RequestError"
+        this.requestHandler = requestHandler
+    }
+}
 
 /**
  * This error class should be used if an entity is not found in the database.
  */
-export class MissingEntityError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class MissingEntityError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'MissingEntityError'
     }
 }
@@ -13,9 +27,9 @@ export class MissingEntityError extends ErrorWithStatus {
 /**
  * This error class should be used if an object contains an invalid value.
  */
-export class InvalidValueError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class InvalidValueError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'InvalidValueError'
     }
 }
@@ -23,9 +37,9 @@ export class InvalidValueError extends ErrorWithStatus {
 /**
  * This error class should be used if a service configuration is faulty.
  */
-export class ServiceConfigurationError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class ServiceConfigurationError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'ServiceConfigurationError'
     }
 }
@@ -33,9 +47,9 @@ export class ServiceConfigurationError extends ErrorWithStatus {
 /**
  * This error class should be used if an operation cannot be executed from the current state.
  */
-export class InvalidStateError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class InvalidStateError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'InvalidStateError'
     }
 }
@@ -43,9 +57,9 @@ export class InvalidStateError extends ErrorWithStatus {
 /**
  * This error class should be used if there is an inconsistency in the database.
  */
-export class InconsistentDatabaseError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class InconsistentDatabaseError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'InconsistentDatabaseError'
     }
 }
@@ -53,9 +67,9 @@ export class InconsistentDatabaseError extends ErrorWithStatus {
 /**
  * This error class should be used if an object is missing a needed property.
  */
-export class MissingPropertyError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class MissingPropertyError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'MissingPropertyError'
     }
 }
@@ -63,9 +77,9 @@ export class MissingPropertyError extends ErrorWithStatus {
 /**
  * This error class should be used if a required device is not connection.
  */
-export class DeviceNotConnectedError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class DeviceNotConnectedError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'DeviceNotConnectedError'
     }
 }
@@ -73,11 +87,11 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
 /**
  * This error class should be used as a wrapper for errors thrown by the api-client.
  */
-export class InternalRequestError extends ErrorWithStatus {
+export class InternalRequestError extends RequestError {
     public internalError: Error
 
-    constructor(message: string, error: Error, status?: number) {
-        super(message, status)
+    constructor(requestHandler: RequestHandler, message: string, error: Error, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'InternalRequestError'
         this.internalError = error
     }
@@ -86,9 +100,9 @@ export class InternalRequestError extends ErrorWithStatus {
 /**
  * This error class should be used if a booking is invalid.
  */
-export class InvalidBookingError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
+export class InvalidBookingError extends RequestError {
+    constructor(requestHandler: RequestHandler, message: string, status?: number) {
+        super(requestHandler, message, status)
         this.name = 'InvalidBookingError'
     }
 }

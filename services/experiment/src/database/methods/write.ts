@@ -21,67 +21,83 @@ import {
     createRoleModel,
     createServiceConfigurationModel,
 } from './create'
+import { RequestHandler } from '../../util/requestHandler'
 
 const HOUR = 60 * 60 * 1000
 
 /**
- * This function writes the data of a {@link Device} to a {@link DeviceModel}.
- * @param deviceModel The {@link DeviceModel} the data should be written to.
- * @param device The {@link Device} providing the data to be written.
+ * This function writes the data of a Device to a DeviceModel.
+ * @param deviceModel The DeviceModel the data should be written to.
+ * @param device The Device providing the data to be written.
  */
-export function writeDeviceModel(deviceModel: DeviceModel, device: Device) {
+export function writeDeviceModel(
+    requestHandler: RequestHandler,
+    deviceModel: DeviceModel,
+    device: Device
+) {
+    requestHandler.log('debug', `Attempting to write the data of ${device} to the device model ${deviceModel}`)
     if (!device.device)
-        throw new MissingPropertyError('Device is missing property "url"', 400)
+        requestHandler.throw(MissingPropertyError, 'Device is missing property "url"', 400)
     if (device.device) deviceModel.url = device.device
     if (device.role) deviceModel.role = device.role
 }
 
 /**
- * This function writes the data of a {@link Role} to a {@link RoleModel}.
- * @param roleModel The {@link RoleModel} the data should be written to.
- * @param role The {@link Role} providing the data to be written.
+ * This function writes the data of a Role to a RoleModel.
+ * @param roleModel The RoleModel the data should be written to.
+ * @param role The Role providing the data to be written.
  */
-export function writeRoleModel(roleModel: RoleModel, role: Role) {
+export function writeRoleModel(
+    requestHandler: RequestHandler,
+    roleModel: RoleModel,
+    role: Role
+) {
+    requestHandler.log('debug', `Attempting to write the data of ${role} to the role model ${roleModel}`)
     if (role.name) roleModel.name = role.name
     if (role.description) roleModel.description = role.description
 }
 
 /**
- * This function writes the data of a string to a {@link PeerconnectionModel}.
- * @param peerconnectionModel The {@link PeerconnectionModel} the data should be written to.
+ * This function writes the data of a string to a PeerconnectionModel.
+ * @param peerconnectionModel The PeerconnectionModel the data should be written to.
  * @param peerconnectionUrl The url of a peerconnection.
- * @throws {MissingPropertyError} Thrown when the peerconnection is missing required properties.
  */
 export function writePeerconnectionModel(
+    requestHandler: RequestHandler,
     peerconnectionModel: PeerconnectionModel,
     peerconnectionUrl: string
 ) {
+    requestHandler.log('debug', `Attempting to write "${peerconnectionUrl}" to the peerconnection model ${peerconnectionModel}`)
     peerconnectionModel.url = peerconnectionUrl
 }
 
 /**
- * This function writes the data of a {@link Participant} to a {@link ParticipantModel}.
- * @param participantModel The {@link ParticipantModel} the data should be written to.
- * @param participant The {@link Participant} providing the data to be written.
+ * This function writes the data of a Participant to a ParticipantModel.
+ * @param participantModel The ParticipantModel the data should be written to.
+ * @param participant The Participant providing the data to be written.
  */
 export function writeParticipantModel(
+    requestHandler: RequestHandler,
     participantModel: ParticipantModel,
     participant: Participant
 ) {
+    requestHandler.log('debug', `Attempting to write the data of ${participant} to the participant model ${participantModel}`)
     if (participant.role) participantModel.role = participant.role
     if (participant.serviceId) participantModel.serviceId = participant.serviceId
     if (participant.config) participantModel.config = JSON.stringify(participant.config)
 }
 
 /**
- * This function writes the data of a {@link ServiceConfiguration} to a {@link ServiceConfigurationModel}.
- * @param serviceConfigurationModel The {@link ServiceConfigurationModel} the data should be written to.
- * @param serviceConfiguration The {@link ServiceConfiguration} providing the data to be written.
+ * This function writes the data of a ServiceConfiguration to a ServiceConfigurationModel.
+ * @param serviceConfigurationModel The ServiceConfigurationModel the data should be written to.
+ * @param serviceConfiguration The ServiceConfiguration providing the data to be written.
  */
 export function writeServiceConfigurationModel(
+    requestHandler: RequestHandler,
     serviceConfigurationModel: ServiceConfigurationModel,
     serviceConfiguration: ServiceConfiguration
 ) {
+    requestHandler.log('debug', `Attempting to write the data of ${serviceConfiguration} to the service configuration model ${serviceConfigurationModel}`)
     if (serviceConfiguration.serviceType)
         serviceConfigurationModel.serviceType = serviceConfiguration.serviceType
     if (serviceConfiguration.configuration)
@@ -91,21 +107,26 @@ export function writeServiceConfigurationModel(
     if (serviceConfiguration.participants) {
         serviceConfigurationModel.participants = []
         for (const participant of serviceConfiguration.participants) {
-            const participantModel = createParticipantModel(participant)
+            const participantModel = requestHandler.executeSync(
+                createParticipantModel,
+                participant
+            )
             serviceConfigurationModel.participants.push(participantModel)
         }
     }
 }
 
 /**
- * This function writes the data of a {@link Experiment} to a {@link ExperimentModel}.
- * @param experimentModel The {@link ExperimentModel} the data should be written to.
- * @param experiment The {@link Experiment} providing the data to be written.
+ * This function writes the data of a Experiment to a ExperimentModel.
+ * @param experimentModel The ExperimentModel the data should be written to.
+ * @param experiment The Experiment providing the data to be written.
  */
 export function writeExperimentModel(
+    requestHandler: RequestHandler,
     experimentModel: ExperimentModel,
     experiment: Experiment
 ) {
+    requestHandler.log('debug', `Attempting to write the data of ${experiment} to the experiment model ${experimentModel}`)
     experimentModel.status = experiment.status ?? experimentModel.status ?? 'created'
     if (experiment.bookingTime) {
         if (experiment.bookingTime.startTime)
@@ -123,29 +144,34 @@ export function writeExperimentModel(
     if (experiment.devices) {
         experimentModel.devices = []
         for (const device of experiment.devices) {
-            const deviceModel = createDeviceModel(device)
+            const deviceModel = requestHandler.executeSync(createDeviceModel, device)
             experimentModel.devices.push(deviceModel)
         }
     }
     if (experiment.roles) {
         experimentModel.roles = []
         for (const role of experiment.roles) {
-            const roleModel = createRoleModel(role)
+            const roleModel = requestHandler.executeSync(createRoleModel, role)
             experimentModel.roles.push(roleModel)
         }
     }
     if (experiment.connections) {
         experimentModel.connections = []
         for (const peerconnection of experiment.connections) {
-            const peerconnectionModel = createPeerconnectionModel(peerconnection)
+            const peerconnectionModel = requestHandler.executeSync(
+                createPeerconnectionModel,
+                peerconnection
+            )
             experimentModel.connections.push(peerconnectionModel)
         }
     }
     if (experiment.serviceConfigurations) {
         experimentModel.serviceConfigurations = []
         for (const serviceConfiguration of experiment.serviceConfigurations) {
-            const serviceConfigurationModel =
-                createServiceConfigurationModel(serviceConfiguration)
+            const serviceConfigurationModel = requestHandler.executeSync(
+                createServiceConfigurationModel,
+                serviceConfiguration
+            )
             experimentModel.serviceConfigurations.push(serviceConfigurationModel)
         }
     }

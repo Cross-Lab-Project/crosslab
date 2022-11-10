@@ -1,10 +1,3 @@
-import {
-    isConcreteDevice,
-    isDeviceGroup,
-    isInstantiableBrowserDevice,
-    isInstantiableCloudDevice,
-    isPeerconnection,
-} from '@cross-lab-project/api-client/dist/generated/device/types'
 import { MalformedBodyError } from '../generated/types'
 import {
     InvalidValueError,
@@ -15,6 +8,8 @@ import express from 'express'
 import { config } from '../config'
 import { findPeerconnectionModelByUrl } from '../database/methods/find'
 import { saveExperimentModel } from '../database/methods/save'
+import { DeviceServiceTypes } from '@cross-lab-project/api-client'
+import { RequestHandler } from './requestHandler'
 
 export const callbackUrl: string =
     config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/callbacks'
@@ -29,16 +24,17 @@ export const deviceChangedCallbacks: string[] = []
 export function callbackHandling(app: express.Application) {
     // TODO: adapt callback handling after codegen update
     app.post('/experiments/callbacks', async (req, res) => {
+        const requestHandler: RequestHandler = new RequestHandler("callbackHandling")
         const callback = req.body
         if (typeof callback !== 'object')
             throw new MalformedBodyError('Body of callback is not an object', 400)
-        const callbackType = getCallbackType(callback)
+        const callbackType = requestHandler.executeSync(getCallbackType, callback)
 
         switch (callbackType) {
             case 'event':
-                return res.status(await handleEventCallback(callback)).send()
+                return res.status(await requestHandler.executeAsync(handleEventCallback, callback)).send()
             default:
-                throw new InvalidValueError(
+                requestHandler.throw(InvalidValueError,
                     `Callbacks of type "${req.body.callbackType}" are not supported`,
                     400
                 )
@@ -52,7 +48,7 @@ export function callbackHandling(app: express.Application) {
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
  * @returns The type of the incoming callback.
  */
-function getCallbackType(callback: any) {
+function getCallbackType(_requestHandler: RequestHandler, callback: any) {
     if (typeof callback.callbackType !== 'string') {
         throw new MalformedBodyError(
             'Property "callbackType" needs to be of type string',
@@ -72,7 +68,7 @@ function getCallbackType(callback: any) {
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-async function handleEventCallback(callback: any): Promise<200 | 410> {
+async function handleEventCallback(requestHandler: RequestHandler, callback: any): Promise<200 | 410> {
     if (!callback.eventType) {
         throw new MalformedBodyError(
             'Callbacks of type "event" require property "eventType"',
@@ -87,13 +83,13 @@ async function handleEventCallback(callback: any): Promise<200 | 410> {
     }
     switch (callback.eventType) {
         case 'peerconnection-status-changed':
-            return await handlePeerconnectionStatusChangedEventCallback(callback)
+            return await requestHandler.executeAsync(handlePeerconnectionStatusChangedEventCallback, callback)
         case 'peerconnection-closed':
-            return handlePeerconnectionClosedEventCallback(callback)
+            return requestHandler.executeSync(handlePeerconnectionClosedEventCallback, callback)
         case 'device-changed':
-            return handleDeviceChangedEventCallback(callback)
+            return requestHandler.executeSync(handleDeviceChangedEventCallback, callback)
         default:
-            throw new InvalidValueError(
+            requestHandler.throw(InvalidValueError,
                 `Event-callbacks of type "${callback.eventType}" are not supported`,
                 400
             )
@@ -106,7 +102,7 @@ async function handleEventCallback(callback: any): Promise<200 | 410> {
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
  * @returns The status code for the response to the incoming callback.
  */
-function handlePeerconnectionClosedEventCallback(callback: any): 200 | 410 {
+function handlePeerconnectionClosedEventCallback(_requestHandler: RequestHandler, callback: any): 200 | 410 {
     if (!callback.peerconnection) {
         throw new MalformedBodyError(
             'Event-callbacks of type "peerconnection-closed" require property "peerconnection"',
@@ -114,7 +110,7 @@ function handlePeerconnectionClosedEventCallback(callback: any): 200 | 410 {
         )
     }
     const peerconnection = callback.peerconnection
-    if (!isPeerconnection(peerconnection)) {
+    if (!DeviceServiceTypes.isPeerconnection(peerconnection)) {
         throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
     }
     if (!peerconnection.url) {
@@ -134,6 +130,7 @@ function handlePeerconnectionClosedEventCallback(callback: any): 200 | 410 {
  * @returns The status code for the response to the incoming callback.
  */
 async function handlePeerconnectionStatusChangedEventCallback(
+    requestHandler: RequestHandler,
     callback: any
 ): Promise<200 | 410> {
     if (!callback.peerconnection) {
@@ -143,7 +140,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
         )
     }
     const peerconnection = callback.peerconnection
-    if (!isPeerconnection(peerconnection)) {
+    if (!DeviceServiceTypes.isPeerconnection(peerconnection)) {
         throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
     }
     if (!peerconnection.url) {
@@ -157,9 +154,9 @@ async function handlePeerconnectionStatusChangedEventCallback(
     }
 
     // TODO: add peerconnection status changed handling
-    const peerconnectionModel = await findPeerconnectionModelByUrl(peerconnection.url)
+    const peerconnectionModel = await requestHandler.executeAsync(findPeerconnectionModelByUrl, peerconnection.url)
     if (!peerconnectionModel)
-        throw new MissingEntityError(
+        requestHandler.throw(MissingEntityError,
             `No peerconnection model with url ${peerconnection.url} found`,
             500
         ) // NOTE: error code
@@ -174,12 +171,12 @@ async function handlePeerconnectionStatusChangedEventCallback(
             // TODO: handle status connected
             const experimentModel = peerconnectionModel.experiment
             if (!experimentModel)
-                throw new MissingPropertyError(
+                requestHandler.throw(MissingPropertyError,
                     `Peerconnection model is missing property "experiment"`
                 ) // NOTE: error code
 
             if (!experimentModel.connections)
-                throw new MissingPropertyError(
+                requestHandler.throw(MissingPropertyError,
                     `Experiment model is missing property "connections"`
                 ) // NOTE: error code
 
@@ -188,7 +185,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
                 !experimentModel.connections.find((c) => c.status !== 'connected')
             ) {
                 experimentModel.status = 'running'
-                await saveExperimentModel(experimentModel)
+                await requestHandler.executeAsync(saveExperimentModel, experimentModel)
             }
             break
         case 'failed':
@@ -207,7 +204,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
  * @returns The status code for the response to the incoming callback.
  */
-function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
+function handleDeviceChangedEventCallback(_requestHandler: RequestHandler, callback: any): 200 | 410 {
     if (!callback.device) {
         throw new MalformedBodyError(
             'Event-callbacks of type "device-changed" require property "device"',
@@ -216,10 +213,10 @@ function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
     }
     const device = callback.device
     if (
-        !isConcreteDevice(callback.device) &&
-        !isDeviceGroup(callback.device) &&
-        !isInstantiableBrowserDevice(callback.device) &&
-        !isInstantiableCloudDevice(callback.device)
+        !DeviceServiceTypes.isConcreteDevice(callback.device) &&
+        !DeviceServiceTypes.isDeviceGroup(callback.device) &&
+        !DeviceServiceTypes.isInstantiableBrowserDevice(callback.device) &&
+        !DeviceServiceTypes.isInstantiableCloudDevice(callback.device)
     ) {
         throw new MalformedBodyError('Property "device" is not a valid device', 400)
     }
