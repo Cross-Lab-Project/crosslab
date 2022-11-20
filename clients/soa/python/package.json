@@ -1,0 +1,16 @@
+{
+    "name": "crosslab_soa_client code generation project",
+    "version": "1.0.0",
+    "scripts": {
+      "generate": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../../../services/device/api/schemas/messages/*.yml -t ./template python -o ./src/crosslab_soa_client",
+      "watch-templates": "nodemon --watch template -e njk --exec \"npm run generate\""
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+      "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration-v2",
+      "nodemon": "^2.0.20"
+    }
+  }
+  

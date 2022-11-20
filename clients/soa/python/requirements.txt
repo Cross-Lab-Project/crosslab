@@ -1,0 +1,6 @@
+-e ./
+-e ../../api/python
+pytest
+pytest-asyncio
+pytest-aiohttp
+tox
