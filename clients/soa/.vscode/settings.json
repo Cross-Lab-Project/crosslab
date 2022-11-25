@@ -1,0 +1,11 @@
+// hidden
+{
+    "files.exclude": {
+        // generated
+        // end generated
+    },
+    "files.watcherExclude": {
+        // generated
+        // end generated
+    }
+}

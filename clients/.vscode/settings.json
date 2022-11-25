@@ -1,0 +1,9 @@
+{
+    "files.exclude": {
+        //begin generated
+        "api/.vscode": true,
+        //end generated
+    },
+    "files.watcherExclude": {
+    }
+}

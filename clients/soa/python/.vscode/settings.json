@@ -13,4 +13,11 @@
         "--profile",
         "black"
     ],
+    "files.exclude": {
+        //begin generated
+        
+        //end generated
+    },
+    "files.watcherExclude": {
+    }
 }

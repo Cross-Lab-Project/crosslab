@@ -4,5 +4,13 @@
         "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json": "**/api/resources/**/*.yml",
         "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json": "**/api/parameters/**/*.yml",
         "https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json": "**/api/content/**/*.yml"
+    },
+    "files.exclude": {
+        //begin generated
+        "clients/api/.vscode": true,
+        "clients/.vscode": true,
+        //end generated
+    },
+    "files.watcherExclude": {
     }
 }
