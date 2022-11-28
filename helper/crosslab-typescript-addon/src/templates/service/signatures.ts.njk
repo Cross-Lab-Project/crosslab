@@ -1,3 +1,4 @@
+{%- macro generateSignatures() -%}
 {%- set schemas = (api | resolveSchemas) -%}
 {%- set typeDependencies = ["SuccessResponse", "ErrorResponse", "UserData"] -%}
 {%- set operations = (api | resolveOperations) -%}
@@ -142,7 +143,7 @@ export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" 
 
 {%- set responseBody = "undefined" -%}
 {%- if response.schema -%}
-    {%- set responseBody = response.schema | typeDeclaration(schemas) -%}
+    {%- set responseBody = response.schema | typeDeclaration(schemas) | indent(4) -%}
 {%- endif %}
 
 /**
@@ -152,7 +153,7 @@ export interface {{ operation.name }}{{ response.status }}ResponseType extends {
     status: {{ response.status }}
     headers{{ "?" if not response.headers }}: {
         {% for header in response.headers -%}
-        "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas) if header.schema else "undefined" }},
+        "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas) | indent(8) if header.schema else "undefined" }},
         {% endfor -%}
         [k: string]: string | undefined
     }
@@ -161,3 +162,5 @@ export interface {{ operation.name }}{{ response.status }}ResponseType extends {
 
 {%- endfor %}
 {%- endfor %}
+{%- endmacro -%}
+{{ generateSignatures() | prettier }}

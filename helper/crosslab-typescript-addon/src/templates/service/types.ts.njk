@@ -1,3 +1,4 @@
+{%- macro generateTypes() -%}
 {%- set schemas = (api | resolveSchemas) -%}
 {%- set securitySchemes = [] -%}
 {%- set validationDependencies = [] -%}
@@ -92,3 +93,5 @@ export function is{{ schema["x-name"] }}(obj: any): obj is {{ schema["x-name"] }
     return validate{{ schema["x-name"] }}(obj)
 }
 {%- endfor %}
+{%- endmacro -%}
+{{ generateTypes() | prettier }}
