@@ -1,4 +1,5 @@
-import { program } from "commander";
+#! /usr/bin/env node
+import { Option, program } from "commander";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import {
   quicktype,
@@ -22,8 +23,11 @@ import {
 import { readdirSync, writeFileSync, mkdirSync } from "fs";
 import { OpenAPIV3_1 } from "openapi-types";
 import { join, resolve } from "path";
+import { activateFilterCollection, activatePreset } from "./addon";
 
-const env = nunjucks.configure({ autoescape: false, noCache: true });
+export { Addon, Preset, FilterCollection, Filter, Global } from "./addon"
+
+const env = nunjucks.configure("/", { autoescape: false, noCache: true });
 env.addFilter("formatPath", formatPath_filter);
 env.addFilter("hasPathParameter", hasPathParameter_filter);
 env.addFilter("upperCamelCase", upperCamelCase_filter);
@@ -93,10 +97,21 @@ async function main() {
     .version("0.2.0")
     .requiredOption("-i, --input <string>", "openapi input file")
     .requiredOption("-t, --template <string>", "openapi template name")
-    .requiredOption("-o, --output <string>", "openapi output directory");
+    .requiredOption("-o, --output <string>", "openapi output directory")
+    .option("-f, --filters <string...>", "filter collections to load")
+    .addOption(new Option("-p, --preset <string>").implies({ template: "" }).conflicts("-f"));
 
   program.parse();
   const options = program.opts();
+  
+  if (options.filters) {
+    options.filters.foreach((fc: string) => activateFilterCollection(fc, env))
+  }
+
+  if (options.preset) { 
+    activatePreset(options.preset, env)
+  }
+
   const input: string = options.input;
 
   const api = (await SwaggerParser.validate(input)) as OpenAPIV3_1.Document;
@@ -109,6 +124,7 @@ async function main() {
 
   inputData = extractSchemaInput(api);
   const context = {
+    api,
     ...api,
     schemas,
   };
@@ -118,7 +134,8 @@ async function main() {
   mkdirSync(outputDir, { recursive: true });
 
   // render all templates in the template directory
-  let templateDir = resolve(__dirname, "../templates", options.template);
+  let templateDir = env.getGlobal("templateDir") ? env.getGlobal("templateDir") : resolve(__dirname, "../templates", options.template);
+  //console.log(templateDir)
   if (options.template.startsWith(".")) {
     templateDir = resolve(process.cwd(), options.template);
   }
@@ -161,7 +178,7 @@ function extractSchemaInput(api: OpenAPIV3_1.Document): InputData {
             const schemaInput = new JSONSchemaInput(
               new FetchingJSONSchemaStore()
             );
-            console.log(name)
+            //console.log(name)
             schemas.addInput(schemaInput);
             schemaInput.addSource({
               name,
@@ -186,8 +203,8 @@ function extractSchemaInput(api: OpenAPIV3_1.Document): InputData {
                   new FetchingJSONSchemaStore()
                 );
                 schemas.addInput(schemaInput);
-                console.log(name)
-                console.log(schema)
+                //console.log(name)
+                //console.log(schema)
                 schemaInput.addSource({
                   name,
                   schema: JSON.stringify(schema),
