@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  operationId: create_websocket_token
   summary: Create new websocket token for device
   tags:
     - device

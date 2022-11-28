@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_devices
   summary: List devices
   tags:
     - device
@@ -24,6 +25,7 @@ get:
     500:
       description: Server Error.
 post:
+  operationId: create_device
   summary: Create a new device
   tags:
     - device

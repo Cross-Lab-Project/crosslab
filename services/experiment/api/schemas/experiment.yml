@@ -1,3 +1,4 @@
+title: Experiment
 allOf:
   - $ref: ./experiment_overview.yml
   - type: object

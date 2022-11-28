@@ -57,7 +57,7 @@ export abstract class DeviceOverviewModel {
     uuid!: string
     @Column()
     name?: string
-    @Column()
+    @Column({nullable: true})
     description?: string
     @Column()
     type?: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
@@ -65,6 +65,15 @@ export abstract class DeviceOverviewModel {
     owner?: string
     @DeleteDateColumn()
     deletedAt?: Date
+}
+
+@ChildEntity()
+export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewModel {
+    @OneToMany(() => ConcreteDeviceModel, (concreteDevice) => concreteDevice.instanceOf, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
+    instances?: ConcreteDeviceModel[]
 }
 
 @ChildEntity('device')
@@ -108,15 +117,6 @@ export class DeviceGroupModel extends DeviceOverviewModel {
         cascade: true,
     })
     devices?: DeviceReferenceModel[]
-}
-
-@ChildEntity()
-export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewModel {
-    @OneToMany(() => ConcreteDeviceModel, (concreteDevice) => concreteDevice.instanceOf, {
-        onDelete: 'CASCADE',
-        cascade: true,
-    })
-    instances?: ConcreteDeviceModel[]
 }
 
 @ChildEntity('cloud instantiable')

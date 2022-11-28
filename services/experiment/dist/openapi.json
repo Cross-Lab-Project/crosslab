@@ -3,13 +3,9 @@
   "info": {
     "title": "CrossLab Experiment Service REST API (internal)",
     "description": "This is the OpenAPI description of the internal CrossLab Experiment Service REST API.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Experiment Service"
   },
-  "servers": [
-    {
-      "url": "https://api.goldi-labs.de"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "JWT": {
@@ -21,6 +17,7 @@
     },
     "schemas": {
       "experiment_overview": {
+        "title": "Experiment Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -42,10 +39,6 @@
           }
         }
       },
-      "name": {
-        "type": "string",
-        "description": "Name for an experiment role."
-      },
       "device": {
         "title": "Device",
         "type": "object",
@@ -56,11 +49,13 @@
             "format": "uri"
           },
           "role": {
-            "$ref": "#/components/schemas/name"
+            "type": "string",
+            "description": "The name of the device's role."
           }
         }
       },
       "role": {
+        "title": "role",
         "type": "object",
         "properties": {
           "name": {
@@ -77,7 +72,8 @@
         "type": "object",
         "properties": {
           "role": {
-            "$ref": "#/components/schemas/name"
+            "type": "string",
+            "description": "The name of the participant's role."
           },
           "serviceId": {
             "type": "string"
@@ -90,6 +86,7 @@
         }
       },
       "service_configuration": {
+        "title": "Service Configuration",
         "type": "object",
         "properties": {
           "serviceType": {
@@ -112,6 +109,7 @@
         }
       },
       "experiment": {
+        "title": "Experiment",
         "allOf": [
           {
             "$ref": "#/components/schemas/experiment_overview"
@@ -203,6 +201,7 @@
   "paths": {
     "/experiments": {
       "get": {
+        "operationId": "list_experiments",
         "summary": "List experiments",
         "tags": [
           "experiment"
@@ -247,6 +246,7 @@
         }
       },
       "post": {
+        "operationId": "create_experiment",
         "summary": "Create a new experiment",
         "tags": [
           "experiment"
@@ -304,15 +304,13 @@
           },
           "500": {
             "description": "Server Error."
-          },
-          "502": {
-            "description": "Bad Gateway."
           }
         }
       }
     },
     "/experiments/{experiment_id}": {
       "get": {
+        "operationId": "get_experiment",
         "summary": "View an experiment.",
         "tags": [
           "experiment"
@@ -359,6 +357,7 @@
         }
       },
       "patch": {
+        "operationId": "update_experiment",
         "summary": "Update an existing experiment.",
         "description": "With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.\n",
         "tags": [
@@ -425,9 +424,6 @@
           },
           "500": {
             "description": "Server Error."
-          },
-          "502": {
-            "description": "Bad Gateway."
           }
         },
         "callbacks": {
@@ -475,6 +471,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_experiment",
         "summary": "Delete an experiment",
         "tags": [
           "experiment"

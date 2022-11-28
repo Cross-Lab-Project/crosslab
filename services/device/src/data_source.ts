@@ -11,6 +11,7 @@ import {
     InstantiableCloudDeviceModel,
     InstantiableBrowserDeviceModel,
     ServiceModel,
+    InstantiableDeviceOverviewModel,
 } from './model'
 
 export const AppDataSource = new DataSource({
@@ -20,6 +21,7 @@ export const AppDataSource = new DataSource({
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,
+        InstantiableDeviceOverviewModel,
         InstantiableCloudDeviceModel,
         InstantiableBrowserDeviceModel,
         DeviceGroupModel,

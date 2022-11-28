@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Device Service REST API (internal)",
     "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Device Service"
   },
   "components": {
     "securitySchemes": {
@@ -142,6 +143,7 @@
             "$ref": "#/components/schemas/time_slot"
           },
           {
+            "type": "object",
             "properties": {
               "available": {
                 "type": "boolean"
@@ -328,11 +330,20 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/service_config"
+                  "$ref": "#/components/schemas/service_config",
+                  "required": [
+                    "serviceType",
+                    "serviceId",
+                    "remoteServiceId"
+                  ]
                 }
               },
               "tiebreaker": {
                 "type": "boolean"
+              },
+              "config": {
+                "type": "object",
+                "additionalProperties": true
               }
             },
             "required": [
@@ -411,6 +422,7 @@
         "x-typeguard": true
       },
       "device_reference": {
+        "title": "Device Reference",
         "type": "object",
         "properties": {
           "url": {
@@ -441,6 +453,7 @@
         }
       },
       "configured_device_reference": {
+        "title": "Configured Device Reference",
         "type": "object",
         "properties": {
           "url": {
@@ -589,6 +602,7 @@
   "paths": {
     "/devices": {
       "get": {
+        "operationId": "list_devices",
         "summary": "List devices",
         "tags": [
           "device"
@@ -633,6 +647,7 @@
         }
       },
       "post": {
+        "operationId": "create_device",
         "summary": "Create a new device",
         "tags": [
           "device"
@@ -994,6 +1009,7 @@
     },
     "/devices/{device_id}": {
       "get": {
+        "operationId": "get_device",
         "summary": "View a registered device",
         "tags": [
           "device"
@@ -1159,6 +1175,7 @@
         }
       },
       "patch": {
+        "operationId": "update_device",
         "summary": "Update an existing device",
         "tags": [
           "device"
@@ -1521,6 +1538,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_device",
         "summary": "Delete a registered device",
         "tags": [
           "device"
@@ -1560,7 +1578,8 @@
         }
       },
       "post": {
-        "summary": "Create an instance of a virtual device",
+        "operationId": "instantiate_device",
+        "summary": "Create an instance of a cloud instantiable device",
         "tags": [
           "device"
         ],
@@ -1582,7 +1601,7 @@
         ],
         "responses": {
           "201": {
-            "description": "The JSON Representation of the created instance of the virtual device",
+            "description": "The JSON Representation of the created instance",
             "content": {
               "application/json": {
                 "schema": {
@@ -1662,6 +1681,7 @@
     },
     "/devices/{device_id}/availability": {
       "post": {
+        "operationId": "add_availability_rules",
         "summary": "Update the device availability",
         "tags": [
           "device"
@@ -1758,6 +1778,7 @@
     },
     "/devices/{device_id}/websocket": {
       "post": {
+        "operationId": "create_websocket_token",
         "summary": "Create new websocket token for device",
         "tags": [
           "device"
@@ -1806,6 +1827,7 @@
     },
     "/devices/{device_id}/signaling": {
       "post": {
+        "operationId": "send_signaling_message",
         "summary": "Send signaling message to device",
         "tags": [
           "device"
@@ -1870,6 +1892,7 @@
     },
     "/peerconnections": {
       "get": {
+        "operationId": "list_peerconnections",
         "summary": "List Peer Connection",
         "tags": [
           "peerconnection"
@@ -1914,6 +1937,7 @@
         }
       },
       "post": {
+        "operationId": "create_peerconnection",
         "summary": "Create a new Peer Connection",
         "tags": [
           "peerconnection"
@@ -2067,6 +2091,7 @@
     },
     "/peerconnections/{peerconnection_id}": {
       "get": {
+        "operationId": "get_peerconnection",
         "summary": "View a peer connection",
         "tags": [
           "peerconnection"
@@ -2113,6 +2138,7 @@
         ]
       },
       "delete": {
+        "operationId": "delete_peerconnection",
         "summary": "Delete a peer connection",
         "tags": [
           "peerconnection"

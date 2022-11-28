@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_device
   summary: View a registered device
   tags:
     - device
@@ -27,6 +28,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: update_device
   summary: Update an existing device
   tags:
     - device
@@ -73,6 +75,7 @@ patch:
             410:
               description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
 delete:
+  operationId: delete_device
   summary: Delete a registered device
   tags:
     - device
@@ -96,7 +99,8 @@ delete:
     500:
       description: Server Error.
 post:
-  summary: Create an instance of a virtual device
+  operationId: instantiate_device
+  summary: Create an instance of a cloud instantiable device
   tags:
     - device
   security:
@@ -108,7 +112,7 @@ post:
     - $ref: "../parameters/device_changed_url.yml"
   responses:
     201:
-      description: The JSON Representation of the created instance of the virtual device
+      description: The JSON Representation of the created instance
       content:
         application/json:
           $ref: "../content/device_instantiated.yml"

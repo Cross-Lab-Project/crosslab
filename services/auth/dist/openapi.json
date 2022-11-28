@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Simple Authentication Service (internal)",
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Authentication Service"
   },
   "components": {
     "securitySchemes": {
@@ -11,6 +12,11 @@
         "type": "http",
         "scheme": "basic",
         "description": "Basic authentication using the TUI username and password."
+      },
+      "AccessToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A token for user authentication."
       },
       "JWT": {
         "type": "http",
@@ -136,6 +142,7 @@
   "paths": {
     "/auth": {
       "get": {
+        "operationId": "auth",
         "x-internal": true,
         "tags": [
           "authentication"
@@ -145,7 +152,6 @@
             "AccessToken": []
           }
         ],
-        "operationId": "auth",
         "summary": "Authenticate user",
         "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
         "parameters": [
@@ -193,10 +199,15 @@
     },
     "/login": {
       "post": {
+        "operationId": "login",
         "tags": [
           "authentication"
         ],
-        "operationId": "login",
+        "security": [
+          {
+            "TuiAuth": []
+          }
+        ],
         "summary": "Login user",
         "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
         "requestBody": {
@@ -253,6 +264,7 @@
     },
     "/logout": {
       "post": {
+        "operationId": "logout",
         "tags": [
           "authentication"
         ],
@@ -263,7 +275,6 @@
             ]
           }
         ],
-        "operationId": "logout",
         "summary": "Logout user",
         "description": "This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.",
         "requestBody": {
@@ -306,6 +317,7 @@
     },
     "/device_authentication_token": {
       "post": {
+        "operationId": "create_device_authentication_token",
         "tags": [
           "authentication"
         ],
@@ -322,7 +334,6 @@
             "$ref": "#/components/parameters/device_url"
           }
         ],
-        "operationId": "device_token",
         "summary": "Authenticate user",
         "description": "This endpoint will generate a new device authentication token.",
         "responses": {
@@ -356,6 +367,7 @@
     },
     "/users": {
       "get": {
+        "operationId": "list_users",
         "summary": "Get all users",
         "tags": [
           "user"
@@ -400,6 +412,7 @@
         }
       },
       "post": {
+        "operationId": "create_user",
         "summary": "Create new user",
         "tags": [
           "user"
@@ -453,6 +466,7 @@
     },
     "/users/{username}": {
       "get": {
+        "operationId": "get_user",
         "summary": "Get user by username",
         "tags": [
           "user"
@@ -499,6 +513,7 @@
         }
       },
       "patch": {
+        "operationId": "update_user",
         "summary": "Update user by username",
         "tags": [
           "user"
@@ -555,6 +570,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_user",
         "summary": "Delete user by username",
         "tags": [
           "user"
@@ -596,6 +612,7 @@
     },
     "/users/{username}/roles/{role_name}": {
       "put": {
+        "operationId": "add_role_to_user",
         "summary": "Add new role to user",
         "tags": [
           "user"
@@ -645,6 +662,7 @@
         }
       },
       "delete": {
+        "operationId": "remove_role_from_user",
         "summary": "Delete role from user",
         "tags": [
           "user"
@@ -689,6 +707,7 @@
     },
     "/identity": {
       "get": {
+        "operationId": "get_identity",
         "summary": "Get identity of yourself",
         "tags": [
           "identity"
@@ -730,6 +749,7 @@
         }
       },
       "patch": {
+        "operationId": "update_identity",
         "summary": "Update identity of yourself",
         "tags": [
           "identity"

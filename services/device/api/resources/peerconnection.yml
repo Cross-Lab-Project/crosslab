@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_peerconnection
   summary: View a peer connection
   tags:
     - peerconnection
@@ -26,6 +27,7 @@ get:
   parameters:
     - $ref: '../parameters/peerconnection_id.yml'
 delete:
+  operationId: delete_peerconnection
   summary: Delete a peer connection
   tags:
     - peerconnection

@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  operationId: send_signaling_message
   summary: Send signaling message to device
   tags:
     - device

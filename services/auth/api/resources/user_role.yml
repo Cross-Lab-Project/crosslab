@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 put:
+  operationId: add_role_to_user
   summary: Add new role to user
   tags:
     - user
@@ -27,6 +28,7 @@ put:
     500:
       description: Server Error.
 delete:
+  operationId: remove_role_from_user
   summary: Delete role from user
   tags:
     - user

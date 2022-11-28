@@ -18,8 +18,15 @@ allOf:
         type: array
         items:
           $ref: "../service_config.yml"
+          required:
+            - serviceType
+            - serviceId
+            - remoteServiceId
       tiebreaker:
         type: boolean
+      config:
+        type: object
+        additionalProperties: true
     required:
       - command
       - connectionType

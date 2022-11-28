@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_experiment
   summary: View an experiment.
   tags:
     - experiment
@@ -26,6 +27,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: update_experiment
   summary: Update an existing experiment.
   description: |
     With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
@@ -81,6 +83,7 @@ patch:
             410:
               description: The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference.
 delete:
+  operationId: delete_experiment
   summary: Delete an experiment
   tags:
     - experiment

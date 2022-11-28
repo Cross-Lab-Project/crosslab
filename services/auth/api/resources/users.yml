@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_users
   summary: Get all users
   tags:
     - user
@@ -24,6 +25,7 @@ get:
     500:
       description: Server Error.
 post:
+  operationId: create_user
   summary: Create new user
   tags:
     - user

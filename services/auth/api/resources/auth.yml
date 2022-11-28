@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: auth
   x-internal: true
   tags:
     - authentication
   security:
     - AccessToken: []
-  operationId: auth
   summary: Authenticate user
   description: |-
     This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.

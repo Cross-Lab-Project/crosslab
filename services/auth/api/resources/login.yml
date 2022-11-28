@@ -1,8 +1,10 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  operationId: login
   tags:
     - authentication
-  operationId: login
+  security:
+    - TuiAuth: []
   summary: Login user
   description: |-
     This endpoint will login a user and return an access token for the use of the microservice architecture.

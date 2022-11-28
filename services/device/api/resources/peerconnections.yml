@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_peerconnections
   summary: List Peer Connection
   tags:
     - peerconnection
@@ -24,6 +25,7 @@ get:
     500:
       description: Server Error.
 post:
+  operationId: create_peerconnection
   summary: Create a new Peer Connection
   tags:
     - peerconnection

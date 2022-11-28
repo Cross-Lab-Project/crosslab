@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  operationId: create_device_authentication_token
   tags:
     - authentication
   security:
@@ -8,7 +9,6 @@ post:
       - device_token:create
   parameters:
     - $ref: "../parameters/device_url.yml"
-  operationId: device_token
   summary: Authenticate user
   description: |-
     This endpoint will generate a new device authentication token.

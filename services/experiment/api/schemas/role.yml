@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: role
 type: object
 properties:
   name:
     type: string
-    description:
-      Name for an experiment role.
+    description: Name for an experiment role.
       #There are however a few magic role names:
       #* **base**: The members of this group are essential for the experiment. Whenever the #connection to any of these devices is lost, the experiment can't be continued. The base #group is always instantiated at the beginning of an experiment, and can only be #instantiated once.
       #* **user**: This role is used to collect all services used for user interaction. As a #user is free to join / leave an experiment at any time, the experiment can not rely on #these service connection been established. There also can be multiple connections of #these type.
