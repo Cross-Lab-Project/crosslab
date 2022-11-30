@@ -58,22 +58,20 @@ export function validate{{ operation.name | cap }}Input(
     {% if operation.parameters -%}
     if (parameters) {
         {%- for parameter in operation.parameters %}
-        if (!validate{{ parameter.name | formatName }}(parameters["{{ parameter.name }}"])) {
+        if (
+            {{ "parameters['" + parameter.name + "'] && " if not parameter.required -}}
+            !validate{{ parameter.name | formatName -}}(parameters["{{ parameter.name }}"])
+        ) {
             (validate{{ operation.name | cap }}Input as any).errors = (validate{{ parameter.name | formatName }} as any).errors
             return false
         }
         {%- endfor %}
     }
-    {%- if operation.parameters | selectattr("required") | length > 0 -%}
-    {{ "" }} else {
-        return false
-    }
-    {%- endif %}
 
     {% endif -%}
 
     {% if operation.requestBody -%}
-    if (!validate{{ operation.name | cap }}RequestBody(body)) {
+    if ({{ "body && " if not operation.requestBody.required -}}!validate{{ operation.name | cap }}RequestBody(body)) {
         (validate{{ operation.name | cap }}Input as any).errors = (validate{{ operation.name | cap }}RequestBody as any).errors
         return false
     }
@@ -94,17 +92,15 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
         {% if response.headers -%}
         if (response.headers) {
             {%- for header in response.headers %}
-            if (!validate{{ header.name }}(response.headers["{{ header.name }}"])) {
+            if (
+                {{ "response.headers['" + header.name + "'] && " if not header.required -}} 
+                !validate{{ header.name }}(response.headers["{{ header.name }}"])
+            ) {
                 (validate{{ operation.name | cap }}Output as any).errors = (validate{{ header.name }} as any).errors
                 return false
             }   
             {%- endfor %}
         }
-        {%- if response.headers | selectattr("required") | length > 0 -%}
-        {{ "" }} else {
-            return false
-        }
-        {%- endif %}
 
         {% endif -%}
         {% if response.schema -%}

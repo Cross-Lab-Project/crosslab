@@ -6,7 +6,7 @@ import {
     resolveSchemas,
     SimplifiedOperation,
 } from './resolve'
-import { schemaToTypeDeclaration } from './typings'
+import { destructureSchema, schemaToTypeDeclaration } from './typings'
 import { validation_filter } from './validation'
 import { FilterCollection } from '@cross-lab-project/openapi-codegen'
 import { format } from 'prettier'
@@ -46,8 +46,11 @@ function typeDeclaration_filter(
  * @param schema The schema for which to find the type dependencies.
  * @returns The found type dependencies.
  */
-function typeDependencies_filter(schema: OpenAPIV3_1.SchemaObject) {
-    return schemaToTypeDeclaration(schema).typeDependencies
+function typeDependencies_filter(
+    schema: OpenAPIV3_1.SchemaObject,
+    extendedSchemas: ExtendedSchema[] = []
+) {
+    return schemaToTypeDeclaration(schema, { context: extendedSchemas }).typeDependencies
 }
 
 /**
@@ -100,13 +103,16 @@ function unique_filter(array: any[]): any[] {
 /**
  * This function defines a filter which attempts to resolve the schemas of a given
  * OpenAPI document.
- * @param api The OpenAPI document for which to resolve the schemas
+ * @param api The OpenAPI document for which to resolve the schemas.
+ * @param isService 
+ * If true the UserType schema is added and method path will be used for 
+ * naming. Otherwise the operationId will be used for naming.
  * @returns
  * The resolved schemas with additional properties 'x-name', 'x-standalone'
- * and 'x-location'
+ * and 'x-location'.
  */
-function resolveSchemas_filter(api: OpenAPIV3_1.Document): ExtendedSchema[] {
-    return resolveSchemas(api)
+function resolveSchemas_filter(api: OpenAPIV3_1.Document, isService: boolean = true): ExtendedSchema[] {
+    return resolveSchemas(api, isService)
 }
 
 /**
@@ -192,6 +198,24 @@ function prettier_filter(string: string) {
     return format(string, { parser: 'typescript', tabWidth: 4 })
 }
 
+function endswith_filter(string: string, searchString: string | RegExp) {
+    if (typeof searchString === string)
+        return string.endsWith(searchString as string)
+    
+    const regex: RegExp = new RegExp(searchString)
+    return regex.test(string)
+}
+
+function destructureSchema_filter(
+    schema: OpenAPIV3_1.SchemaObject, 
+    options?: {
+        prefixTypes?: string,
+        context?: OpenAPIV3_1.SchemaObject[]
+    }
+) {
+    return destructureSchema(schema, options)
+}
+
 export const TypeScriptFilterCollection: FilterCollection = {
     name: 'typescript',
     filters: [
@@ -266,6 +290,14 @@ export const TypeScriptFilterCollection: FilterCollection = {
         {
             name: 'prettier',
             function: prettier_filter
+        },
+        {
+            name: 'endswith',
+            function: endswith_filter
+        },
+        {
+            name: 'destructureSchema',
+            function: destructureSchema_filter
         }
     ],
 }

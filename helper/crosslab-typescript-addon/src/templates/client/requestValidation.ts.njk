@@ -55,34 +55,35 @@ export namespace {{ serviceName | formatName }}RequestValidation {
 {%- for operation in operations %}
 {%- set basicValidation = (serviceName | formatName) + "BasicValidation" %}
 {%- set signatures = (serviceName | formatName) + "Signatures" %}
+{%- set low_name = operation.operationId | formatName(false) %}
+{%- set cap_name = operation.operationId | formatName() %}
     /**
-     * This function validates the inputs of a {{ operation.method | upper }} request on {{ operation.path }}
+     * This function validates the inputs to {{ low_name }}()
      */
-    export function validate{{ operation.name | cap }}Input(
-        {{- "parameters: " + signatures + "." + operation.name + "ParametersType" if operation.parameters -}}
+    export function validate{{ cap_name }}Input(
+        {{- "parameters: " + signatures + "." + cap_name + "Parameters" if operation.parameters -}}
         {{- ", " if (operation.parameters and operation.requestBody) -}}
-        {{- "body: " + signatures + "." + operation.name + "RequestBodyType" if operation.requestBody -}}
+        {{- "body: " + signatures + "." + cap_name + "Body" if operation.requestBody -}}
     ) {
         {% if operation.parameters -%}
         if (parameters) {
             {%- for parameter in operation.parameters %}
-            if (!{{ basicValidation }}.validate{{ parameter.name | formatName }}(parameters["{{ parameter.name }}"])) {
-                (validate{{ operation.name | cap }}Input as any).errors = ({{ basicValidation }}.validate{{ parameter.name | formatName }} as any).errors
+            if (
+                {{ "parameters['" + parameter.name + "'] && " if not parameter.required -}}
+                !{{ basicValidation }}.validate{{ parameter.name | formatName -}}
+                (parameters["{{ parameter.name }}"])
+            ) {
+                (validate{{ cap_name }}Input as any).errors = ({{ basicValidation }}.validate{{ parameter.name | formatName }} as any).errors
                 return false
             }
             {%- endfor %}
         }
-        {%- if operation.parameters | selectattr("required") | length > 0 -%}
-        {{ "" }} else {
-            return false
-        }
-        {%- endif %}
 
         {% endif -%}
 
         {% if operation.requestBody -%}
-        if (!{{ basicValidation }}.validate{{ operation.name | cap }}RequestBody(body)) {
-            (validate{{ operation.name | cap }}Input as any).errors = ({{ basicValidation }}.validate{{ operation.name | cap }}RequestBody as any).errors
+        if ({{ "body && " if not operation.requestBody.required -}}!{{ basicValidation }}.validate{{ cap_name }}Body(body)) {
+            (validate{{ cap_name }}Input as any).errors = ({{ basicValidation }}.validate{{ cap_name }}Body as any).errors
             return false
         }
 
@@ -92,9 +93,9 @@ export namespace {{ serviceName | formatName }}RequestValidation {
     }
 
     /**
-     * This function validates the outputs to a {{ operation.method | upper }} request on {{ operation.path }}
+     * This function validates the outputs of {{ low_name }}()
      */
-    export function validate{{ operation.name | cap }}Output(response: ResponseData): response is {{ signatures }}.{{ operation.name }}ResponseType {
+    export function validate{{ cap_name }}Output(response: ResponseData): response is {{ signatures }}.{{ cap_name }}Response {
         if (response.status < 100 || response.status >= 600) return false
 
         {% for response in operation.responses -%}
@@ -102,22 +103,21 @@ export namespace {{ serviceName | formatName }}RequestValidation {
             {% if response.headers -%}
             if (response.headers) {
                 {%- for header in response.headers %}
-                if (!{{ basicValidation }}.validate{{ operation.name | cap }}Header{{ header.name | formatName }}(response.headers["{{ header.name }}"])) {
-                    (validate{{ operation.name | cap }}Output as any).errors = ({{ basicValidation }}.validate{{ operation.name | cap }}Header{{ header.name | formatName }} as any).errors
+                if (
+                    {{ "response.headers['" + header.name + "'] && " if not header.required -}} 
+                    !{{ basicValidation }}.validate{{ cap_name }}{{ header.name | formatName -}}
+                    (response.headers["{{ header.name }}"])
+                ) {
+                    (validate{{ cap_name }}Output as any).errors = ({{ basicValidation }}.validate{{ cap_name }}{{ header.name | formatName }} as any).errors
                     return false
                 }   
                 {%- endfor %}
             }
-            {%- if response.headers | selectattr("required") | length > 0 -%}
-            {{ "" }} else {
-                return false
-            }
-            {%- endif %}
 
             {% endif -%}
             {% if response.schema -%}
-            if (!{{ basicValidation }}.validate{{ operation.name | cap }}Response{{ response.status }}(response.body)) {
-                (validate{{ operation.name | cap }}Output as any).errors = ({{ basicValidation }}.validate{{ operation.name | cap }}Response{{ response.status }} as any).errors
+            if (!{{ basicValidation }}.validate{{ cap_name }}Response{{ response.status }}(response.body)) {
+                (validate{{ cap_name }}Output as any).errors = ({{ basicValidation }}.validate{{ cap_name }}Response{{ response.status }} as any).errors
                 return false
             }
 
@@ -126,7 +126,7 @@ export namespace {{ serviceName | formatName }}RequestValidation {
         }
 
         {% endfor -%}
-        (validate{{ operation.name | cap }}Output as any).errors = `Response status ${response.status} is unexpected`
+        (validate{{ cap_name }}Output as any).errors = `Response status ${response.status} is unexpected`
 
         return false
     }

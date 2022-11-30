@@ -8,7 +8,7 @@
     {%- if operation.parameters -%}
         {%- for parameter in operation.parameters -%}
             {%- if parameter.schema -%}
-                {%- set typeDependencies = (typeDependencies.push(parameter.schema | typeDependencies), typeDependencies) -%}
+                {%- set typeDependencies = (typeDependencies.push(parameter.schema | typeDependencies(schemas)), typeDependencies) -%}
             {%- endif -%}
         {%- endfor -%}
     {%- endif -%}
@@ -16,14 +16,14 @@
     {%- if operation.requestBody -%}
         {%- set requestBody = operation.requestBody -%}
         {%- if requestBody.schema -%}
-            {%- set typeDependencies = (typeDependencies.push(requestBody.schema | typeDependencies), typeDependencies) -%}
+            {%- set typeDependencies = (typeDependencies.push(requestBody.schema | typeDependencies(schemas)), typeDependencies) -%}
         {%- endif -%}
     {%- endif -%}
 
     {%- if operation.responses -%}
         {%- for response in operation.responses -%}
             {%- if response.schema -%}
-                {%- set typeDependencies = (typeDependencies.push(response.schema | typeDependencies), typeDependencies) -%}
+                {%- set typeDependencies = (typeDependencies.push(response.schema | typeDependencies(schemas)), typeDependencies) -%}
             {%- endif -%}
         {%- endfor -%}
     {%- endif -%}

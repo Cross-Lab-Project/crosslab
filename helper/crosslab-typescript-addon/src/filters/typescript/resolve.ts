@@ -21,11 +21,13 @@ type SimplifiedParameter = {
     name: string
     required: boolean
     in: string
+    description?: string
     schema?: OpenAPIV3_1.SchemaObject
 }
 
 type SimplifiedRequestBody = {
     required: boolean
+    description?: string
     schema?: OpenAPIV3_1.SchemaObject
 }
 
@@ -37,6 +39,7 @@ type SimplifiedHeader = {
 
 type SimplifiedResponse = {
     status: number
+    description: string
     schema?: OpenAPIV3_1.SchemaObject
     headers?: SimplifiedHeader[]
 }
@@ -49,6 +52,9 @@ export type SimplifiedOperation = {
     serviceName: string
     operationId: string
     summary: string
+    destructureInput: boolean
+    buildUrl: boolean
+    optionalUrl: boolean
     security?: OpenAPIV3_1.SecurityRequirementObject[]
     parameters?: SimplifiedParameter[]
     requestBody?: SimplifiedRequestBody
@@ -81,7 +87,10 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     operationId: operation.operationId ?? "",
                     security: operation.security,
                     summary: operation.summary ?? "",
-                    external: (operation as any)["x-internal"] ? false : true
+                    external: (operation as any)["x-internal"] ? false : true,
+                    destructureInput: (operation as any)["x-destructure-input"] ?? false,
+                    buildUrl: (operation as any)["x-build-url"] ?? false,
+                    optionalUrl: (operation as any)["x-optional-url"] ?? false,
                 }
 
                 // Search for parameters to add
@@ -92,15 +101,16 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     for (const parameter of parameters) {
                         if (!simplifiedOperation.parameters)
                             simplifiedOperation.parameters = []
-                        const SimplifiedParameter: SimplifiedParameter = {
+                        const simplifiedParameter: SimplifiedParameter = {
                             name: parameter.name,
                             required: parameter.required ?? false,
                             in: parameter.in,
+                            description: parameter.description,
                             schema: parameter.schema as
                                 | OpenAPIV3_1.SchemaObject
                                 | undefined,
                         }
-                        simplifiedOperation.parameters.push(SimplifiedParameter)
+                        simplifiedOperation.parameters.push(simplifiedParameter)
                     }
                 }
 
@@ -110,6 +120,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     | undefined
                 if (requestBody) {
                     simplifiedOperation.requestBody = {
+                        description: requestBody.description,
                         required: requestBody.required ?? false,
                     }
                     const content = requestBody.content
@@ -128,6 +139,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     const response = responses[status] as OpenAPIV3_1.ResponseObject
                     const simplifiedResponse: SimplifiedResponse = {
                         status: parseInt(status),
+                        description: response.description
                     }
                     // Add schema of response if present
                     if ('content' in response) {
@@ -169,15 +181,18 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
 /**
  * This function tries to resolve the Schemas of a given OpenAPI document.
  * @param api The OpenAPI document for which to resolve the Schemas.
+ * @param isService 
+ * If true the UserType schema is added and method path will be used for 
+ * naming. Otherwise the operationId will be used for naming.
  * @returns
  * The resolved Schemas with additional properties 'x-name', 'x-standalone'
  * and 'x-location'
  */
-export function resolveSchemas(api: OpenAPIV3_1.Document, addUserType: boolean = true): ExtendedSchema[] {
+export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = true): ExtendedSchema[] {
     const extendedSchemas: ExtendedSchema[] = []
 
     // Add UserType schema
-    if (addUserType)
+    if (isService)
         extendedSchemas.push({
             ...userTypeSchema,
             'x-standalone': true,
@@ -239,7 +254,9 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, addUserType: boolean =
                         extendedSchemas.push({
                             ...schema,
                             'x-standalone': false,
-                            'x-name': formatMethodPath(path, method) + 'RequestBody',
+                            'x-name': isService ? 
+                                formatMethodPath(path, method) + 'RequestBody' :
+                                formatName(operation.operationId ?? "", false) + 'Body',
                             'x-location': `#/paths/${path}/${method}/requestBody/content/application/json/schema`,
                             'x-service-name': (operation as any)['x-service-name']
                         })
@@ -258,9 +275,12 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, addUserType: boolean =
                                 extendedSchemas.push({
                                     ...schema,
                                     'x-standalone': false,
-                                    'x-name':
+                                    'x-name': isService ?
                                         formatMethodPath(path, method) +
                                         'Response' +
+                                        status :
+                                        formatName(operation.operationId ?? "", false) + 
+                                        'Response' + 
                                         status,
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/content/application/json/schema`,
                                     'x-service-name': (operation as any)['x-service-name']
@@ -275,9 +295,11 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, addUserType: boolean =
                                 extendedSchemas.push({
                                     ...schema,
                                     'x-standalone': false,
-                                    'x-name':
+                                    'x-name': isService ?
                                         formatMethodPath(path, method) +
                                         'Header' +
+                                        formatName(headerName):
+                                        formatName(operation.operationId ?? "", false) +
                                         formatName(headerName),
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/headers/${headerName}/schema`,
                                     'x-service-name': (operation as any)["x-service-name"]

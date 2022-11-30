@@ -1,5 +1,5 @@
 {%- macro generateSignatures() -%}
-{%- set unsortedSchemas = (api | resolveSchemas) -%}
+{%- set unsortedSchemas = (api | resolveSchemas(false)) -%}
 {%- set sortedSchemas = unsortedSchemas | sortByAttribute("x-service-name") -%}
 {%- set typeDependencies = ["SuccessResponse", "ErrorResponse"] -%}
 {%- set unsortedOperations = (api | resolveOperations) -%}
@@ -49,6 +49,8 @@ import {
  */
 export namespace {{ serviceName | formatName }}Signatures {
     {%- for operation in operations %}
+    {%- set low_name = operation.operationId | formatName(false) %}
+    {%- set cap_name = operation.operationId | formatName %}
     {%- set types = (serviceName | formatName) + "Types" %}
     {%- set success_responses = [] -%}
     {%- set error_responses = [] -%}
@@ -56,9 +58,9 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- if operation.responses -%}
         {%- for response in operation.responses -%}
             {%- if response.status | int < 400 -%}
-                {%- set success_responses = (success_responses.push(operation.name + response.status + "ResponseType"), success_responses) -%}
+                {%- set success_responses = (success_responses.push(cap_name + "Response" + response.status), success_responses) -%}
             {%- else -%}
-                {%- set error_responses = (error_responses.push(operation.name + response.status + "ResponseType"), error_responses) -%}
+                {%- set error_responses = (error_responses.push(cap_name + "Response" + response.status), error_responses) -%}
             {%- endif -%}
         {%- endfor -%}
     {%- endif %}
@@ -73,9 +75,10 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- endif -%}
     
     /**
-     * Typing for the parameters of a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for the parameters of the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export type {{ operation.name }}ParametersType = {
+    export type {{ cap_name }}Parameters = {
         {% for parameter in operation.parameters -%}
             {%- set temp = '"' + parameter.name + '"' -%}
             {%- set temp = temp + ("?" if not parameter.required) + ": " -%}
@@ -95,9 +98,10 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- endif -%}
 
     /**
-     * Typing for the request body of a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for the body of the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export type {{ operation.name }}RequestBodyType = 
+    export type {{ cap_name }}Body = 
         {{- " " + operation.requestBody.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixTypes": types + "." }) | indent(4) if operation.requestBody.schema}}
         {{- " | undefined" if not operation.requestBody.required }}
     {%- endif %}
@@ -111,27 +115,30 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- endif -%}
 
     /**
-     * Typing for all possible responses to a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for all possible responses to the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export type {{ operation.name }}ResponseType = 
-        {{- " " + operation.name + "SuccessResponseType" if success_responses | length > 0 }}
+    export type {{ cap_name }}Response = 
+        {{- " " + cap_name + "SuccessResponse" if success_responses | length > 0 }}
         {{- " |" if success_responses | length > 0 and error_responses | length > 0 }}
-        {{- " " + operation.name + "ErrorResponseType" if error_responses | length > 0 }}
+        {{- " " + cap_name + "ErrorResponse" if error_responses | length > 0 }}
 
     {%- if success_responses | length > 0 %}
 
     /**
-     * Typing for all successful responses to a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for all successful responses to the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export type {{ operation.name }}SuccessResponseType = {{ success_responses | join(" | ") }}
+    export type {{ cap_name }}SuccessResponse = {{ success_responses | join(" | ") }}
     {%- endif %}
 
     {%- if error_responses | length > 0 %}
 
     /**
-     * Typing for all error responses to a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for all error responses to the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" | ") }}
+    export type {{ cap_name }}ErrorResponse = {{ error_responses | join(" | ") }}
     {%- endif %}
     {%- endif %}
 
@@ -143,9 +150,10 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- endif %}
 
     /**
-     * Typing for a response with status {{ response.status }} to a {{ operation.method | upper }} request on {{ operation.path }}
+     * Typing for a response with status {{ response.status }} to the request made by {{ low_name }}()
+     * @category {{ low_name }}()
      */
-    export interface {{ operation.name }}{{ response.status }}ResponseType extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
+    export interface {{ cap_name }}Response{{ response.status }} extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
         status: {{ response.status }}
         headers{{ "?" if not response.headers }}: {
             {% for header in response.headers -%}

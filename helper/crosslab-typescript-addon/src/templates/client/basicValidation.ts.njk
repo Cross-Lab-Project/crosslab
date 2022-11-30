@@ -1,4 +1,4 @@
-{%- set unsortedSchemas = (api | resolveSchemas) -%}
+{%- set unsortedSchemas = (api | resolveSchemas(false)) -%}
 {%- set sortedSchemas = unsortedSchemas | sortByAttribute('x-service-name') -%}
 //@ts-nocheck
 /**

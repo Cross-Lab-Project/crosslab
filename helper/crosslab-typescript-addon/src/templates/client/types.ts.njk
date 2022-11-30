@@ -1,5 +1,5 @@
 {%- macro generateTypes() -%}
-{%- set unsortedSchemas = (api | resolveSchemas) -%}
+{%- set unsortedSchemas = (api | resolveSchemas(false)) -%}
 {%- set sortedSchemas = unsortedSchemas | sortByAttribute('x-service-name') -%}
 {%- set securitySchemes = [] -%}
 {%- set validationDependencies = [] -%}
@@ -24,13 +24,19 @@ import {
 
 {% endif -%}
 
+/**
+ * @internal
+ */
 export interface RequestInfo {
     method?: "GET" | "POST" | "PUT" | "DELETE" | "TRACE" | "OPTIONS" | "PATCH" | "HEAD"
     body?: string
     headers?: [string, string][]
 }
 
-export type FetchFunction = (url: string, info?: RequestInfo) => ResponseData
+/**
+ * @internal
+ */
+export type FetchFunction = (url: string, info?: RequestInfo) => Promise<ResponseData> | ResponseData
 
 export interface ResponseData {
     status: number,
@@ -48,70 +54,18 @@ export interface ErrorResponse extends ResponseData {
     success?: false
 }
 
+/**
+ * @internal
+ */
 export function isSuccessResponse(response: ResponseData): response is SuccessResponse {
     return response.status < 400
 }
 
+/**
+ * @internal
+ */
 export function isErrorResponse(response: ResponseData): response is ErrorResponse {
     return response.status >= 400
-}
-
-/**
- * This error class should be used if an error occurs during validation of a request/response.
- */
-export class ValidationError extends Error {
-    public errors: any
-
-    constructor(message: string, errors: any) {
-        super(message)
-        this.name = "ValidationError"
-        this.errors = errors
-    }
-}
-
-/**
- * This error class should be used if an error occurs while fetching a request.
- */
-export class FetchError extends Error {
-    constructor(message: string) {
-        super(message)
-        this.name = "FetchError"
-    }
-}
-
-/**
- * This error class should be used if the response of the server has a status greater than or equal to 400.
- * This error should contain the validated response.
- */
-export class UnsuccessfulRequestError extends Error {
-    public response: ResponseData
-
-    constructor(message: string, response: ResponseData) {
-        super(message)
-        this.response = response
-        this.name = 'UnsuccessfulRequestError'
-    }
-}
-
-/**
- * This error class should be used if the validation of an url fails.
- */
-export class InvalidUrlError extends Error {
-    constructor(message: string) {
-        super(message)
-        this.name = 'InvalidUrlError'
-    }
-}
-
-export async function parseResponse(response: Response): Promise<ResponseData> {
-    let text = null
-    try {
-        text = await response.text()
-        const json = JSON.parse(text)
-        return { status: response.status, body: json }
-    } catch {
-        return { status: response.status, body: text }
-    }
 }
 
 /**

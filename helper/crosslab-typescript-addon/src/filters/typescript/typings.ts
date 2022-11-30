@@ -1,6 +1,77 @@
 import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName } from './format'
 
+interface DestructuredProperty {
+    name: string
+    declaration: string
+    required: boolean
+    description?: string
+    top: boolean
+}
+
+type DestructuredSchema = DestructuredProperty[]
+
+/**
+ * Destructures a schema
+ * @param schema The schema to be destructured
+ * @param options.context
+ * Other schemas which can be used to determine a changed required property
+ * @param options.prefixTypes
+ * The prefix that should be appended to directly resolved types
+ * @returns Properties of provided schema
+ */
+export function destructureSchema(
+    schema: OpenAPIV3_1.SchemaObject, 
+    options?: {
+        prefixTypes?: string
+        context?: OpenAPIV3_1.SchemaObject[]
+    },
+    first: boolean = true
+): DestructuredSchema {
+    const destructuredSchema: DestructuredSchema = []
+
+    if (schema.type === "array" && first) {
+        destructuredSchema.push({
+            name: formatName(schema.title ?? "default", false),
+            description: schema.description,
+            declaration: schemaToTypeDeclaration(schema, {
+                inline: true,
+                resolveDirectly: false,
+                context: options?.context,
+                prefixTypes: options?.prefixTypes
+            }).typeDeclaration,
+            required: true,
+            top: true
+        })
+    }
+
+    if (schema.allOf) {
+        for (const s of (schema.allOf as OpenAPIV3_1.SchemaObject[])) {
+            destructuredSchema.push(...destructureSchema(s, options, false))
+        }
+    }
+
+    if (schema.properties) {
+        for (const propertyName in schema.properties) {
+            const property = schema.properties[propertyName] as OpenAPIV3_1.SchemaObject
+            destructuredSchema.push({
+                name: propertyName,
+                description: property.description,
+                declaration: schemaToTypeDeclaration(property, {
+                    inline: true,
+                    resolveDirectly: true,
+                    context: options?.context,
+                    prefixTypes: options?.prefixTypes
+                }).typeDeclaration,
+                required: schema.required ? schema.required.includes(propertyName) : false,
+                top: false
+            })
+        }
+    }
+
+    return destructuredSchema
+}
+
 /**
  * resolves the type declaration and type dependencies of a schema
  * @param schema
@@ -58,10 +129,12 @@ export function schemaToTypeDeclaration(
                 }
             }
         }
-        return {
-            typeDeclaration: prefix + prefixTypes + formatName(schema.title) + suffix,
-            typeDependencies: [formatName(schema.title)],
-            comment: comment,
+        if (options.context.find(s => s.title === schema.title && (s as any)['x-standalone'])) {
+            return {
+                typeDeclaration: prefix + prefixTypes + formatName(schema.title) + suffix,
+                typeDependencies: [formatName(schema.title)],
+                comment: comment,
+            }
         }
     }
 
