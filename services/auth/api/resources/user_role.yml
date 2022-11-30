@@ -13,7 +13,7 @@ put:
     - $ref: "../parameters/role_name.yml"
   responses:
     200:
-      description: The JSON representation of the updated user
+      description: The JSON representation of the updated user.
       content:
         application/json:
           $ref: "../content/user.yml"
@@ -27,6 +27,7 @@ put:
       description: Resource not found.
     500:
       description: Server Error.
+  x-build-url: true
 delete:
   operationId: remove_role_from_user
   summary: Delete role from user
@@ -41,7 +42,7 @@ delete:
     - $ref: "../parameters/role_name.yml"
   responses:
     204:
-      description: Role deleted successfully from user
+      description: Role deleted successfully from user.
     400:
       description: Bad Request.
     401:
@@ -52,3 +53,4 @@ delete:
       description: Resource not found.
     500:
       description: Server Error.
+  x-build-url: true

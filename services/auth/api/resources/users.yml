@@ -10,7 +10,7 @@ get:
       - users:list
   responses:
     200:
-      description: The JSON representation of the users
+      description: The JSON representation of the users.
       content:
         application/json:
           $ref: "../content/user_list.yml"
@@ -24,6 +24,7 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
   operationId: create_user
   summary: Create new user
@@ -34,13 +35,13 @@ post:
       - users
       - users:create
   requestBody:
-    description: User to be created
+    description: User to be created.
     content:
       application/json:
         $ref: "../content/user.yml"
   responses:
     201:
-      description: The JSON representation of the created user
+      description: The JSON representation of the created user.
       content:
         application/json:
           $ref: "../content/user.yml"
@@ -54,3 +55,4 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true

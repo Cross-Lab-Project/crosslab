@@ -13,7 +13,7 @@ get:
         - device:list
   responses:
     200:
-      description: The JSON Representation of the device
+      description: The JSON Representation of the device.
       content:
         application/json:
           $ref: "../content/device_response.yml"
@@ -40,13 +40,13 @@ patch:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/device_changed_url.yml"
   requestBody:
-    description: Update the device
+    description: Updated device.
     content:
       application/json:
         $ref: "../content/device_body.yml"
   responses:
     200:
-      description: The JSON Representation of the changed device
+      description: The JSON Representation of the changed device.
       content:
         application/json:
           $ref: "../content/device_response.yml"
@@ -87,7 +87,7 @@ delete:
     - $ref: "../parameters/device_id.yml"
   responses:
     204:
-      description: The device was deleted
+      description: The device was deleted.
     400:
       description: Bad Request.
     401:
@@ -100,7 +100,7 @@ delete:
       description: Server Error.
 post:
   operationId: instantiate_device
-  summary: Create an instance of a cloud instantiable device
+  summary: Instantiate a cloud instantiable device
   tags:
     - device
   security:
@@ -112,7 +112,7 @@ post:
     - $ref: "../parameters/device_changed_url.yml"
   responses:
     201:
-      description: The JSON Representation of the created instance
+      description: The JSON Representation of the created instance.
       content:
         application/json:
           $ref: "../content/device_instantiated.yml"

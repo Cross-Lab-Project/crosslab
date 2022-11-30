@@ -24,6 +24,7 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
   operationId: create_update
   tags:
@@ -34,6 +35,7 @@ post:
       - update:create
   summary: Create new update information
   requestBody:
+    description: The update to be created.
     required: true
     content:
       application/json:
@@ -54,3 +56,4 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true

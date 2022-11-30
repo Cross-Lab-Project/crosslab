@@ -10,7 +10,7 @@ get:
       - peerconnection:list
   responses:
     200:
-      description: The JSON Representation of the device peer connection
+      description: The JSON Representation of the device peer connection.
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
@@ -37,7 +37,7 @@ delete:
       - peerconnection:create
   responses:
     204:
-      description: The peer connection was deleted successfully
+      description: The peer connection was deleted successfully.
     400:
       description: Bad Request.
     401:

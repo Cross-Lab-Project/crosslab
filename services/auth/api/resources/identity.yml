@@ -10,7 +10,7 @@ get:
       - identity:list
   responses:
     200:
-      description: The JSON representation of the corresponding user
+      description: The JSON representation of the corresponding user.
       content: 
         application/json:
           $ref: "../content/user.yml"
@@ -34,13 +34,13 @@ patch:
       - identity
       - identity:edit
   requestBody:
-    description: Updated identity
+    description: Updated identity.
     content:
       application/json:
         $ref: "../content/user.yml"
   responses:
     200:
-      description: The JSON representation of the updated user
+      description: The JSON representation of the updated user.
       content:
         application/json:
           $ref: "../content/user.yml"

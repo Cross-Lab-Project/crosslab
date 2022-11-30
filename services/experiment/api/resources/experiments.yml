@@ -24,6 +24,7 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
   operationId: create_experiment
   summary: Create a new experiment
@@ -34,6 +35,7 @@ post:
       - experiment
       - experiment:create
   requestBody:
+    description: The experiment to be created.
     required: true
     content:
       application/json:
@@ -59,3 +61,4 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true

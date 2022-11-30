@@ -12,9 +12,11 @@ post:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/peerconnection_url.yml"
   requestBody:
+    description: The signaling message to be sent.
     content:
       application/json:
         schema:
+          title: Sig Message
           anyOf:
             - $ref: "../schemas/messages/create_peerconnection_message.yml"
             - $ref: "../schemas/messages/close_peerconnection_message.yml"
@@ -22,7 +24,7 @@ post:
     required: true
   responses:
     200:
-      description: The signaling message was delivered successfully
+      description: The signaling message was delivered successfully.
     400:
       description: Bad Request.
     401:

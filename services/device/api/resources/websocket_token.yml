@@ -12,7 +12,7 @@ post:
     - $ref: "../parameters/device_id.yml"
   responses:
     200:
-      description: The newly generated websocket token for the device
+      description: The newly generated websocket token for the device.
       content:
         application/json:
           schema:

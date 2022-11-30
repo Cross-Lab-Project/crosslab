@@ -10,7 +10,7 @@ get:
         - device:list
   responses:
     200:
-      description: The list of all devices
+      description: The list of all devices.
       content:
         application/json:
           $ref: "../content/device_list.yml"
@@ -24,6 +24,7 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
   operationId: create_device
   summary: Create a new device
@@ -36,6 +37,7 @@ post:
   parameters:
     - $ref: "../parameters/device_changed_url.yml"
   requestBody:
+    description: The device to be created.
     required: true
     content:
       application/json:
@@ -70,3 +72,4 @@ post:
               description: The event was successfully processed.
             410:
               description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+  x-optional-url: true

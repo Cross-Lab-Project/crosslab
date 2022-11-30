@@ -617,7 +617,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all devices",
+            "description": "The list of all devices.",
             "content": {
               "application/json": {
                 "schema": {
@@ -644,7 +644,8 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
         "operationId": "create_device",
@@ -666,10 +667,12 @@
           }
         ],
         "requestBody": {
+          "description": "The device to be created.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
                     "allOf": [
@@ -1004,7 +1007,8 @@
               }
             }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/devices/{device_id}": {
@@ -1032,7 +1036,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device",
+            "description": "The JSON Representation of the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1197,10 +1201,11 @@
           }
         ],
         "requestBody": {
-          "description": "Update the device",
+          "description": "Updated device.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
                     "allOf": [
@@ -1339,7 +1344,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed device",
+            "description": "The JSON Representation of the changed device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1558,7 +1563,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The device was deleted"
+            "description": "The device was deleted."
           },
           "400": {
             "description": "Bad Request."
@@ -1579,7 +1584,7 @@
       },
       "post": {
         "operationId": "instantiate_device",
-        "summary": "Create an instance of a cloud instantiable device",
+        "summary": "Instantiate a cloud instantiable device",
         "tags": [
           "device"
         ],
@@ -1601,7 +1606,7 @@
         ],
         "responses": {
           "201": {
-            "description": "The JSON Representation of the created instance",
+            "description": "The JSON Representation of the created instance.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1700,9 +1705,12 @@
           }
         ],
         "requestBody": {
+          "description": "The availability rules to be applied.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Availability Rules",
+                "description": "The availability rule to be applied.",
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/availability_rule"
@@ -1749,7 +1757,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed availability",
+            "description": "The JSON Representation of the changed availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1798,7 +1806,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The newly generated websocket token for the device",
+            "description": "The newly generated websocket token for the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1849,9 +1857,11 @@
           }
         ],
         "requestBody": {
+          "description": "The signaling message to be sent.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Sig Message",
                 "anyOf": [
                   {
                     "$ref": "#/components/schemas/create_peerconnection_message"
@@ -1870,7 +1880,7 @@
         },
         "responses": {
           "200": {
-            "description": "The signaling message was delivered successfully"
+            "description": "The signaling message was delivered successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -1907,7 +1917,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all peerconnection.",
+            "description": "The list of all peerconnections.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1934,7 +1944,8 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
         "operationId": "create_peerconnection",
@@ -1959,6 +1970,7 @@
           }
         ],
         "requestBody": {
+          "description": "The peerconnection to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -1970,7 +1982,7 @@
         },
         "responses": {
           "201": {
-            "description": "The peer connection was created. A JSON representation of the new peer connection is returned.",
+            "description": "The peerconnection was created. A JSON representation of the new peer connection is returned.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2086,7 +2098,8 @@
               }
             }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/peerconnections/{peerconnection_id}": {
@@ -2106,7 +2119,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device peer connection",
+            "description": "The JSON Representation of the device peer connection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2153,7 +2166,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The peer connection was deleted successfully"
+            "description": "The peer connection was deleted successfully."
           },
           "400": {
             "description": "Bad Request."

@@ -18,7 +18,7 @@ post:
           properties:
             token:
               type: string
-              description: The token to be invalidated
+              description: The token to be invalidated.
   responses:
     200:
       description: Successfully logged out the user.
@@ -32,3 +32,4 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
+  x-destructure-input: true

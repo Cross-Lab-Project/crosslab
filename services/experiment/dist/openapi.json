@@ -243,7 +243,8 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
         "operationId": "create_experiment",
@@ -260,6 +261,7 @@
           }
         ],
         "requestBody": {
+          "description": "The experiment to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -305,7 +307,8 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/experiments/{experiment_id}": {

@@ -12,7 +12,7 @@ get:
     - $ref: "../parameters/username.yml"
   responses:
     200:
-      description: The JSON respresentation of the user
+      description: The JSON respresentation of the user.
       content:
         application/json:
           $ref: "../content/user.yml"
@@ -44,7 +44,7 @@ patch:
         $ref: "../content/user.yml"
   responses:
     200:
-      description: The JSON representation of the updated user
+      description: The JSON representation of the updated user.
       content:
         application/json:
           $ref: "../content/user.yml"

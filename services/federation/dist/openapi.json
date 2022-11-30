@@ -123,7 +123,8 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
         "operationId": "create_institution",
@@ -140,6 +141,7 @@
           }
         ],
         "requestBody": {
+          "description": "The institution to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -175,13 +177,14 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/institutions/{institution_id}": {
       "get": {
         "operationId": "get_institution",
-        "summary": "View a institution.",
+        "summary": "View an institution.",
         "tags": [
           "institution"
         ],
@@ -285,7 +288,7 @@
       },
       "delete": {
         "operationId": "delete_institution",
-        "summary": "Delete a institution",
+        "summary": "Delete an institution",
         "tags": [
           "institution"
         ],

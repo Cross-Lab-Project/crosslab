@@ -10,7 +10,7 @@ get:
       - peerconnection:list
   responses:
     200:
-      description: The list of all peerconnection.
+      description: The list of all peerconnections.
       content:
         application/json:
           $ref: '../content/peerconnection_list.yml'
@@ -24,6 +24,7 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
   operationId: create_peerconnection
   summary: Create a new Peer Connection
@@ -37,13 +38,14 @@ post:
     - $ref: '../parameters/closed_url.yml'
     - $ref: '../parameters/status_changed_url.yml'
   requestBody:
+    description: The peerconnection to be created.
     required: true
     content:
       application/json:
         $ref: '../content/peerconnection.yml'
   responses:
     201:
-      description: The peer connection was created. A JSON representation of the new peer connection is returned.
+      description: The peerconnection was created. A JSON representation of the new peer connection is returned.
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
@@ -87,3 +89,4 @@ post:
               description: The event was successfully processed.
             410:
               description: The callback is no longer required.
+  x-optional-url: true

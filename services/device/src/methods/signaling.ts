@@ -22,7 +22,7 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
         ...common,
         services: peerconnection.deviceA.config
-            ? peerconnection.deviceA.config.map(formatServiceConfig)
+            ? peerconnection.deviceA.config.map(formatServiceConfig) as any
             : [],
         tiebreaker: false,
     }
@@ -30,7 +30,7 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
         ...common,
         services: peerconnection.deviceB.config
-            ? peerconnection.deviceB.config.map(formatServiceConfig)
+            ? peerconnection.deviceB.config.map(formatServiceConfig) as any
             : [],
         tiebreaker: true,
     }

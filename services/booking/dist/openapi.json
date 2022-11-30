@@ -43,9 +43,11 @@
         ],
         "summary": "Returns the free / booked times for given experiment.",
         "requestBody": {
+          "description": "Requested experiment and timeframe.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Schedule Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -152,7 +154,8 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/booking": {
@@ -168,9 +171,11 @@
         ],
         "summary": "Books an experiment.",
         "requestBody": {
+          "description": "Experiment, timeframe and type of booking.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Booking Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -233,12 +238,13 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/booking/{ID}": {
       "patch": {
-        "operationId": "add_devices_to_booking",
+        "operationId": "update_booking",
         "security": [
           {
             "JWT": []
@@ -254,9 +260,11 @@
         ],
         "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
         "requestBody": {
+          "description": "Devices or callback to be added to the booking.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Devices or Callback",
                 "anyOf": [
                   {
                     "type": "object",
