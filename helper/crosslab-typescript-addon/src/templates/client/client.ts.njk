@@ -419,6 +419,10 @@ export class APIClient {
         {%- endset -%}
     {%- endif -%}
 
+    {%- set input = ("" if low_name == "logout" else input) -%}
+    {%- set params = ("" if low_name == "logout" else params) -%}
+    {%- set body = ("const body: AuthenticationServiceSignatures.LogoutBody = { token: this._accessToken }" if low_name == "logout" else body) -%}
+
     /**
      * {{ operation.summary }} {{ ("\n\t * " if params) + params }}
      *
@@ -508,6 +512,7 @@ export class APIClient {
             )
         
         {{ "this._accessToken = response.body" if low_name == "login" }}
+        {{- "this._accessToken = ''" if low_name == "logout" }}
 
         {%- if successResponses | selectattr("schema") | length > 0 and low_name != "login" %}
 
