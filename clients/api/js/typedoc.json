@@ -15,6 +15,6 @@
     "categorizeByGroup": false,
     "categoryOrder": ["Constructors", "Accessors", "*"],
     "disableSources": true,
-    "plugin": ["@cross-lab-project/documentation-theme"],
+    "plugin": ["@cross-lab-project/tsdoc-theme"],
     "theme": "crosslab"
 }
