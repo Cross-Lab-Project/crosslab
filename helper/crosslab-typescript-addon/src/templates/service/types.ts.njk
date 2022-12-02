@@ -88,9 +88,10 @@ export class ValidationError extends ErrorWithStatus {
 
 {{ schemas | standaloneTypings }}
 
-{% for schema in schemas | selectattr("x-typeguard") -%}
+{%- for schema in schemas | selectattr("x-typeguard") | select("attrequalto", ["x-standalone", true]) %}
+
 export function is{{ schema["x-name"] }}(obj: any): obj is {{ schema["x-name"] }} {
-    return validate{{ schema["x-name"] }}(obj)
+    return {{ schema["x-service-name"] | formatName }}BasicValidation.validate{{ schema["x-name"] }}(obj)
 }
 {%- endfor %}
 {%- endmacro -%}
