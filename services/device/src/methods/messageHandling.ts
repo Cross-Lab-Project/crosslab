@@ -37,8 +37,8 @@ async function handleSignalingMessage(
     try {
         await apiClient.sendSignalingMessage(
             peerDeviceUrl,
-            message.connectionUrl,
-            message
+            message,
+            message.connectionUrl
         )
     } catch (error) {
         console.error(

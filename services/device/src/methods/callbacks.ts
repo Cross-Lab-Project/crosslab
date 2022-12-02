@@ -1,6 +1,5 @@
 import express from 'express'
 import {
-    MalformedBodyError,
     isConcreteDevice,
     isDeviceGroup,
     isInstantiableBrowserDevice,
@@ -8,7 +7,7 @@ import {
 } from '../generated/types'
 import { pendingPeerconnections } from '../globals'
 import { DeviceOverviewModel, PeerconnectionModel } from '../model'
-import { InvalidValueError } from '../types/errors'
+import { InvalidValueError, MalformedBodyError } from '../types/errors'
 import { formatDevice, formatPeerconnection } from './database/format'
 import { startSignaling } from './signaling'
 

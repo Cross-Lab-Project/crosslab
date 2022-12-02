@@ -79,3 +79,23 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
         this.name = 'DeviceNotConnectedError'
     }
 }
+
+/**
+ * This error class should be used if an error occurs during JWT verification.
+ */
+ export class JWTVerificationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "JWTVerificationError"
+    }
+}
+
+/**
+ * This error class should be used if the body of a request is malformed.
+ */
+ export class MalformedBodyError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedBodyError"
+    }
+}

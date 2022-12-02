@@ -8,7 +8,7 @@
         "openapi-bundle": "npx @redocly/openapi-cli bundle ./api/openapi.yml --output dist/openapi.json",
         "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
         "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-        "build-generate-code": "npx openapi-codegen server dist/openapi.json",
+        "build-generate-code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
         "build-compile": "tsc",
         "build": "npm run build-generate-code && npm run build-compile",
         "start": "node dist/index.js",
@@ -18,7 +18,8 @@
     "author": "Johannes Nau",
     "license": "UNLICENSED",
     "devDependencies": {
-        "@cross-lab-project/openapi-codegen": "^0.0.34",
+        "@cross-lab-project/openapi-codegen": "^0.1.0",
+        "@cross-lab-project/codegen-typescript-addon": "^0.0.4", 
         "@types/body-parser": "^1.19.2",
         "@types/express": "^4.17.13",
         "@types/node": "^18.0.3",
@@ -30,7 +31,7 @@
         "prettier": "^2.7.1"
     },
     "dependencies": {
-        "@cross-lab-project/api-client": "^0.0.25",
+        "@cross-lab-project/api-client": "^0.1.0",
         "ajv-formats": "^2.1.1",
         "body-parser": "^1.20.0",
         "express": "^4.18.1",

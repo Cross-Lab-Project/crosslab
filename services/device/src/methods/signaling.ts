@@ -37,14 +37,14 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
 
     await apiClient.sendSignalingMessage(
         peerconnection.deviceA.url,
-        peerconnectionUrlFromId(peerconnection.uuid),
-        createPeerConnectionMessageA
+        createPeerConnectionMessageA,
+        peerconnectionUrlFromId(peerconnection.uuid)
     )
 
     await apiClient.sendSignalingMessage(
         peerconnection.deviceB.url,
-        peerconnectionUrlFromId(peerconnection.uuid),
-        createPeerConnectionMessageB
+        createPeerConnectionMessageB,
+        peerconnectionUrlFromId(peerconnection.uuid)
     )
 
     // NOTE: this behaviour should maybe be changed later on
