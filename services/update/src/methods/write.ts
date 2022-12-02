@@ -11,6 +11,6 @@ export function writeUpdateInformation(
     updateInformation: UpdateInformation
 ) {
     updateInformationModel.device_id = updateInformation.device_id
-    updateInformationModel.newest_version = updateInformation.newest_version
-    updateInformationModel.newest_version_link = updateInformation.newest_version_link
+    updateInformationModel.latest_version = updateInformation.latest_version
+    updateInformationModel.latest_version_link = updateInformation.latest_version_link
 }

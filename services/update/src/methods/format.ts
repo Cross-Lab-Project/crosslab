@@ -11,7 +11,7 @@ export function formatUpdateInformation(
 ): UpdateInformation {
     return {
         device_id: updateInformationModel.device_id,
-        newest_version: updateInformationModel.newest_version,
-        newest_version_link: updateInformationModel.newest_version_link,
+        latest_version: updateInformationModel.latest_version,
+        latest_version_link: updateInformationModel.latest_version_link,
     }
 }

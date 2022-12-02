@@ -63,11 +63,11 @@ export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parame
         )
     }
 
-    if (parameters.current_version !== updateInformation.newest_version) {
+    if (parameters.current_version !== updateInformation.latest_version) {
         return {
             status: 303,
             headers: {
-                Location: updateInformation.newest_version_link,
+                Location: updateInformation.latest_version_link,
             },
         }
     }

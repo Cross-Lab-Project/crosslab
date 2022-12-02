@@ -5,7 +5,7 @@ export class UpdateInformationModel {
     @PrimaryColumn()
     device_id!: string
     @Column()
-    newest_version!: string
+    latest_version!: string
     @Column()
-    newest_version_link!: string
+    latest_version_link!: string
 }
