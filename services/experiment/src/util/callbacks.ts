@@ -1,6 +1,6 @@
-import { MalformedBodyError } from '../generated/types'
 import {
     InvalidValueError,
+    MalformedBodyError,
     MissingEntityError,
     MissingPropertyError,
 } from '../types/errors'
@@ -24,7 +24,7 @@ export const deviceChangedCallbacks: string[] = []
 export function callbackHandling(app: express.Application) {
     // TODO: adapt callback handling after codegen update
     app.post('/experiments/callbacks', async (req, res) => {
-        const requestHandler: RequestHandler = new RequestHandler("callbackHandling")
+        const requestHandler: RequestHandler = new RequestHandler('callbackHandling')
         const callback = req.body
         if (typeof callback !== 'object')
             throw new MalformedBodyError('Body of callback is not an object', 400)
@@ -32,9 +32,14 @@ export function callbackHandling(app: express.Application) {
 
         switch (callbackType) {
             case 'event':
-                return res.status(await requestHandler.executeAsync(handleEventCallback, callback)).send()
+                return res
+                    .status(
+                        await requestHandler.executeAsync(handleEventCallback, callback)
+                    )
+                    .send()
             default:
-                requestHandler.throw(InvalidValueError,
+                requestHandler.throw(
+                    InvalidValueError,
                     `Callbacks of type "${req.body.callbackType}" are not supported`,
                     400
                 )
@@ -46,6 +51,7 @@ export function callbackHandling(app: express.Application) {
  * This function attempts to get the type of an incoming callback.
  * @param callback The incoming callback of which to get the type.
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
+ * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @returns The type of the incoming callback.
  */
 function getCallbackType(_requestHandler: RequestHandler, callback: any) {
@@ -56,7 +62,7 @@ function getCallbackType(_requestHandler: RequestHandler, callback: any) {
         )
     }
     if (!callback.callbackType) {
-        throw new MalformedBodyError('Callbacks require property "callbackType"', 400)
+        throw new MissingPropertyError('Callbacks require property "callbackType"', 400)
     }
     return callback.callbackType as string
 }
@@ -64,32 +70,42 @@ function getCallbackType(_requestHandler: RequestHandler, callback: any) {
 /**
  * This function handles an incoming event callback.
  * @param callback The incoming event callback to be handled.
- * @throws {MalformedBodyError} Thrown if the callback is malformed.
+ * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-async function handleEventCallback(requestHandler: RequestHandler, callback: any): Promise<200 | 410> {
+async function handleEventCallback(
+    requestHandler: RequestHandler,
+    callback: any
+): Promise<200 | 410> {
     if (!callback.eventType) {
-        throw new MalformedBodyError(
+        throw new MissingPropertyError(
             'Callbacks of type "event" require property "eventType"',
             400
         )
     }
     if (typeof callback.eventType !== 'string') {
-        throw new MalformedBodyError(
+        throw new MissingPropertyError(
             'Property "callbackType" needs to be of type "string"',
             400
         )
     }
     switch (callback.eventType) {
         case 'peerconnection-status-changed':
-            return await requestHandler.executeAsync(handlePeerconnectionStatusChangedEventCallback, callback)
+            return await requestHandler.executeAsync(
+                handlePeerconnectionStatusChangedEventCallback,
+                callback
+            )
         case 'peerconnection-closed':
-            return requestHandler.executeSync(handlePeerconnectionClosedEventCallback, callback)
+            return requestHandler.executeSync(
+                handlePeerconnectionClosedEventCallback,
+                callback
+            )
         case 'device-changed':
             return requestHandler.executeSync(handleDeviceChangedEventCallback, callback)
         default:
-            requestHandler.throw(InvalidValueError,
+            requestHandler.throw(
+                InvalidValueError,
                 `Event-callbacks of type "${callback.eventType}" are not supported`,
                 400
             )
@@ -100,11 +116,15 @@ async function handleEventCallback(requestHandler: RequestHandler, callback: any
  * This function handles an incoming "peerconnection-closed" event callback.
  * @param callback The incoming "peerconnection-closed" callback to be handled.
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
+ * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @returns The status code for the response to the incoming callback.
  */
-function handlePeerconnectionClosedEventCallback(_requestHandler: RequestHandler, callback: any): 200 | 410 {
+function handlePeerconnectionClosedEventCallback(
+    _requestHandler: RequestHandler,
+    callback: any
+): 200 | 410 {
     if (!callback.peerconnection) {
-        throw new MalformedBodyError(
+        throw new MissingPropertyError(
             'Event-callbacks of type "peerconnection-closed" require property "peerconnection"',
             400
         )
@@ -114,7 +134,7 @@ function handlePeerconnectionClosedEventCallback(_requestHandler: RequestHandler
         throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
     }
     if (!peerconnection.url) {
-        throw new MalformedBodyError('Property "peerconnection" is missing url', 400)
+        throw new MissingPropertyError('Property "peerconnection" is missing property "url"', 400)
     }
     if (!peerconnectionClosedCallbacks.includes(peerconnection.url)) {
         return 410
@@ -127,6 +147,7 @@ function handlePeerconnectionClosedEventCallback(_requestHandler: RequestHandler
  * This function handles an incoming "peerconnection-status-changed" event callback.
  * @param callback The incoming "peerconnection-status-changed" callback to be handled.
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
+ * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @returns The status code for the response to the incoming callback.
  */
 async function handlePeerconnectionStatusChangedEventCallback(
@@ -134,7 +155,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
     callback: any
 ): Promise<200 | 410> {
     if (!callback.peerconnection) {
-        throw new MalformedBodyError(
+        throw new MissingPropertyError(
             'Event-callbacks of type "peerconnection-status-changed" require property "peerconnection"',
             400
         )
@@ -144,19 +165,23 @@ async function handlePeerconnectionStatusChangedEventCallback(
         throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
     }
     if (!peerconnection.url) {
-        throw new MalformedBodyError('Property "peerconnection" is missing url', 400)
+        throw new MissingPropertyError('Property "peerconnection" is missing property "url"', 400)
     }
     if (!peerconnectionStatusChangedCallbacks.includes(peerconnection.url)) {
         return 410
     }
     if (!peerconnection.status) {
-        throw new MalformedBodyError('Property "peerconnection" is missing status')
+        throw new MissingPropertyError('Property "peerconnection" is missing property "status"')
     }
 
     // TODO: add peerconnection status changed handling
-    const peerconnectionModel = await requestHandler.executeAsync(findPeerconnectionModelByUrl, peerconnection.url)
+    const peerconnectionModel = await requestHandler.executeAsync(
+        findPeerconnectionModelByUrl,
+        peerconnection.url
+    )
     if (!peerconnectionModel)
-        requestHandler.throw(MissingEntityError,
+        requestHandler.throw(
+            MissingEntityError,
             `No peerconnection model with url ${peerconnection.url} found`,
             500
         ) // NOTE: error code
@@ -171,12 +196,14 @@ async function handlePeerconnectionStatusChangedEventCallback(
             // TODO: handle status connected
             const experimentModel = peerconnectionModel.experiment
             if (!experimentModel)
-                requestHandler.throw(MissingPropertyError,
+                requestHandler.throw(
+                    MissingPropertyError,
                     `Peerconnection model is missing property "experiment"`
                 ) // NOTE: error code
 
             if (!experimentModel.connections)
-                requestHandler.throw(MissingPropertyError,
+                requestHandler.throw(
+                    MissingPropertyError,
                     `Experiment model is missing property "connections"`
                 ) // NOTE: error code
 
@@ -202,11 +229,15 @@ async function handlePeerconnectionStatusChangedEventCallback(
  * This function handles an incoming "device-changed" event callback.
  * @param callback The incoming "device-changed" callback to be handled.
  * @throws {MalformedBodyError} Thrown if the callback is malformed.
+ * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @returns The status code for the response to the incoming callback.
  */
-function handleDeviceChangedEventCallback(_requestHandler: RequestHandler, callback: any): 200 | 410 {
+function handleDeviceChangedEventCallback(
+    _requestHandler: RequestHandler,
+    callback: any
+): 200 | 410 {
     if (!callback.device) {
-        throw new MalformedBodyError(
+        throw new MissingPropertyError(
             'Event-callbacks of type "device-changed" require property "device"',
             400
         )
@@ -221,7 +252,7 @@ function handleDeviceChangedEventCallback(_requestHandler: RequestHandler, callb
         throw new MalformedBodyError('Property "device" is not a valid device', 400)
     }
     if (!device.url) {
-        throw new MalformedBodyError('Property "device" is missing url', 400)
+        throw new MissingPropertyError('Property "device" is missing property "url"', 400)
     }
     if (!deviceChangedCallbacks.includes(device.url)) {
         return 410

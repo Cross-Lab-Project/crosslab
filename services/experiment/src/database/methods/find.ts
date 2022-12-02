@@ -5,8 +5,7 @@ import { experimentRepository, peerconnectionRepository } from '../repositories'
  * This function returns all experiment models found in the database.
  * @returns All experiment models found in the database.
  */
-export async function findAllExperimentModels(requestHandler: RequestHandler) {
-    requestHandler.log('debug', `Attempting to find all experiment models`)
+export async function findAllExperimentModels(_requestHandler: RequestHandler) {
     return await experimentRepository.find()
 }
 
@@ -16,13 +15,9 @@ export async function findAllExperimentModels(requestHandler: RequestHandler) {
  * @returns The found experiment model.
  */
 export async function findExperimentModelById(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     experimentModelId: string
 ) {
-    requestHandler.log(
-        'debug',
-        `Attempting to find experiment model "${experimentModelId}"`
-    )
     return await experimentRepository.findOne({
         where: {
             uuid: experimentModelId,
@@ -42,13 +37,9 @@ export async function findExperimentModelById(
  * @returns The found peerconnection model.
  */
 export async function findPeerconnectionModelByUrl(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     peerconnectionUrl: string
 ) {
-    requestHandler.log(
-        'debug',
-        `Attempting to find peerconnection model with url "${peerconnectionUrl}"`
-    )
     return await peerconnectionRepository.findOne({
         where: {
             url: peerconnectionUrl,

@@ -1,59 +1,95 @@
-import { logger } from './logging'
+import { Logger, format, transports, createLogger, LogEntry } from 'winston'
+import { ErrorWithStatus } from '../generated/types'
 
-type Tail<T extends unknown[]> = T extends [infer _Head, ...infer Tail]
-    ? Tail
-    : never
+/**
+ * The possible log level names
+ */
+export type LogLevelName = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 
-export interface LogContext {
-    index: number
-    currentFunctionName?: string
+/**
+ * The mapping of the possible log level names to their corresponding level
+ */
+const logLevels: Record<LogLevelName, number> = {
+    fatal: 0,
+    error: 1,
+    warn: 2,
+    info: 3,
+    debug: 4,
+    trace: 5,
 }
 
+export const logger: Logger = createLogger({
+    format: format.json(),
+    exitOnError: false,
+    levels: logLevels,
+    transports: [
+        new transports.Console({level: 'debug'}),
+    ],
+})
+
+type Tail<T extends unknown[]> = T extends [infer _Head, ...infer Tail] ? Tail : never
+
 export class RequestHandler {
-    private index: number
+    private id: number
     private currentFunctionName?: string
+    private logEntries: LogEntry[]
     private static currentIndex: number = 0
+    private static logger: Logger = logger
 
     constructor(functionName?: string) {
-        this.index = RequestHandler.currentIndex++
+        this.id = RequestHandler.currentIndex++
         this.currentFunctionName = functionName
+        this.logEntries = []
     }
 
-    public log(...args: Parameters<typeof logger.log>) {
-        let prepend = ''
-        prepend += `(${this.index}) `
-        prepend += this.currentFunctionName ? `${this.currentFunctionName} ` : ''
-        prepend += prepend.length > 0 ? ': ' : ''
-        logger.log(args[0], prepend + args[1])
+    public log = (level: LogLevelName, message: any, meta?: {[k: string]: any}) => {
+        const logEntry = {
+            level: level,
+            message: message,
+            requestId: this.id,
+            currentFunction: this.currentFunctionName,
+            ...meta
+        }
+        this.logEntries.push(logEntry)
     }
 
     public executeSync<F extends (r: RequestHandler, ...args: any) => any>(
         f: F,
         ...args: Tail<Parameters<F>>
     ): ReturnType<F> {
-        this.log("debug", `Entering sync function "${f.name}"`)
+        this.log('debug', `Entering sync function "${f.name}"`, { input: args })
         const previousFunctionName = this.currentFunctionName
         this.currentFunctionName = f.name
-        const result = f(this, args)
+        const result = f(this, ...args)
         this.currentFunctionName = previousFunctionName
-        this.log("debug", `Leaving sync function "${f.name}"`)
+        this.log('debug', `Leaving sync function "${f.name}"`, { output: result })
         return result
     }
 
-    public async executeAsync<F extends (r: RequestHandler, ...args: any) => Promise<any>>(
-        f: F,
-        ...args: Tail<Parameters<F>>
-    ): Promise<ReturnType<F>> {
-        this.log("debug", `Entering async function "${f.name}"`)
+    public async executeAsync<
+        F extends (r: RequestHandler, ...args: any) => Promise<any>
+    >(f: F, ...args: Tail<Parameters<F>>): Promise<ReturnType<F>> {
+        this.log('debug', `Entering async function "${f.name}"`, { input: args })
         const previousFunctionName = this.currentFunctionName
         this.currentFunctionName = f.name
-        const result = await f(this, args)
+        const result = await f(this, ...args)
         this.currentFunctionName = previousFunctionName
-        this.log("debug", `Leaving async function "${f.name}"`)
+        this.log('debug', `Leaving async function "${f.name}"`, { output: result })
         return result
     }
 
-    public throw<E extends { new(requestHandler: RequestHandler, ...args: Tail<ConstructorParameters<E>>): InstanceType<E> }>(error: E, ...args: Tail<ConstructorParameters<typeof error>>): never {
-        throw new error(this, ...args)
+    public throw<
+        I extends ErrorWithStatus,
+        E extends {
+            new (
+                ...args: ConstructorParameters<E>
+            ): I
+        }
+    >(error: E, ...args: ConstructorParameters<typeof error>): never {
+        const err = new error(...args)
+        const status = err.status
+        delete err.status
+        RequestHandler.logger.log('error', `${err.name} ${status}: "${err.message}"`, { error: err.stack, status, trace: this.logEntries })
+        throw {...err, status }
     }
 }

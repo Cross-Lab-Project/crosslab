@@ -21,10 +21,9 @@ import { RequestHandler } from '../../util/requestHandler'
  * @returns The resulting Device.
  */
 function formatDeviceModel(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     deviceModel: DeviceModel
 ): Device {
-    requestHandler.log('debug', `Attempting to format the device model ${deviceModel}`)
     return {
         device: deviceModel.url,
         role: deviceModel.role,
@@ -36,11 +35,10 @@ function formatDeviceModel(
  * @param roleModel The RoleModel to be formatted.
  * @returns The resulting Role.
  */
-function formatRoleModel(requestHandler: RequestHandler, roleModel: RoleModel): Role {
-    requestHandler.log('debug', `Attempting to format the role model ${roleModel}`)
+function formatRoleModel(_requestHandler: RequestHandler, roleModel: RoleModel): Role {
     return {
         name: roleModel.name,
-        description: roleModel.description,
+        description: roleModel.description ?? undefined,
     }
 }
 
@@ -50,14 +48,13 @@ function formatRoleModel(requestHandler: RequestHandler, roleModel: RoleModel): 
  * @returns The resulting Participant.
  */
 function formatParticipantModel(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     participantModel: ParticipantModel
 ): Participant {
-    requestHandler.log('debug', `Attempting to format the participant model ${participantModel}`)
     return {
         role: participantModel.role,
         serviceId: participantModel.serviceId,
-        config: participantModel.config ? JSON.parse(participantModel.config) : undefined,
+        config: participantModel.config ? participantModel.config : undefined,
     }
 }
 
@@ -71,11 +68,10 @@ function formatServiceConfigurationModel(
     requestHandler: RequestHandler,
     serviceConfigurationModel: ServiceConfigurationModel
 ): ServiceConfiguration {
-    requestHandler.log('debug', `Attempting to format the service configuration model ${serviceConfigurationModel}`)
     return {
         serviceType: serviceConfigurationModel.serviceType,
         configuration: serviceConfigurationModel.configuration
-            ? JSON.parse(serviceConfigurationModel.configuration)
+            ? serviceConfigurationModel.configuration
             : undefined,
         participants: serviceConfigurationModel.participants
             ? serviceConfigurationModel.participants.map((p) =>
@@ -94,7 +90,6 @@ export function formatExperimentModel(
     requestHandler: RequestHandler,
     experimentModel: ExperimentModel
 ): Experiment {
-    requestHandler.log('debug', `Attempting to format the experiment model ${experimentModel}`)
     const experimentUrl = requestHandler.executeSync(
         experimentUrlFromId,
         experimentModel.uuid
@@ -112,7 +107,9 @@ export function formatExperimentModel(
               )
             : undefined,
         roles: experimentModel.roles
-            ? experimentModel.roles.map((r) => requestHandler.executeSync(formatRoleModel, r))
+            ? experimentModel.roles.map((r) =>
+                  requestHandler.executeSync(formatRoleModel, r)
+              )
             : undefined,
         connections: experimentModel.connections
             ? experimentModel.connections.map((c) => c.url)

@@ -6,12 +6,8 @@ import { experimentRepository } from '../repositories'
  * @param experimentModelId The id of the experiment model to be deleted.
  */
 export async function deleteExperimentModelById(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     experimentModelId: string
 ) {
-    requestHandler.log(
-        'debug',
-        `Attempting to delete experiment model "${experimentModelId}"`
-    )
     return await experimentRepository.softDelete({ uuid: experimentModelId })
 }

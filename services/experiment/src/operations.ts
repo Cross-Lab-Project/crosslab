@@ -4,20 +4,19 @@ import {
     deleteExperimentsByExperimentIdSignature,
     patchExperimentsByExperimentIdSignature,
     getExperimentsSignature,
-    getExperimentsSuccessResponseType,
-} from '../generated/signatures/experiments'
-import { formatExperimentModel } from '../database/methods/format'
-import { writeExperimentModel } from '../database/methods/write'
-import { bookExperiment, finishExperiment, runExperiment } from '../util/experimentStatus'
-import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
+} from "./generated/signatures"
+import { formatExperimentModel } from './database/methods/format'
+import { writeExperimentModel } from './database/methods/write'
+import { bookExperiment, finishExperiment, runExperiment } from './util/experimentStatus'
+import { InconsistentDatabaseError, MissingEntityError } from './types/errors'
 import {
     findAllExperimentModels,
     findExperimentModelById,
-} from '../database/methods/find'
-import { createExperimentModel } from '../database/methods/create'
-import { saveExperimentModel } from '../database/methods/save'
-import { deleteExperimentModelById } from '../database/methods/delete'
-import { RequestHandler } from '../util/requestHandler'
+} from './database/methods/find'
+import { createExperimentModel } from './database/methods/create'
+import { saveExperimentModel } from './database/methods/save'
+import { deleteExperimentModelById } from './database/methods/delete'
+import { RequestHandler } from './util/requestHandler'
 
 /**
  * This function implements the functionality for handling GET requests on
@@ -30,15 +29,18 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
 
     const experiments = await requestHandler.executeAsync(findAllExperimentModels)
 
-    const result: getExperimentsSuccessResponseType = {
+    const result: ReturnType<getExperimentsSignature> = {
         status: 200,
-        body: experiments.map((e) => requestHandler.executeSync(formatExperimentModel, e)),
+        body: experiments.map((e) =>
+            requestHandler.executeSync(formatExperimentModel, e)
+        ),
     }
 
     requestHandler.log(
         'info',
         `Successfully handled GET request on endpoint /experiments`
     )
+
     return result
 }
 
@@ -64,10 +66,17 @@ export const postExperiments: postExperimentsSignature = async (body, _user) => 
         await requestHandler.executeAsync(finishExperiment, experimentModel)
     await requestHandler.executeAsync(saveExperimentModel, experimentModel) // NOTE: truly needed?
 
-    return {
+    const result: ReturnType<postExperimentsSignature> = {
         status: 201,
         body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled POST request on endpoint /experiments`
+    )
+
+    return result
 }
 
 /**
@@ -80,7 +89,9 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     parameters,
     _user
 ) => {
-    const requestHandler: RequestHandler = new RequestHandler('getExperimentsByExperimentId')
+    const requestHandler: RequestHandler = new RequestHandler(
+        'getExperimentsByExperimentId'
+    )
     requestHandler.log(
         'info',
         `Handling GET request on endpoint /experiments/${parameters.experiment_id}`
@@ -92,16 +103,24 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     )
 
     if (!experimentModel) {
-        requestHandler.throw(MissingEntityError,
+        requestHandler.throw(
+            MissingEntityError,
             `Could not find experiment model ${parameters.experiment_id}`,
             404
         )
     }
 
-    return {
+    const result: ReturnType<getExperimentsByExperimentIdSignature> = {
         status: 200,
         body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled GET request on endpoint /experiments/${parameters.experiment_id}`
+    )
+
+    return result
 }
 
 /**
@@ -112,31 +131,40 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
  */
 export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature =
     async (parameters, _user) => {
-        const requestHandler: RequestHandler = new RequestHandler('deleteExperimentsByExperimentId')
+        const requestHandler: RequestHandler = new RequestHandler(
+            'deleteExperimentsByExperimentId'
+        )
         requestHandler.log(
             'info',
             `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`
         )
-    
+
         const result = await requestHandler.executeAsync(
             deleteExperimentModelById,
             parameters.experiment_id
         )
-    
+
         if (!result.affected) {
-            requestHandler.throw(MissingEntityError,
+            requestHandler.throw(
+                MissingEntityError,
                 `Could not find experiment model ${parameters.experiment_id}`,
                 404
             )
         }
-    
+
         if (result.affected > 1) {
-            requestHandler.throw(InconsistentDatabaseError,
+            requestHandler.throw(
+                InconsistentDatabaseError,
                 `More than one experiment model with id ${parameters.experiment_id} deleted`,
                 500
             )
         }
-    
+
+        requestHandler.log(
+            'info',
+            `Successfully handled DELETE request on endpoint /experiments/${parameters.experiment_id}`
+        )
+
         return {
             status: 204,
         }
@@ -151,7 +179,9 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
     async (parameters, body, _user) => {
-        const requestHandler: RequestHandler = new RequestHandler('patchExperimentsByExperimentId')
+        const requestHandler: RequestHandler = new RequestHandler(
+            'patchExperimentsByExperimentId'
+        )
         requestHandler.log(
             'info',
             `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`
@@ -163,7 +193,8 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
         )
 
         if (!experimentModel) {
-            requestHandler.throw(MissingEntityError,
+            requestHandler.throw(
+                MissingEntityError,
                 `Could not find experiment model ${parameters.experiment_id}`,
                 404
             )
@@ -179,8 +210,15 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
             await requestHandler.executeAsync(finishExperiment, experimentModel)
         await requestHandler.executeAsync(saveExperimentModel, experimentModel)
 
-        return {
+        const result: ReturnType<patchExperimentsByExperimentIdSignature> = {
             status: 200,
             body: requestHandler.executeSync(formatExperimentModel, experimentModel),
         }
+
+        requestHandler.log(
+            'info',
+            `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`
+        )
+
+        return result
     }

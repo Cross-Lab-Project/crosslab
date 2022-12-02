@@ -30,17 +30,20 @@ export async function establishPeerconnections(
         )
         if (!experimentModel.connections) experimentModel.connections = []
         if (!peerconnection.url)
-            requestHandler.throw(MissingPropertyError,
+            requestHandler.throw(
+                MissingPropertyError,
                 'Created peerconnection does not have a url',
                 500
             )
         if (!peerconnection.devices)
-            requestHandler.throw(MissingPropertyError,
+            requestHandler.throw(
+                MissingPropertyError,
                 'Created peerconnection does not have devices',
                 500
             )
         if (!peerconnection.devices[0].url || !peerconnection.devices[1].url)
-            requestHandler.throw(MissingPropertyError,
+            requestHandler.throw(
+                MissingPropertyError,
                 'Created peerconnection has a device without an url',
                 500
             )

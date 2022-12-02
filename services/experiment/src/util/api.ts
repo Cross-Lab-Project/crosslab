@@ -20,21 +20,29 @@ const apiClient: APIClient = new APIClient(config.BASE_URL)
  */
 function handleInternalRequestError(requestHandler: RequestHandler, error: unknown) {
     if (error instanceof FetchError)
-        requestHandler.throw(InternalRequestError,
+        requestHandler.throw(
+            InternalRequestError,
             `An error occurred while trying to fetch the request`,
             error,
             500
         )
     else if (error instanceof ValidationError)
-        requestHandler.throw(InternalRequestError,
+        requestHandler.throw(
+            InternalRequestError,
             `An error occurred while trying to validate the request/response`,
             error,
             500
         )
     else if (error instanceof InvalidUrlError)
-        requestHandler.throw(InternalRequestError, `The provided url is malformed`, error, 400)
+        requestHandler.throw(
+            InternalRequestError,
+            `The provided url is malformed`,
+            error,
+            400
+        )
     else if (error instanceof UnsuccessfulRequestError)
-        requestHandler.throw(InternalRequestError,
+        requestHandler.throw(
+            InternalRequestError,
             `The request was unsuccessful`,
             error,
             error.response.status
@@ -60,17 +68,17 @@ export async function getDevice(
 }
 
 /**
- * This function wraps the createDeviceInstance() function of the api-client and throws server-specific errors.
- * @param args The arguments of the createDeviceInstance() function.
+ * This function wraps the instantiateDevice() function of the api-client and throws server-specific errors.
+ * @param args The arguments of the instantiateDevice() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The created instance of the device and its device token.
  */
 export async function instantiateDevice(
     requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.createDeviceInstance>
+    ...args: Parameters<typeof apiClient.instantiateDevice>
 ) {
     try {
-        return await apiClient.createDeviceInstance(args[0], args[1])
+        return await apiClient.instantiateDevice(args[0], args[1])
     } catch (error) {
         handleInternalRequestError(requestHandler, error)
         throw error
@@ -182,7 +190,8 @@ export async function startCloudDeviceInstance(
 ) {
     try {
         if (!device.instantiate_url)
-            requestHandler.throw(MissingPropertyError,
+            requestHandler.throw(
+                MissingPropertyError,
                 'Resolved instantiable cloud device does not have an instantiate url',
                 500
             ) // NOTE: error code?
@@ -213,17 +222,17 @@ export async function startCloudDeviceInstance(
 }
 
 /**
- * This function wraps the patchDevice() function of the api-client and throws server specific errors.
- * @param args The arguments of the patchDevice() function.
+ * This function wraps the updateDevice() function of the api-client and throws server specific errors.
+ * @param args The arguments of the updateDevice() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The patched device.
  */
-export async function patchDevice(
+export async function updateDevice(
     requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.patchDevice>
+    ...args: Parameters<typeof apiClient.updateDevice>
 ) {
     try {
-        return await apiClient.patchDevice(args[0], args[1], args[2])
+        return await apiClient.updateDevice(args[0], args[1], args[2])
     } catch (error) {
         handleInternalRequestError(requestHandler, error)
         throw error

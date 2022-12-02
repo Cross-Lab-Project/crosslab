@@ -5,8 +5,6 @@ import {
     DeleteDateColumn,
     ManyToOne,
     OneToMany,
-    ManyToMany,
-    JoinTable,
 } from 'typeorm'
 
 @Entity({ name: 'Experiment' })
@@ -24,8 +22,7 @@ export class ExperimentModel {
         cascade: true,
     })
     devices?: DeviceModel[]
-    @ManyToMany(() => RoleModel)
-    @JoinTable({ name: 'ExperimentRoleMapping' })
+    @OneToMany(() => RoleModel, (role) => role.experiment, { eager: true, onDelete: 'CASCADE', cascade: true })
     roles?: RoleModel[]
     @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment, {
         onDelete: 'CASCADE',
@@ -50,8 +47,10 @@ export class RoleModel {
     uuid!: string
     @Column()
     name?: string
-    @Column()
-    description?: string
+    @Column("text", {nullable: true})
+    description?: string | null
+    @ManyToOne(() => ExperimentModel, (experiment) => experiment.roles)
+    experiment!: ExperimentModel
 }
 
 @Entity({ name: 'Device' })
@@ -63,8 +62,8 @@ export class DeviceModel {
     @Column()
     role?: string
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
-    experiment?: ExperimentModel
-    @Column('simple-json')
+    experiment!: ExperimentModel
+    @Column('simple-json', {nullable: true})
     additionalProperties?: {
         instanceUrl?: string
         deviceToken?: string
@@ -80,7 +79,7 @@ export class PeerconnectionModel {
     @Column()
     status?: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.connections)
-    experiment?: ExperimentModel
+    experiment!: ExperimentModel
 }
 
 @Entity({ name: 'ServiceConfiguration' })
@@ -89,8 +88,10 @@ export class ServiceConfigurationModel {
     uuid!: string
     @Column()
     serviceType?: string
-    @Column()
-    configuration?: string // TODO: save JSON as string (simple-json)
+    @Column("simple-json")
+    configuration?: {
+        [k: string]: any
+    }
     @OneToMany(
         () => ParticipantModel,
         (participant) => participant.serviceConfiguration,
@@ -98,7 +99,7 @@ export class ServiceConfigurationModel {
     )
     participants?: ParticipantModel[]
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.serviceConfigurations)
-    experiment?: ExperimentModel
+    experiment!: ExperimentModel
 }
 
 @Entity({ name: 'Participant' })
@@ -109,11 +110,13 @@ export class ParticipantModel {
     role?: string
     @Column()
     serviceId?: string
-    @Column()
-    config?: string // TODO: save JSON as string (simple-json)
+    @Column("simple-json")
+    config?: {
+        [k: string]: any
+    }
     @ManyToOne(
         () => ServiceConfigurationModel,
         (serviceConfiguration) => serviceConfiguration.participants
     )
-    serviceConfiguration?: ServiceConfigurationModel
+    serviceConfiguration!: ServiceConfigurationModel
 }

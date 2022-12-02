@@ -20,13 +20,18 @@ export function buildConnectionPlan(
         !experiment.serviceConfigurations ||
         experiment.serviceConfigurations.length === 0
     )
-        requestHandler.throw(MissingPropertyError,
+        requestHandler.throw(
+            MissingPropertyError,
             'Experiment must have a configuration to be run',
             400
         )
 
     if (!experiment.devices || experiment.devices.length === 0)
-        requestHandler.throw(MissingPropertyError, 'Experiment must have a device to be run', 400)
+        requestHandler.throw(
+            MissingPropertyError,
+            'Experiment must have a device to be run',
+            400
+        )
 
     const pairwiseServiceConfigurations: typeof experiment['serviceConfigurations'] =
         toPairwiseServiceConfig(requestHandler, experiment)
@@ -117,8 +122,8 @@ function updateServiceConfig(
     device.config = device.config ?? {}
     device.config.services = device.config.services ?? []
     device.config?.services?.push({
-        ...JSON.parse(serviceConfig.configuration ?? '{}'),
-        ...JSON.parse(participant.config ?? '{}'),
+        ...serviceConfig.configuration,
+        ...participant.config,
         serviceId: participant.serviceId,
         serviceType: serviceConfig.serviceType,
         remoteServiceId: remoteParticipant.serviceId,
@@ -131,14 +136,19 @@ function mapRoleConfigToDevices(
     experiment: ExperimentModel
 ) {
     if (!experiment.devices || experiment.devices.length === 0) {
-        requestHandler.throw(MissingPropertyError, 'Experiment must have a device to be run', 400)
+        requestHandler.throw(
+            MissingPropertyError,
+            'Experiment must have a device to be run',
+            400
+        )
     }
     const deviceMappedServiceConfigs: (ServiceConfigurationModel & {
         devices: DeviceModel[]
     })[] = []
     for (const serviceConfig of pairwiseServiceConfigurations) {
         if (!serviceConfig.participants || serviceConfig.participants.length !== 2) {
-            requestHandler.throw(MissingPropertyError,
+            requestHandler.throw(
+                MissingPropertyError,
                 'pairwiseServiceConfigurations must have exactly two participants',
                 400
             )
@@ -170,7 +180,8 @@ function toPairwiseServiceConfig(
     experiment: ExperimentModel
 ) {
     if (!experiment.serviceConfigurations) {
-        requestHandler.throw(MissingPropertyError,
+        requestHandler.throw(
+            MissingPropertyError,
             'Experiment must have a configuration to be run',
             400
         )

@@ -16,5 +16,8 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-    }
+    },
+    "exclude": [
+        "src/generated/operations_templates"
+    ]
 }

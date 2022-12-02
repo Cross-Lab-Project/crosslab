@@ -35,9 +35,12 @@ export function writeDeviceModel(
     deviceModel: DeviceModel,
     device: Device
 ) {
-    requestHandler.log('debug', `Attempting to write the data of ${device} to the device model ${deviceModel}`)
     if (!device.device)
-        requestHandler.throw(MissingPropertyError, 'Device is missing property "url"', 400)
+        requestHandler.throw(
+            MissingPropertyError,
+            'Device is missing property "url"',
+            400
+        )
     if (device.device) deviceModel.url = device.device
     if (device.role) deviceModel.role = device.role
 }
@@ -48,11 +51,10 @@ export function writeDeviceModel(
  * @param role The Role providing the data to be written.
  */
 export function writeRoleModel(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     roleModel: RoleModel,
     role: Role
 ) {
-    requestHandler.log('debug', `Attempting to write the data of ${role} to the role model ${roleModel}`)
     if (role.name) roleModel.name = role.name
     if (role.description) roleModel.description = role.description
 }
@@ -63,11 +65,10 @@ export function writeRoleModel(
  * @param peerconnectionUrl The url of a peerconnection.
  */
 export function writePeerconnectionModel(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     peerconnectionModel: PeerconnectionModel,
     peerconnectionUrl: string
 ) {
-    requestHandler.log('debug', `Attempting to write "${peerconnectionUrl}" to the peerconnection model ${peerconnectionModel}`)
     peerconnectionModel.url = peerconnectionUrl
 }
 
@@ -77,14 +78,13 @@ export function writePeerconnectionModel(
  * @param participant The Participant providing the data to be written.
  */
 export function writeParticipantModel(
-    requestHandler: RequestHandler,
+    _requestHandler: RequestHandler,
     participantModel: ParticipantModel,
     participant: Participant
 ) {
-    requestHandler.log('debug', `Attempting to write the data of ${participant} to the participant model ${participantModel}`)
     if (participant.role) participantModel.role = participant.role
     if (participant.serviceId) participantModel.serviceId = participant.serviceId
-    if (participant.config) participantModel.config = JSON.stringify(participant.config)
+    if (participant.config) participantModel.config = participant.config
 }
 
 /**
@@ -97,13 +97,10 @@ export function writeServiceConfigurationModel(
     serviceConfigurationModel: ServiceConfigurationModel,
     serviceConfiguration: ServiceConfiguration
 ) {
-    requestHandler.log('debug', `Attempting to write the data of ${serviceConfiguration} to the service configuration model ${serviceConfigurationModel}`)
     if (serviceConfiguration.serviceType)
         serviceConfigurationModel.serviceType = serviceConfiguration.serviceType
     if (serviceConfiguration.configuration)
-        serviceConfigurationModel.configuration = JSON.stringify(
-            serviceConfiguration.configuration
-        )
+        serviceConfigurationModel.configuration = serviceConfiguration.configuration
     if (serviceConfiguration.participants) {
         serviceConfigurationModel.participants = []
         for (const participant of serviceConfiguration.participants) {
@@ -126,7 +123,6 @@ export function writeExperimentModel(
     experimentModel: ExperimentModel,
     experiment: Experiment
 ) {
-    requestHandler.log('debug', `Attempting to write the data of ${experiment} to the experiment model ${experimentModel}`)
     experimentModel.status = experiment.status ?? experimentModel.status ?? 'created'
     if (experiment.bookingTime) {
         if (experiment.bookingTime.startTime)

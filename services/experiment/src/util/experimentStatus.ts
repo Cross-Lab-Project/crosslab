@@ -32,7 +32,10 @@ export async function bookExperiment(
     requestHandler.log('info', `Attempting to book experiment "${experimentUrl}"`)
 
     if (!experimentModel.devices || experimentModel.devices.length === 0)
-        requestHandler.throw(MissingPropertyError, `Experiment ${experimentUrl} has no devices`)
+        requestHandler.throw(
+            MissingPropertyError,
+            `Experiment ${experimentUrl} has no devices`
+        )
 
     // TODO: book experiment
     // const currentTime = new Date()
@@ -78,12 +81,20 @@ export async function runExperiment(
     requestHandler.log('info', `Attempting to run experiment "${experimentUrl}"`)
     // make sure experiment is not already finished
     if (experimentModel.status === 'finished') {
-        requestHandler.throw(InvalidStateError, `Experiment status is already "finished"`, 400)
+        requestHandler.throw(
+            InvalidStateError,
+            `Experiment status is already "finished"`,
+            400
+        )
     }
 
     // make sure the experiment contains devices
     if (!experimentModel.devices || experimentModel.devices.length === 0) {
-        requestHandler.throw(MissingPropertyError, `Experiment does not contain any devices`, 400)
+        requestHandler.throw(
+            MissingPropertyError,
+            `Experiment does not contain any devices`,
+            400
+        )
     }
 
     // book experiment if status is "created"
@@ -93,7 +104,11 @@ export async function runExperiment(
 
     // make sure the experiment has a booking
     if (!experimentModel.bookingID) {
-        requestHandler.throw(MissingPropertyError, `Experiment does not have a booking`, 400)
+        requestHandler.throw(
+            MissingPropertyError,
+            `Experiment does not have a booking`,
+            400
+        )
     }
 
     /**
@@ -106,7 +121,8 @@ export async function runExperiment(
     for (const device of experimentModel.devices) {
         const resolvedDevice = await requestHandler.executeAsync(getDevice, device.url) // TODO: error handling
         if (resolvedDevice.type === 'device' && !resolvedDevice.connected) {
-            requestHandler.throw(DeviceNotConnectedError,
+            requestHandler.throw(
+                DeviceNotConnectedError,
                 `Cannot start experiment since device ${device.url} is not connected`,
                 500
             ) // NOTE: maybe there is a more fitting error code
@@ -119,14 +135,34 @@ export async function runExperiment(
         ) {
             needsSetup = true
             if (!resolvedDevice.url)
-                requestHandler.throw(MissingPropertyError, 'Device is missing its url', 500) // NOTE: error code?
+                requestHandler.throw(
+                    MissingPropertyError,
+                    'Device is missing its url',
+                    500
+                ) // NOTE: error code?
             const { instance, deviceToken } = await requestHandler.executeAsync(
                 instantiateDevice,
                 resolvedDevice.url,
-                { changedURL: callbackUrl }
+                { changedUrl: callbackUrl }
             )
-            if (!instance.url)
-                requestHandler.throw(MissingPropertyError, 'Device instance is missing its url', 500) // NOTE: error code?
+            if (!instance) 
+                requestHandler.throw(
+                    MissingPropertyError,
+                    'Instance of device is missing',
+                    500
+                )
+            if (!instance?.url)
+                requestHandler.throw(
+                    MissingPropertyError,
+                    'Device instance is missing its url',
+                    500
+                ) // NOTE: error code?
+            if (!deviceToken) 
+                requestHandler.throw(
+                    MissingPropertyError,
+                    'Token of device instance is missing',
+                    500
+                )
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
@@ -203,7 +239,10 @@ export async function finishExperiment(
             // delete all peerconnections
             if (experimentModel.connections) {
                 for (const peerconnection of experimentModel.connections) {
-                    await requestHandler.executeAsync(deletePeerconnection, peerconnection.url)
+                    await requestHandler.executeAsync(
+                        deletePeerconnection,
+                        peerconnection.url
+                    )
                 }
             }
             // TODO: unlock all devices (booking client missing)

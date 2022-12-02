@@ -40,7 +40,6 @@ export function createDeviceModel(
     requestHandler: RequestHandler,
     device: Device
 ): DeviceModel {
-    requestHandler.log('debug', `Attempting to create a new device model from ${device}`)
     const deviceModel = deviceRepository.create()
     requestHandler.executeSync(writeDeviceModel, deviceModel, device)
     return deviceModel
@@ -52,7 +51,6 @@ export function createDeviceModel(
  * @returns The created role model.
  */
 export function createRoleModel(requestHandler: RequestHandler, role: Role): RoleModel {
-    requestHandler.log('debug', `Attempting to create a new role model from ${role}`)
     const roleModel = roleRepository.create()
     requestHandler.executeSync(writeRoleModel, roleModel, role)
     return roleModel
@@ -67,10 +65,6 @@ export function createPeerconnectionModel(
     requestHandler: RequestHandler,
     peerconnectionUrl: string
 ): PeerconnectionModel {
-    requestHandler.log(
-        'debug',
-        `Attempting to create a new peerconnection model from "${peerconnectionUrl}"`
-    )
     const peerconnectionModel = peerconnectionRepository.create()
     requestHandler.executeSync(
         writePeerconnectionModel,
@@ -89,10 +83,6 @@ export function createParticipantModel(
     requestHandler: RequestHandler,
     participant: Participant
 ): ParticipantModel {
-    requestHandler.log(
-        'debug',
-        `Attempting to create a new participant model from ${participant}`
-    )
     const participantModel = participantRepository.create()
     requestHandler.executeSync(writeParticipantModel, participantModel, participant)
     return participantModel
@@ -107,10 +97,6 @@ export function createServiceConfigurationModel(
     requestHandler: RequestHandler,
     serviceConfiguration: ServiceConfiguration
 ): ServiceConfigurationModel {
-    requestHandler.log(
-        'debug',
-        `Attempting to create a new service configuration model from ${serviceConfiguration}`
-    )
     const serviceConfigurationModel = serviceConfigurationRepository.create()
     requestHandler.executeSync(
         writeServiceConfigurationModel,
@@ -130,10 +116,6 @@ export function createExperimentModel(
     requestHandler: RequestHandler,
     experiment: Experiment
 ): ExperimentModel {
-    requestHandler.log(
-        'debug',
-        `Attempting to create a new experiment model from ${experiment}`
-    )
     const experimentModel = experimentRepository.create()
     requestHandler.executeSync(writeExperimentModel, experimentModel, experiment)
     experimentModel.status = 'created'
