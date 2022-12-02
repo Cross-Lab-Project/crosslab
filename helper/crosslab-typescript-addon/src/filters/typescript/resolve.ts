@@ -1,5 +1,5 @@
 import { OpenAPIV3_1 } from 'openapi-types'
-import { formatName, formatMethodPath } from './format'
+import { formatName, formatOperation } from './format'
 import { userTypeSchema } from './schemas/userType'
 
 /**
@@ -80,7 +80,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
 
                 // Create SimplifiedOperation with known properties
                 let simplifiedOperation: SimplifiedOperation = {
-                    name: formatMethodPath(path, method),
+                    name: formatOperation(path, method),
                     path: path,
                     method: method,
                     serviceName: (operation as any)["x-service-name"],
@@ -255,7 +255,7 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                             ...schema,
                             'x-standalone': false,
                             'x-name': isService ? 
-                                formatMethodPath(path, method) + 'RequestBody' :
+                                formatOperation(path, method) + 'RequestBody' :
                                 formatName(operation.operationId ?? "", false) + 'Body',
                             'x-location': `#/paths/${path}/${method}/requestBody/content/application/json/schema`,
                             'x-service-name': (operation as any)['x-service-name']
@@ -276,7 +276,7 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                     ...schema,
                                     'x-standalone': false,
                                     'x-name': isService ?
-                                        formatMethodPath(path, method) +
+                                        formatOperation(path, method) +
                                         'Response' +
                                         status :
                                         formatName(operation.operationId ?? "", false) + 
@@ -296,7 +296,7 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                     ...schema,
                                     'x-standalone': false,
                                     'x-name': isService ?
-                                        formatMethodPath(path, method) +
+                                        formatOperation(path, method) +
                                         'Header' +
                                         formatName(headerName):
                                         formatName(operation.operationId ?? "", false) +

@@ -44,6 +44,7 @@ import fetch from "cross-fetch"
 
 /**
  * This error class should be used if an error occurs during validation of a request/response.
+ * @category Errors
  */
 export class ValidationError extends Error {
     public errors: any
@@ -57,6 +58,7 @@ export class ValidationError extends Error {
 
 /**
  * This error class should be used if an error occurs while fetching a request.
+ * @category Errors
  */
 export class FetchError extends Error {
     constructor(message: string) {
@@ -68,6 +70,7 @@ export class FetchError extends Error {
 /**
  * This error class should be used if the response of the server has a status 
  * greater than or equal to 400. This error should contain the validated response.
+ * @category Errors
  */
 export class UnsuccessfulRequestError extends Error {
     public response: ResponseData
@@ -81,6 +84,7 @@ export class UnsuccessfulRequestError extends Error {
 
 /**
  * This error class should be used if the validation of an url fails.
+ * @category Errors
  */
 export class InvalidUrlError extends Error {
     constructor(message: string) {
@@ -91,9 +95,8 @@ export class InvalidUrlError extends Error {
 
 /**
  * This function attempts to parse a Response as ResponseData.
- * @internal
  */
-export async function parseResponse(response: Response): Promise<ResponseData> {
+async function parseResponse(response: Response): Promise<ResponseData> {
     let text = null
     try {
         text = await response.text()
@@ -108,9 +111,8 @@ export async function parseResponse(response: Response): Promise<ResponseData> {
  * This function checks if a string is a valid http url.
  * @param string The string to be checked.
  * @returns True if the string is a valid http url.
- * @internal
  */
-export function isValidHttpUrl(string: string) {
+function isValidHttpUrl(string: string) {
     let url
 
     try {
@@ -131,9 +133,8 @@ export function isValidHttpUrl(string: string) {
  * @example
  * // returns ["username", "role_name"]
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
- * @internal
  */
-export function parsePathParameters(url: string, endpoint: string): string[] {
+function parsePathParameters(url: string, endpoint: string): string[] {
     const parameterRegex = '([a-zA-Z0-9-]+)'
     const regex = new RegExp(
         endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$'
@@ -154,9 +155,8 @@ export function parsePathParameters(url: string, endpoint: string): string[] {
  * @example
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
- * @internal
  */
-export function validateUrl(url: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
     if (!isValidHttpUrl(url)) throw new InvalidUrlError('Provided url is not a valid http url')
     return parsePathParameters(url, endpoint)
 }
@@ -172,14 +172,14 @@ export function validateUrl(url: string, endpoint: string): string[] {
  * // returns "https://api.example.com/devices/device_id/token"
  * appendToUrl("https://api.example.com/devices/device_id/", "/token")
  * @returns The url with the appended endpoint.
- * @internal
  */
-export function appendToUrl(url: string, endpoint: string) {
+function appendToUrl(url: string, endpoint: string) {
     return url.endsWith('/') ? `${url.slice(0, -1)}${endpoint}` : `${url}${endpoint}`
 }
 
 /**
  * Client for the use of the Crosslab API
+ * @category Client
  */
 export class APIClient {
     private _url: string
@@ -246,21 +246,27 @@ export class APIClient {
     {%- set buildUrl = operation.buildUrl %}
     {%- set optionalUrl = operation.optionalUrl %}
 
-    {# Handle destructuring of input #}
+    {#- Handle destructuring of input #}
     {%- if operation.destructureInput %}
 
+        {#- Destructure request body schema #}
         {%- set destructured = (
             operation.requestBody.schema | destructureSchema({ 
                 "prefixTypes": (operation.serviceName | formatName) + "Types." 
             })
         ) if operation.requestBody else [] %}
 
+        {#- Construct input declaration #}
         {%- set input %}
+            {#- Add url parameter if needed #}
             {{- "url: string," if requiredUrl and not buildUrl -}}
+
+            {#- Add required properties of destructured request body schema #}
             {%- for property in (destructured | select("attrequalto", ["required", true])) %}
                 {{ property.name }}: {{ property.declaration }},
             {%- endfor %}
 
+            {#- Add required parameters of operation #}
             {%- if operation.parameters %}
                 {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) %}
                     {%- if parameter.in != "path" or buildUrl %}
@@ -269,13 +275,16 @@ export class APIClient {
                 {%- endfor %}
             {%- endif %}
 
+            {#- Construct optional parameters #}
             {%- if  (destructured | select("attrequalto", ["required", false]) | length > 0) or 
                     (operation.parameters and operation.parameters | select("attrequalto", ["required", false]) | length > 0) or
                     optionalUrl %}
                 options?: {
+                    {#- Add optional properties of destructured request body schema #}
                     {%- for property in destructured | select("attrequalto", ["required", false]) %}
                         {{ property.name }}?: {{ property.declaration }},
                     {%- endfor %}
+                    {#- Add optional parameters #}
                     {%- if operation.parameters %}
                         {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) %}
                             {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixTypes": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
@@ -283,9 +292,10 @@ export class APIClient {
                     {%- endif %}
                     {{- "url?: string" if optionalUrl -}}
                 }
-            {%- endif%}
+            {%- endif %}
         {%- endset %}
 
+        {#- Construct body variable declaration #}
         {%- set body %}
             const body: {{ signatures }}.{{ cap_name }}Body = 
             {%- if destructured | length == 1 and destructured[0].top %}
@@ -299,15 +309,21 @@ export class APIClient {
             {%- endif %}
         {%- endset %}
 
+        {#- Construct param tsdoc tags #}
         {%- set params -%}
+            {#- Construct param tag for url #}
             {%- if requiredUrl and not buildUrl -%}
                 {{- "\n\t * " -}} @param url
                 {{- "\n\t * " -}} Url of the resource to be accessed.
             {%- endif -%}
+
+            {#- Construct param tag for required properties of destructured request body schema #}
             {%- for property in destructured | select("attrequalto", ["required", true]) -%}
                 {{- "\n\t * " -}} @param {{ property.name }}
                 {{- "\n\t * " -}} {{ property.description }}
             {%- endfor -%}
+
+            {#- Construct param tag for required parameters #}
             {%- if operation.parameters -%}
                 {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) -%}
                     {%- if parameter.in != "path" or buildUrl -%}
@@ -316,16 +332,22 @@ export class APIClient {
                     {%- endif -%}
                 {%- endfor -%}
             {%- endif -%}
+
+            {#- Construct param tag for optional properties of destructured request body schema #}
             {%- for property in destructured | select("attrequalto", ["required", false]) -%}
                 {{- "\n\t * " -}} @param options.{{ property.name }}
                 {{- "\n\t * " -}} {{ property.description }}
             {%- endfor -%}
+
+            {#- Construct param tag for optional parameters #}
             {%- if operation.parameters -%}
                 {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) -%}
                     {{- "\n\t * " -}} @param options.{{ parameter.name }}
                     {{- "\n\t * " -}} {{ parameter.description }}
                 {%- endfor -%}
             {%- endif -%}
+
+            {#- Construct param tag for optional url #}
             {%- if optionalUrl -%}
                 {{- "\n\t *" }} @param options.url 
                 {{- "\n\t *" }} Url of the {{ operation.serviceName }} to be used.
@@ -334,18 +356,27 @@ export class APIClient {
 
     {%- else %}
 
+        {#- Construct input declaration #}
         {%- set input %}
+            {#- Add url parameter if needed #}
             {{- "url: string," if requiredUrl and not buildUrl -}}
+
+            {#- Add declaration of request body if defined #}
             {%- if operation.requestBody -%}
             {{- bodyName + ": " -}}
             {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixTypes": types + "." }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
             {%- endif -%}
+
+            {#- Add declaration of parameters and optional url if defined #}
             {%- if operation.parameters or optionalUrl -%}
+                {#- Add declaration of required parameters #}
                 {%- if operation.parameters -%}
                     {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) -%}
                         {{- parameter.name + ": " + (parameter.schema | typeDeclaration) + "," if (parameter.in != "path" or buildUrl) -}}
                     {%- endfor -%}
                 {%- endif -%}
+
+                {#- Add declaration of optional parameters / optional url #}
                 {%- if (operation.parameters and operation.parameters | select("attrequalto", ["required", false]) | length > 0) or optionalUrl -%}
                     options?: {
                         {%- if operation.parameters -%}
@@ -359,13 +390,18 @@ export class APIClient {
             {%- endif -%}
         {%- endset %}
 
+        {#- Construct body variable declaration #}
         {%- set body = "const body = " + bodyName if bodyName != "body" else "" %}
 
+        {#- Construct param tsdoc tags #}
         {%- set params -%}
+            {#- Construct param tag for url #}
             {%- if requiredUrl and not buildUrl -%}
                 {{- "\n\t * " -}} @param url
                 {{- "\n\t * " -}} Url of the resource to be accessed.
             {%- endif -%}
+
+            {#- Construct param tag for request body #}
             {%- if operation.requestBody -%}
                 {{- "\n\t * " -}} @param {{ bodyName }}
                 {%- if operation.requestBody.description -%}
@@ -374,6 +410,8 @@ export class APIClient {
                     {{- "\n\t * " -}} {{ operation.requestBody.schema.description | replace(r/\n$/, "") | replace("\n", "\n\t * ") }}
                 {%- endif -%}
             {%- endif -%}
+
+            {#- Construct param tag for parameters #}
             {%- if operation.parameters -%}
                 {%- for parameter in operation.parameters -%}
                     {%- if parameter.in != "path" or buildUrl -%}
@@ -382,6 +420,8 @@ export class APIClient {
                     {%- endif -%}
                 {%- endfor -%}
             {%- endif -%}
+
+            {#- Construct param tag for optional url #}
             {%- if optionalUrl -%}
                 {{- "\n\t * " -}} @param options.url 
                 {{- "\n\t * " -}} Url of the {{ operation.serviceName }} to be used.
@@ -390,6 +430,7 @@ export class APIClient {
 
     {%- endif %}
 
+    {#- Construct parameter variable declaration #}
     {%- if operation.parameters %}
         {%- set parameters %}
         const parameters = {
@@ -400,13 +441,16 @@ export class APIClient {
         {%- endset %}
     {%- endif %}
 
+    {#- Construct returns tsdoc tag #}
     {%- if operation.responses -%}
+        {#- Collect all success responses of operation #}
         {%- set successResponses = [] -%}
         {%- for response in operation.responses -%}
             {%- if response.status < 400 -%}
                 {%- set successResponses = (successResponses.push(response), successResponses) if response.status < 400 -%}
             {%- endif -%}
         {%- endfor -%}
+        {#- Construct returns tsdoc tag #}
         {%- set returns -%}
             {{- "" -}} @returns
             {%- if successResponses | length == 1 -%}
@@ -419,6 +463,7 @@ export class APIClient {
         {%- endset -%}
     {%- endif -%}
 
+    {#- Override input, params and body for logout operation #}
     {%- set input = ("" if low_name == "logout" else input) -%}
     {%- set params = ("" if low_name == "logout" else params) -%}
     {%- set body = ("const body: AuthenticationServiceSignatures.LogoutBody = { token: this._accessToken }" if low_name == "logout" else body) -%}

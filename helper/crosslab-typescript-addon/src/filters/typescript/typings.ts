@@ -1,6 +1,9 @@
 import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName } from './format'
 
+/**
+ * Interface for the property of a destructured schema.
+ */
 interface DestructuredProperty {
     name: string
     declaration: string
@@ -9,16 +12,19 @@ interface DestructuredProperty {
     top: boolean
 }
 
+/**
+ * Typing for destructured schemas.
+ */
 type DestructuredSchema = DestructuredProperty[]
 
 /**
- * Destructures a schema
- * @param schema The schema to be destructured
+ * Destructures a schema.
+ * @param schema The schema to be destructured.
  * @param options.context
- * Other schemas which can be used to determine a changed required property
+ * Other schemas which can be used to determine a changed required property.
  * @param options.prefixTypes
- * The prefix that should be appended to directly resolved types
- * @returns Properties of provided schema
+ * The prefix that should be appended to directly resolved types.
+ * @returns Properties of provided schema.
  */
 export function destructureSchema(
     schema: OpenAPIV3_1.SchemaObject, 
@@ -73,18 +79,18 @@ export function destructureSchema(
 }
 
 /**
- * resolves the type declaration and type dependencies of a schema
+ * resolves the type declaration and type dependencies of a schema.
  * @param schema
- * SchemaObject for which to resolve type declaration and type dependencies
+ * SchemaObject for which to resolve type declaration and type dependencies.
  * @param options.inline
- * Determines if the output should be in one line
+ * Determines if the output should be in one line.
  * @param options.resolveDirectly
- * Determines if a schema with a title should be resolved directly
+ * Determines if a schema with a title should be resolved directly.
  * @param options.context
- * Other schemas which can be used to determine a changed required property
+ * Other schemas which can be used to determine a changed required property.
  * @param options.prefixTypes
- * The prefix that should be appended to directly resolved types
- * @returns comment, type declaration and type dependencies
+ * The prefix that should be appended to directly resolved types.
+ * @returns comment, type declaration and type dependencies.
  */
 export function schemaToTypeDeclaration(
     schema: OpenAPIV3_1.SchemaObject,

@@ -1,4 +1,11 @@
-export function formatMethodPath(
+/**
+ * This function formats the path of an operation.
+ * @param path The path of the operation.
+ * @param method The method of the operation.
+ * @param capitalize If true, the first letter will be capitalized.
+ * @returns The formatted operation path.
+ */
+export function formatOperation(
     path: string,
     method: string,
     capitalize: boolean = false
@@ -43,6 +50,11 @@ export function formatName(name: string, capitalize: boolean = true) {
     return result
 }
 
+/**
+ * This function formats the path of an operation to an express path.
+ * @param path The path of the operation.
+ * @returns A valid express path.
+ */
 export function formatExpressPath(path: string) {
     return path.replace(/\{(.*?)\}/g, ':$1')
 }

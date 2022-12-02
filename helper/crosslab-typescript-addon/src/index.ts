@@ -1,5 +1,5 @@
 import { TypeScriptFilterCollection } from './filters/typescript'
-import { Addon } from '@cross-lab-project/openapi-codegen'
+import { Addon } from '../../openapi-codegeneration/dist'
 import { attributeEqualTo } from './tests'
 
 const CrosslabTypeScriptAddon: Addon = {
@@ -24,6 +24,13 @@ const CrosslabTypeScriptAddon: Addon = {
                 function: attributeEqualTo
             }],
             templatesDir: __dirname + '/templates/client'
+        },
+        {
+            name: 'client:basicValidation',
+            filterCollections: [TypeScriptFilterCollection],
+            globals: [],
+            tests: [],
+            templatesDir: __dirname + '/templates/client-basicValidation'
         }
     ],
 }

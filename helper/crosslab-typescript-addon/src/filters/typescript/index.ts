@@ -1,5 +1,5 @@
 import { OpenAPIV3_1 } from 'openapi-types'
-import { formatName, formatMethodPath, formatExpressPath } from './format'
+import { formatName, formatOperation, formatExpressPath } from './format'
 import {
     ExtendedSchema,
     resolveOperations,
@@ -8,7 +8,7 @@ import {
 } from './resolve'
 import { destructureSchema, schemaToTypeDeclaration } from './typings'
 import { validation_filter } from './validation'
-import { FilterCollection } from '@cross-lab-project/openapi-codegen'
+import { FilterCollection } from '../../../../openapi-codegeneration/dist'
 import { format } from 'prettier'
 
 /**
@@ -198,6 +198,13 @@ function prettier_filter(string: string) {
     return format(string, { parser: 'typescript', tabWidth: 4 })
 }
 
+/**
+ * This function defines a filter that checks if a given string ends with the
+ * provided search string.
+ * @param string The string to be checked.
+ * @param searchString The search string.
+ * @returns True if the given string ends with the search string, else false.
+ */
 function endswith_filter(string: string, searchString: string | RegExp) {
     if (typeof searchString === string)
         return string.endsWith(searchString as string)
@@ -206,6 +213,28 @@ function endswith_filter(string: string, searchString: string | RegExp) {
     return regex.test(string)
 }
 
+/**
+ * This function defines a filter that splits a given string into an array of
+ * substrings divided by the provided split string.
+ * @param string The string to be split.
+ * @param splitString The split string.
+ * @example
+ * ```
+ * "This is a test" | split(" ") = ["This", "is", "a", "test"]
+ * ```
+ * @returns The array of substrings.
+ */
+function split_filter(string: string, splitString: string) {
+    return string.split(splitString)
+}
+
+/**
+ * This function defines a filter that attempts to destructure a schema.
+ * @param schema The schema to be destructured.
+ * @param options.prefixTypes A prefix to be appended to property types.
+ * @param options.context List of schemas used to resolve property types.
+ * @returns The destructured schema
+ */
 function destructureSchema_filter(
     schema: OpenAPIV3_1.SchemaObject, 
     options?: {
@@ -216,6 +245,9 @@ function destructureSchema_filter(
     return destructureSchema(schema, options)
 }
 
+/**
+ * The filter collection for typescript.
+ */
 export const TypeScriptFilterCollection: FilterCollection = {
     name: 'typescript',
     filters: [
@@ -237,7 +269,7 @@ export const TypeScriptFilterCollection: FilterCollection = {
         },
         {
             name: 'formatMethodPath',
-            function: formatMethodPath,
+            function: formatOperation,
         },
         {
             name: 'typeDependencies',
@@ -298,6 +330,10 @@ export const TypeScriptFilterCollection: FilterCollection = {
         {
             name: 'destructureSchema',
             function: destructureSchema_filter
+        },
+        {
+            name: 'split',
+            function: split_filter
         }
     ],
 }
