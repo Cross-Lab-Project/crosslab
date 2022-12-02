@@ -1,7 +1,11 @@
 {
   "name": "@cross-lab-project/tsdoc-theme",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A theme for the typedoc-documentation of the crosslab services and clients.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",

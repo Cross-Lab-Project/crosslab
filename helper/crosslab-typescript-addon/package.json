@@ -1,7 +1,11 @@
 {
   "name": "@cross-lab-project/codegen-typescript-addon",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An addon for openapi-codegen that can be used to generate code for crosslab services and clients in typescript.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  },
   "main": "dist/index.js",
   "scripts": {
     "copy-templates": "rm $(find ./dist/templates -name *.njk) & copyfiles -u 1 src/templates/**/*.njk dist/",
