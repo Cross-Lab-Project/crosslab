@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Simple Update Service (internal)",
     "description": "This is the OpenAPI description for a simple update server.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Update Service"
   },
   "components": {
     "securitySchemes": {
@@ -17,23 +18,24 @@
     "schemas": {
       "update_information": {
         "title": "UpdateInformation",
+        "description": "Information regarding an update. Contains the id of the device, \nthe name of the latest version and a link to it.\n",
         "type": "object",
         "properties": {
           "device_id": {
             "type": "string"
           },
-          "newest_version": {
+          "latest_version": {
             "type": "string"
           },
-          "newest_version_link": {
+          "latest_version_link": {
             "type": "string",
             "format": "uri"
           }
         },
         "required": [
           "device_id",
-          "newest_version",
-          "newest_version_link"
+          "latest_version",
+          "latest_version_link"
         ]
       }
     },
@@ -61,6 +63,7 @@
   "paths": {
     "/updates": {
       "get": {
+        "operationId": "list_updates",
         "tags": [
           "update"
         ],
@@ -102,9 +105,11 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_update",
         "tags": [
           "update"
         ],
@@ -118,6 +123,7 @@
         ],
         "summary": "Create new update information",
         "requestBody": {
+          "description": "The update to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -153,13 +159,23 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/updates/{device_id}": {
       "get": {
+        "operationId": "get_update",
         "tags": [
           "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:list"
+            ]
+          }
         ],
         "summary": "Get update for device",
         "parameters": [
@@ -204,6 +220,7 @@
         }
       },
       "patch": {
+        "operationId": "patch_update",
         "tags": [
           "update"
         ],
@@ -260,6 +277,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_update",
         "tags": [
           "update"
         ],

@@ -3,7 +3,8 @@ title: Availability Rule
 type: object
 allOf:
   - $ref: "./time_slot.yml"
-  - properties: 
+  - type: object
+    properties: 
       available:
         type: boolean
       repeat:

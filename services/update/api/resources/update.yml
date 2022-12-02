@@ -1,7 +1,12 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_update
   tags:
     - update
+  security:
+    - JWT:
+      - update
+      - update:list
   summary: Get update for device
   parameters:
     - $ref: "../parameters/device_id.yml"
@@ -28,6 +33,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: patch_update
   tags:
     - update
   security:
@@ -59,6 +65,7 @@ patch:
     500:
       description: Server Error.
 delete:
+  operationId: delete_update
   tags:
     - update
   security:

@@ -31,7 +31,7 @@ export class ServiceConfigurationError extends ErrorWithStatus {
 }
 
 /**
- * This error class should be used if an object contains an invalid value.
+ * This error class should be used if an operation cannot be executed from the current state.
  */
 export class InvalidStateError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
@@ -57,5 +57,62 @@ export class MissingPropertyError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'MissingPropertyError'
+    }
+}
+
+/**
+ * This error class should be used if a required device is not connection.
+ */
+export class DeviceNotConnectedError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = 'DeviceNotConnectedError'
+    }
+}
+
+/**
+ * This error class should be used as a wrapper for errors thrown by the api-client.
+ */
+export class InternalRequestError extends ErrorWithStatus {
+    public internalError: Error
+
+    constructor(
+        message: string,
+        error: Error,
+        status?: number
+    ) {
+        super(message, status)
+        this.name = 'InternalRequestError'
+        this.internalError = error
+    }
+}
+
+/**
+ * This error class should be used if a booking is invalid.
+ */
+export class InvalidBookingError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = 'InvalidBookingError'
+    }
+}
+
+/**
+ * This error class should be used if an error occurs during JWT verification.
+ */
+export class JWTVerificationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "JWTVerificationError"
+    }
+}
+
+/**
+ * This error class should be used if the body of a request is malformed.
+ */
+ export class MalformedBodyError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedBodyError"
     }
 }

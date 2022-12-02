@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
+  operationId: add_availability_rules
   summary: Update the device availability
   tags:
     - device
@@ -10,12 +11,13 @@ post:
   parameters:
     - $ref: "../parameters/device_id.yml"
   requestBody:
+    description: The availability rules to be applied.
     content:
       application/json:
         $ref: "../content/availability_request.yml"
   responses:
     200:
-      description: The JSON Representation of the changed availability
+      description: The JSON Representation of the changed availability.
       content:
         application/json:
           $ref: "../content/availability.yml"

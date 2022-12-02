@@ -1,19 +1,12 @@
 import { config } from '../config'
-import { AppDataSource } from '../data_source'
 import {
-    DeviceOverview,
     ConcreteDevice,
     DeviceGroup,
-    VirtualDevice,
+    InstantiableCloudDevice,
+    InstantiableBrowserDevice,
 } from '../generated/types'
 import { apiClient } from '../globals'
-import {
-    DeviceReferenceModel,
-    ConcreteDeviceModel,
-    DeviceGroupModel,
-    VirtualDeviceModel,
-} from '../model'
-import { InconsistentDatabaseError } from '../types/errors'
+import { DeviceReferenceModel } from '../model'
 
 /**
  * This function builds the url of a device using its id.
@@ -44,24 +37,6 @@ export function peerconnectionUrlFromId(peerconnectionId: string): string {
 }
 
 /**
- * This function checks if a {@link DeviceOverview} is a {@link ConcreteDevice}.
- * @param device The {@link DeviceOverview} to be checked.
- * @returns True if the {@link DeviceOverview} is a {@link ConcreteDevice}, else false.
- */
-export function isConcreteDevice(device: DeviceOverview): device is ConcreteDevice {
-    return device.type == 'device'
-}
-
-/**
- * This function checks if a {@link DeviceOverview} is a {@link DeviceGroup}.
- * @param device The {@link DeviceOverview} to be checked.
- * @returns True if the {@link DeviceOverview} is a {@link DeviceGroup}, else false.
- */
-export function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
-    return device.type == 'group'
-}
-
-/**
  * This function resolves a reference to a device.
  * @param reference The reference to be resolved.
  * @param flat_group If true then the resolved device group will contain no further device groups.
@@ -70,7 +45,13 @@ export function isDeviceGroup(device: DeviceOverview): device is DeviceGroup {
 export async function resolveDeviceReference(
     reference: DeviceReferenceModel,
     flat_group: boolean = false
-): Promise<ConcreteDevice | DeviceGroup | VirtualDevice | undefined> {
+): Promise<
+    | ConcreteDevice
+    | DeviceGroup
+    | InstantiableCloudDevice
+    | InstantiableBrowserDevice
+    | undefined
+> {
     if (reference.url) {
         const deviceId = reference.url.split('/').at(-1)
         if (!deviceId) return undefined
@@ -97,55 +78,11 @@ export function flattenDeviceGroup(deviceGroup: DeviceGroup): ConcreteDevice[] {
         for (const device of deviceGroup.devices) {
             if (!device.type) continue
             if (device.type == 'device') devices.push(device)
+            if (device.type == 'edge instantiable') devices.push(device)
+            if (device.type == 'cloud instantiable') devices.push(device)
             if (device.type == 'group') devices.push(...flattenDeviceGroup(device))
         }
     }
 
     return devices
-}
-
-/**
- * This function retrieves a device from the database by its UUID.
- * @param uuid The UUID of the device to be retrieved.
- * @throws {InconsistentDatabaseError} Thrown if device is found as multiple types.
- * @returns The retrieved device.
- */
-export async function getDeviceModelByUUID(
-    uuid: string
-): Promise<ConcreteDeviceModel | DeviceGroupModel | VirtualDeviceModel | undefined> {
-    const concreteDeviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-    const deviceGroupRepository = AppDataSource.getRepository(DeviceGroupModel)
-    const virtualDeviceRepository = AppDataSource.getRepository(VirtualDeviceModel)
-    const concreteDevice = await concreteDeviceRepository.findOne({
-        where: {
-            uuid: uuid,
-        },
-        relations: {
-            announcedAvailability: true,
-        },
-    })
-    const deviceGroup = await deviceGroupRepository.findOne({
-        where: {
-            uuid: uuid,
-        },
-        relations: {
-            devices: true,
-        },
-    })
-    const virtualDevice = await virtualDeviceRepository.findOne({
-        where: {
-            uuid: uuid,
-        },
-    })
-
-    if (
-        (concreteDevice && deviceGroup) ||
-        (concreteDevice && virtualDevice) ||
-        (deviceGroup && virtualDevice)
-    )
-        throw new InconsistentDatabaseError('Multiple devices found for same uuid')
-    if (concreteDevice) return concreteDevice
-    if (deviceGroup) return deviceGroup
-    if (virtualDevice) return virtualDevice
-    return undefined
 }

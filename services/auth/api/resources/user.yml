@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_user
   summary: Get user by username
   tags:
     - user
@@ -11,7 +12,7 @@ get:
     - $ref: "../parameters/username.yml"
   responses:
     200:
-      description: The JSON respresentation of the user
+      description: The JSON respresentation of the user.
       content:
         application/json:
           $ref: "../content/user.yml"
@@ -26,6 +27,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: update_user
   summary: Update user by username
   tags:
     - user
@@ -42,7 +44,7 @@ patch:
         $ref: "../content/user.yml"
   responses:
     200:
-      description: The JSON representation of the updated user
+      description: The JSON representation of the updated user.
       content:
         application/json:
           $ref: "../content/user.yml"
@@ -57,6 +59,7 @@ patch:
     500:
       description: Server Error.
 delete:
+  operationId: delete_user
   summary: Delete user by username
   tags:
     - user

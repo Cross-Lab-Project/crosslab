@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_identity
   summary: Get identity of yourself
   tags:
     - identity
@@ -9,7 +10,7 @@ get:
       - identity:list
   responses:
     200:
-      description: The JSON representation of the corresponding user
+      description: The JSON representation of the corresponding user.
       content: 
         application/json:
           $ref: "../content/user.yml"
@@ -24,6 +25,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: update_identity
   summary: Update identity of yourself
   tags:
     - identity
@@ -32,13 +34,13 @@ patch:
       - identity
       - identity:edit
   requestBody:
-    description: Updated identity
+    description: Updated identity.
     content:
       application/json:
         $ref: "../content/user.yml"
   responses:
     200:
-      description: The JSON representation of the updated user
+      description: The JSON representation of the updated user.
       content:
         application/json:
           $ref: "../content/user.yml"

@@ -3,22 +3,20 @@
   "info": {
     "title": "CrossLab Simple Authentication Service (internal)",
     "description": "This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Authentication Service"
   },
-  "servers": [
-    {
-      "url": "https://api.goldi-labs.de"
-    },
-    {
-      "url": "http://localhost"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "TuiAuth": {
         "type": "http",
         "scheme": "basic",
         "description": "Basic authentication using the TUI username and password."
+      },
+      "AccessToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A token for user authentication."
       },
       "JWT": {
         "type": "http",
@@ -52,10 +50,19 @@
           "description": "The protocol of the client."
         }
       },
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "Url of the device.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
       "username": {
         "in": "path",
         "name": "username",
-        "description": "Username of the user",
+        "description": "Username of a user.",
         "required": true,
         "schema": {
           "type": "string"
@@ -64,7 +71,7 @@
       "role_name": {
         "in": "path",
         "name": "role_name",
-        "description": "Name of the role",
+        "description": "Name of a role.",
         "required": true,
         "schema": {
           "type": "string"
@@ -77,9 +84,11 @@
         "type": "object",
         "properties": {
           "username": {
+            "description": "Username of the user.",
             "type": "string"
           },
           "password": {
+            "description": "Password of the user.",
             "type": "string"
           }
         },
@@ -91,6 +100,7 @@
       "auth_method": {
         "title": "AuthMethod",
         "type": "string",
+        "description": "Authentication method.",
         "enum": [
           "tui",
           "local"
@@ -135,6 +145,7 @@
   "paths": {
     "/auth": {
       "get": {
+        "operationId": "auth",
         "x-internal": true,
         "tags": [
           "authentication"
@@ -144,7 +155,6 @@
             "AccessToken": []
           }
         ],
-        "operationId": "auth",
         "summary": "Authenticate user",
         "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
         "parameters": [
@@ -192,10 +202,15 @@
     },
     "/login": {
       "post": {
+        "operationId": "login",
         "tags": [
           "authentication"
         ],
-        "operationId": "login",
+        "security": [
+          {
+            "TuiAuth": []
+          }
+        ],
         "summary": "Login user",
         "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
         "requestBody": {
@@ -226,7 +241,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "the access token",
+                  "description": "The access token.",
                   "type": "string"
                 }
               }
@@ -247,11 +262,13 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-destructure-input": true
       }
     },
     "/logout": {
       "post": {
+        "operationId": "logout",
         "tags": [
           "authentication"
         ],
@@ -262,7 +279,6 @@
             ]
           }
         ],
-        "operationId": "logout",
         "summary": "Logout user",
         "description": "This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.",
         "requestBody": {
@@ -274,7 +290,7 @@
                 "properties": {
                   "token": {
                     "type": "string",
-                    "description": "The token to be invalidated"
+                    "description": "The token to be invalidated."
                   }
                 }
               }
@@ -303,8 +319,9 @@
         }
       }
     },
-    "/device_token": {
+    "/device_authentication_token": {
       "post": {
+        "operationId": "create_device_authentication_token",
         "tags": [
           "authentication"
         ],
@@ -316,12 +333,16 @@
             ]
           }
         ],
-        "operationId": "device_token",
-        "summary": "Authenticate user",
-        "description": "This endpoint will generate a new device token linked to the requesting user.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_url"
+          }
+        ],
+        "summary": "Create a new device authentication token",
+        "description": "This endpoint will generate a new device authentication token.",
         "responses": {
           "200": {
-            "description": "Return the token which represents the device.",
+            "description": "The new device authentication token.",
             "content": {
               "application/json": {
                 "schema": {
@@ -350,6 +371,7 @@
     },
     "/users": {
       "get": {
+        "operationId": "list_users",
         "summary": "Get all users",
         "tags": [
           "user"
@@ -364,7 +386,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON representation of the users",
+            "description": "The JSON representation of the users.",
             "content": {
               "application/json": {
                 "schema": {
@@ -391,9 +413,11 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_user",
         "summary": "Create new user",
         "tags": [
           "user"
@@ -407,7 +431,7 @@
           }
         ],
         "requestBody": {
-          "description": "User to be created",
+          "description": "User to be created.",
           "content": {
             "application/json": {
               "schema": {
@@ -418,7 +442,7 @@
         },
         "responses": {
           "201": {
-            "description": "The JSON representation of the created user",
+            "description": "The JSON representation of the created user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -442,11 +466,13 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/users/{username}": {
       "get": {
+        "operationId": "get_user",
         "summary": "Get user by username",
         "tags": [
           "user"
@@ -466,7 +492,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON respresentation of the user",
+            "description": "The JSON respresentation of the user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -493,6 +519,7 @@
         }
       },
       "patch": {
+        "operationId": "update_user",
         "summary": "Update user by username",
         "tags": [
           "user"
@@ -522,7 +549,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON representation of the updated user",
+            "description": "The JSON representation of the updated user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -549,6 +576,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_user",
         "summary": "Delete user by username",
         "tags": [
           "user"
@@ -590,6 +618,7 @@
     },
     "/users/{username}/roles/{role_name}": {
       "put": {
+        "operationId": "add_role_to_user",
         "summary": "Add new role to user",
         "tags": [
           "user"
@@ -612,7 +641,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON representation of the updated user",
+            "description": "The JSON representation of the updated user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -636,9 +665,12 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-build-url": true,
+        "x-optional-url": true
       },
       "delete": {
+        "operationId": "remove_role_from_user",
         "summary": "Delete role from user",
         "tags": [
           "user"
@@ -661,7 +693,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Role deleted successfully from user"
+            "description": "Role deleted successfully from user."
           },
           "400": {
             "description": "Bad Request."
@@ -678,11 +710,14 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-build-url": true,
+        "x-optional-url": true
       }
     },
     "/identity": {
       "get": {
+        "operationId": "get_identity",
         "summary": "Get identity of yourself",
         "tags": [
           "identity"
@@ -697,7 +732,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON representation of the corresponding user",
+            "description": "The JSON representation of the corresponding user.",
             "content": {
               "application/json": {
                 "schema": {
@@ -724,6 +759,7 @@
         }
       },
       "patch": {
+        "operationId": "update_identity",
         "summary": "Update identity of yourself",
         "tags": [
           "identity"
@@ -737,7 +773,7 @@
           }
         ],
         "requestBody": {
-          "description": "Updated identity",
+          "description": "Updated identity.",
           "content": {
             "application/json": {
               "schema": {
@@ -748,7 +784,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON representation of the updated user",
+            "description": "The JSON representation of the updated user.",
             "content": {
               "application/json": {
                 "schema": {

@@ -1,5 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
+  title: Availability Rules
+  description: The availability rule to be applied.
   type: array
   items:
     $ref: "../schemas/availability_rule.yml"

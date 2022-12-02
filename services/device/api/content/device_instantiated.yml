@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  type: object
+  properties:
+    instance:
+      $ref: '../schemas/device_concrete.yml'
+    deviceToken:
+      type: string

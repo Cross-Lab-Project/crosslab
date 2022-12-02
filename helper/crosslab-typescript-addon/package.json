@@ -1,0 +1,32 @@
+{
+  "name": "@cross-lab-project/codegen-typescript-addon",
+  "version": "0.0.4",
+  "description": "An addon for openapi-codegen that can be used to generate code for crosslab services and clients in typescript.",
+  "main": "dist/index.js",
+  "scripts": {
+    "copy-templates": "rm $(find ./dist/templates -name *.njk) & copyfiles -u 1 src/templates/**/*.njk dist/",
+    "build": "tsc && npm run copy-templates",
+    "format": "npx prettier src --write"
+  },
+  "author": "Pierre Helbing",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@cross-lab-project/openapi-codegen": "^0.1.0",
+    "@types/node": "^17.0.35",
+    "@types/nunjucks": "^3.2.1",
+    "@types/prettier": "^2.6.3",
+    "@types/seedrandom": "^3.0.2",
+    "copyfiles": "^2.4.1",
+    "openapi-types": "^12.0.0",
+    "tsc-watch": "^5.0.3",
+    "typescript": "^4.6.4"
+  },
+  "peerDependencies": {
+    "@cross-lab-project/openapi-codegen": "^0.1.0",
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1",
+    "nunjucks": "^3.2.3",
+    "prettier": "^2.6.2"
+  }
+}

@@ -5,6 +5,7 @@ info:
   description: |-
     This is the OpenAPI description of the internal CrossLab Device Service REST API.
   version: 0.0.1
+  x-service-name: Device Service
 
 components:
   securitySchemes:
@@ -33,8 +34,8 @@ paths:
     $ref: "./resources/device.yml"
   /devices/{device_id}/availability:
     $ref: "./resources/device_availability.yml"
-  /devices/{device_id}/token:
-    $ref: "./resources/device_token.yml"
+  /devices/{device_id}/websocket:
+    $ref: "./resources/websocket_token.yml"
   /devices/{device_id}/signaling:
     $ref: "./resources/device_signaling.yml"
   /peerconnections:

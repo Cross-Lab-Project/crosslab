@@ -10,4 +10,12 @@ allOf:
         maxItems: 2
         items:
           $ref: "./configured_device_reference.yml"
+      status:
+        type: string
+        description: The status of the peerconnection.
+        enum:
+          - waiting-for-devices
+          - connected
+          - failed
+          - closed
 x-typeguard: true

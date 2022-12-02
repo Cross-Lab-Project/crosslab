@@ -6,6 +6,7 @@ import {
     getAllowlistedUser,
     getTokenByTokenString,
     getTokenStringFromAuthorization,
+    signDeviceToken,
     signUserToken,
 } from '../methods/auth'
 import {
@@ -66,8 +67,17 @@ export const getAuth: getAuthSignature = async (parameters) => {
         if (token.expiresOn && new Date(token.expiresOn).getTime() < Date.now())
             throw new ExpiredError(`Token is expired`)
 
-        console.log(`signing jwt for user ${user.username}`)
-        const jwt = await signUserToken(user, activeKey)
+        let jwt
+        // Check if token has a device
+        if (token.device) {
+            // Sign device token
+            console.log(`signing jwt for device ${token.device}`)
+            jwt = await signDeviceToken(token.device, user, activeKey)
+        } else {
+            // Sign user token
+            console.log(`signing jwt for user ${user.username}`)
+            jwt = await signUserToken(user, activeKey)
+        }
 
         // Update token expiration time
         if (token.expiresOn) token.expiresOn = new Date(Date.now() + HOUR).toISOString()

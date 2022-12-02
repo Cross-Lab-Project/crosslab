@@ -99,3 +99,26 @@ export class LdapBindError extends LdapError {
         this.name = 'LdapBindError'
     }
 }
+
+/**
+ * This error class should be used as a wrapper for errors thrown by the api-client.
+ */
+export class InternalRequestError extends ErrorWithStatus {
+    public internalError: Error
+
+    constructor(message: string, error: Error, status?: number) {
+        super(message, status)
+        this.name = 'InternalRequestError'
+        this.internalError = error
+    }
+}
+
+/**
+ * This error class should be used when an user is not the owner of a device.
+ */
+export class OwnershipError extends ErrorWithStatus {
+    constructor() {
+        super(`User is not the owner of the device`, 403)
+        this.name = 'OwnershipError'
+    }
+}

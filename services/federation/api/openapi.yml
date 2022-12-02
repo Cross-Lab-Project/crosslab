@@ -1,12 +1,11 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
 openapi: 3.1.0
 info:
-  title: CrossLab Device Service REST API (internal)
+  title: CrossLab Federation Service REST API (internal)
   description: |-
-    This is the OpenAPI description of the internal CrossLab Device Service REST API.
+    This is the OpenAPI description of the internal CrossLab Federation Service REST API.
   version: 0.0.1
-servers:
-  - url: http://localhost:3000
+  x-service-name: Federation Service
 
 components:
   securitySchemes:
@@ -15,7 +14,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: |-
-        As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.
+        As this is the API description of the internal Federation API, the only supported security schema is the JWT bearer token.
         This token will be populated by the API Gateway.
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 tags:

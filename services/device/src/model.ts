@@ -24,29 +24,56 @@ export function isDeviceGroupModel(
     return device.type === 'group'
 }
 
-export function isVirtualDeviceModel(
+export function isInstantiableCloudDeviceModel(
     device: DeviceOverviewModel
-): device is VirtualDeviceModel {
-    return device.type === 'virtual'
+): device is InstantiableCloudDeviceModel {
+    return device.type === 'cloud instantiable'
+}
+
+export function isInstantiableBrowserDeviceModel(
+    device: DeviceOverviewModel
+): device is InstantiableBrowserDeviceModel {
+    return device.type === 'edge instantiable'
+}
+
+export function isInstantiableDeviceModel(
+    device: DeviceOverviewModel
+): device is InstantiableBrowserDeviceModel | InstantiableCloudDeviceModel {
+    return (
+        isInstantiableBrowserDeviceModel(device) || isInstantiableCloudDeviceModel(device)
+    )
 }
 
 @Entity({ name: 'Device' })
 @TableInheritance({
-    column: { type: 'varchar', name: 'type', enum: ['device', 'group'] },
+    column: {
+        type: 'varchar',
+        name: 'type',
+        enum: ['device', 'group', 'cloud instantiable', 'edge instantiable'],
+    },
 })
 export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
     name?: string
-    @Column()
+    @Column({nullable: true})
     description?: string
     @Column()
-    type?: 'device' | 'group' | 'virtual'
+    type?: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
     @Column()
     owner?: string
     @DeleteDateColumn()
     deletedAt?: Date
+}
+
+@ChildEntity()
+export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewModel {
+    @OneToMany(() => ConcreteDeviceModel, (concreteDevice) => concreteDevice.instanceOf, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
+    instances?: ConcreteDeviceModel[]
 }
 
 @ChildEntity('device')
@@ -74,6 +101,11 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
         cascade: true,
     })
     services?: ServiceModel[]
+    @ManyToOne(
+        () => InstantiableDeviceOverviewModel,
+        (instantiableDevice) => instantiableDevice.instances
+    )
+    instanceOf?: InstantiableDeviceOverviewModel
 }
 
 @ChildEntity('group')
@@ -87,10 +119,20 @@ export class DeviceGroupModel extends DeviceOverviewModel {
     devices?: DeviceReferenceModel[]
 }
 
-@ChildEntity('virtual')
-export class VirtualDeviceModel extends DeviceOverviewModel {
+@ChildEntity('cloud instantiable')
+export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
-    type?: 'virtual'
+    type?: 'cloud instantiable'
+    @Column()
+    instantiateUrl?: string
+}
+
+@ChildEntity('edge instantiable')
+export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewModel {
+    @Column()
+    type?: 'edge instantiable'
+    @Column()
+    codeUrl?: string
 }
 
 @Entity({ name: 'DeviceReference' })
@@ -159,6 +201,8 @@ export class TimeSlotModel {
 export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
+    @Column()
+    status!: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
     @OneToOne(() => DeviceReferenceModel, { onDelete: 'CASCADE', cascade: true })
     @JoinColumn()
     deviceA!: DeviceReferenceModel
@@ -187,7 +231,7 @@ export class ServiceConfigModel {
     deletedAt?: Date
 }
 
-@Entity({ name: 'ServiceDescription'})
+@Entity({ name: 'ServiceDescription' })
 export class ServiceModel {
     @PrimaryGeneratedColumn()
     id!: number

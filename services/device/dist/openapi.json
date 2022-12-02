@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Device Service REST API (internal)",
     "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Device Service"
   },
   "components": {
     "securitySchemes": {
@@ -27,10 +28,6 @@
               "messageType": {
                 "const": "authenticate"
               },
-              "deviceUrl": {
-                "type": "string",
-                "format": "uri"
-              },
               "token": {
                 "type": "string"
               },
@@ -39,8 +36,7 @@
               }
             },
             "required": [
-              "messageType",
-              "deviceUrl"
+              "messageType"
             ]
           }
         ],
@@ -70,14 +66,17 @@
             "enum": [
               "device",
               "group",
-              "virtual"
+              "edge instantiable",
+              "cloud instantiable"
             ]
           },
           "owner": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "readOnly": true
           }
-        }
+        },
+        "x-typeguard": true
       },
       "time_slot": {
         "title": "Time Slot",
@@ -133,7 +132,8 @@
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       },
       "availability_rule": {
         "title": "Availability Rule",
@@ -143,6 +143,7 @@
             "$ref": "#/components/schemas/time_slot"
           },
           {
+            "type": "object",
             "properties": {
               "available": {
                 "type": "boolean"
@@ -203,10 +204,11 @@
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       },
-      "device_virtual": {
-        "title": "Virtual Device",
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview"
@@ -215,11 +217,37 @@
             "type": "object",
             "properties": {
               "type": {
-                "const": "virtual"
+                "const": "cloud instantiable"
+              },
+              "instantiate_url": {
+                "type": "string",
+                "format": "uri"
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "code_url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ],
+        "x-typeguard": true
       },
       "message": {
         "title": "Message",
@@ -302,11 +330,20 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/service_config"
+                  "$ref": "#/components/schemas/service_config",
+                  "required": [
+                    "serviceType",
+                    "serviceId",
+                    "remoteServiceId"
+                  ]
                 }
               },
               "tiebreaker": {
                 "type": "boolean"
+              },
+              "config": {
+                "type": "object",
+                "additionalProperties": true
               }
             },
             "required": [
@@ -385,6 +422,7 @@
         "x-typeguard": true
       },
       "device_reference": {
+        "title": "Device Reference",
         "type": "object",
         "properties": {
           "url": {
@@ -415,6 +453,7 @@
         }
       },
       "configured_device_reference": {
+        "title": "Configured Device Reference",
         "type": "object",
         "properties": {
           "url": {
@@ -451,6 +490,16 @@
                 "items": {
                   "$ref": "#/components/schemas/configured_device_reference"
                 }
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the peerconnection.",
+                "enum": [
+                  "waiting-for-devices",
+                  "connected",
+                  "failed",
+                  "closed"
+                ]
               }
             }
           }
@@ -515,6 +564,16 @@
           "format": "uri"
         }
       },
+      "status_changed_url": {
+        "name": "statusChangedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called if the status of the peerconnection changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
       "peerconnection_id": {
         "in": "path",
         "name": "peerconnection_id",
@@ -543,6 +602,7 @@
   "paths": {
     "/devices": {
       "get": {
+        "operationId": "list_devices",
         "summary": "List devices",
         "tags": [
           "device"
@@ -557,7 +617,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all devices",
+            "description": "The list of all devices.",
             "content": {
               "application/json": {
                 "schema": {
@@ -584,9 +644,11 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_device",
         "summary": "Create a new device",
         "tags": [
           "device"
@@ -605,10 +667,12 @@
           }
         ],
         "requestBody": {
+          "description": "The device to be created.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
                     "allOf": [
@@ -632,7 +696,10 @@
                     "$ref": "#/components/schemas/device_group"
                   },
                   {
-                    "$ref": "#/components/schemas/device_virtual"
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -756,7 +823,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -914,7 +984,10 @@
                                 "$ref": "#/components/schemas/device_group"
                               },
                               {
-                                "$ref": "#/components/schemas/device_virtual"
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -934,11 +1007,13 @@
               }
             }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/devices/{device_id}": {
       "get": {
+        "operationId": "get_device",
         "summary": "View a registered device",
         "tags": [
           "device"
@@ -961,7 +1036,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device",
+            "description": "The JSON Representation of the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -973,7 +1048,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -1101,6 +1179,7 @@
         }
       },
       "patch": {
+        "operationId": "update_device",
         "summary": "Update an existing device",
         "tags": [
           "device"
@@ -1122,10 +1201,11 @@
           }
         ],
         "requestBody": {
-          "description": "Update the device",
+          "description": "Updated device.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
                     "allOf": [
@@ -1149,7 +1229,10 @@
                     "$ref": "#/components/schemas/device_group"
                   },
                   {
-                    "$ref": "#/components/schemas/device_virtual"
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -1261,7 +1344,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed device",
+            "description": "The JSON Representation of the changed device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1273,7 +1356,10 @@
                       "$ref": "#/components/schemas/device_group"
                     },
                     {
-                      "$ref": "#/components/schemas/device_virtual"
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -1431,7 +1517,10 @@
                                 "$ref": "#/components/schemas/device_group"
                               },
                               {
-                                "$ref": "#/components/schemas/device_virtual"
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -1454,6 +1543,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_device",
         "summary": "Delete a registered device",
         "tags": [
           "device"
@@ -1473,7 +1563,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The device was deleted"
+            "description": "The device was deleted."
           },
           "400": {
             "description": "Bad Request."
@@ -1493,7 +1583,8 @@
         }
       },
       "post": {
-        "summary": "Create an instance of a virtual device",
+        "operationId": "instantiate_device",
+        "summary": "Instantiate a cloud instantiable device",
         "tags": [
           "device"
         ],
@@ -1515,11 +1606,19 @@
         ],
         "responses": {
           "201": {
-            "description": "The JSON Representation of the created instance of the virtual device",
+            "description": "The JSON Representation of the created instance.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/device_concrete"
+                  "type": "object",
+                  "properties": {
+                    "instance": {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    "deviceToken": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -1587,6 +1686,7 @@
     },
     "/devices/{device_id}/availability": {
       "post": {
+        "operationId": "add_availability_rules",
         "summary": "Update the device availability",
         "tags": [
           "device"
@@ -1605,9 +1705,12 @@
           }
         ],
         "requestBody": {
+          "description": "The availability rules to be applied.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Availability Rules",
+                "description": "The availability rule to be applied.",
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/availability_rule"
@@ -1654,7 +1757,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed availability",
+            "description": "The JSON Representation of the changed availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1681,9 +1784,10 @@
         }
       }
     },
-    "/devices/{device_id}/token": {
+    "/devices/{device_id}/websocket": {
       "post": {
-        "summary": "Create new token for device",
+        "operationId": "create_websocket_token",
+        "summary": "Create new websocket token for device",
         "tags": [
           "device"
         ],
@@ -1702,7 +1806,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The newly generated token for the device",
+            "description": "The newly generated websocket token for the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1731,6 +1835,7 @@
     },
     "/devices/{device_id}/signaling": {
       "post": {
+        "operationId": "send_signaling_message",
         "summary": "Send signaling message to device",
         "tags": [
           "device"
@@ -1752,9 +1857,11 @@
           }
         ],
         "requestBody": {
+          "description": "The signaling message to be sent.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Sig Message",
                 "anyOf": [
                   {
                     "$ref": "#/components/schemas/create_peerconnection_message"
@@ -1773,7 +1880,7 @@
         },
         "responses": {
           "200": {
-            "description": "The signaling message was delivered successfully"
+            "description": "The signaling message was delivered successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -1795,6 +1902,7 @@
     },
     "/peerconnections": {
       "get": {
+        "operationId": "list_peerconnections",
         "summary": "List Peer Connection",
         "tags": [
           "peerconnection"
@@ -1809,7 +1917,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all peerconnection.",
+            "description": "The list of all peerconnections.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1836,9 +1944,11 @@
           "500": {
             "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_peerconnection",
         "summary": "Create a new Peer Connection",
         "tags": [
           "peerconnection"
@@ -1854,9 +1964,13 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/closed_url"
+          },
+          {
+            "$ref": "#/components/parameters/status_changed_url"
           }
         ],
         "requestBody": {
+          "description": "The peerconnection to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -1868,7 +1982,17 @@
         },
         "responses": {
           "201": {
-            "description": "The peer connection was created. A JSON representation of the new peer connection is returned.",
+            "description": "The peerconnection was created. A JSON representation of the new peer connection is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The device service will attempt to create the peerconnection as soon as possible.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1933,12 +2057,54 @@
                 }
               }
             }
+          },
+          "status-changed": {
+            "{$request.query.statusChangedUrl}": {
+              "post": {
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-status-changed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/peerconnections/{peerconnection_id}": {
       "get": {
+        "operationId": "get_peerconnection",
         "summary": "View a peer connection",
         "tags": [
           "peerconnection"
@@ -1953,7 +2119,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device peer connection",
+            "description": "The JSON Representation of the device peer connection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1985,6 +2151,7 @@
         ]
       },
       "delete": {
+        "operationId": "delete_peerconnection",
         "summary": "Delete a peer connection",
         "tags": [
           "peerconnection"
@@ -1999,7 +2166,7 @@
         ],
         "responses": {
           "204": {
-            "description": "The peer connection was deleted successfully"
+            "description": "The peer connection was deleted successfully."
           },
           "400": {
             "description": "Bad Request."

@@ -1,15 +1,18 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: UpdateInformation
+description: |
+  Information regarding an update. Contains the id of the device, 
+  the name of the latest version and a link to it.
 type: object
 properties: 
   device_id: 
     type: string
-  newest_version:
+  latest_version:
     type: string
-  newest_version_link:
+  latest_version_link:
     type: string
     format: uri
 required: 
   - device_id
-  - newest_version
-  - newest_version_link
+  - latest_version
+  - latest_version_link

@@ -21,3 +21,4 @@ allOf:
         items:
           type: object
           additionalProperties: true
+x-typeguard: true

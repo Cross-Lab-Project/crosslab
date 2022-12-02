@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_peerconnections
   summary: List Peer Connection
   tags:
     - peerconnection
@@ -9,7 +10,7 @@ get:
       - peerconnection:list
   responses:
     200:
-      description: The list of all peerconnection.
+      description: The list of all peerconnections.
       content:
         application/json:
           $ref: '../content/peerconnection_list.yml'
@@ -23,7 +24,9 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
+  operationId: create_peerconnection
   summary: Create a new Peer Connection
   tags:
     - peerconnection
@@ -33,14 +36,21 @@ post:
       - peerconnection:create
   parameters:
     - $ref: '../parameters/closed_url.yml'
+    - $ref: '../parameters/status_changed_url.yml'
   requestBody:
+    description: The peerconnection to be created.
     required: true
     content:
       application/json:
         $ref: '../content/peerconnection.yml'
   responses:
     201:
-      description: The peer connection was created. A JSON representation of the new peer connection is returned.
+      description: The peerconnection was created. A JSON representation of the new peer connection is returned.
+      content:
+        application/json:
+          $ref: '../content/peerconnection.yml'
+    202:
+      description: The device service will attempt to create the peerconnection as soon as possible.
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
@@ -61,9 +71,22 @@ post:
           requestBody:
             content:
               application/json:
-                $ref: '../content/peerconnection_event.yml'
+                $ref: '../content/peerconnection_closed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.
             410:
               description: The callback is no longer required.
+    status-changed:
+      '{$request.query.statusChangedUrl}':
+        post:
+          requestBody:
+            content:
+              application/json:
+                $ref: '../content/peerconnection_status_changed_event.yml'
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required.
+  x-optional-url: true

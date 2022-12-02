@@ -69,3 +69,33 @@ export class InvalidChangeError extends ErrorWithStatus {
         this.name = 'InvalidChangeError'
     }
 }
+
+/**
+ * This error class should be used if a required device is not connection.
+ */
+export class DeviceNotConnectedError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = 'DeviceNotConnectedError'
+    }
+}
+
+/**
+ * This error class should be used if an error occurs during JWT verification.
+ */
+ export class JWTVerificationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "JWTVerificationError"
+    }
+}
+
+/**
+ * This error class should be used if the body of a request is malformed.
+ */
+ export class MalformedBodyError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedBodyError"
+    }
+}

@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_peerconnection
   summary: View a peer connection
   tags:
     - peerconnection
@@ -9,7 +10,7 @@ get:
       - peerconnection:list
   responses:
     200:
-      description: The JSON Representation of the device peer connection
+      description: The JSON Representation of the device peer connection.
       content:
         application/json:
           $ref: '../content/peerconnection.yml'
@@ -26,6 +27,7 @@ get:
   parameters:
     - $ref: '../parameters/peerconnection_id.yml'
 delete:
+  operationId: delete_peerconnection
   summary: Delete a peer connection
   tags:
     - peerconnection
@@ -35,7 +37,7 @@ delete:
       - peerconnection:create
   responses:
     204:
-      description: The peer connection was deleted successfully
+      description: The peer connection was deleted successfully.
     400:
       description: Bad Request.
     401:

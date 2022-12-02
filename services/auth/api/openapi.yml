@@ -5,10 +5,7 @@ info:
   description: |-
     This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.
   version: 0.0.1
-
-servers:
-  - url: https://api.goldi-labs.de
-  - url: http://localhost
+  x-service-name: Authentication Service
 
 components:
   securitySchemes:
@@ -16,6 +13,10 @@ components:
       type: http
       scheme: basic
       description: Basic authentication using the TUI username and password.
+    AccessToken:
+      type: http
+      scheme: bearer
+      description: A token for user authentication.
     JWT:
       type: http
       scheme: bearer
@@ -31,8 +32,8 @@ paths:
     $ref: "./resources/login.yml"
   /logout:
     $ref: "./resources/logout.yml"
-  /device_token:
-    $ref: "./resources/device_token.yml"
+  /device_authentication_token:
+    $ref: "./resources/device_authentication_token.yml"
   /users:
     $ref: "./resources/users.yml"
   /users/{username}:

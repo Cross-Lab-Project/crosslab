@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_experiments
   summary: List experiments
   tags:
     - experiment
@@ -23,7 +24,9 @@ get:
       description: Resource not found.
     500:
       description: Server Error.
+  x-optional-url: true
 post:
+  operationId: create_experiment
   summary: Create a new experiment
   tags:
     - experiment
@@ -32,6 +35,7 @@ post:
       - experiment
       - experiment:create
   requestBody:
+    description: The experiment to be created.
     required: true
     content:
       application/json:
@@ -42,6 +46,11 @@ post:
       content:
         application/json:
           $ref: '../content/experiment.yml'
+    202:
+      description: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
     400:
       description: Bad Request.
     401:
@@ -52,5 +61,4 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
-    502:
-      description: Bad Gateway.
+  x-optional-url: true

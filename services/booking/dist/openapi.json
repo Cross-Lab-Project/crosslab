@@ -1,9 +1,10 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.0",
   "info": {
     "title": "Booking service",
     "description": "This API represents the booking service, which each participating institution hosting one instance of the booking service (e.g. each institution has one *device-reservation* service). All of the booking services connected through **CrossLab** will communicate with each other in order to allow cross-institution bookings.\n\nIn this document, two words are used: *reservation* for the management of low-level devices and *bookings* for the experiment booking inkluding one or multiple devices. The booking service itself is build on 4 different microservices, as shown by the different tags used in this documentation. By using different micro service, scaling is easier to realise (especially when using a language like TypeScript which does not support parallel execution). The booking service as a whole should have different data bases:\n * **Device reservation database**: This database contains the low-level reservation for individual devices. The *schedule-service* will access it read-only and the *device-reservation* will access it read-write.\n * **Booking database**: This contains the database with all experiment bookings including experiments. It can be accessed read-write by *booking-frontend* and *booking-backend*.\n * **Callback-Database**: This contains all known callbacks (both registered from other services and one callbacks registered at the booking service). It should only be accessed by booking-backend.\n\nTo facillitate communication between the different services, a message broker will be used.",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "x-service-name": "Booking Service"
   },
   "servers": [
     {
@@ -31,6 +32,7 @@
   "paths": {
     "/schedule": {
       "post": {
+        "operationId": "get_schedule",
         "security": [
           {
             "JWT": []
@@ -41,9 +43,11 @@
         ],
         "summary": "Returns the free / booked times for given experiment.",
         "requestBody": {
+          "description": "Requested experiment and timeframe.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Schedule Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -150,11 +154,13 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/booking": {
-      "put": {
+      "post": {
+        "operationId": "book_experiment",
         "security": [
           {
             "JWT": []
@@ -165,9 +171,11 @@
         ],
         "summary": "Books an experiment.",
         "requestBody": {
+          "description": "Experiment, timeframe and type of booking.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Booking Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -230,11 +238,13 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/booking/{ID}": {
       "patch": {
+        "operationId": "update_booking",
         "security": [
           {
             "JWT": []
@@ -242,13 +252,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -256,9 +260,11 @@
         ],
         "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
         "requestBody": {
+          "description": "Devices or callback to be added to the booking.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Devices or Callback",
                 "anyOf": [
                   {
                     "type": "object",
@@ -337,6 +343,7 @@
         }
       },
       "delete": {
+        "operationId": "cancel_booking",
         "security": [
           {
             "JWT": []
@@ -344,13 +351,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -387,6 +388,7 @@
         }
       },
       "get": {
+        "operationId": "get_booking",
         "security": [
           {
             "JWT": []
@@ -394,13 +396,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -458,6 +454,7 @@
     },
     "/booking/{ID}/destroy": {
       "delete": {
+        "operationId": "delete_booking",
         "security": [
           {
             "JWT": []
@@ -465,13 +462,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -510,6 +501,7 @@
     },
     "/booking/{ID}/lock": {
       "put": {
+        "operationId": "lock_booking",
         "security": [
           {
             "JWT": []
@@ -517,13 +509,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -593,6 +579,7 @@
         }
       },
       "delete": {
+        "operationId": "unlock_booking",
         "security": [
           {
             "JWT": []
@@ -600,13 +587,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -642,6 +623,7 @@
     },
     "/booking_callback/{ID}": {
       "post": {
+        "x-internal": true,
         "security": [
           {
             "JWT": []
@@ -649,13 +631,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
-            "name": "ID",
-            "schema": {
-              "type": "string"
-            },
-            "required": true,
-            "description": "ID of Booking"
+            "$ref": "#/components/parameters/ID"
           }
         ],
         "tags": [
@@ -690,6 +666,7 @@
   "components": {
     "schemas": {
       "Booking": {
+        "title": "Booking",
         "description": "A booking in the booking system.",
         "type": "object",
         "required": [
@@ -751,6 +728,7 @@
         }
       },
       "Device": {
+        "title": "Device",
         "description": "A device might either be a physical/virtual device or a group of device.",
         "type": "object",
         "required": [
@@ -765,6 +743,7 @@
         }
       },
       "Experiment": {
+        "title": "Experiment",
         "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
         "type": "object",
         "required": [
@@ -785,6 +764,7 @@
         }
       },
       "Timeslot": {
+        "title": "Timeslot",
         "description": "A time slot represents a slice of time used for bookings.",
         "type": "object",
         "required": [
@@ -811,6 +791,17 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "parameters": {
+      "ID": {
+        "in": "path",
+        "name": "ID",
+        "schema": {
+          "type": "string"
+        },
+        "required": true,
+        "description": "ID of Booking"
       }
     }
   }

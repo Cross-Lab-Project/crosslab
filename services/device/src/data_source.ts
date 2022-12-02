@@ -8,8 +8,10 @@ import {
     PeerconnectionModel,
     TimeSlotModel,
     ServiceConfigModel,
-    VirtualDeviceModel,
+    InstantiableCloudDeviceModel,
+    InstantiableBrowserDeviceModel,
     ServiceModel,
+    InstantiableDeviceOverviewModel,
 } from './model'
 
 export const AppDataSource = new DataSource({
@@ -19,13 +21,15 @@ export const AppDataSource = new DataSource({
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,
-        VirtualDeviceModel,
+        InstantiableDeviceOverviewModel,
+        InstantiableCloudDeviceModel,
+        InstantiableBrowserDeviceModel,
         DeviceGroupModel,
         AvailabilityRuleModel,
         ServiceConfigModel,
         DeviceReferenceModel,
         PeerconnectionModel,
         TimeSlotModel,
-        ServiceModel
+        ServiceModel,
     ],
 })

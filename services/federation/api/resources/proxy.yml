@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: proxy_get
   summary: Make an authorized GET request to an external resource.
   description: |
     Proxies a GET request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -11,6 +12,7 @@ get:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -23,6 +25,7 @@ get:
     5XX:
       description: The response of the external resource.
 post:
+  operationId: proxy_post
   summary: Make an authorized POST request to an external resource.
   description: |
     Proxies a POST request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -34,6 +37,7 @@ post:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -46,6 +50,7 @@ post:
     5XX:
       description: The response of the external resource.
 put:
+  operationId: proxy_put
   summary: Make an authorized PUT request to an external resource.
   description: |
     Proxies a PUT request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -57,6 +62,7 @@ put:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -69,6 +75,7 @@ put:
     5XX:
       description: The response of the external resource.
 patch:
+  operationId: proxy_patch
   summary: Make an authorized PATCH request to an external resource.
   description: |
     Proxies a PATCH request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -80,6 +87,7 @@ patch:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -92,6 +100,7 @@ patch:
     5XX:
       description: The response of the external resource.
 delete:
+  operationId: proxy_delete
   summary: Make an authorized DELETE request to an external resource.
   description: |
     Proxies a DELETE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -103,6 +112,7 @@ delete:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -115,6 +125,7 @@ delete:
     5XX:
       description: The response of the external resource.
 head:
+  operationId: proxy_head
   summary: Make an authorized HEAD request to an external resource.
   description: |
     Proxies a HEAD request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -126,6 +137,7 @@ head:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -138,6 +150,7 @@ head:
     5XX:
       description: The response of the external resource.
 options:
+  operationId: proxy_options
   summary: Make an authorized OPTIONS request to an external resource.
   description: |
     Proxies an OPTIONS request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -149,6 +162,7 @@ options:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.
@@ -161,6 +175,7 @@ options:
     5XX:
       description: The response of the external resource.
 trace:
+  operationId: proxy_trace
   summary: Make an authorized TRACE request to an external resource.
   description: |
     Proxies a TRACE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.
@@ -172,6 +187,7 @@ trace:
   parameters:
     - $ref: "../parameters/url.yml"
   x-proxy-request: true
+  x-internal: true
   responses:
     1XX:
       description: The response of the external resource.

@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  summary: View a institution.
+  operationId: get_institution
+  summary: View an institution.
   tags:
     - institution
   parameters:
@@ -26,6 +27,7 @@ get:
     500:
       description: Server Error.
 patch:
+  operationId: update_institution
   summary: Update an institution.
   tags:
     - institution
@@ -57,7 +59,8 @@ patch:
     500:
       description: Server Error.
 delete:
-  summary: Delete a institution
+  operationId: delete_institution
+  summary: Delete an institution
   tags:
     - institution
   security:
