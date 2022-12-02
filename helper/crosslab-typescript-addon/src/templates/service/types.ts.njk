@@ -2,7 +2,7 @@
 {%- set schemas = (api | resolveSchemas) -%}
 {%- set securitySchemes = [] -%}
 {%- set validationDependencies = [] -%}
-{%- for schema in schemas | selectattr("x-typeguard") -%}
+{%- for schema in schemas | selectattr("x-typeguard") | select("attrequalto", ["x-standalone", true]) -%}
     {%- set validationDependencies = (validationDependencies.push("validate" + schema["x-name"]), validationDependencies) -%}
 {%- endfor -%}
 
@@ -84,6 +84,13 @@ export class ValidationError extends ErrorWithStatus {
         this.name = "ValidationError"
         this.errors = errors
     }
+}
+
+/**
+ * This type allows to pick the required properties of another type.
+ */
+export type Require<Type, Key extends keyof Type> = Partial<Type> & {
+    [Property in Key]-?: Type[Property]
 }
 
 {{ schemas | standaloneTypings }}
