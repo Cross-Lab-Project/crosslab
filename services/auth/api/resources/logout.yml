@@ -32,4 +32,3 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
-  x-destructure-input: true

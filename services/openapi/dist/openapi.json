@@ -1200,7 +1200,6 @@
             "description": "Server Error."
           }
         },
-        "x-destructure-input": true,
         "x-service-name": "Authentication Service"
       }
     },
@@ -1558,6 +1557,7 @@
           }
         },
         "x-build-url": true,
+        "x-optional-url": true,
         "x-service-name": "Authentication Service"
       },
       "delete": {
@@ -1603,6 +1603,7 @@
           }
         },
         "x-build-url": true,
+        "x-optional-url": true,
         "x-service-name": "Authentication Service"
       }
     },

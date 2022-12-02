@@ -28,6 +28,7 @@ put:
     500:
       description: Server Error.
   x-build-url: true
+  x-optional-url: true
 delete:
   operationId: remove_role_from_user
   summary: Delete role from user
@@ -54,3 +55,4 @@ delete:
     500:
       description: Server Error.
   x-build-url: true
+  x-optional-url: true

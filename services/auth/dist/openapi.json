@@ -316,8 +316,7 @@
           "500": {
             "description": "Server Error."
           }
-        },
-        "x-destructure-input": true
+        }
       }
     },
     "/device_authentication_token": {
@@ -667,7 +666,8 @@
             "description": "Server Error."
           }
         },
-        "x-build-url": true
+        "x-build-url": true,
+        "x-optional-url": true
       },
       "delete": {
         "operationId": "remove_role_from_user",
@@ -711,7 +711,8 @@
             "description": "Server Error."
           }
         },
-        "x-build-url": true
+        "x-build-url": true,
+        "x-optional-url": true
       }
     },
     "/identity": {
