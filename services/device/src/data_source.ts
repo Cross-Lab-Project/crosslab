@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm'
+import { PeerconnectionRefactoringSTATUS } from './database/migrations/peerconnection-status'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -32,4 +33,6 @@ export const AppDataSource = new DataSource({
         TimeSlotModel,
         ServiceModel,
     ],
+    migrations: [PeerconnectionRefactoringSTATUS],
+    migrationsRun: true
 })

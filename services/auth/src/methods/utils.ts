@@ -41,7 +41,7 @@ export async function resolveAllowlistEntry(entry: string): Promise<[string, str
     // Resolve the ip of the provided url
     const ip = await new Promise<string>((res) => {
         dns.resolve4(url, (err, addresses) => {
-            if (err) res('')
+            if (err || addresses.length === 0) res('')
             res(addresses[0])
         })
     })

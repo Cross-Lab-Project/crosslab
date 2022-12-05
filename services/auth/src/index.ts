@@ -13,14 +13,16 @@ AppDataSource.initialize()
         await initializeDataSource()
 
         // Resolve Allowlist
-        for (const entry of config.ALLOWLIST) {
-            try {
-                const result = await resolveAllowlistEntry(entry)
-                allowlist[result[0]] = result[1]
-            } catch (error) {
-                console.error(error)
+        setInterval(async () => {
+            for (const entry of config.ALLOWLIST) {
+                try {
+                    const result = await resolveAllowlistEntry(entry)
+                    allowlist[result[0]] = result[1]
+                } catch (error) {
+                    console.error(error)
+                }
             }
-        }
+        }, 600000)
 
         // Create new active key
         const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
