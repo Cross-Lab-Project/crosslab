@@ -8,21 +8,24 @@ import { isUserType, JWTVerificationError } from './generated/types'
 
 export let allowlist: { [key: string]: string } = {}
 
+async function resolveAllowlist() {
+    for (const entry of config.ALLOWLIST) {
+        try {
+            const result = await resolveAllowlistEntry(entry)
+            allowlist[result[0]] = result[1]
+        } catch (error) {
+            console.error(error)
+        }
+    }
+}
+
 AppDataSource.initialize()
     .then(async () => {
         await initializeDataSource()
 
         // Resolve Allowlist
-        setInterval(async () => {
-            for (const entry of config.ALLOWLIST) {
-                try {
-                    const result = await resolveAllowlistEntry(entry)
-                    allowlist[result[0]] = result[1]
-                } catch (error) {
-                    console.error(error)
-                }
-            }
-        }, 600000)
+        resolveAllowlist()
+        setInterval(resolveAllowlist, 600000)
 
         // Create new active key
         const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)

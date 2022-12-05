@@ -1,6 +1,6 @@
-import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
+import { MigrationInterface, QueryRunner, TableColumn } from "typeorm"
 
-export class PeerconnectionRefactoringSTATUS implements MigrationInterface {
+export class PeerconnectionStatus1670225182011 implements MigrationInterface {
     async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.addColumn("Peerconnection", new TableColumn({
             name: "status",
