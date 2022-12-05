@@ -5,7 +5,19 @@ export class PeerconnectionStatus1670225251577 implements MigrationInterface {
         await queryRunner.addColumn("Peerconnection", new TableColumn({
             name: "status",
             type: "text",
-            enum: ['waiting-for-devices', 'connected', 'failed', 'closed']
+            enum: ['waiting-for-devices', 'connected', 'failed', 'closed'],
+            isNullable: true
+        }))
+
+        queryRunner.query(
+            `UPDATE Peerconnection SET status='closed'`
+        )
+
+        await queryRunner.changeColumn("Peerconnection", "status", new TableColumn({
+            name: "status",
+            type: "text",
+            enum: ['waiting-for-devices', 'connected', 'failed', 'closed'],
+            isNullable: false
         }))
     }
 
