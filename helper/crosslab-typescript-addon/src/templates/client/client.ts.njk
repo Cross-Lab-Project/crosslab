@@ -240,6 +240,7 @@ export class APIClient {
     {%- set types = (operation.serviceName | formatName) + "Types" %}
     {%- set signatures = (operation.serviceName | formatName) + "Signatures" %}
     {%- set pathParameters = (operation.parameters | select("attrequalto", ["in", "path"])) if operation.parameters else [] %}
+    {%- set queryParameters = (operation.parameters | select("attrequalto", ["in", "query"])) if operation.parameters else [] %}
     {%- set headerParameter = (operation.parameters | select("attrequalto", ["in", "header"])) if operation.parameters else [] %}
     {%- set bodyName = (operation.requestBody.schema.title | formatName(false)) if operation.requestBody.schema.title else "body" %}
     {%- set requiredUrl = true if operation.parameters and operation.parameters | select("attrequalto", ["in", "path"]) | length > 0 else false %}
@@ -511,6 +512,16 @@ export class APIClient {
 
         {{ parameters if operation.parameters }}
 
+        {%- if queryParameters | length > 0 %}
+
+            const query: [string,string][] = []
+            {%- for queryParameter in queryParameters %}
+            
+                if (parameters["{{ queryParameter.name }}"]) 
+                    query.push(["{{ queryParameter.name }}", parameters["{{ queryParameter.name }}"].toString()])
+            {%- endfor %}
+        {%- endif %}
+
         if (!{{ requestValidation }}.validate{{ cap_name }}Input(
             {{- "parameters" if operation.parameters -}}
             {{- ", " if (operation.parameters and operation.requestBody) -}}
@@ -526,7 +537,7 @@ export class APIClient {
         const authorization: string = `Bearer ${this._accessToken}`
         {%- endif %}
 
-        const response = await this.fetch(url, {
+        const response = await this.fetch(url {{ "+ '?' + new URLSearchParams(query)" if queryParameters | length > 0 }}, {
             method: "{{ operation.method | upper }}", 
             headers: [
                 ["Content-Type", "application/json"],
