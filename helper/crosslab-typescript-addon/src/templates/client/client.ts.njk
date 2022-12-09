@@ -233,6 +233,13 @@ export class APIClient {
         this._accessToken = accessToken
     }
 
+    /**
+     * @category Accessors
+     */
+    get accessToken() {
+        return this._accessToken
+    }
+
     {%- for operation in operations | selectattr("external") %}
     {%- set low_name = operation.operationId | formatName(false) %}
     {%- set cap_name = operation.operationId | formatName %}

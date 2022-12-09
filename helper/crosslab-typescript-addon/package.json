@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/codegen-typescript-addon",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "An addon for openapi-codegen that can be used to generate code for crosslab services and clients in typescript.",
   "repository": {
     "type": "git",
@@ -10,7 +10,8 @@
   "scripts": {
     "copy-templates": "rm $(find ./dist/templates -name *.njk) & copyfiles -u 1 src/templates/**/*.njk dist/",
     "build": "tsc && npm run copy-templates",
-    "format": "npx prettier src --write"
+    "format": "npx prettier src --write",
+    "prepare": "npm run build"
   },
   "author": "Pierre Helbing",
   "license": "UNLICENSED",
