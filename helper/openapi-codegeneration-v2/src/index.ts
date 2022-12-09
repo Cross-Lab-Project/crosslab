@@ -19,9 +19,10 @@ import {
   replaceRegEx_filter,
   upperCamelCase_filter,
 } from "./filter";
-import { readdirSync, writeFileSync, mkdirSync } from "fs";
+import { readdirSync, writeFileSync, mkdirSync, readFileSync } from "fs";
 import { OpenAPIV3_1 } from "openapi-types";
 import { join, resolve } from "path";
+import yaml from "yaml";
 
 const env = nunjucks.configure({ autoescape: false, noCache: true });
 env.addFilter("formatPath", formatPath_filter);
@@ -42,6 +43,7 @@ async function schemas(language: string) {
   if (schemas_cache[language]) {
     return schemas_cache[language];
   }
+  console.log(inputData)
   const res = await quicktype({
     inputData,
     lang: "python",
@@ -91,23 +93,54 @@ async function main() {
     .name("openapi-codegeneration")
     .description("Generate code from an OpenAPI service")
     .version("0.2.0")
-    .requiredOption("-i, --input <string>", "openapi input file")
+    .requiredOption("-i, --input <strings...>", "openapi input file")
     .requiredOption("-t, --template <string>", "openapi template name")
     .requiredOption("-o, --output <string>", "openapi output directory");
 
   program.parse();
   const options = program.opts();
-  const input: string = options.input;
+  const inputs: string = options.input;
 
-  const api = (await SwaggerParser.validate(input)) as OpenAPIV3_1.Document;
-  if (api.openapi !== "3.1.0") {
-    console.error(
-      `Only OpenAPI 3.1.0 is supported, but ${api.info.version} was provided. Please upgrade your OpenAPI file.`
+  function loadAndDeref(input: string): string {
+    const file = readFileSync(input, "utf8");
+    const schema = yaml.parse(file);
+    return JSON.stringify(schema).replace(
+      /{[^{}]*"\$ref":"([^"]*)"[^{}]*}/g,
+      (substring, group: string) => {
+        return loadAndDeref(resolve(join(input, '..', group)));
+      }
     );
-    process.exit(1);
   }
 
-  inputData = extractSchemaInput(api);
+  inputData = new InputData();
+  let api: undefined | OpenAPIV3_1.Document = undefined;
+  for (const input of inputs) {
+    try {
+      const openApi = (await SwaggerParser.validate(
+        input
+      )) as OpenAPIV3_1.Document;
+      if (openApi.openapi !== "3.1.0") {
+        console.error(
+          `Only OpenAPI 3.1.0 is supported, but ${openApi.info.version} was provided. Please upgrade your OpenAPI file.`
+        );
+        process.exit(1);
+      }
+      if (api !== undefined) {
+        console.error(
+          "Multiple OpenAPI Specifications in input files. This tools only support one OpenAPI document at a time."
+        );
+        process.exit(1);
+      }
+      api = openApi;
+      inputData = extractSchemasFromOpenAPI(inputData, api);
+    } catch (e) {
+      // parse input as normal yaml file
+      const schema = JSON.parse(loadAndDeref(input));
+      console.log(JSON.stringify(schema, null, 2));
+      addJsonSchema(schema.title??input, schema, inputData);
+    }
+  }
+
   const context = {
     ...api,
     schemas,
@@ -137,9 +170,10 @@ async function main() {
 
 main();
 
-function extractSchemaInput(api: OpenAPIV3_1.Document): InputData {
-  const schemas = new InputData();
-
+function extractSchemasFromOpenAPI(
+  schemas: InputData,
+  api: OpenAPIV3_1.Document
+): InputData {
   if (api.paths) {
     for (const path of Object.keys(api.paths)) {
       const pathItem = api.paths[path] as OpenAPIV3_1.PathItemObject;
@@ -147,57 +181,56 @@ function extractSchemaInput(api: OpenAPIV3_1.Document): InputData {
         const operation = pathItem[
           method as OpenAPIV3_1.HttpMethods
         ] as OpenAPIV3_1.OperationObject;
-        const requestBody = operation.requestBody as
-          | OpenAPIV3_1.RequestBodyObject
-          | undefined;
-        if (requestBody) {
-          const content = requestBody.content;
-          const schema = content["application/json"].schema;
-          const name = lowerSnakeCase_filter(
-            `${method}_${formatPath_filter(path)}_request_body`
-          );
-          if (schema) {
-            schema_mapping.push(name);
-            const schemaInput = new JSONSchemaInput(
-              new FetchingJSONSchemaStore()
-            );
-            console.log(name)
-            schemas.addInput(schemaInput);
-            schemaInput.addSource({
-              name,
-              schema: JSON.stringify(schema),
-            });
-          }
-        }
+        extractAndAddSchema(
+          operation.requestBody,
+          `${method}_${formatPath_filter(path)}_request_body`
+        );
 
         const responses = operation.responses;
         for (const key in responses) {
-          const response = responses[key];
-          if ("content" in response) {
-            const content = response.content;
-            if (content) {
-              const schema = content["application/json"].schema;
-              const name = lowerSnakeCase_filter(
-                `${method}_${formatPath_filter(path)}_response_body_${key}`
-              );
-              if (schema) {
-                schema_mapping.push(name);
-                const schemaInput = new JSONSchemaInput(
-                  new FetchingJSONSchemaStore()
-                );
-                schemas.addInput(schemaInput);
-                console.log(name)
-                console.log(schema)
-                schemaInput.addSource({
-                  name,
-                  schema: JSON.stringify(schema),
-                });
-              }
-            }
-          }
+          extractAndAddSchema(
+            responses[key],
+            `${method}_${formatPath_filter(path)}_response_body_${key}`
+          );
         }
       }
     }
   }
   return schemas;
+
+  function extractAndAddSchema(
+    contentObject:
+      | OpenAPIV3_1.ReferenceObject
+      | OpenAPIV3_1.ResponseObject
+      | OpenAPIV3_1.RequestBodyObject
+      | undefined,
+    name: string
+  ) {
+    if (contentObject) {
+      if ("content" in contentObject) {
+        const content = contentObject.content;
+        if (content) {
+          const schema = content["application/json"].schema;
+          addJsonSchema(name, schema, schemas);
+        }
+      }
+    }
+  }
+}
+
+function addJsonSchema(
+  name: string,
+  schema: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject | undefined,
+  schemas: InputData
+) {
+  const _name = lowerSnakeCase_filter(name);
+  if (schema) {
+    schema_mapping.push(_name);
+    const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
+    schemas.addInput(schemaInput);
+    schemaInput.addSource({
+      name: _name,
+      schema: JSON.stringify(schema).replace(/"const":("[^"]*")/g,`"enum":[$1]`),
+    });
+  }
 }

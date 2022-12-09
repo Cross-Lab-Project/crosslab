@@ -28,12 +28,13 @@
   "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
-    "@cross-lab-project/openapi-codegen": "^0.0.31",
+    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "@types/node": "^18.0.3",
-    "typescript": "^4.7.4",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
+    "ajv-formats": "^2.1.1",
     "cross-fetch": "^3.1.5"
   }
 }
