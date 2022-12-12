@@ -1,14 +1,14 @@
 import re
 import pytest
 from aioresponses import aioresponses
-import asyncio
 import json
 import datetime
 
 from crosslab_api_client import APIClient
-from crosslab_api_client.schemas import *
+from crosslab_api_client.schemas import *  # noqa: F403
 
 BASE_URL = 'https://api.example.com'
+
 
 def normalize_result(_dict):
     if isinstance(_dict, dict):
@@ -17,11 +17,11 @@ def normalize_result(_dict):
                 del _dict[key]
             else:
                 try:
-                    value=value.replace('Z', '+00:00')
-                    value=value.replace('.0+', '.000+')
-                    value=value.replace('.00+', '.000+')
-                    _dict[key]=datetime.fromisoformat(value).replace(tzinfo=None).isoformat()
-                except:
+                    value = value.replace('Z', '+00:00')
+                    value = value.replace('.0+', '.000+')
+                    value = value.replace('.00+', '.000+')
+                    _dict[key] = datetime.fromisoformat(value).replace(tzinfo=None).isoformat()
+                except:  # noqa: E722
                     normalize_result(value)
     elif isinstance(_dict, list):
         for v_i in _dict:
@@ -31,8 +31,8 @@ def normalize_result(_dict):
 
 {%- macro _make_request(method_name, request_body_param, url) -%}
 resp = await client.{{method_name | lowerCamelCase}}(
-    {%- if url %}url={{url}},{% endif %}
-    {%- if request_body_param%} body={{request_body_param}}, {% endif -%}
+    {%- if url %}url={{url}}, {% endif %}
+    {%- if request_body_param%}body={{request_body_param}}, {% endif -%}
     **parameters)
 {%- endmacro -%}
 
@@ -56,7 +56,7 @@ aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{sta
     {%- else -%}
 aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{status}})
     {%- endif %}
-{%- endmacro %}
+{%- endmacro -%}
 
 {%- macro create_parameter_set(details) -%}
     {%- set optional_params = [] %}
@@ -70,9 +70,9 @@ aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{sta
                 {%- set paramType = 'True' %}
             {%- endif -%}
             {%- if param.required -%}
-                {%- set required_params = (required_params.push('"'+param.name+'" : '+paramType), required_params) %}
+                {%- set required_params = (required_params.push('"'+param.name+'": '+paramType+', '), required_params) %}
             {%- else -%}
-                {%- set optional_params = (optional_params.push('"'+param.name+'" : '+paramType), optional_params) %}
+                {%- set optional_params = (optional_params.push('"'+param.name+'": '+paramType+', '), optional_params) %}
             {%- endif -%}
         {%- endif -%}
     {%- endfor -%}
@@ -84,27 +84,31 @@ aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{sta
         {%- for param in optional_arg_group -%}
             {{param}}
         {%- endfor -%}
-        },
+        }, {# -#}
     {%- endfor -%}]
 {%- endmacro -%}
 
-{% for path, methods in paths -%}
+{%- for path, methods in paths -%}
     {%- for method, details in methods -%}
         {%- set method_name = (method+"_"+( path | formatPath))%}
+
+
 @pytest.mark.asyncio
 async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
         {%- set request_body_param="" %}
-    url=r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
-    url_variant=r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c') | replaceRegEx('^\/', '')}}'
-    full_url=BASE_URL+r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
-        {% if details.requestBody %}
+    url = r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
+    url_variant = r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c') | replaceRegEx('^\/', '')}}'
+    full_url = BASE_URL+r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
+        {%- if details.requestBody %}
             {%- if details.requestBody.content["application/json"].schema %}
+
     request_dict = json.loads(r'{{details.requestBody.content["application/json"].schema | jsf | dump}}')
     request = {{transformerFromDict('python', method_name+'_request_body') | await }}(request_dict)
                 {%- set request_body_param="request" -%}
-            {%- endif %}
-        {% endif %}
-    parameter_list={{create_parameter_set(details)}}
+            {%- endif -%}
+        {%- endif %}
+
+    parameter_list = {{create_parameter_set(details)}}
         {%- for status, response in details.responses %}
             {%- set response_transformer = transformerToDict('python', method_name+'_response_body_'+status) | await %}
             {%- if not details | hasPathParameter %}
@@ -112,7 +116,7 @@ async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
         {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, url) | indent(8) }}
             {%- endif %}
-        
+
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
         {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "url") | indent(8) }}
@@ -124,6 +128,6 @@ async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
         {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "full_url") | indent(8) }}
-        {% endfor %}
-    {% endfor -%}
-{%- endfor -%}
+        {%- endfor -%}
+    {%- endfor -%}
+{%- endfor %}

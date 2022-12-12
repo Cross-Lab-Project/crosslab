@@ -11,7 +11,7 @@
 #     result = post_login_request_body_from_dict(json.loads(json_string))
 #     result = post_login_response_body201_from_dict(json.loads(json_string))
 #     result = post_logout_request_body_from_dict(json.loads(json_string))
-#     result = post_device_token_response_body200_from_dict(json.loads(json_string))
+#     result = post_device_authentication_token_response_body200_from_dict(json.loads(json_string))
 #     result = get_users_response_body200_from_dict(json.loads(json_string))
 #     result = post_users_request_body_from_dict(json.loads(json_string))
 #     result = post_users_response_body201_from_dict(json.loads(json_string))
@@ -27,9 +27,9 @@
 #     result = post_schedule_response_body404_from_dict(json.loads(json_string))
 #     result = post_schedule_response_body422_from_dict(json.loads(json_string))
 #     result = post_schedule_response_body500_from_dict(json.loads(json_string))
-#     result = put_booking_request_body_from_dict(json.loads(json_string))
-#     result = put_booking_response_body200_from_dict(json.loads(json_string))
-#     result = put_booking_response_body500_from_dict(json.loads(json_string))
+#     result = post_booking_request_body_from_dict(json.loads(json_string))
+#     result = post_booking_response_body200_from_dict(json.loads(json_string))
+#     result = post_booking_response_body500_from_dict(json.loads(json_string))
 #     result = patch_booking_request_body_from_dict(json.loads(json_string))
 #     result = patch_booking_response_body200_from_dict(json.loads(json_string))
 #     result = patch_booking_response_body500_from_dict(json.loads(json_string))
@@ -40,7 +40,6 @@
 #     result = put_booking_lock_response_body200_from_dict(json.loads(json_string))
 #     result = put_booking_lock_response_body500_from_dict(json.loads(json_string))
 #     result = delete_booking_lock_response_body500_from_dict(json.loads(json_string))
-#     result = post_booking_callback_response_body500_from_dict(json.loads(json_string))
 #     result = get_devices_response_body200_from_dict(json.loads(json_string))
 #     result = post_devices_request_body_from_dict(json.loads(json_string))
 #     result = post_devices_response_body201_from_dict(json.loads(json_string))
@@ -50,18 +49,32 @@
 #     result = post_device_response_body201_from_dict(json.loads(json_string))
 #     result = post_device_availability_request_body_from_dict(json.loads(json_string))
 #     result = post_device_availability_response_body200_from_dict(json.loads(json_string))
-#     result = purple_post_device_token_response_body200_from_dict(json.loads(json_string))
+#     result = post_device_websocket_response_body200_from_dict(json.loads(json_string))
 #     result = post_device_signaling_request_body_from_dict(json.loads(json_string))
 #     result = get_peerconnections_response_body200_from_dict(json.loads(json_string))
 #     result = post_peerconnections_request_body_from_dict(json.loads(json_string))
 #     result = post_peerconnections_response_body201_from_dict(json.loads(json_string))
+#     result = post_peerconnections_response_body202_from_dict(json.loads(json_string))
 #     result = get_peerconnection_response_body200_from_dict(json.loads(json_string))
 #     result = get_experiments_response_body200_from_dict(json.loads(json_string))
 #     result = post_experiments_request_body_from_dict(json.loads(json_string))
 #     result = post_experiments_response_body201_from_dict(json.loads(json_string))
+#     result = post_experiments_response_body202_from_dict(json.loads(json_string))
 #     result = get_experiment_response_body200_from_dict(json.loads(json_string))
 #     result = patch_experiment_request_body_from_dict(json.loads(json_string))
 #     result = patch_experiment_response_body200_from_dict(json.loads(json_string))
+#     result = patch_experiment_response_body202_from_dict(json.loads(json_string))
+#     result = get_institutions_response_body200_from_dict(json.loads(json_string))
+#     result = post_institutions_request_body_from_dict(json.loads(json_string))
+#     result = post_institutions_response_body201_from_dict(json.loads(json_string))
+#     result = get_institution_response_body200_from_dict(json.loads(json_string))
+#     result = patch_institution_request_body_from_dict(json.loads(json_string))
+#     result = patch_institution_response_body200_from_dict(json.loads(json_string))
+#     result = get_updates_response_body200_from_dict(json.loads(json_string))
+#     result = post_updates_request_body_from_dict(json.loads(json_string))
+#     result = post_updates_response_body201_from_dict(json.loads(json_string))
+#     result = patch_update_request_body_from_dict(json.loads(json_string))
+#     result = patch_update_response_body200_from_dict(json.loads(json_string))
 
 from enum import Enum
 from typing import Optional, Any, List, Dict, TypeVar, Type, Callable, cast
@@ -127,13 +140,17 @@ def from_dict(f: Callable[[Any], T], x: Any) -> Dict[str, T]:
 
 
 class AuthMethod(Enum):
+    """Authentication method."""
     LOCAL = "local"
     TUI = "tui"
 
 
 class PostLoginRequestBody:
+    """Password of the user."""
     password: str
+    """Username of the user."""
     username: str
+    """Authentication method."""
     method: Optional[AuthMethod]
 
     def __init__(self, password: str, username: str, method: Optional[AuthMethod]) -> None:
@@ -158,7 +175,7 @@ class PostLoginRequestBody:
 
 
 class PostLogoutRequestBody:
-    """The token to be invalidated"""
+    """The token to be invalidated."""
     token: Optional[str]
 
     def __init__(self, token: Optional[str]) -> None:
@@ -772,7 +789,7 @@ class PostScheduleRequestBody:
         return result
 
 
-class Booked:
+class BookedElement:
     """A time slot represents a slice of time used for bookings."""
     """End time of the booking."""
     end: datetime
@@ -784,11 +801,11 @@ class Booked:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Booked':
+    def from_dict(obj: Any) -> 'BookedElement':
         assert isinstance(obj, dict)
         end = from_datetime(obj.get("End"))
         start = from_datetime(obj.get("Start"))
-        return Booked(end, start)
+        return BookedElement(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -797,7 +814,7 @@ class Booked:
         return result
 
 
-class Free:
+class FreeElement:
     """A time slot represents a slice of time used for bookings."""
     """End time of the booking."""
     end: datetime
@@ -809,11 +826,11 @@ class Free:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Free':
+    def from_dict(obj: Any) -> 'FreeElement':
         assert isinstance(obj, dict)
         end = from_datetime(obj.get("End"))
         start = from_datetime(obj.get("Start"))
-        return Free(end, start)
+        return FreeElement(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -824,13 +841,13 @@ class Free:
 
 class PostScheduleResponseBody200_Element:
     """Array of booked times."""
-    booked: List[Booked]
+    booked: List[BookedElement]
     """ID of the device (or * if combined)."""
     device: str
     """Array of free times."""
-    free: List[Free]
+    free: List[FreeElement]
 
-    def __init__(self, booked: List[Booked], device: str, free: List[Free]) -> None:
+    def __init__(self, booked: List[BookedElement], device: str, free: List[FreeElement]) -> None:
         self.booked = booked
         self.device = device
         self.free = free
@@ -838,16 +855,16 @@ class PostScheduleResponseBody200_Element:
     @staticmethod
     def from_dict(obj: Any) -> 'PostScheduleResponseBody200_Element':
         assert isinstance(obj, dict)
-        booked = from_list(Booked.from_dict, obj.get("Booked"))
+        booked = from_list(BookedElement.from_dict, obj.get("Booked"))
         device = from_str(obj.get("Device"))
-        free = from_list(Free.from_dict, obj.get("Free"))
+        free = from_list(FreeElement.from_dict, obj.get("Free"))
         return PostScheduleResponseBody200_Element(booked, device, free)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Booked"] = from_list(lambda x: to_class(Booked, x), self.booked)
+        result["Booked"] = from_list(lambda x: to_class(BookedElement, x), self.booked)
         result["Device"] = from_str(self.device)
-        result["Free"] = from_list(lambda x: to_class(Free, x), self.free)
+        result["Free"] = from_list(lambda x: to_class(FreeElement, x), self.free)
         return result
 
 
@@ -873,7 +890,7 @@ class FluffyDevice:
         return result
 
 
-class PutBookingRequestBodyExperiment:
+class PostBookingRequestBodyExperiment:
     """An experiment describes a set of devices and how they should be connected (potentially
     among other metadata).
     """
@@ -889,11 +906,11 @@ class PutBookingRequestBodyExperiment:
         self.devices = devices
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutBookingRequestBodyExperiment':
+    def from_dict(obj: Any) -> 'PostBookingRequestBodyExperiment':
         assert isinstance(obj, dict)
         description = from_union([from_str, from_none], obj.get("Description"))
         devices = from_list(FluffyDevice.from_dict, obj.get("Devices"))
-        return PutBookingRequestBodyExperiment(description, devices)
+        return PostBookingRequestBodyExperiment(description, devices)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -902,7 +919,7 @@ class PutBookingRequestBodyExperiment:
         return result
 
 
-class PutBookingRequestBodyTime:
+class PostBookingRequestBodyTime:
     """A time slot represents a slice of time used for bookings."""
     """End time of the booking."""
     end: datetime
@@ -914,11 +931,11 @@ class PutBookingRequestBodyTime:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutBookingRequestBodyTime':
+    def from_dict(obj: Any) -> 'PostBookingRequestBodyTime':
         assert isinstance(obj, dict)
         end = from_datetime(obj.get("End"))
         start = from_datetime(obj.get("Start"))
-        return PutBookingRequestBodyTime(end, start)
+        return PostBookingRequestBodyTime(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -934,40 +951,40 @@ class TypeEnum(Enum):
     NORMAL = "normal"
 
 
-class PutBookingRequestBody:
+class PostBookingRequestBody:
     """An experiment describes a set of devices and how they should be connected (potentially
     among other metadata).
     """
-    experiment: PutBookingRequestBodyExperiment
+    experiment: PostBookingRequestBodyExperiment
     """A time slot represents a slice of time used for bookings."""
-    time: PutBookingRequestBodyTime
+    time: PostBookingRequestBodyTime
     """Type of booking. Currently, only one type is defined, but others might follow (e.g.
     priority booking). If empty, 'normal' is assumed.
     """
     type: Optional[TypeEnum]
 
-    def __init__(self, experiment: PutBookingRequestBodyExperiment, time: PutBookingRequestBodyTime, type: Optional[TypeEnum]) -> None:
+    def __init__(self, experiment: PostBookingRequestBodyExperiment, time: PostBookingRequestBodyTime, type: Optional[TypeEnum]) -> None:
         self.experiment = experiment
         self.time = time
         self.type = type
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutBookingRequestBody':
+    def from_dict(obj: Any) -> 'PostBookingRequestBody':
         assert isinstance(obj, dict)
-        experiment = PutBookingRequestBodyExperiment.from_dict(obj.get("Experiment"))
-        time = PutBookingRequestBodyTime.from_dict(obj.get("Time"))
+        experiment = PostBookingRequestBodyExperiment.from_dict(obj.get("Experiment"))
+        time = PostBookingRequestBodyTime.from_dict(obj.get("Time"))
         type = from_union([TypeEnum, from_none], obj.get("Type"))
-        return PutBookingRequestBody(experiment, time, type)
+        return PostBookingRequestBody(experiment, time, type)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Experiment"] = to_class(PutBookingRequestBodyExperiment, self.experiment)
-        result["Time"] = to_class(PutBookingRequestBodyTime, self.time)
+        result["Experiment"] = to_class(PostBookingRequestBodyExperiment, self.experiment)
+        result["Time"] = to_class(PostBookingRequestBodyTime, self.time)
         result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         return result
 
 
-class PutBookingResponseBody200:
+class PostBookingResponseBody200:
     """ID at which the booking can be managed."""
     booking_id: str
 
@@ -975,10 +992,10 @@ class PutBookingResponseBody200:
         self.booking_id = booking_id
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutBookingResponseBody200':
+    def from_dict(obj: Any) -> 'PostBookingResponseBody200':
         assert isinstance(obj, dict)
         booking_id = from_str(obj.get("BookingID"))
-        return PutBookingResponseBody200(booking_id)
+        return PostBookingResponseBody200(booking_id)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1074,7 +1091,7 @@ class Status(Enum):
     REJECTED = "rejected"
 
 
-class PurpleTime:
+class PurpleTimeslot:
     """A time slot represents a slice of time used for bookings."""
     """End time of the booking."""
     end: datetime
@@ -1086,11 +1103,11 @@ class PurpleTime:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PurpleTime':
+    def from_dict(obj: Any) -> 'PurpleTimeslot':
         assert isinstance(obj, dict)
         end = from_datetime(obj.get("End"))
         start = from_datetime(obj.get("Start"))
-        return PurpleTime(end, start)
+        return PurpleTimeslot(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1115,7 +1132,7 @@ class GetBookingResponseBody200_Booking:
     """
     status: Status
     """A time slot represents a slice of time used for bookings."""
-    time: PurpleTime
+    time: PurpleTimeslot
     """Type of booking. Currently, only one type is defined, but others might follow (e.g.
     priority booking). If empty, 'normal' is assumed.
     """
@@ -1123,7 +1140,7 @@ class GetBookingResponseBody200_Booking:
     """If true, this booking was done by you."""
     you: bool
 
-    def __init__(self, devices: List[str], external: bool, id: str, message: Optional[str], status: Status, time: PurpleTime, type: Optional[TypeEnum], you: bool) -> None:
+    def __init__(self, devices: List[str], external: bool, id: str, message: Optional[str], status: Status, time: PurpleTimeslot, type: Optional[TypeEnum], you: bool) -> None:
         self.devices = devices
         self.external = external
         self.id = id
@@ -1141,7 +1158,7 @@ class GetBookingResponseBody200_Booking:
         id = from_str(obj.get("ID"))
         message = from_union([from_str, from_none], obj.get("Message"))
         status = Status(obj.get("Status"))
-        time = PurpleTime.from_dict(obj.get("Time"))
+        time = PurpleTimeslot.from_dict(obj.get("Time"))
         type = from_union([TypeEnum, from_none], obj.get("Type"))
         you = from_bool(obj.get("You"))
         return GetBookingResponseBody200_Booking(devices, external, id, message, status, time, type, you)
@@ -1153,7 +1170,7 @@ class GetBookingResponseBody200_Booking:
         result["ID"] = from_str(self.id)
         result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
-        result["Time"] = to_class(PurpleTime, self.time)
+        result["Time"] = to_class(PurpleTimeslot, self.time)
         result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
@@ -1191,7 +1208,7 @@ class GetBookingResponseBody200:
         return result
 
 
-class FluffyTime:
+class FluffyTimeslot:
     """A time slot represents a slice of time used for bookings."""
     """End time of the booking."""
     end: datetime
@@ -1203,11 +1220,11 @@ class FluffyTime:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'FluffyTime':
+    def from_dict(obj: Any) -> 'FluffyTimeslot':
         assert isinstance(obj, dict)
         end = from_datetime(obj.get("End"))
         start = from_datetime(obj.get("Start"))
-        return FluffyTime(end, start)
+        return FluffyTimeslot(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1232,7 +1249,7 @@ class PutBookingLockResponseBody200_Booking:
     """
     status: Status
     """A time slot represents a slice of time used for bookings."""
-    time: FluffyTime
+    time: FluffyTimeslot
     """Type of booking. Currently, only one type is defined, but others might follow (e.g.
     priority booking). If empty, 'normal' is assumed.
     """
@@ -1240,7 +1257,7 @@ class PutBookingLockResponseBody200_Booking:
     """If true, this booking was done by you."""
     you: bool
 
-    def __init__(self, devices: List[str], external: bool, id: str, message: Optional[str], status: Status, time: FluffyTime, type: Optional[TypeEnum], you: bool) -> None:
+    def __init__(self, devices: List[str], external: bool, id: str, message: Optional[str], status: Status, time: FluffyTimeslot, type: Optional[TypeEnum], you: bool) -> None:
         self.devices = devices
         self.external = external
         self.id = id
@@ -1258,7 +1275,7 @@ class PutBookingLockResponseBody200_Booking:
         id = from_str(obj.get("ID"))
         message = from_union([from_str, from_none], obj.get("Message"))
         status = Status(obj.get("Status"))
-        time = FluffyTime.from_dict(obj.get("Time"))
+        time = FluffyTimeslot.from_dict(obj.get("Time"))
         type = from_union([TypeEnum, from_none], obj.get("Type"))
         you = from_bool(obj.get("You"))
         return PutBookingLockResponseBody200_Booking(devices, external, id, message, status, time, type, you)
@@ -1270,7 +1287,7 @@ class PutBookingLockResponseBody200_Booking:
         result["ID"] = from_str(self.id)
         result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
-        result["Time"] = to_class(FluffyTime, self.time)
+        result["Time"] = to_class(FluffyTimeslot, self.time)
         result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
@@ -1354,9 +1371,10 @@ class PutBookingLockResponseBody200:
 
 class GetDevicesResponseBody200_Type(Enum):
     """Type of the device"""
+    CLOUD_INSTANTIABLE = "cloud instantiable"
     DEVICE = "device"
+    EDGE_INSTANTIABLE = "edge instantiable"
     GROUP = "group"
-    VIRTUAL = "virtual"
 
 
 class DeviceOverview:
@@ -1501,8 +1519,10 @@ class PostDevicesRequestBody:
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
     devices: Optional[List[PostDevicesRequestBodyDevice]]
+    instantiate_url: Optional[str]
+    code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyDevice]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -1513,6 +1533,8 @@ class PostDevicesRequestBody:
         self.experiment = experiment
         self.services = services
         self.devices = devices
+        self.instantiate_url = instantiate_url
+        self.code_url = code_url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostDevicesRequestBody':
@@ -1527,7 +1549,9 @@ class PostDevicesRequestBody:
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesRequestBodyDevice.from_dict, x), from_none], obj.get("devices"))
-        return PostDevicesRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices)
+        instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
+        code_url = from_union([from_str, from_none], obj.get("code_url"))
+        return PostDevicesRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1541,6 +1565,8 @@ class PostDevicesRequestBody:
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyDevice, x), x), from_none], self.devices)
+        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -1602,8 +1628,10 @@ class PostDevicesResponseBody201:
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
     devices: Optional[List[PostDevicesResponseBody201_Device]]
+    instantiate_url: Optional[str]
+    code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_Device]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -1614,6 +1642,8 @@ class PostDevicesResponseBody201:
         self.experiment = experiment
         self.services = services
         self.devices = devices
+        self.instantiate_url = instantiate_url
+        self.code_url = code_url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostDevicesResponseBody201':
@@ -1628,7 +1658,9 @@ class PostDevicesResponseBody201:
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesResponseBody201_Device.from_dict, x), from_none], obj.get("devices"))
-        return PostDevicesResponseBody201(description, name, owner, type, url, announced_availability, connected, experiment, services, devices)
+        instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
+        code_url = from_union([from_str, from_none], obj.get("code_url"))
+        return PostDevicesResponseBody201(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1642,6 +1674,8 @@ class PostDevicesResponseBody201:
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_Device, x), x), from_none], self.devices)
+        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -1703,8 +1737,10 @@ class GetDeviceResponseBody200:
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
     devices: Optional[List[GetDeviceResponseBody200_Device]]
+    instantiate_url: Optional[str]
+    code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_Device]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -1715,6 +1751,8 @@ class GetDeviceResponseBody200:
         self.experiment = experiment
         self.services = services
         self.devices = devices
+        self.instantiate_url = instantiate_url
+        self.code_url = code_url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetDeviceResponseBody200':
@@ -1729,7 +1767,9 @@ class GetDeviceResponseBody200:
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(GetDeviceResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
-        return GetDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices)
+        instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
+        code_url = from_union([from_str, from_none], obj.get("code_url"))
+        return GetDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1743,6 +1783,8 @@ class GetDeviceResponseBody200:
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_Device, x), x), from_none], self.devices)
+        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -1842,8 +1884,10 @@ class PatchDeviceRequestBody:
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
     devices: Optional[List[PatchDeviceRequestBodyDevice]]
+    instantiate_url: Optional[str]
+    code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyDevice]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -1854,6 +1898,8 @@ class PatchDeviceRequestBody:
         self.experiment = experiment
         self.services = services
         self.devices = devices
+        self.instantiate_url = instantiate_url
+        self.code_url = code_url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchDeviceRequestBody':
@@ -1868,7 +1914,9 @@ class PatchDeviceRequestBody:
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceRequestBodyDevice.from_dict, x), from_none], obj.get("devices"))
-        return PatchDeviceRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices)
+        instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
+        code_url = from_union([from_str, from_none], obj.get("code_url"))
+        return PatchDeviceRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1882,6 +1930,8 @@ class PatchDeviceRequestBody:
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyDevice, x), x), from_none], self.devices)
+        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -1943,8 +1993,10 @@ class PatchDeviceResponseBody200:
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
     devices: Optional[List[PatchDeviceResponseBody200_Device]]
+    instantiate_url: Optional[str]
+    code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_Device]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -1955,6 +2007,8 @@ class PatchDeviceResponseBody200:
         self.experiment = experiment
         self.services = services
         self.devices = devices
+        self.instantiate_url = instantiate_url
+        self.code_url = code_url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchDeviceResponseBody200':
@@ -1969,7 +2023,9 @@ class PatchDeviceResponseBody200:
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
-        return PatchDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices)
+        instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
+        code_url = from_union([from_str, from_none], obj.get("code_url"))
+        return PatchDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -1983,10 +2039,12 @@ class PatchDeviceResponseBody200:
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_Device, x), x), from_none], self.devices)
+        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
-class PostDeviceResponseBody201_AnnouncedAvailability:
+class ConcreteDeviceAnnouncedAvailability:
     end: Optional[datetime]
     start: Optional[datetime]
 
@@ -1995,11 +2053,11 @@ class PostDeviceResponseBody201_AnnouncedAvailability:
         self.start = start
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PostDeviceResponseBody201_AnnouncedAvailability':
+    def from_dict(obj: Any) -> 'ConcreteDeviceAnnouncedAvailability':
         assert isinstance(obj, dict)
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
-        return PostDeviceResponseBody201_AnnouncedAvailability(end, start)
+        return ConcreteDeviceAnnouncedAvailability(end, start)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -2008,24 +2066,29 @@ class PostDeviceResponseBody201_AnnouncedAvailability:
         return result
 
 
-class PostDeviceResponseBody201:
+class ConcreteDeviceType(Enum):
+    """Type of the device"""
+    DEVICE = "device"
+
+
+class ConcreteDevice:
     """Extended description of the device, features, etc."""
     description: Optional[str]
     """Name of the device"""
     name: Optional[str]
     owner: Optional[str]
     """Type of the device"""
-    type: Optional[GetDevicesResponseBody200_Type]
+    type: Optional[ConcreteDeviceType]
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PostDeviceResponseBody201_AnnouncedAvailability]]
+    announced_availability: Optional[List[ConcreteDeviceAnnouncedAvailability]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDeviceResponseBody201_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[ConcreteDeviceAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
@@ -2037,30 +2100,52 @@ class PostDeviceResponseBody201:
         self.services = services
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PostDeviceResponseBody201':
+    def from_dict(obj: Any) -> 'ConcreteDevice':
         assert isinstance(obj, dict)
         description = from_union([from_str, from_none], obj.get("description"))
         name = from_union([from_str, from_none], obj.get("name"))
         owner = from_union([from_str, from_none], obj.get("owner"))
-        type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
+        type = from_union([ConcreteDeviceType, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PostDeviceResponseBody201_AnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
+        announced_availability = from_union([lambda x: from_list(ConcreteDeviceAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
-        return PostDeviceResponseBody201(description, name, owner, type, url, announced_availability, connected, experiment, services)
+        return ConcreteDevice(description, name, owner, type, url, announced_availability, connected, experiment, services)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["description"] = from_union([from_str, from_none], self.description)
         result["name"] = from_union([from_str, from_none], self.name)
         result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceResponseBody201_AnnouncedAvailability, x), x), from_none], self.announced_availability)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(ConcreteDeviceAnnouncedAvailability, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        return result
+
+
+class PostDeviceResponseBody201:
+    device_token: Optional[str]
+    instance: Optional[ConcreteDevice]
+
+    def __init__(self, device_token: Optional[str], instance: Optional[ConcreteDevice]) -> None:
+        self.device_token = device_token
+        self.instance = instance
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostDeviceResponseBody201':
+        assert isinstance(obj, dict)
+        device_token = from_union([from_str, from_none], obj.get("deviceToken"))
+        instance = from_union([ConcreteDevice.from_dict, from_none], obj.get("instance"))
+        return PostDeviceResponseBody201(device_token, instance)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["deviceToken"] = from_union([from_str, from_none], self.device_token)
+        result["instance"] = from_union([lambda x: to_class(ConcreteDevice, x), from_none], self.instance)
         return result
 
 
@@ -2094,6 +2179,7 @@ class TentacledRepeat:
 
 
 class PurpleAvailabilityRule:
+    """The availability rule to be applied."""
     end: Optional[datetime]
     start: Optional[datetime]
     available: Optional[bool]
@@ -2147,17 +2233,61 @@ class PostDeviceAvailabilityResponseBody200_Element:
         return result
 
 
+class CommandEnum(Enum):
+    """The access token.
+    
+    First unknown device ID.
+    
+    First virtual device ID.
+    
+    Error description.
+    
+    Error description
+    
+    Error code
+    
+    Error string
+    
+    URL to the [peer
+    connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).
+    """
+    CLOSE_PEERCONNECTION = "closePeerconnection"
+    CREATE_PEERCONNECTION = "createPeerconnection"
+
+
 class ConnectionType(Enum):
     WEBRTC = "webrtc"
     WEBSOCKET = "websocket"
 
 
-class PostDeviceSignalingRequestBodyService:
-    remote_service_id: Optional[str]
-    service_id: Optional[str]
-    service_type: Optional[str]
+class MessageTypeEnum(Enum):
+    """The access token.
+    
+    First unknown device ID.
+    
+    First virtual device ID.
+    
+    Error description.
+    
+    Error description
+    
+    Error code
+    
+    Error string
+    
+    URL to the [peer
+    connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).
+    """
+    COMMAND = "command"
+    SIGNALING = "signaling"
 
-    def __init__(self, remote_service_id: Optional[str], service_id: Optional[str], service_type: Optional[str]) -> None:
+
+class PostDeviceSignalingRequestBodyService:
+    remote_service_id: str
+    service_id: str
+    service_type: str
+
+    def __init__(self, remote_service_id: str, service_id: str, service_type: str) -> None:
         self.remote_service_id = remote_service_id
         self.service_id = service_id
         self.service_type = service_type
@@ -2165,16 +2295,16 @@ class PostDeviceSignalingRequestBodyService:
     @staticmethod
     def from_dict(obj: Any) -> 'PostDeviceSignalingRequestBodyService':
         assert isinstance(obj, dict)
-        remote_service_id = from_union([from_str, from_none], obj.get("remoteServiceId"))
-        service_id = from_union([from_str, from_none], obj.get("serviceId"))
-        service_type = from_union([from_str, from_none], obj.get("serviceType"))
+        remote_service_id = from_str(obj.get("remoteServiceId"))
+        service_id = from_str(obj.get("serviceId"))
+        service_type = from_str(obj.get("serviceType"))
         return PostDeviceSignalingRequestBodyService(remote_service_id, service_id, service_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        result["remoteServiceId"] = from_str(self.remote_service_id)
+        result["serviceId"] = from_str(self.service_id)
+        result["serviceType"] = from_str(self.service_type)
         return result
 
 
@@ -2185,8 +2315,9 @@ class SignalingType(Enum):
 
 
 class PostDeviceSignalingRequestBody:
-    message_type: str
-    command: Optional[str]
+    message_type: MessageTypeEnum
+    command: Optional[CommandEnum]
+    config: Optional[Dict[str, Any]]
     connection_type: Optional[ConnectionType]
     connection_url: str
     services: Optional[List[PostDeviceSignalingRequestBodyService]]
@@ -2194,9 +2325,10 @@ class PostDeviceSignalingRequestBody:
     content: Optional[Dict[str, Any]]
     signaling_type: Optional[SignalingType]
 
-    def __init__(self, message_type: str, command: Optional[str], connection_type: Optional[ConnectionType], connection_url: str, services: Optional[List[PostDeviceSignalingRequestBodyService]], tiebreaker: Optional[bool], content: Optional[Dict[str, Any]], signaling_type: Optional[SignalingType]) -> None:
+    def __init__(self, message_type: MessageTypeEnum, command: Optional[CommandEnum], config: Optional[Dict[str, Any]], connection_type: Optional[ConnectionType], connection_url: str, services: Optional[List[PostDeviceSignalingRequestBodyService]], tiebreaker: Optional[bool], content: Optional[Dict[str, Any]], signaling_type: Optional[SignalingType]) -> None:
         self.message_type = message_type
         self.command = command
+        self.config = config
         self.connection_type = connection_type
         self.connection_url = connection_url
         self.services = services
@@ -2207,20 +2339,22 @@ class PostDeviceSignalingRequestBody:
     @staticmethod
     def from_dict(obj: Any) -> 'PostDeviceSignalingRequestBody':
         assert isinstance(obj, dict)
-        message_type = from_str(obj.get("messageType"))
-        command = from_union([from_str, from_none], obj.get("command"))
+        message_type = MessageTypeEnum(obj.get("messageType"))
+        command = from_union([CommandEnum, from_none], obj.get("command"))
+        config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
         connection_type = from_union([ConnectionType, from_none], obj.get("connectionType"))
         connection_url = from_str(obj.get("connectionUrl"))
         services = from_union([lambda x: from_list(PostDeviceSignalingRequestBodyService.from_dict, x), from_none], obj.get("services"))
         tiebreaker = from_union([from_bool, from_none], obj.get("tiebreaker"))
         content = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("content"))
         signaling_type = from_union([SignalingType, from_none], obj.get("signalingType"))
-        return PostDeviceSignalingRequestBody(message_type, command, connection_type, connection_url, services, tiebreaker, content, signaling_type)
+        return PostDeviceSignalingRequestBody(message_type, command, config, connection_type, connection_url, services, tiebreaker, content, signaling_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["messageType"] = from_str(self.message_type)
-        result["command"] = from_union([from_str, from_none], self.command)
+        result["messageType"] = to_enum(MessageTypeEnum, self.message_type)
+        result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
+        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
         result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
         result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyService, x), x), from_none], self.services)
@@ -2230,7 +2364,7 @@ class PostDeviceSignalingRequestBody:
         return result
 
 
-class GetPeerconnectionsResponseBody200_Device:
+class DeviceReference:
     """URL of the device"""
     url: Optional[str]
 
@@ -2238,10 +2372,10 @@ class GetPeerconnectionsResponseBody200_Device:
         self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'GetPeerconnectionsResponseBody200_Device':
+    def from_dict(obj: Any) -> 'DeviceReference':
         assert isinstance(obj, dict)
         url = from_union([from_str, from_none], obj.get("url"))
-        return GetPeerconnectionsResponseBody200_Device(url)
+        return DeviceReference(url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -2250,24 +2384,24 @@ class GetPeerconnectionsResponseBody200_Device:
 
 
 class PeerconnectionOverview:
-    devices: Optional[List[GetPeerconnectionsResponseBody200_Device]]
+    devices: Optional[List[DeviceReference]]
     """URL of the peerconnection"""
     url: Optional[str]
 
-    def __init__(self, devices: Optional[List[GetPeerconnectionsResponseBody200_Device]], url: Optional[str]) -> None:
+    def __init__(self, devices: Optional[List[DeviceReference]], url: Optional[str]) -> None:
         self.devices = devices
         self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PeerconnectionOverview':
         assert isinstance(obj, dict)
-        devices = from_union([lambda x: from_list(GetPeerconnectionsResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
+        devices = from_union([lambda x: from_list(DeviceReference.from_dict, x), from_none], obj.get("devices"))
         url = from_union([from_str, from_none], obj.get("url"))
         return PeerconnectionOverview(devices, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_Device, x), x), from_none], self.devices)
+        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(DeviceReference, x), x), from_none], self.devices)
         result["url"] = from_union([from_str, from_none], self.url)
         return result
 
@@ -2339,26 +2473,39 @@ class PostPeerconnectionsRequestBodyDevice:
         return result
 
 
+class PostPeerconnectionsRequestBodyStatus(Enum):
+    """The status of the peerconnection."""
+    CLOSED = "closed"
+    CONNECTED = "connected"
+    FAILED = "failed"
+    WAITING_FOR_DEVICES = "waiting-for-devices"
+
+
 class PostPeerconnectionsRequestBody:
     devices: Optional[List[PostPeerconnectionsRequestBodyDevice]]
     """URL of the peerconnection"""
     url: Optional[str]
+    """The status of the peerconnection."""
+    status: Optional[PostPeerconnectionsRequestBodyStatus]
 
-    def __init__(self, devices: Optional[List[PostPeerconnectionsRequestBodyDevice]], url: Optional[str]) -> None:
+    def __init__(self, devices: Optional[List[PostPeerconnectionsRequestBodyDevice]], url: Optional[str], status: Optional[PostPeerconnectionsRequestBodyStatus]) -> None:
         self.devices = devices
         self.url = url
+        self.status = status
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostPeerconnectionsRequestBody':
         assert isinstance(obj, dict)
         devices = from_union([lambda x: from_list(PostPeerconnectionsRequestBodyDevice.from_dict, x), from_none], obj.get("devices"))
         url = from_union([from_str, from_none], obj.get("url"))
-        return PostPeerconnectionsRequestBody(devices, url)
+        status = from_union([PostPeerconnectionsRequestBodyStatus, from_none], obj.get("status"))
+        return PostPeerconnectionsRequestBody(devices, url, status)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyDevice, x), x), from_none], self.devices)
         result["url"] = from_union([from_str, from_none], self.url)
+        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -2433,22 +2580,27 @@ class PostPeerconnectionsResponseBody201:
     devices: Optional[List[PostPeerconnectionsResponseBody201_Device]]
     """URL of the peerconnection"""
     url: Optional[str]
+    """The status of the peerconnection."""
+    status: Optional[PostPeerconnectionsRequestBodyStatus]
 
-    def __init__(self, devices: Optional[List[PostPeerconnectionsResponseBody201_Device]], url: Optional[str]) -> None:
+    def __init__(self, devices: Optional[List[PostPeerconnectionsResponseBody201_Device]], url: Optional[str], status: Optional[PostPeerconnectionsRequestBodyStatus]) -> None:
         self.devices = devices
         self.url = url
+        self.status = status
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostPeerconnectionsResponseBody201':
         assert isinstance(obj, dict)
         devices = from_union([lambda x: from_list(PostPeerconnectionsResponseBody201_Device.from_dict, x), from_none], obj.get("devices"))
         url = from_union([from_str, from_none], obj.get("url"))
-        return PostPeerconnectionsResponseBody201(devices, url)
+        status = from_union([PostPeerconnectionsRequestBodyStatus, from_none], obj.get("status"))
+        return PostPeerconnectionsResponseBody201(devices, url, status)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_Device, x), x), from_none], self.devices)
         result["url"] = from_union([from_str, from_none], self.url)
+        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -2496,7 +2648,7 @@ class TentacledConfig:
         return result
 
 
-class GetPeerconnectionResponseBody200_Device:
+class PostPeerconnectionsResponseBody202_Device:
     config: Optional[TentacledConfig]
     """URL of the device"""
     url: Optional[str]
@@ -2506,11 +2658,11 @@ class GetPeerconnectionResponseBody200_Device:
         self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'GetPeerconnectionResponseBody200_Device':
+    def from_dict(obj: Any) -> 'PostPeerconnectionsResponseBody202_Device':
         assert isinstance(obj, dict)
         config = from_union([TentacledConfig.from_dict, from_none], obj.get("config"))
         url = from_union([from_str, from_none], obj.get("url"))
-        return GetPeerconnectionResponseBody200_Device(config, url)
+        return PostPeerconnectionsResponseBody202_Device(config, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -2519,57 +2671,158 @@ class GetPeerconnectionResponseBody200_Device:
         return result
 
 
+class PostPeerconnectionsResponseBody202:
+    devices: Optional[List[PostPeerconnectionsResponseBody202_Device]]
+    """URL of the peerconnection"""
+    url: Optional[str]
+    """The status of the peerconnection."""
+    status: Optional[PostPeerconnectionsRequestBodyStatus]
+
+    def __init__(self, devices: Optional[List[PostPeerconnectionsResponseBody202_Device]], url: Optional[str], status: Optional[PostPeerconnectionsRequestBodyStatus]) -> None:
+        self.devices = devices
+        self.url = url
+        self.status = status
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostPeerconnectionsResponseBody202':
+        assert isinstance(obj, dict)
+        devices = from_union([lambda x: from_list(PostPeerconnectionsResponseBody202_Device.from_dict, x), from_none], obj.get("devices"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        status = from_union([PostPeerconnectionsRequestBodyStatus, from_none], obj.get("status"))
+        return PostPeerconnectionsResponseBody202(devices, url, status)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_Device, x), x), from_none], self.devices)
+        result["url"] = from_union([from_str, from_none], self.url)
+        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        return result
+
+
+class StickyServiceConfig:
+    remote_service_id: Optional[str]
+    service_id: Optional[str]
+    service_type: Optional[str]
+
+    def __init__(self, remote_service_id: Optional[str], service_id: Optional[str], service_type: Optional[str]) -> None:
+        self.remote_service_id = remote_service_id
+        self.service_id = service_id
+        self.service_type = service_type
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'StickyServiceConfig':
+        assert isinstance(obj, dict)
+        remote_service_id = from_union([from_str, from_none], obj.get("remoteServiceId"))
+        service_id = from_union([from_str, from_none], obj.get("serviceId"))
+        service_type = from_union([from_str, from_none], obj.get("serviceType"))
+        return StickyServiceConfig(remote_service_id, service_id, service_type)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        return result
+
+
+class StickyConfig:
+    services: Optional[List[StickyServiceConfig]]
+
+    def __init__(self, services: Optional[List[StickyServiceConfig]]) -> None:
+        self.services = services
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'StickyConfig':
+        assert isinstance(obj, dict)
+        services = from_union([lambda x: from_list(StickyServiceConfig.from_dict, x), from_none], obj.get("services"))
+        return StickyConfig(services)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["services"] = from_union([lambda x: from_list(lambda x: to_class(StickyServiceConfig, x), x), from_none], self.services)
+        return result
+
+
+class GetPeerconnectionResponseBody200_Device:
+    config: Optional[StickyConfig]
+    """URL of the device"""
+    url: Optional[str]
+
+    def __init__(self, config: Optional[StickyConfig], url: Optional[str]) -> None:
+        self.config = config
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetPeerconnectionResponseBody200_Device':
+        assert isinstance(obj, dict)
+        config = from_union([StickyConfig.from_dict, from_none], obj.get("config"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetPeerconnectionResponseBody200_Device(config, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["config"] = from_union([lambda x: to_class(StickyConfig, x), from_none], self.config)
+        result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
 class GetPeerconnectionResponseBody200:
     devices: Optional[List[GetPeerconnectionResponseBody200_Device]]
     """URL of the peerconnection"""
     url: Optional[str]
+    """The status of the peerconnection."""
+    status: Optional[PostPeerconnectionsRequestBodyStatus]
 
-    def __init__(self, devices: Optional[List[GetPeerconnectionResponseBody200_Device]], url: Optional[str]) -> None:
+    def __init__(self, devices: Optional[List[GetPeerconnectionResponseBody200_Device]], url: Optional[str], status: Optional[PostPeerconnectionsRequestBodyStatus]) -> None:
         self.devices = devices
         self.url = url
+        self.status = status
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetPeerconnectionResponseBody200':
         assert isinstance(obj, dict)
         devices = from_union([lambda x: from_list(GetPeerconnectionResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
         url = from_union([from_str, from_none], obj.get("url"))
-        return GetPeerconnectionResponseBody200(devices, url)
+        status = from_union([PostPeerconnectionsRequestBodyStatus, from_none], obj.get("status"))
+        return GetPeerconnectionResponseBody200(devices, url, status)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_Device, x), x), from_none], self.devices)
         result["url"] = from_union([from_str, from_none], self.url)
+        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
-class StatusEnum(Enum):
+class GetExperimentsResponseBody200_Status(Enum):
     """Status of the experiment"""
     BOOKED = "booked"
     CREATED = "created"
     FINISHED = "finished"
     RUNNING = "running"
+    SETUP = "setup"
 
 
-class GetExperimentsResponseBody200_Element:
+class ExperimentOverview:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str]) -> None:
         self.status = status
         self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'GetExperimentsResponseBody200_Element':
+    def from_dict(obj: Any) -> 'ExperimentOverview':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
-        return GetExperimentsResponseBody200_Element(status, url)
+        return ExperimentOverview(status, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         return result
 
@@ -2601,7 +2854,7 @@ class PostExperimentsRequestBodyDevice:
     [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     """
     device: Optional[str]
-    """Name for an experiment role."""
+    """The name of the device's role."""
     role: Optional[str]
 
     def __init__(self, device: Optional[str], role: Optional[str]) -> None:
@@ -2653,7 +2906,7 @@ class PurpleParticipant:
     override the service configuration).
     """
     config: Optional[Dict[str, Any]]
-    """Name for an experiment role."""
+    """The name of the participant's role."""
     role: Optional[str]
     service_id: Optional[str]
 
@@ -2714,7 +2967,7 @@ class PostExperimentsRequestBodyServiceConfiguration:
 
 class PostExperimentsRequestBody:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
     booking_time: Optional[PostExperimentsRequestBodyBookingTime]
@@ -2727,7 +2980,7 @@ class PostExperimentsRequestBody:
     """Services associated with the experiment"""
     service_configurations: Optional[List[PostExperimentsRequestBodyServiceConfiguration]]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str], booking_time: Optional[PostExperimentsRequestBodyBookingTime], connections: Optional[List[str]], devices: Optional[List[PostExperimentsRequestBodyDevice]], roles: Optional[List[PostExperimentsRequestBodyRole]], service_configurations: Optional[List[PostExperimentsRequestBodyServiceConfiguration]]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PostExperimentsRequestBodyBookingTime], connections: Optional[List[str]], devices: Optional[List[PostExperimentsRequestBodyDevice]], roles: Optional[List[PostExperimentsRequestBodyRole]], service_configurations: Optional[List[PostExperimentsRequestBodyServiceConfiguration]]) -> None:
         self.status = status
         self.url = url
         self.booking_time = booking_time
@@ -2739,7 +2992,7 @@ class PostExperimentsRequestBody:
     @staticmethod
     def from_dict(obj: Any) -> 'PostExperimentsRequestBody':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
         booking_time = from_union([PostExperimentsRequestBodyBookingTime.from_dict, from_none], obj.get("bookingTime"))
         connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
@@ -2750,7 +3003,7 @@ class PostExperimentsRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyBookingTime, x), from_none], self.booking_time)
         result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
@@ -2787,7 +3040,7 @@ class PostExperimentsResponseBody201_Device:
     [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     """
     device: Optional[str]
-    """Name for an experiment role."""
+    """The name of the device's role."""
     role: Optional[str]
 
     def __init__(self, device: Optional[str], role: Optional[str]) -> None:
@@ -2839,7 +3092,7 @@ class FluffyParticipant:
     override the service configuration).
     """
     config: Optional[Dict[str, Any]]
-    """Name for an experiment role."""
+    """The name of the participant's role."""
     role: Optional[str]
     service_id: Optional[str]
 
@@ -2900,7 +3153,7 @@ class PostExperimentsResponseBody201_ServiceConfiguration:
 
 class PostExperimentsResponseBody201:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
     booking_time: Optional[PostExperimentsResponseBody201_BookingTime]
@@ -2913,7 +3166,7 @@ class PostExperimentsResponseBody201:
     """Services associated with the experiment"""
     service_configurations: Optional[List[PostExperimentsResponseBody201_ServiceConfiguration]]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str], booking_time: Optional[PostExperimentsResponseBody201_BookingTime], connections: Optional[List[str]], devices: Optional[List[PostExperimentsResponseBody201_Device]], roles: Optional[List[PostExperimentsResponseBody201_Role]], service_configurations: Optional[List[PostExperimentsResponseBody201_ServiceConfiguration]]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PostExperimentsResponseBody201_BookingTime], connections: Optional[List[str]], devices: Optional[List[PostExperimentsResponseBody201_Device]], roles: Optional[List[PostExperimentsResponseBody201_Role]], service_configurations: Optional[List[PostExperimentsResponseBody201_ServiceConfiguration]]) -> None:
         self.status = status
         self.url = url
         self.booking_time = booking_time
@@ -2925,7 +3178,7 @@ class PostExperimentsResponseBody201:
     @staticmethod
     def from_dict(obj: Any) -> 'PostExperimentsResponseBody201':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
         booking_time = from_union([PostExperimentsResponseBody201_BookingTime.from_dict, from_none], obj.get("bookingTime"))
         connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
@@ -2936,13 +3189,199 @@ class PostExperimentsResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_BookingTime, x), from_none], self.booking_time)
         result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Device, x), x), from_none], self.devices)
         result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Role, x), x), from_none], self.roles)
         result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        return result
+
+
+class PostExperimentsResponseBody202_BookingTime:
+    end_time: Optional[datetime]
+    start_time: Optional[datetime]
+
+    def __init__(self, end_time: Optional[datetime], start_time: Optional[datetime]) -> None:
+        self.end_time = end_time
+        self.start_time = start_time
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostExperimentsResponseBody202_BookingTime':
+        assert isinstance(obj, dict)
+        end_time = from_union([from_datetime, from_none], obj.get("endTime"))
+        start_time = from_union([from_datetime, from_none], obj.get("startTime"))
+        return PostExperimentsResponseBody202_BookingTime(end_time, start_time)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        return result
+
+
+class PostExperimentsResponseBody202_Device:
+    """URL to the
+    [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    """
+    device: Optional[str]
+    """The name of the device's role."""
+    role: Optional[str]
+
+    def __init__(self, device: Optional[str], role: Optional[str]) -> None:
+        self.device = device
+        self.role = role
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostExperimentsResponseBody202_Device':
+        assert isinstance(obj, dict)
+        device = from_union([from_str, from_none], obj.get("device"))
+        role = from_union([from_str, from_none], obj.get("role"))
+        return PostExperimentsResponseBody202_Device(device, role)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device"] = from_union([from_str, from_none], self.device)
+        result["role"] = from_union([from_str, from_none], self.role)
+        return result
+
+
+class PostExperimentsResponseBody202_Role:
+    description: Optional[str]
+    """Name for an experiment role."""
+    name: Optional[str]
+
+    def __init__(self, description: Optional[str], name: Optional[str]) -> None:
+        self.description = description
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostExperimentsResponseBody202_Role':
+        assert isinstance(obj, dict)
+        description = from_union([from_str, from_none], obj.get("description"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PostExperimentsResponseBody202_Role(description, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["description"] = from_union([from_str, from_none], self.description)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class TentacledParticipant:
+    """Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the
+    service configuration send to the participant (fields of the participant configuration
+    override the service configuration).
+    """
+    config: Optional[Dict[str, Any]]
+    """The name of the participant's role."""
+    role: Optional[str]
+    service_id: Optional[str]
+
+    def __init__(self, config: Optional[Dict[str, Any]], role: Optional[str], service_id: Optional[str]) -> None:
+        self.config = config
+        self.role = role
+        self.service_id = service_id
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'TentacledParticipant':
+        assert isinstance(obj, dict)
+        config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
+        role = from_union([from_str, from_none], obj.get("role"))
+        service_id = from_union([from_str, from_none], obj.get("serviceId"))
+        return TentacledParticipant(config, role, service_id)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        result["role"] = from_union([from_str, from_none], self.role)
+        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        return result
+
+
+class PostExperimentsResponseBody202_ServiceConfiguration:
+    """Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the
+    service configuration send to the participant (fields of the participant configuration
+    override the service configuration).
+    """
+    configuration: Optional[Dict[str, Any]]
+    """List of participants for the service"""
+    participants: Optional[List[TentacledParticipant]]
+    """Type of the service"""
+    service_type: Optional[str]
+
+    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[TentacledParticipant]], service_type: Optional[str]) -> None:
+        self.configuration = configuration
+        self.participants = participants
+        self.service_type = service_type
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostExperimentsResponseBody202_ServiceConfiguration':
+        assert isinstance(obj, dict)
+        configuration = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("configuration"))
+        participants = from_union([lambda x: from_list(TentacledParticipant.from_dict, x), from_none], obj.get("participants"))
+        service_type = from_union([from_str, from_none], obj.get("serviceType"))
+        return PostExperimentsResponseBody202_ServiceConfiguration(configuration, participants, service_type)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(TentacledParticipant, x), x), from_none], self.participants)
+        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        return result
+
+
+class PostExperimentsResponseBody202:
+    """Status of the experiment"""
+    status: Optional[GetExperimentsResponseBody200_Status]
+    """URL of the experiment"""
+    url: Optional[str]
+    booking_time: Optional[PostExperimentsResponseBody202_BookingTime]
+    """Connections associated with the experiment"""
+    connections: Optional[List[str]]
+    """Devices associated with the experiment"""
+    devices: Optional[List[PostExperimentsResponseBody202_Device]]
+    """Roles that are used in this experiment"""
+    roles: Optional[List[PostExperimentsResponseBody202_Role]]
+    """Services associated with the experiment"""
+    service_configurations: Optional[List[PostExperimentsResponseBody202_ServiceConfiguration]]
+
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PostExperimentsResponseBody202_BookingTime], connections: Optional[List[str]], devices: Optional[List[PostExperimentsResponseBody202_Device]], roles: Optional[List[PostExperimentsResponseBody202_Role]], service_configurations: Optional[List[PostExperimentsResponseBody202_ServiceConfiguration]]) -> None:
+        self.status = status
+        self.url = url
+        self.booking_time = booking_time
+        self.connections = connections
+        self.devices = devices
+        self.roles = roles
+        self.service_configurations = service_configurations
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostExperimentsResponseBody202':
+        assert isinstance(obj, dict)
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        booking_time = from_union([PostExperimentsResponseBody202_BookingTime.from_dict, from_none], obj.get("bookingTime"))
+        connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
+        devices = from_union([lambda x: from_list(PostExperimentsResponseBody202_Device.from_dict, x), from_none], obj.get("devices"))
+        roles = from_union([lambda x: from_list(PostExperimentsResponseBody202_Role.from_dict, x), from_none], obj.get("roles"))
+        service_configurations = from_union([lambda x: from_list(PostExperimentsResponseBody202_ServiceConfiguration.from_dict, x), from_none], obj.get("serviceConfigurations"))
+        return PostExperimentsResponseBody202(status, url, booking_time, connections, devices, roles, service_configurations)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        result["url"] = from_union([from_str, from_none], self.url)
+        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_BookingTime, x), from_none], self.booking_time)
+        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Device, x), x), from_none], self.devices)
+        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Role, x), x), from_none], self.roles)
+        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -2973,7 +3412,7 @@ class GetExperimentResponseBody200_Device:
     [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     """
     device: Optional[str]
-    """Name for an experiment role."""
+    """The name of the device's role."""
     role: Optional[str]
 
     def __init__(self, device: Optional[str], role: Optional[str]) -> None:
@@ -3017,7 +3456,7 @@ class GetExperimentResponseBody200_Role:
         return result
 
 
-class TentacledParticipant:
+class StickyParticipant:
     """Service configuration of the participant.
     
     This configuration object will be merged with the service configuration to become the
@@ -3025,7 +3464,7 @@ class TentacledParticipant:
     override the service configuration).
     """
     config: Optional[Dict[str, Any]]
-    """Name for an experiment role."""
+    """The name of the participant's role."""
     role: Optional[str]
     service_id: Optional[str]
 
@@ -3035,12 +3474,12 @@ class TentacledParticipant:
         self.service_id = service_id
 
     @staticmethod
-    def from_dict(obj: Any) -> 'TentacledParticipant':
+    def from_dict(obj: Any) -> 'StickyParticipant':
         assert isinstance(obj, dict)
         config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
         role = from_union([from_str, from_none], obj.get("role"))
         service_id = from_union([from_str, from_none], obj.get("serviceId"))
-        return TentacledParticipant(config, role, service_id)
+        return StickyParticipant(config, role, service_id)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -3059,11 +3498,11 @@ class GetExperimentResponseBody200_ServiceConfiguration:
     """
     configuration: Optional[Dict[str, Any]]
     """List of participants for the service"""
-    participants: Optional[List[TentacledParticipant]]
+    participants: Optional[List[StickyParticipant]]
     """Type of the service"""
     service_type: Optional[str]
 
-    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[TentacledParticipant]], service_type: Optional[str]) -> None:
+    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[StickyParticipant]], service_type: Optional[str]) -> None:
         self.configuration = configuration
         self.participants = participants
         self.service_type = service_type
@@ -3072,21 +3511,21 @@ class GetExperimentResponseBody200_ServiceConfiguration:
     def from_dict(obj: Any) -> 'GetExperimentResponseBody200_ServiceConfiguration':
         assert isinstance(obj, dict)
         configuration = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("configuration"))
-        participants = from_union([lambda x: from_list(TentacledParticipant.from_dict, x), from_none], obj.get("participants"))
+        participants = from_union([lambda x: from_list(StickyParticipant.from_dict, x), from_none], obj.get("participants"))
         service_type = from_union([from_str, from_none], obj.get("serviceType"))
         return GetExperimentResponseBody200_ServiceConfiguration(configuration, participants, service_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(TentacledParticipant, x), x), from_none], self.participants)
+        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(StickyParticipant, x), x), from_none], self.participants)
         result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
 class GetExperimentResponseBody200:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
     booking_time: Optional[GetExperimentResponseBody200_BookingTime]
@@ -3099,7 +3538,7 @@ class GetExperimentResponseBody200:
     """Services associated with the experiment"""
     service_configurations: Optional[List[GetExperimentResponseBody200_ServiceConfiguration]]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str], booking_time: Optional[GetExperimentResponseBody200_BookingTime], connections: Optional[List[str]], devices: Optional[List[GetExperimentResponseBody200_Device]], roles: Optional[List[GetExperimentResponseBody200_Role]], service_configurations: Optional[List[GetExperimentResponseBody200_ServiceConfiguration]]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[GetExperimentResponseBody200_BookingTime], connections: Optional[List[str]], devices: Optional[List[GetExperimentResponseBody200_Device]], roles: Optional[List[GetExperimentResponseBody200_Role]], service_configurations: Optional[List[GetExperimentResponseBody200_ServiceConfiguration]]) -> None:
         self.status = status
         self.url = url
         self.booking_time = booking_time
@@ -3111,7 +3550,7 @@ class GetExperimentResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'GetExperimentResponseBody200':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
         booking_time = from_union([GetExperimentResponseBody200_BookingTime.from_dict, from_none], obj.get("bookingTime"))
         connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
@@ -3122,7 +3561,7 @@ class GetExperimentResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
         result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
@@ -3159,7 +3598,7 @@ class PatchExperimentRequestBodyDevice:
     [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     """
     device: Optional[str]
-    """Name for an experiment role."""
+    """The name of the device's role."""
     role: Optional[str]
 
     def __init__(self, device: Optional[str], role: Optional[str]) -> None:
@@ -3203,7 +3642,7 @@ class PatchExperimentRequestBodyRole:
         return result
 
 
-class StickyParticipant:
+class IndigoParticipant:
     """Service configuration of the participant.
     
     This configuration object will be merged with the service configuration to become the
@@ -3211,7 +3650,7 @@ class StickyParticipant:
     override the service configuration).
     """
     config: Optional[Dict[str, Any]]
-    """Name for an experiment role."""
+    """The name of the participant's role."""
     role: Optional[str]
     service_id: Optional[str]
 
@@ -3221,12 +3660,12 @@ class StickyParticipant:
         self.service_id = service_id
 
     @staticmethod
-    def from_dict(obj: Any) -> 'StickyParticipant':
+    def from_dict(obj: Any) -> 'IndigoParticipant':
         assert isinstance(obj, dict)
         config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
         role = from_union([from_str, from_none], obj.get("role"))
         service_id = from_union([from_str, from_none], obj.get("serviceId"))
-        return StickyParticipant(config, role, service_id)
+        return IndigoParticipant(config, role, service_id)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -3245,11 +3684,11 @@ class PatchExperimentRequestBodyServiceConfiguration:
     """
     configuration: Optional[Dict[str, Any]]
     """List of participants for the service"""
-    participants: Optional[List[StickyParticipant]]
+    participants: Optional[List[IndigoParticipant]]
     """Type of the service"""
     service_type: Optional[str]
 
-    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[StickyParticipant]], service_type: Optional[str]) -> None:
+    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[IndigoParticipant]], service_type: Optional[str]) -> None:
         self.configuration = configuration
         self.participants = participants
         self.service_type = service_type
@@ -3258,21 +3697,21 @@ class PatchExperimentRequestBodyServiceConfiguration:
     def from_dict(obj: Any) -> 'PatchExperimentRequestBodyServiceConfiguration':
         assert isinstance(obj, dict)
         configuration = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("configuration"))
-        participants = from_union([lambda x: from_list(StickyParticipant.from_dict, x), from_none], obj.get("participants"))
+        participants = from_union([lambda x: from_list(IndigoParticipant.from_dict, x), from_none], obj.get("participants"))
         service_type = from_union([from_str, from_none], obj.get("serviceType"))
         return PatchExperimentRequestBodyServiceConfiguration(configuration, participants, service_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(StickyParticipant, x), x), from_none], self.participants)
+        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndigoParticipant, x), x), from_none], self.participants)
         result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
 class PatchExperimentRequestBody:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
     booking_time: Optional[PatchExperimentRequestBodyBookingTime]
@@ -3285,7 +3724,7 @@ class PatchExperimentRequestBody:
     """Services associated with the experiment"""
     service_configurations: Optional[List[PatchExperimentRequestBodyServiceConfiguration]]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str], booking_time: Optional[PatchExperimentRequestBodyBookingTime], connections: Optional[List[str]], devices: Optional[List[PatchExperimentRequestBodyDevice]], roles: Optional[List[PatchExperimentRequestBodyRole]], service_configurations: Optional[List[PatchExperimentRequestBodyServiceConfiguration]]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PatchExperimentRequestBodyBookingTime], connections: Optional[List[str]], devices: Optional[List[PatchExperimentRequestBodyDevice]], roles: Optional[List[PatchExperimentRequestBodyRole]], service_configurations: Optional[List[PatchExperimentRequestBodyServiceConfiguration]]) -> None:
         self.status = status
         self.url = url
         self.booking_time = booking_time
@@ -3297,7 +3736,7 @@ class PatchExperimentRequestBody:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchExperimentRequestBody':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
         booking_time = from_union([PatchExperimentRequestBodyBookingTime.from_dict, from_none], obj.get("bookingTime"))
         connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
@@ -3308,7 +3747,7 @@ class PatchExperimentRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyBookingTime, x), from_none], self.booking_time)
         result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
@@ -3345,7 +3784,7 @@ class PatchExperimentResponseBody200_Device:
     [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     """
     device: Optional[str]
-    """Name for an experiment role."""
+    """The name of the device's role."""
     role: Optional[str]
 
     def __init__(self, device: Optional[str], role: Optional[str]) -> None:
@@ -3389,7 +3828,7 @@ class PatchExperimentResponseBody200_Role:
         return result
 
 
-class IndigoParticipant:
+class IndecentParticipant:
     """Service configuration of the participant.
     
     This configuration object will be merged with the service configuration to become the
@@ -3397,7 +3836,7 @@ class IndigoParticipant:
     override the service configuration).
     """
     config: Optional[Dict[str, Any]]
-    """Name for an experiment role."""
+    """The name of the participant's role."""
     role: Optional[str]
     service_id: Optional[str]
 
@@ -3407,12 +3846,12 @@ class IndigoParticipant:
         self.service_id = service_id
 
     @staticmethod
-    def from_dict(obj: Any) -> 'IndigoParticipant':
+    def from_dict(obj: Any) -> 'IndecentParticipant':
         assert isinstance(obj, dict)
         config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
         role = from_union([from_str, from_none], obj.get("role"))
         service_id = from_union([from_str, from_none], obj.get("serviceId"))
-        return IndigoParticipant(config, role, service_id)
+        return IndecentParticipant(config, role, service_id)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -3431,11 +3870,11 @@ class PatchExperimentResponseBody200_ServiceConfiguration:
     """
     configuration: Optional[Dict[str, Any]]
     """List of participants for the service"""
-    participants: Optional[List[IndigoParticipant]]
+    participants: Optional[List[IndecentParticipant]]
     """Type of the service"""
     service_type: Optional[str]
 
-    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[IndigoParticipant]], service_type: Optional[str]) -> None:
+    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[IndecentParticipant]], service_type: Optional[str]) -> None:
         self.configuration = configuration
         self.participants = participants
         self.service_type = service_type
@@ -3444,21 +3883,21 @@ class PatchExperimentResponseBody200_ServiceConfiguration:
     def from_dict(obj: Any) -> 'PatchExperimentResponseBody200_ServiceConfiguration':
         assert isinstance(obj, dict)
         configuration = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("configuration"))
-        participants = from_union([lambda x: from_list(IndigoParticipant.from_dict, x), from_none], obj.get("participants"))
+        participants = from_union([lambda x: from_list(IndecentParticipant.from_dict, x), from_none], obj.get("participants"))
         service_type = from_union([from_str, from_none], obj.get("serviceType"))
         return PatchExperimentResponseBody200_ServiceConfiguration(configuration, participants, service_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndigoParticipant, x), x), from_none], self.participants)
+        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndecentParticipant, x), x), from_none], self.participants)
         result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
 class PatchExperimentResponseBody200:
     """Status of the experiment"""
-    status: Optional[StatusEnum]
+    status: Optional[GetExperimentsResponseBody200_Status]
     """URL of the experiment"""
     url: Optional[str]
     booking_time: Optional[PatchExperimentResponseBody200_BookingTime]
@@ -3471,7 +3910,7 @@ class PatchExperimentResponseBody200:
     """Services associated with the experiment"""
     service_configurations: Optional[List[PatchExperimentResponseBody200_ServiceConfiguration]]
 
-    def __init__(self, status: Optional[StatusEnum], url: Optional[str], booking_time: Optional[PatchExperimentResponseBody200_BookingTime], connections: Optional[List[str]], devices: Optional[List[PatchExperimentResponseBody200_Device]], roles: Optional[List[PatchExperimentResponseBody200_Role]], service_configurations: Optional[List[PatchExperimentResponseBody200_ServiceConfiguration]]) -> None:
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PatchExperimentResponseBody200_BookingTime], connections: Optional[List[str]], devices: Optional[List[PatchExperimentResponseBody200_Device]], roles: Optional[List[PatchExperimentResponseBody200_Role]], service_configurations: Optional[List[PatchExperimentResponseBody200_ServiceConfiguration]]) -> None:
         self.status = status
         self.url = url
         self.booking_time = booking_time
@@ -3483,7 +3922,7 @@ class PatchExperimentResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchExperimentResponseBody200':
         assert isinstance(obj, dict)
-        status = from_union([StatusEnum, from_none], obj.get("status"))
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
         url = from_union([from_str, from_none], obj.get("url"))
         booking_time = from_union([PatchExperimentResponseBody200_BookingTime.from_dict, from_none], obj.get("bookingTime"))
         connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
@@ -3494,13 +3933,548 @@ class PatchExperimentResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(StatusEnum, x), from_none], self.status)
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
         result["url"] = from_union([from_str, from_none], self.url)
         result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
         result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Device, x), x), from_none], self.devices)
         result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Role, x), x), from_none], self.roles)
         result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        return result
+
+
+class PatchExperimentResponseBody202_BookingTime:
+    end_time: Optional[datetime]
+    start_time: Optional[datetime]
+
+    def __init__(self, end_time: Optional[datetime], start_time: Optional[datetime]) -> None:
+        self.end_time = end_time
+        self.start_time = start_time
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchExperimentResponseBody202_BookingTime':
+        assert isinstance(obj, dict)
+        end_time = from_union([from_datetime, from_none], obj.get("endTime"))
+        start_time = from_union([from_datetime, from_none], obj.get("startTime"))
+        return PatchExperimentResponseBody202_BookingTime(end_time, start_time)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        return result
+
+
+class PatchExperimentResponseBody202_Device:
+    """URL to the
+    [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    """
+    device: Optional[str]
+    """The name of the device's role."""
+    role: Optional[str]
+
+    def __init__(self, device: Optional[str], role: Optional[str]) -> None:
+        self.device = device
+        self.role = role
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchExperimentResponseBody202_Device':
+        assert isinstance(obj, dict)
+        device = from_union([from_str, from_none], obj.get("device"))
+        role = from_union([from_str, from_none], obj.get("role"))
+        return PatchExperimentResponseBody202_Device(device, role)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device"] = from_union([from_str, from_none], self.device)
+        result["role"] = from_union([from_str, from_none], self.role)
+        return result
+
+
+class PatchExperimentResponseBody202_Role:
+    description: Optional[str]
+    """Name for an experiment role."""
+    name: Optional[str]
+
+    def __init__(self, description: Optional[str], name: Optional[str]) -> None:
+        self.description = description
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchExperimentResponseBody202_Role':
+        assert isinstance(obj, dict)
+        description = from_union([from_str, from_none], obj.get("description"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PatchExperimentResponseBody202_Role(description, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["description"] = from_union([from_str, from_none], self.description)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class HilariousParticipant:
+    """Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the
+    service configuration send to the participant (fields of the participant configuration
+    override the service configuration).
+    """
+    config: Optional[Dict[str, Any]]
+    """The name of the participant's role."""
+    role: Optional[str]
+    service_id: Optional[str]
+
+    def __init__(self, config: Optional[Dict[str, Any]], role: Optional[str], service_id: Optional[str]) -> None:
+        self.config = config
+        self.role = role
+        self.service_id = service_id
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'HilariousParticipant':
+        assert isinstance(obj, dict)
+        config = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("config"))
+        role = from_union([from_str, from_none], obj.get("role"))
+        service_id = from_union([from_str, from_none], obj.get("serviceId"))
+        return HilariousParticipant(config, role, service_id)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        result["role"] = from_union([from_str, from_none], self.role)
+        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        return result
+
+
+class PatchExperimentResponseBody202_ServiceConfiguration:
+    """Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the
+    service configuration send to the participant (fields of the participant configuration
+    override the service configuration).
+    """
+    configuration: Optional[Dict[str, Any]]
+    """List of participants for the service"""
+    participants: Optional[List[HilariousParticipant]]
+    """Type of the service"""
+    service_type: Optional[str]
+
+    def __init__(self, configuration: Optional[Dict[str, Any]], participants: Optional[List[HilariousParticipant]], service_type: Optional[str]) -> None:
+        self.configuration = configuration
+        self.participants = participants
+        self.service_type = service_type
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchExperimentResponseBody202_ServiceConfiguration':
+        assert isinstance(obj, dict)
+        configuration = from_union([lambda x: from_dict(lambda x: x, x), from_none], obj.get("configuration"))
+        participants = from_union([lambda x: from_list(HilariousParticipant.from_dict, x), from_none], obj.get("participants"))
+        service_type = from_union([from_str, from_none], obj.get("serviceType"))
+        return PatchExperimentResponseBody202_ServiceConfiguration(configuration, participants, service_type)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(HilariousParticipant, x), x), from_none], self.participants)
+        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        return result
+
+
+class PatchExperimentResponseBody202:
+    """Status of the experiment"""
+    status: Optional[GetExperimentsResponseBody200_Status]
+    """URL of the experiment"""
+    url: Optional[str]
+    booking_time: Optional[PatchExperimentResponseBody202_BookingTime]
+    """Connections associated with the experiment"""
+    connections: Optional[List[str]]
+    """Devices associated with the experiment"""
+    devices: Optional[List[PatchExperimentResponseBody202_Device]]
+    """Roles that are used in this experiment"""
+    roles: Optional[List[PatchExperimentResponseBody202_Role]]
+    """Services associated with the experiment"""
+    service_configurations: Optional[List[PatchExperimentResponseBody202_ServiceConfiguration]]
+
+    def __init__(self, status: Optional[GetExperimentsResponseBody200_Status], url: Optional[str], booking_time: Optional[PatchExperimentResponseBody202_BookingTime], connections: Optional[List[str]], devices: Optional[List[PatchExperimentResponseBody202_Device]], roles: Optional[List[PatchExperimentResponseBody202_Role]], service_configurations: Optional[List[PatchExperimentResponseBody202_ServiceConfiguration]]) -> None:
+        self.status = status
+        self.url = url
+        self.booking_time = booking_time
+        self.connections = connections
+        self.devices = devices
+        self.roles = roles
+        self.service_configurations = service_configurations
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchExperimentResponseBody202':
+        assert isinstance(obj, dict)
+        status = from_union([GetExperimentsResponseBody200_Status, from_none], obj.get("status"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        booking_time = from_union([PatchExperimentResponseBody202_BookingTime.from_dict, from_none], obj.get("bookingTime"))
+        connections = from_union([lambda x: from_list(from_str, x), from_none], obj.get("connections"))
+        devices = from_union([lambda x: from_list(PatchExperimentResponseBody202_Device.from_dict, x), from_none], obj.get("devices"))
+        roles = from_union([lambda x: from_list(PatchExperimentResponseBody202_Role.from_dict, x), from_none], obj.get("roles"))
+        service_configurations = from_union([lambda x: from_list(PatchExperimentResponseBody202_ServiceConfiguration.from_dict, x), from_none], obj.get("serviceConfigurations"))
+        return PatchExperimentResponseBody202(status, url, booking_time, connections, devices, roles, service_configurations)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        result["url"] = from_union([from_str, from_none], self.url)
+        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_BookingTime, x), from_none], self.booking_time)
+        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Device, x), x), from_none], self.devices)
+        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Role, x), x), from_none], self.roles)
+        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        return result
+
+
+class Institution:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'Institution':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return Institution(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class PostInstitutionsRequestBody:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostInstitutionsRequestBody':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PostInstitutionsRequestBody(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class PostInstitutionsResponseBody201:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostInstitutionsResponseBody201':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PostInstitutionsResponseBody201(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class GetInstitutionResponseBody200:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetInstitutionResponseBody200':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return GetInstitutionResponseBody200(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class PatchInstitutionRequestBody:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchInstitutionRequestBody':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PatchInstitutionRequestBody(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class PatchInstitutionResponseBody200:
+    api: Optional[str]
+    api_token: Optional[str]
+    federated_api: Optional[str]
+    homepage: Optional[str]
+    name: Optional[str]
+
+    def __init__(self, api: Optional[str], api_token: Optional[str], federated_api: Optional[str], homepage: Optional[str], name: Optional[str]) -> None:
+        self.api = api
+        self.api_token = api_token
+        self.federated_api = federated_api
+        self.homepage = homepage
+        self.name = name
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchInstitutionResponseBody200':
+        assert isinstance(obj, dict)
+        api = from_union([from_str, from_none], obj.get("api"))
+        api_token = from_union([from_str, from_none], obj.get("apiToken"))
+        federated_api = from_union([from_str, from_none], obj.get("federatedApi"))
+        homepage = from_union([from_str, from_none], obj.get("homepage"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        return PatchInstitutionResponseBody200(api, api_token, federated_api, homepage, name)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["api"] = from_union([from_str, from_none], self.api)
+        result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        result["homepage"] = from_union([from_str, from_none], self.homepage)
+        result["name"] = from_union([from_str, from_none], self.name)
+        return result
+
+
+class UpdateInformation:
+    """Information regarding an update. Contains the id of the device,
+    the name of the latest version and a link to it.
+    """
+    device_id: str
+    latest_version: str
+    latest_version_link: str
+
+    def __init__(self, device_id: str, latest_version: str, latest_version_link: str) -> None:
+        self.device_id = device_id
+        self.latest_version = latest_version
+        self.latest_version_link = latest_version_link
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'UpdateInformation':
+        assert isinstance(obj, dict)
+        device_id = from_str(obj.get("device_id"))
+        latest_version = from_str(obj.get("latest_version"))
+        latest_version_link = from_str(obj.get("latest_version_link"))
+        return UpdateInformation(device_id, latest_version, latest_version_link)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device_id"] = from_str(self.device_id)
+        result["latest_version"] = from_str(self.latest_version)
+        result["latest_version_link"] = from_str(self.latest_version_link)
+        return result
+
+
+class PostUpdatesRequestBody:
+    """Information regarding an update. Contains the id of the device,
+    the name of the latest version and a link to it.
+    """
+    device_id: str
+    latest_version: str
+    latest_version_link: str
+
+    def __init__(self, device_id: str, latest_version: str, latest_version_link: str) -> None:
+        self.device_id = device_id
+        self.latest_version = latest_version
+        self.latest_version_link = latest_version_link
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostUpdatesRequestBody':
+        assert isinstance(obj, dict)
+        device_id = from_str(obj.get("device_id"))
+        latest_version = from_str(obj.get("latest_version"))
+        latest_version_link = from_str(obj.get("latest_version_link"))
+        return PostUpdatesRequestBody(device_id, latest_version, latest_version_link)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device_id"] = from_str(self.device_id)
+        result["latest_version"] = from_str(self.latest_version)
+        result["latest_version_link"] = from_str(self.latest_version_link)
+        return result
+
+
+class PostUpdatesResponseBody201:
+    """Information regarding an update. Contains the id of the device,
+    the name of the latest version and a link to it.
+    """
+    device_id: str
+    latest_version: str
+    latest_version_link: str
+
+    def __init__(self, device_id: str, latest_version: str, latest_version_link: str) -> None:
+        self.device_id = device_id
+        self.latest_version = latest_version
+        self.latest_version_link = latest_version_link
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostUpdatesResponseBody201':
+        assert isinstance(obj, dict)
+        device_id = from_str(obj.get("device_id"))
+        latest_version = from_str(obj.get("latest_version"))
+        latest_version_link = from_str(obj.get("latest_version_link"))
+        return PostUpdatesResponseBody201(device_id, latest_version, latest_version_link)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device_id"] = from_str(self.device_id)
+        result["latest_version"] = from_str(self.latest_version)
+        result["latest_version_link"] = from_str(self.latest_version_link)
+        return result
+
+
+class PatchUpdateRequestBody:
+    """Information regarding an update. Contains the id of the device,
+    the name of the latest version and a link to it.
+    """
+    device_id: str
+    latest_version: str
+    latest_version_link: str
+
+    def __init__(self, device_id: str, latest_version: str, latest_version_link: str) -> None:
+        self.device_id = device_id
+        self.latest_version = latest_version
+        self.latest_version_link = latest_version_link
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchUpdateRequestBody':
+        assert isinstance(obj, dict)
+        device_id = from_str(obj.get("device_id"))
+        latest_version = from_str(obj.get("latest_version"))
+        latest_version_link = from_str(obj.get("latest_version_link"))
+        return PatchUpdateRequestBody(device_id, latest_version, latest_version_link)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device_id"] = from_str(self.device_id)
+        result["latest_version"] = from_str(self.latest_version)
+        result["latest_version_link"] = from_str(self.latest_version_link)
+        return result
+
+
+class PatchUpdateResponseBody200:
+    """Information regarding an update. Contains the id of the device,
+    the name of the latest version and a link to it.
+    """
+    device_id: str
+    latest_version: str
+    latest_version_link: str
+
+    def __init__(self, device_id: str, latest_version: str, latest_version_link: str) -> None:
+        self.device_id = device_id
+        self.latest_version = latest_version
+        self.latest_version_link = latest_version_link
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchUpdateResponseBody200':
+        assert isinstance(obj, dict)
+        device_id = from_str(obj.get("device_id"))
+        latest_version = from_str(obj.get("latest_version"))
+        latest_version_link = from_str(obj.get("latest_version_link"))
+        return PatchUpdateResponseBody200(device_id, latest_version, latest_version_link)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["device_id"] = from_str(self.device_id)
+        result["latest_version"] = from_str(self.latest_version)
+        result["latest_version_link"] = from_str(self.latest_version_link)
         return result
 
 
@@ -3528,11 +4502,11 @@ def post_logout_request_body_to_dict(x: PostLogoutRequestBody) -> Any:
     return to_class(PostLogoutRequestBody, x)
 
 
-def post_device_token_response_body200_from_dict(s: Any) -> str:
+def post_device_authentication_token_response_body200_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def post_device_token_response_body200_to_dict(x: str) -> Any:
+def post_device_authentication_token_response_body200_to_dict(x: str) -> Any:
     return from_str(x)
 
 
@@ -3656,27 +4630,27 @@ def post_schedule_response_body500_to_dict(x: str) -> Any:
     return from_str(x)
 
 
-def put_booking_request_body_from_dict(s: Any) -> PutBookingRequestBody:
-    return PutBookingRequestBody.from_dict(s)
+def post_booking_request_body_from_dict(s: Any) -> PostBookingRequestBody:
+    return PostBookingRequestBody.from_dict(s)
 
 
-def put_booking_request_body_to_dict(x: PutBookingRequestBody) -> Any:
-    return to_class(PutBookingRequestBody, x)
+def post_booking_request_body_to_dict(x: PostBookingRequestBody) -> Any:
+    return to_class(PostBookingRequestBody, x)
 
 
-def put_booking_response_body200_from_dict(s: Any) -> PutBookingResponseBody200:
-    return PutBookingResponseBody200.from_dict(s)
+def post_booking_response_body200_from_dict(s: Any) -> PostBookingResponseBody200:
+    return PostBookingResponseBody200.from_dict(s)
 
 
-def put_booking_response_body200_to_dict(x: PutBookingResponseBody200) -> Any:
-    return to_class(PutBookingResponseBody200, x)
+def post_booking_response_body200_to_dict(x: PostBookingResponseBody200) -> Any:
+    return to_class(PostBookingResponseBody200, x)
 
 
-def put_booking_response_body500_from_dict(s: Any) -> str:
+def post_booking_response_body500_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def put_booking_response_body500_to_dict(x: str) -> Any:
+def post_booking_response_body500_to_dict(x: str) -> Any:
     return from_str(x)
 
 
@@ -3760,14 +4734,6 @@ def delete_booking_lock_response_body500_to_dict(x: str) -> Any:
     return from_str(x)
 
 
-def post_booking_callback_response_body500_from_dict(s: Any) -> str:
-    return from_str(s)
-
-
-def post_booking_callback_response_body500_to_dict(x: str) -> Any:
-    return from_str(x)
-
-
 def get_devices_response_body200_from_dict(s: Any) -> List[DeviceOverview]:
     return from_list(DeviceOverview.from_dict, s)
 
@@ -3840,11 +4806,11 @@ def post_device_availability_response_body200_to_dict(x: List[PostDeviceAvailabi
     return from_list(lambda x: to_class(PostDeviceAvailabilityResponseBody200_Element, x), x)
 
 
-def purple_post_device_token_response_body200_from_dict(s: Any) -> str:
+def post_device_websocket_response_body200_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def purple_post_device_token_response_body200_to_dict(x: str) -> Any:
+def post_device_websocket_response_body200_to_dict(x: str) -> Any:
     return from_str(x)
 
 
@@ -3880,6 +4846,14 @@ def post_peerconnections_response_body201_to_dict(x: PostPeerconnectionsResponse
     return to_class(PostPeerconnectionsResponseBody201, x)
 
 
+def post_peerconnections_response_body202_from_dict(s: Any) -> PostPeerconnectionsResponseBody202:
+    return PostPeerconnectionsResponseBody202.from_dict(s)
+
+
+def post_peerconnections_response_body202_to_dict(x: PostPeerconnectionsResponseBody202) -> Any:
+    return to_class(PostPeerconnectionsResponseBody202, x)
+
+
 def get_peerconnection_response_body200_from_dict(s: Any) -> GetPeerconnectionResponseBody200:
     return GetPeerconnectionResponseBody200.from_dict(s)
 
@@ -3888,12 +4862,12 @@ def get_peerconnection_response_body200_to_dict(x: GetPeerconnectionResponseBody
     return to_class(GetPeerconnectionResponseBody200, x)
 
 
-def get_experiments_response_body200_from_dict(s: Any) -> List[GetExperimentsResponseBody200_Element]:
-    return from_list(GetExperimentsResponseBody200_Element.from_dict, s)
+def get_experiments_response_body200_from_dict(s: Any) -> List[ExperimentOverview]:
+    return from_list(ExperimentOverview.from_dict, s)
 
 
-def get_experiments_response_body200_to_dict(x: List[GetExperimentsResponseBody200_Element]) -> Any:
-    return from_list(lambda x: to_class(GetExperimentsResponseBody200_Element, x), x)
+def get_experiments_response_body200_to_dict(x: List[ExperimentOverview]) -> Any:
+    return from_list(lambda x: to_class(ExperimentOverview, x), x)
 
 
 def post_experiments_request_body_from_dict(s: Any) -> PostExperimentsRequestBody:
@@ -3910,6 +4884,14 @@ def post_experiments_response_body201_from_dict(s: Any) -> PostExperimentsRespon
 
 def post_experiments_response_body201_to_dict(x: PostExperimentsResponseBody201) -> Any:
     return to_class(PostExperimentsResponseBody201, x)
+
+
+def post_experiments_response_body202_from_dict(s: Any) -> PostExperimentsResponseBody202:
+    return PostExperimentsResponseBody202.from_dict(s)
+
+
+def post_experiments_response_body202_to_dict(x: PostExperimentsResponseBody202) -> Any:
+    return to_class(PostExperimentsResponseBody202, x)
 
 
 def get_experiment_response_body200_from_dict(s: Any) -> GetExperimentResponseBody200:
@@ -3934,3 +4916,99 @@ def patch_experiment_response_body200_from_dict(s: Any) -> PatchExperimentRespon
 
 def patch_experiment_response_body200_to_dict(x: PatchExperimentResponseBody200) -> Any:
     return to_class(PatchExperimentResponseBody200, x)
+
+
+def patch_experiment_response_body202_from_dict(s: Any) -> PatchExperimentResponseBody202:
+    return PatchExperimentResponseBody202.from_dict(s)
+
+
+def patch_experiment_response_body202_to_dict(x: PatchExperimentResponseBody202) -> Any:
+    return to_class(PatchExperimentResponseBody202, x)
+
+
+def get_institutions_response_body200_from_dict(s: Any) -> List[Institution]:
+    return from_list(Institution.from_dict, s)
+
+
+def get_institutions_response_body200_to_dict(x: List[Institution]) -> Any:
+    return from_list(lambda x: to_class(Institution, x), x)
+
+
+def post_institutions_request_body_from_dict(s: Any) -> PostInstitutionsRequestBody:
+    return PostInstitutionsRequestBody.from_dict(s)
+
+
+def post_institutions_request_body_to_dict(x: PostInstitutionsRequestBody) -> Any:
+    return to_class(PostInstitutionsRequestBody, x)
+
+
+def post_institutions_response_body201_from_dict(s: Any) -> PostInstitutionsResponseBody201:
+    return PostInstitutionsResponseBody201.from_dict(s)
+
+
+def post_institutions_response_body201_to_dict(x: PostInstitutionsResponseBody201) -> Any:
+    return to_class(PostInstitutionsResponseBody201, x)
+
+
+def get_institution_response_body200_from_dict(s: Any) -> GetInstitutionResponseBody200:
+    return GetInstitutionResponseBody200.from_dict(s)
+
+
+def get_institution_response_body200_to_dict(x: GetInstitutionResponseBody200) -> Any:
+    return to_class(GetInstitutionResponseBody200, x)
+
+
+def patch_institution_request_body_from_dict(s: Any) -> PatchInstitutionRequestBody:
+    return PatchInstitutionRequestBody.from_dict(s)
+
+
+def patch_institution_request_body_to_dict(x: PatchInstitutionRequestBody) -> Any:
+    return to_class(PatchInstitutionRequestBody, x)
+
+
+def patch_institution_response_body200_from_dict(s: Any) -> PatchInstitutionResponseBody200:
+    return PatchInstitutionResponseBody200.from_dict(s)
+
+
+def patch_institution_response_body200_to_dict(x: PatchInstitutionResponseBody200) -> Any:
+    return to_class(PatchInstitutionResponseBody200, x)
+
+
+def get_updates_response_body200_from_dict(s: Any) -> List[UpdateInformation]:
+    return from_list(UpdateInformation.from_dict, s)
+
+
+def get_updates_response_body200_to_dict(x: List[UpdateInformation]) -> Any:
+    return from_list(lambda x: to_class(UpdateInformation, x), x)
+
+
+def post_updates_request_body_from_dict(s: Any) -> PostUpdatesRequestBody:
+    return PostUpdatesRequestBody.from_dict(s)
+
+
+def post_updates_request_body_to_dict(x: PostUpdatesRequestBody) -> Any:
+    return to_class(PostUpdatesRequestBody, x)
+
+
+def post_updates_response_body201_from_dict(s: Any) -> PostUpdatesResponseBody201:
+    return PostUpdatesResponseBody201.from_dict(s)
+
+
+def post_updates_response_body201_to_dict(x: PostUpdatesResponseBody201) -> Any:
+    return to_class(PostUpdatesResponseBody201, x)
+
+
+def patch_update_request_body_from_dict(s: Any) -> PatchUpdateRequestBody:
+    return PatchUpdateRequestBody.from_dict(s)
+
+
+def patch_update_request_body_to_dict(x: PatchUpdateRequestBody) -> Any:
+    return to_class(PatchUpdateRequestBody, x)
+
+
+def patch_update_response_body200_from_dict(s: Any) -> PatchUpdateResponseBody200:
+    return PatchUpdateResponseBody200.from_dict(s)
+
+
+def patch_update_response_body200_to_dict(x: PatchUpdateResponseBody200) -> Any:
+    return to_class(PatchUpdateResponseBody200, x)

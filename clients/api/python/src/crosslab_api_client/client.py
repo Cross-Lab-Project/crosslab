@@ -2,6 +2,7 @@ import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
 from crosslab_api_client.schemas import *  # noqa: F403
+from crosslab_api_client.exceptions import AuthorizationException
 
 
 class APIClient:
@@ -53,7 +54,7 @@ class APIClient:
             if resp.status in [401, 403]:
                 raise AuthorizationException(
                     resp.headers.get('WWW-Authenticate', ""))
-            if resp.status not in [200, 201, 204]:
+            if resp.status not in [200, 201, 202, 204, 303]:
                 raise Exception(f'{resp.status}: {await resp.text()}')
             if asText:
                 return resp.status, await resp.text()
@@ -114,28 +115,35 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceToken(self, url: str = "/device_token"):  # noqa: E501
+    async def postDeviceAuthenticationToken(self, device_url: str, url: str = "/device_authentication_token"):  # noqa: E501
         """
-        Authenticate user
+        Create a new device authentication token
         
-        This endpoint will generate a new device token linked to the requesting user."""  # noqa: E501
+        This endpoint will generate a new device authentication token."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(device_token)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(device_authentication_token)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/device_token'
+        valid_url = '/'+m.group(2)+'/device_authentication_token'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if device_url:
+            if isinstance(device_url, list):
+                query_params['device_url'] = device_url
+            else:
+                query_params['device_url'] = str(device_url)
         # make http call
-        status, resp = await self._fetch(valid_url, method="post")
+        status, resp = await self._fetch(valid_url, method="post", params=query_params)
            
         # transform response
         if status == 200:
-            return post_device_token_response_body200_from_dict(resp)
+            return post_device_authentication_token_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getUsers(self, url: str = "/users"):  # noqa: E501
@@ -307,7 +315,7 @@ class APIClient:
 
     async def getIdentity(self, url: str = "/identity"):  # noqa: E501
         """
-        Get identity of yourself by jwt
+        Get identity of yourself
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -330,7 +338,7 @@ class APIClient:
 
     async def patchIdentity(self, body: Optional[PatchIdentityRequestBody] = None, url: str = "/identity"):  # noqa: E501
         """
-        Update identity of yourself by jwt
+        Update identity of yourself
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -380,7 +388,7 @@ class APIClient:
             return post_schedule_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def putBooking(self, body: Optional[PutBookingRequestBody] = None, url: str = "/booking"):  # noqa: E501
+    async def postBooking(self, body: Optional[PostBookingRequestBody] = None, url: str = "/booking"):  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501
@@ -396,14 +404,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = put_booking_request_body_to_dict(body) if body else None
+        transformedBody = post_booking_request_body_to_dict(body) if body else None
 
         # make http call
-        status, resp = await self._fetch(valid_url, method="put", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 200:
-            return put_booking_response_body200_from_dict(resp)
+            return post_booking_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def patchBooking(self, url: str, body: PatchBookingRequestBody):  # noqa: E501
@@ -547,29 +555,6 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postBookingCallback(self, url: str):  # noqa: E501
-        """
-        Callback used for updating device info / booking info.
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking_callback\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-
-        # make http call
-        status, resp = await self._fetch(valid_url, method="post")
-           
-        # transform response
-        if status == 200:
-            return
-        raise Exception(f"Unexpected status code: {status}")
-
     async def getDevices(self, url: str = "/devices"):  # noqa: E501
         """
         List devices
@@ -614,8 +599,10 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedUrl:
-            query_params['changedUrl'] = changedUrl
-
+            if isinstance(changedUrl, list):
+                query_params['changedUrl'] = changedUrl
+            else:
+                query_params['changedUrl'] = str(changedUrl)
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
            
@@ -642,8 +629,10 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if flat_group:
-            query_params['flat_group'] = flat_group
-
+            if isinstance(flat_group, list):
+                query_params['flat_group'] = flat_group
+            else:
+                query_params['flat_group'] = str(flat_group)
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
            
@@ -673,8 +662,10 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedUrl:
-            query_params['changedUrl'] = changedUrl
-
+            if isinstance(changedUrl, list):
+                query_params['changedUrl'] = changedUrl
+            else:
+                query_params['changedUrl'] = str(changedUrl)
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody, params=query_params)
            
@@ -708,7 +699,7 @@ class APIClient:
 
     async def postDevice(self, url: str, changedUrl: Optional[str] = None):  # noqa: E501
         """
-        Create an instance of a virtual device
+        Instantiate a cloud instantiable device
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -724,8 +715,10 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedUrl:
-            query_params['changedUrl'] = changedUrl
-
+            if isinstance(changedUrl, list):
+                query_params['changedUrl'] = changedUrl
+            else:
+                query_params['changedUrl'] = str(changedUrl)
         # make http call
         status, resp = await self._fetch(valid_url, method="post", params=query_params)
            
@@ -760,18 +753,18 @@ class APIClient:
             return post_device_availability_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceToken(self, url: str):  # noqa: E501
+    async def postDeviceWebsocket(self, url: str):  # noqa: E501
         """
-        Create new token for device
+        Create new websocket token for device
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/token)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/websocket)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/token'
+        valid_url = '/'+m.group(2)+'/websocket'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
@@ -780,7 +773,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return purple_post_device_token_response_body200_from_dict(resp)
+            return post_device_websocket_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def postDeviceSignaling(self, url: str, body: PostDeviceSignalingRequestBody, peerconnection_url: str):  # noqa: E501
@@ -804,8 +797,10 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if peerconnection_url:
-            query_params['peerconnection_url'] = peerconnection_url
-
+            if isinstance(peerconnection_url, list):
+                query_params['peerconnection_url'] = peerconnection_url
+            else:
+                query_params['peerconnection_url'] = str(peerconnection_url)
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
            
@@ -837,7 +832,7 @@ class APIClient:
             return get_peerconnections_response_body200_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postPeerconnections(self, body: PostPeerconnectionsRequestBody, closedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
+    async def postPeerconnections(self, body: PostPeerconnectionsRequestBody, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
         """
         Create a new Peer Connection
         """  # noqa: E501
@@ -858,14 +853,23 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if closedUrl:
-            query_params['closedUrl'] = closedUrl
-
+            if isinstance(closedUrl, list):
+                query_params['closedUrl'] = closedUrl
+            else:
+                query_params['closedUrl'] = str(closedUrl)
+        if statusChangedUrl:
+            if isinstance(statusChangedUrl, list):
+                query_params['statusChangedUrl'] = statusChangedUrl
+            else:
+                query_params['statusChangedUrl'] = str(statusChangedUrl)
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
            
         # transform response
         if status == 201:
             return post_peerconnections_response_body201_from_dict(resp)
+        if status == 202:
+            return post_peerconnections_response_body202_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getPeerconnection(self, url: str):  # noqa: E501
@@ -961,6 +965,8 @@ class APIClient:
         # transform response
         if status == 201:
             return post_experiments_response_body201_from_dict(resp)
+        if status == 202:
+            return post_experiments_response_body202_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getExperiment(self, url: str):  # noqa: E501
@@ -1011,14 +1017,18 @@ class APIClient:
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedURL:
-            query_params['changedURL'] = changedURL
-
+            if isinstance(changedURL, list):
+                query_params['changedURL'] = changedURL
+            else:
+                query_params['changedURL'] = str(changedURL)
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody, params=query_params)
            
         # transform response
         if status == 200:
             return patch_experiment_response_body200_from_dict(resp)
+        if status == 202:
+            return patch_experiment_response_body202_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteExperiment(self, url: str):  # noqa: E501
@@ -1030,6 +1040,257 @@ class APIClient:
 
         # match path to url schema
         m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def getInstitutions(self, url: str = "/institutions"):  # noqa: E501
+        """
+        List institutions
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(institutions)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/institutions'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return get_institutions_response_body200_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def postInstitutions(self, body: PostInstitutionsRequestBody, url: str = "/institutions"):  # noqa: E501
+        """
+        Create a new institution
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(institutions)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/institutions'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # transform body
+        transformedBody = post_institutions_request_body_to_dict(body) if body else None
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+           
+        # transform response
+        if status == 201:
+            return post_institutions_response_body201_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def getInstitution(self, url: str):  # noqa: E501
+        """
+        View an institution.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return get_institution_response_body200_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def patchInstitution(self, url: str, body: Optional[PatchInstitutionRequestBody] = None):  # noqa: E501
+        """
+        Update an institution.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # transform body
+        transformedBody = patch_institution_request_body_to_dict(body) if body else None
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+           
+        # transform response
+        if status == 200:
+            return patch_institution_response_body200_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def deleteInstitution(self, url: str):  # noqa: E501
+        """
+        Delete an institution
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def getUpdates(self, url: str = "/updates"):  # noqa: E501
+        """
+        Get update information for all devices
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(updates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/updates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return get_updates_response_body200_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def postUpdates(self, body: PostUpdatesRequestBody, url: str = "/updates"):  # noqa: E501
+        """
+        Create new update information
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(updates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/updates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # transform body
+        transformedBody = post_updates_request_body_to_dict(body) if body else None
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+           
+        # transform response
+        if status == 201:
+            return post_updates_response_body201_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def getUpdate(self, url: str, current_version: Optional[str] = None):  # noqa: E501
+        """
+        Get update for device
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(updates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if current_version:
+            if isinstance(current_version, list):
+                query_params['current_version'] = current_version
+            else:
+                query_params['current_version'] = str(current_version)
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get", params=query_params)
+           
+        # transform response
+        if status == 200:
+            return
+        if status == 303:
+            return
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def patchUpdate(self, url: str, body: PatchUpdateRequestBody):  # noqa: E501
+        """
+        Edit update information
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(updates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # transform body
+        transformedBody = patch_update_request_body_to_dict(body) if body else None
+
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+           
+        # transform response
+        if status == 200:
+            return patch_update_response_body200_from_dict(resp)
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def deleteUpdate(self, url: str):  # noqa: E501
+        """
+        Delete update information
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(updates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''

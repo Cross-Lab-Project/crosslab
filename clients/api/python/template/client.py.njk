@@ -2,6 +2,7 @@ import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
 from crosslab_api_client.schemas import *  # noqa: F403
+from crosslab_api_client.exceptions import AuthorizationException
 
 
 class APIClient:
@@ -53,7 +54,7 @@ class APIClient:
             if resp.status in [401, 403]:
                 raise AuthorizationException(
                     resp.headers.get('WWW-Authenticate', ""))
-            if resp.status not in [200, 201, 204]:
+            if resp.status not in [200, 201, 202, 204, 303]:
                 raise Exception(f'{resp.status}: {await resp.text()}')
             if asText:
                 return resp.status, await resp.text()
@@ -131,16 +132,18 @@ class APIClient:
         query_params: Dict[str, Union[List[str], str]] = {}
         {% for param in query_params -%}
         if {{param}}:
-            query_params['{{param}}'] = {{param}}
-        {%- endfor %}
-
-        {% endif -%}
+            if isinstance({{param}}, list):
+                query_params['{{param}}'] = {{param}}
+            else:
+                query_params['{{param}}'] = str({{param}})
+        {% endfor -%}
+        {%- endif -%}
         # make http call
         status, resp = await self._fetch(valid_url, method="{{method}}"{% if details.requestBody -%} , body=transformedBody{% endif %} {%- if query_params | length > 0 -%}, params=query_params{%- endif -%})
            
         # transform response
         {%- for status, response in details.responses -%}
-            {%- if status >= 200 and status <300 -%}
+            {%- if status >= 200 and status <300 or status == 303 -%}
                 {%- set transformer = transformerFromDict('python', method_name+'_response_body_'+status) | await -%}
                 {%- if transformer %}
         if status == {{status}}:
