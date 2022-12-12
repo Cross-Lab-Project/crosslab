@@ -73,9 +73,9 @@ class APIClient:
         {%- endif -%}
         {%- if details.requestBody -%}
             {%- if details.requestBody.required -%}
-                {%- set params = (params.push('body: '+(type('python', (method_name+'_request_body') | lowerSnakeCase) | await )), params) %}
+                {%- set params = (params.push('body: '+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )), params) %}
             {%- else -%}
-                {%- set params = (params.push('body: Optional['+(type('python', (method_name+'_request_body') | lowerSnakeCase) | await )+'] = None'), params) %}
+                {%- set params = (params.push('body: Optional['+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )+'] = None'), params) %}
             {%- endif -%}
             
         {%- endif -%}
@@ -124,7 +124,7 @@ class APIClient:
 
         {% if details.requestBody -%}
         # transform body
-        transformedBody = {{transformerToDict('python', method_name+'_request_body') | await}}(body) if body else None
+        transformedBody = {{transformerToDict('python', method_name+'_request_body_write') | await}}(body) if body else None
 
         {% endif %}
         {%- if query_params | length > 0 -%}
@@ -144,7 +144,7 @@ class APIClient:
         # transform response
         {%- for status, response in details.responses -%}
             {%- if status >= 200 and status <300 or status == 303 -%}
-                {%- set transformer = transformerFromDict('python', method_name+'_response_body_'+status) | await -%}
+                {%- set transformer = transformerFromDict('python', method_name+'_response_body_'+status+'_read') | await -%}
                 {%- if transformer %}
         if status == {{status}}:
             return {{transformer}}(resp)

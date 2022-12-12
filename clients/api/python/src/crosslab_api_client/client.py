@@ -61,7 +61,7 @@ class APIClient:
             else:
                 return resp.status, await resp.json()
 
-    async def postLogin(self, body: PostLoginRequestBody, url: str = "/login"):  # noqa: E501
+    async def postLogin(self, body: PostLoginRequestBodyWrite, url: str = "/login"):  # noqa: E501
         """
         Login user
         
@@ -78,17 +78,17 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_login_request_body_to_dict(body) if body else None
+        transformedBody = post_login_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 201:
-            return post_login_response_body201_from_dict(resp)
+            return post_login_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postLogout(self, body: PostLogoutRequestBody, url: str = "/logout"):  # noqa: E501
+    async def postLogout(self, body: PostLogoutRequestBodyWrite, url: str = "/logout"):  # noqa: E501
         """
         Logout user
         
@@ -105,7 +105,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_logout_request_body_to_dict(body) if body else None
+        transformedBody = post_logout_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
@@ -143,7 +143,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return post_device_authentication_token_response_body200_from_dict(resp)
+            return post_device_authentication_token_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getUsers(self, url: str = "/users"):  # noqa: E501
@@ -166,10 +166,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_users_response_body200_from_dict(resp)
+            return get_users_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postUsers(self, body: Optional[PostUsersRequestBody] = None, url: str = "/users"):  # noqa: E501
+    async def postUsers(self, body: Optional[PostUsersRequestBodyWrite] = None, url: str = "/users"):  # noqa: E501
         """
         Create new user
         """  # noqa: E501
@@ -185,14 +185,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_users_request_body_to_dict(body) if body else None
+        transformedBody = post_users_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 201:
-            return post_users_response_body201_from_dict(resp)
+            return post_users_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getUser(self, url: str):  # noqa: E501
@@ -215,10 +215,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_user_response_body200_from_dict(resp)
+            return get_user_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchUser(self, url: str, body: Optional[PatchUserRequestBody] = None):  # noqa: E501
+    async def patchUser(self, url: str, body: Optional[PatchUserRequestBodyWrite] = None):  # noqa: E501
         """
         Update user by username
         """  # noqa: E501
@@ -234,14 +234,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_user_request_body_to_dict(body) if body else None
+        transformedBody = patch_user_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
            
         # transform response
         if status == 200:
-            return patch_user_response_body200_from_dict(resp)
+            return patch_user_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteUser(self, url: str):  # noqa: E501
@@ -287,7 +287,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return put_user_roles_response_body200_from_dict(resp)
+            return put_user_roles_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteUserRoles(self, url: str):  # noqa: E501
@@ -333,10 +333,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_identity_response_body200_from_dict(resp)
+            return get_identity_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchIdentity(self, body: Optional[PatchIdentityRequestBody] = None, url: str = "/identity"):  # noqa: E501
+    async def patchIdentity(self, body: Optional[PatchIdentityRequestBodyWrite] = None, url: str = "/identity"):  # noqa: E501
         """
         Update identity of yourself
         """  # noqa: E501
@@ -352,17 +352,17 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_identity_request_body_to_dict(body) if body else None
+        transformedBody = patch_identity_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
            
         # transform response
         if status == 200:
-            return patch_identity_response_body200_from_dict(resp)
+            return patch_identity_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postSchedule(self, body: Optional[PostScheduleRequestBody] = None, url: str = "/schedule"):  # noqa: E501
+    async def postSchedule(self, body: Optional[PostScheduleRequestBodyWrite] = None, url: str = "/schedule"):  # noqa: E501
         """
         Returns the free / booked times for given experiment.
         """  # noqa: E501
@@ -378,17 +378,17 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_schedule_request_body_to_dict(body) if body else None
+        transformedBody = post_schedule_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 200:
-            return post_schedule_response_body200_from_dict(resp)
+            return post_schedule_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postBooking(self, body: Optional[PostBookingRequestBody] = None, url: str = "/booking"):  # noqa: E501
+    async def postBooking(self, body: Optional[PostBookingRequestBodyWrite] = None, url: str = "/booking"):  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501
@@ -404,17 +404,17 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_booking_request_body_to_dict(body) if body else None
+        transformedBody = post_booking_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 200:
-            return post_booking_response_body200_from_dict(resp)
+            return post_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchBooking(self, url: str, body: PatchBookingRequestBody):  # noqa: E501
+    async def patchBooking(self, url: str, body: PatchBookingRequestBodyWrite):  # noqa: E501
         """
         Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
         """  # noqa: E501
@@ -430,14 +430,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_booking_request_body_to_dict(body) if body else None
+        transformedBody = patch_booking_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
            
         # transform response
         if status == 200:
-            return patch_booking_response_body200_from_dict(resp)
+            return patch_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteBooking(self, url: str):  # noqa: E501
@@ -483,7 +483,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_booking_response_body200_from_dict(resp)
+            return get_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteBookingDestroy(self, url: str):  # noqa: E501
@@ -529,7 +529,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return put_booking_lock_response_body200_from_dict(resp)
+            return put_booking_lock_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteBookingLock(self, url: str):  # noqa: E501
@@ -575,10 +575,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_devices_response_body200_from_dict(resp)
+            return get_devices_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDevices(self, body: PostDevicesRequestBody, changedUrl: Optional[str] = None, url: str = "/devices"):  # noqa: E501
+    async def postDevices(self, body: PostDevicesRequestBodyWrite, changedUrl: Optional[str] = None, url: str = "/devices"):  # noqa: E501
         """
         Create a new device
         """  # noqa: E501
@@ -594,7 +594,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_devices_request_body_to_dict(body) if body else None
+        transformedBody = post_devices_request_body_write_to_dict(body) if body else None
 
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
@@ -608,7 +608,7 @@ class APIClient:
            
         # transform response
         if status == 201:
-            return post_devices_response_body201_from_dict(resp)
+            return post_devices_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getDevice(self, url: str, flat_group: Optional[bool] = None):  # noqa: E501
@@ -638,10 +638,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_device_response_body200_from_dict(resp)
+            return get_device_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchDevice(self, url: str, body: Optional[PatchDeviceRequestBody] = None, changedUrl: Optional[str] = None):  # noqa: E501
+    async def patchDevice(self, url: str, body: Optional[PatchDeviceRequestBodyWrite] = None, changedUrl: Optional[str] = None):  # noqa: E501
         """
         Update an existing device
         """  # noqa: E501
@@ -657,7 +657,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_device_request_body_to_dict(body) if body else None
+        transformedBody = patch_device_request_body_write_to_dict(body) if body else None
 
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
@@ -671,7 +671,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return patch_device_response_body200_from_dict(resp)
+            return patch_device_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteDevice(self, url: str):  # noqa: E501
@@ -724,10 +724,10 @@ class APIClient:
            
         # transform response
         if status == 201:
-            return post_device_response_body201_from_dict(resp)
+            return post_device_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceAvailability(self, url: str, body: Optional[List[PurpleAvailabilityRule]] = None):  # noqa: E501
+    async def postDeviceAvailability(self, url: str, body: Optional[List[FluffyAvailabilityRule]] = None):  # noqa: E501
         """
         Update the device availability
         """  # noqa: E501
@@ -743,14 +743,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_device_availability_request_body_to_dict(body) if body else None
+        transformedBody = post_device_availability_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 200:
-            return post_device_availability_response_body200_from_dict(resp)
+            return post_device_availability_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def postDeviceWebsocket(self, url: str):  # noqa: E501
@@ -773,10 +773,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return post_device_websocket_response_body200_from_dict(resp)
+            return post_device_websocket_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceSignaling(self, url: str, body: PostDeviceSignalingRequestBody, peerconnection_url: str):  # noqa: E501
+    async def postDeviceSignaling(self, url: str, body: PostDeviceSignalingRequestBodyWrite, peerconnection_url: str):  # noqa: E501
         """
         Send signaling message to device
         """  # noqa: E501
@@ -792,7 +792,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_device_signaling_request_body_to_dict(body) if body else None
+        transformedBody = post_device_signaling_request_body_write_to_dict(body) if body else None
 
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
@@ -829,10 +829,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_peerconnections_response_body200_from_dict(resp)
+            return get_peerconnections_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postPeerconnections(self, body: PostPeerconnectionsRequestBody, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
+    async def postPeerconnections(self, body: PostPeerconnectionsRequestBodyWrite, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
         """
         Create a new Peer Connection
         """  # noqa: E501
@@ -848,7 +848,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_peerconnections_request_body_to_dict(body) if body else None
+        transformedBody = post_peerconnections_request_body_write_to_dict(body) if body else None
 
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
@@ -867,9 +867,9 @@ class APIClient:
            
         # transform response
         if status == 201:
-            return post_peerconnections_response_body201_from_dict(resp)
+            return post_peerconnections_response_body201_read_from_dict(resp)
         if status == 202:
-            return post_peerconnections_response_body202_from_dict(resp)
+            return post_peerconnections_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getPeerconnection(self, url: str):  # noqa: E501
@@ -892,7 +892,7 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_peerconnection_response_body200_from_dict(resp)
+            return get_peerconnection_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deletePeerconnection(self, url: str):  # noqa: E501
@@ -938,10 +938,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_experiments_response_body200_from_dict(resp)
+            return get_experiments_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postExperiments(self, body: PostExperimentsRequestBody, url: str = "/experiments"):  # noqa: E501
+    async def postExperiments(self, body: PostExperimentsRequestBodyWrite, url: str = "/experiments"):  # noqa: E501
         """
         Create a new experiment
         """  # noqa: E501
@@ -957,16 +957,16 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_experiments_request_body_to_dict(body) if body else None
+        transformedBody = post_experiments_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 201:
-            return post_experiments_response_body201_from_dict(resp)
+            return post_experiments_response_body201_read_from_dict(resp)
         if status == 202:
-            return post_experiments_response_body202_from_dict(resp)
+            return post_experiments_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getExperiment(self, url: str):  # noqa: E501
@@ -989,10 +989,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_experiment_response_body200_from_dict(resp)
+            return get_experiment_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchExperiment(self, url: str, body: Optional[PatchExperimentRequestBody] = None, changedURL: Optional[str] = None):  # noqa: E501
+    async def patchExperiment(self, url: str, body: Optional[PatchExperimentRequestBodyWrite] = None, changedURL: Optional[str] = None):  # noqa: E501
         """
         Update an existing experiment.
         
@@ -1012,7 +1012,7 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_experiment_request_body_to_dict(body) if body else None
+        transformedBody = patch_experiment_request_body_write_to_dict(body) if body else None
 
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
@@ -1026,9 +1026,9 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return patch_experiment_response_body200_from_dict(resp)
+            return patch_experiment_response_body200_read_from_dict(resp)
         if status == 202:
-            return patch_experiment_response_body202_from_dict(resp)
+            return patch_experiment_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteExperiment(self, url: str):  # noqa: E501
@@ -1074,10 +1074,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_institutions_response_body200_from_dict(resp)
+            return get_institutions_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postInstitutions(self, body: PostInstitutionsRequestBody, url: str = "/institutions"):  # noqa: E501
+    async def postInstitutions(self, body: PostInstitutionsRequestBodyWrite, url: str = "/institutions"):  # noqa: E501
         """
         Create a new institution
         """  # noqa: E501
@@ -1093,14 +1093,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_institutions_request_body_to_dict(body) if body else None
+        transformedBody = post_institutions_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 201:
-            return post_institutions_response_body201_from_dict(resp)
+            return post_institutions_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getInstitution(self, url: str):  # noqa: E501
@@ -1123,10 +1123,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_institution_response_body200_from_dict(resp)
+            return get_institution_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchInstitution(self, url: str, body: Optional[PatchInstitutionRequestBody] = None):  # noqa: E501
+    async def patchInstitution(self, url: str, body: Optional[PatchInstitutionRequestBodyWrite] = None):  # noqa: E501
         """
         Update an institution.
         """  # noqa: E501
@@ -1142,14 +1142,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_institution_request_body_to_dict(body) if body else None
+        transformedBody = patch_institution_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
            
         # transform response
         if status == 200:
-            return patch_institution_response_body200_from_dict(resp)
+            return patch_institution_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteInstitution(self, url: str):  # noqa: E501
@@ -1195,10 +1195,10 @@ class APIClient:
            
         # transform response
         if status == 200:
-            return get_updates_response_body200_from_dict(resp)
+            return get_updates_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postUpdates(self, body: PostUpdatesRequestBody, url: str = "/updates"):  # noqa: E501
+    async def postUpdates(self, body: PostUpdatesRequestBodyWrite, url: str = "/updates"):  # noqa: E501
         """
         Create new update information
         """  # noqa: E501
@@ -1214,14 +1214,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = post_updates_request_body_to_dict(body) if body else None
+        transformedBody = post_updates_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
            
         # transform response
         if status == 201:
-            return post_updates_response_body201_from_dict(resp)
+            return post_updates_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def getUpdate(self, url: str, current_version: Optional[str] = None):  # noqa: E501
@@ -1256,7 +1256,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchUpdate(self, url: str, body: PatchUpdateRequestBody):  # noqa: E501
+    async def patchUpdate(self, url: str, body: PatchUpdateRequestBodyWrite):  # noqa: E501
         """
         Edit update information
         """  # noqa: E501
@@ -1272,14 +1272,14 @@ class APIClient:
             valid_url = valid_url[1:]
 
         # transform body
-        transformedBody = patch_update_request_body_to_dict(body) if body else None
+        transformedBody = patch_update_request_body_write_to_dict(body) if body else None
 
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
            
         # transform response
         if status == 200:
-            return patch_update_response_body200_from_dict(resp)
+            return patch_update_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
     async def deleteUpdate(self, url: str):  # noqa: E501

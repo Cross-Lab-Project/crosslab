@@ -49,7 +49,6 @@ async function schemas(language: string) {
   if (schemas_cache[language]) {
     return schemas_cache[language];
   }
-  console.log(inputData)
   const res = await quicktype({
     inputData,
     lang: "python",
@@ -154,7 +153,6 @@ async function main() {
     } catch (e) {
       // parse input as normal yaml file
       const schema = JSON.parse(loadAndDeref(input));
-      console.log(JSON.stringify(schema, null, 2));
       addJsonSchema(schema.title??input, schema, inputData);
     }
   }
@@ -244,11 +242,38 @@ function addJsonSchema(
   const _name = lowerSnakeCase_filter(name);
   if (schema) {
     schema_mapping.push(_name);
+    schema_mapping.push(_name+"_write");
+    schema_mapping.push(_name+"_read");
     const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
+    const schemaInputWrite = new JSONSchemaInput(new FetchingJSONSchemaStore());
+    const schemaInputRead = new JSONSchemaInput(new FetchingJSONSchemaStore());
     schemas.addInput(schemaInput);
+    schemas.addInput(schemaInputWrite);
+    schemas.addInput(schemaInputRead);
+
+    let schema_string=JSON.stringify(schema)
+    if (schema_string.includes("\"const\":")) {
+      schema_string = schema_string.replace(/"const":("[^"]*")/g,`"enum":[$1]`)
+    }
+
+    let schema_string_write=schema_string
+    let schema_string_read=schema_string
+    if (schema_string.includes("\"readOnly\":") || schema_string.includes("\"writeOnly\":")) {
+      schema_string_write = schema_string.replace(/"[^\"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,``)
+      schema_string_read = schema_string.replace(/"[^\"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,``)
+    }
+
     schemaInput.addSource({
       name: _name,
-      schema: JSON.stringify(schema).replace(/"const":("[^"]*")/g,`"enum":[$1]`),
+      schema: schema_string,
+    });
+    schemaInputWrite.addSource({
+      name: _name+"_write",
+      schema: schema_string_write,
+    });
+    schemaInputRead.addSource({
+      name: _name+"_read",
+      schema: schema_string_read,
     });
   }
 }

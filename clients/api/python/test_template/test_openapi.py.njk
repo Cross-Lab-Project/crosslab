@@ -103,14 +103,14 @@ async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
             {%- if details.requestBody.content["application/json"].schema %}
 
     request_dict = json.loads(r'{{details.requestBody.content["application/json"].schema | jsf | dump}}')
-    request = {{transformerFromDict('python', method_name+'_request_body') | await }}(request_dict)
+    request = {{transformerFromDict('python', method_name+'_request_body_write') | await }}(request_dict)
                 {%- set request_body_param="request" -%}
             {%- endif -%}
         {%- endif %}
 
     parameter_list = {{create_parameter_set(details)}}
         {%- for status, response in details.responses %}
-            {%- set response_transformer = transformerToDict('python', method_name+'_response_body_'+status) | await %}
+            {%- set response_transformer = transformerToDict('python', method_name+'_response_body_'+status+'_read') | await %}
             {%- if not details | hasPathParameter %}
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
