@@ -7,10 +7,26 @@
     },
     "files.exclude": {
         //begin generated
+        "clients/api/python/**/*.egg-info": true,
+        "clients/api/python/node_modules": true,
+        "clients/api/python/**/__pycache__": true,
+        "clients/api/python/.pytest_cache": true,
+        "clients/api/python/.tox": true,
         "clients/api/.vscode": true,
+        "clients/soa/.vscode": true,
         "clients/.vscode": true,
+        "helper/crosslab-typescript-addon/node_modules": true,
+        "helper/crosslab-typescript-addon/.vscode": true,
+        "helper/openapi-codegeneration/node_modules": true,
+        "helper/openapi-codegeneration/.vscode": true,
+        "helper/tsdoc-theme/node_modules": true,
+        "helper/tsdoc-theme/.vscode": true,
+        "helper/.vscode": true,
         //end generated
     },
     "files.watcherExclude": {
+        //begin generated
+
+        //end generated
     }
 }

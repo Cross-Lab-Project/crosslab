@@ -1,7 +1,7 @@
 {
     "files.exclude": {
         //begin generated
-
+        "./crosslab/services/.vscode": true,
         //end generated
     },
     "files.watcherExclude": {

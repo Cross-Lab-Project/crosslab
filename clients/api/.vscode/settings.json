@@ -1,9 +1,21 @@
 {
     "files.exclude": {
         //begin generated
-
+        "js/.vscode": true,
+        "python/**/*.egg-info": true,
+        "python/node_modules": true,
+        "python/**/__pycache__": true,
+        "python/.pytest_cache": true,
+        "python/.tox": true,
         //end generated
     },
     "files.watcherExclude": {
+        //begin generated
+        "python/**/*.egg-info": true,
+        "python/node_modules": true,
+        "python/**/__pycache__": true,
+        "python/.pytest_cache": true,
+        "python/.tox": true,
+        //end generated
     }
 }
