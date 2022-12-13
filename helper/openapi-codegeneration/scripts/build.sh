@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 
-npm install
+npm install --install-links
 npm run build

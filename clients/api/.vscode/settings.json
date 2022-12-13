@@ -1,7 +1,6 @@
 {
     "files.exclude": {
         //begin generated
-        "js/.vscode": true,
         "python/**/*.egg-info": true,
         "python/node_modules": true,
         "python/**/__pycache__": true,
