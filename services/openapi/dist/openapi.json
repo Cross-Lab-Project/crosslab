@@ -84,7 +84,6 @@
         "x-service-name": "Authentication Service"
       },
       "Device": {
-        "title": "Device",
         "description": "A device might either be a physical/virtual device or a group of device.",
         "type": "object",
         "required": [
@@ -96,11 +95,9 @@
             "description": "Unique ID of the device. Contains the institution (by having an end point at that institution)",
             "format": "uri"
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "Experiment": {
-        "title": "Experiment",
         "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
         "type": "object",
         "required": [
@@ -118,11 +115,9 @@
             "type": "string",
             "description": "User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "Timeslot": {
-        "title": "Timeslot",
         "description": "A time slot represents a slice of time used for bookings.",
         "type": "object",
         "required": [
@@ -140,11 +135,9 @@
             "description": "End time of the booking.",
             "format": "date-time"
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "Booking": {
-        "title": "Booking",
         "description": "A booking in the booking system.",
         "type": "object",
         "required": [
@@ -203,8 +196,7 @@
             "type": "string",
             "description": "User readable notes about the status of the booking (e.g. if devices are unknown)."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "device_overview": {
         "title": "Device Overview",
@@ -923,16 +915,6 @@
           "type": "string",
           "x-service-name": "Authentication Service"
         }
-      },
-      "ID": {
-        "in": "path",
-        "name": "ID",
-        "schema": {
-          "type": "string",
-          "x-service-name": "Booking Service"
-        },
-        "required": true,
-        "description": "ID of Booking"
       },
       "device_changed_url": {
         "name": "changedUrl",
@@ -1707,7 +1689,6 @@
     },
     "/schedule": {
       "post": {
-        "operationId": "get_schedule",
         "security": [
           {
             "JWT": []
@@ -1718,11 +1699,9 @@
         ],
         "summary": "Returns the free / booked times for given experiment.",
         "requestBody": {
-          "description": "Requested experiment and timeframe.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Schedule Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -1829,14 +1808,11 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-optional-url": true,
-        "x-service-name": "Booking Service"
+        }
       }
     },
     "/booking": {
-      "post": {
-        "operationId": "book_experiment",
+      "put": {
         "security": [
           {
             "JWT": []
@@ -1847,11 +1823,9 @@
         ],
         "summary": "Books an experiment.",
         "requestBody": {
-          "description": "Experiment, timeframe and type of booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Booking Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -1914,14 +1888,11 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-optional-url": true,
-        "x-service-name": "Booking Service"
+        }
       }
     },
     "/booking/{ID}": {
       "patch": {
-        "operationId": "update_booking",
         "security": [
           {
             "JWT": []
@@ -1929,7 +1900,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1937,11 +1914,9 @@
         ],
         "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
         "requestBody": {
-          "description": "Devices or callback to be added to the booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Devices or Callback",
                 "anyOf": [
                   {
                     "type": "object",
@@ -2017,11 +1992,9 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "delete": {
-        "operationId": "cancel_booking",
         "security": [
           {
             "JWT": []
@@ -2029,7 +2002,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -2063,11 +2042,9 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "get": {
-        "operationId": "get_booking",
         "security": [
           {
             "JWT": []
@@ -2075,7 +2052,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -2128,13 +2111,11 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       }
     },
     "/booking/{ID}/destroy": {
       "delete": {
-        "operationId": "delete_booking",
         "security": [
           {
             "JWT": []
@@ -2142,7 +2123,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -2176,13 +2163,11 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       }
     },
     "/booking/{ID}/lock": {
       "put": {
-        "operationId": "lock_booking",
         "security": [
           {
             "JWT": []
@@ -2190,7 +2175,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -2257,11 +2248,9 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
       },
       "delete": {
-        "operationId": "unlock_booking",
         "security": [
           {
             "JWT": []
@@ -2269,7 +2258,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -2300,8 +2295,53 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-service-name": "Booking Service"
+        }
+      }
+    },
+    "/booking_callback/{ID}": {
+      "post": {
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "tags": [
+          "booking-backend"
+        ],
+        "summary": "Callback used for updating device info / booking info.",
+        "responses": {
+          "200": {
+            "description": "Update was processed."
+          },
+          "404": {
+            "description": "Callback is no longer needed."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        }
       }
     },
     "/devices": {
