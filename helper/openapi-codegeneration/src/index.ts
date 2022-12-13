@@ -168,7 +168,12 @@ async function main() {
   mkdirSync(outputDir, { recursive: true });
 
   // render all templates in the template directory
-  let templateDir = env.getGlobal("templateDir") ? env.getGlobal("templateDir") : resolve(__dirname, "../templates", options.template);
+  let templateDir
+  try{
+    templateDir = env.getGlobal("templateDir")
+  } catch {
+    templateDir = resolve(__dirname, "../templates", options.template);
+  }
   if (options.template.startsWith(".")) {
     templateDir = resolve(process.cwd(), options.template);
   }
