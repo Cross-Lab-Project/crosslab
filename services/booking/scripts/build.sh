@@ -20,5 +20,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-npm install
 npm run openapi-bundle

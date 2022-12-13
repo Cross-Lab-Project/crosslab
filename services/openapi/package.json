@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "openapi-lint": "node generate.js && npx @redocly/openapi-cli lint ./openapi.yml",
-        "openapi-bundle": "node generate.js && npx @redocly/openapi-cli bundle ./openapi.yml --output dist/openapi.json && node update.js",
+        "openapi-lint": "node generate.js && npx --yes @redocly/openapi-cli lint ./openapi.yml",
+        "openapi-bundle": "node generate.js && npx --yes @redocly/openapi-cli bundle ./openapi.yml --output dist/openapi.json && node update.js",
         "watch-openapi": "npx --yes chokidar-cli './**/*.yml' -c 'npm run openapi-bundle'",
         "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'rapidoc.html' --files 'dist/openapi.json'"
     },

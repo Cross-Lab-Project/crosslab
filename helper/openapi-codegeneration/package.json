@@ -15,8 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "prepare": "npm run build"
+    "watch": "tsc -w"
   },
   "author": "Johannes Nau",
   "license": "UNLICENSED",

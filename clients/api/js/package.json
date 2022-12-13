@@ -31,7 +31,6 @@
     "build-generate": "npm run generate-bv && npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client -o ./src/generated",
     "build-compile": "tsc",
     "build": "npm run build-generate && npm run build-compile",
-    "prepare": "npm run build",
     "test": "node dist/test/test.js",
     "format": "npx prettier src --write",
     "predocs": "npm run build",

@@ -10,8 +10,7 @@
   "scripts": {
     "copy-templates": "rm $(find ./dist/templates -name *.njk) & copyfiles -u 1 src/templates/**/*.njk dist/",
     "build": "tsc && npm run copy-templates",
-    "format": "npx prettier src --write",
-    "prepare": "npm run build"
+    "format": "npx prettier src --write"
   },
   "author": "Pierre Helbing",
   "license": "UNLICENSED",

@@ -11,8 +11,7 @@
   "scripts": {
     "build-compile": "tsc",
     "build": "npm run build-compile",
-    "watch": "tsc -w",
-    "prepare": "npm run build"
+    "watch": "tsc -w"
   },
   "files": [
     "dist"

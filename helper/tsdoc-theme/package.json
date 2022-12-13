@@ -8,8 +8,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "prepare": "npm run build"
+    "build": "tsc"
   },
   "author": "Pierre Helbing",
   "license": "UNLICENSED",
