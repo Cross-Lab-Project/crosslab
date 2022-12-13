@@ -20,8 +20,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-npm install
 npm run openapi-bundle
 if [ "$SPEC_ONLY" = false ] ; then
+  npm install
   npm run build
 fi
