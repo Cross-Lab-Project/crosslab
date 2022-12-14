@@ -1,4 +1,4 @@
 #!/bin/sh
 
-npm install
+npm install --install-links
 npm run test

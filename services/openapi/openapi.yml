@@ -6,6 +6,13 @@ info:
     This is the OpenAPI description for the CrossLab REST API.
   version: 0.0.1
 
+servers:
+  - url: 'https://{tenant}'
+    variables:
+      tenant:
+        default: 'api.cross-lab.org'
+        description: The tenant name of the CrossLab instance.
+
 components:
   securitySchemes:
     default:
