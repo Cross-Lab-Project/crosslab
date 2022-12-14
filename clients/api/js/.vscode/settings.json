@@ -5,6 +5,7 @@
         //end generated
     },
     "files.watcherExclude": {
+        "node_modules": true,
         //begin generated
         
         //end generated
