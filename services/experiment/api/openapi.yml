@@ -7,13 +7,6 @@ info:
   version: 0.0.1
   x-service-name: Experiment Service
 
-servers:
-  - url: 'https://{tenant}'
-    variables:
-      tenant:
-        default: 'api.cross-lab.org'
-        description: The tenant name of the CrossLab instance.
-
 components:
   securitySchemes:
     JWT:
