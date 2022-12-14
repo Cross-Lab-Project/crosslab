@@ -1,5 +1,5 @@
 import { OpenAPIV3_1 } from "openapi-types";
-import {JSONSchemaFaker} from 'json-schema-faker';
+import {JSONSchemaFaker} from 'deterministic-json-schema-faker';
 import seedrandom from 'seedrandom';
 
 export function formatPath_filter(path: string) {
