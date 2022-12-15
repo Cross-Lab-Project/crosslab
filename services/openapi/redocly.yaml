@@ -2,3 +2,4 @@ extends:
   - recommended
 rules:
   no-empty-servers: warn
+  path-parameters-defined: warn

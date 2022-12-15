@@ -2661,6 +2661,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -3196,6 +3206,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -3352,6 +3372,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -3735,6 +3765,15 @@
           "closed": {
             "{$request.query.closedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-closed\" event",
                 "requestBody": {
                   "content": {
                     "application/json": {
@@ -3775,6 +3814,15 @@
           "status-changed": {
             "{$request.query.statusChangedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-status-changed\" event",
                 "requestBody": {
                   "content": {
                     "application/json": {
@@ -4018,6 +4066,59 @@
             "description": "Server Error."
           }
         },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
         "x-optional-url": true,
         "x-service-name": "Experiment Service"
       }
@@ -4145,6 +4246,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {

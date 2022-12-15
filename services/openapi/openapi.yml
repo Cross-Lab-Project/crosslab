@@ -11,6 +11,12 @@ components:
     default:
       type: http
       scheme: basic
+    JWT:
+      type: http
+      scheme: bearer
+    TuiAuth:
+      type: http
+      scheme: bearer
 
 paths:
   $ref: './gen/paths.json'
