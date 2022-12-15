@@ -308,6 +308,59 @@
             "description": "Server Error."
           }
         },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
         "x-optional-url": true
       }
     },
@@ -433,6 +486,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {

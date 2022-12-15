@@ -64,6 +64,12 @@ patch:
     changed:
       "{$request.query.changedUrl}":
         post:
+          security:
+            - JWT:
+              - device
+              - device:edit
+              - device:create
+          summary: Callback for the "device-changed" event
           requestBody:
             required: true
             content:
@@ -130,6 +136,12 @@ post:
     changed:
       "{$request.query.changedUrl}":
         post:
+          security:
+            - JWT:
+              - device
+              - device:edit
+              - device:create
+          summary: Callback for the "device-changed" event
           requestBody:
             required: true
             content:

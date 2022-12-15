@@ -956,6 +956,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -1489,6 +1499,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -1643,6 +1663,16 @@
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -2021,6 +2051,15 @@
           "closed": {
             "{$request.query.closedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-closed\" event",
                 "requestBody": {
                   "content": {
                     "application/json": {
@@ -2061,6 +2100,15 @@
           "status-changed": {
             "{$request.query.statusChangedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-status-changed\" event",
                 "requestBody": {
                   "content": {
                     "application/json": {

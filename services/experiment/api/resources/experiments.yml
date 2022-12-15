@@ -61,4 +61,24 @@ post:
       description: Resource not found.
     500:
       description: Server Error.
+  callbacks:
+    changed:
+      "{$request.query.changedUrl}":
+        post:
+          security:
+            - JWT:
+              - experiment
+              - experiment:create
+              - experiment:edit
+          summary: Callback for the "experiment-changed" event
+          requestBody:
+            required: true
+            content:
+              application/json:
+                $ref: "../content/experiment_event.yml"
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference.
   x-optional-url: true

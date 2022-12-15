@@ -72,6 +72,12 @@ patch:
     changed:
       "{$request.query.changedUrl}":
         post:
+          security:
+            - JWT:
+              - experiment
+              - experiment:create
+              - experiment:edit
+          summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
             content:

@@ -68,6 +68,11 @@ post:
     closed:
       '{$request.query.closedUrl}':
         post:
+          security:
+            - JWT:
+              - peerconnection
+              - peerconnection:create
+          summary: Callback for the "peerconnection-closed" event
           requestBody:
             content:
               application/json:
@@ -80,6 +85,11 @@ post:
     status-changed:
       '{$request.query.statusChangedUrl}':
         post:
+          security:
+            - JWT:
+              - peerconnection
+              - peerconnection:create
+          summary: Callback for the "peerconnection-status-changed" event
           requestBody:
             content:
               application/json:
