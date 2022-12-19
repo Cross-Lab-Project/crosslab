@@ -12,6 +12,7 @@ from crosslab_soa_client.connection import DataChannel
 
 from helpers import AsyncException, wait
 
+
 class DataOnly(Service):
     service_type = "goldi/legacy/message"
     service_direction = "inout"
@@ -26,9 +27,11 @@ class DataOnly(Service):
         self.service_id = serviceId
 
     def getMeta(self):
-        return {"serviceType": self.service_type,
-                "serviceId": self.service_id,
-                "serviceDirection": self.service_direction}
+        return {
+            "serviceType": self.service_type,
+            "serviceId": self.service_id,
+            "serviceDirection": self.service_direction,
+        }
 
     def setupConnection(self, connection, serviceConfig):
         channel = DataChannel()
@@ -50,11 +53,11 @@ class DataOnly(Service):
 
 @pytest.mark.asyncio
 async def test_connect_and_authenticate(mock_server):
-    mock_server.get("/devices/123/token", payload="token")
+    mock_server.get("/devices/123/token/websocket", payload="token")
     ws = mock_server.ws("/devices/123/ws")
     ws.expect(
-        r'{"messageType": "authenticate", "authenticated": null, "deviceUrl": "{base_url}/devices/123", "token": "token"}',
-        answer=r'{"messageType": "authenticate", "authenticated": true, "deviceUrl": "{base_url}/devices/123"}',
+        r'{"messageType": "authenticate", "authenticated": null, "token": "token"}',
+        answer=r'{"messageType": "authenticate", "authenticated": true}',
     )
     base_url = await mock_server.start()
 
@@ -64,7 +67,9 @@ async def test_connect_and_authenticate(mock_server):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="This test is not working yet. Connection is never build -> timeout")
+@pytest.mark.skip(
+    reason="This test is not working yet. Connection is never build -> timeout"
+)
 async def test_create_peerconnection(mock_server):
     mock_server.get("/devices/123/token", payload="token")
 
@@ -74,7 +79,7 @@ async def test_create_peerconnection(mock_server):
         answer=r'{"messageType": "authenticate", "authenticated": true, "deviceUrl": "{base_url}/devices/123"}',
     )
     ws.send(
-        r'{"messageType": "command", "command": "createPeerconnection", "connectionType": "webrtc", "connectionUrl": "{base_url}/peerconnections/1233",'\
+        r'{"messageType": "command", "command": "createPeerconnection", "connectionType": "webrtc", "connectionUrl": "{base_url}/peerconnections/1233",'
         r'"services": [{"serviceType": "dataOnly", "serviceId": "local", "remoteServiceId": "remote"}], "tiebreaker": true}'
     )
     ws.sleep(0.5)

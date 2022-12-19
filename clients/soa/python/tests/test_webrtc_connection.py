@@ -11,7 +11,7 @@ from crosslab_soa_client.connection import Connection, DataChannel, MediaChannel
 from crosslab_soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab_soa_client.schemas import (
     PartialSignalingMessage,
-    ServiceConfig,
+    CreatePeerconnectionMessageService,
     SignalingMessage,
     SignalingMessageMessageType,
 )
@@ -167,7 +167,7 @@ class DataOnly(Service):
 async def test_webrtc_connection_data_only(tiebreaker: bool):
     asyncException = AsyncException()
 
-    serviceConfig = ServiceConfig.from_dict(
+    serviceConfig = CreatePeerconnectionMessageService.from_dict(
         {
             "serviceType": "http://example.com/data-only",
             "serviceId": "data",
@@ -234,7 +234,7 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
 async def test_webrtc_connection_video_only(tiebreaker: bool):
     asyncException = AsyncException()
 
-    serviceConfig = ServiceConfig.from_dict(
+    serviceConfig = CreatePeerconnectionMessageService.from_dict(
         {
             "serviceType": "http://example.com/data-only",
             "serviceId": "data",

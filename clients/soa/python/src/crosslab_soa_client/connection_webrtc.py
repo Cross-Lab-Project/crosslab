@@ -17,7 +17,7 @@ from crosslab_soa_client.connection import (
 )
 from crosslab_soa_client.schemas import (
     PartialSignalingMessage,
-    ServiceConfig,
+    CreatePeerconnectionMessageService,
     SignalingMessage,
     SignalingType,
 )
@@ -96,7 +96,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         await self.pc.close()
         del self.pc
 
-    def _create_label(self, serviceConfig: ServiceConfig, id: str):
+    def _create_label(self, serviceConfig: CreatePeerconnectionMessageService, id: str):
         id1 = (
             serviceConfig.service_id
             if self.tiebreaker
@@ -112,7 +112,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         )
         return label
 
-    def transmit(self, serviceConfig: ServiceConfig, id: str, channel: Channel):
+    def transmit(
+        self,
+        serviceConfig: CreatePeerconnectionMessageService,
+        id: str,
+        channel: Channel,
+    ):
         label = self._create_label(serviceConfig, id)
         if channel.channel_type == "MediaChannel":
             self._mediaChannelMap[label] = cast(MediaChannel, channel)
@@ -133,7 +138,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             dchannel.on("upstreamData", upstreamData)
             datachannel.on("message", message)
 
-    def receive(self, serviceConfig: ServiceConfig, id: str, channel: Channel):
+    def receive(
+        self,
+        serviceConfig: CreatePeerconnectionMessageService,
+        id: str,
+        channel: Channel,
+    ):
         label = self._create_label(serviceConfig, id)
         self._receivingChannelMap[label] = channel
         if channel.channel_type == "MediaChannel":

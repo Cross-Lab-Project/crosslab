@@ -26,7 +26,7 @@ RUN apt-get update \
 ARG PYTHON_VERSIONS="3.8 3.9 3.10 3.11"
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa \
-    && for VERSION in ${PYTHON_VERSIONS}; do DEBIAN_FRONTEND=noninteractive apt-get -y install python$VERSION python$VERSION-distutils; done \
+    && for VERSION in ${PYTHON_VERSIONS}; do DEBIAN_FRONTEND=noninteractive apt-get -y install python$VERSION python$VERSION-distutils python$VERSION-dev; done \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
         python3 \
         python3-pip \
@@ -38,6 +38,59 @@ ENV PATH="$PATH:/home/${USERNAME}/.local/bin"
 # install docker
 RUN curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
 RUN sh /tmp/get-docker.sh
+
+# install rpiboot
+RUN cd /opt/ \
+    && DEBIAN_FRONTEND=noninteractive apt-get -y install git libusb-1.0-0-dev pkg-config bmap-tools \
+    && git clone --depth=1 https://github.com/raspberrypi/usbboot \
+    && cd usbboot \
+    && make \
+    && chmod +s rpiboot
+
+ENV PATH="$PATH:/opt/usbboot"
+
+# install kas
+RUN sudo pip3 install kas
+
+# Yocto Dependencies
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        gawk \
+        wget \
+        git-core \
+        subversion \
+        diffstat \
+        unzip \
+        sysstat \
+        texinfo \
+        build-essential \
+        chrpath \
+        socat \
+        python3 \
+        python3-pip \
+        python3-pexpect \
+        xz-utils  \
+        locales \
+        cpio \
+        screen \
+        tmux \
+        sudo \
+        iputils-ping \
+        python3-git \
+        python3-jinja2 \
+        libegl1-mesa \
+        libsdl1.2-dev \
+        pylint \
+        xterm \
+        iproute2 \
+        fluxbox \
+        tightvncserver \
+        lz4 \
+        zstd \
+        file
+
+# aiortc dependencies
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libavdevice-dev libavfilter-dev libopus-dev libvpx-dev pkg-config
 
 USER $USERNAME
 

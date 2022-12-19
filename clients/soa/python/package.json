@@ -9,7 +9,7 @@
     "license": "UNLICENSED",
     "private": true,
     "dependencies": {
-      "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration-v2",
+      "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration",
       "nodemon": "^2.0.20"
     }
   }

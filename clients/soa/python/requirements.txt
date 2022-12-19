@@ -1,5 +1,5 @@
--e ./
 -e ../../api/python
+-e ./
 pytest
 pytest-asyncio
 pytest-aiohttp

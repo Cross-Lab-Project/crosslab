@@ -53,7 +53,7 @@ async def authenticate(
     await ws.send_json(
         authentication_message_to_dict(
             AuthenticationMessage(
-                AuthenticationMessageMessageType.AUTHENTICATE, None, device_url, token
+                AuthenticationMessageMessageType.AUTHENTICATE, None, token
             )
         )
     )
@@ -104,7 +104,7 @@ class DeviceHandler:
 
         async with client:
             async with aiohttp.ClientSession() as session:
-                token = await client.postDeviceToken(token_endpoint)
+                token = await client.postDeviceWebsocket(token_endpoint)
                 self.ws = await session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
 
