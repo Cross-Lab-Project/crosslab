@@ -1,6 +1,6 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "API-Client for all Crosslab APIs",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -33,7 +33,6 @@
     "build": "npm run build-generate && npm run build-compile",
     "test": "node dist/test/test.js",
     "format": "npx prettier src --write",
-    "predocs": "npm run build",
     "docs": "typedoc --options ./typedoc.json"
   },
   "files": [

@@ -1,4 +1,5 @@
 import { Role, User } from '../generated/types'
+import { userUrlFromUsername } from '../globals'
 import { ScopeModel, RoleModel, UserModel } from '../model'
 
 /**
@@ -29,6 +30,7 @@ export function formatRole(role: RoleModel): Role {
  */
 export function formatUser(user: UserModel): User {
     return {
+        url: userUrlFromUsername(user.username),
         username: user.username,
         roles: user.roles ? user.roles.map(formatRole) : [],
     }

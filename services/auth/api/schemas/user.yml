@@ -2,6 +2,10 @@
 title: User
 type: object
 properties: 
+  url:
+    type: string
+    format: uri
+    readOnly: true
   username:
     type: string
   password:
