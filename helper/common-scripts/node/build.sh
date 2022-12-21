@@ -20,8 +20,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-npm run openapi-bundle
-if [ "$SPEC_ONLY" = false ] ; then
-  npm install
+if [ "$SPEC_ONLY" = true ] ; then
+  mv package.json package.bak
+  mv package-lock.json package-lock.bak
+  npm install @redocly/cli
+  mv package-lock.bak package-lock.json
+  mv package.bak package.json
+  npm run openapi-bundle
+else
+  npm install --install-links
   npm run build
 fi
