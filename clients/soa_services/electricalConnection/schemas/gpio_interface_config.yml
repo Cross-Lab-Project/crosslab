@@ -4,11 +4,20 @@ type: object
 properties:
   driver:
     type: string
+  directon:
+    type: string
+    enum:
+      - in
+      - out
+      - inout
   signals:
     type: object
     properties:
       gpio:
         type: string
     additionalProperties: false
+    required:
+      - gpio
 required:
   - signals
+  - direction

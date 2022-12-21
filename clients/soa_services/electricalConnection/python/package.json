@@ -1,0 +1,9 @@
+{  "scripts": {
+    "generate": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../schemas/*.yml -t ./template python -o ./src/crosslab/soa_services/electrical",
+    "watch-generate": "nodemon --watch template -e njk --exec \"npm run generate\""
+  },
+  "private": true,
+  "dependencies": {
+    "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration"
+  }
+}

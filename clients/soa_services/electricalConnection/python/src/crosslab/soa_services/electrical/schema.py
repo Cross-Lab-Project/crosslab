@@ -20,8 +20,8 @@
 #     result = upstream_signal_interface_configuration_write_from_dict(json.loads(json_string))
 #     result = upstream_signal_interface_configuration_read_from_dict(json.loads(json_string))
 
-from typing import Optional, Any, List, TypeVar, Type, cast, Callable
 from enum import Enum
+from typing import Any, Optional, List, TypeVar, Type, cast, Callable
 
 
 T = TypeVar("T")
@@ -47,6 +47,11 @@ def from_union(fs, x):
     assert False
 
 
+def to_enum(c: Type[EnumT], x: Any) -> EnumT:
+    assert isinstance(x, c)
+    return x.value
+
+
 def to_class(c: Type[T], x: Any) -> dict:
     assert isinstance(x, c)
     return cast(Any, x).to_dict()
@@ -57,40 +62,45 @@ def from_list(f: Callable[[Any], T], x: Any) -> List[T]:
     return [f(y) for y in x]
 
 
-def to_enum(c: Type[EnumT], x: Any) -> EnumT:
-    assert isinstance(x, c)
-    return x.value
+class Directon(Enum):
+    IN = "in"
+    INOUT = "inout"
+    OUT = "out"
 
 
 class PurpleSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'PurpleSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return PurpleSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: PurpleSignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: PurpleSignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: PurpleSignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -98,17 +108,21 @@ class ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration:
     @staticmethod
     def from_dict(obj: Any) -> 'ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = PurpleSignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration(driver, signals, bus_id, interface_id, interface_type)
+        return ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(PurpleSignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
@@ -142,34 +156,38 @@ class ElectricalServiceConfiguration:
 
 
 class FluffySignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'FluffySignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return FluffySignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class ElectricalServiceConfigurationWriteUpstreamSignalInterfaceConfiguration:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: FluffySignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: FluffySignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: FluffySignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -177,17 +195,21 @@ class ElectricalServiceConfigurationWriteUpstreamSignalInterfaceConfiguration:
     @staticmethod
     def from_dict(obj: Any) -> 'ElectricalServiceConfigurationWriteUpstreamSignalInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = FluffySignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return ElectricalServiceConfigurationWriteUpstreamSignalInterfaceConfiguration(driver, signals, bus_id, interface_id, interface_type)
+        return ElectricalServiceConfigurationWriteUpstreamSignalInterfaceConfiguration(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(FluffySignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
@@ -217,34 +239,38 @@ class ElectricalServiceConfigurationWrite:
 
 
 class TentacledSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'TentacledSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return TentacledSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: TentacledSignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: TentacledSignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: TentacledSignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -252,17 +278,21 @@ class ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration:
     @staticmethod
     def from_dict(obj: Any) -> 'ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = TentacledSignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration(driver, signals, bus_id, interface_id, interface_type)
+        return ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(TentacledSignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
@@ -292,122 +322,146 @@ class ElectricalServiceConfigurationRead:
 
 
 class GPIOInterfaceConfigurationSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfigurationSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return GPIOInterfaceConfigurationSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class GPIOInterfaceConfiguration:
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: GPIOInterfaceConfigurationSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: GPIOInterfaceConfigurationSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: GPIOInterfaceConfigurationSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = GPIOInterfaceConfigurationSignals.from_dict(obj.get("signals"))
-        return GPIOInterfaceConfiguration(driver, signals)
+        direction = obj.get("direction")
+        return GPIOInterfaceConfiguration(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(GPIOInterfaceConfigurationSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
 class GPIOInterfaceConfigurationWriteSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfigurationWriteSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return GPIOInterfaceConfigurationWriteSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class GPIOInterfaceConfigurationWrite:
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: GPIOInterfaceConfigurationWriteSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: GPIOInterfaceConfigurationWriteSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: GPIOInterfaceConfigurationWriteSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfigurationWrite':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = GPIOInterfaceConfigurationWriteSignals.from_dict(obj.get("signals"))
-        return GPIOInterfaceConfigurationWrite(driver, signals)
+        direction = obj.get("direction")
+        return GPIOInterfaceConfigurationWrite(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(GPIOInterfaceConfigurationWriteSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
 class GPIOInterfaceConfigurationReadSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfigurationReadSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return GPIOInterfaceConfigurationReadSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class GPIOInterfaceConfigurationRead:
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: GPIOInterfaceConfigurationReadSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: GPIOInterfaceConfigurationReadSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: GPIOInterfaceConfigurationReadSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'GPIOInterfaceConfigurationRead':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = GPIOInterfaceConfigurationReadSignals.from_dict(obj.get("signals"))
-        return GPIOInterfaceConfigurationRead(driver, signals)
+        direction = obj.get("direction")
+        return GPIOInterfaceConfigurationRead(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(GPIOInterfaceConfigurationReadSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
@@ -491,157 +545,185 @@ class GPIOInterfaceDataRead:
 
 
 class SignalInterfaceConfigurationSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfigurationSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return SignalInterfaceConfigurationSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class SignalInterfaceConfiguration:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: SignalInterfaceConfigurationSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: SignalInterfaceConfigurationSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: SignalInterfaceConfigurationSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = SignalInterfaceConfigurationSignals.from_dict(obj.get("signals"))
-        return SignalInterfaceConfiguration(driver, signals)
+        direction = obj.get("direction")
+        return SignalInterfaceConfiguration(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(SignalInterfaceConfigurationSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
 class SignalInterfaceConfigurationWriteSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfigurationWriteSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return SignalInterfaceConfigurationWriteSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class SignalInterfaceConfigurationWrite:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: SignalInterfaceConfigurationWriteSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: SignalInterfaceConfigurationWriteSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: SignalInterfaceConfigurationWriteSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfigurationWrite':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = SignalInterfaceConfigurationWriteSignals.from_dict(obj.get("signals"))
-        return SignalInterfaceConfigurationWrite(driver, signals)
+        direction = obj.get("direction")
+        return SignalInterfaceConfigurationWrite(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(SignalInterfaceConfigurationWriteSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
 class SignalInterfaceConfigurationReadSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfigurationReadSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return SignalInterfaceConfigurationReadSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class SignalInterfaceConfigurationRead:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: SignalInterfaceConfigurationReadSignals
+    direction: Any
 
-    def __init__(self, driver: Optional[str], signals: SignalInterfaceConfigurationReadSignals) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: SignalInterfaceConfigurationReadSignals, direction: Any) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
 
     @staticmethod
     def from_dict(obj: Any) -> 'SignalInterfaceConfigurationRead':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = SignalInterfaceConfigurationReadSignals.from_dict(obj.get("signals"))
-        return SignalInterfaceConfigurationRead(driver, signals)
+        direction = obj.get("direction")
+        return SignalInterfaceConfigurationRead(directon, driver, signals, direction)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(SignalInterfaceConfigurationReadSignals, self.signals)
+        result["direction"] = self.direction
         return result
 
 
 class UpstreamSignalInterfaceConfigurationSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfigurationSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return UpstreamSignalInterfaceConfigurationSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class UpstreamSignalInterfaceConfiguration:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: UpstreamSignalInterfaceConfigurationSignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationSignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationSignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -649,17 +731,21 @@ class UpstreamSignalInterfaceConfiguration:
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfiguration':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = UpstreamSignalInterfaceConfigurationSignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return UpstreamSignalInterfaceConfiguration(driver, signals, bus_id, interface_id, interface_type)
+        return UpstreamSignalInterfaceConfiguration(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(UpstreamSignalInterfaceConfigurationSignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
@@ -667,34 +753,38 @@ class UpstreamSignalInterfaceConfiguration:
 
 
 class UpstreamSignalInterfaceConfigurationWriteSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfigurationWriteSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return UpstreamSignalInterfaceConfigurationWriteSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class UpstreamSignalInterfaceConfigurationWrite:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: UpstreamSignalInterfaceConfigurationWriteSignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationWriteSignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationWriteSignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -702,17 +792,21 @@ class UpstreamSignalInterfaceConfigurationWrite:
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfigurationWrite':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = UpstreamSignalInterfaceConfigurationWriteSignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return UpstreamSignalInterfaceConfigurationWrite(driver, signals, bus_id, interface_id, interface_type)
+        return UpstreamSignalInterfaceConfigurationWrite(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(UpstreamSignalInterfaceConfigurationWriteSignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
@@ -720,34 +814,38 @@ class UpstreamSignalInterfaceConfigurationWrite:
 
 
 class UpstreamSignalInterfaceConfigurationReadSignals:
-    gpio: Optional[str]
+    gpio: str
 
-    def __init__(self, gpio: Optional[str]) -> None:
+    def __init__(self, gpio: str) -> None:
         self.gpio = gpio
 
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfigurationReadSignals':
         assert isinstance(obj, dict)
-        gpio = from_union([from_str, from_none], obj.get("gpio"))
+        gpio = from_str(obj.get("gpio"))
         return UpstreamSignalInterfaceConfigurationReadSignals(gpio)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["gpio"] = from_union([from_str, from_none], self.gpio)
+        result["gpio"] = from_str(self.gpio)
         return result
 
 
 class UpstreamSignalInterfaceConfigurationRead:
     """Configuration for a signal interface"""
+    directon: Optional[Directon]
     driver: Optional[str]
     signals: UpstreamSignalInterfaceConfigurationReadSignals
+    direction: Any
     bus_id: str
     interface_id: str
     interface_type: str
 
-    def __init__(self, driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationReadSignals, bus_id: str, interface_id: str, interface_type: str) -> None:
+    def __init__(self, directon: Optional[Directon], driver: Optional[str], signals: UpstreamSignalInterfaceConfigurationReadSignals, direction: Any, bus_id: str, interface_id: str, interface_type: str) -> None:
+        self.directon = directon
         self.driver = driver
         self.signals = signals
+        self.direction = direction
         self.bus_id = bus_id
         self.interface_id = interface_id
         self.interface_type = interface_type
@@ -755,17 +853,21 @@ class UpstreamSignalInterfaceConfigurationRead:
     @staticmethod
     def from_dict(obj: Any) -> 'UpstreamSignalInterfaceConfigurationRead':
         assert isinstance(obj, dict)
+        directon = from_union([Directon, from_none], obj.get("directon"))
         driver = from_union([from_str, from_none], obj.get("driver"))
         signals = UpstreamSignalInterfaceConfigurationReadSignals.from_dict(obj.get("signals"))
+        direction = obj.get("direction")
         bus_id = from_str(obj.get("busId"))
         interface_id = from_str(obj.get("interfaceId"))
         interface_type = from_str(obj.get("interfaceType"))
-        return UpstreamSignalInterfaceConfigurationRead(driver, signals, bus_id, interface_id, interface_type)
+        return UpstreamSignalInterfaceConfigurationRead(directon, driver, signals, direction, bus_id, interface_id, interface_type)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        result["directon"] = from_union([lambda x: to_enum(Directon, x), from_none], self.directon)
         result["driver"] = from_union([from_str, from_none], self.driver)
         result["signals"] = to_class(UpstreamSignalInterfaceConfigurationReadSignals, self.signals)
+        result["direction"] = self.direction
         result["busId"] = from_str(self.bus_id)
         result["interfaceId"] = from_str(self.interface_id)
         result["interfaceType"] = from_str(self.interface_type)
