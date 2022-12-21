@@ -1,0 +1,41 @@
+{
+    "python.formatting.provider": "none",
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "files.exclude": {
+        ".mypy_cache": true,
+        ".pytest_cache": true,
+        ".tox": true,
+        "**/*.egg-info": true,
+        "**/__pycache__": true,
+        //begin generated
+        
+        //end generated
+    },
+    "files.watcherExclude": {
+        ".mypy_cache": true,
+        ".pytest_cache": true,
+        ".tox": true,
+        "**/*.egg-info": true,
+        "**/__pycache__": true,
+        //begin generated
+        
+        //end generated
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.exclude": [
+        ".tox",
+        "dist"
+    ]
+}

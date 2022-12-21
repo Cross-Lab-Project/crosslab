@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Signal Interface Configuration
+description: Configuration for a signal interface
+type: object
+anyOf:
+  - $ref: ../schemas/gpio_interface_config.yml
