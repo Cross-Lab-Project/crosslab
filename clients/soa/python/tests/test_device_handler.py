@@ -1,16 +1,14 @@
 import asyncio
-import pytest
-import aiohttp
 import tracemalloc
-
-from crosslab_soa_client.device_handler import DeviceHandler
-
 from typing import List
 
-from crosslab_soa_client.service import Service
-from crosslab_soa_client.connection import DataChannel
-
+import aiohttp
+import pytest
 from helpers import AsyncException, wait
+
+from crosslab.soa_client.connection import DataChannel
+from crosslab.soa_client.device_handler import DeviceHandler
+from crosslab.soa_client.service import Service
 
 
 class DataOnly(Service):

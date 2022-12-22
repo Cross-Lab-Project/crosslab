@@ -2,9 +2,9 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Union
 
-from pyee.asyncio import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
-from crosslab_soa_client.schemas import (
+from crosslab.soa_client.schemas import (
     CreatePeerconnectionMessageService,
     SignalingMessage,
 )

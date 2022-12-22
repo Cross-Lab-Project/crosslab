@@ -1,7 +1,7 @@
 from typing import Any
 
 import pytest
-from crosslab_soa_client.connection import Connection, DataChannel, MediaChannel
+from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
 
 from crosslab.soa_services.electrical import ElectricalConnectionService
 from crosslab.soa_services.electrical.schema import (
@@ -42,7 +42,6 @@ class ConnectionStub(Connection):
 
 def test_gpio_meta():
     gci = ConstractableGPIOInterface(["S1", "S2"])
-    print(gci.getDescription())
     assert gci.getDescription() == {"availableSignals": {"gpio": ["S1", "S2"]}}
 
 

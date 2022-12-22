@@ -2,11 +2,11 @@ import re
 from typing import Any, Dict, Optional
 
 import aiohttp
-from crosslab_api_client import APIClient
+from crosslab_api_client import APIClient  # type: ignore
 
-from crosslab_soa_client.connection import Connection
-from crosslab_soa_client.connection_webrtc import WebRTCPeerConnection
-from crosslab_soa_client.schemas import (
+from crosslab.soa_client.connection import Connection
+from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
+from crosslab.soa_client.schemas import (
     AuthenticationMessage,
     AuthenticationMessageMessageType,
     ClosePeerconnectionMessage,
@@ -20,7 +20,7 @@ from crosslab_soa_client.schemas import (
     close_peerconnection_message_from_dict,
     create_peerconnection_message_from_dict,
 )
-from crosslab_soa_client.service import Service
+from crosslab.soa_client.service import Service
 
 
 def message_decode(msg: Any):

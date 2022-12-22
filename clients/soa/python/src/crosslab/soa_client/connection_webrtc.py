@@ -3,21 +3,25 @@ import json
 from enum import Enum
 from typing import Any, Dict, Literal, cast
 
-from aiortc import RTCConfiguration, RTCPeerConnection, RTCSessionDescription
-from aiortc.events import RTCTrackEvent
-from aiortc.rtcrtpsender import RTCRtpSender
-from aiortc.sdp import SessionDescription
-from pyee.asyncio import AsyncIOEventEmitter
+from aiortc import (  # type: ignore
+    RTCConfiguration,
+    RTCPeerConnection,
+    RTCSessionDescription,
+)
+from aiortc.events import RTCTrackEvent  # type: ignore
+from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
+from aiortc.sdp import SessionDescription  # type: ignore
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
-from crosslab_soa_client.connection import (
+from crosslab.soa_client.connection import (
     Channel,
     Connection,
     DataChannel,
     MediaChannel,
 )
-from crosslab_soa_client.schemas import (
-    PartialSignalingMessage,
+from crosslab.soa_client.schemas import (
     CreatePeerconnectionMessageService,
+    PartialSignalingMessage,
     SignalingMessage,
     SignalingType,
 )

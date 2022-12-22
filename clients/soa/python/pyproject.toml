@@ -1,3 +1,26 @@
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "crosslab_soa_client"
+version = "0.0.1"
+authors = [
+    {name= "Johannes Nau", email="johannes.nau@tu-ilmenau.de"}
+]
+description = "The CrossLab SOA Client"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "aiortc @ git+https://github.com/GOLDi2/aiortc.git",
+    "crosslab_api_client"
+]
+
+[tool.setuptools.package-data]
+"crosslab.soa_client" = ["py.typed"]
+
+[tool.pytest]
+norecursedirs = "tests/helpers"

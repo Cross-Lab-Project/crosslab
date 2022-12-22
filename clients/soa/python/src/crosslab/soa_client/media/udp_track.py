@@ -1,7 +1,7 @@
 import asyncio
 import socket
 
-from aiortc import MediaStreamTrack
+from aiortc import MediaStreamTrack  # type: ignore
 
 
 class UDPTrack(MediaStreamTrack):

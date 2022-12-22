@@ -1,8 +1,8 @@
 import json
 from typing import Any, Dict, List
 
-from crosslab_soa_client.connection import Connection, DataChannel
-from crosslab_soa_client.service import Service
+from crosslab.soa_client.connection import Connection, DataChannel
+from crosslab.soa_client.service import Service
 from pyee import AsyncIOEventEmitter
 
 from crosslab.soa_services.electrical import (

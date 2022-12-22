@@ -7,15 +7,15 @@ import pytest
 from aiortc import MediaStreamTrack
 from helpers import AsyncException, wait
 
-from crosslab_soa_client.connection import Connection, DataChannel, MediaChannel
-from crosslab_soa_client.connection_webrtc import WebRTCPeerConnection
-from crosslab_soa_client.schemas import (
-    PartialSignalingMessage,
+from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
+from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
+from crosslab.soa_client.schemas import (
     CreatePeerconnectionMessageService,
+    PartialSignalingMessage,
     SignalingMessage,
     SignalingMessageMessageType,
 )
-from crosslab_soa_client.service import Service
+from crosslab.soa_client.service import Service
 
 
 class DummyTrack(MediaStreamTrack):

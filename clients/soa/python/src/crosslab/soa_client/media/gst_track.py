@@ -1,5 +1,6 @@
 import subprocess
-from crosslab_soa_client.media.udp_track import UDPTrack
+
+from crosslab.soa_client.media.udp_track import UDPTrack
 
 
 class GstTrack(UDPTrack):
