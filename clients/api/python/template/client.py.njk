@@ -1,22 +1,31 @@
 import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
-from crosslab_api_client.schemas import *  # noqa: F403
-from crosslab_api_client.exceptions import AuthorizationException
+from crosslab.api_client.schemas import *  # noqa: F403
+from crosslab.api_client.exceptions import AuthorizationException
 
 
 class APIClient:
     BASE_URL: Optional[str] = None
+    authToken: Optional[str] = None
 
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: Optional[str] = None, authToken: Optional[str] = None):
         if base_url is None:
             base_url = self.BASE_URL
         elif base_url.endswith('/'):
             base_url = base_url[:-1]
         self.BASE_URL = base_url
+        self.authToken = authToken
+
+    def set_auth_token(self, authToken: str):
+        self.authToken = authToken
+        if self.http_session is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {authToken}'})
 
     async def __aenter__(self):
         self.http_session = aiohttp.ClientSession()
+        if self.authToken is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {self.authToken}'})
         return self
 
     async def __aexit__(self, *err):
@@ -99,7 +108,7 @@ class APIClient:
             {%- set params = (params.push('url: str = "'+path+'"'), params) %}
         {%- endif %}
 
-    async def {{ method_name | lowerCamelCase }}({{ params | join(', ') }}):  # noqa: E501
+    async def {{ details.operationId | lowerSnakeCase }}({{ params | join(', ') }}):  # noqa: E501
         """
         {{details.summary}}
         {% if details.description %}

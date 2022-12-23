@@ -4,8 +4,8 @@ from aioresponses import aioresponses
 import json
 import datetime
 
-from crosslab_api_client import APIClient
-from crosslab_api_client.schemas import *  # noqa: F403
+from crosslab.api_client import APIClient
+from crosslab.api_client.schemas import *  # noqa: F403
 
 BASE_URL = 'https://api.example.com'
 
@@ -29,20 +29,20 @@ def normalize_result(_dict):
                 normalize_result(v_i)
     return _dict
 
-{%- macro _make_request(method_name, request_body_param, url) -%}
-resp = await client.{{method_name | lowerCamelCase}}(
+{%- macro _make_request(operation_id, request_body_param, url) -%}
+resp = await client.{{operation_id  | lowerSnakeCase}}(
     {%- if url %}url={{url}}, {% endif %}
     {%- if request_body_param%}body={{request_body_param}}, {% endif -%}
     **parameters)
 {%- endmacro -%}
 
-{%- macro make_request_and_assert(method_name, request_body_param, status, response_transformer, url) -%}
+{%- macro make_request_and_assert(operation_id, request_body_param, status, response_transformer, url) -%}
 async with APIClient(BASE_URL) as client:
     {%- if status>=400 %}
     with pytest.raises(Exception):
-        {{_make_request(method_name, request_body_param, url)}}
+        {{_make_request(operation_id, request_body_param, url)}}
     {%- else %}
-    {{_make_request(method_name, request_body_param, url)}}
+    {{_make_request(operation_id, request_body_param, url)}}
         {%- if response_transformer %}
     assert normalize_result({{response_transformer}}(resp)) == normalize_result(response_{{status}}_dict)
         {%- endif -%}
@@ -94,7 +94,7 @@ aioresponses.{{method}}(re.compile(re.escape(full_url)+r'(\?.*)?'), status={{sta
 
 
 @pytest.mark.asyncio
-async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
+async def test_{{details.operationId  | lowerSnakeCase}}(aioresponses: aioresponses):
         {%- set request_body_param="" %}
     url = r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c')}}'
     url_variant = r'{{ path | replaceRegEx('\{.*?\}', 'c799cc2e-cdc5-4143-973a-6f56a5afa82c') | replaceRegEx('^\/', '')}}'
@@ -114,20 +114,20 @@ async def test_{{method_name | lowerCamelCase}}(aioresponses: aioresponses):
             {%- if not details | hasPathParameter %}
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
-        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, url) | indent(8) }}
+        {{ make_request_and_assert(details.operationId, request_body_param, status, response_transformer, url) | indent(8) }}
             {%- endif %}
 
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
-        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "url") | indent(8) }}
+        {{ make_request_and_assert(details.operationId, request_body_param, status, response_transformer, "url") | indent(8) }}
 
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
-        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "url_variant") | indent(8) }}
+        {{ make_request_and_assert(details.operationId, request_body_param, status, response_transformer, "url_variant") | indent(8) }}
 
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
-        {{ make_request_and_assert(method_name, request_body_param, status, response_transformer, "full_url") | indent(8) }}
+        {{ make_request_and_assert(details.operationId, request_body_param, status, response_transformer, "full_url") | indent(8) }}
         {%- endfor -%}
     {%- endfor -%}
 {%- endfor %}

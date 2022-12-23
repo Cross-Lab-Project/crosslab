@@ -1,22 +1,31 @@
 import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
-from crosslab_api_client.schemas import *  # noqa: F403
-from crosslab_api_client.exceptions import AuthorizationException
+from crosslab.api_client.schemas import *  # noqa: F403
+from crosslab.api_client.exceptions import AuthorizationException
 
 
 class APIClient:
     BASE_URL: Optional[str] = None
+    authToken: Optional[str] = None
 
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: Optional[str] = None, authToken: Optional[str] = None):
         if base_url is None:
             base_url = self.BASE_URL
         elif base_url.endswith('/'):
             base_url = base_url[:-1]
         self.BASE_URL = base_url
+        self.authToken = authToken
+
+    def set_auth_token(self, authToken: str):
+        self.authToken = authToken
+        if self.http_session is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {authToken}'})
 
     async def __aenter__(self):
         self.http_session = aiohttp.ClientSession()
+        if self.authToken is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {self.authToken}'})
         return self
 
     async def __aexit__(self, *err):
@@ -61,7 +70,7 @@ class APIClient:
             else:
                 return resp.status, await resp.json()
 
-    async def postLogin(self, body: PostLoginRequestBodyWrite, url: str = "/login"):  # noqa: E501
+    async def login(self, body: PostLoginRequestBodyWrite, url: str = "/login"):  # noqa: E501
         """
         Login user
         
@@ -88,7 +97,7 @@ class APIClient:
             return post_login_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postLogout(self, body: PostLogoutRequestBodyWrite, url: str = "/logout"):  # noqa: E501
+    async def logout(self, body: PostLogoutRequestBodyWrite, url: str = "/logout"):  # noqa: E501
         """
         Logout user
         
@@ -115,7 +124,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceAuthenticationToken(self, device_url: str, url: str = "/device_authentication_token"):  # noqa: E501
+    async def create_device_authentication_token(self, device_url: str, url: str = "/device_authentication_token"):  # noqa: E501
         """
         Create a new device authentication token
         
@@ -146,7 +155,7 @@ class APIClient:
             return post_device_authentication_token_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getUsers(self, url: str = "/users"):  # noqa: E501
+    async def list_users(self, url: str = "/users"):  # noqa: E501
         """
         Get all users
         """  # noqa: E501
@@ -169,7 +178,7 @@ class APIClient:
             return get_users_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postUsers(self, body: Optional[PostUsersRequestBodyWrite] = None, url: str = "/users"):  # noqa: E501
+    async def create_user(self, body: Optional[PostUsersRequestBodyWrite] = None, url: str = "/users"):  # noqa: E501
         """
         Create new user
         """  # noqa: E501
@@ -195,7 +204,7 @@ class APIClient:
             return post_users_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getUser(self, url: str):  # noqa: E501
+    async def get_user(self, url: str):  # noqa: E501
         """
         Get user by username
         """  # noqa: E501
@@ -218,7 +227,7 @@ class APIClient:
             return get_user_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchUser(self, url: str, body: Optional[PatchUserRequestBodyWrite] = None):  # noqa: E501
+    async def update_user(self, url: str, body: Optional[PatchUserRequestBodyWrite] = None):  # noqa: E501
         """
         Update user by username
         """  # noqa: E501
@@ -244,7 +253,7 @@ class APIClient:
             return patch_user_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteUser(self, url: str):  # noqa: E501
+    async def delete_user(self, url: str):  # noqa: E501
         """
         Delete user by username
         """  # noqa: E501
@@ -267,7 +276,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def putUserRoles(self, url: str):  # noqa: E501
+    async def add_role_to_user(self, url: str):  # noqa: E501
         """
         Add new role to user
         """  # noqa: E501
@@ -290,7 +299,7 @@ class APIClient:
             return put_user_roles_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteUserRoles(self, url: str):  # noqa: E501
+    async def remove_role_from_user(self, url: str):  # noqa: E501
         """
         Delete role from user
         """  # noqa: E501
@@ -313,7 +322,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getIdentity(self, url: str = "/identity"):  # noqa: E501
+    async def get_identity(self, url: str = "/identity"):  # noqa: E501
         """
         Get identity of yourself
         """  # noqa: E501
@@ -336,7 +345,7 @@ class APIClient:
             return get_identity_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchIdentity(self, body: Optional[PatchIdentityRequestBodyWrite] = None, url: str = "/identity"):  # noqa: E501
+    async def update_identity(self, body: Optional[PatchIdentityRequestBodyWrite] = None, url: str = "/identity"):  # noqa: E501
         """
         Update identity of yourself
         """  # noqa: E501
@@ -362,7 +371,7 @@ class APIClient:
             return patch_identity_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postSchedule(self, body: Optional[PostScheduleRequestBodyWrite] = None, url: str = "/schedule"):  # noqa: E501
+    async def get_schedule(self, body: Optional[PostScheduleRequestBodyWrite] = None, url: str = "/schedule"):  # noqa: E501
         """
         Returns the free / booked times for given experiment.
         """  # noqa: E501
@@ -388,7 +397,7 @@ class APIClient:
             return post_schedule_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postBooking(self, body: Optional[PostBookingRequestBodyWrite] = None, url: str = "/booking"):  # noqa: E501
+    async def book_experiment(self, body: Optional[PostBookingRequestBodyWrite] = None, url: str = "/booking"):  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501
@@ -414,7 +423,7 @@ class APIClient:
             return post_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchBooking(self, url: str, body: PatchBookingRequestBodyWrite):  # noqa: E501
+    async def update_booking(self, url: str, body: PatchBookingRequestBodyWrite):  # noqa: E501
         """
         Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
         """  # noqa: E501
@@ -440,7 +449,7 @@ class APIClient:
             return patch_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteBooking(self, url: str):  # noqa: E501
+    async def cancel_booking(self, url: str):  # noqa: E501
         """
         Cancels a booking, as long as the booking was originally done by you.
         """  # noqa: E501
@@ -463,7 +472,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getBooking(self, url: str):  # noqa: E501
+    async def get_booking(self, url: str):  # noqa: E501
         """
         Returns whether a list of devices is currently booked for a user
         """  # noqa: E501
@@ -486,7 +495,7 @@ class APIClient:
             return get_booking_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteBookingDestroy(self, url: str):  # noqa: E501
+    async def delete_booking(self, url: str):  # noqa: E501
         """
         Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
         """  # noqa: E501
@@ -509,7 +518,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def putBookingLock(self, url: str):  # noqa: E501
+    async def lock_booking(self, url: str):  # noqa: E501
         """
         Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
         """  # noqa: E501
@@ -532,7 +541,7 @@ class APIClient:
             return put_booking_lock_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteBookingLock(self, url: str):  # noqa: E501
+    async def unlock_booking(self, url: str):  # noqa: E501
         """
         Unlocks all devices belonging to a booking, status will be set to 'booked'.
         """  # noqa: E501
@@ -555,7 +564,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getDevices(self, url: str = "/devices"):  # noqa: E501
+    async def list_devices(self, url: str = "/devices"):  # noqa: E501
         """
         List devices
         """  # noqa: E501
@@ -578,7 +587,7 @@ class APIClient:
             return get_devices_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDevices(self, body: PostDevicesRequestBodyWrite, changedUrl: Optional[str] = None, url: str = "/devices"):  # noqa: E501
+    async def create_device(self, body: PostDevicesRequestBodyWrite, changedUrl: Optional[str] = None, url: str = "/devices"):  # noqa: E501
         """
         Create a new device
         """  # noqa: E501
@@ -611,7 +620,7 @@ class APIClient:
             return post_devices_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getDevice(self, url: str, flat_group: Optional[bool] = None):  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None):  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -641,7 +650,7 @@ class APIClient:
             return get_device_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchDevice(self, url: str, body: Optional[PatchDeviceRequestBodyWrite] = None, changedUrl: Optional[str] = None):  # noqa: E501
+    async def update_device(self, url: str, body: Optional[PatchDeviceRequestBodyWrite] = None, changedUrl: Optional[str] = None):  # noqa: E501
         """
         Update an existing device
         """  # noqa: E501
@@ -674,7 +683,7 @@ class APIClient:
             return patch_device_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteDevice(self, url: str):  # noqa: E501
+    async def delete_device(self, url: str):  # noqa: E501
         """
         Delete a registered device
         """  # noqa: E501
@@ -697,7 +706,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDevice(self, url: str, changedUrl: Optional[str] = None):  # noqa: E501
+    async def instantiate_device(self, url: str, changedUrl: Optional[str] = None):  # noqa: E501
         """
         Instantiate a cloud instantiable device
         """  # noqa: E501
@@ -727,7 +736,7 @@ class APIClient:
             return post_device_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceAvailability(self, url: str, body: Optional[List[FluffyAvailabilityRule]] = None):  # noqa: E501
+    async def add_availability_rules(self, url: str, body: Optional[List[IndigoAvailabilityRule]] = None):  # noqa: E501
         """
         Update the device availability
         """  # noqa: E501
@@ -753,7 +762,7 @@ class APIClient:
             return post_device_availability_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceWebsocket(self, url: str):  # noqa: E501
+    async def create_websocket_token(self, url: str):  # noqa: E501
         """
         Create new websocket token for device
         """  # noqa: E501
@@ -776,7 +785,7 @@ class APIClient:
             return post_device_websocket_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postDeviceSignaling(self, url: str, body: PostDeviceSignalingRequestBodyWrite, peerconnection_url: str):  # noqa: E501
+    async def send_signaling_message(self, url: str, body: PostDeviceSignalingRequestBodyWrite, peerconnection_url: str):  # noqa: E501
         """
         Send signaling message to device
         """  # noqa: E501
@@ -809,7 +818,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getPeerconnections(self, url: str = "/peerconnections"):  # noqa: E501
+    async def list_peerconnections(self, url: str = "/peerconnections"):  # noqa: E501
         """
         List Peer Connection
         """  # noqa: E501
@@ -832,7 +841,7 @@ class APIClient:
             return get_peerconnections_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postPeerconnections(self, body: PostPeerconnectionsRequestBodyWrite, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
+    async def create_peerconnection(self, body: PostPeerconnectionsRequestBodyWrite, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
         """
         Create a new Peer Connection
         """  # noqa: E501
@@ -872,7 +881,7 @@ class APIClient:
             return post_peerconnections_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getPeerconnection(self, url: str):  # noqa: E501
+    async def get_peerconnection(self, url: str):  # noqa: E501
         """
         View a peer connection
         """  # noqa: E501
@@ -895,7 +904,7 @@ class APIClient:
             return get_peerconnection_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deletePeerconnection(self, url: str):  # noqa: E501
+    async def delete_peerconnection(self, url: str):  # noqa: E501
         """
         Delete a peer connection
         """  # noqa: E501
@@ -918,7 +927,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getExperiments(self, url: str = "/experiments"):  # noqa: E501
+    async def list_experiments(self, url: str = "/experiments"):  # noqa: E501
         """
         List experiments
         """  # noqa: E501
@@ -941,7 +950,7 @@ class APIClient:
             return get_experiments_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postExperiments(self, body: PostExperimentsRequestBodyWrite, url: str = "/experiments"):  # noqa: E501
+    async def create_experiment(self, body: PostExperimentsRequestBodyWrite, url: str = "/experiments"):  # noqa: E501
         """
         Create a new experiment
         """  # noqa: E501
@@ -969,7 +978,7 @@ class APIClient:
             return post_experiments_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getExperiment(self, url: str):  # noqa: E501
+    async def get_experiment(self, url: str):  # noqa: E501
         """
         View an experiment.
         """  # noqa: E501
@@ -992,7 +1001,7 @@ class APIClient:
             return get_experiment_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchExperiment(self, url: str, body: Optional[PatchExperimentRequestBodyWrite] = None, changedURL: Optional[str] = None):  # noqa: E501
+    async def update_experiment(self, url: str, body: Optional[PatchExperimentRequestBodyWrite] = None, changedURL: Optional[str] = None):  # noqa: E501
         """
         Update an existing experiment.
         
@@ -1031,7 +1040,7 @@ class APIClient:
             return patch_experiment_response_body202_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteExperiment(self, url: str):  # noqa: E501
+    async def delete_experiment(self, url: str):  # noqa: E501
         """
         Delete an experiment
         """  # noqa: E501
@@ -1054,7 +1063,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getInstitutions(self, url: str = "/institutions"):  # noqa: E501
+    async def list_institutions(self, url: str = "/institutions"):  # noqa: E501
         """
         List institutions
         """  # noqa: E501
@@ -1077,7 +1086,7 @@ class APIClient:
             return get_institutions_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postInstitutions(self, body: PostInstitutionsRequestBodyWrite, url: str = "/institutions"):  # noqa: E501
+    async def create_institution(self, body: PostInstitutionsRequestBodyWrite, url: str = "/institutions"):  # noqa: E501
         """
         Create a new institution
         """  # noqa: E501
@@ -1103,7 +1112,7 @@ class APIClient:
             return post_institutions_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getInstitution(self, url: str):  # noqa: E501
+    async def get_institution(self, url: str):  # noqa: E501
         """
         View an institution.
         """  # noqa: E501
@@ -1126,7 +1135,7 @@ class APIClient:
             return get_institution_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchInstitution(self, url: str, body: Optional[PatchInstitutionRequestBodyWrite] = None):  # noqa: E501
+    async def update_institution(self, url: str, body: Optional[PatchInstitutionRequestBodyWrite] = None):  # noqa: E501
         """
         Update an institution.
         """  # noqa: E501
@@ -1152,7 +1161,7 @@ class APIClient:
             return patch_institution_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteInstitution(self, url: str):  # noqa: E501
+    async def delete_institution(self, url: str):  # noqa: E501
         """
         Delete an institution
         """  # noqa: E501
@@ -1175,7 +1184,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getUpdates(self, url: str = "/updates"):  # noqa: E501
+    async def list_updates(self, url: str = "/updates"):  # noqa: E501
         """
         Get update information for all devices
         """  # noqa: E501
@@ -1198,7 +1207,7 @@ class APIClient:
             return get_updates_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def postUpdates(self, body: PostUpdatesRequestBodyWrite, url: str = "/updates"):  # noqa: E501
+    async def create_update(self, body: PostUpdatesRequestBodyWrite, url: str = "/updates"):  # noqa: E501
         """
         Create new update information
         """  # noqa: E501
@@ -1224,7 +1233,7 @@ class APIClient:
             return post_updates_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def getUpdate(self, url: str, current_version: Optional[str] = None):  # noqa: E501
+    async def get_update(self, url: str, current_version: Optional[str] = None):  # noqa: E501
         """
         Get update for device
         """  # noqa: E501
@@ -1256,7 +1265,7 @@ class APIClient:
             return
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patchUpdate(self, url: str, body: PatchUpdateRequestBodyWrite):  # noqa: E501
+    async def patch_update(self, url: str, body: PatchUpdateRequestBodyWrite):  # noqa: E501
         """
         Edit update information
         """  # noqa: E501
@@ -1282,7 +1291,7 @@ class APIClient:
             return patch_update_response_body200_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def deleteUpdate(self, url: str):  # noqa: E501
+    async def delete_update(self, url: str):  # noqa: E501
         """
         Delete update information
         """  # noqa: E501

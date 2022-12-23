@@ -4,6 +4,7 @@ import pytest
 from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
 
 from crosslab.soa_services.electrical import ElectricalConnectionService
+from crosslab.soa_services.electrical.schema import Direction
 from crosslab.soa_services.electrical.schema import (
     ElectricalServiceConfiguration as ServiceConfig,
 )
@@ -70,6 +71,7 @@ def test_gpio_changeDriver(tiebreaker):
                 bus_id="0",
                 signals=PurpleSignals("S1"),
                 driver=None,
+                direction=Direction.INOUT,
             )
         ],
         service_type=ServiceType.GOLDI_ELECTRICAL,
