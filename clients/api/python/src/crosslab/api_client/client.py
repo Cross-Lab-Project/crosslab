@@ -736,7 +736,7 @@ class APIClient:
             return post_device_response_body201_read_from_dict(resp)
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_availability_rules(self, url: str, body: Optional[List[IndigoAvailabilityRule]] = None):  # noqa: E501
+    async def add_availability_rules(self, url: str, body: Optional[List[FluffyAvailabilityRule]] = None):  # noqa: E501
         """
         Update the device availability
         """  # noqa: E501

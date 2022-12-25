@@ -2791,33 +2791,33 @@ async def test_create_device(aioresponses: aioresponses):
     url_variant = r'devices'
     full_url = BASE_URL+r'/devices'
 
-    request_dict = json.loads(r'{"url":"http://AkgADFaPgqxOpr.qpreMUa3n-R5UPlOuxHLcLupGSttrIvDIIcLzysNf6XDoKvXGiqh1MD2sUYu2bpMjW-1O7iGrjZkvG8W","name":"aliquip dolore ut","description":"laborum non ullamco","type":"cloud instantiable","owner":"http://ewbdFKbYQoElXYtDgvMM.tvdyh.hvmH","instantiate_url":"http://qyoxerSwsSxes.wqnSJG7aB8hliwTihEUpj.GZH5Pnhyuy5RSS6pj.YW1G"}')
+    request_dict = json.loads(r'{"services":[],"url":"https://FFtBZqePJevWvqANceH.erzuirQaTbcwUTzpisvYDrbm0JMrsFw.-U1iS5kUOo","type":"device","connected":true,"owner":"https://mDCjpDPqCPPtDeHBrJuRtfOZdAkcLQgiM.kjDA0FCmSOocI6lV.q9RAXULVivUlme.Yb+A5VglKZF9jsM33IUv5MmtYkt4tbqo7-gGC4","description":"consequat id commodo","name":"amet Duis eiusmod dolor deserunt","experiment":"https://yZjFsGlZmXSOaJmchy.ezuSwTSEZ9RaYnbjr-R86Gm5bddW7BbgjWvaia3qfQMtJd,JFhTVyi7xYNvwoq.FegAtFIqvVB","announcedAvailability":[{"repeat":{"frequency":"DAILY","until":"1996-05-09T01:35:51.0Z"}}]}')
     request = post_devices_request_body_write_from_dict(request_dict)
 
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_201_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(body=request, **parameters)
             assert normalize_result(post_devices_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_201_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=url, body=request, **parameters)
             assert normalize_result(post_devices_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_201_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=url_variant, body=request, **parameters)
             assert normalize_result(post_devices_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_201_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=full_url, body=request, **parameters)
@@ -2948,21 +2948,21 @@ async def test_get_device(aioresponses: aioresponses):
     parameter_list = [{"flat_group": True, }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=url, **parameters)
             assert normalize_result(get_device_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=url_variant, **parameters)
             assert normalize_result(get_device_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=full_url, **parameters)
@@ -3065,27 +3065,27 @@ async def test_update_device(aioresponses: aioresponses):
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request_dict = json.loads(r'{"url":"http://AkgADFaPgqxOpr.qpreMUa3n-R5UPlOuxHLcLupGSttrIvDIIcLzysNf6XDoKvXGiqh1MD2sUYu2bpMjW-1O7iGrjZkvG8W","name":"aliquip dolore ut","description":"laborum non ullamco","type":"cloud instantiable","owner":"http://ewbdFKbYQoElXYtDgvMM.tvdyh.hvmH","instantiate_url":"http://qyoxerSwsSxes.wqnSJG7aB8hliwTihEUpj.GZH5Pnhyuy5RSS6pj.YW1G"}')
+    request_dict = json.loads(r'{"services":[],"url":"https://FFtBZqePJevWvqANceH.erzuirQaTbcwUTzpisvYDrbm0JMrsFw.-U1iS5kUOo","type":"device","connected":true,"owner":"https://mDCjpDPqCPPtDeHBrJuRtfOZdAkcLQgiM.kjDA0FCmSOocI6lV.q9RAXULVivUlme.Yb+A5VglKZF9jsM33IUv5MmtYkt4tbqo7-gGC4","description":"consequat id commodo","name":"amet Duis eiusmod dolor deserunt","experiment":"https://yZjFsGlZmXSOaJmchy.ezuSwTSEZ9RaYnbjr-R86Gm5bddW7BbgjWvaia3qfQMtJd,JFhTVyi7xYNvwoq.FegAtFIqvVB","announcedAvailability":[{"repeat":{"frequency":"DAILY","until":"1996-05-09T01:35:51.0Z"}}]}')
     request = patch_device_request_body_write_from_dict(request_dict)
 
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=url, body=request, **parameters)
             assert normalize_result(patch_device_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=url_variant, body=request, **parameters)
             assert normalize_result(patch_device_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"owner":"https://LwENfhelgMUnopYy.wdsEk9vYD7omiXkN5BrItQoqFDF7XVlUNBNhMu","name":"laborum ad","connected":false,"availabilityRules":[{"available":true,"end":"1960-06-01T04:38:10.0Z","start":"2003-11-14T19:40:34.0Z"},{"start":"1993-07-23T08:02:56.0Z"}],"url":"https://MdqZ.wudnmSoCB","type":"device","description":"fugiat voluptate sint Excepteur","experiment":"http://mTy.evzwZS43uBn+oMB.4AQBi,fsKUquolJoWJBGj3x3CD5vkGT3","announcedAvailability":[{"end":"1989-12-25T19:04:42.0Z"},{"end":"2007-09-15T07:38:01.0Z","start":"1982-03-01T06:39:28.0Z"},{"start":"1970-03-02T19:32:26.0Z","end":"1953-12-07T17:11:53.0Z"},{"end":"2021-10-13T10:57:51.0Z","start":"2011-12-21T18:04:38.0Z"}]}')
+        response_200_dict = json.loads(r'{"type":"device","owner":"http://wrvuppqewWdH.omhcAwZEk9qD7opUiXkFBrRItQoqFDF7XVlUNBNhMuyCMYhjfpg7qrt-Fj5hqnNkDvd8tzmY60V61j","url":"http://uFaodEpKyQkGvFI.gotilvYR.udrlbOB-hlPogvYKzKk","description":"fugiat eiusmod","name":"aute consequat veniam","services":[],"experiment":"http://RdmTyMiQYSUxtCuahvebSpQ.enR73CD5qG","connected":false}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=full_url, body=request, **parameters)
@@ -3305,21 +3305,21 @@ async def test_instantiate_device(aioresponses: aioresponses):
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"experiment":"https://yLriKDNyKac.ehdNK3wAB.GcBnRMsghhlUAmEgNgC.wcay9VX9jr76x6W+W4nYNiXj7NY1QmKZdDyJnkxz","availabilityRules":[{"start":"1976-12-29T16:41:47.0Z"}],"services":[],"url":"http://POGaCipwdGWvBhRaysTtvJXtPxma.pppyXeLKkosMVbSakwpCnLEVImJPxoufMQYn+rA.NdtB0BBqpTjqZeAO","owner":"https://YZpVc.fflGBYrnhM,li92Y09zbh9B0hxzX0hoT5FQHC2QOC09XI6kt","connected":false,"description":"eu anim","name":"anim","announcedAvailability":[{"end":"1956-05-27T13:01:53.0Z"},{"start":"1971-03-25T04:01:13.0Z","end":"2007-09-01T04:41:49.0Z"},{"start":"1943-07-20T01:46:42.0Z"}]},"deviceToken":"ut consectetur sit Lorem"}')
+        response_201_dict = json.loads(r'{"instance":{"announcedAvailability":[{"start":"1955-04-07T01:22:58.0Z","end":"1995-07-10T11:59:14.0Z"},{"end":"2006-05-22T14:58:01.0Z","start":"1956-06-29T18:16:35.0Z"},{"end":"2013-11-28T07:03:49.0Z"},{"end":"2015-04-21T18:19:04.0Z","start":"1975-07-14T08:16:38.0Z"}],"url":"http://uqyLriKDNyKa.qeZcaJtVX9mfvD76xUF+W4nYYFiXhN--1QmKZdxJnnq","services":[],"type":"device","connected":true,"name":"in","owner":"http://XtPxmagFFBylFzvNnkgMTYi.yvmlIqZeAORZPbJktCdGBIj2aFx5zB","description":"nostrud Lorem commodo Excepteur","experiment":"http://ziGqQoyUsaiCVXWUsGq.vgYEjjfQYlaoNU0.TNshwmZX97ESZapPxeXRR6oyHetq"},"deviceToken":"irure eu"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url, **parameters)
             assert normalize_result(post_device_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"experiment":"https://yLriKDNyKac.ehdNK3wAB.GcBnRMsghhlUAmEgNgC.wcay9VX9jr76x6W+W4nYNiXj7NY1QmKZdDyJnkxz","availabilityRules":[{"start":"1976-12-29T16:41:47.0Z"}],"services":[],"url":"http://POGaCipwdGWvBhRaysTtvJXtPxma.pppyXeLKkosMVbSakwpCnLEVImJPxoufMQYn+rA.NdtB0BBqpTjqZeAO","owner":"https://YZpVc.fflGBYrnhM,li92Y09zbh9B0hxzX0hoT5FQHC2QOC09XI6kt","connected":false,"description":"eu anim","name":"anim","announcedAvailability":[{"end":"1956-05-27T13:01:53.0Z"},{"start":"1971-03-25T04:01:13.0Z","end":"2007-09-01T04:41:49.0Z"},{"start":"1943-07-20T01:46:42.0Z"}]},"deviceToken":"ut consectetur sit Lorem"}')
+        response_201_dict = json.loads(r'{"instance":{"announcedAvailability":[{"start":"1955-04-07T01:22:58.0Z","end":"1995-07-10T11:59:14.0Z"},{"end":"2006-05-22T14:58:01.0Z","start":"1956-06-29T18:16:35.0Z"},{"end":"2013-11-28T07:03:49.0Z"},{"end":"2015-04-21T18:19:04.0Z","start":"1975-07-14T08:16:38.0Z"}],"url":"http://uqyLriKDNyKa.qeZcaJtVX9mfvD76xUF+W4nYYFiXhN--1QmKZdxJnnq","services":[],"type":"device","connected":true,"name":"in","owner":"http://XtPxmagFFBylFzvNnkgMTYi.yvmlIqZeAORZPbJktCdGBIj2aFx5zB","description":"nostrud Lorem commodo Excepteur","experiment":"http://ziGqQoyUsaiCVXWUsGq.vgYEjjfQYlaoNU0.TNshwmZX97ESZapPxeXRR6oyHetq"},"deviceToken":"irure eu"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url_variant, **parameters)
             assert normalize_result(post_device_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"experiment":"https://yLriKDNyKac.ehdNK3wAB.GcBnRMsghhlUAmEgNgC.wcay9VX9jr76x6W+W4nYNiXj7NY1QmKZdDyJnkxz","availabilityRules":[{"start":"1976-12-29T16:41:47.0Z"}],"services":[],"url":"http://POGaCipwdGWvBhRaysTtvJXtPxma.pppyXeLKkosMVbSakwpCnLEVImJPxoufMQYn+rA.NdtB0BBqpTjqZeAO","owner":"https://YZpVc.fflGBYrnhM,li92Y09zbh9B0hxzX0hoT5FQHC2QOC09XI6kt","connected":false,"description":"eu anim","name":"anim","announcedAvailability":[{"end":"1956-05-27T13:01:53.0Z"},{"start":"1971-03-25T04:01:13.0Z","end":"2007-09-01T04:41:49.0Z"},{"start":"1943-07-20T01:46:42.0Z"}]},"deviceToken":"ut consectetur sit Lorem"}')
+        response_201_dict = json.loads(r'{"instance":{"announcedAvailability":[{"start":"1955-04-07T01:22:58.0Z","end":"1995-07-10T11:59:14.0Z"},{"end":"2006-05-22T14:58:01.0Z","start":"1956-06-29T18:16:35.0Z"},{"end":"2013-11-28T07:03:49.0Z"},{"end":"2015-04-21T18:19:04.0Z","start":"1975-07-14T08:16:38.0Z"}],"url":"http://uqyLriKDNyKa.qeZcaJtVX9mfvD76xUF+W4nYYFiXhN--1QmKZdxJnnq","services":[],"type":"device","connected":true,"name":"in","owner":"http://XtPxmagFFBylFzvNnkgMTYi.yvmlIqZeAORZPbJktCdGBIj2aFx5zB","description":"nostrud Lorem commodo Excepteur","experiment":"http://ziGqQoyUsaiCVXWUsGq.vgYEjjfQYlaoNU0.TNshwmZX97ESZapPxeXRR6oyHetq"},"deviceToken":"irure eu"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=full_url, **parameters)

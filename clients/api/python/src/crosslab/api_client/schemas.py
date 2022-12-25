@@ -4149,28 +4149,6 @@ class GetDevicesResponseBody200_ReadElement:
         return result
 
 
-class PostDevicesRequestBodyAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesRequestBodyAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PostDevicesRequestBodyAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
 class Frequency(Enum):
     DAILY = "DAILY"
     HOURLY = "HOURLY"
@@ -4269,8 +4247,7 @@ class PostDevicesRequestBody:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PostDevicesRequestBodyAnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesRequestBodyAvailabilityRule]]
+    announced_availability: Optional[List[PostDevicesRequestBodyAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -4279,14 +4256,13 @@ class PostDevicesRequestBody:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyAnnouncedAvailability]], availability_rules: Optional[List[PostDevicesRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -4302,15 +4278,14 @@ class PostDevicesRequestBody:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesRequestBodyAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesRequestBodyDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesRequestBody(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -4319,36 +4294,13 @@ class PostDevicesRequestBody:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyDevice, x), x), from_none], self.devices)
         result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
         result["code_url"] = from_union([from_str, from_none], self.code_url)
-        return result
-
-
-class PostDevicesRequestBodyWriteAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesRequestBodyWriteAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PostDevicesRequestBodyWriteAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4442,8 +4394,7 @@ class PostDevicesRequestBodyWrite:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PostDevicesRequestBodyWriteAnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesRequestBodyWriteAvailabilityRule]]
+    announced_availability: Optional[List[PostDevicesRequestBodyWriteAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -4452,14 +4403,13 @@ class PostDevicesRequestBodyWrite:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyWriteAnnouncedAvailability]], availability_rules: Optional[List[PostDevicesRequestBodyWriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyWriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyWriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyWriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -4475,15 +4425,14 @@ class PostDevicesRequestBodyWrite:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyWriteAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesRequestBodyWriteAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyWriteAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesRequestBodyWriteDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesRequestBodyWrite(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesRequestBodyWrite(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -4492,36 +4441,13 @@ class PostDevicesRequestBodyWrite:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteDevice, x), x), from_none], self.devices)
         result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
         result["code_url"] = from_union([from_str, from_none], self.code_url)
-        return result
-
-
-class PostDevicesRequestBodyReadAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesRequestBodyReadAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PostDevicesRequestBodyReadAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4615,8 +4541,7 @@ class PostDevicesRequestBodyRead:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PostDevicesRequestBodyReadAnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesRequestBodyReadAvailabilityRule]]
+    announced_availability: Optional[List[PostDevicesRequestBodyReadAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -4625,14 +4550,13 @@ class PostDevicesRequestBodyRead:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyReadAnnouncedAvailability]], availability_rules: Optional[List[PostDevicesRequestBodyReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesRequestBodyReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesRequestBodyReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -4648,15 +4572,14 @@ class PostDevicesRequestBodyRead:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyReadAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesRequestBodyReadAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PostDevicesRequestBodyReadAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesRequestBodyReadDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesRequestBodyRead(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesRequestBodyRead(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -4665,8 +4588,7 @@ class PostDevicesRequestBodyRead:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -4695,66 +4617,6 @@ class PostDevicesResponseBody201_AnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class StickyRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'StickyRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return StickyRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PostDevicesResponseBody201_AvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[StickyRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[StickyRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesResponseBody201_AvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([StickyRepeat.from_dict, from_none], obj.get("repeat"))
-        return PostDevicesResponseBody201_AvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(StickyRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -4789,7 +4651,6 @@ class PostDevicesResponseBody201:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PostDevicesResponseBody201_AnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesResponseBody201_AvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -4798,14 +4659,13 @@ class PostDevicesResponseBody201:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_AnnouncedAvailability]], availability_rules: Optional[List[PostDevicesResponseBody201_AvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -4822,14 +4682,13 @@ class PostDevicesResponseBody201:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PostDevicesResponseBody201_AnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesResponseBody201_AvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesResponseBody201_Device.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesResponseBody201(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesResponseBody201(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -4839,7 +4698,6 @@ class PostDevicesResponseBody201:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_AvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -4868,66 +4726,6 @@ class PostDevicesResponseBody201_WriteAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class IndigoRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'IndigoRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return IndigoRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PostDevicesResponseBody201_WriteAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[IndigoRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[IndigoRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesResponseBody201_WriteAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([IndigoRepeat.from_dict, from_none], obj.get("repeat"))
-        return PostDevicesResponseBody201_WriteAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(IndigoRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -4962,7 +4760,6 @@ class PostDevicesResponseBody201_Write:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PostDevicesResponseBody201_WriteAnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesResponseBody201_WriteAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -4971,14 +4768,13 @@ class PostDevicesResponseBody201_Write:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_WriteAnnouncedAvailability]], availability_rules: Optional[List[PostDevicesResponseBody201_WriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_WriteAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -4995,14 +4791,13 @@ class PostDevicesResponseBody201_Write:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PostDevicesResponseBody201_WriteAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesResponseBody201_WriteAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesResponseBody201_WriteDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesResponseBody201_Write(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesResponseBody201_Write(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5012,7 +4807,6 @@ class PostDevicesResponseBody201_Write:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5041,66 +4835,6 @@ class PostDevicesResponseBody201_ReadAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class IndecentRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'IndecentRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return IndecentRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PostDevicesResponseBody201_ReadAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[IndecentRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[IndecentRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostDevicesResponseBody201_ReadAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([IndecentRepeat.from_dict, from_none], obj.get("repeat"))
-        return PostDevicesResponseBody201_ReadAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(IndecentRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5135,7 +4869,6 @@ class PostDevicesResponseBody201_Read:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PostDevicesResponseBody201_ReadAnnouncedAvailability]]
-    availability_rules: Optional[List[PostDevicesResponseBody201_ReadAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -5144,14 +4877,13 @@ class PostDevicesResponseBody201_Read:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_ReadAnnouncedAvailability]], availability_rules: Optional[List[PostDevicesResponseBody201_ReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PostDevicesResponseBody201_ReadAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PostDevicesResponseBody201_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -5168,14 +4900,13 @@ class PostDevicesResponseBody201_Read:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PostDevicesResponseBody201_ReadAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PostDevicesResponseBody201_ReadAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PostDevicesResponseBody201_ReadDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PostDevicesResponseBody201_Read(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PostDevicesResponseBody201_Read(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5185,7 +4916,6 @@ class PostDevicesResponseBody201_Read:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5214,66 +4944,6 @@ class GetDeviceResponseBody200_AnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class HilariousRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'HilariousRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return HilariousRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class GetDeviceResponseBody200_AvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[HilariousRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[HilariousRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'GetDeviceResponseBody200_AvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([HilariousRepeat.from_dict, from_none], obj.get("repeat"))
-        return GetDeviceResponseBody200_AvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(HilariousRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5308,7 +4978,6 @@ class GetDeviceResponseBody200:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[GetDeviceResponseBody200_AnnouncedAvailability]]
-    availability_rules: Optional[List[GetDeviceResponseBody200_AvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -5317,14 +4986,13 @@ class GetDeviceResponseBody200:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_AnnouncedAvailability]], availability_rules: Optional[List[GetDeviceResponseBody200_AvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -5341,14 +5009,13 @@ class GetDeviceResponseBody200:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(GetDeviceResponseBody200_AnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(GetDeviceResponseBody200_AvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(GetDeviceResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return GetDeviceResponseBody200(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return GetDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5358,7 +5025,6 @@ class GetDeviceResponseBody200:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_AvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5387,66 +5053,6 @@ class GetDeviceResponseBody200_WriteAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class AmbitiousRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'AmbitiousRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return AmbitiousRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class GetDeviceResponseBody200_WriteAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[AmbitiousRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[AmbitiousRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'GetDeviceResponseBody200_WriteAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([AmbitiousRepeat.from_dict, from_none], obj.get("repeat"))
-        return GetDeviceResponseBody200_WriteAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(AmbitiousRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5481,7 +5087,6 @@ class GetDeviceResponseBody200_Write:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[GetDeviceResponseBody200_WriteAnnouncedAvailability]]
-    availability_rules: Optional[List[GetDeviceResponseBody200_WriteAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -5490,14 +5095,13 @@ class GetDeviceResponseBody200_Write:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_WriteAnnouncedAvailability]], availability_rules: Optional[List[GetDeviceResponseBody200_WriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_WriteAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -5514,14 +5118,13 @@ class GetDeviceResponseBody200_Write:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(GetDeviceResponseBody200_WriteAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(GetDeviceResponseBody200_WriteAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(GetDeviceResponseBody200_WriteDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return GetDeviceResponseBody200_Write(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return GetDeviceResponseBody200_Write(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5531,7 +5134,6 @@ class GetDeviceResponseBody200_Write:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5560,66 +5162,6 @@ class GetDeviceResponseBody200_ReadAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class CunningRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'CunningRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return CunningRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class GetDeviceResponseBody200_ReadAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[CunningRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[CunningRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'GetDeviceResponseBody200_ReadAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([CunningRepeat.from_dict, from_none], obj.get("repeat"))
-        return GetDeviceResponseBody200_ReadAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(CunningRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5654,7 +5196,6 @@ class GetDeviceResponseBody200_Read:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[GetDeviceResponseBody200_ReadAnnouncedAvailability]]
-    availability_rules: Optional[List[GetDeviceResponseBody200_ReadAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -5663,14 +5204,13 @@ class GetDeviceResponseBody200_Read:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_ReadAnnouncedAvailability]], availability_rules: Optional[List[GetDeviceResponseBody200_ReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[GetDeviceResponseBody200_ReadAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[GetDeviceResponseBody200_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -5687,14 +5227,13 @@ class GetDeviceResponseBody200_Read:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(GetDeviceResponseBody200_ReadAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(GetDeviceResponseBody200_ReadAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(GetDeviceResponseBody200_ReadDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return GetDeviceResponseBody200_Read(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return GetDeviceResponseBody200_Read(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5704,7 +5243,6 @@ class GetDeviceResponseBody200_Read:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5714,29 +5252,7 @@ class GetDeviceResponseBody200_Read:
         return result
 
 
-class PatchDeviceRequestBodyAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceRequestBodyAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PatchDeviceRequestBodyAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class MagentaRepeat:
+class StickyRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -5750,12 +5266,12 @@ class MagentaRepeat:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'MagentaRepeat':
+    def from_dict(obj: Any) -> 'StickyRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return MagentaRepeat(count, frequency, until)
+        return StickyRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5770,9 +5286,9 @@ class PatchDeviceRequestBodyAvailabilityRule:
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[MagentaRepeat]
+    repeat: Optional[StickyRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[MagentaRepeat]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[StickyRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
@@ -5784,7 +5300,7 @@ class PatchDeviceRequestBodyAvailabilityRule:
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([MagentaRepeat.from_dict, from_none], obj.get("repeat"))
+        repeat = from_union([StickyRepeat.from_dict, from_none], obj.get("repeat"))
         return PatchDeviceRequestBodyAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
@@ -5792,7 +5308,7 @@ class PatchDeviceRequestBodyAvailabilityRule:
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(MagentaRepeat, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(StickyRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5826,8 +5342,7 @@ class PatchDeviceRequestBody:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PatchDeviceRequestBodyAnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceRequestBodyAvailabilityRule]]
+    announced_availability: Optional[List[PatchDeviceRequestBodyAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -5836,14 +5351,13 @@ class PatchDeviceRequestBody:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyAnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -5859,15 +5373,14 @@ class PatchDeviceRequestBody:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceRequestBodyAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceRequestBodyDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceRequestBody(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceRequestBody(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5876,8 +5389,7 @@ class PatchDeviceRequestBody:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -5887,29 +5399,7 @@ class PatchDeviceRequestBody:
         return result
 
 
-class PatchDeviceRequestBodyWriteAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceRequestBodyWriteAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PatchDeviceRequestBodyWriteAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class FriskyRepeat:
+class IndigoRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -5923,12 +5413,12 @@ class FriskyRepeat:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'FriskyRepeat':
+    def from_dict(obj: Any) -> 'IndigoRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return FriskyRepeat(count, frequency, until)
+        return IndigoRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -5943,9 +5433,9 @@ class PatchDeviceRequestBodyWriteAvailabilityRule:
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[FriskyRepeat]
+    repeat: Optional[IndigoRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[FriskyRepeat]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[IndigoRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
@@ -5957,7 +5447,7 @@ class PatchDeviceRequestBodyWriteAvailabilityRule:
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([FriskyRepeat.from_dict, from_none], obj.get("repeat"))
+        repeat = from_union([IndigoRepeat.from_dict, from_none], obj.get("repeat"))
         return PatchDeviceRequestBodyWriteAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
@@ -5965,7 +5455,7 @@ class PatchDeviceRequestBodyWriteAvailabilityRule:
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(FriskyRepeat, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(IndigoRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5999,8 +5489,7 @@ class PatchDeviceRequestBodyWrite:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PatchDeviceRequestBodyWriteAnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceRequestBodyWriteAvailabilityRule]]
+    announced_availability: Optional[List[PatchDeviceRequestBodyWriteAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -6009,14 +5498,13 @@ class PatchDeviceRequestBodyWrite:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyWriteAnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceRequestBodyWriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyWriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyWriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyWriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6032,15 +5520,14 @@ class PatchDeviceRequestBodyWrite:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyWriteAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceRequestBodyWriteAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyWriteAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceRequestBodyWriteDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceRequestBodyWrite(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceRequestBodyWrite(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6049,8 +5536,7 @@ class PatchDeviceRequestBodyWrite:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6060,29 +5546,7 @@ class PatchDeviceRequestBodyWrite:
         return result
 
 
-class PatchDeviceRequestBodyReadAnnouncedAvailability:
-    end: Optional[datetime]
-    start: Optional[datetime]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime]) -> None:
-        self.end = end
-        self.start = start
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceRequestBodyReadAnnouncedAvailability':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        return PatchDeviceRequestBodyReadAnnouncedAvailability(end, start)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class MischievousRepeat:
+class IndecentRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -6096,12 +5560,12 @@ class MischievousRepeat:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'MischievousRepeat':
+    def from_dict(obj: Any) -> 'IndecentRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return MischievousRepeat(count, frequency, until)
+        return IndecentRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6116,9 +5580,9 @@ class PatchDeviceRequestBodyReadAvailabilityRule:
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[MischievousRepeat]
+    repeat: Optional[IndecentRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[MischievousRepeat]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[IndecentRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
@@ -6130,7 +5594,7 @@ class PatchDeviceRequestBodyReadAvailabilityRule:
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([MischievousRepeat.from_dict, from_none], obj.get("repeat"))
+        repeat = from_union([IndecentRepeat.from_dict, from_none], obj.get("repeat"))
         return PatchDeviceRequestBodyReadAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
@@ -6138,7 +5602,7 @@ class PatchDeviceRequestBodyReadAvailabilityRule:
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(MischievousRepeat, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(IndecentRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -6172,8 +5636,7 @@ class PatchDeviceRequestBodyRead:
     """URL of the device"""
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
-    announced_availability: Optional[List[PatchDeviceRequestBodyReadAnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceRequestBodyReadAvailabilityRule]]
+    announced_availability: Optional[List[PatchDeviceRequestBodyReadAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -6182,14 +5645,13 @@ class PatchDeviceRequestBodyRead:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyReadAnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceRequestBodyReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceRequestBodyReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceRequestBodyReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6205,15 +5667,14 @@ class PatchDeviceRequestBodyRead:
         owner = from_union([from_str, from_none], obj.get("owner"))
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
-        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyReadAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceRequestBodyReadAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
+        announced_availability = from_union([lambda x: from_list(PatchDeviceRequestBodyReadAvailabilityRule.from_dict, x), from_none], obj.get("announcedAvailability"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceRequestBodyReadDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceRequestBodyRead(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceRequestBodyRead(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6222,8 +5683,7 @@ class PatchDeviceRequestBodyRead:
         result["owner"] = from_union([from_str, from_none], self.owner)
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadAvailabilityRule, x), x), from_none], self.availability_rules)
+        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6252,66 +5712,6 @@ class PatchDeviceResponseBody200_AnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class BraggadociousRepeat:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'BraggadociousRepeat':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return BraggadociousRepeat(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PatchDeviceResponseBody200_AvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[BraggadociousRepeat]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[BraggadociousRepeat]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceResponseBody200_AvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([BraggadociousRepeat.from_dict, from_none], obj.get("repeat"))
-        return PatchDeviceResponseBody200_AvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(BraggadociousRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -6346,7 +5746,6 @@ class PatchDeviceResponseBody200:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PatchDeviceResponseBody200_AnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceResponseBody200_AvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -6355,14 +5754,13 @@ class PatchDeviceResponseBody200:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_AnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceResponseBody200_AvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_AnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_Device]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6379,14 +5777,13 @@ class PatchDeviceResponseBody200:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PatchDeviceResponseBody200_AnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceResponseBody200_AvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceResponseBody200_Device.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceResponseBody200(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceResponseBody200(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6396,7 +5793,6 @@ class PatchDeviceResponseBody200:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_AvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6425,66 +5821,6 @@ class PatchDeviceResponseBody200_WriteAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class Repeat1:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Repeat1':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat1(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PatchDeviceResponseBody200_WriteAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat1]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat1]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceResponseBody200_WriteAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat1.from_dict, from_none], obj.get("repeat"))
-        return PatchDeviceResponseBody200_WriteAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat1, x), from_none], self.repeat)
         return result
 
 
@@ -6519,7 +5855,6 @@ class PatchDeviceResponseBody200_Write:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PatchDeviceResponseBody200_WriteAnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceResponseBody200_WriteAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -6528,14 +5863,13 @@ class PatchDeviceResponseBody200_Write:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_WriteAnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceResponseBody200_WriteAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_WriteAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_WriteDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6552,14 +5886,13 @@ class PatchDeviceResponseBody200_Write:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PatchDeviceResponseBody200_WriteAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceResponseBody200_WriteAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceResponseBody200_WriteDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceResponseBody200_Write(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceResponseBody200_Write(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6569,7 +5902,6 @@ class PatchDeviceResponseBody200_Write:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6598,66 +5930,6 @@ class PatchDeviceResponseBody200_ReadAnnouncedAvailability:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        return result
-
-
-class Repeat2:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Repeat2':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat2(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PatchDeviceResponseBody200_ReadAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat2]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat2]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchDeviceResponseBody200_ReadAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat2.from_dict, from_none], obj.get("repeat"))
-        return PatchDeviceResponseBody200_ReadAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat2, x), from_none], self.repeat)
         return result
 
 
@@ -6692,7 +5964,6 @@ class PatchDeviceResponseBody200_Read:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PatchDeviceResponseBody200_ReadAnnouncedAvailability]]
-    availability_rules: Optional[List[PatchDeviceResponseBody200_ReadAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
@@ -6701,14 +5972,13 @@ class PatchDeviceResponseBody200_Read:
     instantiate_url: Optional[str]
     code_url: Optional[str]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_ReadAnnouncedAvailability]], availability_rules: Optional[List[PatchDeviceResponseBody200_ReadAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[GetDevicesResponseBody200_Type], url: Optional[str], announced_availability: Optional[List[PatchDeviceResponseBody200_ReadAnnouncedAvailability]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]], devices: Optional[List[PatchDeviceResponseBody200_ReadDevice]], instantiate_url: Optional[str], code_url: Optional[str]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6725,14 +5995,13 @@ class PatchDeviceResponseBody200_Read:
         type = from_union([GetDevicesResponseBody200_Type, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PatchDeviceResponseBody200_ReadAnnouncedAvailability.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PatchDeviceResponseBody200_ReadAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
         devices = from_union([lambda x: from_list(PatchDeviceResponseBody200_ReadDevice.from_dict, x), from_none], obj.get("devices"))
         instantiate_url = from_union([from_str, from_none], obj.get("instantiate_url"))
         code_url = from_union([from_str, from_none], obj.get("code_url"))
-        return PatchDeviceResponseBody200_Read(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services, devices, instantiate_url, code_url)
+        return PatchDeviceResponseBody200_Read(description, name, owner, type, url, announced_availability, connected, experiment, services, devices, instantiate_url, code_url)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6742,7 +6011,6 @@ class PatchDeviceResponseBody200_Read:
         result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6774,66 +6042,6 @@ class PurpleTimeSlot:
         return result
 
 
-class Repeat3:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Repeat3':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat3(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class PurpleAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat3]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat3]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PurpleAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat3.from_dict, from_none], obj.get("repeat"))
-        return PurpleAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat3, x), from_none], self.repeat)
-        return result
-
-
 class ConcreteDeviceType(Enum):
     """Type of the device"""
     DEVICE = "device"
@@ -6851,20 +6059,18 @@ class PurpleConcreteDevice:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[PurpleTimeSlot]]
-    availability_rules: Optional[List[PurpleAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[PurpleTimeSlot]], availability_rules: Optional[List[PurpleAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[PurpleTimeSlot]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -6878,11 +6084,10 @@ class PurpleConcreteDevice:
         type = from_union([ConcreteDeviceType, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(PurpleTimeSlot.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(PurpleAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
-        return PurpleConcreteDevice(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services)
+        return PurpleConcreteDevice(description, name, owner, type, url, announced_availability, connected, experiment, services)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -6892,7 +6097,6 @@ class PurpleConcreteDevice:
         result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PurpleTimeSlot, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(PurpleAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -6943,66 +6147,6 @@ class FluffyTimeSlot:
         return result
 
 
-class Repeat4:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Repeat4':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat4(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class FluffyAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat4]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat4]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'FluffyAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat4.from_dict, from_none], obj.get("repeat"))
-        return FluffyAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat4, x), from_none], self.repeat)
-        return result
-
-
 class FluffyConcreteDevice:
     """Extended description of the device, features, etc."""
     description: Optional[str]
@@ -7015,20 +6159,18 @@ class FluffyConcreteDevice:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[FluffyTimeSlot]]
-    availability_rules: Optional[List[FluffyAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[FluffyTimeSlot]], availability_rules: Optional[List[FluffyAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[FluffyTimeSlot]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -7042,11 +6184,10 @@ class FluffyConcreteDevice:
         type = from_union([ConcreteDeviceType, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(FluffyTimeSlot.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(FluffyAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
-        return FluffyConcreteDevice(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services)
+        return FluffyConcreteDevice(description, name, owner, type, url, announced_availability, connected, experiment, services)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -7056,7 +6197,6 @@ class FluffyConcreteDevice:
         result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(FluffyTimeSlot, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(FluffyAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -7107,66 +6247,6 @@ class TentacledTimeSlot:
         return result
 
 
-class Repeat5:
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    """How often the time slot will be repeated"""
-    count: Optional[int]
-    frequency: Optional[Frequency]
-    """Up to this date-time the time slot will be repeated."""
-    until: Optional[datetime]
-
-    def __init__(self, count: Optional[int], frequency: Optional[Frequency], until: Optional[datetime]) -> None:
-        self.count = count
-        self.frequency = frequency
-        self.until = until
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'Repeat5':
-        assert isinstance(obj, dict)
-        count = from_union([from_int, from_none], obj.get("count"))
-        frequency = from_union([Frequency, from_none], obj.get("frequency"))
-        until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat5(count, frequency, until)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
-        return result
-
-
-class TentacledAvailabilityRule:
-    end: Optional[datetime]
-    start: Optional[datetime]
-    available: Optional[bool]
-    """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat5]
-
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat5]) -> None:
-        self.end = end
-        self.start = start
-        self.available = available
-        self.repeat = repeat
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'TentacledAvailabilityRule':
-        assert isinstance(obj, dict)
-        end = from_union([from_datetime, from_none], obj.get("end"))
-        start = from_union([from_datetime, from_none], obj.get("start"))
-        available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat5.from_dict, from_none], obj.get("repeat"))
-        return TentacledAvailabilityRule(end, start, available, repeat)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat5, x), from_none], self.repeat)
-        return result
-
-
 class TentacledConcreteDevice:
     """Extended description of the device, features, etc."""
     description: Optional[str]
@@ -7179,20 +6259,18 @@ class TentacledConcreteDevice:
     url: Optional[str]
     """A list of time slots that the maintainer of the device announced it is available"""
     announced_availability: Optional[List[TentacledTimeSlot]]
-    availability_rules: Optional[List[TentacledAvailabilityRule]]
     """If true, the device is connected to the service and can be used."""
     connected: Optional[bool]
     experiment: Optional[str]
     services: Optional[List[Dict[str, Any]]]
 
-    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[TentacledTimeSlot]], availability_rules: Optional[List[TentacledAvailabilityRule]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
+    def __init__(self, description: Optional[str], name: Optional[str], owner: Optional[str], type: Optional[ConcreteDeviceType], url: Optional[str], announced_availability: Optional[List[TentacledTimeSlot]], connected: Optional[bool], experiment: Optional[str], services: Optional[List[Dict[str, Any]]]) -> None:
         self.description = description
         self.name = name
         self.owner = owner
         self.type = type
         self.url = url
         self.announced_availability = announced_availability
-        self.availability_rules = availability_rules
         self.connected = connected
         self.experiment = experiment
         self.services = services
@@ -7206,11 +6284,10 @@ class TentacledConcreteDevice:
         type = from_union([ConcreteDeviceType, from_none], obj.get("type"))
         url = from_union([from_str, from_none], obj.get("url"))
         announced_availability = from_union([lambda x: from_list(TentacledTimeSlot.from_dict, x), from_none], obj.get("announcedAvailability"))
-        availability_rules = from_union([lambda x: from_list(TentacledAvailabilityRule.from_dict, x), from_none], obj.get("availabilityRules"))
         connected = from_union([from_bool, from_none], obj.get("connected"))
         experiment = from_union([from_str, from_none], obj.get("experiment"))
         services = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], obj.get("services"))
-        return TentacledConcreteDevice(description, name, owner, type, url, announced_availability, availability_rules, connected, experiment, services)
+        return TentacledConcreteDevice(description, name, owner, type, url, announced_availability, connected, experiment, services)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -7220,7 +6297,6 @@ class TentacledConcreteDevice:
         result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
         result["url"] = from_union([from_str, from_none], self.url)
         result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(TentacledTimeSlot, x), x), from_none], self.announced_availability)
-        result["availabilityRules"] = from_union([lambda x: from_list(lambda x: to_class(TentacledAvailabilityRule, x), x), from_none], self.availability_rules)
         result["connected"] = from_union([from_bool, from_none], self.connected)
         result["experiment"] = from_union([from_str, from_none], self.experiment)
         result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
@@ -7249,7 +6325,7 @@ class PostDeviceResponseBody201_Read:
         return result
 
 
-class Repeat6:
+class HilariousRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -7263,12 +6339,12 @@ class Repeat6:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Repeat6':
+    def from_dict(obj: Any) -> 'HilariousRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat6(count, frequency, until)
+        return HilariousRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -7278,39 +6354,39 @@ class Repeat6:
         return result
 
 
-class StickyAvailabilityRule:
+class PurpleAvailabilityRule:
     """The availability rule to be applied."""
     end: Optional[datetime]
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat6]
+    repeat: Optional[HilariousRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat6]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[HilariousRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
         self.repeat = repeat
 
     @staticmethod
-    def from_dict(obj: Any) -> 'StickyAvailabilityRule':
+    def from_dict(obj: Any) -> 'PurpleAvailabilityRule':
         assert isinstance(obj, dict)
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat6.from_dict, from_none], obj.get("repeat"))
-        return StickyAvailabilityRule(end, start, available, repeat)
+        repeat = from_union([HilariousRepeat.from_dict, from_none], obj.get("repeat"))
+        return PurpleAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat6, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(HilariousRepeat, x), from_none], self.repeat)
         return result
 
 
-class Repeat7:
+class AmbitiousRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -7324,12 +6400,12 @@ class Repeat7:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Repeat7':
+    def from_dict(obj: Any) -> 'AmbitiousRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat7(count, frequency, until)
+        return AmbitiousRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -7339,39 +6415,39 @@ class Repeat7:
         return result
 
 
-class IndigoAvailabilityRule:
+class FluffyAvailabilityRule:
     """The availability rule to be applied."""
     end: Optional[datetime]
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat7]
+    repeat: Optional[AmbitiousRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat7]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[AmbitiousRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
         self.repeat = repeat
 
     @staticmethod
-    def from_dict(obj: Any) -> 'IndigoAvailabilityRule':
+    def from_dict(obj: Any) -> 'FluffyAvailabilityRule':
         assert isinstance(obj, dict)
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat7.from_dict, from_none], obj.get("repeat"))
-        return IndigoAvailabilityRule(end, start, available, repeat)
+        repeat = from_union([AmbitiousRepeat.from_dict, from_none], obj.get("repeat"))
+        return FluffyAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat7, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(AmbitiousRepeat, x), from_none], self.repeat)
         return result
 
 
-class Repeat8:
+class CunningRepeat:
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
     """How often the time slot will be repeated"""
     count: Optional[int]
@@ -7385,12 +6461,12 @@ class Repeat8:
         self.until = until
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Repeat8':
+    def from_dict(obj: Any) -> 'CunningRepeat':
         assert isinstance(obj, dict)
         count = from_union([from_int, from_none], obj.get("count"))
         frequency = from_union([Frequency, from_none], obj.get("frequency"))
         until = from_union([from_datetime, from_none], obj.get("until"))
-        return Repeat8(count, frequency, until)
+        return CunningRepeat(count, frequency, until)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -7400,35 +6476,35 @@ class Repeat8:
         return result
 
 
-class IndecentAvailabilityRule:
+class TentacledAvailabilityRule:
     """The availability rule to be applied."""
     end: Optional[datetime]
     start: Optional[datetime]
     available: Optional[bool]
     """If specified the time slot is repeated in a fixed offset specified by the frequency"""
-    repeat: Optional[Repeat8]
+    repeat: Optional[CunningRepeat]
 
-    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[Repeat8]) -> None:
+    def __init__(self, end: Optional[datetime], start: Optional[datetime], available: Optional[bool], repeat: Optional[CunningRepeat]) -> None:
         self.end = end
         self.start = start
         self.available = available
         self.repeat = repeat
 
     @staticmethod
-    def from_dict(obj: Any) -> 'IndecentAvailabilityRule':
+    def from_dict(obj: Any) -> 'TentacledAvailabilityRule':
         assert isinstance(obj, dict)
         end = from_union([from_datetime, from_none], obj.get("end"))
         start = from_union([from_datetime, from_none], obj.get("start"))
         available = from_union([from_bool, from_none], obj.get("available"))
-        repeat = from_union([Repeat8.from_dict, from_none], obj.get("repeat"))
-        return IndecentAvailabilityRule(end, start, available, repeat)
+        repeat = from_union([CunningRepeat.from_dict, from_none], obj.get("repeat"))
+        return TentacledAvailabilityRule(end, start, available, repeat)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
         result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(Repeat8, x), from_none], self.repeat)
+        result["repeat"] = from_union([lambda x: to_class(CunningRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -15028,28 +14104,28 @@ def post_device_response_body201_read_to_dict(x: PostDeviceResponseBody201_Read)
     return to_class(PostDeviceResponseBody201_Read, x)
 
 
-def post_device_availability_request_body_from_dict(s: Any) -> List[StickyAvailabilityRule]:
-    return from_list(StickyAvailabilityRule.from_dict, s)
+def post_device_availability_request_body_from_dict(s: Any) -> List[PurpleAvailabilityRule]:
+    return from_list(PurpleAvailabilityRule.from_dict, s)
 
 
-def post_device_availability_request_body_to_dict(x: List[StickyAvailabilityRule]) -> Any:
-    return from_list(lambda x: to_class(StickyAvailabilityRule, x), x)
+def post_device_availability_request_body_to_dict(x: List[PurpleAvailabilityRule]) -> Any:
+    return from_list(lambda x: to_class(PurpleAvailabilityRule, x), x)
 
 
-def post_device_availability_request_body_write_from_dict(s: Any) -> List[IndigoAvailabilityRule]:
-    return from_list(IndigoAvailabilityRule.from_dict, s)
+def post_device_availability_request_body_write_from_dict(s: Any) -> List[FluffyAvailabilityRule]:
+    return from_list(FluffyAvailabilityRule.from_dict, s)
 
 
-def post_device_availability_request_body_write_to_dict(x: List[IndigoAvailabilityRule]) -> Any:
-    return from_list(lambda x: to_class(IndigoAvailabilityRule, x), x)
+def post_device_availability_request_body_write_to_dict(x: List[FluffyAvailabilityRule]) -> Any:
+    return from_list(lambda x: to_class(FluffyAvailabilityRule, x), x)
 
 
-def post_device_availability_request_body_read_from_dict(s: Any) -> List[IndecentAvailabilityRule]:
-    return from_list(IndecentAvailabilityRule.from_dict, s)
+def post_device_availability_request_body_read_from_dict(s: Any) -> List[TentacledAvailabilityRule]:
+    return from_list(TentacledAvailabilityRule.from_dict, s)
 
 
-def post_device_availability_request_body_read_to_dict(x: List[IndecentAvailabilityRule]) -> Any:
-    return from_list(lambda x: to_class(IndecentAvailabilityRule, x), x)
+def post_device_availability_request_body_read_to_dict(x: List[TentacledAvailabilityRule]) -> Any:
+    return from_list(lambda x: to_class(TentacledAvailabilityRule, x), x)
 
 
 def post_device_availability_response_body200_from_dict(s: Any) -> List[PostDeviceAvailabilityResponseBody200_Element]:
