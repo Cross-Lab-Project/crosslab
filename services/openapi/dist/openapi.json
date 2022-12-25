@@ -272,6 +272,42 @@
         },
         "x-service-name": "Device Service"
       },
+      "device_concrete": {
+        "title": "Concrete Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "connected": {
+                "description": "If true, the device is connected to the service and can be used.\n",
+                "type": "boolean"
+              },
+              "announcedAvailability": {
+                "$ref": "#/components/schemas/availability"
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
       "availability_rule": {
         "title": "Availability Rule",
         "type": "object",
@@ -313,50 +349,6 @@
             }
           }
         ],
-        "x-service-name": "Device Service"
-      },
-      "device_concrete": {
-        "title": "Concrete Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "device"
-              },
-              "connected": {
-                "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean"
-              },
-              "announcedAvailability": {
-                "$ref": "#/components/schemas/availability",
-                "readOnly": true
-              },
-              "availabilityRules": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/availability_rule"
-                },
-                "writeOnly": true
-              },
-              "experiment": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
         "x-service-name": "Device Service"
       },
       "device_group": {
@@ -2393,7 +2385,22 @@
                 "title": "Device Init",
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
@@ -2923,7 +2930,22 @@
                 "title": "Device Init",
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
