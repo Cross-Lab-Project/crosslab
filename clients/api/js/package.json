@@ -45,8 +45,8 @@
   "license": "ISC",
   "devDependencies": {
     "@cross-lab-project/codegen-typescript-addon": "file:../../../helper/crosslab-typescript-addon",
-    "@cross-lab-project/tsdoc-theme": "^0.0.2",
-    "@cross-lab-project/openapi-codegen": "^0.1.0",
+    "@cross-lab-project/tsdoc-theme": "file:../../../helper/tsdoc-theme",
+    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "@types/node": "^18.0.3",
     "typedoc": "^0.23.20",
     "typescript": "^4.7.4"
