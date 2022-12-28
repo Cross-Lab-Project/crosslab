@@ -2,7 +2,7 @@ import re
 from typing import Any, Dict, Optional
 
 import aiohttp
-from crosslab_api_client import APIClient  # type: ignore
+from crosslab.api_client import APIClient  # type: ignore
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
@@ -104,7 +104,7 @@ class DeviceHandler:
 
         async with client:
             async with aiohttp.ClientSession() as session:
-                token = await client.postDeviceWebsocket(token_endpoint)
+                token = await client.create_websocket_token(token_endpoint)
                 self.ws = await session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
 
