@@ -1,13 +1,8 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
-	"name": "Crosslab Auth Service",
-	"image": "crosslab/development-container",
-	"runArgs": [
-		// mount docker socker
-		"-v",
-		"/var/run/docker.sock:/var/run/docker.sock"
-	],
+	"name": "Node.js & TypeScript",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:16-bullseye"
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

@@ -1,5 +1,5 @@
 import { AuthenticationError, LdapAuthenticationError } from '../types/errors'
-import { postLoginSignature } from '../generated/signatures/login'
+import { postLoginSignature } from '../generated/signatures'
 import { loginLocal, loginTui } from '../methods/login'
 
 /**

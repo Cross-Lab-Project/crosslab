@@ -1,7 +1,7 @@
 import {
     getIdentitySignature,
     patchIdentitySignature,
-} from '../generated/signatures/identity'
+} from '../generated/signatures'
 import { AppDataSource } from '../data_source'
 import { UserModel } from '../model'
 import { MissingEntityError } from '../types/errors'
@@ -18,7 +18,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
     const userRepository = AppDataSource.getRepository(UserModel)
     const userModel = await userRepository.findOne({
         where: {
-            username: user.username,
+            username: user.JWT?.username,
         },
         relations: {
             roles: {
@@ -28,7 +28,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
     })
 
     if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.username}`, 404)
+        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
     console.log(`getIdentity succeeded`)
 
@@ -48,10 +48,10 @@ export const getIdentity: getIdentitySignature = async (user) => {
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
     console.log(`patchIdentity called`)
     const userRepository = AppDataSource.getRepository(UserModel)
-    const userModel = await userRepository.findOneBy({ username: user.username })
+    const userModel = await userRepository.findOneBy({ username: user.JWT?.username })
 
     if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.username}`, 404)
+        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
     await writeUser(userModel, body ?? {})
     await userRepository.save(userModel)

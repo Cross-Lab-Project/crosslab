@@ -4,8 +4,6 @@ import { config } from '../config'
 import { AppDataSource } from '../data_source'
 import { MissingEntityError } from '../types/errors'
 import {
-    MalformedParameterError,
-    MissingParameterError,
     UserType,
 } from '../generated/types'
 import { allowlist } from '..'
@@ -129,13 +127,15 @@ export async function signDeviceToken(
  */
 export function getTokenStringFromAuthorization(authorization?: string): string {
     if (!authorization) {
-        throw new MissingParameterError(`Authorization parameter is missing`, 401)
+        // TODO: was - throw new MissingParameterError(`Authorization parameter is missing`, 401)
+        throw new Error(`Authorization parameter is missing`)
     }
 
     const splitAuthorization = authorization.split(' ')
 
     if (splitAuthorization.length !== 2) {
-        throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
+        // TODO: was - throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
+        throw new Error(`Authorization parameter is malformed`)
     }
 
     return splitAuthorization[1]

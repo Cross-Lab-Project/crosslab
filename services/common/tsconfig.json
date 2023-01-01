@@ -4,11 +4,8 @@
         "moduleResolution": "Node",
         "allowSyntheticDefaultImports": true,
         "target": "ES2021",
-        "lib": [
-            "ES2021"
-        ],
         "esModuleInterop": true,
-        "outDir": "app",
+        "outDir": "lib",
         "rootDir": "src",
         "strict": true,
         "noImplicitAny": true,
@@ -19,6 +16,8 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true,
+        "declarationDir": "lib/types"
     }
 }

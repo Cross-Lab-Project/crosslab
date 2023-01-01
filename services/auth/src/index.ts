@@ -1,10 +1,12 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose'
+#!/usr/bin/env node
+
 import { config } from './config'
 import { AppDataSource, initializeDataSource } from './data_source'
 import { app } from './generated'
 import { ActiveKeyModel } from './model'
 import { resolveAllowlistEntry, generateNewKey, jwk } from './methods/utils'
-import { isUserType, JWTVerificationError } from './generated/types'
+
+import { JWTVerify } from '@crosslab/service-common'
 
 export let allowlist: { [key: string]: string } = {}
 
@@ -46,28 +48,15 @@ AppDataSource.initialize()
             res.send({ jwks_uri: '/.well-known/jwks.json' })
         })
         app.initService({
-            JWTVerify: async (jwt, scopes) => {
-                if (!jwt) throw new JWTVerificationError('No JWT provided', 401)
-                if (!config.SECURITY_ISSUER)
-                    throw new JWTVerificationError('No security issuer specified', 500)
-                const jwksUri = new URL(
-                    config.BASE_URL.endsWith('/')
-                        ? config.BASE_URL + '.well-known/jwks.json'
-                        : config.BASE_URL + '/.well-known/jwks.json'
-                )
-                const JWKS = createRemoteJWKSet(jwksUri)
-                const jwtVerifyResult = await jwtVerify(jwt, JWKS, {
-                    issuer: config.SECURITY_ISSUER,
-                    audience: config.SECURITY_AUDIENCE,
-                })
-                if (!isUserType(jwtVerifyResult.payload))
-                    throw new JWTVerificationError('Payload is malformed', 401)
-                const user = jwtVerifyResult.payload
-                for (const scope of scopes) {
-                    if (user.scopes.includes(scope)) return user
+            security: {
+                JWT: JWTVerify(config) as any,
+                AccessToken: (_req, _scopes) => {
+                    throw new Error('Not Implemented')
+                },
+                TuiAuth: (_req, _scopes) => {
+                    throw new Error('Not implemented')
                 }
-                throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403)
-            },
+            }
         })
         app.listen(config.PORT)
         console.log('Initialization finished')

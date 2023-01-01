@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data_source'
-import { getAuthSignature } from '../generated/signatures/auth'
+import { getAuthSignature } from '../generated/signatures'
 import { ActiveKeyModel, TokenModel } from '../model'
 import { allowlist } from '..'
 import {
@@ -94,7 +94,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     } catch (error) {
         console.error(`getAuth failed: ${error}`)
         return {
-            status: 200,
+            status: 500,
         }
     }
 }

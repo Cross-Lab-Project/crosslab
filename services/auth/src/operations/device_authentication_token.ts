@@ -1,5 +1,5 @@
 import { AppDataSource } from '../data_source'
-import { postDeviceAuthenticationTokenSignature } from '../generated/signatures/device_authentication_token'
+import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
 import { TokenModel, UserModel } from '../model'
 import { MissingEntityError, OwnershipError } from '../types/errors'
@@ -16,7 +16,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
 
     const userModel = await userRepository.findOne({
         where: {
-            username: user.username,
+            username: user.JWT?.username,
         },
         relations: {
             tokens: true,
@@ -24,10 +24,10 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
     })
 
     if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.username}`, 404)
+        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
     const device = await getDevice(parameters.device_url)
-    if (device.owner != user.url) throw new OwnershipError()
+    if (device.owner != user.JWT?.url) throw new OwnershipError()
 
     const tokenRepository = AppDataSource.getRepository(TokenModel)
     const token = tokenRepository.create()

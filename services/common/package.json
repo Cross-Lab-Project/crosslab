@@ -1,0 +1,20 @@
+{
+  "name": "@crosslab/service-common",
+  "types": "./lib/types/index.d.ts",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "lib"
+  ],
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "jose": "^4.11.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  },
+  "version": "0.0.0-dev+1dbac76"
+}

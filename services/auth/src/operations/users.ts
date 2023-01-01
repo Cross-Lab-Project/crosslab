@@ -6,11 +6,11 @@ import {
     patchUsersByUsernameSignature,
     putUsersByUsernameRolesByRoleNameSignature,
     deleteUsersByUsernameRolesByRoleNameSignature,
-} from '../generated/signatures/users'
+} from '../generated/signatures'
 import { RoleModel, UserModel } from '../model'
 import { AppDataSource } from '../data_source'
 import { MissingEntityError } from '../types/errors'
-import { MalformedBodyError } from '../generated/types'
+import { MalformedBodyError } from '@crosslab/service-common'
 import { formatUser } from '../methods/format'
 import { addRole, isRequiredUser } from '../methods/utils'
 import { createUser, writeUser } from '../methods/write'
