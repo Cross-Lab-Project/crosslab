@@ -3462,21 +3462,24 @@
                 }
               },
               "examples": {
-                "Make the device always unavailable": {
+                "make_the_device_always_unavailable": {
+                  "description": "Make the device always unavailable",
                   "value": [
                     {
                       "available": false
                     }
                   ]
                 },
-                "Make the device always available": {
+                "make_the_device_always_available": {
+                  "description": "Make the device always available",
                   "value": [
                     {
                       "available": true
                     }
                   ]
                 },
-                "Make the device only available from monday 9:00 through friday 17:00": {
+                "make_the_device_available_from_monday_9_00_through_friday_17_00": {
+                  "description": "Make the device only available from monday 9:00 through friday 17:00",
                   "value": [
                     {
                       "available": true,
