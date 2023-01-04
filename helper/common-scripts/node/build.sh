@@ -23,8 +23,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ "$SPEC_ONLY" = true ] ; then
-  mv package.json package.bak
-  mv package-lock.json package-lock.bak
+  mv package.json package.bak || true
+  mv package-lock.json package-lock.bak || true
   npm install @redocly/cli
   mv package-lock.bak package-lock.json
   mv package.bak package.json
