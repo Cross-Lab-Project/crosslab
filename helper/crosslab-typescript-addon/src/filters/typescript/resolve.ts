@@ -38,7 +38,7 @@ type SimplifiedHeader = {
 }
 
 type SimplifiedResponse = {
-    status: number
+    status: string
     description: string
     schema?: OpenAPIV3_1.SchemaObject
     headers?: SimplifiedHeader[]
@@ -55,6 +55,7 @@ export type SimplifiedOperation = {
     destructureInput: boolean
     buildUrl: boolean
     optionalUrl: boolean
+    isProxyRequest: boolean
     security?: OpenAPIV3_1.SecurityRequirementObject[]
     parameters?: SimplifiedParameter[]
     requestBody?: SimplifiedRequestBody
@@ -91,6 +92,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     destructureInput: (operation as any)["x-destructure-input"] ?? false,
                     buildUrl: (operation as any)["x-build-url"] ?? false,
                     optionalUrl: (operation as any)["x-optional-url"] ?? false,
+                    isProxyRequest: (operation as any)["x-proxy-request"] ?? false
                 }
 
                 // Search for parameters to add
@@ -138,7 +140,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     if (!simplifiedOperation.responses) simplifiedOperation.responses = []
                     const response = responses[status] as OpenAPIV3_1.ResponseObject
                     const simplifiedResponse: SimplifiedResponse = {
-                        status: parseInt(status),
+                        status: status,
                         description: response.description
                     }
                     // Add schema of response if present

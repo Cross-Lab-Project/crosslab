@@ -6,6 +6,7 @@ import {
     APIClient,
     DeviceServiceTypes,
 } from '@cross-lab-project/api-client'
+import fetch from 'node-fetch'
 import { config } from '../config'
 import { InternalRequestError, MissingPropertyError } from '../types/errors'
 import { RequestHandler } from './requestHandler'

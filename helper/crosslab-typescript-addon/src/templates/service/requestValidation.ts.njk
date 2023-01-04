@@ -22,7 +22,7 @@
                 {%- set validationDependencies = (validationDependencies.push("validate" + (operation.name | cap) + "Response" + response.status), validationDependencies) -%}
             {%- endif -%}
             {%- for header in response.headers -%}
-                {%- set validationDependencies = (validationDependencies.push("validate" + (header.name)), validationDependencies) -%}
+                {%- set validationDependencies = (validationDependencies.push("validate" + (operation.name | cap) + "Header" + (header.name)), validationDependencies) -%}
             {%- endfor -%}
         {%- endfor -%}
     {%- endif -%}
@@ -88,15 +88,19 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
     if (response.status < 100 || response.status >= 600) return false
 
     {% for response in operation.responses -%}
+    {%- if response.status | endswith("XX") %}
+    if (response.status >= {{ (response.status | replace("X","0") | int) }} && response.status < {{ (response.status | replace("X","0") | int) + 100 }} ) {
+    {%- else %}
     if (response.status === {{ response.status }}) {
+    {%- endif %}
         {% if response.headers -%}
         if (response.headers) {
             {%- for header in response.headers %}
             if (
                 {{ "response.headers['" + header.name + "'] && " if not header.required -}} 
-                !validate{{ header.name }}(response.headers["{{ header.name }}"])
+                !validate{{ operation.name | cap }}Header{{ header.name }}(response.headers["{{ header.name }}"])
             ) {
-                (validate{{ operation.name | cap }}Output as any).errors = (validate{{ header.name }} as any).errors
+                (validate{{ operation.name | cap }}Output as any).errors = (validate{{ operation.name | cap }}Header{{ header.name }} as any).errors
                 return false
             }   
             {%- endfor %}

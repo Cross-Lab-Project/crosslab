@@ -4,3 +4,6 @@ src/generated
 node_modules
 .npmrc
 *.db
+package.resolved.json
+.packages
+app

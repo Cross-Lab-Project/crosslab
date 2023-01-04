@@ -107,3 +107,13 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
         this.name = "MalformedBodyError"
     }
 }
+
+/**
+ * This error class should be used if a parameter of a request is missing.
+ */
+ export class MissingParameterError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MissingParameterError"
+    }
+}

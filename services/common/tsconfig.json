@@ -18,6 +18,9 @@
         "emitDecoratorMetadata": true,
         "declaration": true,
         "declarationMap": true,
-        "declarationDir": "lib/types"
+        "declarationDir": "lib/types",
+        "lib": [
+            "ES2021"
+        ],
     }
 }
