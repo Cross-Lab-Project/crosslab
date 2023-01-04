@@ -1,15 +1,15 @@
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from './data_source'
 import {
     getUpdatesSignature,
     deleteUpdatesByDeviceIdSignature,
     getUpdatesByDeviceIdSignature,
     patchUpdatesByDeviceIdSignature,
     postUpdatesSignature,
-} from '../generated/signatures/updates'
-import { formatUpdateInformation } from '../methods/format'
-import { writeUpdateInformation } from '../methods/write'
-import { UpdateInformationModel } from '../model'
-import { InvalidChangeError, MissingEntityError } from '../types/errors'
+} from './generated/signatures'
+import { formatUpdateInformation } from './methods/format'
+import { writeUpdateInformation } from './methods/write'
+import { UpdateInformationModel } from './model'
+import { InvalidChangeError, MissingEntityError } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /updates endpoint.

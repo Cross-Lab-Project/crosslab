@@ -10,7 +10,7 @@
     {%- if operation.parameters -%}
         {%- set signatureDependencies = (signatureDependencies.push(operation.name + "ParametersType"), signatureDependencies) -%}
     {%- endif -%}
-    {%- if operation.requestBody -%}
+    {%- if (operation.requestBody or operation.isProxyRequest) -%}
         {%- set signatureDependencies = (signatureDependencies.push(operation.name + "RequestBodyType"), signatureDependencies) -%}
     {%- endif -%}
 {%- endfor -%}
@@ -139,7 +139,7 @@ export default function routes(
 
         {% endif -%}
 
-        {% if operation.requestBody -%}
+        {% if (operation.requestBody or operation.isProxyRequest) -%}
         const body: {{ operation.name }}RequestBodyType = req.body
 
         {% endif -%}
@@ -147,7 +147,7 @@ export default function routes(
         try {
             if (!validate{{ operation.name | cap }}Input(
                 {{- "parameters" if operation.parameters -}}
-                {{- ", " if (operation.parameters and operation.requestBody) -}}
+                {{- ", " if (operation.parameters and (operation.requestBody or operation.isProxyRequest)) -}}
                 {{- "body" if operation.requestBody -}}
             )) {
                 throw new ValidationError("Request validation failed", 400)
@@ -156,8 +156,8 @@ export default function routes(
             const result = await operations.{{ operation.name }}(
                 {{- "parameters" if operation.parameters -}}
                 {{- ", " if (operation.parameters and operation.requestBody) or (operation.parameters and operation.security) -}}
-                {{- "body" if operation.requestBody -}}
-                {{- ", " if (operation.requestBody and operation.security) -}}
+                {{- "body" if (operation.requestBody or operation.isProxyRequest) -}}
+                {{- ", " if ((operation.requestBody or operation.isProxyRequest) and operation.security) -}}
                 {{- "userData" if operation.security -}}
             )
 
