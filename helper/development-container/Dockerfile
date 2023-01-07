@@ -92,6 +92,15 @@ RUN apt-get update && \
 # aiortc dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libavdevice-dev libavfilter-dev libopus-dev libvpx-dev pkg-config
 
+# install tox
+RUN sudo pip3 install tox
+
+RUN sudo apt install -y jq fd-find
+RUN ln -s $(which fdfind) /usr/bin/fd
+RUN sudo pip3 install yq
+
+RUN sudo pip3 install shyaml
+
 USER $USERNAME
 
 RUN echo 'alias build="./scripts/build.sh"' >> ~/.bashrc \
@@ -101,3 +110,4 @@ RUN echo 'alias build="./scripts/build.sh"' >> ~/.bashrc \
 
 COPY container-scripts/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "sleep", "infinity" ]

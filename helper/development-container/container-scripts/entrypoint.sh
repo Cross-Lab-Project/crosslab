@@ -2,6 +2,10 @@
 set -e
 DOCKER_SOCKET=/var/run/docker.sock
 
+# check if localhost is in /etc/hosts
+grep -q localhost /etc/hosts || sudo bash -c 'echo "127.0.0.1 localhost" >> /etc/hosts'
+grep -q $(hostname) /etc/hosts || sudo bash -c 'echo "127.0.0.1 $(hostname)" >> /etc/hosts'
+
 # if $USER is not set, set it to the current user
 if [ -z "$USER" ]; then
     USER=$(whoami)
@@ -20,3 +24,5 @@ if [ -S ${DOCKER_SOCKET} ]; then
         newgrp docker-host
     fi
 fi
+
+exec "$@"
