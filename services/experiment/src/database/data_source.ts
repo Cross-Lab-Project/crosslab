@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm'
-import { PeerconnectionStatus1670225182011 } from './migrations/1670225182011-PeerconnectionStatus'
 import {
     DeviceModel,
     ExperimentModel,
@@ -21,6 +20,6 @@ export const AppDataSource = new DataSource({
         ParticipantModel,
         RoleModel,
     ],
-    migrations: [PeerconnectionStatus1670225182011],
-    migrationsRun: true
+    //migrations: [PeerconnectionStatus1670225182011],
+    //migrationsRun: true
 })

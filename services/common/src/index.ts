@@ -1,6 +1,7 @@
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { JWTVerificationError } from "./errors";
 export * from './errors'
+import { URL } from 'url'; 
 
 export function JWTVerify(options: { BASE_URL: string, SECURITY_ISSUER: string, SECURITY_AUDIENCE: string }){
     return async (req: any, scopes: string[]) => {

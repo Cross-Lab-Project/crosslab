@@ -155,11 +155,7 @@
         "tags": [
           "authentication"
         ],
-        "security": [
-          {
-            "AccessToken": []
-          }
-        ],
+        "security": [],
         "summary": "Authenticate user",
         "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
         "parameters": [
@@ -211,11 +207,7 @@
         "tags": [
           "authentication"
         ],
-        "security": [
-          {
-            "TuiAuth": []
-          }
-        ],
+        "security": [],
         "summary": "Login user",
         "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
         "requestBody": {

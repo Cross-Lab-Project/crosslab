@@ -34,5 +34,5 @@ export const AppDataSource = new DataSource({
         ServiceModel,
     ],
     migrations: [PeerconnectionStatus1670225251577],
-    migrationsRun: true
+    //migrationsRun: true
 })

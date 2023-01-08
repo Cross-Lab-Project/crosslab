@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { IncomingMessage } from 'http'
 import { createRemoteJWKSet, jwtVerify } from 'jose'
 import { Socket } from 'net'

@@ -1,8 +1,11 @@
 {
   "name": "@crosslab/service-federation",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "bin":{
+    "crosslab-federation-service": "./app/index.js"
+  },
+  "files": [
+      "app"
+  ],
   "scripts": {
     "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
     "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
@@ -11,7 +14,7 @@
     "build-generate-code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build-compile": "tsc",
     "build": "npm run build-generate-code && npm run build-compile",
-    "start": "node dist/index.js",
+    "start": "node app/index.js",
     "dev": "npx nodemon src/index.ts",
     "format": "npx prettier src --write"
   },

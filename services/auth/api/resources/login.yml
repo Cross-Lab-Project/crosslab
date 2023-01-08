@@ -3,8 +3,7 @@ post:
   operationId: login
   tags:
     - authentication
-  security:
-    - TuiAuth: []
+  security: []
   summary: Login user
   description: |-
     This endpoint will login a user and return an access token for the use of the microservice architecture.

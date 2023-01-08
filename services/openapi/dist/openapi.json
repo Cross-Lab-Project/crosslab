@@ -7,10 +7,6 @@
   },
   "components": {
     "securitySchemes": {
-      "TuiAuth": {
-        "type": "http",
-        "scheme": "basic"
-      },
       "JWT": {
         "type": "http",
         "scheme": "bearer",
@@ -1093,11 +1089,7 @@
         "tags": [
           "authentication"
         ],
-        "security": [
-          {
-            "TuiAuth": []
-          }
-        ],
+        "security": [],
         "summary": "Login user",
         "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
         "requestBody": {

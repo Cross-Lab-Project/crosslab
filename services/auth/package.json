@@ -14,7 +14,7 @@
         "build-generate-code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
         "build-compile": "tsc",
         "build": "npm run build-generate-code && npm run build-compile",
-        "start": "node dist/index.js",
+        "start": "node app/index.js",
         "dev": "npx nodemon src/index.ts",
         "format": "npx prettier src --write"
     },
