@@ -16,6 +16,6 @@ npm pack --pack-destination=./dist/
 mv package.bak package.json
 
 if [ -f Dockerfile ]; then
-  TAG=$(cat package.resolved.json | jq -r '.name + ":" + .version' | sed 's/@//g' | sed 's/+/-/g')
+  TAG=$(cat package.json | jq -r '.dockerName'):$(git rev-parse --short HEAD)
   $SCRIPT_DIR/build-docker.sh --tag $TAG
 fi

@@ -34,27 +34,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     }
     const activeKey = activeKeys[0]
 
-    // Allowlisted Auth
-    try {
-        if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
-            const user = await getAllowlistedUser(parameters['X-Real-IP'])
-
-            console.log(`signing jwt for user ${user.username}`)
-            const jwt = await signUserToken(user, activeKey)
-
-            console.log(`getAuth succeeded`)
-
-            return {
-                status: 200,
-                headers: {
-                    Authorization: 'Bearer ' + jwt,
-                },
-            }
-        }
-    } catch (error) {
-        console.error(`Authentication of allowlisted IP failed: ${error}`)
-    }
-
     // Non Allowlisted Auth
     try {
         // Resolve user from Authorization parameter
@@ -92,9 +71,33 @@ export const getAuth: getAuthSignature = async (parameters) => {
             },
         }
     } catch (error) {
-        console.error(`getAuth failed: ${error}`)
-        return {
-            status: 500,
+        // Allowlisted Auth
+        if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
+            try {
+                const user = await getAllowlistedUser(parameters['X-Real-IP'])
+
+                console.log(`signing jwt for user ${user.username}`)
+                const jwt = await signUserToken(user, activeKey)
+
+                console.log(`getAuth succeeded`)
+
+                return {
+                    status: 200,
+                    headers: {
+                        Authorization: 'Bearer ' + jwt,
+                    },
+                }
+            } catch (error) {
+                console.error(`Authentication of allowlisted IP failed: ${error}`)
+                return {
+                    status: 500,
+                }
+            }
+        } else {
+            console.error(`getAuth failed: ${error}`)
+            return {
+                status: 500,
+            }
         }
     }
 }

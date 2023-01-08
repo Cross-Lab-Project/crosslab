@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { config } from './config'
 import { AppDataSource } from './database/data_source'
 import { app } from './generated/index'

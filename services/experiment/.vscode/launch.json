@@ -14,10 +14,9 @@
             "env": {
                 "SECURITY_ISSUER": "http://localhost",
                 "SECURITY_AUDIENCE": "http://localhost",
-                "ALLOWLIST": "localhost:authservice,localhost:deviceservice,localhost:experimentservice,localhost:federationservice,localhost:updateservice"
+                "BASE_URL": "http://localhost",
+                "PORT": "3002",
             },
-            "sourceMaps": true,
-            "smartStep": true,
             "program": "${workspaceFolder}/src/index.ts",
             "outFiles": [
                 "${workspaceFolder}/app/**/*.js"

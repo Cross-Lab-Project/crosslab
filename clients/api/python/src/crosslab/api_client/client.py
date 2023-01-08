@@ -68,7 +68,10 @@ class APIClient:
             if asText:
                 return resp.status, await resp.text()
             else:
-                return resp.status, await resp.json()
+                try:
+                    return resp.status, await resp.json()
+                except aiohttp.ContentTypeError:
+                    return resp.status, await resp.text()
 
     async def login(self, body: PostLoginRequestBodyWrite, url: str = "/login"):  # noqa: E501
         """

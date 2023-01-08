@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { JWTVerify } from '@crosslab/service-common'
 import { config } from './config'
 import { AppDataSource } from './data_source'

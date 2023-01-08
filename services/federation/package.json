@@ -1,5 +1,6 @@
 {
   "name": "@crosslab/service-federation",
+  "dockerName": "federation-service",
   "bin":{
     "crosslab-federation-service": "./app/index.js"
   },

@@ -1,5 +1,6 @@
 {
     "name": "@crosslab/service-auth",
+    "dockerName": "auth-service",
     "bin":{
         "crosslab-auth-service": "./app/index.js"
     },

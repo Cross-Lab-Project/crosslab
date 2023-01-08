@@ -103,13 +103,13 @@ export async function runExperiment(
     }
 
     // make sure the experiment has a booking
-    if (!experimentModel.bookingID) {
+    /*if (!experimentModel.bookingID) {
         requestHandler.throw(
             MissingPropertyError,
             `Experiment does not have a booking`,
             400
         )
-    }
+    }*/
 
     /**
      * This variable determines if the experiment needs to go into the state "setup".

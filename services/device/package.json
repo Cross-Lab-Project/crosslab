@@ -1,5 +1,6 @@
 {
     "name": "@crosslab/service-device",
+    "dockerName": "device-service",
     "description": "",
     "bin":{
         "crosslab-device-service": "./app/index.js"

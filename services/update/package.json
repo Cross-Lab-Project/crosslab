@@ -1,5 +1,6 @@
 {
     "name": "@crosslab/service-update",
+    "dockerName": "update-service",
     "description": "",
     "bin":{
         "crosslab-update-service": "./app/index.js"

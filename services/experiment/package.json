@@ -1,5 +1,6 @@
 {
   "name": "@crosslab/service-experiment",
+  "dockerName": "experiment-service",
   "description": "",
   "bin":{
     "crosslab-experiment-service": "./app/index.js"

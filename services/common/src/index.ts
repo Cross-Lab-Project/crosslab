@@ -28,7 +28,7 @@ export function JWTVerify(options: { BASE_URL: string, SECURITY_ISSUER: string, 
             audience: options.SECURITY_AUDIENCE,
         })
         const user = jwtVerifyResult.payload
-        if (!user.scopes || Array.isArray(user.scopes))
+        if (!user.scopes || !Array.isArray(user.scopes))
             throw new JWTVerificationError('Payload is malformed', 401)
         for (const scope of scopes) {
             if ((user.scopes as Array<any>).includes(scope)) {
