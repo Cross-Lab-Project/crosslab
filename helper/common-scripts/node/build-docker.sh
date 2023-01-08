@@ -1,6 +1,38 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR=$(dirname "$0")
+
+# default values
+NO_EXPORT=false
+
+# Read the commands
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -t|--tag)
+      TAG="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
+    --no-export)
+      NO_EXPORT=true
+      shift # past argument
+      ;;
+
+    *) # unknown option
+      shift # past argument
+    ;;
+  esac
+done
+
+if [ -z "$TAG" ]; then
+  echo "Please specify a tag for the docker image"
+  exit 1
+fi
+
 rm -rf .packages
 mkdir .packages
 
@@ -34,3 +66,12 @@ for dependency in $(get_local_dependencies package.json); do
 done
 
 cp ./dist/*.tgz .packages/
+
+# build docker image
+docker build -t $TAG .
+
+# Save the container to a tar file
+if [ "$NO_EXPORT" = false ]; then
+  mkdir -p dist
+  docker save $TAG > ./dist/docker-image.tar
+fi
