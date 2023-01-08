@@ -47,13 +47,21 @@ async def receiveMessage(ws: aiohttp.ClientWebSocketResponse):
         return msg
 
 
+def cleandict(d):
+    if not isinstance(d, dict):
+        return d
+    return dict((k, cleandict(v)) for k, v in d.items() if v is not None)
+
+
 async def authenticate(
     ws: aiohttp.ClientWebSocketResponse, device_url: str, token: str
 ):
     await ws.send_json(
-        authentication_message_to_dict(
-            AuthenticationMessage(
-                AuthenticationMessageMessageType.AUTHENTICATE, None, token
+        cleandict(
+            authentication_message_to_dict(
+                AuthenticationMessage(
+                    AuthenticationMessageMessageType.AUTHENTICATE, None, token
+                )
             )
         )
     )
@@ -78,8 +86,8 @@ def derive_endpoints_from_url(url: str, fallback_base_url: Optional[str] = None)
     if base_url is None:
         raise ValueError("Base URL for device not found")
     device_url = base_url + "/" + url_match.group(2)
-    token_endpoint = device_url + "/token"
-    ws_endpoint = (device_url + "/ws").replace("http", "ws")
+    token_endpoint = device_url
+    ws_endpoint = (base_url + "/devices/websocket").replace("http", "ws")
     return base_url, device_url, token_endpoint, ws_endpoint
 
 

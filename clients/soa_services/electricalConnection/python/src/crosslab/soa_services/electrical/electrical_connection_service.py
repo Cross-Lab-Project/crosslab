@@ -18,30 +18,30 @@ from crosslab.soa_services.electrical.schema import (
 
 
 class ElectricalConnectionService(Service, AsyncIOEventEmitter):
-    serviceType = "goldi/electrical"
-    serviceId: str
+    service_type = "goldi/electrical"
+    service_id: str
     interfaces: Dict[str, SignalInterface]
-    interfacesConstructors: Dict[str, ConstructableSignalInterface]
-    interfacesByBusId: Dict[str, List[SignalInterface]]
+    interfaces_constructors: Dict[str, ConstructableSignalInterface]
+    interfaces_by_bus_id: Dict[str, List[SignalInterface]]
 
     def __init__(self, serviceId: str):
         super().__init__()
         self.interfaces = dict()
-        self.interfacesConstructors = dict()
-        self.interfacesByBusId = dict()
-        self.serviceId = serviceId
+        self.interfaces_constructors = dict()
+        self.interfaces_by_bus_id = dict()
+        self.service_id = serviceId
 
     def addInterface(self, interface: ConstructableSignalInterface):
-        self.interfacesConstructors[interface.interfaceType] = interface
+        self.interfaces_constructors[interface.interfaceType] = interface
 
     def getMeta(self):
         return {
-            "serviceType": self.serviceType,
-            "serviceId": self.serviceId,
+            "serviceType": self.service_type,
+            "serviceId": self.service_id,
             "serviceDirection": "prosumer",
             "interfaces": [
                 {"interfaceType": i.interfaceType, **i.getDescription()}
-                for i in self.interfacesConstructors.values()
+                for i in self.interfaces_constructors.values()
             ],
         }
 
@@ -52,7 +52,7 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
         if interfaceConfig.interface_id in self.interfaces:
             return self.interfaces[interfaceConfig.interface_id]
         else:
-            interfaceConstructor = self.interfacesConstructors[
+            interfaceConstructor = self.interfaces_constructors[
                 interfaceConfig.interface_type
             ]
             interface = interfaceConstructor.create(interfaceConfig)
@@ -84,10 +84,10 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
                     json.dumps({"busId": busId, "data": data.to_dict()})
                 ),
             )
-            interfaceList = self.interfacesByBusId.get(interfaceConfig.bus_id, None)
+            interfaceList = self.interfaces_by_bus_id.get(interfaceConfig.bus_id, None)
             if interfaceList is None:
-                self.interfacesByBusId[interfaceConfig.bus_id] = []
-            self.interfacesByBusId[interfaceConfig.bus_id].append(signalInterface)
+                self.interfaces_by_bus_id[interfaceConfig.bus_id] = []
+            self.interfaces_by_bus_id[interfaceConfig.bus_id].append(signalInterface)
 
         if connection.tiebreaker:
             connection.transmit(serviceConfig, "data", channel)
@@ -96,7 +96,7 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
 
     def handleData(self, data: str):
         message = json.loads(data)
-        interfaces = self.interfacesByBusId.get(message["busId"])
+        interfaces = self.interfaces_by_bus_id.get(message["busId"])
         if interfaces is not None:
             for interface in interfaces:
                 interface.downstreamData(message["data"])

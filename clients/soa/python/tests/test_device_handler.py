@@ -51,10 +51,10 @@ class DataOnly(Service):
 
 @pytest.mark.asyncio
 async def test_connect_and_authenticate(mock_server):
-    mock_server.get("/devices/123/token/websocket", payload="token")
+    mock_server.get("/devices/123/websocket", payload="token")
     ws = mock_server.ws("/devices/123/ws")
     ws.expect(
-        r'{"messageType": "authenticate", "authenticated": null, "token": "token"}',
+        r'{"messageType": "authenticate", "token": "token"}',
         answer=r'{"messageType": "authenticate", "authenticated": true}',
     )
     base_url = await mock_server.start()
@@ -69,7 +69,7 @@ async def test_connect_and_authenticate(mock_server):
     reason="This test is not working yet. Connection is never build -> timeout"
 )
 async def test_create_peerconnection(mock_server):
-    mock_server.get("/devices/123/token", payload="token")
+    mock_server.get("/devices/123/websocket", payload="token")
 
     ws = mock_server.ws("/devices/123/ws")
     ws.expect(

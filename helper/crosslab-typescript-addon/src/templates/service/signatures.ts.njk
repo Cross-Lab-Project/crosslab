@@ -31,14 +31,18 @@ export type {{ operation.name }}Signature = (
         {%- endif -%}
         {{- ", " if (operation.requestBody or operation.isProxyRequest) and operation.security -}}
         {%- if operation.security -%}
-            {%- set userDataTypes = [] -%}
-            {%- for securityRequirement in operation.security -%}
-                {%- set temp = [] -%}
-                {%- for securityMethod, scopes in securityRequirement -%}
-                    {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
+            {%- if operation.security | length > 0 -%}
+                {%- set userDataTypes = [] -%}
+                {%- for securityRequirement in operation.security -%}
+                    {%- set temp = [] -%}
+                    {%- for securityMethod, scopes in securityRequirement -%}
+                        {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
+                    {%- endfor -%}
+                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | strings | join("|")) + ">"), userDataTypes) -%}
                 {%- endfor -%}
-                {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | strings | join("|")) + ">"), userDataTypes) -%}
-            {%- endfor -%}
+            {%- else -%}
+                {%- set userDataTypes = ["undefined"] -%}
+            {%- endif -%}
 
             userData: {{ userDataTypes | join(" | ") }}
         {%- endif -%}

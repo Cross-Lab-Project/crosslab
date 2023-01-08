@@ -1,13 +1,8 @@
 {
   "name": "@cross-lab-project/api-client",
-  "version": "0.1.4",
   "description": "API-Client for all Crosslab APIs",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
-  },
+  "types": "./lib/types/index.d.ts",
+  "main": "./lib/cjs/index.js",
   "scripts": {
     "generate-bv-auth": "npx openapi-codegen -i ../../../services/auth/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
     "move-bv-auth": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/authentication.ts",
@@ -29,18 +24,21 @@
     "bv-update": "npm run generate-bv-update && npm run move-bv-update",
     "generate-bv": "npm run bv-auth && npm run bv-booking && npm run bv-device && npm run bv-experiment && npm run bv-federation && npm run bv-update",
     "build-generate": "npm run generate-bv && npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client -o ./src/generated",
-    "build-compile": "tsc",
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "build": "npm run build-generate && npm run build-compile",
     "test": "node dist/test/test.js",
     "format": "npx prettier src --write",
     "docs": "typedoc --options ./typedoc.json"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "exports": [
-    "./dist/index.js"
-  ],
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
   "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
