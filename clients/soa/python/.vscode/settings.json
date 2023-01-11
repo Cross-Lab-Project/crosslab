@@ -14,11 +14,24 @@
         "black"
     ],
     "files.exclude": {
+        ".pytest_cache": true,
+        ".mypy_cache": true,
+        ".tox": true,
+        "node_modules": true,
+        "**/__pycache__": true,
+        "**/*.egg-info": true,
         //begin generated
         
         //end generated
     },
     "files.watcherExclude": {
+        "dist": true,
+        ".pytest_cache": true,
+        ".mypy_cache": true,
+        ".tox": true,
+        "node_modules": true,
+        "**/__pycache__": true,
+        "**/*.egg-info": true,
         //begin generated
         
         //end generated

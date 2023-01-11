@@ -1,17 +1,15 @@
 {
     "files.exclude": {
-        "node_modules": true,
-        "lib": true,
         //begin generated
-        
+        "js/lib": true,
+        "js/node_modules": true,
         //end generated
     },
     "files.watcherExclude": {
-        "node_modules": true,
-        "lib": true,
-        "dist": true,
         //begin generated
-        
+        "js/dist": true,
+        "js/lib": true,
+        "js/node_modules": true,
         //end generated
     }
 }

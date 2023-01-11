@@ -15,6 +15,7 @@
     ],
     "files.exclude": {
         ".mypy_cache": true,
+        "node_modules": true,
         ".pytest_cache": true,
         ".tox": true,
         "**/*.egg-info": true,
@@ -24,6 +25,8 @@
         //end generated
     },
     "files.watcherExclude": {
+        "dist": true,
+        "node_modules": true,
         ".mypy_cache": true,
         ".pytest_cache": true,
         ".tox": true,
