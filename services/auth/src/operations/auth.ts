@@ -27,6 +27,14 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
     const tokenRepository = AppDataSource.getRepository(TokenModel)
 
+    // Catch missing authorization header (OPTIONS requests)
+    if (!parameters.Authorization) {
+        return {
+            status: 200,
+            headers: {}
+        }
+    }
+
     // Get active key
     const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
     if (activeKeys.length != 1) {
