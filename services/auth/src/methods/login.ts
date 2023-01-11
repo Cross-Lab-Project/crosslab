@@ -1,5 +1,4 @@
 import { Client as LdapClient } from 'ldapts'
-import { AppDataSource } from '../data_source'
 import {
     AuthenticationError,
     InconsistentDatabaseError,
@@ -7,29 +6,33 @@ import {
     LdapBindError,
     LdapError,
 } from '../types/errors'
-import { RoleModel, TokenModel, UserModel } from '../model'
+import { TokenModel, UserModel } from '../database/model'
 import { compare } from 'bcryptjs'
+import { createTokenModel, createUserModel } from '../database/methods/create'
+import { saveUserModel } from '../database/methods/save'
+import { findUserModelByUsername } from '../database/methods/find'
 
 /**
  * This function creates a token for a user.
- * @param user The user the token should be created for.
+ * @param userModel The user the token should be created for.
  * @param expiresIn Time until the token expires (default: one hour).
  * @returns Newly created token.
  */
 async function createUserToken(
-    user: UserModel,
+    userModel: UserModel,
     expiresIn: number = 3600000
 ): Promise<TokenModel> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const tokenRepository = AppDataSource.getRepository(TokenModel)
+    const tokenModel = await createTokenModel({
+        scopes: [],
+        expiresOn: new Date(Date.now() + expiresIn).toISOString()
+    })
+    
+    userModel.tokens = await userModel.tokens ?? []
+    userModel.tokens.push(tokenModel)
 
-    const token = tokenRepository.create()
-    token.expiresOn = new Date(Date.now() + expiresIn).toISOString()
-    if (!user.tokens) user.tokens = []
-    user.tokens.push(token)
-    await userRepository.save(user)
+    await saveUserModel(userModel)
 
-    return token
+    return tokenModel
 }
 
 /**
@@ -38,16 +41,14 @@ async function createUserToken(
  * @returns The newly created TUI user.
  */
 async function createUserTUI(username: string): Promise<UserModel> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const roleRepository = AppDataSource.getRepository(RoleModel)
+    const userModel = await createUserModel({
+        username: "tui:" + username,
+        roles: [{ name: "user" }]
+    })
+    userModel.tokens = []
+    await saveUserModel(userModel)
 
-    const user = userRepository.create()
-    user.username = 'tui:' + username
-    user.roles = [await roleRepository.findOneByOrFail({ name: 'user' })]
-    user.tokens = []
-    await userRepository.save(user)
-
-    return user
+    return userModel
 }
 
 /**
@@ -63,8 +64,6 @@ export async function loginTui(
     username: string,
     password: string
 ): Promise<TokenModel | undefined> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-
     // Initialize Ldap Client
     const client = new LdapClient({
         url: 'ldaps://ldapauth.tu-ilmenau.de:636',
@@ -100,22 +99,15 @@ export async function loginTui(
     }
 
     // Find User with matching Username
-    let user = await userRepository.findOne({
-        where: {
-            username: 'tui:' + username,
-        },
-        relations: {
-            tokens: true,
-        },
-    })
+    let userModel = await findUserModelByUsername('tui:' + username)
 
     // Create new User if no User was found
-    if (!user) {
+    if (!userModel) {
         console.log(`User tui:${username} not found, creating new user`)
-        user = await createUserTUI(username)
+        userModel = await createUserTUI(username)
     }
 
-    return await createUserToken(user)
+    return await createUserToken(userModel)
 }
 
 /**
@@ -130,18 +122,13 @@ export async function loginLocal(
     username: string,
     password: string
 ): Promise<TokenModel | undefined> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOne({
-        where: {
-            username: username,
-        },
-    })
+    const userModel = await findUserModelByUsername(username)
 
-    if (!user) throw new AuthenticationError(`Invalid login credentials`, 401)
-    if (!user.password) throw new InconsistentDatabaseError(`User has no password`, 500)
+    if (!userModel) throw new AuthenticationError(`Invalid login credentials`, 401)
+    if (!userModel.password) throw new InconsistentDatabaseError(`User has no password`, 500)
 
-    if (!(await compare(password, user.password)))
+    if (!(await compare(password, userModel.password)))
         throw new AuthenticationError(`Invalid login credentials`, 401)
 
-    return await createUserToken(user)
+    return await createUserToken(userModel)
 }

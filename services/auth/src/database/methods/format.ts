@@ -1,5 +1,5 @@
-import { Role, User } from '../generated/types'
-import { userUrlFromUsername } from '../globals'
+import { Role, User } from '../../generated/types'
+import { userUrlFromUsername } from '../../globals'
 import { ScopeModel, RoleModel, UserModel } from '../model'
 
 /**
@@ -7,7 +7,7 @@ import { ScopeModel, RoleModel, UserModel } from '../model'
  * @param scope The ScopeModel to be formatted.
  * @returns The resulting Scope.
  */
-export function formatScope(scope: ScopeModel): string {
+export function formatScopeModel(scope: ScopeModel): string {
     return scope.name
 }
 
@@ -16,10 +16,10 @@ export function formatScope(scope: ScopeModel): string {
  * @param role The RoleModel to be formatted.
  * @returns The resulting Role.
  */
-export function formatRole(role: RoleModel): Role {
+export function formatRoleModel(role: RoleModel): Role {
     return {
         name: role.name,
-        scopes: role.scopes ? role.scopes.map(formatScope) : [],
+        scopes: role.scopes ? role.scopes.map(formatScopeModel) : [],
     }
 }
 
@@ -28,10 +28,10 @@ export function formatRole(role: RoleModel): Role {
  * @param user The UserModel to be formatted.
  * @returns The resulting User.
  */
-export function formatUser(user: UserModel): User {
+export function formatUserModel(user: UserModel): User {
     return {
         url: userUrlFromUsername(user.username),
         username: user.username,
-        roles: user.roles ? user.roles.map(formatRole) : [],
+        roles: user.roles ? user.roles.map(formatRoleModel) : [],
     }
 }

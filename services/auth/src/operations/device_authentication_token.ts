@@ -1,8 +1,9 @@
-import { AppDataSource } from '../data_source'
+import { MissingEntityError } from '@crosslab/service-common'
+import { AppDataSource } from '../database/data_source'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
-import { TokenModel, UserModel } from '../model'
-import { MissingEntityError, OwnershipError } from '../types/errors'
+import { TokenModel, UserModel } from '../database/model'
+import { OwnershipError } from '../types/errors'
 
 /**
  * This function implements the functionality for handling POST requests on /device_token endpoint.
@@ -14,13 +15,8 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
     console.log(`postDeviceAuthenticationToken called`)
     const userRepository = AppDataSource.getRepository(UserModel)
 
-    const userModel = await userRepository.findOne({
-        where: {
-            username: user.JWT?.username,
-        },
-        relations: {
-            tokens: true,
-        },
+    const userModel = await userRepository.findOneBy({
+        username: user.JWT?.username
     })
 
     if (!userModel)
@@ -34,6 +30,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
 
     token.device = device.url
 
+    userModel.tokens = await userModel.tokens
     userModel.tokens.push(token)
     await userRepository.save(userModel)
 

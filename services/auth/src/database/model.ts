@@ -20,8 +20,8 @@ export class RoleModel {
     @PrimaryColumn()
     name!: string
     @ManyToMany(() => UserModel, (user) => user.roles)
-    users!: UserModel[]
-    @ManyToMany(() => ScopeModel)
+    users!: Promise<UserModel[]> | UserModel[]
+    @ManyToMany(() => ScopeModel, { eager: true })
     @JoinTable()
     scopes!: ScopeModel[]
 }
@@ -32,14 +32,14 @@ export class UserModel {
     username!: string
     @Column({ nullable: true })
     password?: string
-    @ManyToMany(() => RoleModel, (role) => role.users)
+    @ManyToMany(() => RoleModel, (role) => role.users, { eager: true })
     @JoinTable()
     roles!: RoleModel[]
     @OneToMany(() => TokenModel, (token) => token.user, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    tokens!: TokenModel[]
+    tokens!: Promise<TokenModel[]> | TokenModel[]
 }
 
 @Entity()
@@ -50,9 +50,9 @@ export class TokenModel {
     expiresOn?: string
     @Column({ nullable: true })
     device?: string
-    @ManyToOne(() => UserModel, (user) => user.tokens)
+    @ManyToOne(() => UserModel, (user) => user.tokens, { eager: true })
     user!: UserModel
-    @ManyToMany(() => ScopeModel)
+    @ManyToMany(() => ScopeModel, { eager: true })
     @JoinTable()
     scopes!: ScopeModel[]
 }
@@ -75,6 +75,6 @@ export class KeyModel {
 export class ActiveKeyModel {
     @PrimaryColumn()
     use!: string
-    @ManyToOne(() => KeyModel)
+    @ManyToOne(() => KeyModel, { eager: true })
     key!: KeyModel
 }

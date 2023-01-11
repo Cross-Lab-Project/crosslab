@@ -1,12 +1,12 @@
-import { ActiveKeyModel, KeyModel, TokenModel, UserModel } from '../model'
+import { ActiveKeyModel, KeyModel, UserModel } from '../database/model'
 import { SignJWT, JWTPayload, importJWK } from 'jose'
 import { config } from '../config'
-import { AppDataSource } from '../data_source'
-import { MissingEntityError } from '../types/errors'
 import {
     UserType,
 } from '../generated/types'
-import { allowlist } from '..'
+import { MalformedParameterError, MissingEntityError, MissingParameterError } from '@crosslab/service-common'
+import { allowlist } from './utils'
+import { findUserModelByUsername } from '../database/methods/find'
 
 /**
  * Try to find user associated to allowlisted IP.
@@ -15,21 +15,10 @@ import { allowlist } from '..'
  * @returns The user associated with the allowlisted IP.
  */
 export async function getAllowlistedUser(ip: string): Promise<UserModel> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-
     console.warn(
         `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
     )
-    const user = await userRepository.findOne({
-        where: {
-            username: allowlist[ip],
-        },
-        relations: {
-            roles: {
-                scopes: true,
-            },
-        },
-    })
+    const user = await findUserModelByUsername(allowlist[ip])
 
     if (!user)
         throw new MissingEntityError(
@@ -80,9 +69,9 @@ export async function signUserToken(
             url: BASE_URL + `/users/${user.username}`,
             username: user.username,
             scopes: user.roles
-                .map((r) => r.scopes.map((s) => s.name))
+                .map((role) => role.scopes.map((scope) => scope.name))
                 .flat(1)
-                .filter((v, i, s) => s.indexOf(v) === i),
+                .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -111,9 +100,9 @@ export async function signDeviceToken(
             username: user.username,
             device: deviceUrl,
             scopes: user.roles
-                .map((r) => r.scopes.map((s) => s.name))
+                .map((role) => role.scopes.map((s) => s.name))
                 .flat(1)
-                .filter((v, i, s) => s.indexOf(v) === i),
+                .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -126,48 +115,19 @@ export async function signDeviceToken(
  * @returns String representation of the token.
  */
 export function getTokenStringFromAuthorization(authorization?: string): string {
+    const regex = /Bearer (\S*)$/
+
     if (!authorization) {
-        // TODO: was - throw new MissingParameterError(`Authorization parameter is missing`, 401)
-        throw new Error(`Authorization parameter is missing`)
+        throw new MissingParameterError(`Authorization parameter is missing`, 401)
+        // throw new Error(`Authorization parameter is missing`)
     }
 
-    const splitAuthorization = authorization.split(' ')
+    const match = authorization.match(regex)
 
-    if (splitAuthorization.length !== 2) {
-        // TODO: was - throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
-        throw new Error(`Authorization parameter is malformed`)
+    if (!match || match.length !== 2) {
+        throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
+        // throw new Error(`Authorization parameter is malformed`)
     }
 
-    return splitAuthorization[1]
-}
-
-/**
- * This function searches the database for a token matching the provided string.
- * @param tokenString String representation of the token.
- * @returns Token matching the provided string.
- */
-export async function getTokenByTokenString(tokenString: string): Promise<TokenModel> {
-    const tokenRepository = AppDataSource.getRepository(TokenModel)
-
-    const token = await tokenRepository.findOne({
-        where: {
-            token: tokenString,
-        },
-        relations: {
-            user: {
-                roles: {
-                    scopes: true,
-                },
-            },
-        },
-    })
-
-    if (!token) {
-        throw new MissingEntityError(
-            `No matching token found for provided tokenString`,
-            404
-        )
-    }
-
-    return token
+    return match[1]
 }

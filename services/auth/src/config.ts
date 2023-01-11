@@ -1,4 +1,6 @@
 import { exit } from 'process'
+import { DataSourceOptions } from 'typeorm'
+import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel } from './database/model'
 
 function die(reason: string): string {
     console.error(reason)
@@ -20,4 +22,11 @@ export const config = {
         process.env.SECURITY_AUDIENCE ??
         die('the environment variable SECURITY_AUDIENCE is not define!'),
     ALLOWLIST: process.env.ALLOWLIST ? parseAllowlist(process.env.ALLOWLIST) : [],
+}
+
+export const dataSourceConfig: DataSourceOptions = {
+    type: 'sqlite',
+    database: process.env.DATABASE ?? 'db/device.db',
+    synchronize: true,
+    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
 }

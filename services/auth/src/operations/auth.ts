@@ -1,10 +1,8 @@
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from '../database/data_source'
 import { getAuthSignature } from '../generated/signatures'
-import { ActiveKeyModel, TokenModel } from '../model'
-import { allowlist } from '..'
+import { ActiveKeyModel, TokenModel } from '../database/model'
 import {
     getAllowlistedUser,
-    getTokenByTokenString,
     getTokenStringFromAuthorization,
     signDeviceToken,
     signUserToken,
@@ -12,8 +10,10 @@ import {
 import {
     ExpiredError,
     InconsistentDatabaseError,
-    MissingEntityError,
 } from '../types/errors'
+import { allowlist } from '../methods/utils'
+import { MissingEntityError } from '@crosslab/service-common'
+import { findTokenModelByToken } from '../database/methods/find'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -46,13 +46,24 @@ export const getAuth: getAuthSignature = async (parameters) => {
     try {
         // Resolve user from Authorization parameter
         const tokenString = getTokenStringFromAuthorization(parameters.Authorization)
-        const token = await getTokenByTokenString(tokenString)
+        const token = await findTokenModelByToken(tokenString)
+
+        if (!token) {
+            throw new MissingEntityError(
+                `No matching token found`,
+                401
+            )
+        }
+    
+        if (!token.user) {
+            throw new InconsistentDatabaseError(`Token has no associated user`, 500)
+        }
+
         const user = token.user
-        if (!user) throw new MissingEntityError(`Token has no associated user`)
 
         // Check if token is expired
         if (token.expiresOn && new Date(token.expiresOn).getTime() < Date.now())
-            throw new ExpiredError(`Token is expired`)
+            throw new ExpiredError(`Token is expired`, 401)
 
         let jwt
         // Check if token has a device
@@ -81,31 +92,22 @@ export const getAuth: getAuthSignature = async (parameters) => {
     } catch (error) {
         // Allowlisted Auth
         if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
-            try {
-                const user = await getAllowlistedUser(parameters['X-Real-IP'])
+            // try {
+            const user = await getAllowlistedUser(parameters['X-Real-IP'])
 
-                console.log(`signing jwt for user ${user.username}`)
-                const jwt = await signUserToken(user, activeKey)
+            console.log(`signing jwt for user ${user.username}`)
+            const jwt = await signUserToken(user, activeKey)
 
-                console.log(`getAuth succeeded`)
+            console.log(`getAuth succeeded`)
 
-                return {
-                    status: 200,
-                    headers: {
-                        Authorization: 'Bearer ' + jwt,
-                    },
-                }
-            } catch (error) {
-                console.error(`Authentication of allowlisted IP failed: ${error}`)
-                return {
-                    status: 500,
-                }
+            return {
+                status: 200,
+                headers: {
+                    Authorization: 'Bearer ' + jwt,
+                },
             }
         } else {
-            console.error(`getAuth failed: ${error}`)
-            return {
-                status: 500,
-            }
+            throw error
         }
     }
 }

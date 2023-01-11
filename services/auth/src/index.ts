@@ -1,33 +1,20 @@
 #!/usr/bin/env node
 
-import { config } from './config'
-import { AppDataSource, initializeDataSource } from './data_source'
+import { config, dataSourceConfig } from './config'
+import { AppDataSource, initializeDataSource } from './database/data_source'
 import { app } from './generated'
-import { ActiveKeyModel } from './model'
-import { resolveAllowlistEntry, generateNewKey, jwk } from './methods/utils'
+import { ActiveKeyModel } from './database/model'
+import { generateNewKey, jwk, resolveAllowlist } from './methods/utils'
 
 import { JWTVerify } from '@crosslab/service-common'
 
-export let allowlist: { [key: string]: string } = {}
-
-async function resolveAllowlist() {
-    for (const entry of config.ALLOWLIST) {
-        try {
-            const result = await resolveAllowlistEntry(entry)
-            allowlist[result[0]] = result[1]
-        } catch (error) {
-            console.error(error)
-        }
-    }
-}
-
-AppDataSource.initialize()
+AppDataSource.initialize(dataSourceConfig)
     .then(async () => {
         await initializeDataSource()
 
         // Resolve Allowlist
-        resolveAllowlist()
-        setInterval(resolveAllowlist, 600000)
+        resolveAllowlist(config)
+        setInterval(resolveAllowlist, 600000, config)
 
         // Create new active key
         const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)

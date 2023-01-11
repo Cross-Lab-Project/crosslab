@@ -11,16 +11,6 @@ export class DNSResolveError extends Error {
 }
 
 /**
- * This error class should be used if an entity is not found in the database.
- */
-export class MissingEntityError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'MissingEntityError'
-    }
-}
-
-/**
  * This error class should be used if an object contains an invalid value.
  */
 export class InvalidValueError extends ErrorWithStatus {

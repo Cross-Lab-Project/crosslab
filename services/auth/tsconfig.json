@@ -9,7 +9,6 @@
         ],
         "esModuleInterop": true,
         "outDir": "app",
-        "rootDir": "src",
         "strict": true,
         "noImplicitAny": true,
         "noUnusedLocals": true,
@@ -20,5 +19,9 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "skipLibCheck": true,
-    }
+    },
+    "include": [
+      "src/**/*",
+      "test/**/*"
+    ]
 }

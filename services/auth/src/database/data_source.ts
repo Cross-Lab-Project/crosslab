@@ -1,20 +1,29 @@
 import { hash } from 'bcryptjs'
-import { DataSource } from 'typeorm'
+import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
 import {
-    ActiveKeyModel,
-    KeyModel,
     RoleModel,
     ScopeModel,
-    TokenModel,
     UserModel,
 } from './model'
 
-export const AppDataSource = new DataSource({
-    type: 'sqlite',
-    database: 'db/auth.db',
-    synchronize: true,
-    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
-})
+export class ApplicationDataSource {
+    private dataSource?: DataSource
+    
+    
+    initialize(options: DataSourceOptions) {
+        this.dataSource = new DataSource(options)
+        return this.dataSource.initialize()
+    }
+
+    getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
+        if (!this.dataSource) 
+            throw new Error("Data Source has not been initialized!") // TODO: better error
+
+        return this.dataSource.getRepository(target)
+    }
+}
+
+export const AppDataSource = new ApplicationDataSource()
 
 interface Scope {
     name: string
@@ -172,7 +181,7 @@ async function createDefaultSuperadminUser() {
         },
     })
 
-    if (roleSuperadmin.users.length === 0) {
+    if ((await roleSuperadmin.users).length === 0) {
         const user = userRepository.create()
         user.username = 'superadmin'
         user.password = await hash('superadmin', 10)
@@ -203,7 +212,7 @@ async function createDefaultServiceUser(
         },
     })
 
-    if (roleAuthService.users.length === 0) {
+    if ((await roleAuthService.users).length === 0) {
         const user = userRepository.create()
         user.username = service.replace('_', '')
         user.roles = [roleAuthService]
