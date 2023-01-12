@@ -261,7 +261,7 @@ export async function writePeerconnection(
     peerconnectionModel: PeerconnectionModel,
     peerconnection: Peerconnection
 ) {
-    peerconnection.status = 'waiting-for-devices'
+    peerconnectionModel.status = 'waiting-for-devices'
     if (peerconnection.devices) {
         const deviceReferenceRepository =
             AppDataSource.getRepository(DeviceReferenceModel)
