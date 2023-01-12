@@ -1,8 +1,8 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 
 import { Producer, Consumer, Service, ServiceConfiguration,ServiceDirection } from "@cross-lab-project/soa-client"
-import { DataChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
-import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
+import { DataChannel } from "@cross-lab-project/soa-client";
+import { PeerConnection } from "@cross-lab-project/soa-client";
 
 type ServiceType = "goldi/file";
 const ServiceType: ServiceType = "goldi/file";

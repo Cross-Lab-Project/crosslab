@@ -1,21 +1,26 @@
 {
   "name": "@cross-lab-project/soa-client",
-  "version": "0.0.14",
   "description": "SOA-Client for all Crosslab",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./lib/types/index.d.ts",
+  "main": "./lib/cjs/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Cross-Lab-Project/crosslab.git"
   },
   "scripts": {
-    "build-compile": "tsc",
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "build": "npm run build-compile",
     "watch": "tsc -w"
   },
   "files": [
-    "dist"
+    "lib"
   ],
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "devDependencies": {

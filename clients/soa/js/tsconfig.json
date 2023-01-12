@@ -1,23 +1,7 @@
 {
+    "extends": "./tsconfig-base.json",
     "compilerOptions": {
-        "module": "ES6",
-        "moduleResolution": "Node",
-        "allowSyntheticDefaultImports": true,
-        "target": "ES6",
-        "lib": [
-            "ES6",
-            "DOM"
-        ],
-        "esModuleInterop": true,
-        "outDir": "dist",
-        "rootDir": "src",
-        "strict": true,
-        "noImplicitAny": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "sourceMap": true,
-        "declaration": true
+        "module": "ESNext",
+        "outDir": "./lib/esm",
     }
 }

@@ -1,6 +1,6 @@
 import { ServiceConfiguration, Service, Producer, Consumer } from "@cross-lab-project/soa-client";
-import { MediaChannel } from "@cross-lab-project/soa-client/dist/peer/channel";
-import { PeerConnection } from "@cross-lab-project/soa-client/dist/peer/connection";
+import { MediaChannel } from "@cross-lab-project/soa-client";
+import { PeerConnection } from "@cross-lab-project/soa-client";
 import { TypedEmitter } from "tiny-typed-emitter";
 
 type ServiceType = "goldi/webcam";

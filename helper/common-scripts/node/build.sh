@@ -3,6 +3,9 @@ set -e
 
 SCRIPT_DIR=$(dirname "$0")
 
+rm package-lock.json || true
+rm -rf node_modules
+
 npm install --install-links
 npm run build
 

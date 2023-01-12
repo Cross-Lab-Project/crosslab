@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 ARG USERNAME=dev
 ARG USER_UID=1000
@@ -57,10 +57,10 @@ RUN apt-get update \
 
 USER $USERNAME
 
-RUN echo 'alias build="./scripts/build.sh"' >> ~/.bashrc \
-    && echo 'alias build-spec="./scripts/build.sh -s"' >> ~/.bashrc \
-    && echo 'alias lint="./scripts/lint.sh"' >> ~/.bashrc \
-    && echo 'alias test="./scripts/test.sh"' >> ~/.bashrc
+#RUN echo 'alias build="./scripts/build.sh"' >> ~/.bashrc \
+#    && echo 'alias build-spec="./scripts/build.sh -s"' >> ~/.bashrc \
+#    && echo 'alias lint="./scripts/lint.sh"' >> ~/.bashrc \
+#    && echo 'alias test="./scripts/test.sh"' >> ~/.bashrc
 
 COPY container-scripts/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
