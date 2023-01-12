@@ -135,7 +135,7 @@ export async function loginLocal(
 
     if (!userModel.password) throw new AuthenticationError(`Password authentication not possible for this user`, 401)
 
-    if (!(await compare(password, userModel.password)))
+    if (!(await compare(password, userModel.password ?? "")))
         throw new AuthenticationError(`Invalid login credentials`, 401)
 
     return await createUserToken(userModel)

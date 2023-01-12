@@ -15,7 +15,6 @@ import { userRepository } from './repositories/userRepository'
 export class ApplicationDataSource {
     private dataSource?: DataSource
     
-<<<<<<<< HEAD:services/auth/src/database/dataSource.ts
     public async initialize(options: DataSourceOptions) {
         this.dataSource = new DataSource(options)
         await this.dataSource.initialize()
@@ -28,15 +27,6 @@ export class ApplicationDataSource {
     }
 
     public getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
-========
-    
-    initialize(options: DataSourceOptions) {
-        this.dataSource = new DataSource(options)
-        return this.dataSource.initialize()
-    }
-
-    getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
->>>>>>>> e2573b6 (Add test cases and new database methods to auth service):services/auth/src/database/data_source.ts
         if (!this.dataSource) 
             throw new Error("Data Source has not been initialized!") // TODO: better error
 
