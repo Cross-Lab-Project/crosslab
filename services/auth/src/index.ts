@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { config, dataSourceConfig } from './config'
-import { AppDataSource, initializeDataSource } from './database/data_source'
+import { AppDataSource, initializeDataSource } from './database/dataSource'
 import { app } from './generated'
-import { ActiveKeyModel } from './database/model'
-import { generateNewKey, jwk, resolveAllowlist } from './methods/utils'
-
+import { generateNewKey, jwk } from './methods/key'
 import { JWTVerify } from '@crosslab/service-common'
+import { activeKeyRepository } from './database/repositories/activeKeyRepository'
+import { resolveAllowlist } from './methods/allowlist'
 
 AppDataSource.initialize(dataSourceConfig)
     .then(async () => {
@@ -17,16 +17,18 @@ AppDataSource.initialize(dataSourceConfig)
         setInterval(resolveAllowlist, 600000, config)
 
         // Create new active key
-        const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
         const key = await generateNewKey()
         const jwks = JSON.stringify({ keys: [jwk(key)] })
-        for (const activeKey of await activeKeyRepository.find()) {
+        for (const activeKey of await activeKeyRepository.find({})) {
             await activeKeyRepository.delete(activeKey)
         }
-        const activeKey = activeKeyRepository.create()
-        activeKey.key = key
-        activeKey.use = key.use
-        await activeKeyRepository.save(activeKey)
+
+        const activeKeyModel = await activeKeyRepository.create({
+            key: key.uuid,
+            use: key.use
+        })
+
+        await activeKeyRepository.save(activeKeyModel)
 
         app.get('/.well-known/jwks.json', (_req, res, _next) => {
             res.send(jwks)

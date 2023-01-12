@@ -10,15 +10,17 @@ export default () => describe("GET /identity", async function () {
             url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`,
             scopes: ["test scope"]
         }
+
         const result = await getIdentity({
             JWT: user
         })
-        assert(result.status === 200)
-        assert(result.body.username === user.username)
-        assert(result.body.url === user.url)
-        assert(result.body.roles)
-        assert(result.body.roles.length === 1)
-        assert(result.body.roles[0].name === "test role")
+        assert(result.status === 200, "Status is not equal to 200")
+        assert(result.body.username === user.username, "Usernames do not match")
+        assert(result.body.url === user.url, "URLs do not match")
+        assert(result.body.roles, "Result does not have any roles")
+        assert(result.body.roles.length === 1, "Result does not have exactly one role")
+        assert(result.body.roles[0].name === "test role", "Result does not have correct role")
+        assert(!result.body.password, "Result contains the password")
     })
 
     it("should not get the identity of an unknown user", async function () {

@@ -1,7 +1,6 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import { AppDataSource } from '../database/data_source'
+import { tokenRepository } from '../database/repositories/tokenRepository'
+import { userRepository } from '../database/repositories/userRepository'
 import { postLogoutSignature } from '../generated/signatures'
-import { UserModel } from '../database/model'
 
 /**
  * This function implements the functionality for handling POST requests on /logout endpoint.
@@ -11,29 +10,22 @@ import { UserModel } from '../database/model'
  */
 export const postLogout: postLogoutSignature = async (body, user) => {
     console.log(`postLogout called for ${user.JWT?.username}`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const userModel = await userRepository.findOneBy({
-        username: user.JWT?.username
+
+    const userModel = await userRepository.findOneOrFail({
+        where: {
+            username: user.JWT?.username
+        },
+        relations: {
+            tokens: true
+        }
     })
 
-    if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
-
-    userModel.tokens = await userModel.tokens ?? []
-    const token = userModel.tokens.find((token) => token.token === body.token)
-
-    if (!token)
-        throw new MissingEntityError(
-            `Could not find requested token in tokens of user ${user.JWT?.username}`,
-            404
-        )
-
-    userModel.tokens = userModel.tokens.filter((token) => token.token !== body.token)
-    await userRepository.save(userModel)
+    const tokenModel = (await userModel.tokens).find((tokenModel) => tokenModel.token === body.token)
+    if (tokenModel) await tokenRepository.delete(tokenModel)
 
     console.log(`postLogout succeeded`)
 
     return {
-        status: 200,
+        status: 204,
     }
 }

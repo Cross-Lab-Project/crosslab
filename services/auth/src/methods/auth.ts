@@ -5,8 +5,8 @@ import {
     UserType,
 } from '../generated/types'
 import { MalformedParameterError, MissingEntityError, MissingParameterError } from '@crosslab/service-common'
-import { allowlist } from './utils'
-import { findUserModelByUsername } from '../database/methods/find'
+import { allowlist } from './allowlist'
+import { userRepository } from '../database/repositories/userRepository'
 
 /**
  * Try to find user associated to allowlisted IP.
@@ -18,7 +18,14 @@ export async function getAllowlistedUser(ip: string): Promise<UserModel> {
     console.warn(
         `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
     )
-    const user = await findUserModelByUsername(allowlist[ip])
+    
+    const user = allowlist[ip] 
+        ? await userRepository.findOne({ 
+            where: {
+                username: allowlist[ip]
+            }
+        })
+        : undefined
 
     if (!user)
         throw new MissingEntityError(

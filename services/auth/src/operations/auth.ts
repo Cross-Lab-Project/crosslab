@@ -1,6 +1,4 @@
-import { AppDataSource } from '../database/data_source'
 import { getAuthSignature } from '../generated/signatures'
-import { ActiveKeyModel, TokenModel } from '../database/model'
 import {
     getAllowlistedUser,
     getTokenStringFromAuthorization,
@@ -11,9 +9,10 @@ import {
     ExpiredError,
     InconsistentDatabaseError,
 } from '../types/errors'
-import { allowlist } from '../methods/utils'
+import { allowlist } from '../methods/allowlist'
 import { MissingEntityError } from '@crosslab/service-common'
-import { findTokenModelByToken } from '../database/methods/find'
+import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
+import { tokenRepository } from '../database/repositories/tokenRepository'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -24,8 +23,6 @@ import { findTokenModelByToken } from '../database/methods/find'
 export const getAuth: getAuthSignature = async (parameters) => {
     console.log(`getAuth called`)
     const HOUR = 60 * 60 * 1000
-    const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
-    const tokenRepository = AppDataSource.getRepository(TokenModel)
 
     // Catch missing authorization header (OPTIONS requests)
     if (!parameters.Authorization) {
@@ -36,7 +33,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     }
 
     // Get active key
-    const activeKeys = await activeKeyRepository.find({ relations: { key: true } })
+    const activeKeys = await activeKeyRepository.find()
     if (activeKeys.length != 1) {
         throw new InconsistentDatabaseError('Too many active keys', 500)
     }
@@ -46,14 +43,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
     try {
         // Resolve user from Authorization parameter
         const tokenString = getTokenStringFromAuthorization(parameters.Authorization)
-        const token = await findTokenModelByToken(tokenString)
-
-        if (!token) {
-            throw new MissingEntityError(
-                `No matching token found`,
-                401
-            )
-        }
+        const token = await tokenRepository.findOneOrFail({
+            where: {
+                token: tokenString 
+            }
+        })
     
         if (!token.user) {
             throw new InconsistentDatabaseError(`Token has no associated user`, 500)
@@ -107,6 +101,9 @@ export const getAuth: getAuthSignature = async (parameters) => {
                 },
             }
         } else {
+            if (error instanceof MissingEntityError) {
+                error.status = 401
+            }
             throw error
         }
     }

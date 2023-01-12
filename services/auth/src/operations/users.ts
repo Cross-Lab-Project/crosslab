@@ -7,14 +7,10 @@ import {
     putUsersByUsernameRolesByRoleNameSignature,
     deleteUsersByUsernameRolesByRoleNameSignature,
 } from '../generated/signatures'
-import { RoleModel, UserModel } from '../database/model'
-import { AppDataSource } from '../database/data_source'
-import { MalformedBodyError, MissingEntityError } from '@crosslab/service-common'
-import { formatUserModel } from '../database/methods/format'
-import { isRequiredUser } from '../methods/utils'
-import { writeUserModel } from '../database/methods/write'
-import { addRoleModelToUserModel } from '../database/methods/add'
-import { createUserModel } from '../database/methods/create'
+import { MalformedBodyError } from '@crosslab/service-common'
+import { isRequiredUser } from '../types/typeguards'
+import { userRepository } from '../database/repositories/userRepository'
+import { roleRepository } from '../database/repositories/roleRepository'
 
 /**
  * This function implements the functionality for handling GET requests on /users endpoint.
@@ -22,14 +18,14 @@ import { createUserModel } from '../database/methods/create'
  */
 export const getUsers: getUsersSignature = async (_user) => {
     console.log(`getUsers called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const users = await userRepository.find()
+
+    const userModels = await userRepository.find()
 
     console.log(`getUsers succeeded`)
 
     return {
         status: 200,
-        body: users.map(formatUserModel),
+        body: await Promise.all(userModels.map(userRepository.format)),
     }
 }
 
@@ -46,12 +42,13 @@ export const postUsers: postUsersSignature = async (body, _user) => {
     if (!isRequiredUser(body))
         throw new MalformedBodyError(`Body is missing required properties`, 400)
 
-    const user = await createUserModel(body)
+    const userModel = await userRepository.create(body)
+
     console.log(`postUsers succeeded`)
 
     return {
         status: 201,
-        body: formatUserModel(user),
+        body: await userRepository.format(userModel),
     }
 }
 
@@ -66,19 +63,18 @@ export const getUsersByUsername: getUsersByUsernameSignature = async (
     _user
 ) => {
     console.log(`getUsersByUsername called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({
-        username: parameters.username
-    })
 
-    if (!user)
-        throw new MissingEntityError(`Could not find user ${parameters.username}`, 404)
+    const userModel = await userRepository.findOneOrFail({
+        where: {
+            username: parameters.username
+        }
+    })
 
     console.log(`getUsersByUsername succeeded`)
 
     return {
         status: 200,
-        body: formatUserModel(user),
+        body: await userRepository.format(userModel),
     }
 }
 
@@ -93,15 +89,14 @@ export const deleteUsersByUsername: deleteUsersByUsernameSignature = async (
     _user
 ) => {
     console.log(`deleteUsersByUsername called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({ username: parameters.username })
 
-    if (!user)
-        throw new MissingEntityError(`Could not find user ${parameters.username}`, 404)
-
-    await userRepository.softDelete({
-        username: user.username
+    const userModel = await userRepository.findOneOrFail({ 
+        where: {
+            username: parameters.username 
+        }
     })
+
+    await userRepository.delete(userModel)
 
     console.log(`deleteUsersByUsername succeeded`)
 
@@ -125,22 +120,21 @@ export const patchUsersByUsername: patchUsersByUsernameSignature = async (
     _user
 ) => {
     console.log(`patchUsersByUsername called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const user = await userRepository.findOneBy({ 
-        username: parameters.username 
+    
+    const userModel = await userRepository.findOneOrFail({ 
+        where: {
+            username: parameters.username
+        }
     })
 
-    if (!user)
-        throw new MissingEntityError(`Could not find user ${parameters.username}`, 404)
-
-    await writeUserModel(user, body ?? {})
-    await userRepository.save(user)
+    await userRepository.write(userModel, body ?? {})
+    await userRepository.save(userModel)
 
     console.log(`patchUsersByUsername succeeded`)
 
     return {
         status: 200,
-        body: formatUserModel(user),
+        body: await userRepository.format(userModel),
     }
 }
 
@@ -153,34 +147,26 @@ export const patchUsersByUsername: patchUsersByUsernameSignature = async (
 export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNameSignature =
     async (parameters, _user) => {
         console.log(`putUsersByUsernameRolesByRoleName called`)
-        const userRepository = AppDataSource.getRepository(UserModel)
-        const roleRepository = AppDataSource.getRepository(RoleModel)
-        const user = await userRepository.findOneBy({ 
-            username: parameters.username 
+        
+        const userModel = await userRepository.findOneOrFail({ 
+            where: {
+                username: parameters.username 
+            }
         })
-        const role = await roleRepository.findOneBy({ 
-            name: parameters.role_name 
+        const roleModel = await roleRepository.findOneOrFail({ 
+            where: {
+                name: parameters.role_name 
+            }
         })
 
-        if (!user)
-            throw new MissingEntityError(
-                `Could not find user ${parameters.username}`,
-                404
-            )
-        if (!role)
-            throw new MissingEntityError(
-                `Could not find role ${parameters.role_name}`,
-                404
-            )
-
-        await addRoleModelToUserModel(user, role)
-        await userRepository.save(user)
+        userRepository.addRoleModelToUserModel(userModel, roleModel)
+        await userRepository.save(userModel)
 
         console.log(`putUsersByUsernameRolesByRoleName succeeded`)
 
         return {
             status: 200,
-            body: formatUserModel(user),
+            body: await userRepository.format(userModel),
         }
     }
 
@@ -193,29 +179,21 @@ export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNam
 export const deleteUsersByUsernameRolesByRoleName: deleteUsersByUsernameRolesByRoleNameSignature =
     async (parameters, _user) => {
         console.log(`deleteUsersByUsernameRolesByRoleName called`)
-        const userRepository = AppDataSource.getRepository(UserModel)
-        const roleRepository = AppDataSource.getRepository(RoleModel)
-        const user = await userRepository.findOneBy({ username: parameters.username })
-        const role = await roleRepository.findOneBy({ name: parameters.role_name })
+        
+        const userModel = await userRepository.findOneOrFail({ 
+            where: {
+                username: parameters.username 
+            }
+        })
+        const roleModel = await roleRepository.findOneOrFail({ 
+            where: {
+                name: parameters.role_name 
+            }
+        })
 
-        if (!user)
-            throw new MissingEntityError(
-                `Could not find user ${parameters.username}`,
-                404
-            )
-        if (!role)
-            throw new MissingEntityError(
-                `Could not find role ${parameters.role_name}`,
-                404
-            )
+        userRepository.removeRoleModelFromUserModel(userModel, roleModel)
 
-        let index = user.roles.findIndex((role) => role.name === parameters.role_name)
-        while (index !== -1) {
-            user.roles.splice(index, 1)
-            index = user.roles.findIndex((role) => role.name === parameters.role_name)
-        }
-
-        await userRepository.save(user)
+        await userRepository.save(userModel)
 
         console.log(`deleteUsersByUsernameRolesByRoleName succeeded`)
 

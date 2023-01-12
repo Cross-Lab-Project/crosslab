@@ -1,5 +1,5 @@
 export * from "./operations/auth";
-export * from "./operations/device_authentication_token";
+export * from "./operations/deviceAuthenticationToken";
 export * from "./operations/identity";
 export * from "./operations/login";
 export * from "./operations/logout";

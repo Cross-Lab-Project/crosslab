@@ -20,7 +20,7 @@ post:
               type: string
               description: The token to be invalidated.
   responses:
-    200:
+    204:
       description: Successfully logged out the user.
     400:
       description: Bad Request.

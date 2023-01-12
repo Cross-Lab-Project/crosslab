@@ -1,13 +1,10 @@
 import assert from "assert"
-import { AppDataSource } from "../../../src/database/data_source"
-import { UserModel } from "../../../src/database/model"
+import { userRepository } from "../../../src/database/repositories/userRepository"
 import { postLogin } from "../../../src/operations"
 import { AuthenticationError } from "../../../src/types/errors"
 
 export default () => describe("POST /login", async function () {
     it("should login the local test user successfully", async function () {
-        const userRepository = AppDataSource.getRepository(UserModel)
-
         const result = await postLogin({
             username: "username",
             password: "password",
@@ -16,8 +13,15 @@ export default () => describe("POST /login", async function () {
         assert(result.status === 201)
         assert(result.body)
 
-        const user = await userRepository.findOneByOrFail({ username: "username" })
-        assert((await user.tokens).find((token) => token.token === result.body))
+        const userModel = await userRepository.findOneOrFail({
+            where: {
+                username: "username" 
+            },
+            relations: {
+                tokens: true
+            }
+        })
+        assert((await userModel.tokens).find((token) => token.token === result.body))
     })
 
     it("should not login a local user with wrong username", async function () {

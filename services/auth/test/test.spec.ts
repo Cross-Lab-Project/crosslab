@@ -1,9 +1,15 @@
 import { config, dataSourceConfig } from "../src/config";
-import { AppDataSource, initializeDataSource } from "../src/database/data_source";
-import { generateNewKey, resolveAllowlist } from "../src/methods/utils";
-import { ActiveKeyModel, RoleModel, ScopeModel, TokenModel, UserModel } from "../src/database/model";
+import { AppDataSource, initializeDataSource } from "../src/database/dataSource";
+import { generateNewKey } from "../src/methods/key";
 import methodsSuite from "./methods/index.spec"
 import operationsSuite from "./operations/index.spec"
+import databaseSuite from "./database/index.spec"
+import { resolveAllowlist } from "../src/methods/allowlist";
+import { scopeRepository } from "../src/database/repositories/scopeRepository";
+import { roleRepository } from "../src/database/repositories/roleRepository";
+import { userRepository } from "../src/database/repositories/userRepository";
+import { tokenRepository } from "../src/database/repositories/tokenRepository";
+import { activeKeyRepository } from "../src/database/repositories/activeKeyRepository";
 
 describe("Authentication Service Tests", async function () {
     this.beforeAll(async function () {
@@ -15,34 +21,35 @@ describe("Authentication Service Tests", async function () {
         await initializeDataSource()
 
         // add test objects
-        const scopeRepository = AppDataSource.getRepository(ScopeModel)
-        const roleRepository = AppDataSource.getRepository(RoleModel)
-        const userRepository = AppDataSource.getRepository(UserModel)
-        const tokenRepository = AppDataSource.getRepository(TokenModel)
-
-        const testScope = scopeRepository.create()
-        testScope.name = "test scope"
+        const testScope = await scopeRepository.create("test scope")
         await scopeRepository.save(testScope)
 
-        const testRole = roleRepository.create()
-        testRole.name = "test role"
-        testRole.scopes = [testScope]
-        roleRepository.save(testRole)
+        const testRole = await roleRepository.create({
+            name: "test role",
+            scopes: ["test scope"]
+        })
+        await roleRepository.save(testRole)
 
-        const testUser = userRepository.create()
-        testUser.username = "username"
-        testUser.password = "password"
-        testUser.roles = [testRole]
+        const testUser = await userRepository.create({
+            username: "username",
+            password: "password",
+            roles: [{
+                name: "test role"
+            }]
+        })
         await userRepository.save(testUser)
 
-        const testTokenValid = tokenRepository.create()
+        const testTokenValid = await tokenRepository.create({
+            scopes: ["test scope"]
+        })
         testTokenValid.scopes = [testScope]
         testTokenValid.token = "valid"
         testTokenValid.user = testUser
         await tokenRepository.save(testTokenValid)
 
-        const testTokenExpired = tokenRepository.create()
-        testTokenExpired.scopes = [testScope]
+        const testTokenExpired = await tokenRepository.create({
+            scopes: ["test scope"]
+        })
         testTokenExpired.token = "expired"
         testTokenExpired.user = testUser
         testTokenExpired.expiresOn = new Date(Date.now() - 3600000).toISOString()
@@ -52,17 +59,18 @@ describe("Authentication Service Tests", async function () {
         await resolveAllowlist(config)
     
         // create active key
-        const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
         const key = await generateNewKey()
         for (const activeKey of await activeKeyRepository.find()) {
             await activeKeyRepository.delete(activeKey)
         }
-        const activeKey = activeKeyRepository.create()
-        activeKey.key = key
-        activeKey.use = key.use
+        const activeKey = await activeKeyRepository.create({
+            key: key.uuid,
+            use: key.use
+        })
         await activeKeyRepository.save(activeKey)
     })
 
+    databaseSuite()
     methodsSuite()
     operationsSuite()
 })

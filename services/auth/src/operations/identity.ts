@@ -2,11 +2,8 @@ import {
     getIdentitySignature,
     patchIdentitySignature,
 } from '../generated/signatures'
-import { AppDataSource } from '../database/data_source'
-import { UserModel } from '../database/model'
-import { formatUserModel } from '../database/methods/format'
-import { writeUserModel } from '../database/methods/write'
 import { MissingEntityError } from '@crosslab/service-common'
+import { userRepository } from '../database/repositories/userRepository'
 
 /**
  * This function implements the functionality for handling GET requests on /identity endpoint.
@@ -15,9 +12,11 @@ import { MissingEntityError } from '@crosslab/service-common'
  */
 export const getIdentity: getIdentitySignature = async (user) => {
     console.log(`getIdentity called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const userModel = await userRepository.findOneBy({
-        username: user.JWT?.username
+
+    const userModel = await userRepository.findOne({
+        where: {
+            username: user.JWT?.username
+        }
     })
 
     if (!userModel)
@@ -27,7 +26,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
 
     return {
         status: 200,
-        body: formatUserModel(userModel),
+        body: await userRepository.format(userModel),
     }
 }
 
@@ -40,19 +39,23 @@ export const getIdentity: getIdentitySignature = async (user) => {
  */
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
     console.log(`patchIdentity called`)
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const userModel = await userRepository.findOneBy({ username: user.JWT?.username })
+
+    const userModel = await userRepository.findOne({ 
+        where: {
+            username: user.JWT?.username 
+        }
+    })
 
     if (!userModel)
         throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
-    await writeUserModel(userModel, body ?? {})
+    await userRepository.write(userModel, body ?? {})
     await userRepository.save(userModel)
 
     console.log(`patchIdentity succeeded`)
 
     return {
         status: 200,
-        body: formatUserModel(userModel),
+        body: await userRepository.format(userModel),
     }
 }

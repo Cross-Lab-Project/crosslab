@@ -12,14 +12,14 @@ import { loginLocal, loginTui } from '../methods/login'
 export const postLogin: postLoginSignature = async (body) => {
     console.log(`postLogin called for ${body.username} using method ${body.method}`)
 
-    let token
+    let tokenModel
     try {
         switch (body.method) {
             case 'local':
-                token = await loginLocal(body.username, body.password)
+                tokenModel = await loginLocal(body.username, body.password)
                 break
             case 'tui':
-                token = await loginTui(body.username, body.password)
+                tokenModel = await loginTui(body.username, body.password)
                 break
         }
     } catch (error) {
@@ -31,12 +31,12 @@ export const postLogin: postLoginSignature = async (body) => {
         throw error
     }
 
-    if (!token) throw new AuthenticationError(`Authentication failed`, 401)
+    if (!tokenModel) throw new AuthenticationError(`Authentication failed`, 401)
 
     console.log(`postLogin succeeded`)
 
     return {
         status: 201,
-        body: token.token,
+        body: tokenModel.token,
     }
 }

@@ -1,5 +1,5 @@
 import authTests from "./auth/index.spec"
-import deviceAuthenticationTokenTests from "./device_authentication_token/index.spec"
+import deviceAuthenticationTokenTests from "./deviceAuthenticationToken/index.spec"
 import identityTests from "./identity/index.spec"
 import loginTests from "./login/index.spec"
 import logoutTests from "./logout/index.spec"

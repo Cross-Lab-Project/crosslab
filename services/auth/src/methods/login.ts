@@ -1,16 +1,14 @@
 import { Client as LdapClient } from 'ldapts'
 import {
     AuthenticationError,
-    InconsistentDatabaseError,
     LdapAuthenticationError,
     LdapBindError,
     LdapError,
 } from '../types/errors'
 import { TokenModel, UserModel } from '../database/model'
 import { compare } from 'bcryptjs'
-import { createTokenModel, createUserModel } from '../database/methods/create'
-import { saveUserModel } from '../database/methods/save'
-import { findUserModelByUsername } from '../database/methods/find'
+import { tokenRepository } from '../database/repositories/tokenRepository'
+import { userRepository } from '../database/repositories/userRepository'
 
 /**
  * This function creates a token for a user.
@@ -22,7 +20,7 @@ async function createUserToken(
     userModel: UserModel,
     expiresIn: number = 3600000
 ): Promise<TokenModel> {
-    const tokenModel = await createTokenModel({
+    const tokenModel = await tokenRepository.create({
         scopes: [],
         expiresOn: new Date(Date.now() + expiresIn).toISOString()
     })
@@ -30,7 +28,7 @@ async function createUserToken(
     userModel.tokens = await userModel.tokens ?? []
     userModel.tokens.push(tokenModel)
 
-    await saveUserModel(userModel)
+    await userRepository.save(userModel)
 
     return tokenModel
 }
@@ -41,12 +39,12 @@ async function createUserToken(
  * @returns The newly created TUI user.
  */
 async function createUserTUI(username: string): Promise<UserModel> {
-    const userModel = await createUserModel({
+    const userModel = await userRepository.create({
         username: "tui:" + username,
         roles: [{ name: "user" }]
     })
     userModel.tokens = []
-    await saveUserModel(userModel)
+    await userRepository.save(userModel)
 
     return userModel
 }
@@ -99,7 +97,11 @@ export async function loginTui(
     }
 
     // Find User with matching Username
-    let userModel = await findUserModelByUsername('tui:' + username)
+    let userModel = await userRepository.findOne({ 
+        where: { 
+            username: 'tui:' + username 
+        }
+    })
 
     // Create new User if no User was found
     if (!userModel) {
@@ -122,12 +124,15 @@ export async function loginLocal(
     username: string,
     password: string
 ): Promise<TokenModel | undefined> {
-    const userModel = await findUserModelByUsername(username)
+    const userModel = await userRepository.findOne({ 
+        where: {
+            username 
+        }
+    })
 
     if (!userModel) throw new AuthenticationError(`Invalid login credentials`, 401)
-    if (!userModel.password) throw new InconsistentDatabaseError(`User has no password`, 500)
 
-    if (!(await compare(password, userModel.password)))
+    if (!(await compare(password, userModel.password ?? "")))
         throw new AuthenticationError(`Invalid login credentials`, 401)
 
     return await createUserToken(userModel)

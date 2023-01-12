@@ -1,17 +1,41 @@
-export type Token = {
-    token: string
-    scopes: string[]
-    expiresOn?: string
-    device?: string
-}
+export type Token<T extends "request" | "response" | "all" = "all"> = 
+    T extends "all" 
+        ? {
+            token: string
+            scopes: string[]
+            expiresOn?: string
+            device?: string
+          }
+        : T extends "request"
+        ? {
+            scopes: string[]
+            expiresOn?: string
+            device?: string
+          }
+        : T extends "response"
+        ? undefined
+        : never
 
-export type Scope = {
-    name: string
-}
+export type Scope<_T extends "request" | "response" | "all" = "all"> = string
 
-export type Key = {
-    alg: string,
-    private_key: string,
-    public_key: string,
-    use: string
-}
+export type Key<T extends "request" | "response" | "all" = "all"> = 
+    T extends "all" | "request"
+        ? {
+            alg: string
+            private_key: string
+            public_key: string
+            use: string
+          }
+        : T extends "response"
+        ? undefined
+        : never
+
+export type ActiveKey<T extends "request" | "response" | "all" = "all"> = 
+    T extends "all" | "request"
+        ? {
+            use: string
+            key: string
+          }
+        : T extends "response"
+        ? undefined
+        : never
