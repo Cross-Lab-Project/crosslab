@@ -1,13 +1,18 @@
+import { JWK } from 'jose'
 import {
     Column,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
     OneToMany,
+    OneToOne,
     PrimaryColumn,
     PrimaryGeneratedColumn,
 } from 'typeorm'
+import { Role, User } from '../generated/types'
+import { ActiveKey, Key, Scope, Token } from '../types/types'
 
 @Entity()
 export class ScopeModel {
@@ -65,10 +70,13 @@ export class KeyModel {
     use!: string
     @Column()
     alg!: string
-    @Column('text')
-    public_key!: string
-    @Column('text')
-    private_key!: string
+    @Column('simple-json')
+    public_key!: JWK
+    @Column('simple-json')
+    private_key!: JWK
+    @OneToOne(() => UserModel)
+    @JoinColumn()
+    user?: Promise<UserModel> | UserModel
 }
 
 @Entity()
@@ -77,4 +85,50 @@ export class ActiveKeyModel {
     use!: string
     @ManyToOne(() => KeyModel, { eager: true })
     key!: KeyModel
+}
+
+/**
+ * Type containing all the different models.
+ */
+export type Model = ActiveKeyModel | KeyModel | RoleModel | ScopeModel | TokenModel | UserModel
+
+/**
+ * Type mapping a model and ...(TODO)... to their corresponding data type.
+ */
+export type ModelType<M extends Model, T extends "request" | "response" | "all" = "all"> = M extends ActiveKeyModel 
+    ? ActiveKey<T>
+    : M extends KeyModel
+    ? Key<T>
+    : M extends RoleModel
+    ? Role<T>
+    : M extends ScopeModel
+    ? Scope<T>
+    : M extends TokenModel
+    ? Token<T>
+    : M extends UserModel
+    ? User<T>
+    : never
+
+/**
+ * This function returns the name of a model.
+ * @param model The model for which to retrieve the name.
+ * @returns The name of the provided model.
+ */
+export function getModelName(model: Model) {
+    switch (model) {
+        case ActiveKeyModel:
+            return "Active Key"
+        case KeyModel:
+            return "Key"
+        case RoleModel:
+            return "Role"
+        case ScopeModel:
+            return "Scope"
+        case TokenModel:
+            return "Token"
+        case UserModel:
+            return "User"
+        default:
+            return "Unknown"
+    }
 }

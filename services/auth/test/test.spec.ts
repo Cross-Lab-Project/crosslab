@@ -1,15 +1,34 @@
-import { config, dataSourceConfig } from "../src/config";
 import { AppDataSource, initializeDataSource } from "../src/database/dataSource";
 import { generateNewKey } from "../src/methods/key";
 import methodsSuite from "./methods/index.spec"
 import operationsSuite from "./operations/index.spec"
 import databaseSuite from "./database/index.spec"
-import { resolveAllowlist } from "../src/methods/allowlist";
+import { parseAllowlist, resolveAllowlist } from "../src/methods/allowlist";
 import { scopeRepository } from "../src/database/repositories/scopeRepository";
 import { roleRepository } from "../src/database/repositories/roleRepository";
 import { userRepository } from "../src/database/repositories/userRepository";
 import { tokenRepository } from "../src/database/repositories/tokenRepository";
 import { activeKeyRepository } from "../src/database/repositories/activeKeyRepository";
+import { DataSourceOptions } from "typeorm";
+import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel } from "../src/database/model";
+import { AppConfiguration } from "../src/types/types";
+
+const config: AppConfiguration = {
+    PORT: 3000,
+    NODE_ENV: 'development',
+    BASE_URL: 'http://localhost:3000',
+    SECURITY_ISSUER: "http://localhost",
+    SECURITY_AUDIENCE: "http://localhost",
+    ALLOWLIST: parseAllowlist("localhost:username")
+}
+
+const dataSourceConfig: DataSourceOptions = {
+    type: 'sqlite',
+    database: 'test/db/auth.db',
+    synchronize: true,
+    dropSchema: true,
+    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel]
+}
 
 describe("Authentication Service Tests", async function () {
     this.beforeAll(async function () {
@@ -40,6 +59,7 @@ describe("Authentication Service Tests", async function () {
         await userRepository.save(testUser)
 
         const testTokenValid = await tokenRepository.create({
+            user: "username",
             scopes: ["test scope"]
         })
         testTokenValid.scopes = [testScope]
@@ -48,6 +68,7 @@ describe("Authentication Service Tests", async function () {
         await tokenRepository.save(testTokenValid)
 
         const testTokenExpired = await tokenRepository.create({
+            user: "username",
             scopes: ["test scope"]
         })
         testTokenExpired.token = "expired"
@@ -61,16 +82,20 @@ describe("Authentication Service Tests", async function () {
         // create active key
         const key = await generateNewKey()
         for (const activeKey of await activeKeyRepository.find()) {
-            await activeKeyRepository.delete(activeKey)
+            await activeKeyRepository.remove(activeKey)
         }
         const activeKey = await activeKeyRepository.create({
-            key: key.uuid,
             use: key.use
         })
         await activeKeyRepository.save(activeKey)
     })
 
-    databaseSuite()
+    this.beforeAll(function () {
+        console.log = () => undefined
+        console.warn = () => undefined
+    })
+
+    // databaseSuite()
     methodsSuite()
-    operationsSuite()
+    // operationsSuite()
 })

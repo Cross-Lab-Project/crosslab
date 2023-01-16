@@ -20,11 +20,10 @@ AppDataSource.initialize(dataSourceConfig)
         const key = await generateNewKey()
         const jwks = JSON.stringify({ keys: [jwk(key)] })
         for (const activeKey of await activeKeyRepository.find({})) {
-            await activeKeyRepository.delete(activeKey)
+            await activeKeyRepository.remove(activeKey)
         }
 
         const activeKeyModel = await activeKeyRepository.create({
-            key: key.uuid,
             use: key.use
         })
 
@@ -47,6 +46,7 @@ AppDataSource.initialize(dataSourceConfig)
                 }
             }
         })
+        
         app.listen(config.PORT)
         console.log('Initialization finished')
     })

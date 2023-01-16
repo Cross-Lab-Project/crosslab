@@ -1,22 +1,7 @@
+import { MissingEntityError } from "@crosslab/service-common"
 import { FindManyOptions, FindOneOptions, Repository } from "typeorm"
-import { Role, User } from "../../generated/types"
-import { ActiveKey, Key, Scope, Token } from "../../types/types"
-import { ActiveKeyModel, KeyModel, RoleModel, ScopeModel, TokenModel, UserModel } from "../model"
-
-type Model = ActiveKeyModel | KeyModel | RoleModel | ScopeModel | TokenModel | UserModel
-type ModelType<M extends Model, T extends "request" | "response" | "all" = "all"> = M extends ActiveKeyModel 
-    ? ActiveKey<T>
-    : M extends KeyModel
-    ? Key<T>
-    : M extends RoleModel
-    ? Role<T>
-    : M extends ScopeModel
-    ? Scope<T>
-    : M extends TokenModel
-    ? Token<T>
-    : M extends UserModel
-    ? User<T>
-    : never
+import { UninitializedRepositoryError } from "../../types/errors"
+import { getModelName, Model, ModelType } from "../model"
 
 /**
  * An abstract class for a repository.
@@ -26,18 +11,63 @@ type ModelType<M extends Model, T extends "request" | "response" | "all" = "all"
  */
 export abstract class AbstractRepository<M extends Model> {
     protected repository?: Repository<M>
+    private model: Model
 
-    abstract initialize(): void
-    protected checkIfInitialized(): void {
-        if (!this.repository) throw new Error("Repository has not been initialized")
+    constructor(model: Model) {
+        this.model = model
     }
 
-    abstract create(data: ModelType<M,"request">): Promise<M>
+    protected throwUninitializedRepositoryError(): never {
+        throw new UninitializedRepositoryError(this.model)
+    }
+
+    abstract initialize(): void
+
+    public async create(data?: ModelType<M,"request">): Promise<M> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        const model = this.repository.create()
+        if (data === undefined) return model
+        await this.write(model, data)
+        return model
+    }
+
     abstract write(model: M, data: ModelType<M,"request">): Promise<void>
-    abstract save(model: M): Promise<void>
-    abstract find(options?: FindManyOptions<M>): Promise<M[]>
-    abstract findOne(options: FindOneOptions<M>): Promise<M|null>
-    abstract findOneOrFail(options: FindOneOptions<M>): Promise<M>
+
+    public async save(model: M): Promise<M> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        return await this.repository.save(model)
+    }
+
+    public async find(options?: FindManyOptions<M>): Promise<M[]> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        return await this.repository.find(options)
+    }
+
+    public async findOne(options: FindOneOptions<M>): Promise<M|null> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        return await this.repository.findOne(options)
+    }
+
+    public async findOneOrFail(options: FindOneOptions<M>): Promise<M> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        const model = await this.repository.findOne(options)
+
+        if (!model) {
+            throw new MissingEntityError(
+                `The requested ${
+                    getModelName(this.model).toLowerCase()
+                } does not exist in the database`,
+                404
+            )
+        }
+
+        return model
+    }
+
     abstract format(model: M): Promise<ModelType<M,"response">>
-    abstract delete(model: M): Promise<void>
+
+    public async remove(model: M): Promise<void> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        await this.repository.remove(model)
+    }
 }

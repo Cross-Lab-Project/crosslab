@@ -1,6 +1,5 @@
-import { InvalidValueError, MissingEntityError } from "@crosslab/service-common";
+import { InvalidValueError } from "@crosslab/service-common";
 import { hash } from "bcryptjs";
-import { FindManyOptions, FindOneOptions } from "typeorm";
 import { AbstractRepository } from "./abstractRepository";
 import { User } from "../../generated/types";
 import { userUrlFromUsername } from "../../globals";
@@ -9,15 +8,12 @@ import { RoleModel, UserModel } from "../model";
 import { roleRepository } from "./roleRepository";
 
 class UserRepository extends AbstractRepository<UserModel> {
-    public initialize(): void {
-        this.repository = AppDataSource.getRepository(UserModel)
+    constructor() {
+        super(UserModel)
     }
 
-    public async create(data: User<"request">): Promise<UserModel> {
-        this.checkIfInitialized()
-        const userModel = this.repository!.create()
-        await this.write(userModel, data)
-        return userModel
+    public initialize(): void {
+        this.repository = AppDataSource.getRepository(UserModel)
     }
 
     public async write(model: UserModel, data: User<"request">): Promise<void> {
@@ -36,40 +32,6 @@ class UserRepository extends AbstractRepository<UserModel> {
                 this.addRoleModelToUserModel(model, roleModel)
             }
         }
-    }
-
-    public async save(model: UserModel): Promise<void> {
-        this.checkIfInitialized()
-        await this.repository!.save(model)
-    }
-
-    public async find(options?: FindManyOptions<UserModel>): Promise<UserModel[]> {
-        this.checkIfInitialized()
-        return await this.repository!.find(options)
-    }
-
-    public async findOne(options: FindOneOptions<UserModel>): Promise<UserModel | null> {
-        this.checkIfInitialized()
-        return await this.repository!.findOne(options)
-    }
-
-    public async findOneOrFail(options: FindOneOptions<UserModel>): Promise<UserModel> {
-        this.checkIfInitialized()
-        const model = await this.repository!.findOne(options)
-
-        if (!model) {
-            throw new MissingEntityError(
-                `The requested user does not exist in the database`,
-                404
-            )
-        }
-
-        return model
-    }
-
-    public async delete(model: UserModel): Promise<void> {
-        this.checkIfInitialized()
-        await this.repository!.remove(model)
     }
 
     public async format(model: UserModel): Promise<User<"response">> {

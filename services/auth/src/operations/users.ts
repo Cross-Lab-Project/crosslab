@@ -96,7 +96,7 @@ export const deleteUsersByUsername: deleteUsersByUsernameSignature = async (
         }
     })
 
-    await userRepository.delete(userModel)
+    await userRepository.remove(userModel)
 
     console.log(`deleteUsersByUsername succeeded`)
 

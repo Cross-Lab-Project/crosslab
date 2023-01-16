@@ -1,3 +1,5 @@
+import { Model, getModelName } from '../database/model'
+import { capitalizeFirstLetter } from '../methods/utils'
 import { ErrorWithStatus } from '../generated/types'
 
 /**
@@ -110,5 +112,17 @@ export class OwnershipError extends ErrorWithStatus {
     constructor() {
         super(`User is not the owner of the device`, 403)
         this.name = 'OwnershipError'
+    }
+}
+
+/**
+ * This error class should be used when a repository has not been initialized before use.
+ */
+export class UninitializedRepositoryError extends ErrorWithStatus {
+    constructor(model: Model) {
+        super(`${
+            capitalizeFirstLetter(getModelName(model).toLowerCase())
+        } repository has not been initialized`, 500)
+        this.name = "UninitializedRepositoryError"
     }
 }

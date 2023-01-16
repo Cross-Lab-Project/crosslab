@@ -21,7 +21,7 @@ export const postLogout: postLogoutSignature = async (body, user) => {
     })
 
     const tokenModel = (await userModel.tokens).find((tokenModel) => tokenModel.token === body.token)
-    if (tokenModel) await tokenRepository.delete(tokenModel)
+    if (tokenModel) await tokenRepository.remove(tokenModel)
 
     console.log(`postLogout succeeded`)
 

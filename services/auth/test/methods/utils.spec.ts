@@ -1,38 +1,34 @@
+import assert from "assert"
+import * as sinon from "sinon"
+import { capitalizeFirstLetter, die } from "../../src/methods/utils"
+
 export default () => describe("utils methods", async function () {
     // TBD
-    describe("resolveAllowlist", async function () {
-        xit("should resolve allowlist correctly", async function () {
-            // TBD
+    describe("capitalizeFirstLetter", async function () {
+        it("should capitalize the first letter of the provided string", async function () {
+            assert(capitalizeFirstLetter("test") === "Test")
+            assert(capitalizeFirstLetter("Test") === "Test")
+            assert(capitalizeFirstLetter("tEST") === "TEST")
+            assert(capitalizeFirstLetter("TEST") === "TEST")
+        })
+
+        it("should return an empty string when the provided string is empty", async function () {
+            assert(capitalizeFirstLetter("") === "")
         })
     })
 
-    describe("resolveAllowlistEntry", async function () {
-        xit("should resolve an allowlist entry correctly", async function () {
-            // TBD
-        })
-    })
+    describe("die", async function () {
+        it("should exit the program and log the reason", async function () {
+            const consoleErrorStub = sinon.stub(console, "error")
+            const processExitStub = sinon.stub(process, "exit")
 
-    describe("generateNewKey", async function () {
-        xit("should generate a new key correctly", async function () {
-            // TBD
-        })
-    })
+            die("test reason")
 
-    describe("jwk", async function () {
-        xit("should parse a jwk correctly", async function () {
-            // TBD
-        })
-    })
+            assert(consoleErrorStub.calledWith("test reason"))
+            assert(processExitStub.calledWith(1))
 
-    describe("isRequiredUser", async function () {
-        xit("should check if user is required correctly", async function () {
-            // TBD
-        })
-    })
-
-    describe("addRole", async function () {
-        xit("should add role to user correctly", async function () {
-            // TBD
+            consoleErrorStub.restore()
+            processExitStub.restore()
         })
     })
 })

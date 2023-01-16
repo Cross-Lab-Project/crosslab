@@ -1,7 +1,6 @@
 import { getAuthSignature } from '../generated/signatures'
 import {
-    getAllowlistedUser,
-    getTokenStringFromAuthorization,
+    parseBearerToken,
     signDeviceToken,
     signUserToken,
 } from '../methods/auth'
@@ -9,10 +8,10 @@ import {
     ExpiredError,
     InconsistentDatabaseError,
 } from '../types/errors'
-import { allowlist } from '../methods/allowlist'
 import { MissingEntityError } from '@crosslab/service-common'
 import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
 import { tokenRepository } from '../database/repositories/tokenRepository'
+import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -42,7 +41,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     // Non Allowlisted Auth
     try {
         // Resolve user from Authorization parameter
-        const tokenString = getTokenStringFromAuthorization(parameters.Authorization)
+        const tokenString = parseBearerToken(parameters.Authorization)
         const token = await tokenRepository.findOneOrFail({
             where: {
                 token: tokenString 
@@ -86,7 +85,6 @@ export const getAuth: getAuthSignature = async (parameters) => {
     } catch (error) {
         // Allowlisted Auth
         if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
-            // try {
             const user = await getAllowlistedUser(parameters['X-Real-IP'])
 
             console.log(`signing jwt for user ${user.username}`)

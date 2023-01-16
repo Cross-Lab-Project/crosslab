@@ -21,6 +21,7 @@ async function createUserToken(
     expiresIn: number = 3600000
 ): Promise<TokenModel> {
     const tokenModel = await tokenRepository.create({
+        user: userModel.username,
         scopes: [],
         expiresOn: new Date(Date.now() + expiresIn).toISOString()
     })

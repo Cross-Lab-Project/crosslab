@@ -159,7 +159,7 @@ export default () => describe("Active Key Repository Tests", async function () {
             assert(foundKeyModel.public_key === keyModel.public_key)
             assert(foundKeyModel.use === keyModel.use)
 
-            await keyRepository.delete(keyModel)
+            await keyRepository.remove(keyModel)
 
             try {
                 await keyRepository.findOneOrFail({

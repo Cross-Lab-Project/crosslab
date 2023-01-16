@@ -1,4 +1,4 @@
-import { generateKeyPair, exportJWK, JWK } from 'jose'
+import { generateKeyPair, exportJWK } from 'jose'
 import { KeyModel } from '../database/model'
 import { keyRepository } from '../database/repositories/keyRepository'
 
@@ -11,8 +11,8 @@ export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
     const keyPair = await generateKeyPair('RS256')
 
     const keyModel = await keyRepository.create({
-        private_key: JSON.stringify(await exportJWK(keyPair.privateKey)),
-        public_key: JSON.stringify(await exportJWK(keyPair.publicKey)),
+        private_key: await exportJWK(keyPair.privateKey),
+        public_key: await exportJWK(keyPair.publicKey),
         use: usage,
         alg: 'RS256'
     })
@@ -28,7 +28,7 @@ export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
  * @returns The parsed JWK.
  */
 export function jwk(keyModel: KeyModel) {
-    const jwk: JWK = JSON.parse(keyModel.public_key)
+    const jwk = keyModel.public_key
 
     jwk.use = keyModel.use
     jwk.alg = keyModel.alg

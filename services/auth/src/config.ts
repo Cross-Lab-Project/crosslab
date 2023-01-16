@@ -1,17 +1,10 @@
-import { exit } from 'process'
 import { DataSourceOptions } from 'typeorm'
 import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel } from './database/model'
+import { parseAllowlist } from './methods/allowlist'
+import { die } from './methods/utils'
+import { AppConfiguration } from './types/types'
 
-function die(reason: string): string {
-    console.error(reason)
-    exit(1)
-}
-
-function parseAllowlist(allowlist: string): string[] {
-    return allowlist.replace(/\s+/g, '').split(',')
-}
-
-export const config = {
+export const config: AppConfiguration = {
     PORT: parseInt(process.env.PORT ?? '3000'),
     NODE_ENV: process.env.NODE_ENV ?? 'development',
     BASE_URL: process.env.BASE_URL ?? 'http://localhost:3000',
@@ -26,7 +19,7 @@ export const config = {
 
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
-    database: process.env.DATABASE ?? 'db/device.db',
+    database: 'db/device.db',
     synchronize: true,
     entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
 }

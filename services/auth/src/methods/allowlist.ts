@@ -2,8 +2,13 @@ import { MissingEntityError } from "@crosslab/service-common"
 import { userRepository } from "../database/repositories/userRepository"
 import { MalformedAllowlistEntryError, DNSResolveError } from "../types/errors"
 import dns from "dns"
+import { UserModel } from "../database/model"
 
 export const allowlist: { [key: string]: string } = {}
+
+export function parseAllowlist(allowlist: string): string[] {
+    return allowlist.replace(/\s+/g, '').split(',')
+}
 
 export async function resolveAllowlist(config: any) {
     for (const entry of config.ALLOWLIST ?? []) {
@@ -65,4 +70,32 @@ export async function resolveAllowlistEntry(entry: string): Promise<[string, str
     console.log(`resolveAllowlistEntry succeeded`)
 
     return [ip, userModel.username]
+}
+
+/**
+ * Try to find user associated to allowlisted IP.
+ * @param ip IP from the client that is potentially allowlisted.
+ * @throws {MissingEntityError} User associated with allowlisted IP needs to exist in the database.
+ * @returns The user associated with the allowlisted IP.
+ */
+export async function getAllowlistedUser(ip: string): Promise<UserModel> {
+    console.warn(
+        `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
+    )
+    
+    const user = allowlist[ip] 
+        ? await userRepository.findOne({ 
+            where: {
+                username: allowlist[ip]
+            }
+        })
+        : undefined
+
+    if (!user)
+        throw new MissingEntityError(
+            `User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`,
+            500
+        )
+
+    return user
 }

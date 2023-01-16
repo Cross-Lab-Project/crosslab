@@ -118,7 +118,7 @@ export default () => describe("Scope Repository Tests", async function () {
             })
             assert(foundScopeModel.name === scopeData)
 
-            await scopeRepository.delete(scopeModel)
+            await scopeRepository.remove(scopeModel)
             
             try {
                 await scopeRepository.findOneOrFail({
@@ -134,7 +134,7 @@ export default () => describe("Scope Repository Tests", async function () {
         })
 
         it("should not throw an error when scope model is non-existent", async function () {
-            await scopeRepository.delete({ name: "new:non-existent" })
+            await scopeRepository.remove({ name: "new:non-existent" })
         })
     })
     

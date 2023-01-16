@@ -4,37 +4,7 @@ import { config } from '../config'
 import {
     UserType,
 } from '../generated/types'
-import { MalformedParameterError, MissingEntityError, MissingParameterError } from '@crosslab/service-common'
-import { allowlist } from './allowlist'
-import { userRepository } from '../database/repositories/userRepository'
-
-/**
- * Try to find user associated to allowlisted IP.
- * @param ip IP from the client that is potentially allowlisted.
- * @throws {MissingEntityError} User associated with allowlisted IP needs to exist in the database.
- * @returns The user associated with the allowlisted IP.
- */
-export async function getAllowlistedUser(ip: string): Promise<UserModel> {
-    console.warn(
-        `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
-    )
-    
-    const user = allowlist[ip] 
-        ? await userRepository.findOne({ 
-            where: {
-                username: allowlist[ip]
-            }
-        })
-        : undefined
-
-    if (!user)
-        throw new MissingEntityError(
-            `User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`,
-            500
-        )
-
-    return user
-}
+import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
 
 /**
  * This function signs a JWT.
@@ -117,11 +87,11 @@ export async function signDeviceToken(
 }
 
 /**
- * This function parses the string representation of a token from the Authorization parameter
+ * This function parses bearer token from the Authorization parameter
  * @param authorization Authorization parameter from request.
  * @returns String representation of the token.
  */
-export function getTokenStringFromAuthorization(authorization?: string): string {
+export function parseBearerToken(authorization?: string): string {
     const regex = /Bearer (\S*)$/
 
     if (!authorization) {
