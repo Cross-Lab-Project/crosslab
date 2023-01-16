@@ -1,11 +1,10 @@
-import { exit } from 'process'
 import { DataSourceOptions } from 'typeorm'
 import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel } from './database/model'
 import { AppConfiguration } from './types/types'
 
 export function die(reason: string): string {
     console.error(reason)
-    exit(1)
+    process.exit(1)
 }
 
 function initializeAppConfiguration(): AppConfiguration {

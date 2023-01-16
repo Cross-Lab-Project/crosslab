@@ -3,7 +3,7 @@ import { generateNewKey } from "../src/methods/key";
 import methodsSuite from "./methods/index.spec"
 import operationsSuite from "./operations/index.spec"
 import databaseSuite from "./database/index.spec"
-import { resolveAllowlist } from "../src/methods/allowlist";
+import { parseAllowlist, resolveAllowlist } from "../src/methods/allowlist";
 import { scopeRepository } from "../src/database/repositories/scopeRepository";
 import { roleRepository } from "../src/database/repositories/roleRepository";
 import { userRepository } from "../src/database/repositories/userRepository";
