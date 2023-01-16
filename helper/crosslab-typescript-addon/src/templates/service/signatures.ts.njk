@@ -30,7 +30,7 @@ export type {{ operation.name }}Signature = (
             body: {{ operation.name }}RequestBodyType
         {%- endif -%}
         {{- ", " if (operation.requestBody or operation.isProxyRequest) and operation.security -}}
-        {%- if operation.security -%}
+        {%- if operation.security and (operation.security | length) > 0 -%}
             {%- if operation.security | length > 0 -%}
                 {%- set userDataTypes = [] -%}
                 {%- for securityRequirement in operation.security -%}
@@ -62,7 +62,7 @@ export type {{ operation.name }}ParametersType = {
     {% for parameter in operation.parameters -%}
         {%- set temp = '"' + parameter.name + '"' -%}
         {%- set temp = temp + ("?" if not parameter.required) + ": " -%}
-        {%- set temp = temp + (parameter.schema | typeDeclaration(schemas)) -%}
+        {%- set temp = temp + (parameter.schema | typeDeclaration(schemas, { "schemaType": "request" })) -%}
         {%- set parametersTypeDeclarations = (parametersTypeDeclarations.push(temp), parametersTypeDeclarations) -%}
     {%- endfor -%}
     {{ parametersTypeDeclarations | join(",\n\t") }},
@@ -75,7 +75,7 @@ export type {{ operation.name }}ParametersType = {
  * Typing for the request body of a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export type {{ operation.name }}RequestBodyType = 
-    {{- " " + operation.requestBody.schema | typeDeclaration(schemas) if operation.requestBody.schema}}
+    {{- " " + operation.requestBody.schema | typeDeclaration(schemas, { "schemaType": "request" }) if operation.requestBody.schema}}
     {{- " any" if operation.isProxyRequest }}
     {{- " | undefined" if not operation.requestBody.required }}
 
@@ -112,7 +112,7 @@ export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" 
 
 {%- set responseBody = "undefined" -%}
 {%- if response.schema -%}
-    {%- set responseBody = response.schema | typeDeclaration(schemas) | indent(4) -%}
+    {%- set responseBody = response.schema | typeDeclaration(schemas, { "schemaType": "response" }) | indent(4) -%}
 {%- endif %}
 
 /**
@@ -122,7 +122,7 @@ export interface {{ operation.name }}{{ response.status }}ResponseType extends {
     status: {{ ("Status" + response.status) if (response.status | endswith("XX")) else response.status }}
     headers{{ "?" if not response.headers }}: {
         {% for header in response.headers -%}
-        "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas) | indent(8) if header.schema else "undefined" }},
+        "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas, { "schemaType": "response" }) | indent(8) if header.schema else "undefined" }},
         {% endfor -%}
         [k: string]: string | undefined
     }

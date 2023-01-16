@@ -99,6 +99,7 @@ export function schemaToTypeDeclaration(
         inline?: boolean
         resolveDirectly?: boolean
         context?: OpenAPIV3_1.SchemaObject[]
+        schemaType?: "request"|"response"|"all"
     }
 ): {
     comment?: string
@@ -110,8 +111,9 @@ export function schemaToTypeDeclaration(
     options.inline = options.inline ?? false
     options.resolveDirectly = options.resolveDirectly ?? true
     options.context = options.context ?? []
+    options.schemaType = options.schemaType ?? "all"
+    options.prefixTypes = options.prefixTypes ?? ""
 
-    const prefixTypes = options.prefixTypes ?? ""
     let comment = schema.description
         ? `/**\n * ${schema.description.replace(/\n/g, '')}\n */\n`
         : ''
@@ -137,7 +139,12 @@ export function schemaToTypeDeclaration(
         }
         if (options.context.find(s => s.title === schema.title && (s as any)['x-standalone'])) {
             return {
-                typeDeclaration: prefix + prefixTypes + formatName(schema.title) + suffix,
+                typeDeclaration: prefix 
+                    + options.prefixTypes 
+                    + formatName(schema.title) 
+                    + (options.schemaType === "request" ? '<"request">':'')
+                    + (options.schemaType === "response" ? '<"response">':'')
+                    + suffix,
                 typeDependencies: [formatName(schema.title)],
                 comment: comment,
             }
@@ -152,7 +159,7 @@ export function schemaToTypeDeclaration(
         for (const subschema of schema.allOf as Array<OpenAPIV3_1.SchemaObject>) {
             if (!type) type = subschema.type
             if (type != subschema.type) throw 'Error: cannot merge types for allOf'
-            const td = schemaToTypeDeclaration(subschema, { context: options.context, prefixTypes: prefixTypes })
+            const td = schemaToTypeDeclaration(subschema, options)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
@@ -168,7 +175,7 @@ export function schemaToTypeDeclaration(
         const typeDeclarations = []
         let dependencies: Array<string> = []
         for (const subschema of schema.anyOf) {
-            const td = schemaToTypeDeclaration(subschema, { context: options.context, prefixTypes: prefixTypes })
+            const td = schemaToTypeDeclaration(subschema, options)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
@@ -184,7 +191,7 @@ export function schemaToTypeDeclaration(
         const typeDeclarations = []
         let dependencies: Array<string> = []
         for (const subschema of schema.oneOf) {
-            const td = schemaToTypeDeclaration(subschema, { context: options.context, prefixTypes: prefixTypes })
+            const td = schemaToTypeDeclaration(subschema, options)
             typeDeclarations.push(td.typeDeclaration)
             dependencies = dependencies.concat(td.typeDependencies)
         }
@@ -228,10 +235,7 @@ export function schemaToTypeDeclaration(
             let dependencies: Array<string> = []
             if (schema.properties) {
                 for (const property of Object.keys(schema.properties)) {
-                    const td = schemaToTypeDeclaration(schema.properties[property], {
-                        context: options.context,
-                        prefixTypes: prefixTypes
-                    })
+                    const td = schemaToTypeDeclaration(schema.properties[property], options)
                     properties.push(
                         `${td.comment}${property}${
                             required.includes(property) ? '' : '?'
@@ -261,7 +265,7 @@ export function schemaToTypeDeclaration(
         case 'array':
             const td = schemaToTypeDeclaration(
                 (schema as OpenAPIV3_1.ArraySchemaObject).items,
-                { context: options.context, prefixTypes: prefixTypes }
+                options
             )
             return {
                 typeDeclaration: `${td.typeDeclaration}[]`,

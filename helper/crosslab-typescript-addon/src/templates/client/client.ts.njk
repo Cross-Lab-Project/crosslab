@@ -187,11 +187,11 @@ export class APIClient {
     private fetch: FetchFunction = async (url, info) => {
         let raw_response
         try {
-            raw_response = await fetch(url, {
-                method: info?.method,
-                body: info?.body,
-                headers: info?.headers
-            })
+            if (url.startsWith(this._url)) {
+                raw_response = await fetch(url, info);
+            } else {
+                raw_response = await fetch(appendToUrl(this._url, "/proxy?" + new URLSearchParams([["URL", url]]).toString()), info)      
+            }
         } catch (error) {
             if (error instanceof Error) {
                 throw new FetchError(error.message)
@@ -372,7 +372,7 @@ export class APIClient {
             {#- Add declaration of request body if defined #}
             {%- if operation.requestBody -%}
             {{- bodyName + ": " -}}
-            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixTypes": types + "." }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
+            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixTypes": types + ".", "schemaType": "request" }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
             {%- endif -%}
 
             {#- Add declaration of parameters and optional url if defined #}
@@ -501,6 +501,8 @@ export class APIClient {
     > {
         {%- if requiredUrl %}
             {%- if not buildUrl %}
+                const urlSuffix = '{{ operation.path | replace(r/{.*?}/g, "{}") }}'.split('{}').at(-1) ?? ''
+                if (!url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
                 const [{{ operation.path | replace(r/(.*?{(.*?)})(\/\w*)*/g, "$2,") }}] = 
                 {{- "" }} validateUrl(url, '{{ operation.path | replace(r/{.*?}/g, "{}") }}')
             {%- else %}

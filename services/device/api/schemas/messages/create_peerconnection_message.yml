@@ -17,6 +17,7 @@ allOf:
       services:
         type: array
         items:
+          type: object
           $ref: "../service_config.yml"
           required:
             - serviceType

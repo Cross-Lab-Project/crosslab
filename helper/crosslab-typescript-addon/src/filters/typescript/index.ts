@@ -60,18 +60,50 @@ function typeDependencies_filter(
  * @returns The typings of the schemas.
  */
 function standaloneTypings_filter(extendedSchemas: ExtendedSchema[]) {
-    const standaloneSchemas = extendedSchemas.filter((sd) => sd['x-standalone'])
+    const standaloneSchemas = extendedSchemas
+        .filter((extendedSchema) => extendedSchema['x-standalone'] && extendedSchema['x-schema-type'] === "all")
+    
+    const mappedStandaloneSchemas = standaloneSchemas
+        .map((extendedSchema) => {
+            const requestSchema = extendedSchemas.find((es) => es['x-location'] === extendedSchema['x-location'] + "_request")
+            const responseSchema = extendedSchemas.find((es) => es['x-location'] === extendedSchema['x-location'] + "_response")
+            if (!requestSchema || !responseSchema)
+                throw new Error("Could not find request-/response-schema")
+            return {
+                all: extendedSchema,
+                request: requestSchema,
+                response: responseSchema,
+            }
+        })
 
     return (
-        standaloneSchemas
-            .map((schema) => {
-                const name = schema.title ? formatName(schema.title) : 'MISSING_NAME'
-                const td = schemaToTypeDeclaration(schema, {
+        mappedStandaloneSchemas
+            .map((schemas) => {
+                const name = schemas.all.title ? formatName(schemas.all.title) : 'MISSING_NAME'
+                const tdAll = schemaToTypeDeclaration(schemas.all, {
                     inline: false,
                     resolveDirectly: false,
                     context: standaloneSchemas,
                 })
-                return `${td.comment}export type ${name} = ${td.typeDeclaration}`
+                const tdRequest = schemaToTypeDeclaration(schemas.request, {
+                    inline: false,
+                    resolveDirectly: false,
+                    context: standaloneSchemas,
+                })
+                const tdResponse = schemaToTypeDeclaration(schemas.response, {
+                    inline: false,
+                    resolveDirectly: false,
+                    context: standaloneSchemas,
+                })
+                return `
+                ${tdAll.comment}export type ${name}<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? ${tdAll.typeDeclaration}
+                    : T extends "request" 
+                    ? ${tdRequest.typeDeclaration}
+                    : T extends "response"
+                    ? ${tdResponse.typeDeclaration}
+                    : never
+                `
             })
             .join('\n\n')
     )

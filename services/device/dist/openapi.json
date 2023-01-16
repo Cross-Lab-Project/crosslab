@@ -330,6 +330,7 @@
               "services": {
                 "type": "array",
                 "items": {
+                  "type": "object",
                   "$ref": "#/components/schemas/service_config",
                   "required": [
                     "serviceType",

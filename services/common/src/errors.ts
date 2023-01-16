@@ -117,3 +117,13 @@ export class DeviceNotConnectedError extends ErrorWithStatus {
         this.name = "MissingParameterError"
     }
 }
+
+/**
+ * This error class should be used if a parameter of a request is malformed.
+ */
+ export class MalformedParameterError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = "MalformedParameterError"
+    }
+}
