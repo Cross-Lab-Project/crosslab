@@ -7,21 +7,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Authentication Service",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "env": {
-                "SECURITY_ISSUER": "http://localhost",
-                "SECURITY_AUDIENCE": "http://localhost",
-                "ALLOWLIST": "localhost:authservice,localhost:deviceservice,localhost:experimentservice,localhost:federationservice,localhost:updateservice"
-            },
-            "sourceMaps": true,
-            "smartStep": true,
-            "program": "${workspaceFolder}/src/index.ts",
-            "outFiles": [
-                "${workspaceFolder}/app/**/*.js"
-            ]
+            "restart": true
         }
     ]
 }

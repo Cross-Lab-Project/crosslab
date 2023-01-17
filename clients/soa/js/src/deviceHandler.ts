@@ -8,6 +8,7 @@ import {
 import { PeerConnection } from "./peer/connection";
 import { Service } from "./service";
 import { WebRTCPeerConnection } from "./peer/webrtc-connection";
+import WebSocket from "isomorphic-ws";
 
 export class DeviceHandler {
   ws!: WebSocket;
@@ -72,6 +73,7 @@ export class DeviceHandler {
       service.setupConnection(connection, serviceConfig);
     }
     connection.on("signalingMessage", (msg) => {
+      console.log("sending:", msg)
       this.ws.send(
         JSON.stringify(<SignalingMessage>{
           ...msg,
