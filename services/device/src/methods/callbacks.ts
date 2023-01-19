@@ -1,17 +1,24 @@
 import express from 'express'
 import fetch from 'node-fetch'
+import { config } from '../config'
+import { AppDataSource } from '../data_source'
 import {
     isConcreteDevice,
     isDeviceGroup,
     isInstantiableBrowserDevice,
     isInstantiableCloudDevice,
 } from '../generated/types'
-import { pendingPeerconnections } from '../globals'
-import { DeviceOverviewModel, PeerconnectionModel } from '../model'
+import { apiClient, timeoutMap } from '../globals'
+import { PeerconnectionModel } from '../model'
 import { InvalidValueError, MalformedBodyError } from '../types/errors'
+import { DeviceModel } from '../types/helper'
 import { formatDevice, formatPeerconnection } from './database/format'
 import { startSignaling } from './signaling'
 
+export const callbackUrl: string =
+    config.BASE_URL +
+    (config.BASE_URL.endsWith('/') ? '' : '/') +
+    'callbacks/device'
 export const changedCallbacks = new Map<string, Array<string>>()
 export const closedCallbacks = new Map<string, Array<string>>()
 export const statusChangedCallbacks = new Map<string, Array<string>>()
@@ -20,22 +27,26 @@ export const statusChangedCallbacks = new Map<string, Array<string>>()
  * This function adds the endpoint for incoming callbacks registered by the peerconnection service.
  * @param app The express application the callback endpoint should be added to.
  */
-export function peerconnectionsCallbackHandling(app: express.Application) {
+export function callbackHandling(app: express.Application) {
     // TODO: adapt callback handling after codegen update
-    app.post('/peerconnections/callbacks', (req, res) => {
-        const callback = req.body
-        if (typeof callback !== 'object')
-            throw new MalformedBodyError('Body of callback is not an object', 400)
-        const callbackType = getCallbackType(callback)
+    app.post('/callbacks/device', async (req, res, next) => {
+        try {
+            const callback: any = req.body
+            if (typeof callback !== 'object')
+                throw new MalformedBodyError('Body of callback is not an object', 400)
+            const callbackType = getCallbackType(callback)
 
-        switch (callbackType) {
-            case 'event':
-                return res.status(handleEventCallback(callback)).send()
-            default:
-                throw new InvalidValueError(
-                    `Callbacks of type "${req.body.callbackType}" are not supported`,
-                    400
-                )
+            switch (callbackType) {
+                case 'event':
+                    return res.status(await handleEventCallback(callback)).send()
+                default:
+                    throw new InvalidValueError(
+                        `Callbacks of type "${req.body.callbackType}" are not supported`,
+                        400
+                    )
+            }
+        } catch (error) {
+            return next(error)
         }
     })
 }
@@ -66,7 +77,7 @@ function getCallbackType(callback: any) {
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-function handleEventCallback(callback: any): 200 | 410 {
+async function handleEventCallback(callback: any): Promise<200 | 410> {
     if (!callback.eventType) {
         throw new MalformedBodyError(
             'Callbacks of type "event" require property "eventType"',
@@ -81,7 +92,7 @@ function handleEventCallback(callback: any): 200 | 410 {
     }
     switch (callback.eventType) {
         case 'device-changed':
-            return handleDeviceChangedEventCallback(callback)
+            return await handleDeviceChangedEventCallback(callback)
         default:
             throw new InvalidValueError(
                 `Event-callbacks of type "${callback.eventType}" are not supported`,
@@ -97,7 +108,7 @@ function handleEventCallback(callback: any): 200 | 410 {
  * @throws {InvalidValueError} Thrown if the device is not of type "device".
  * @returns The status code for the response to the incoming callback.
  */
-function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
+async function handleDeviceChangedEventCallback(callback: any): Promise<200 | 410> {
     if (!callback.device) {
         throw new MalformedBodyError(
             'Event-callbacks of type "device-changed" require property "device"',
@@ -122,42 +133,64 @@ function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
             400 // NOTE: error code
         )
     }
-    const pendingConnections = pendingPeerconnections.filter(
-        (pc) => pc.deviceA.url === device.url || pc.deviceB.url === device.url
-    )
+    const pendingConnectionsA = await AppDataSource.getRepository(PeerconnectionModel).find({
+        where: {
+            deviceA: {
+                url: device.url
+            }
+        },
+        relations: {
+            deviceA: true,
+            deviceB: true
+        }
+    })
+    const pendingConnectionsB = await AppDataSource.getRepository(PeerconnectionModel).find({
+        where: {
+            deviceB: {
+                url: device.url
+            }
+        },
+        relations: {
+            deviceA: true,
+            deviceB: true
+        }
+    })
+    const pendingConnections = [...pendingConnectionsA, ...pendingConnectionsB]
     if (pendingConnections.length === 0) {
         return 410
     }
     for (const pendingConnection of pendingConnections) {
-        if (pendingConnection.deviceA.url === device.url) {
-            pendingConnection.deviceA = device
-        } else {
-            pendingConnection.deviceB = device
-        }
+        const deviceA = await apiClient.getDevice(pendingConnection.deviceA.url)
+        const deviceB = await apiClient.getDevice(pendingConnection.deviceB.url)
 
-        if (pendingConnection.deviceA.connected && pendingConnection.deviceB.connected) {
-            clearTimeout(pendingConnection.timeout)
-            startSignaling(pendingConnection.peerconnection)
-            return 410
+        if (deviceA.connected && deviceB.connected) {
+            clearTimeout(timeoutMap.get(pendingConnection.uuid))
+            await startSignaling(pendingConnection)
+            timeoutMap.delete(pendingConnection.uuid)
         }
     }
-    return 200
+    return pendingConnections.length === 0 ? 410 : 200
 }
 
 /**
  * This function sends a "device-changed" callback.
  * @param device The device for which to send the callback.
  */
-export async function sendChangedCallback(device: DeviceOverviewModel) {
+export async function sendChangedCallback(device: DeviceModel) {
+    console.log(`Sending changedCallback for device ${device.uuid}`)
     const urls = changedCallbacks.get(device.uuid) ?? []
     for (const url of urls) {
+        console.log(`Sending changedCallback for device ${device.uuid} to url ${url}`)
         const res = await fetch(url, {
-            method: 'post',
+            method: 'POST',
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'device-changed',
-                ...formatDevice(device),
+                device: await formatDevice(device),
             }),
+            headers: [
+                ["Content-Type", "application/json"]
+            ]
         })
 
         if (res.status === 410) {
@@ -182,8 +215,11 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnnection-closed',
-                ...formatPeerconnection(peerconnection),
+                peerconnection: formatPeerconnection(peerconnection),
             }),
+            headers: [
+                ["Content-Type", "application/json"]
+            ]
         })
 
         if (res.status === 410) {
@@ -201,15 +237,20 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
  * @param peerconnection The peerconnection for which to send the callback.
  */
 export async function sendStatusChangedCallback(peerconnection: PeerconnectionModel) {
+    console.log(`Sending statusChangedCallback for peerconnection ${peerconnection.uuid}`)
     const urls = statusChangedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
+        console.log(`Sending statusChangedCallback for peerconnection ${peerconnection.uuid} to url ${url}`)
         const res = await fetch(url, {
             method: 'post',
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnection-status-changed',
-                ...formatPeerconnection(peerconnection),
+                peerconnection: formatPeerconnection(peerconnection),
             }),
+            headers: [
+                ["Content-Type", "application/json"]
+            ]
         })
 
         if (res.status === 410) {

@@ -3,7 +3,7 @@ import { saveExperimentModel } from '../database/methods/save'
 import { ExperimentModel } from '../database/model'
 import { MissingPropertyError } from '../types/errors'
 import { createPeerconnection } from './api'
-import { callbackUrl } from './callbacks'
+import { callbackUrl, peerconnectionClosedCallbacks, peerconnectionStatusChangedCallbacks } from './callbacks'
 import { buildConnectionPlan } from './connectionPlan'
 import { RequestHandler } from './requestHandler'
 
@@ -26,6 +26,7 @@ export async function establishPeerconnections(
             peerconnectionPlan,
             {
                 closedUrl: callbackUrl,
+                statusChangedUrl: callbackUrl
             }
         )
         if (!experimentModel.connections) experimentModel.connections = []
@@ -47,6 +48,8 @@ export async function establishPeerconnections(
                 'Created peerconnection has a device without an url',
                 500
             )
+        peerconnectionClosedCallbacks.push(peerconnection.url)
+        peerconnectionStatusChangedCallbacks.push(peerconnection.url)
 
         // create, push and save new peerconnection
         const peerconnectionModel = requestHandler.executeSync(

@@ -273,3 +273,20 @@ export async function unlockDevices(
         throw error
     }
 }
+
+/**
+ * This function wraps the getPeerconnection() function of the api-client and throws server specific errors.
+ * @param args The arguments of the getPeerconnection() function.
+ * @throws {InternalRequestError} Thrown if an error occurs during the request.
+ */
+ export async function getPeerconnection(
+    requestHandler: RequestHandler,
+    ...args: Parameters<typeof apiClient.getPeerconnection>
+) {
+    try {
+        return await apiClient.getPeerconnection(args[0])
+    } catch (error) {
+        handleInternalRequestError(requestHandler, error)
+        throw error
+    }
+}

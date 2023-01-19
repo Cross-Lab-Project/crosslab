@@ -16,7 +16,7 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import { Request, ErrorRequestHandler } from "express"
+import { Application, Request, ErrorRequestHandler } from "express"
 
 {%- if validationDependencies | length > 0 %}
 
@@ -36,6 +36,7 @@ export type initServiceOptions<T extends SecurityScheme> = {
     }
     {%- endif %}
     errorHandler?: ErrorRequestHandler
+    additionalHandlers?: ((app: Application) => void)[]
 }
 
 export type UserData<T extends SecurityScheme> = {

@@ -10,9 +10,10 @@ import { findPeerconnectionModelByUrl } from '../database/methods/find'
 import { saveExperimentModel } from '../database/methods/save'
 import { DeviceServiceTypes } from '@cross-lab-project/api-client'
 import { RequestHandler } from './requestHandler'
+import { getPeerconnection } from './api'
 
 export const callbackUrl: string =
-    config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/callbacks'
+    config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + `callbacks/experiment`
 export const peerconnectionClosedCallbacks: string[] = []
 export const peerconnectionStatusChangedCallbacks: string[] = []
 export const deviceChangedCallbacks: string[] = []
@@ -23,26 +24,31 @@ export const deviceChangedCallbacks: string[] = []
  */
 export function callbackHandling(app: express.Application) {
     // TODO: adapt callback handling after codegen update
-    app.post('/experiments/callbacks', async (req, res) => {
-        const requestHandler: RequestHandler = new RequestHandler('callbackHandling')
-        const callback = req.body
-        if (typeof callback !== 'object')
-            throw new MalformedBodyError('Body of callback is not an object', 400)
-        const callbackType = requestHandler.executeSync(getCallbackType, callback)
+    app.post('/callbacks/experiment', async (req, res, next) => {
+        try {
+            const requestHandler: RequestHandler = new RequestHandler('callbackHandling')
+            const callback = req.body
+            console.log(callback)
+            if (typeof callback !== 'object')
+                throw new MalformedBodyError('Body of callback is not an object', 400)
+            const callbackType = requestHandler.executeSync(getCallbackType, callback)
 
-        switch (callbackType) {
-            case 'event':
-                return res
-                    .status(
-                        await requestHandler.executeAsync(handleEventCallback, callback)
+            switch (callbackType) {
+                case 'event':
+                    return res
+                        .status(
+                            await requestHandler.executeAsync(handleEventCallback, callback)
+                        )
+                        .send()
+                default:
+                    requestHandler.throw(
+                        InvalidValueError,
+                        `Callbacks of type "${req.body.callbackType}" are not supported`,
+                        400
                     )
-                    .send()
-            default:
-                requestHandler.throw(
-                    InvalidValueError,
-                    `Callbacks of type "${req.body.callbackType}" are not supported`,
-                    400
-                )
+            }
+        } catch (error) {
+            return next(error)
         }
     })
 }
@@ -55,14 +61,14 @@ export function callbackHandling(app: express.Application) {
  * @returns The type of the incoming callback.
  */
 function getCallbackType(_requestHandler: RequestHandler, callback: any) {
+    if (!callback.callbackType) {
+        throw new MissingPropertyError('Callbacks require property "callbackType"', 400)
+    }
     if (typeof callback.callbackType !== 'string') {
         throw new MalformedBodyError(
             'Property "callbackType" needs to be of type string',
             400
         )
-    }
-    if (!callback.callbackType) {
-        throw new MissingPropertyError('Callbacks require property "callbackType"', 400)
     }
     return callback.callbackType as string
 }
@@ -86,7 +92,7 @@ async function handleEventCallback(
     }
     if (typeof callback.eventType !== 'string') {
         throw new MissingPropertyError(
-            'Property "callbackType" needs to be of type "string"',
+            'Property "eventType" needs to be of type "string"',
             400
         )
     }
@@ -168,7 +174,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
         throw new MissingPropertyError('Property "peerconnection" is missing property "url"', 400)
     }
     if (!peerconnectionStatusChangedCallbacks.includes(peerconnection.url)) {
-        return 410
+        return 410 // TODO: find a solution for this problem (race condition)
     }
     if (!peerconnection.status) {
         throw new MissingPropertyError('Property "peerconnection" is missing property "status"')
@@ -187,6 +193,12 @@ async function handlePeerconnectionStatusChangedEventCallback(
         ) // NOTE: error code
 
     peerconnectionModel.status = peerconnection.status
+    const experimentModel = peerconnectionModel.experiment
+    if (!experimentModel)
+        requestHandler.throw(
+            MissingPropertyError,
+            `Peerconnection model is missing property "experiment"`
+        ) // NOTE: error code
 
     switch (peerconnectionModel.status) {
         case 'closed':
@@ -194,22 +206,21 @@ async function handlePeerconnectionStatusChangedEventCallback(
             break
         case 'connected':
             // TODO: handle status connected
-            const experimentModel = peerconnectionModel.experiment
-            if (!experimentModel)
-                requestHandler.throw(
-                    MissingPropertyError,
-                    `Peerconnection model is missing property "experiment"`
-                ) // NOTE: error code
-
             if (!experimentModel.connections)
                 requestHandler.throw(
                     MissingPropertyError,
                     `Experiment model is missing property "connections"`
                 ) // NOTE: error code
+            
+            let connected = true
+            for (const pc of experimentModel.connections) {
+                if ((await getPeerconnection(requestHandler, pc.url)).status !== "connected") {
+                    connected = false
+                }
+            }
 
             if (
-                experimentModel.status === 'setup' &&
-                !experimentModel.connections.find((c) => c.status !== 'connected')
+                experimentModel.status === 'setup' && connected
             ) {
                 experimentModel.status = 'running'
                 await requestHandler.executeAsync(saveExperimentModel, experimentModel)
@@ -257,6 +268,7 @@ function handleDeviceChangedEventCallback(
     if (!deviceChangedCallbacks.includes(device.url)) {
         return 410
     }
+    console.log(`Device ${device.url} changed!`)
     // TODO: add device changed handling
     return 200
 }

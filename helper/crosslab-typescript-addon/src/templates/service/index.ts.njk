@@ -18,10 +18,15 @@ app.initService = (options) => {
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
 
-    /**
-     * Routes
-     */
+    // add routes
     app.use("/", router(options))
+
+    // add additional handlers
+    if (options.additionalHandlers) {
+        for (const handler of options.additionalHandlers) {
+            handler(app)
+        }
+    }
 
     // catch 404
     app.use((req, res, _next) => {

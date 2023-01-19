@@ -22,7 +22,7 @@ import {
     PeerconnectionModel,
 } from './model'
 import { randomUUID } from 'crypto'
-import { apiClient, peerconnectionsCallbackUrl, pendingPeerconnections, YEAR } from './globals'
+import { apiClient, timeoutMap, YEAR } from './globals'
 import {
     ForbiddenOperationError,
     InconsistentDatabaseError,
@@ -37,9 +37,10 @@ import {
     isAuthenticationMessage,
     AuthenticationMessage,
     ClosePeerconnectionMessage,
+    ConcreteDevice,
 } from './generated/types'
 import { applyAvailabilityRules } from './methods/availability'
-import { sendChangedCallback, changedCallbacks, closedCallbacks, sendClosedCallback, statusChangedCallbacks } from './methods/callbacks'
+import { sendChangedCallback, changedCallbacks, closedCallbacks, sendClosedCallback, statusChangedCallbacks, callbackUrl, sendStatusChangedCallback } from './methods/callbacks'
 import {
     formatDevice,
     formatDeviceOverview,
@@ -51,7 +52,6 @@ import { writeAvailabilityRule, writeDevice, writePeerconnection } from './metho
 import WebSocket from 'ws'
 import {
     createDeviceModelFromDevice,
-    createDeviceModel,
 } from './methods/database/create'
 import { deleteDeviceModel } from './methods/database/delete'
 import { saveDeviceModel } from './methods/database/save'
@@ -89,9 +89,10 @@ export function deviceHandling(app: Express.Application) {
                 return
             }
             device.connected = true
-            await deviceRepository.save(device)
-            sendChangedCallback(device)
             connectedDevices.set(device.uuid, ws)
+            await deviceRepository.save(device)
+            await sendChangedCallback(device)
+            console.log(`device ${device.uuid} connected`)
 
             ws.send(
                 JSON.stringify(<AuthenticationMessage>{
@@ -109,7 +110,7 @@ export function deviceHandling(app: Express.Application) {
                 if (isAlive === false) {
                     device.connected = false
                     await deviceRepository.save(device)
-                    sendChangedCallback(device)
+                    await sendChangedCallback(device)
                     connectedDevices.delete(device.uuid)
                     clearInterval(interval)
                     return ws.terminate()
@@ -236,26 +237,27 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
             400
         )
 
-    const concreteDevice = createDeviceModel('device')
-    writeDevice(concreteDevice, {
+    const concreteDevice: ConcreteDevice = {
         ...instantiableDevice,
         type: 'device',
         announcedAvailability: [{ available: true }],
         services: [],
-    })
-    concreteDevice.owner = user.JWT?.url
-    await saveDeviceModel(concreteDevice)
+    }
+    const concreteDeviceModel = createDeviceModelFromDevice<ConcreteDeviceModel>(concreteDevice)
+
+    concreteDeviceModel.owner = user.JWT?.url
+    await saveDeviceModel(concreteDeviceModel)
 
     if (parameters.changedUrl) {
         console.log(
             `registering changed-callback for device ${concreteDevice.uuid} to ${parameters.changedUrl}`
         )
-        const changedCallbackURLs = changedCallbacks.get(concreteDevice.uuid) ?? []
+        const changedCallbackURLs = changedCallbacks.get(concreteDeviceModel.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(concreteDevice.uuid, changedCallbackURLs)
+        changedCallbacks.set(concreteDeviceModel.uuid, changedCallbackURLs)
     }
 
-    const instance = await formatDevice(concreteDevice)
+    const instance = await formatDevice(concreteDeviceModel)
     if (!instance.url)
         throw new MissingPropertyError(
             'Created instance of device does not have an url',
@@ -263,7 +265,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         )
     const deviceToken = await apiClient.createDeviceAuthenticationToken(instance.url) // TODO: error handling
     if (!instantiableDevice.instances) instantiableDevice.instances = []
-    instantiableDevice.instances.push(concreteDevice)
+    instantiableDevice.instances.push(concreteDeviceModel)
 
     await saveDeviceModel(instantiableDevice)
 
@@ -323,7 +325,16 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     if (!device)
         throw new MissingEntityError(`Could not find device ${parameters.device_id}`, 404)
 
-    if (!body) {
+    if (parameters.changedUrl) {
+        console.log(
+            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+        )
+        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
+        changedCallbackURLs.push(parameters.changedUrl)
+        changedCallbacks.set(device.uuid, changedCallbackURLs)
+    }
+
+    if (!body || Object.keys(body).length === 0) {
         console.log(
             `patchDevicesByDeviceId succeeded: no changes applied due to empty body`
         )
@@ -339,15 +350,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 
     writeDevice(device, body)
 
-    sendChangedCallback(device)
-    if (parameters.changedUrl) {
-        console.log(
-            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
-        )
-        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
-        changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(device.uuid, changedCallbackURLs)
-    }
+    await sendChangedCallback(device)
 
     console.log(`patchDevicesByDeviceId succeeded`)
 
@@ -369,7 +372,6 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         console.log(`postDevicesByDeviceIdAvailability called`)
         const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
         const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
-        apiClient.addAvailabilityRules
 
         if (!device)
             throw new MissingEntityError(
@@ -401,7 +403,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         )
 
         await deviceRepository.save(device)
-        sendChangedCallback(device)
+        await sendChangedCallback(device)
 
         console.log(`postDevicesByDeviceIdAvailability succeeded`)
 
@@ -580,12 +582,12 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         const n_deviceA = await apiClient.updateDevice(
             deviceA.url,
             {},
-            { changedUrl: peerconnectionsCallbackUrl }
+            { changedUrl: callbackUrl }
         )
         const n_deviceB = await apiClient.updateDevice(
             deviceB.url,
             {},
-            { changedUrl: peerconnectionsCallbackUrl }
+            { changedUrl: callbackUrl }
         )
 
         // check that devices still have the correct type
@@ -599,18 +601,15 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         }
 
         // set timeout for checking if devices are connected
-        const timeout = setTimeout(() => {
-            console.log('devices did not connect')
-            peerconnection.status = 'failed'
-            peerconnectionRepository.save(peerconnection)
-        }, 30000)
-
-        pendingPeerconnections.push({
-            peerconnection: peerconnection,
-            deviceA: n_deviceA,
-            deviceB: n_deviceB,
-            timeout: timeout,
-        })
+        timeoutMap.set(
+            peerconnection.uuid, 
+            setTimeout(async () => {
+                console.log('devices did not connect')
+                peerconnection.status = 'failed'
+                await peerconnectionRepository.save(peerconnection)
+                await sendStatusChangedCallback(peerconnection)
+            }, 30000)
+        )
     }
 
     if (parameters.closedUrl) {
@@ -726,7 +725,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             peerconnectionUrlFromId(peerconnection.uuid)
         )
 
-        sendClosedCallback(peerconnection)
+        await sendClosedCallback(peerconnection)
 
         console.log(`deletePeerconnectionsByPeerconnectionId succeeded`)
 
