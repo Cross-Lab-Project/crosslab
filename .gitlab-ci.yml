@@ -11,4 +11,4 @@ default:
 build:
   stage: build
   script:
-    - ./scripts/ci.sh
+    - ./scripts/ci.sh -v
