@@ -1,0 +1,9 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+image: crosslab/devcontainer:latest
+
+build:
+  stage: build
+  script:
+    - ./scripts/ci.sh
