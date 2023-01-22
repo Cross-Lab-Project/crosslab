@@ -134,6 +134,7 @@ while true; do
           # No hash file, so job is not build try to download cache
           echo_end "${BLUE}⇣ check for remote cache${NC}"
           $SCRIPT_DIR/download_job_artifact.sh --directory ${root[$job]}/dist --hash $job_input_hash $SUBCOMMANDVARS || true
+          echo "done"
         fi
 
         # Check if job hash is the same

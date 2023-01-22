@@ -93,6 +93,7 @@ if ssh -q -o StrictHostKeyChecking=no $SERVER "true"; then
     $QUIET || echo "Found $RPATH/jobs/$DIR/$HASH. Downloading..."
     mkdir -p $DIR
     rsync -e "ssh -o StrictHostKeyChecking=no" -a $additional_rsync_args $REPOSITORY/jobs/$DIR/$HASH/ $DIR
+    $QUIET || echo "Done"
     exit 0
   fi
 else
