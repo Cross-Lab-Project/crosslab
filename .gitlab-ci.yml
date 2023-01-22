@@ -3,6 +3,11 @@ variables:
 
 image: crosslab/devcontainer:latest
 
+default:
+  before_script:
+    - sudo chown -R $(whoami) .
+    - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
 build:
   stage: build
   script:
