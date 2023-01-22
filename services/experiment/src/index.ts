@@ -3,12 +3,10 @@
 import { config } from './config'
 import { AppDataSource } from './database/data_source'
 import { app } from './generated/index'
-import { createRemoteJWKSet, jwtVerify } from 'jose'
-import { isUserType } from './generated/types'
 import { callbackHandling } from './util/callbacks'
 import expressWinston from 'express-winston'
 import { logger } from './util/requestHandler'
-import { JWTVerificationError } from './types/errors'
+import { JWTVerify } from '@crosslab/service-common'
 
 AppDataSource.initialize()
     .then(() => {
@@ -29,43 +27,13 @@ AppDataSource.initialize()
             }
         }));
 
-        callbackHandling(app)
         app.initService({
             security: { 
-                "JWT": async (req, scopes) => {
-                    const authorization_header = req.header("Authorization")
-                    if (authorization_header === undefined) {
-                        throw new JWTVerificationError("Authorization header is not set", 401)
-                    }
-                    const bearerTokenResult = /^Bearer (.*)$/.exec(authorization_header);
-                    if (bearerTokenResult === null || bearerTokenResult.length != 2) {
-                        throw new JWTVerificationError("Authorization header is malformed", 401)
-                    }
-                    const jwt = bearerTokenResult[1]
-                    if (!jwt) throw new JWTVerificationError('No JWT provided', 401)
-                    if (!config.SECURITY_ISSUER)
-                        throw new JWTVerificationError('No security issuer specified', 500)
-                    const jwksUri = new URL(
-                        config.BASE_URL.endsWith('/')
-                            ? config.BASE_URL + '.well-known/jwks.json'
-                            : config.BASE_URL + '/.well-known/jwks.json'
-                    )
-                    const JWKS = createRemoteJWKSet(jwksUri)
-                    const jwtVerifyResult = await jwtVerify(jwt, JWKS, {
-                        issuer: config.SECURITY_ISSUER,
-                        audience: config.SECURITY_AUDIENCE,
-                    })
-                    if (!isUserType(jwtVerifyResult.payload))
-                        throw new JWTVerificationError('Payload is malformed', 401)
-                    const user = jwtVerifyResult.payload
-                    for (const scope of scopes) {
-                        if (user.scopes.includes(scope)) {
-                            return user
-                        }
-                    }
-                    throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403)
-                }
+                "JWT": JWTVerify(config) as any
             },
+            additionalHandlers: [
+                callbackHandling
+            ]
         })
         app.listen(config.PORT)
     })

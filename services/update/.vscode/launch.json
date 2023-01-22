@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Experiment Service",
+            "name": "Launch Update Service",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev"],
             "skipFiles": [

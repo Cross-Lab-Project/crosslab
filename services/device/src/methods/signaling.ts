@@ -12,11 +12,16 @@ import { peerconnectionUrlFromId } from './utils'
  * @throws Throws errors of the {@link apiClient.sendSignalingMessage | sendSignalingMessage()} function of the api-client.
  */
 export async function startSignaling(peerconnection: PeerconnectionModel) {
+    console.log(`Starting signaling for ${peerconnection.uuid}`)
     const common = <CreatePeerconnectionMessage>{
         messageType: 'command',
         command: 'createPeerconnection',
         connectionType: 'webrtc',
         connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
+    }
+
+    if (peerconnection.status !== "waiting-for-devices") {
+        return 
     }
 
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
@@ -35,6 +40,7 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
         tiebreaker: true,
     }
 
+    // TODO: check what problems may occur here and address them accordingly
     await apiClient.sendSignalingMessage(
         peerconnection.deviceA.url,
         createPeerConnectionMessageA,
@@ -51,5 +57,5 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
     peerconnection.status = 'connected'
     await AppDataSource.getRepository(PeerconnectionModel).save(peerconnection)
 
-    sendStatusChangedCallback(peerconnection)
+    await sendStatusChangedCallback(peerconnection)
 }

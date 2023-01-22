@@ -1,7 +1,7 @@
-import * as example from "./tests/example.spec"
+import * as experiment from "./tests/experiment.spec"
 
 async function test() {
-    await example.test()
+    await experiment.test()
 }
 
 test()

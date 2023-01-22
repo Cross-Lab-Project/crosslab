@@ -27,6 +27,7 @@ export function validation_filter(schemas: ExtendedSchema[]) {
     ajv.addKeyword('x-standalone')
     ajv.addKeyword('x-location')
     ajv.addKeyword('x-service-name')
+    ajv.addKeyword('x-schema-type')
     const mapping: { [k: string]: string } = {}
     for (const schema of schemas) {
         ajv.addSchema(schema, schema['x-location'])

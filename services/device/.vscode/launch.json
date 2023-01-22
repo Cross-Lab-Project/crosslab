@@ -7,19 +7,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Device Service",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "env": {
-                "SECURITY_ISSUER": "http://localhost",
-                "SECURITY_AUDIENCE": "http://localhost",
-                "BASE_URL": "http://localhost"
-            },
-            "program": "${workspaceFolder}/src/index.ts",
-            "outFiles": [
-                "${workspaceFolder}/app/**/*.js"
-            ]
+            "restart": true
         }
     ]
 }

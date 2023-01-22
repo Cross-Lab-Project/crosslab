@@ -45,7 +45,9 @@ export async function findPeerconnectionModelByUrl(
             url: peerconnectionUrl,
         },
         relations: {
-            experiment: true,
+            experiment: {
+                connections: true
+            }
         },
     })
 }

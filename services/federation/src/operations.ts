@@ -20,52 +20,52 @@ type proxySignature = getProxySignature
  * This function implements the functionality for handling $method requests on /proxy endpoint.
  * @param method The http method to be used.
  */
- const proxy: (method: HttpMethod) => proxySignature =
- (method: HttpMethod) => async (parameters, body, _user) => {
-     if (!parameters.URL) throw new MissingParameterError(`Missing URL Parameter`, 400)
+const proxy: (method: HttpMethod) => proxySignature =
+    (method: HttpMethod) => async (parameters, body, _user) => {
+        if (!parameters.URL) throw new MissingParameterError(`Missing URL Parameter`, 400)
 
-     const basePathMatch = parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
+        const basePathMatch = parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
 
-     let headers: HeadersInit = { 'Content-Type': 'application/json' }
-     if (basePathMatch) {
-         const basePath = basePathMatch[0]
-         const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-         const institution = await InstitutionRepository.findOneBy({ api: basePath })
+        let headers: HeadersInit = { 'Content-Type': 'application/json' }
+        if (basePathMatch) {
+            const basePath = basePathMatch[0]
+            const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
+            const institution = await InstitutionRepository.findOneBy({ api: basePath })
 
-         if (institution) {
-             headers['Authorization'] = 'Bearer ' + institution.apiToken
-         }
-     }
+            if (institution) {
+                headers['Authorization'] = 'Bearer ' + institution.apiToken
+            }
+        }
 
-     const response = await fetch(parameters.URL, {
-         headers,
-         method: method,
-         body: Object.keys(body).length > 0 ? body : undefined,
-     })
+        const response = await fetch(parameters.URL, {
+            headers,
+            method: method,
+            body: Object.keys(body).length > 0 ? body : undefined,
+        })
 
-     if (response.status < 100 || response.status >= 600) {
-         throw new InvalidValueError(
-             `Response has invalid status of ${response.status}`,
-             500
-         ) // TODO: maybe find better error
-     }
+        if (response.status < 100 || response.status >= 600) {
+            throw new InvalidValueError(
+                `Response has invalid status of ${response.status}`,
+                500
+            ) // TODO: maybe find better error
+        }
 
-     try {
-         const text = await response.text()
+        try {
+            const text = await response.text()
 
-         return {
-             status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
-             body: text,
-         }
-     } catch (error) {
-         console.log(error)
+            return {
+                status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
+                body: text,
+            }
+        } catch (error) {
+            console.log(error)
 
-         return {
-             status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
-             body: undefined,
-         }
-     }
- }
+            return {
+                status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
+                body: undefined,
+            }
+        }
+    }
 
 export const getProxy = proxy('get')
 export const postProxy = proxy('post')
@@ -80,7 +80,7 @@ export const putProxy = proxy('put')
  * This function implements the functionality for handling GET requests on /institutions endpoint.
  * @param _user The user submitting the request.
  */
- export const getInstitutions: getInstitutionsSignature = async (_user) => {
+export const getInstitutions: getInstitutionsSignature = async (_user) => {
     const institutionRepository = AppDataSource.getRepository(InstitutionModel)
     const institutions = await institutionRepository.find()
     return {

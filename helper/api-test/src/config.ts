@@ -1,5 +1,5 @@
 export const config = {
-    API_URL: "http://api.localhost",
+    API_URL: "http://localhost",
     USERNAME: "superadmin",
     PASSWORD: "superadmin"
 }

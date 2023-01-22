@@ -15,6 +15,7 @@ export type ExtendedSchema = OpenAPIV3_1.SchemaObject & {
     'x-name': string
     'x-location': string
     'x-service-name': string
+    'x-schema-type': "request"|"response"|"all"
 }
 
 type SimplifiedParameter = {
@@ -200,7 +201,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
             'x-standalone': true,
             'x-name': 'UserType',
             'x-location': `#/components/schemas/user_type`,
-            'x-service-name': 'Utility'
+            'x-service-name': 'Utility',
+            'x-schema-type': "all"
         })
 
     // Search in components
@@ -214,7 +216,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                     'x-standalone': true,
                     'x-name': name,
                     'x-location': `#/components/schemas/${schemaName}`,
-                    'x-service-name': (api.components.schemas[schemaName] as any)["x-service-name"]
+                    'x-service-name': (api.components.schemas[schemaName] as any)["x-service-name"],
+                    'x-schema-type': "all"
                 })
             }
         }
@@ -230,7 +233,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                     'x-standalone': false,
                     'x-name': formatName(parameter.name),
                     'x-location': `#/components/parameters/${parameterName}/schema`,
-                    'x-service-name': (schema as any)["x-service-name"]
+                    'x-service-name': (schema as any)["x-service-name"],
+                    'x-schema-type': "all"
                 })
             }
         }
@@ -260,7 +264,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                 formatOperation(path, method) + 'RequestBody' :
                                 formatName(operation.operationId ?? "", false) + 'Body',
                             'x-location': `#/paths/${path}/${method}/requestBody/content/application/json/schema`,
-                            'x-service-name': (operation as any)['x-service-name']
+                            'x-service-name': (operation as any)['x-service-name'],
+                            'x-schema-type': "all"
                         })
                     }
                 }
@@ -285,7 +290,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                         'Response' + 
                                         status,
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/content/application/json/schema`,
-                                    'x-service-name': (operation as any)['x-service-name']
+                                    'x-service-name': (operation as any)['x-service-name'],
+                                    'x-schema-type': "all"
                                 })
                             }
                         }
@@ -304,7 +310,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                         formatName(operation.operationId ?? "", false) +
                                         formatName(headerName),
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/headers/${headerName}/schema`,
-                                    'x-service-name': (operation as any)["x-service-name"]
+                                    'x-service-name': (operation as any)["x-service-name"],
+                                    'x-schema-type': "all"
                                 })
                             }
                         }
@@ -312,6 +319,37 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                 }
             }
         }
+    }
+
+    const _extendedSchemas = JSON.parse(JSON.stringify(extendedSchemas)) as ExtendedSchema[]
+
+    for (const extendedSchema of _extendedSchemas) {
+        const readonlyRegex = /"[^\"]*?":{[^{}]*?"readOnly":true[^{}]*?},?/gms
+        const writeonlyRegex = /"[^\"]*?":{[^{}]*?"writeOnly":true[^{}]*?},?/gms
+
+        const stringifiedExtendedSchema = JSON.stringify(extendedSchema)
+        const stringifiedRequestSchema = stringifiedExtendedSchema
+            .replace(readonlyRegex,"")
+            .replace(/,}/g,"}")
+            .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_request"')
+        const stringifiedResponseSchema = stringifiedExtendedSchema
+            .replace(writeonlyRegex,"")
+            .replace(/,}/g,"}")
+            .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_response"')
+
+        const requestSchema = JSON.parse(stringifiedRequestSchema) as ExtendedSchema
+        const responseSchema = JSON.parse(stringifiedResponseSchema) as ExtendedSchema
+
+        requestSchema['x-schema-type'] = "request"
+        responseSchema['x-schema-type'] = "response"
+
+        requestSchema['x-name'] += "Request"
+        responseSchema['x-name'] += "Response"
+
+        requestSchema['x-location'] += "_request"
+        responseSchema['x-location'] += "_response"
+
+        extendedSchemas.push(...[requestSchema, responseSchema])
     }
 
     return extendedSchemas

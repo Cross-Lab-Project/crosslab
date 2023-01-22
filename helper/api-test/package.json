@@ -12,16 +12,21 @@
     "reset-docker-win": ".\\docker\\reset-docker-dev.bat",
     "test": "ts-mocha -p tsconfig.json src/index.ts"
   },
-  "author": "Eduard Valeev",
+  "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
     "@types/mocha": "^9.1.1",
     "mocha": "^10.0.0",
     "ts-mocha": "^10.0.0",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.2",
+    "ws": "^8.12.0",
+    "isomorphic-ws": "5.0.0",
+    "@types/ws": "^8.5.4"
   },
   "dependencies": {
-    "@cross-lab-project/api-client": "^0.0.24",
+    "@cross-lab-project/api-client": "file:../../clients/api/js",
+    "@cross-lab-project/soa-client": "file:../../clients/soa/js",
+    "@cross-lab-project/soa-service-electrical": "file:../../clients/soa_services/electricalConnection/js",
     "ajv-formats": "^2.1.1"
   }
 }

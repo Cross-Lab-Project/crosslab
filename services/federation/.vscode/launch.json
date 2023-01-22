@@ -5,24 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Federation Service",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/index.ts",
-            "preLaunchTask": "npm: build-compile",
-            "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
-            ],
-            "env": {
-                "PORT": "8080",
-                "NODE_ENV": "development",
-                "BASE_URL": "http://localhost:8080",
-                "SECURITY_ISSUER": "unknonw",
-                "SECURITY_AUDIENCE": "unknown"
-            }
+            "restart": true
         }
     ]
 }

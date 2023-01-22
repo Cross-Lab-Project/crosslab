@@ -54,7 +54,7 @@ export function writeDevice<T extends DeviceModel>(
         writeDeviceGroup(deviceModel, device)
     } else if (
         isInstantiableBrowserDeviceModel(deviceModel) &&
-        isInstantiableBrowserDevice(device)
+        isInstantiableBrowserDevice(device, "request")
     ) {
         writeInstantiableBrowserDevice(deviceModel, device)
     } else if (
@@ -104,9 +104,9 @@ export function writeDeviceOverview(
     deviceOverviewModel: DeviceOverviewModel,
     deviceOverview: DeviceOverview
 ) {
-    deviceOverviewModel.name = deviceOverview.name
-    deviceOverviewModel.description = deviceOverview.description
-    deviceOverviewModel.type = deviceOverview.type
+    if (deviceOverview.name) deviceOverviewModel.name = deviceOverview.name
+    if (deviceOverview.description) deviceOverviewModel.description = deviceOverview.description
+    if (deviceOverview.type) deviceOverviewModel.type = deviceOverview.type
 }
 
 /**

@@ -14,7 +14,7 @@ import { experimentUrlFromId } from './url'
 import { bookExperiment as _bookExperiment } from './api'
 import { saveExperimentModel } from '../database/methods/save'
 import { establishPeerconnections } from './peerconnection'
-import { callbackUrl } from './callbacks'
+import { callbackUrl, deviceChangedCallbacks } from './callbacks'
 import { RequestHandler } from './requestHandler'
 
 /**
@@ -166,6 +166,7 @@ export async function runExperiment(
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
+            deviceChangedCallbacks.push(instance.url)
 
             // instantiate cloud instantiable devices
             const experimentUrl = requestHandler.executeSync(

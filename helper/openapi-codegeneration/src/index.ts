@@ -133,9 +133,11 @@ async function main() {
   let api: undefined | OpenAPIV3_1.Document = undefined;
   for (const input of inputs) {
     try {
-      const openApi = (await SwaggerParser.validate(
-        input
-      )) as OpenAPIV3_1.Document;
+      const openApi = (
+        options["keepRefs"] 
+            ? await SwaggerParser.parse(input) 
+            : await SwaggerParser.validate(input)
+      ) as OpenAPIV3_1.Document;
       if (openApi.openapi !== "3.1.0") {
         console.error(
           `Only OpenAPI 3.1.0 is supported, but ${openApi.info.version} was provided. Please upgrade your OpenAPI file.`

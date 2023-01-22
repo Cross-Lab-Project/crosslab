@@ -27,6 +27,7 @@ function formatDeviceModel(
     return {
         device: deviceModel.url,
         role: deviceModel.role,
+        additionalProperties: deviceModel.additionalProperties
     }
 }
 
