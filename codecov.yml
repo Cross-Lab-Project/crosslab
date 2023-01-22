@@ -1,9 +1,0 @@
-flags:
-  python_api_client:
-    paths:
-      - clients/api/python/**/*
-    carryforward: true
-  python_soa_client:
-    paths:
-      - clients/soa/python/**/*
-    carryforward: true

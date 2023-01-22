@@ -1,3 +1,3 @@
 #!/bin/sh
 
-tox --recreate
+tox --recreate --skip-env lint

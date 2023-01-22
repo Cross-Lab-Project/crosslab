@@ -38,7 +38,7 @@ wget https://raw.githubusercontent.com/microsoft/vscode-dev-containers/main/scri
 wget https://raw.githubusercontent.com/microsoft/vscode-dev-containers/main/script-library/common-debian.sh -O container-scripts/common-debian.sh
 
 # Build the container
-docker build -t crosslab-devcontainer:build .
+docker build --no-cache -t crosslab-devcontainer:build .
 if [ -n "$ADDITIONAL_TAGS" ]; then
   for tag in $ADDITIONAL_TAGS; do
     docker tag crosslab-devcontainer:build $tag

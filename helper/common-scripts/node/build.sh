@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR=$(dirname "$0")
 
-rm package-lock.json || true
+rm -f package-lock.json
 rm -rf node_modules
 
 npm install --install-links

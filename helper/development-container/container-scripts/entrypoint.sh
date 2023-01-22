@@ -8,7 +8,7 @@ grep -q $(hostname) /etc/hosts || sudo bash -c 'echo "127.0.0.1 $(hostname)" >> 
 
 # if $USER is not set, set it to the current user
 if [ -z "$USER" ]; then
-    USER=$(whoami)
+    USER=dev
 fi
 
 if [ -S ${DOCKER_SOCKET} ]; then
@@ -17,12 +17,10 @@ if [ -S ${DOCKER_SOCKET} ]; then
     if [ $DOCKER_GROUP ]
     then
         sudo usermod -g $DOCKER_GROUP $USER 
-        newgrp docker-host
     else
         sudo addgroup --system --gid ${DOCKER_GID} docker-host
         sudo usermod -g docker-host $USER 
-        newgrp docker-host
     fi
 fi
 
-exec "$@"
+gosu $USER "$@"

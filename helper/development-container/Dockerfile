@@ -52,8 +52,9 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         jq \
         fd-find \
-    && sudo pip3 install tox yq shyaml kas \
-    && ln -s $(which fdfind) /usr/bin/fd
+    && sudo pip3 install tox build yq shyaml kas \
+    && ln -s $(which fdfind) /usr/bin/fd 
+RUN npm install -g badge-maker
 
 USER $USERNAME
 
@@ -61,6 +62,16 @@ USER $USERNAME
 #    && echo 'alias build-spec="./scripts/build.sh -s"' >> ~/.bashrc \
 #    && echo 'alias lint="./scripts/lint.sh"' >> ~/.bashrc \
 #    && echo 'alias test="./scripts/test.sh"' >> ~/.bashrc
+
+
+USER root
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y gosu; \
+	rm -rf /var/lib/apt/lists/*; \
+# verify that the binary works
+	gosu nobody true
 
 COPY container-scripts/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]

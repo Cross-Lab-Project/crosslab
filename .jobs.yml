@@ -1,0 +1,185 @@
+################################################################################
+# Build Development Container ##################################################
+################################################################################
+
+helper/development-container:
+  - script: build -t development-container:latest
+
+################################################################################
+# Helper #######################################################################
+################################################################################
+
+helper/tsdoc-theme:
+  - script: build
+
+helper/openapi-codegeneration:
+  - script: build
+
+helper/crosslab-typescript-addon:
+  - script: build
+    dependencies:
+      - helper/openapi-codegeneration:build
+
+
+################################################################################
+# Backend ######################################################################
+################################################################################
+
+services/common:
+  - script: build
+
+services/auth:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint
+    dependencies:
+      - services/auth:build-spec
+  - script: build
+    dependencies:
+      - services/auth:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+
+services/booking:
+  - script: build-spec
+  - script: lint
+    dependencies:
+      - services/booking:build-spec
+
+services/device:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint
+    dependencies:
+      - services/device:build-spec
+  - script: build
+    dependencies:
+      - services/device:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+
+services/experiment:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint
+    dependencies:
+      - services/experiment:build-spec
+  - script: build
+    dependencies:
+      - services/experiment:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+
+services/federation:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint
+    dependencies:
+      - services/federation:build-spec
+  - script: build
+    dependencies:
+      - services/federation:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+
+services/update:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint
+    dependencies:
+      - services/update:build-spec
+  - script: build
+    dependencies:
+      - services/update:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+
+
+services/openapi:
+  - script: build-spec
+    dependencies: 
+      - services/auth:build-spec
+      - services/booking:build-spec
+      - services/device:build-spec
+      - services/experiment:build-spec
+      - services/federation:build-spec
+      - services/update:build-spec
+  - script: lint
+    dependencies:
+      - services/openapi:build-spec
+
+services/gateway:
+  - script: build
+
+
+################################################################################
+# Clients ######################################################################
+################################################################################
+
+clients/api/js:
+  - script: build
+    dependencies:
+      - services/auth:build-spec
+      - services/booking:build-spec
+      - services/device:build-spec
+      - services/experiment:build-spec
+      - services/federation:build-spec
+      - services/update:build-spec
+      - helper/crosslab-typescript-addon:build
+      - helper/tsdoc-theme:build
+      - helper/openapi-codegeneration:build
+
+clients/api/python:
+  - script: build
+    dependencies:
+      - services/openapi:build-spec
+      - helper/openapi-codegeneration:build
+  - script: lint
+    dependencies:
+      - clients/api/python:build
+  - script: test
+    dependencies:
+      - clients/api/python:build
+
+clients/soa/python:
+  - script: build
+    dependencies:
+      - services/openapi:build-spec
+      - helper/openapi-codegeneration:build
+      - clients/api/python:build
+  - script: lint
+    dependencies:
+      - clients/soa/python:build
+  - script: test
+    dependencies:
+      - clients/soa/python:build
+
+# SOA Service ##################################################################
+
+clients/soa_services/electricalConnection/python:
+  - script: build
+    dependencies:
+      - helper/openapi-codegeneration:build
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/electricalConnection/python:build
+  - script: test
+    dependencies:
+      - clients/soa_services/electricalConnection/python:build
