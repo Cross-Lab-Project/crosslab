@@ -7,6 +7,7 @@ cd $SCRIPT_DIR/../..
 
 # Default values
 VERBOSE=false
+SKIP_UPLOAD=false
 
 SUBCOMMANDVARS=""
 
@@ -31,6 +32,11 @@ while [[ $# -gt 0 ]]; do
       SUBCOMMANDVARS="$SUBCOMMANDVARS --web-repository $2"
       shift # past argument
       shift # past value
+      ;;
+
+    --skip-upload)
+      SKIP_UPLOAD=true
+      shift
       ;;
 
     --script)
@@ -179,17 +185,19 @@ while true; do
   break
 done
 
-echo ""
-echo_start "${BLUE}> Uploading artifacts${NC}"
-set +e
-$SCRIPT_DIR/upload_artifacts.sh $SUBCOMMANDVARS; exit_code=$?
-set -e
-if [ $exit_code -eq 0 ]; then
-  echo_end "${GREEN}Done${NC}"
-else
-  echo_end "${RED}Failed${NC}"
+if [ $SKIP_UPLOAD = false ]; then
+  echo ""
+  echo_start "${BLUE}> Uploading artifacts${NC}"
+  set +e
+  $SCRIPT_DIR/upload_artifacts.sh $SUBCOMMANDVARS; exit_code=$?
+  set -e
+  if [ $exit_code -eq 0 ]; then
+    echo_end "${GREEN}Done${NC}"
+  else
+    echo_end "${RED}Failed${NC}"
+  fi
+  echo ""
 fi
-echo ""
 
 if [ -n "$ignored_jobs" ]; then
   echo -e "${YELLOW}$(wc -w <<< $ignored_jobs) jobs didn't run because their dependencies failed:"

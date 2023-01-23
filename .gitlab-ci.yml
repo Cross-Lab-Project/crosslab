@@ -4,15 +4,12 @@ variables:
 image: crosslab/devcontainer:latest
 
 stages:
-  - housekeeping
   - build
 
 default:
   before_script:
     - sudo chown -R $(whoami) .
     - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-    - git config --global user.email "crosslab@tu-ilmenau.de"
-    - git config --global user.name "CrossLab CI"
 
 workflow:
   rules:
@@ -20,13 +17,6 @@ workflow:
       variables:
         PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
         BRANCH: $CI_COMMIT_BRANCH
-
-housekeeping:
-  stage: housekeeping
-  script:
-    - ./scripts/housekeeping.sh --branch $BRANCH
-    - if [[ -n $(git status -s) ]]; then git add .; git commit -m "Housekeeping"; fi
-    - git push origin HEAD:$BRANCH
 
 build:
   stage: build

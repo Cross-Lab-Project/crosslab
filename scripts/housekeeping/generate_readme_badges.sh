@@ -125,5 +125,6 @@ for file in $($HELPER/find_files.sh */README.md); do
   replacement=$(echo -n "$replacement" | tr '\n' '\f')
   cat $file | sed '/{{print badges}}/,/{{end}}/c\'"$replacement" | tr '\f' '\n' > $file.tmp
   mv -f $file.tmp $file
+  git add $file
   echo -e "${CSI}80G${GREEN}✓${NC}"
 done
