@@ -11,6 +11,15 @@ default:
 build:
   stage: build
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+        variables:
+          PIPELINE_NAME: 'MR pipeline: $CI_COMMIT_BRANCH'
+          BRANCH: "HEAD"
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+        variables:
+          PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
+          BRANCH: $CI_COMMIT_BRANCH
+  rules:
     - if: $CI_COMMIT_BRANCH
   script:
-    - ./scripts/ci.sh --branch $CI_COMMIT_BRANCH
+    - echo "./scripts/ci.sh --branch $CI_COMMIT_BRANCH"
