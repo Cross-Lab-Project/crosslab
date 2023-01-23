@@ -11,11 +11,19 @@ QUIET=false
 
 QUIETVAR=""
 
+branch=$(git rev-parse --abbrev-ref HEAD)
+
 # Read the commands
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    --branch)
+      branch="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
     --repository)
       REPOSITORY="$2"
       shift # past argument
@@ -52,7 +60,6 @@ dist_paths=$($SCRIPT_DIR/find_files.sh '*/dist')
 dist_paths=${dist_paths//.\//}
 
 ref=$(git rev-parse HEAD)
-branch=$(git rev-parse --abbrev-ref HEAD)
 
 SERVER=${REPOSITORY/:*/}
 RPATH=${REPOSITORY/*:/}
@@ -64,6 +71,8 @@ fi
 
 $QUIET || echo "Repository: $REPOSITORY"
 $QUIET || echo "Ref: $ref"
+$QUIET || echo "Branch: $branch"
+$QUIET || echo ""
 
 for file in $dist_paths; do
   $QUIET || echo -e "upload $file\n    to $RPATH/$ref/$file"

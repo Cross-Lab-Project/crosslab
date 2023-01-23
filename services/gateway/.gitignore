@@ -1,4 +1,4 @@
 dist
 app
 .packages
-./package.resolved.json
+package.resolved.json

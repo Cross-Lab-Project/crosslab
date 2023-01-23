@@ -150,6 +150,7 @@ while true; do
           continue 2
         fi
 
+        echo_end "${BLUE}running...${NC}"
         mkdir -p ${root[$job]}"/dist"
         rm -f ${root[$job]}"/dist/${script[$job]}.badge"
         set +e

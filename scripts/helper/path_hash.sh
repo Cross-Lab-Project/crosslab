@@ -34,4 +34,4 @@ for path in $PATHS; do
   fi
 done
 
-sort <<< "$FILES"| git hash-object --stdin-paths | git hash-object --stdin
+sha1sum $(sort <<< "$FILES") | sha1sum | cut -c 1-40

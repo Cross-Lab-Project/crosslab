@@ -1,0 +1,25 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+image: crosslab/devcontainer:latest
+
+default:
+  before_script:
+    - sudo chown -R $(whoami) .
+    - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      variables:
+        PIPELINE_NAME: 'MR pipeline: $CI_COMMIT_BRANCH'
+        BRANCH: "HEAD"
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      variables:
+        PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
+        BRANCH: $CI_COMMIT_BRANCH
+
+build:
+  stage: build
+  script:
+    - echo "./scripts/ci.sh --branch $BRANCH"
