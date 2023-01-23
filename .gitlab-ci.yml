@@ -10,5 +10,7 @@ default:
 
 build:
   stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH
   script:
-    - ./scripts/ci.sh
+    - ./scripts/ci.sh --branch=$CI_COMMIT_BRANCH
