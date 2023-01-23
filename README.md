@@ -1,3 +1,13 @@
+
+# CI Status
+
+The following table shows the status for all jobs in this repository.
+
+> **Important** The README.md must be updated whenever the branch is switched.
+> This can be done by running `scripts/housekeeping.sh`. For your convenience
+> this script can be run as pre-commit hook. Run `scripts/install-hooks.sh` to
+> install the hook.
+
 [//]: # ({{print badges}})
 
 |     | build-spec | build | lint | test |
