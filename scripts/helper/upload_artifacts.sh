@@ -71,6 +71,8 @@ fi
 
 $QUIET || echo "Repository: $REPOSITORY"
 $QUIET || echo "Ref: $ref"
+$QUIET || echo "Branch: $branch"
+$QUIET || echo ""
 
 for file in $dist_paths; do
   $QUIET || echo -e "upload $file\n    to $RPATH/$ref/$file"
