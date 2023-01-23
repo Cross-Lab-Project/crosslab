@@ -26,7 +26,7 @@ housekeeping:
   script:
     - ./scripts/housekeeping.sh --branch $BRANCH
     - if [[ -n $(git status -s) ]]; then git add .; git commit -m "Housekeeping"; fi
-    - git push HEAD:$BRANCH
+    - git push origin HEAD:$BRANCH
 
 build:
   stage: build
