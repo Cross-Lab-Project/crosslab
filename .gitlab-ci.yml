@@ -9,7 +9,6 @@ default:
     - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
 workflow:
-  name: '$PIPELINE_NAME'
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       variables:
