@@ -21,4 +21,4 @@ workflow:
 build:
   stage: build
   script:
-    - echo "./scripts/ci.sh --branch $BRANCH"
+    - ./scripts/ci.sh --branch $BRANCH
