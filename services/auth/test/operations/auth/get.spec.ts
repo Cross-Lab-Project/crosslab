@@ -1,4 +1,4 @@
-import { MissingEntityError, MissingParameterError, MalformedParameterError } from "@crosslab/service-common"
+import { MissingEntityError, MalformedParameterError } from "@crosslab/service-common"
 import assert from "assert"
 import { createLocalJWKSet, jwtVerify } from "jose"
 import { config } from "../../../src/config"
@@ -56,7 +56,7 @@ async function checkJWT(authorization: string) {
     assert((payload as any).url === `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`)
 }
 
-export default () => describe("GET /auth", async function () {
+export default () => describe.only("GET /auth", async function () {
     const validToken = "valid"
     const invalidToken = "invalid"
     const expiredToken = "expired"

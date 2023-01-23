@@ -5,6 +5,7 @@ import {
     UserType,
 } from '../generated/types'
 import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
+import { userUrlFromUsername } from './utils'
 
 /**
  * This function signs a JWT.
@@ -24,7 +25,7 @@ export async function sign<P extends JWTPayload>(
         .setIssuedAt()
         .setAudience(config.SECURITY_AUDIENCE)
         .setExpirationTime(expirationTime)
-        .sign(await importJWK(JSON.parse(key.private_key), key.alg))
+        .sign(await importJWK(key.private_key, key.alg))
 }
 
 /**
@@ -37,13 +38,9 @@ export async function signUserToken(
     user: UserModel,
     activeKey: ActiveKeyModel
 ): Promise<string> {
-    const BASE_URL = !config.BASE_URL.endsWith('/')
-        ? config.BASE_URL
-        : config.BASE_URL + '/'
-
     return await sign<UserType>(
         {
-            url: BASE_URL + `/users/${user.username}`,
+            url: userUrlFromUsername(user.username),
             username: user.username,
             scopes: user.roles
                 .map((role) => role.scopes.map((scope) => scope.name))
@@ -67,13 +64,9 @@ export async function signDeviceToken(
     user: UserModel,
     activeKey: ActiveKeyModel
 ): Promise<string> {
-    const BASE_URL = !config.BASE_URL.endsWith('/')
-        ? config.BASE_URL
-        : config.BASE_URL + '/'
-
     return await sign<UserType>(
         {
-            url: BASE_URL + `/users/${user.username}`,
+            url: userUrlFromUsername(user.username),
             username: user.username,
             device: deviceUrl,
             scopes: user.roles
@@ -92,18 +85,16 @@ export async function signDeviceToken(
  * @returns String representation of the token.
  */
 export function parseBearerToken(authorization?: string): string {
-    const regex = /Bearer (\S*)$/
+    const regex = /^Bearer (\S*)$/
 
     if (!authorization) {
         throw new MissingParameterError(`Authorization parameter is missing`, 401)
-        // throw new Error(`Authorization parameter is missing`)
     }
 
     const match = authorization.match(regex)
 
     if (!match || match.length !== 2) {
         throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
-        // throw new Error(`Authorization parameter is malformed`)
     }
 
     return match[1]

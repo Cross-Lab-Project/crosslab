@@ -43,11 +43,16 @@ export type ActiveKey<T extends "request" | "response" | "all" = "all"> =
         ? undefined
         : never
 
+export type AllowlistEntry = {
+    url: string
+    username: string
+}
+
 export type AppConfiguration = {
     PORT: number
     NODE_ENV: string
     BASE_URL: string
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
-    ALLOWLIST: string[]
+    ALLOWLIST: AllowlistEntry[]
 }

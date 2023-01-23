@@ -4,8 +4,11 @@ import {
     UnsuccessfulRequestError,
     FetchError,
 } from '@cross-lab-project/api-client'
-import { apiClient } from '../globals'
 import { InternalRequestError } from '../types/errors'
+import { APIClient } from '@cross-lab-project/api-client'
+import { config } from '../config'
+
+export const apiClient = new APIClient(config.BASE_URL)
 
 /**
  * This function wraps the getDevice() of the api-client and throws server-specific errors.

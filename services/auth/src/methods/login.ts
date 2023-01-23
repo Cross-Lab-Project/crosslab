@@ -62,7 +62,7 @@ async function createUserTUI(username: string): Promise<UserModel> {
 export async function loginTui(
     username: string,
     password: string
-): Promise<TokenModel | undefined> {
+): Promise<TokenModel> {
     // Initialize Ldap Client
     const client = new LdapClient({
         url: 'ldaps://ldapauth.tu-ilmenau.de:636',
@@ -124,7 +124,7 @@ export async function loginTui(
 export async function loginLocal(
     username: string,
     password: string
-): Promise<TokenModel | undefined> {
+): Promise<TokenModel> {
     const userModel = await userRepository.findOne({ 
         where: {
             username 
@@ -133,7 +133,9 @@ export async function loginLocal(
 
     if (!userModel) throw new AuthenticationError(`Invalid login credentials`, 401)
 
-    if (!(await compare(password, userModel.password ?? "")))
+    if (!userModel.password) throw new AuthenticationError(`Password authentication not possible for this user`, 401)
+
+    if (!(await compare(password, userModel.password)))
         throw new AuthenticationError(`Invalid login credentials`, 401)
 
     return await createUserToken(userModel)

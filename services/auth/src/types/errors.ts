@@ -23,12 +23,12 @@ export class InvalidValueError extends ErrorWithStatus {
 }
 
 /**
- * This error class should be used if an entry of the allowlist is malformed.
+ * This error class should be used if the allowlist is malformed.
  */
-export class MalformedAllowlistEntryError extends Error {
+export class MalformedAllowlistError extends Error {
     constructor(message: string) {
         super(message)
-        this.name = 'MalformedAllowlistEntryError'
+        this.name = 'MalformedAllowlistError'
     }
 }
 

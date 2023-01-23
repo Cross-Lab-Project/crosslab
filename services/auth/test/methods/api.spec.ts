@@ -1,8 +1,7 @@
 import { APIClient, FetchError, InvalidUrlError, ResponseData, UnsuccessfulRequestError, ValidationError } from "@cross-lab-project/api-client"
 import assert from "assert"
 import * as sinon from "sinon"
-import { apiClient } from "../../src/globals"
-import { getDevice } from "../../src/methods/api"
+import { getDevice, apiClient } from "../../src/methods/api"
 import { InternalRequestError } from "../../src/types/errors"
 
 type TestErrorName = "FetchError" | "ValidationError" | "InvalidUrlError" | "UnsuccessfulRequestError" | "Error"

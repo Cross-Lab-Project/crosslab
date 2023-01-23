@@ -1,17 +1,35 @@
 import { MissingEntityError } from "@crosslab/service-common"
 import { userRepository } from "../database/repositories/userRepository"
-import { MalformedAllowlistEntryError, DNSResolveError } from "../types/errors"
+import { DNSResolveError, MalformedAllowlistError } from "../types/errors"
 import dns from "dns"
 import { UserModel } from "../database/model"
+import { AllowlistEntry } from "../types/types"
 
 export const allowlist: { [key: string]: string } = {}
 
-export function parseAllowlist(allowlist: string): string[] {
-    return allowlist.replace(/\s+/g, '').split(',')
+export function parseAllowlist(allowlist: string): AllowlistEntry[] {
+    const removedWhitespaceAllowlist = allowlist.replace(/\s+/g, "")
+    const matches = removedWhitespaceAllowlist.match(/^(?:\w+:\w+)?(?:,\w+:\w+)*$/)
+    if (!matches || matches.length !== 1) {
+        throw new MalformedAllowlistError(
+            `The allowlist is malformed`
+        )
+    }
+    const entries = removedWhitespaceAllowlist
+        .split(',')
+        .map((entry) => {
+            const splitEntry = entry.split(":")
+            return <AllowlistEntry>{
+                url: splitEntry[0],
+                username: splitEntry[1]
+            }
+        })
+
+    return entries
 }
 
-export async function resolveAllowlist(config: any) {
-    for (const entry of config.ALLOWLIST ?? []) {
+export async function resolveAllowlist(allowlistEntries: AllowlistEntry[]) {
+    for (const entry of allowlistEntries) {
         try {
             const result = await resolveAllowlistEntry(entry)
             allowlist[result[0]] = result[1]
@@ -23,49 +41,29 @@ export async function resolveAllowlist(config: any) {
 
 /**
  * This function tries to resolve an entry of the allowlist.
- * @param entry Entry of the allowlist ("url":username") to be resolved.
+ * @param allowlistEntry Entry of the allowlist ("url":username") to be resolved.
  * @returns Resolved entry in the form "ip:username"
  */
-export async function resolveAllowlistEntry(entry: string): Promise<[string, string]> {
-    console.log(`resolveAllowlistEntry called for "${entry}"`)
-
-    let url: string = ''
-    let username: string = ''
-
-    // Split provided entry into its url and username components
-    if (entry.includes(':')) {
-        const split = entry.split(':')
-        if (split.length === 2) {
-            [url, username] = split
-        } else {
-            throw new MalformedAllowlistEntryError(
-                `Allowlist entry "${entry}" does not conform to format "url:username"`
-            )
-        }
-    }
-    if (!url) throw new MalformedAllowlistEntryError(`Could not extract url from entry`)
-    if (!username)
-        throw new MalformedAllowlistEntryError(
-            `Could not extract username from allowlist entry`
-        )
+export async function resolveAllowlistEntry(allowlistEntry: AllowlistEntry): Promise<[string, string]> {
+    console.log(`resolveAllowlistEntry called for "${allowlistEntry}"`)
 
     // Resolve the ip of the provided url
     const ip = await new Promise<string>((res) => {
-        dns.lookup(url, (err, address) => {
+        dns.lookup(allowlistEntry.url, (err, address) => {
             if (err || address.length === 0 || !address) 
                 return res('')
             return res(address)
         })
     })
-    if (!ip) throw new DNSResolveError(`Could not resolve ip for "${url}"`)
+    if (!ip) throw new DNSResolveError(`Could not resolve ip for "${allowlistEntry.url}"`)
 
     // Search the user with the provided username
     const userModel = await userRepository.findOne({ 
         where: {
-            username 
+            username: allowlistEntry.username 
         }
     })
-    if (!userModel) throw new MissingEntityError(`Could not find user ${username}`)
+    if (!userModel) throw new MissingEntityError(`Could not find user ${allowlistEntry.username}`)
 
     console.log(`resolveAllowlistEntry succeeded`)
 

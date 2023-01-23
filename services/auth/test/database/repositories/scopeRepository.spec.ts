@@ -1,6 +1,5 @@
 import { MissingEntityError } from "@crosslab/service-common"
 import assert from "assert"
-import { randomUUID } from "crypto"
 import { scopeRepository } from "../../../src/database/repositories/scopeRepository"
 import { Scope } from "../../../src/types/types"
 
@@ -9,7 +8,7 @@ export default () => describe("Scope Repository Tests", async function () {
     describe("create", async function () {
         // TBD
         it("should create a scope model from valid data", async function () {
-            const scopeData: Scope = randomUUID()
+            const scopeData: Scope = "eb1b1e27-50fd-4082-aad8-6d2d01d9fe9e"
             const scopeModel = await scopeRepository.create(scopeData)
             assert(scopeModel.name === scopeData)
         })
@@ -18,7 +17,7 @@ export default () => describe("Scope Repository Tests", async function () {
     describe("write", async function () {
         // TBD
         it("should write valid data to a scope model correctly", async function () {
-            const scopeData: Scope = randomUUID()
+            const scopeData: Scope = "eb1b1e27-50fd-4082-aad8-6d2d01d9fe9e"
             const scopeModel = await scopeRepository.create(scopeData)
             assert(scopeModel.name === scopeData)
 
@@ -31,7 +30,7 @@ export default () => describe("Scope Repository Tests", async function () {
     describe("save", async function () {
         // TBD
         it("should save a valid scope model", async function () {
-            const scopeData: Scope = randomUUID()
+            const scopeData: Scope = "eb1b1e27-50fd-4082-aad8-6d2d01d9fe9e"
             const scopeModel = await scopeRepository.create(scopeData)
             assert(scopeModel.name === scopeData)
 

@@ -2,7 +2,7 @@ import { InvalidValueError } from "@crosslab/service-common";
 import { hash } from "bcryptjs";
 import { AbstractRepository } from "./abstractRepository";
 import { User } from "../../generated/types";
-import { userUrlFromUsername } from "../../globals";
+import { userUrlFromUsername } from "../../methods/utils";
 import { AppDataSource } from "../dataSource";
 import { RoleModel, UserModel } from "../model";
 import { roleRepository } from "./roleRepository";

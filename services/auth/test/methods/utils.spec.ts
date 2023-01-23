@@ -1,9 +1,9 @@
 import assert from "assert"
+import { capitalizeFirstLetter, userUrlFromUsername } from "../../src/methods/utils"
 import * as sinon from "sinon"
-import { capitalizeFirstLetter, die } from "../../src/methods/utils"
+import { config } from "../../src/config"
 
 export default () => describe("utils methods", async function () {
-    // TBD
     describe("capitalizeFirstLetter", async function () {
         it("should capitalize the first letter of the provided string", async function () {
             assert(capitalizeFirstLetter("test") === "Test")
@@ -17,18 +17,22 @@ export default () => describe("utils methods", async function () {
         })
     })
 
-    describe("die", async function () {
-        it("should exit the program and log the reason", async function () {
-            const consoleErrorStub = sinon.stub(console, "error")
-            const processExitStub = sinon.stub(process, "exit")
+    describe("userUrlFromUsername", async function () {
+        it("should correctly build the url of a user", async function () {
+            const TEST_URL_WITHOUT_SLASH = "http://localhost"
+            const TEST_URL_WITH_SLASH = TEST_URL_WITHOUT_SLASH + "/"
+            const TEST_USERNAME = "username"
+            const configBaseUrlStub = sinon.stub(config, "BASE_URL")
+            
+            configBaseUrlStub.value(TEST_URL_WITHOUT_SLASH)
+            const resultWithoutSlash = userUrlFromUsername(TEST_USERNAME)
+            assert(resultWithoutSlash === TEST_URL_WITHOUT_SLASH + "/users/" + TEST_USERNAME)
 
-            die("test reason")
+            configBaseUrlStub.value(TEST_URL_WITH_SLASH)
+            const resetWithSlash = userUrlFromUsername(TEST_USERNAME)
+            assert(resetWithSlash === TEST_URL_WITH_SLASH + "users/" + TEST_USERNAME)
 
-            assert(consoleErrorStub.calledWith("test reason"))
-            assert(processExitStub.calledWith(1))
-
-            consoleErrorStub.restore()
-            processExitStub.restore()
+            configBaseUrlStub.restore()
         })
     })
 })

@@ -6,15 +6,17 @@ import { app } from './generated'
 import { generateNewKey, jwk } from './methods/key'
 import { JWTVerify } from '@crosslab/service-common'
 import { activeKeyRepository } from './database/repositories/activeKeyRepository'
-import { resolveAllowlist } from './methods/allowlist'
+import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
 
 AppDataSource.initialize(dataSourceConfig)
     .then(async () => {
         await initializeDataSource()
 
+        const allowlist = process.env.ALLOWLIST ? parseAllowlist(process.env.ALLOWLIST) : []
+
         // Resolve Allowlist
-        resolveAllowlist(config)
-        setInterval(resolveAllowlist, 600000, config)
+        await resolveAllowlist(allowlist)
+        setInterval(resolveAllowlist, 600000, allowlist)
 
         // Create new active key
         const key = await generateNewKey()
