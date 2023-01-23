@@ -3,6 +3,10 @@ variables:
 
 image: crosslab/devcontainer:latest
 
+stages:
+  - housekeeping
+  - build
+
 default:
   before_script:
     - sudo chown -R $(whoami) .
@@ -10,14 +14,17 @@ default:
 
 workflow:
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      variables:
-        PIPELINE_NAME: 'MR pipeline: $CI_COMMIT_BRANCH'
-        BRANCH: "HEAD"
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
         BRANCH: $CI_COMMIT_BRANCH
+
+housekeeping:
+  stage: housekeeping
+  script:
+    - ./scripts/housekeeping.sh --branch $BRANCH
+    - if [[ -n $(git status -s) ]]; then; git add .; git commit -m "Housekeeping"; fi
+    - git push HEAD:$BRANCH
 
 build:
   stage: build
