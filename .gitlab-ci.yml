@@ -13,4 +13,4 @@ build:
   rules:
     - if: $CI_COMMIT_BRANCH
   script:
-    - ./scripts/ci.sh --branch=$CI_COMMIT_BRANCH
+    - ./scripts/ci.sh --branch=$CI_COMMIT_BRANCH -v
