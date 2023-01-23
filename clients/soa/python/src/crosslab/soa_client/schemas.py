@@ -100,8 +100,10 @@ class AuthenticationMessage:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(AuthenticationMessageMessageType, self.message_type)
-        result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.authenticated is not None:
+            result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -126,8 +128,10 @@ class AuthenticationMessageWrite:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(AuthenticationMessageMessageType, self.message_type)
-        result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.authenticated is not None:
+            result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -152,8 +156,10 @@ class AuthenticationMessageRead:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(AuthenticationMessageMessageType, self.message_type)
-        result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.authenticated is not None:
+            result["authenticated"] = from_union([from_bool, from_none], self.authenticated)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -338,9 +344,12 @@ class CreatePeerconnectionMessageService:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -378,7 +387,8 @@ class CreatePeerconnectionMessage:
         result: dict = {}
         result["messageType"] = to_enum(ClosePeerconnectionMessageMessageType, self.message_type)
         result["command"] = to_enum(CreatePeerconnectionMessageCommand, self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
         result["connectionType"] = to_enum(ConnectionType, self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
         result["services"] = from_list(lambda x: to_class(CreatePeerconnectionMessageService, x), self.services)
@@ -406,9 +416,12 @@ class CreatePeerconnectionMessageWriteService:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -446,7 +459,8 @@ class CreatePeerconnectionMessageWrite:
         result: dict = {}
         result["messageType"] = to_enum(ClosePeerconnectionMessageMessageType, self.message_type)
         result["command"] = to_enum(CreatePeerconnectionMessageCommand, self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
         result["connectionType"] = to_enum(ConnectionType, self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
         result["services"] = from_list(lambda x: to_class(CreatePeerconnectionMessageWriteService, x), self.services)
@@ -474,9 +488,12 @@ class CreatePeerconnectionMessageReadService:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -514,7 +531,8 @@ class CreatePeerconnectionMessageRead:
         result: dict = {}
         result["messageType"] = to_enum(ClosePeerconnectionMessageMessageType, self.message_type)
         result["command"] = to_enum(CreatePeerconnectionMessageCommand, self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
         result["connectionType"] = to_enum(ConnectionType, self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
         result["services"] = from_list(lambda x: to_class(CreatePeerconnectionMessageReadService, x), self.services)
