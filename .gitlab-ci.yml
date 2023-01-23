@@ -11,6 +11,8 @@ default:
   before_script:
     - sudo chown -R $(whoami) .
     - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+    - git config --global user.email "crosslab@tu-ilmenau.de"
+    - git config --global user.name "CrossLab CI"
 
 workflow:
   rules:
