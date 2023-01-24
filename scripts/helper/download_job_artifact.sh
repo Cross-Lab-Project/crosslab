@@ -97,8 +97,13 @@ if ssh -q -o StrictHostKeyChecking=no $SERVER "true"; then
     exit 0
   fi
 else
-  $QUIET || echo "No ssh access to $SERVER"
-  exit 1
+  $QUIET || echo "No ssh access to $SERVER trying WEB_REPOSITORY"
+  URL=$WEB_REPOSITORY/jobs/$DIR/$HASH/
+  DIRS=$(echo ${URL/:\/\//} | sed 's#[^/]##g' | wc -c )
+  mkdir -p $DIR
+  $QUIET || (cd $DIR && wget -q --show-progress -R "index.html*" -r -nH --no-parent --cut-dirs=$DIRS $URL)
+  $QUIET && (cd $DIR && wget -q                 -R "index.html*" -r -nH --no-parent --cut-dirs=$DIRS $URL)
+  exit 0
 fi
 
 exit 1

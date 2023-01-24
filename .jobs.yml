@@ -169,6 +169,10 @@ clients/soa/python:
     dependencies:
       - clients/soa/python:build
 
+clients/soa/js:
+  - script: build
+
+
 # SOA Service ##################################################################
 
 clients/soa_services/electricalConnection/python:
@@ -183,3 +187,18 @@ clients/soa_services/electricalConnection/python:
   - script: test
     dependencies:
       - clients/soa_services/electricalConnection/python:build
+
+clients/soa_services/electricalConnection/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+
+clients/soa_services/webcam/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+
+clients/soa_services/file/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build

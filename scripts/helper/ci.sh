@@ -8,6 +8,7 @@ cd $SCRIPT_DIR/../..
 # Default values
 VERBOSE=false
 SKIP_UPLOAD=false
+CLEAN=false
 
 SUBCOMMANDVARS=""
 
@@ -49,6 +50,11 @@ while [[ $# -gt 0 ]]; do
       shift # past value
       ;;
 
+    --clean)
+      CLEAN=true
+      shift # past argument
+      ;;
+
     -n|--dry-run)
       DRY_RUN=true
       shift # past argument
@@ -67,6 +73,11 @@ done
 
 if [ $VERBOSE = false ]; then
   SUBCOMMANDVARS="$SUBCOMMANDVARS -q"
+fi
+
+if [ $CLEAN = true ]; then
+  echo "Cleaning dist directories"
+  rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
 fi
 
 source $SCRIPT_DIR/printing_functions.sh
