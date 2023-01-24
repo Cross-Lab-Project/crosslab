@@ -85,6 +85,7 @@ if [ "$DRY_RUN" = true ]; then
 fi
 
 $QUIET || echo "Repository: $REPOSITORY"
+$QUIET || echo "Job: $DIR: $HASH"
 
 # check if we have ssh access
 if ssh -q -o StrictHostKeyChecking=no $SERVER "true"; then
