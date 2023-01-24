@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$(dirname "$0")
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 # Read the commands
 while [[ $# -gt 0 ]]; do
@@ -34,4 +34,4 @@ for path in $PATHS; do
   fi
 done
 
-sha1sum $(sort <<< "$FILES") | sha1sum | cut -c 1-40
+sha1sum $(sort <<< "$FILES") | cut -c 1-40 | sha1sum | cut -c 1-40
