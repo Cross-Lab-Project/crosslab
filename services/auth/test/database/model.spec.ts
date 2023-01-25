@@ -10,6 +10,7 @@ export default () => describe("Model Tests", async function () {
             assert(getModelName(ScopeModel) === "Scope")
             assert(getModelName(TokenModel) === "Token")
             assert(getModelName(UserModel) === "User")
+            assert(getModelName(undefined as any) === "Unknown")
         })
     })
 })

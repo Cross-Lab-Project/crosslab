@@ -14,16 +14,26 @@ import { userRepository } from './repositories/userRepository'
 
 export class ApplicationDataSource {
     private dataSource?: DataSource
+    public connected: boolean = false
     
     public async initialize(options: DataSourceOptions) {
         this.dataSource = new DataSource(options)
         await this.dataSource.initialize()
+        this.connected = true
         activeKeyRepository.initialize()
         keyRepository.initialize()
         roleRepository.initialize()
         scopeRepository.initialize()
         tokenRepository.initialize()
         userRepository.initialize()
+    }
+
+    public async teardown() {
+        if (!this.dataSource) 
+            throw new Error("Data Source has not been initialized!") // TODO: better error
+            
+        await this.dataSource.destroy()
+        this.connected = false
     }
 
     public getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {

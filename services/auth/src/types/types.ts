@@ -38,6 +38,7 @@ export type ActiveKey<T extends "request" | "response" | "all" = "all"> =
     T extends "all" | "request"
         ? {
             use: string
+            key?: string
           }
         : T extends "response"
         ? undefined

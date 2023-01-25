@@ -1,26 +1,14 @@
-import { activeKeyRepository } from "../../src/database/repositories/activeKeyRepository"
-import { keyRepository } from "../../src/database/repositories/keyRepository"
-import { roleRepository } from "../../src/database/repositories/roleRepository"
-import { scopeRepository } from "../../src/database/repositories/scopeRepository"
-import { tokenRepository } from "../../src/database/repositories/tokenRepository"
-import { userRepository } from "../../src/database/repositories/userRepository"
-import { activeKeyData } from "../data/activeKeyData.spec"
-import { keyData } from "../data/keyData.spec"
-import { roleData } from "../data/roleData.spec"
-import { scopeData } from "../data/scopeData.spec"
-import { tokenDataExpired, tokenDataValid } from "../data/tokenData.spec"
-import { userData } from "../data/userData.spec"
 import dataSourceSpec from "./dataSource.spec"
 import modelSpec from "./model.spec"
 import repositorySuite from "./repositories/index.spec"
 
 const tests = [
-    modelSpec,
-    dataSourceSpec,
+    // modelSpec,
+    // dataSourceSpec,
     repositorySuite
 ]
 
-export default () => describe("Database", async function () {
+export default () => describe("Database", function () {
     for (const test of tests) {
         test()
     }

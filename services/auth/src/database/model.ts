@@ -2,12 +2,10 @@ import { JWK } from 'jose'
 import {
     Column,
     Entity,
-    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
     OneToMany,
-    OneToOne,
     PrimaryColumn,
     PrimaryGeneratedColumn,
 } from 'typeorm'
@@ -74,9 +72,6 @@ export class KeyModel {
     public_key!: JWK
     @Column('simple-json')
     private_key!: JWK
-    @OneToOne(() => UserModel)
-    @JoinColumn()
-    user?: Promise<UserModel> | UserModel
 }
 
 @Entity()
