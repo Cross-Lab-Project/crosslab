@@ -2,12 +2,8 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Union
 
+from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
 from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
-from crosslab.soa_client.schemas import (
-    CreatePeerconnectionMessageService,
-    SignalingMessage,
-)
 
 MediaStreamTrack = Any
 
@@ -53,7 +49,7 @@ class Connection(ABC):
     @abstractmethod
     def transmit(
         self,
-        serviceConfig: CreatePeerconnectionMessageService,
+        serviceConfig: Any,
         id: str,
         channel: Channel,
     ):
@@ -62,7 +58,7 @@ class Connection(ABC):
     @abstractmethod
     def receive(
         self,
-        serviceConfig: CreatePeerconnectionMessageService,
+        serviceConfig: Any,
         id: str,
         channel: Channel,
     ):

@@ -1,11 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Dict
 
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
-from crosslab.soa_services.electrical.schema import (
-    ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration as SignalInterfaceConfiguration,
-)
+from crosslab.soa_services.electrical.messages import SignalInterfaceConfig
 
 
 class SignalInterface(ABC, AsyncIOEventEmitter):
@@ -26,5 +24,5 @@ class ConstructableSignalInterface(ABC):
         pass
 
     @abstractmethod
-    def create(self, configuration: SignalInterfaceConfiguration) -> SignalInterface:
+    def create(self, configuration: SignalInterfaceConfig) -> SignalInterface:
         pass
