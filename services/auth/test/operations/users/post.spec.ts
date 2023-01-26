@@ -1,3 +1,3 @@
-export default () => describe("POST /users", async function () {
+export default () => describe("POST /users", function () {
     // TBD
 })

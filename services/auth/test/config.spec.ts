@@ -4,7 +4,7 @@ import { AppConfiguration } from "../src/types/types"
 import * as sinon from "sinon"
 import { die } from "../src/config"
 
-export default () => describe("config tests", async function () {
+export default () => describe("config tests", function () {
     let initializeAppConfiguration: () => AppConfiguration
     let processExitStub: sinon.SinonStub
     let processEnvBackup: any
@@ -28,7 +28,7 @@ export default () => describe("config tests", async function () {
         process.env = processEnvBackup
     })
 
-    describe("die", async function () {
+    describe("die", function () {
         it("should exit the program and log the reason", async function () {
             const TEST_REASON = "test reason"
             const consoleErrorStub = sinon.stub(console, "error")

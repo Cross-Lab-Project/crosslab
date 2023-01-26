@@ -18,7 +18,7 @@
         "start": "node app/index.js",
         "dev": "env-cmd -e development npx nodemon src/index.ts",
         "format": "npx prettier src --write",
-        "test": "nyc env-cmd -e development ts-mocha -p tsconfig.json --require @babel/register test/test.spec.ts"
+        "test": "nyc --reporter=html --reporter=text env-cmd -e development ts-mocha -p tsconfig.json --require @babel/register test/test.spec.ts"
     },
     "author": "Johannes Nau",
     "license": "UNLICENSED",

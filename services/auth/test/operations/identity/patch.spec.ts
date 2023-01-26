@@ -4,7 +4,7 @@ import { config } from "../../../src/config"
 import { patchIdentity } from "../../../src/operations"
 
 // TODO: rethink what can be patched for a user
-export default () => describe("PATCH /identity", async function () {
+export default () => describe("PATCH /identity", function () {
     it("should update the identity of a known user", async function () {
         const user = {
             username: "username",

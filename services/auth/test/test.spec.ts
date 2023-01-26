@@ -10,16 +10,17 @@ import { DataSourceOptions } from "typeorm";
 import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel } from "../src/database/model";
 import { config } from "../src/config";
 import configSpec from "./config.spec";
+import operationsSuite from "./operations/index.spec"
 
 describe("Authentication Service Tests", function () {
     this.beforeAll(function () {
-        // console.log = () => undefined
-        // console.warn = () => undefined
-        // console.error = () => undefined
+        console.log = () => undefined
+        console.warn = () => undefined
+        console.error = () => undefined
     })
 
     databaseSuite()
-    // methodsSuite()
-    // operationsSuite()
-    // configSpec()
+    methodsSuite()
+    configSpec()
+    operationsSuite()
 })

@@ -3,7 +3,7 @@ import { userRepository } from "../../../src/database/repositories/userRepositor
 import { postLogin } from "../../../src/operations"
 import { AuthenticationError } from "../../../src/types/errors"
 
-export default () => describe("POST /login", async function () {
+export default () => describe("POST /login", function () {
     it("should login the local test user successfully", async function () {
         const result = await postLogin({
             username: "username",

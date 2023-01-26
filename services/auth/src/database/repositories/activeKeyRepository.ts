@@ -4,7 +4,7 @@ import { ActiveKeyModel } from "../model";
 import { keyRepository } from "./keyRepository";
 import { AppDataSource } from "../dataSource";
 
-class ActiveKeyRepository extends AbstractRepository<ActiveKeyModel> {
+export class ActiveKeyRepository extends AbstractRepository<ActiveKeyModel> {
     constructor() {
         super(ActiveKeyModel)
     }
@@ -15,14 +15,11 @@ class ActiveKeyRepository extends AbstractRepository<ActiveKeyModel> {
 
     public async write(model: ActiveKeyModel, data: ActiveKey<"request">): Promise<void> {
         model.use = data.use
-        
-        if (data.key) {
-            model.key = await keyRepository.findOneOrFail({ 
-                where: {
-                    uuid: data.key
-                } 
-            })
-        }
+        model.key = await keyRepository.findOneOrFail({ 
+            where: {
+                uuid: data.key
+            } 
+        })
     }
 
     public async format(_model: ActiveKeyModel): Promise<ActiveKey<"response">> {

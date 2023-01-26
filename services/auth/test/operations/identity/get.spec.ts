@@ -3,7 +3,7 @@ import assert from "assert"
 import { config } from "../../../src/config"
 import { getIdentity } from "../../../src/operations"
 
-export default () => describe("GET /identity", async function () {
+export default () => describe("GET /identity", function () {
     it("should get the identity of a known user", async function () {
         const user = {
             username: "username",

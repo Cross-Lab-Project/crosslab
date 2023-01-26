@@ -7,6 +7,7 @@ import { jwk } from "../../../src/methods/key"
 import { ActiveKeyModel } from "../../../src/database/model"
 import { getAuth } from "../../../src/operations"
 import { ExpiredError } from "../../../src/types/errors"
+import { TestData } from "../../data/index.spec"
 
 async function JWTVerify(authorization: string, scopes: string[]) {
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
@@ -50,19 +51,25 @@ async function JWTVerify(authorization: string, scopes: string[]) {
 }
 
 async function checkJWT(authorization: string) {
-    const payload = await JWTVerify(authorization, ["test scope"])
-    assert((payload as any).username === "username")
-    assert((payload as any).scopes.includes("test scope"))
-    assert((payload as any).url === `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`)
+    const payload = await JWTVerify(authorization, ["test scope 1"])
+    assert((payload as any).username === "superadmin")
+    assert((payload as any).scopes.includes("test scope 1"))
+    assert((payload as any).url === `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/superadmin`)
 }
 
-export default () => describe.only("GET /auth", async function () {
-    const validToken = "valid"
-    const invalidToken = "invalid"
-    const expiredToken = "expired"
+export default (testData: TestData) => describe("GET /auth", function () {
+    let validToken: string
+    let invalidToken: string
+    let expiredToken: string
     const allowlistedIP = "127.0.0.1"
 
-    describe("non-allowlisted users", async function () {
+    this.beforeEach(async function () {
+        validToken = (await testData.users.superadmin.model.tokens)[0].token
+        expiredToken = (await testData.users.superadmin.model.tokens)[2].token
+        invalidToken = "invalid"
+    })
+
+    describe("non-allowlisted users", function () {
         it("should authenticate a non-allowlisted user with a valid token", async function () {
             const result = await getAuth({
                 Authorization: `Bearer ${validToken}`
@@ -136,7 +143,7 @@ export default () => describe.only("GET /auth", async function () {
         })
     })
 
-    xdescribe("allowlisted users", async function () {
+    describe("allowlisted users", function () {
         it("should authenticate an allowlisted user without an 'Authorization'-header", async function () {
             const result = await getAuth({
                 "X-Real-IP": allowlistedIP

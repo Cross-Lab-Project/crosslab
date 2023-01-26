@@ -1,3 +1,3 @@
-export default () => describe("DELETE /users/{username}", async function () {
+export default () => describe("DELETE /users/{username}", function () {
     // TBD
 })

@@ -7,6 +7,7 @@ import { roleRepository } from "../../../src/database/repositories/roleRepositor
 import { scopeRepository } from "../../../src/database/repositories/scopeRepository";
 import { tokenRepository } from "../../../src/database/repositories/tokenRepository";
 import { userRepository } from "../../../src/database/repositories/userRepository";
+import { parseAllowlist, resolveAllowlist } from "../../../src/methods/allowlist";
 import { activeKeyNames } from "../../data/activeKeyData.spec";
 import { prepareTestData, TestData } from "../../data/index.spec";
 import { keyNames } from "../../data/keyData.spec";
@@ -14,40 +15,39 @@ import { roleNames } from "../../data/roleData.spec";
 import { scopeNames } from "../../data/scopeData.spec";
 import { tokenNames } from "../../data/tokenData.spec";
 import { userNames } from "../../data/userData.spec";
-import { AbstractRepositoryTest } from "./abstractRepository.spec";
-import { ActiveKeyRepositoryTest } from "./activeKeyRepository.spec";
-import keyRepositorySpec from "./keyRepository.spec";
-import roleRepositorySpec from "./roleRepository.spec";
-import scopeRepositorySpec from "./scopeRepository.spec";
-import tokenRepositorySpec from "./tokenRepository.spec";
-import userRepositorySpec from "./userRepository.spec";
+import { activeKeyRepositoryTestSuite } from "./activeKeyRepository.spec";
+import { keyRepositoryTestSuite } from "./keyRepository.spec";
+import { roleRepositoryTestSuite } from "./roleRepository.spec";
+import { scopeRepositoryTestSuite } from "./scopeRepository.spec";
+import { tokenRepositoryTestSuite } from "./tokenRepository.spec";
+import { userRepositoryTestSuite } from "./userRepository.spec";
 
-const tests = [
-    keyRepositorySpec,
-    roleRepositorySpec,
-    scopeRepositorySpec,
-    tokenRepositorySpec,
-    userRepositorySpec
+const repositoryTestSuites = [
+    activeKeyRepositoryTestSuite,
+    keyRepositoryTestSuite,
+    roleRepositoryTestSuite,
+    scopeRepositoryTestSuite,
+    tokenRepositoryTestSuite,
+    userRepositoryTestSuite
 ]
 
 export default () => describe("Repositories", async function () {
-    let activeKeyRepositoryTest: ActiveKeyRepositoryTest
     let suite: Mocha.Suite = this
 
-    this.beforeAll(async function () {
-        activeKeyRepositoryTest = new ActiveKeyRepositoryTest()
-        await activeKeyRepositoryTest.initialize()
-    })
-
     it("Should setup the repository tests", async function() {
-        suite.addSuite(activeKeyRepositoryTest.execute())
+        this.timeout(0)
+
+        for (const repositoryTestSuite of repositoryTestSuites) {
+            await repositoryTestSuite.initialize()
+            suite.addSuite(repositoryTestSuite.execute())
+        }
     })
 })
 
 export async function initTestDatabase(): Promise<TestData> {
     const dataSourceConfig: DataSourceOptions = {
         type: 'sqlite',
-        database: ':memory:',
+        database: 'test/db/auth.db',
         synchronize: true,
         dropSchema: true,
         entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel]
@@ -84,6 +84,11 @@ export async function initTestDatabase(): Promise<TestData> {
     }
 
     // assert that data was created successfully
+
+    const allowlist = process.env.ALLOWLIST ? parseAllowlist(process.env.ALLOWLIST) : []
+
+    // Resolve Allowlist
+    await resolveAllowlist(allowlist)
 
     return testData
 }

@@ -25,18 +25,18 @@ const userDataWithLinks: UserDataWithLinks = {
         request: {
             username: "superadmin",
             password: "superadmin",
-            roles: ["superadmin"]
+            roles: ["superadmin", "user"]
         },
         model: {
             username: "superadmin",
             password: "$2a$10$jA9acOfIQxpzj6X50TcDPugDOb4gXLvdsyEVl.9WUDns1jk565dJS",
-            roles: ["superadmin"],
-            tokens: ["valid token 1"]
+            roles: ["superadmin", "user"],
+            tokens: ["valid token 1", "valid token 2", "expired token 1"]
         },
         response: {
             url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/superadmin`,
             username: "superadmin",
-            roles: ["superadmin"]
+            roles: ["superadmin", "user"]
         }
     }
 }

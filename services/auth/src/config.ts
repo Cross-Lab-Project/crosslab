@@ -26,7 +26,7 @@ export const config: AppConfiguration = initializeAppConfiguration()
 
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
-    database: 'db/device.db',
+    database: 'db/auth.db',
     synchronize: true,
     entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
 }

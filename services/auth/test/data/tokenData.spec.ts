@@ -31,7 +31,8 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         model: {
             scopes: ["scope 1"],
             token: "fe56a6bd-d09b-4d68-8874-ee214f400980",
-            user: "superadmin"
+            user: "superadmin",
+            expiresOn: new Date(Date.now() - 360000).toISOString()
         },
         response: undefined
     },

@@ -24,7 +24,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const HOUR = 60 * 60 * 1000
 
     // Catch missing authorization header (OPTIONS requests)
-    if (!parameters.Authorization) {
+    if (!parameters.Authorization && !(parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']])) {
         return {
             status: 200,
             headers: {}

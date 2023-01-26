@@ -3,8 +3,10 @@ import { Token } from "../../types/types";
 import { ScopeModel, TokenModel } from "../model";
 import { scopeRepository } from "./scopeRepository";
 import { AppDataSource } from "../dataSource";
+import { FindOptionsRelations } from "typeorm";
+import { userRepository } from "./userRepository";
 
-class TokenRepository extends AbstractRepository<TokenModel> {
+export class TokenRepository extends AbstractRepository<TokenModel> {
     constructor() {
         super(TokenModel)
     }
@@ -25,6 +27,11 @@ class TokenRepository extends AbstractRepository<TokenModel> {
                 })
             })
         )
+        model.user = await userRepository.findOneOrFail({
+            where: {
+                username: data.user
+            }
+        })
     }
 
     public async format(_model: TokenModel): Promise<Token<"response">> {
@@ -34,6 +41,13 @@ class TokenRepository extends AbstractRepository<TokenModel> {
     public addScopeModelToTokenModel(tokenModel: TokenModel, scopeModel: ScopeModel) {
         if (!tokenModel.scopes.find((scope) => scope.name === scopeModel.name)) {
             tokenModel.scopes.push(scopeModel)
+        }
+    }
+
+    protected getDefaultFindOptionsRelations(): FindOptionsRelations<TokenModel> | undefined {
+        return {
+            scopes: true,
+            user: true
         }
     }
 }

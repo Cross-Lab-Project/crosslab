@@ -17,6 +17,9 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
     const userModel = await userRepository.findOne({
         where: {
             username: user.JWT?.username
+        },
+        relations: {
+            tokens: true
         }
     })
 
@@ -41,7 +44,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
     console.log(`postDeviceAuthenticationToken succeeded`)
 
     return {
-        status: 201,
+        status: 200,
         body: tokenModel.token,
     }
 }

@@ -1,3 +1,3 @@
-export default () => describe("PATCH /users/{username}", async function () {
+export default () => describe("PATCH /users/{username}", function () {
     // TBD
 })

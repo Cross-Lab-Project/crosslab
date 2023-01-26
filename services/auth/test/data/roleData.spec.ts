@@ -4,7 +4,7 @@ import { EntityData, ReplaceWith, Subset } from "./index.spec";
 import { resolveScope, ScopeName } from "./scopeData.spec";
 import { UserData, UserName } from "./userData.spec";
 
-export const roleNames = ["superadmin"] as const
+export const roleNames = ["superadmin","user"] as const
 export type RoleName = typeof roleNames[number]
 export type RoleData = Record<RoleName, EntityData<RoleModel>> 
 
@@ -23,16 +23,31 @@ const roleDataWithLinks: RoleDataWithLinks = {
     "superadmin": {
         request: {
             name: "superadmin",
-            scopes: ["scope 1"]
+            scopes: ["scope 1","scope 2","scope 3","scope 4","scope 5"]
         },
         model: {
             name: "superadmin",
-            scopes: ["scope 1"],
+            scopes: ["scope 1","scope 2","scope 3","scope 4","scope 5"],
             users: ["superadmin"]
         },
         response: {
             name: "superadmin",
-            scopes: ["scope 1"]
+            scopes: ["scope 1","scope 2","scope 3","scope 4","scope 5"],
+        }
+    },
+    "user": {
+        request: {
+            name: "user",
+            scopes: ["scope 3"]
+        },
+        model: {
+            name: "user",
+            scopes: ["scope 3"],
+            users: ["superadmin"]
+        },
+        response: {
+            name: "user",
+            scopes: ["scope 3"]
         }
     }
 }

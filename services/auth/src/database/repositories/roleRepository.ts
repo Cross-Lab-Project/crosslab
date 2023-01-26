@@ -4,7 +4,7 @@ import { RoleModel } from "../model";
 import { scopeRepository } from "./scopeRepository";
 import { AppDataSource } from "../dataSource";
 
-class RoleRepository extends AbstractRepository<RoleModel> {
+export class RoleRepository extends AbstractRepository<RoleModel> {
     constructor() {
         super(RoleModel)
     }
@@ -14,7 +14,9 @@ class RoleRepository extends AbstractRepository<RoleModel> {
     }
 
     public async write(model: RoleModel, data: Role<"request">): Promise<void> {
-        if (data.name) model.name = data.name
+        if (data.name) {
+            model.name = data.name
+        }
         if (data.scopes) {
             model.scopes = await Promise.all(
                 data.scopes.map(async (scope) => {

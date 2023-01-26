@@ -3,8 +3,8 @@ import modelSpec from "./model.spec"
 import repositorySuite from "./repositories/index.spec"
 
 const tests = [
-    // modelSpec,
-    // dataSourceSpec,
+    modelSpec,
+    dataSourceSpec,
     repositorySuite
 ]
 

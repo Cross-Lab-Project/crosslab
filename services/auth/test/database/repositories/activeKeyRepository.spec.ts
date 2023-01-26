@@ -1,15 +1,15 @@
 import assert from "assert";
 import { FindOptionsWhere } from "typeorm";
 import { ActiveKeyModel } from "../../../src/database/model"; 
-import { AbstractRepositoryTest } from "./abstractRepository.spec";
+import { ActiveKey } from "../../../src/types/types";
+import { AbstractRepositoryTestSuite } from "./abstractRepository.spec";
 
-export class ActiveKeyRepositoryTest extends AbstractRepositoryTest<ActiveKeyModel> {
+class ActiveKeyRepositoryTest extends AbstractRepositoryTestSuite<ActiveKeyModel> {
     constructor() {
         super(ActiveKeyModel)
     }
 
-    validateCreate(model: ActiveKeyModel, data?: { use: string; } | undefined): boolean {
-        // throw new Error("Method not implemented.");
+    validateCreate(model: ActiveKeyModel, data?: ActiveKey<"request">): boolean {
         if (data) {
             assert(model.use === data.use)
             assert(model.key.use === data.use)
@@ -19,36 +19,30 @@ export class ActiveKeyRepositoryTest extends AbstractRepositoryTest<ActiveKeyMod
         return true
     }
 
-    validateWrite(model: ActiveKeyModel, data: { use: string; }): boolean {
-        // throw new Error("Method not implemented.");
+    validateWrite(model: ActiveKeyModel, data: ActiveKey<"request">): boolean {
         assert(model.use === data.use)
         return true
     }
 
-    validateFormat(model: ActiveKeyModel, data: undefined): boolean {
-        // throw new Error("Method not implemented.");
+    validateFormat(_model: ActiveKeyModel, data: ActiveKey<"response">): boolean {
         assert(data === undefined)
         return true
     }
 
-    compareModels(firstModel: ActiveKeyModel, secondModel: ActiveKeyModel, _complete?: boolean | undefined): boolean {
-        // throw new Error("Method not implemented.");
+    compareModels(firstModel: ActiveKeyModel, secondModel: ActiveKeyModel, _complete?: boolean): boolean {
         assert(firstModel.use === secondModel.use)
         assert(firstModel.key.uuid === secondModel.key.uuid)
         return true
     }
     
-    getFindOptionsWhere(model?: ActiveKeyModel | undefined): FindOptionsWhere<ActiveKeyModel> {
-        // throw new Error("Method not implemented.");
-        return model ? {
+    getFindOptionsWhere(model?: ActiveKeyModel): FindOptionsWhere<ActiveKeyModel> {
+        return {
             key: {
-                uuid: model.key.uuid
+                uuid: model ? model.key.uuid : "non-existent"
             },
-            use: model.use
-        } : {
-            key: {
-                uuid: "non-existent"
-            }
+            use: model?.use
         }
     }
 }
+
+export const activeKeyRepositoryTestSuite = new ActiveKeyRepositoryTest()

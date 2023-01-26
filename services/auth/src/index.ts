@@ -26,7 +26,8 @@ AppDataSource.initialize(dataSourceConfig)
         }
 
         const activeKeyModel = await activeKeyRepository.create({
-            use: key.use
+            use: key.use,
+            key: key.uuid
         })
 
         await activeKeyRepository.save(activeKeyModel)

@@ -1,5 +1,5 @@
 import { MissingEntityError } from "@crosslab/service-common"
-import { FindManyOptions, FindOneOptions, Repository } from "typeorm"
+import { FindManyOptions, FindOneOptions, FindOptionsRelations, Repository } from "typeorm"
 import { UninitializedRepositoryError } from "../../types/errors"
 import { getModelName, Model, ModelType } from "../model"
 
@@ -40,17 +40,31 @@ export abstract class AbstractRepository<M extends Model> {
 
     public async find(options?: FindManyOptions<M>): Promise<M[]> {
         if (!this.repository) this.throwUninitializedRepositoryError()
-        return await this.repository.find(options)
+        const findOptions: FindManyOptions<M> = options ? {
+            ...options,
+            relations: options?.relations ?? this.getDefaultFindOptionsRelations()
+        } : {
+            relations: this.getDefaultFindOptionsRelations()
+        }
+        return await this.repository.find(findOptions)
     }
 
     public async findOne(options: FindOneOptions<M>): Promise<M|null> {
         if (!this.repository) this.throwUninitializedRepositoryError()
-        return await this.repository.findOne(options)
+        const findOptions: FindManyOptions<M> = {
+            ...options,
+            relations: options?.relations ?? this.getDefaultFindOptionsRelations()
+        }
+        return await this.repository.findOne(findOptions)
     }
 
     public async findOneOrFail(options: FindOneOptions<M>): Promise<M> {
         if (!this.repository) this.throwUninitializedRepositoryError()
-        const model = await this.repository.findOne(options)
+        const findOptions: FindOneOptions<M> = {
+            ...options,
+            relations: options.relations ?? this.getDefaultFindOptionsRelations()
+        }
+        const model = await this.repository.findOne(findOptions)
 
         if (!model) {
             throw new MissingEntityError(
@@ -69,5 +83,9 @@ export abstract class AbstractRepository<M extends Model> {
     public async remove(model: M): Promise<void> {
         if (!this.repository) this.throwUninitializedRepositoryError()
         await this.repository.remove(model)
+    }
+
+    protected getDefaultFindOptionsRelations(): FindOptionsRelations<M> | undefined {
+        return undefined
     }
 }

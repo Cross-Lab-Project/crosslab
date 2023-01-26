@@ -1,4 +1,4 @@
-import { JWK } from 'jose'
+import { JWK as _JWK } from 'jose'
 import {
     Column,
     Entity,
@@ -11,6 +11,9 @@ import {
 } from 'typeorm'
 import { Role, User } from '../generated/types'
 import { ActiveKey, Key, Scope, Token } from '../types/types'
+
+// this solves an nyc error where branches are wrongly detected
+type JWK = _JWK | never 
 
 @Entity()
 export class ScopeModel {
@@ -71,7 +74,7 @@ export class KeyModel {
     @Column('simple-json')
     public_key!: JWK
     @Column('simple-json')
-    private_key!: JWK
+    private_key!: JWK 
 }
 
 @Entity()

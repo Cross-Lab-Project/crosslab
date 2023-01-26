@@ -5,7 +5,7 @@ import { tokenRepository } from "../../../src/database/repositories/tokenReposit
 import { userRepository } from "../../../src/database/repositories/userRepository"
 import { postLogout } from "../../../src/operations"
 
-export default () => describe("POST /logout", async function () {
+export default () => describe("POST /logout", function () {
     it("should logout the user successfully", async function () {
         // prepare token
         const userModel = await userRepository.findOneOrFail({ 
