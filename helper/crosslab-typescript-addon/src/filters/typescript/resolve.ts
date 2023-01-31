@@ -555,7 +555,12 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
     return invalidSchemas
 }
 
-
+/**
+ * Generates versions of a given schema without one of the unrequired properties.
+ * @param schema The schema for which to generate the versions.
+ * @param prefix A prefix to generate the path to the removed property. 
+ * @returns A list of schemas with each one missing an unrequired property.
+ */
 export function generateSchemasWithoutUnrequired(schema: OpenAPIV3_1.SchemaObject, prefix: string = "schema"): {
     schema: OpenAPIV3_1.SchemaObject,
     path: string
