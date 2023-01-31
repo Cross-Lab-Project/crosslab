@@ -11,6 +11,7 @@ import { ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel 
 import { config } from "../src/config";
 import configSpec from "./config.spec";
 import operationsSuite from "./operations/index.spec"
+import generatedSuite from "./generated/index.spec"
 
 describe("Authentication Service Tests", function () {
     this.beforeAll(function () {
@@ -23,4 +24,5 @@ describe("Authentication Service Tests", function () {
     methodsSuite()
     configSpec()
     operationsSuite()
+    generatedSuite()
 })

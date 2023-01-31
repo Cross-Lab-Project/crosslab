@@ -161,7 +161,7 @@ async function main() {
       ) as OpenAPIV3_1.Document;
       if (openApi.openapi !== "3.1.0") {
         console.error(
-          `Only OpenAPI 3.1.0 is supported, but ${openApi.info.version} was provided. Please upgrade your OpenAPI file.`
+          `Only OpenAPI 3.1.0 is supported, but ${openApi.openapi} was provided. Please upgrade your OpenAPI file.`
         );
         process.exit(1);
       }

@@ -2,6 +2,8 @@ import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName, formatOperation, formatExpressPath } from './format'
 import {
     ExtendedSchema,
+    generateInvalidSchemas,
+    generateSchemasWithoutUnrequired,
     resolveOperations,
     resolveSchemas,
     SimplifiedOperation,
@@ -237,12 +239,19 @@ function prettier_filter(string: string) {
  * @param searchString The search string.
  * @returns True if the given string ends with the search string, else false.
  */
-function endswith_filter(string: string, searchString: string | RegExp) {
-    if (typeof searchString === string)
-        return string.endsWith(searchString as string)
-    
-    const regex: RegExp = new RegExp(searchString)
-    return regex.test(string)
+function endswith_filter(string: string, searchString: string) {
+    return string.endsWith(searchString as string)
+}
+
+/**
+ * This function defines a filter that checks if a given string starts with the
+ * provided search string.
+ * @param string The string to be checked.
+ * @param searchString The search string.
+ * @returns True if the given string ends with the search string, else false.
+ */
+ function startswith_filter(string: string, searchString: string) {
+    return string.startsWith(searchString as string)
 }
 
 /**
@@ -275,6 +284,23 @@ function destructureSchema_filter(
     }
 ) {
     return destructureSchema(schema, options)
+}
+
+/**
+ * This function defines a filter that attempts to delete a property of an object.
+ * @param object The object from which to delete the property.
+ * @param key The key of the property to be deleted.
+ */
+function delete_filter(object: any, key: string) {
+    delete object[key]
+}
+
+/**
+ * This function defines a filter that attempts to clone an object.
+ * @param object The object to be cloned.
+ */
+ function clone_filter(object: any) {
+    return JSON.parse(JSON.stringify(object))
 }
 
 /**
@@ -366,6 +392,26 @@ export const TypeScriptFilterCollection: FilterCollection = {
         {
             name: 'split',
             function: split_filter
+        },
+        {
+            name: 'startswith',
+            function: startswith_filter
+        },
+        {
+            name: 'delete',
+            function: delete_filter
+        },
+        {
+            name: 'clone',
+            function: clone_filter
+        },
+        {
+            name: 'generateInvalidSchemas',
+            function: generateInvalidSchemas
+        },
+        {
+            name: 'generateSchemasWithoutUnrequired',
+            function: generateSchemasWithoutUnrequired
         }
     ],
 }

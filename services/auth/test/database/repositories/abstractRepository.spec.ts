@@ -78,7 +78,7 @@ function getEntityNames<M extends Model>(model: { new(): M }): EntityName<M>[] {
             return userNames as any
     }
 
-    throw new Error(`No entity names exists for the given model`)
+    throw new Error(`No entity names exist for the given model`)
 }
 
 interface RepositoryTestData<M extends Model> {

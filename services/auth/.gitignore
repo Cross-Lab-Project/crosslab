@@ -9,3 +9,4 @@ package.resolved.json
 app
 .nyc_output
 coverage
+test/generated
