@@ -111,13 +111,21 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
         if (response.headers) {
             {%- for header in response.headers %}
             if (
-                {{ "response.headers['" + header.name + "'] && " if not header.required -}} 
                 !validate{{ operation.name | cap }}Header{{ header.name }}(response.headers["{{ header.name }}"])
+                {{ "\n\t\t\t\t&& response.headers['" + header.name + "'] !== undefined " if not header.required -}} 
             ) {
                 (validate{{ operation.name | cap }}Output as any).errors = (validate{{ operation.name | cap }}Header{{ header.name }} as any).errors
                 return false
             }   
             {%- endfor %}
+        } else {
+            {%- if response.headers | selectattr("required") | length > 0 %}
+            return false
+            {%- else %}
+            if (response.headers !== undefined) {
+                return false
+            }
+            {%- endif %}
         }
 
         {% endif -%}

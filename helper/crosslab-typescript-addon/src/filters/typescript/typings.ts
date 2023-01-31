@@ -27,7 +27,7 @@ type DestructuredSchema = DestructuredProperty[]
  * @returns Properties of provided schema.
  */
 export function destructureSchema(
-    schema: OpenAPIV3_1.SchemaObject, 
+    schema: OpenAPIV3_1.SchemaObject,
     options?: {
         prefixTypes?: string
         context?: OpenAPIV3_1.SchemaObject[]
@@ -36,23 +36,23 @@ export function destructureSchema(
 ): DestructuredSchema {
     const destructuredSchema: DestructuredSchema = []
 
-    if (schema.type === "array" && first) {
+    if (schema.type === 'array' && first) {
         destructuredSchema.push({
-            name: formatName(schema.title ?? "default", false),
+            name: formatName(schema.title ?? 'default', false),
             description: schema.description,
             declaration: schemaToTypeDeclaration(schema, {
                 inline: true,
                 resolveDirectly: false,
                 context: options?.context,
-                prefixTypes: options?.prefixTypes
+                prefixTypes: options?.prefixTypes,
             }).typeDeclaration,
             required: true,
-            top: true
+            top: true,
         })
     }
 
     if (schema.allOf) {
-        for (const s of (schema.allOf as OpenAPIV3_1.SchemaObject[])) {
+        for (const s of schema.allOf as OpenAPIV3_1.SchemaObject[]) {
             destructuredSchema.push(...destructureSchema(s, options, false))
         }
     }
@@ -67,10 +67,12 @@ export function destructureSchema(
                     inline: true,
                     resolveDirectly: true,
                     context: options?.context,
-                    prefixTypes: options?.prefixTypes
+                    prefixTypes: options?.prefixTypes,
                 }).typeDeclaration,
-                required: schema.required ? schema.required.includes(propertyName) : false,
-                top: false
+                required: schema.required
+                    ? schema.required.includes(propertyName)
+                    : false,
+                top: false,
             })
         }
     }
@@ -99,7 +101,7 @@ export function schemaToTypeDeclaration(
         inline?: boolean
         resolveDirectly?: boolean
         context?: OpenAPIV3_1.SchemaObject[]
-        schemaType?: "request"|"response"|"all"
+        schemaType?: 'request' | 'response' | 'all'
     }
 ): {
     comment?: string
@@ -111,8 +113,8 @@ export function schemaToTypeDeclaration(
     options.inline = options.inline ?? false
     options.resolveDirectly = options.resolveDirectly ?? true
     options.context = options.context ?? []
-    options.schemaType = options.schemaType ?? "all"
-    options.prefixTypes = options.prefixTypes ?? ""
+    options.schemaType = options.schemaType ?? 'all'
+    options.prefixTypes = options.prefixTypes ?? ''
 
     let comment = schema.description
         ? `/**\n * ${schema.description.replace(/\n/g, '')}\n */\n`
@@ -137,14 +139,19 @@ export function schemaToTypeDeclaration(
                 }
             }
         }
-        if (options.context.find(s => s.title === schema.title && (s as any)['x-standalone'])) {
+        if (
+            options.context.find(
+                (s) => s.title === schema.title && (s as any)['x-standalone']
+            )
+        ) {
             return {
-                typeDeclaration: prefix 
-                    + options.prefixTypes 
-                    + formatName(schema.title) 
-                    + (options.schemaType === "request" ? '<"request">':'')
-                    + (options.schemaType === "response" ? '<"response">':'')
-                    + suffix,
+                typeDeclaration:
+                    prefix +
+                    options.prefixTypes +
+                    formatName(schema.title) +
+                    (options.schemaType === 'request' ? '<"request">' : '') +
+                    (options.schemaType === 'response' ? '<"response">' : '') +
+                    suffix,
                 typeDependencies: [formatName(schema.title)],
                 comment: comment,
             }
@@ -235,7 +242,10 @@ export function schemaToTypeDeclaration(
             let dependencies: Array<string> = []
             if (schema.properties) {
                 for (const property of Object.keys(schema.properties)) {
-                    const td = schemaToTypeDeclaration(schema.properties[property], options)
+                    const td = schemaToTypeDeclaration(
+                        schema.properties[property],
+                        options
+                    )
                     properties.push(
                         `${td.comment}${property}${
                             required.includes(property) ? '' : '?'

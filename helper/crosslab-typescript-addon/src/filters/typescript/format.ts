@@ -44,9 +44,8 @@ export function formatName(name: string, capitalize: boolean = true) {
         })
         .join('')
 
-    if (!capitalize)
-        return result.charAt(0).toLowerCase() + result.slice(1)
-    
+    if (!capitalize) return result.charAt(0).toLowerCase() + result.slice(1)
+
     return result
 }
 

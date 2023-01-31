@@ -60,12 +60,13 @@ export default () => describe("Request Validation Tests", function () {
         ))
     })
 
+    {# BEGIN REQUIRED PARAMETERS TESTING #}
     {%- if operation.parameters %}
     {%- if operation.parameters | selectattr("required") | length > 0 %}
 
-    it("should return false when validating an invalid input for {{ operation.name }} (no parameters)", function () {
+    it("should return false when validating an invalid input for {{ operation.name }} (undefined required parameters)", function () {
         JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input no parameters")
+            random: seedrandom("{{ operation.name }} input undefined required parameters")
         })
         const fakeParameters = undefined
         {%- if operation.requestBody %}
@@ -79,6 +80,22 @@ export default () => describe("Request Validation Tests", function () {
         ))
     })
     {%- else %}
+
+    it("should return true when validating a valid input for {{ operation.name }} (undefined unrequired parameters)", function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("{{ operation.name }} input undefined unrequired parameters")
+        })
+        const fakeParameters = undefined
+        {%- if operation.requestBody %}
+        const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
+        const fakeBody = JSONSchemaFaker.generate(schemaBody)
+        {%- endif %}
+        assert(validate{{ operation.name | cap }}Input(
+            {{- "fakeParameters as any" if operation.parameters -}}
+            {{- ", " if (operation.parameters and operation.requestBody) -}}
+            {{- "fakeBody as any" if operation.requestBody -}}
+        ))
+    })
 
     it("should return false when validating an invalid input for {{ operation.name }} (null parameters)", function () {
         JSONSchemaFaker.option({
@@ -95,8 +112,10 @@ export default () => describe("Request Validation Tests", function () {
             {{- "fakeBody as any" if operation.requestBody -}}
         ))
     })
+
     {%- endif %}
-    {%- endif%}
+    {%- endif %}
+    {# END REQUIRED PARAMETERS TESTING #}
 
     {%- for selectedParameter in operation.parameters %}
 
@@ -200,11 +219,68 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(validate{{ operation.name | cap }}Output({
-            {{ "status: " + response.status + "," }}
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
     })
+
+    {# BEGIN REQUIRED HEADERS TESTING #}
+    {%- if response.headers %}
+    {%- if response.headers | selectattr("required") | length > 0 %}
+
+    it("should return false when validating an invalid {{ response.status }} output for {{ operation.name }} (undefined required headers)", function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("{{ operation.name }} output undefined required headers")
+        })
+        const fakeHeaders = undefined
+        {%- if response.schema %}
+        const schemaBody: Schema = {{ response.schema | stringify(4) | indent(8) }}
+        const fakeBody = JSONSchemaFaker.generate(schemaBody)
+        {%- endif %}
+        assert(!validate{{ operation.name | cap }}Output({
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{- "\n\t\t\tbody: fakeBody," if response.schema }}
+            {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
+        }))
+    })
+    {%- else %}
+
+    it("should return true when validating a valid {{ response.status }} output for {{ operation.name }} (undefined unrequired headers)", function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("{{ operation.name }} output undefined unrequired headers")
+        })
+        const fakeHeaders = undefined
+        {%- if operation.requestBody %}
+        const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
+        const fakeBody = JSONSchemaFaker.generate(schemaBody)
+        {%- endif %}
+        assert(validate{{ operation.name | cap }}Output({
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{- "\n\t\t\tbody: fakeBody," if response.schema }}
+            {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
+        }))
+    })
+
+    it("should return false when validating an invalid {{ response.status }} output for {{ operation.name }} (null headers)", function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("{{ operation.name }} output null headers")
+        })
+        const fakeHeaders = null
+        {%- if operation.requestBody %}
+        const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
+        const fakeBody = JSONSchemaFaker.generate(schemaBody)
+        {%- endif %}
+        assert(!validate{{ operation.name | cap }}Output({
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{- "\n\t\t\tbody: fakeBody," if response.schema }}
+            {{- "\n\t\t\theaders: fakeHeaders as any," if response.headers and response.headers | length > 0 }}
+        }))
+    })
+
+    {%- endif %}
+    {%- endif %}
+    {# END REQUIRED HEADERS TESTING #}
 
     {%- for selectedHeader in response.headers %}
     
@@ -229,7 +305,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " + response.status + "," }}
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
@@ -255,13 +331,41 @@ export default () => describe("Request Validation Tests", function () {
         const schemaBody: Schema = {{ { "not": response.schema } | stringify(4) | indent(8) }}
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " + response.status + "," }}
+            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
     })
     {%- endif %}
     {%- endfor %}
+
+    {%- if operation | getInvalidStatusCode %}
+
+    it("should return false when validating an output with an invalid status code for {{ operation.name }}", function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("{{ operation.name }} output")
+        })
+        {%- if response.headers and response.headers | length > 0 %}
+        const schemasHeaders: { [k: string]: Schema } = {}
+        const fakeHeaders: { [k: string]: any } = {}
+        {%- endif %}
+        {%- for header in response.headers %}
+        schemasHeaders["{{ header.name }}"] = {{ header.schema | stringify(4) | indent(8) }}
+        {%- endfor %}
+        {%- for header in response.headers %}
+        fakeHeaders["{{ header.name }}"] = JSONSchemaFaker.generate(schemasHeaders["{{ header.name }}"])
+        {%- endfor %}
+        {%- if response.schema %}
+        const schemaBody: Schema = {{ response.schema | stringify(4) | indent(8) }}
+        const fakeBody = JSONSchemaFaker.generate(schemaBody)
+        {%- endif %}
+        assert(!validate{{ operation.name | cap }}Output({
+            {{ "status: " + (operation | getInvalidStatusCode) + "," }}
+            {{- "\n\t\t\tbody: fakeBody," if response.schema }}
+            {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
+        }))
+    })
+    {%- endif%}
 
     it("should return false when validating an output with a status code < 100 or >= 600 for {{ operation.name }}", function () {
         assert(!validate{{ operation.name | cap }}Output({

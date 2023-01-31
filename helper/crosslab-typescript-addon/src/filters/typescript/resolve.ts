@@ -3,10 +3,10 @@ import { formatName, formatOperation } from './format'
 import { userTypeSchema } from './schemas/userType'
 
 /**
- * This type extends a SchemaObject with the properties 'x-name', 'x-standalone', 
- * 'x-location' and 'x-service-name'. 'x-name' contains the formatted name of the 
- * schema, 'x-standalone' determines whether a validation function should be 
- * generated for this schema and 'x-location' contains the location of the schema 
+ * This type extends a SchemaObject with the properties 'x-name', 'x-standalone',
+ * 'x-location' and 'x-service-name'. 'x-name' contains the formatted name of the
+ * schema, 'x-standalone' determines whether a validation function should be
+ * generated for this schema and 'x-location' contains the location of the schema
  * inside of its containing document. 'x-service-name' contains the name of the
  * service the schema belongs to.
  */
@@ -15,7 +15,7 @@ export type ExtendedSchema = OpenAPIV3_1.SchemaObject & {
     'x-name': string
     'x-location': string
     'x-service-name': string
-    'x-schema-type': "request"|"response"|"all"
+    'x-schema-type': 'request' | 'response' | 'all'
 }
 
 type SimplifiedParameter = {
@@ -85,15 +85,15 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     name: formatOperation(path, method),
                     path: path,
                     method: method,
-                    serviceName: (operation as any)["x-service-name"],
-                    operationId: operation.operationId ?? "",
+                    serviceName: (operation as any)['x-service-name'],
+                    operationId: operation.operationId ?? '',
                     security: operation.security,
-                    summary: operation.summary ?? "",
-                    external: (operation as any)["x-internal"] ? false : true,
-                    destructureInput: (operation as any)["x-destructure-input"] ?? false,
-                    buildUrl: (operation as any)["x-build-url"] ?? false,
-                    optionalUrl: (operation as any)["x-optional-url"] ?? false,
-                    isProxyRequest: (operation as any)["x-proxy-request"] ?? false
+                    summary: operation.summary ?? '',
+                    external: (operation as any)['x-internal'] ? false : true,
+                    destructureInput: (operation as any)['x-destructure-input'] ?? false,
+                    buildUrl: (operation as any)['x-build-url'] ?? false,
+                    optionalUrl: (operation as any)['x-optional-url'] ?? false,
+                    isProxyRequest: (operation as any)['x-proxy-request'] ?? false,
                 }
 
                 // Search for parameters to add
@@ -142,7 +142,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                     const response = responses[status] as OpenAPIV3_1.ResponseObject
                     const simplifiedResponse: SimplifiedResponse = {
                         status: status,
-                        description: response.description
+                        description: response.description,
                     }
                     // Add schema of response if present
                     if ('content' in response) {
@@ -184,14 +184,17 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
 /**
  * This function tries to resolve the Schemas of a given OpenAPI document.
  * @param api The OpenAPI document for which to resolve the Schemas.
- * @param isService 
- * If true the UserType schema is added and method path will be used for 
+ * @param isService
+ * If true the UserType schema is added and method path will be used for
  * naming. Otherwise the operationId will be used for naming.
  * @returns
  * The resolved Schemas with additional properties 'x-name', 'x-standalone'
  * and 'x-location'
  */
-export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = true): ExtendedSchema[] {
+export function resolveSchemas(
+    api: OpenAPIV3_1.Document,
+    isService: boolean = true
+): ExtendedSchema[] {
     const extendedSchemas: ExtendedSchema[] = []
 
     // Add UserType schema
@@ -202,7 +205,7 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
             'x-name': 'UserType',
             'x-location': `#/components/schemas/user_type`,
             'x-service-name': 'Utility',
-            'x-schema-type': "all"
+            'x-schema-type': 'all',
         })
 
     // Search in components
@@ -210,14 +213,18 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
         // Search for schemas in components
         if (api.components.schemas) {
             for (const schemaName in api.components.schemas) {
-                const name = formatName(api.components.schemas[schemaName].title ?? "MISSING")
+                const name = formatName(
+                    api.components.schemas[schemaName].title ?? 'MISSING'
+                )
                 extendedSchemas.push({
                     ...api.components.schemas[schemaName],
                     'x-standalone': true,
                     'x-name': name,
                     'x-location': `#/components/schemas/${schemaName}`,
-                    'x-service-name': (api.components.schemas[schemaName] as any)["x-service-name"],
-                    'x-schema-type': "all"
+                    'x-service-name': (api.components.schemas[schemaName] as any)[
+                        'x-service-name'
+                    ],
+                    'x-schema-type': 'all',
                 })
             }
         }
@@ -233,8 +240,8 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                     'x-standalone': false,
                     'x-name': formatName(parameter.name),
                     'x-location': `#/components/parameters/${parameterName}/schema`,
-                    'x-service-name': (schema as any)["x-service-name"],
-                    'x-schema-type': "all"
+                    'x-service-name': (schema as any)['x-service-name'],
+                    'x-schema-type': 'all',
                 })
             }
         }
@@ -260,12 +267,12 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                         extendedSchemas.push({
                             ...schema,
                             'x-standalone': false,
-                            'x-name': isService ? 
-                                formatOperation(path, method) + 'RequestBody' :
-                                formatName(operation.operationId ?? "", false) + 'Body',
+                            'x-name': isService
+                                ? formatOperation(path, method) + 'RequestBody'
+                                : formatName(operation.operationId ?? '', false) + 'Body',
                             'x-location': `#/paths/${path}/${method}/requestBody/content/application/json/schema`,
                             'x-service-name': (operation as any)['x-service-name'],
-                            'x-schema-type': "all"
+                            'x-schema-type': 'all',
                         })
                     }
                 }
@@ -282,36 +289,42 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
                                 extendedSchemas.push({
                                     ...schema,
                                     'x-standalone': false,
-                                    'x-name': isService ?
-                                        formatOperation(path, method) +
-                                        'Response' +
-                                        status :
-                                        formatName(operation.operationId ?? "", false) + 
-                                        'Response' + 
-                                        status,
+                                    'x-name': isService
+                                        ? formatOperation(path, method) +
+                                          'Response' +
+                                          status
+                                        : formatName(operation.operationId ?? '', false) +
+                                          'Response' +
+                                          status,
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/content/application/json/schema`,
-                                    'x-service-name': (operation as any)['x-service-name'],
-                                    'x-schema-type': "all"
+                                    'x-service-name': (operation as any)[
+                                        'x-service-name'
+                                    ],
+                                    'x-schema-type': 'all',
                                 })
                             }
                         }
                     }
                     if (response.headers) {
                         for (const headerName in response.headers) {
-                            const schema = (response.headers[headerName] as OpenAPIV3_1.HeaderObject).schema
+                            const schema = (
+                                response.headers[headerName] as OpenAPIV3_1.HeaderObject
+                            ).schema
                             if (schema) {
                                 extendedSchemas.push({
                                     ...schema,
                                     'x-standalone': false,
-                                    'x-name': isService ?
-                                        formatOperation(path, method) +
-                                        'Header' +
-                                        formatName(headerName):
-                                        formatName(operation.operationId ?? "", false) +
-                                        formatName(headerName),
+                                    'x-name': isService
+                                        ? formatOperation(path, method) +
+                                          'Header' +
+                                          formatName(headerName)
+                                        : formatName(operation.operationId ?? '', false) +
+                                          formatName(headerName),
                                     'x-location': `#/paths/${path}/${method}/responses/${status}/headers/${headerName}/schema`,
-                                    'x-service-name': (operation as any)["x-service-name"],
-                                    'x-schema-type': "all"
+                                    'x-service-name': (operation as any)[
+                                        'x-service-name'
+                                    ],
+                                    'x-schema-type': 'all',
                                 })
                             }
                         }
@@ -321,7 +334,9 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
         }
     }
 
-    const _extendedSchemas = JSON.parse(JSON.stringify(extendedSchemas)) as ExtendedSchema[]
+    const _extendedSchemas = JSON.parse(
+        JSON.stringify(extendedSchemas)
+    ) as ExtendedSchema[]
 
     for (const extendedSchema of _extendedSchemas) {
         const readonlyRegex = /"[^\"]*?":{[^{}]*?"readOnly":true[^{}]*?},?/gms
@@ -329,25 +344,25 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
 
         const stringifiedExtendedSchema = JSON.stringify(extendedSchema)
         const stringifiedRequestSchema = stringifiedExtendedSchema
-            .replace(readonlyRegex,"")
-            .replace(/,}/g,"}")
+            .replace(readonlyRegex, '')
+            .replace(/,}/g, '}')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_request"')
         const stringifiedResponseSchema = stringifiedExtendedSchema
-            .replace(writeonlyRegex,"")
-            .replace(/,}/g,"}")
+            .replace(writeonlyRegex, '')
+            .replace(/,}/g, '}')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_response"')
 
         const requestSchema = JSON.parse(stringifiedRequestSchema) as ExtendedSchema
         const responseSchema = JSON.parse(stringifiedResponseSchema) as ExtendedSchema
 
-        requestSchema['x-schema-type'] = "request"
-        responseSchema['x-schema-type'] = "response"
+        requestSchema['x-schema-type'] = 'request'
+        responseSchema['x-schema-type'] = 'response'
 
-        requestSchema['x-name'] += "Request"
-        responseSchema['x-name'] += "Response"
+        requestSchema['x-name'] += 'Request'
+        responseSchema['x-name'] += 'Response'
 
-        requestSchema['x-location'] += "_request"
-        responseSchema['x-location'] += "_response"
+        requestSchema['x-location'] += '_request'
+        responseSchema['x-location'] += '_response'
 
         extendedSchemas.push(...[requestSchema, responseSchema])
     }
@@ -362,36 +377,39 @@ export function resolveSchemas(api: OpenAPIV3_1.Document, isService: boolean = t
  * @param prefix A prefix to generate the path to the removed property.
  * @returns A list of invalid versions of the template schema with the path of the removed property.
  */
-export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix: string = "schema"): {
+export function generateInvalidSchemas(
     schema: OpenAPIV3_1.SchemaObject,
-    path: string,
-    operation: "remove" | "change-type" | "remove-format" | "remove-enum" | "negate-type"
+    prefix: string = 'schema'
+): {
+    schema: OpenAPIV3_1.SchemaObject
+    path: string
+    operation: 'remove' | 'change-type' | 'remove-format' | 'remove-enum' | 'negate-type'
 }[] {
     const invalidSchemas: ReturnType<typeof generateInvalidSchemas> = []
 
     const anySchemas: OpenAPIV3_1.SchemaObject[] = [
         {
-            type: "array",
-            items: {}
+            type: 'array',
+            items: {},
         },
         {
-            type: "boolean"
+            type: 'boolean',
         },
         {
-            type: "integer"
+            type: 'integer',
         },
         {
-            type: "null"
+            type: 'null',
         },
         {
-            type: "number"
+            type: 'number',
         },
         {
-            type: "object"
+            type: 'object',
         },
         {
-            type: "string"
-        }
+            type: 'string',
+        },
     ]
 
     if (schema.allOf) {
@@ -427,54 +445,52 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
     // remove format
     if (schema.format) {
         const invalidSchema = {
-            ...schema
+            ...schema,
         }
         delete invalidSchema.format
 
         invalidSchemas.push({
             schema: invalidSchema,
             path: `${prefix}`,
-            operation: "remove-format"
+            operation: 'remove-format',
         })
     }
 
     // remove enum
     if (schema.enum) {
         const invalidSchema = {
-            ...schema
+            ...schema,
         }
         delete invalidSchema.enum
 
         invalidSchemas.push({
             schema: invalidSchema,
             path: `${prefix}`,
-            operation: "remove-enum"
+            operation: 'remove-enum',
         })
     }
-    
+
     // change type
     if (schema.type) {
         invalidSchemas.push({
             schema: {
-                anyOf: [
-                    ...anySchemas.filter((s) => s.type !== schema.type)
-                ]
+                anyOf: [...anySchemas.filter((s) => s.type !== schema.type)],
             },
             path: `${prefix}`,
-            operation: "change-type"
+            operation: 'change-type',
         })
     }
 
     invalidSchemas.push({
         schema: {
-            not: schema
+            not: schema,
         },
         path: `${prefix}`,
-        operation: "negate-type"
+        operation: 'negate-type',
     })
 
     switch (schema.type) {
-        case "object": 
+        case 'object':
             if (schema.properties) {
                 // remove required properties
                 if (schema.required) {
@@ -482,23 +498,27 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
                         const removedSchema = {
                             ...schema,
                             properties: {
-                                ...schema.properties
-                            }
+                                ...schema.properties,
+                            },
                         }
-                        removedSchema.required = removedSchema.required?.filter((r) => r !== requiredProperty)
+                        removedSchema.required = removedSchema.required?.filter(
+                            (r) => r !== requiredProperty
+                        )
                         delete removedSchema.properties![requiredProperty]
 
                         invalidSchemas.push({
                             schema: removedSchema,
                             path: `${prefix}.${requiredProperty}`,
-                            operation: "remove"
+                            operation: 'remove',
                         })
                     }
                 }
 
                 // recurse into properties
                 for (const propertyName in schema.properties) {
-                    const property = schema.properties[propertyName] as OpenAPIV3_1.SchemaObject
+                    const property = schema.properties[
+                        propertyName
+                    ] as OpenAPIV3_1.SchemaObject
 
                     const invalidPropertySchemas = generateInvalidSchemas(
                         property,
@@ -509,30 +529,30 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
                         const invalidSchema = {
                             ...schema,
                             properties: {
-                                ...schema.properties
-                            }
+                                ...schema.properties,
+                            },
                         }
-                        invalidSchema.properties[propertyName] = invalidPropertySchema.schema
+                        invalidSchema.properties[propertyName] =
+                            invalidPropertySchema.schema
 
                         if (
-                            (invalidPropertySchema.operation !== "remove") &&
+                            invalidPropertySchema.operation !== 'remove' &&
                             !invalidSchema.required?.find((r) => r === propertyName)
                         ) {
-                            if (!invalidSchema.required) 
+                            if (!invalidSchema.required)
                                 invalidSchema.required = [propertyName]
-                            else 
-                                invalidSchema.required.push(propertyName)
+                            else invalidSchema.required.push(propertyName)
                         }
 
                         invalidSchemas.push({
                             ...invalidPropertySchema,
-                            schema: invalidSchema
+                            schema: invalidSchema,
                         })
                     }
                 }
             }
             break
-        case "array":
+        case 'array':
             const invalidItemsSchemas = generateInvalidSchemas(
                 schema.items,
                 `${prefix}.items`
@@ -543,8 +563,8 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
                     ...invalidItemsSchema,
                     schema: {
                         ...currentSchema,
-                        items: invalidItemsSchema.schema
-                    }
+                        items: invalidItemsSchema.schema,
+                    },
                 })
             }
             break
@@ -558,14 +578,18 @@ export function generateInvalidSchemas(schema: OpenAPIV3_1.SchemaObject, prefix:
 /**
  * Generates versions of a given schema without one of the unrequired properties.
  * @param schema The schema for which to generate the versions.
- * @param prefix A prefix to generate the path to the removed property. 
+ * @param prefix A prefix to generate the path to the removed property.
  * @returns A list of schemas with each one missing an unrequired property.
  */
-export function generateSchemasWithoutUnrequired(schema: OpenAPIV3_1.SchemaObject, prefix: string = "schema"): {
+export function generateSchemasWithoutUnrequired(
     schema: OpenAPIV3_1.SchemaObject,
+    prefix: string = 'schema'
+): {
+    schema: OpenAPIV3_1.SchemaObject
     path: string
 }[] {
-    const schemasWithoutUnrequired: ReturnType<typeof generateSchemasWithoutUnrequired> = []
+    const schemasWithoutUnrequired: ReturnType<typeof generateSchemasWithoutUnrequired> =
+        []
 
     if (schema.properties) {
         for (const propertyName in schema.properties) {
@@ -574,14 +598,14 @@ export function generateSchemasWithoutUnrequired(schema: OpenAPIV3_1.SchemaObjec
                 const schemaWithoutUnrequired = {
                     ...schema,
                     properties: {
-                        ...schema.properties
-                    }
+                        ...schema.properties,
+                    },
                 }
                 delete schemaWithoutUnrequired.properties![propertyName]
 
                 schemasWithoutUnrequired.push({
                     schema: schemaWithoutUnrequired,
-                    path: `${prefix}.${propertyName}`
+                    path: `${prefix}.${propertyName}`,
                 })
             }
 
@@ -595,14 +619,15 @@ export function generateSchemasWithoutUnrequired(schema: OpenAPIV3_1.SchemaObjec
                 const schemaWithoutUnrequired = {
                     ...schema,
                     properties: {
-                        ...schema.properties
-                    }
+                        ...schema.properties,
+                    },
                 }
-                schemaWithoutUnrequired.properties[propertyName] = propertySchemaWithoutUnrequired.schema
+                schemaWithoutUnrequired.properties[propertyName] =
+                    propertySchemaWithoutUnrequired.schema
 
                 schemasWithoutUnrequired.push({
                     ...propertySchemaWithoutUnrequired,
-                    schema: schemaWithoutUnrequired
+                    schema: schemaWithoutUnrequired,
                 })
             }
         }
