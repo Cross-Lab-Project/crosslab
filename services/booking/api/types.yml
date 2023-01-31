@@ -1,6 +1,15 @@
 components:
+  parameters:
+      ID:
+        in: path
+        name: ID
+        description: String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).
+        schema:
+          type: string
+        required: true
   schemas:
     Booking:
+      title: Booking
       description: A booking in the booking system.
       type: object
       required:
@@ -48,6 +57,7 @@ components:
           type: string
           description: User readable notes about the status of the booking (e.g. if devices are unknown).
     Device:
+      title: Device
       description: A device might either be a physical/virtual device or a group of device.
       type: object
       required:
@@ -58,6 +68,7 @@ components:
           description: Unique ID of the device. Contains the institution (by having an end point at that institution)
           format: uri
     Experiment:
+      title: Experiment
       description: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
       type: object
       required:
@@ -72,6 +83,7 @@ components:
           type: string
           description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
     Timeslot:
+      title: Timeslot
       description: A time slot represents a slice of time used for bookings.
       type: object
       required:

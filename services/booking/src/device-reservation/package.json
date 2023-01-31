@@ -11,7 +11,8 @@
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/amqplib": "^0.8.2",
+    "@cross-lab-project/codegen-typescript-addon": "^0.0.8",
+    "@types/amqplib": "^0.10.1",
     "amqplib": "^0.10.0",
     "async-mutex": "^0.4.0",
     "dayjs": "^1.11.5",

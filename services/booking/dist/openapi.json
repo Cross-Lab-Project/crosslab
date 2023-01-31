@@ -242,7 +242,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -344,7 +344,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -394,7 +394,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -465,7 +465,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -517,7 +517,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -600,7 +600,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -649,7 +649,7 @@
         ],
         "parameters": [
           {
-            "in": "path",
+            "$ref": "#/components/parameters/ID",
             "name": "ID",
             "schema": {
               "type": "string"
@@ -688,8 +688,20 @@
     }
   },
   "components": {
+    "parameters": {
+      "ID": {
+        "in": "path",
+        "name": "ID",
+        "description": "String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      }
+    },
     "schemas": {
       "Booking": {
+        "title": "Booking",
         "description": "A booking in the booking system.",
         "type": "object",
         "required": [
@@ -751,6 +763,7 @@
         }
       },
       "Device": {
+        "title": "Device",
         "description": "A device might either be a physical/virtual device or a group of device.",
         "type": "object",
         "required": [
@@ -765,6 +778,7 @@
         }
       },
       "Experiment": {
+        "title": "Experiment",
         "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
         "type": "object",
         "required": [
@@ -785,6 +799,7 @@
         }
       },
       "Timeslot": {
+        "title": "Timeslot",
         "description": "A time slot represents a slice of time used for bookings.",
         "type": "object",
         "required": [

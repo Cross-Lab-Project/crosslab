@@ -1,13 +1,13 @@
 import * as crypto from 'crypto';
-import { APIClient } from "@cross-lab-project/api-client";
+import { APIClient, UnsuccessfulRequestError, BookingServiceSignatures } from "@cross-lab-project/api-client";
 import lodash from "lodash"
 import * as amqplib from "amqplib"
 
-import { DeviceBookingRequest } from '../messageDefinition';
-import { config } from '../../../common/config';
-import { GetIDFromURL, BelongsToUs } from '../../../common/auth';
-import { ReservationAnswer, ReservationMessage, ReservationRequest } from '../../../device-reservation/messageDefinition';
-import { sleep } from "../../../common/sleep";
+import { DeviceBookingRequest } from './messageDefinition';
+import { config } from '../../common/config';
+import { BelongsToUs } from '../../common/auth';
+import { ReservationAnswer, ReservationMessage, ReservationRequest } from '../../device-reservation/messageDefinition';
+import { sleep } from "../../common/sleep";
 
 
 export enum callbackType {
@@ -30,16 +30,18 @@ export async function reservateDevice(r: DeviceBookingRequest): Promise<boolean>
 
     let api: APIClient = new APIClient(config.OwnURL);
 
-    let deviceListResponse = await api.getDevicesByDeviceId({ device_id: GetIDFromURL(r.Device.toString()), flat_group: true }, r.Device.toString());
+    let deviceListResponse = await api.getDevice(r.Device.toString(), { flat_group: true });
     let possibleDevices: string[] = [];
 
-    if (deviceListResponse.body.type === "device") {
-        possibleDevices.push(deviceListResponse.body.url)
-    } else {
+    if (deviceListResponse.type === "device" || deviceListResponse.type === "cloud instantiable" || deviceListResponse.type === "edge instantiable") {
+        possibleDevices.push(deviceListResponse.url)
+    } else if (deviceListResponse.type === "group") {
         // group
-        for (let i = 0; i < deviceListResponse.body.devices.length; i++) {
-            possibleDevices.push(deviceListResponse.body.devices[i].url);
+        for (let i = 0; i < deviceListResponse.devices.length; i++) {
+            possibleDevices.push(deviceListResponse.devices[i].url);
         }
+    } else {
+        throw new Error("BUG: Unknown device type for" + r.Device.toString())
     }
 
     {
@@ -61,15 +63,17 @@ export async function reservateDevice(r: DeviceBookingRequest): Promise<boolean>
     }
 
     nextDevice: for (let i = 0; i < possibleDevices.length; i++) {
-        let schedule = await api.postBookingSchedule({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, Combined: false, onlyOwn: true });
-        if (schedule.status !== 200) {
-            continue;
+        let schedule: BookingServiceSignatures.GetScheduleSuccessResponse["body"];
+        try {
+            schedule = await api.getSchedule({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, Combined: false, onlyOwn: true });
+        } catch (e) {
+            continue
         }
-        if (schedule.body.length !== 1) {
+        if (schedule.length !== 1) {
             // Should only be one device
             continue
         }
-        if (schedule.body[0].Booked.length !== 0) {
+        if (schedule[0].Booked.length !== 0) {
             // Device is booked
             continue
         }
@@ -142,11 +146,11 @@ export async function reservateDevice(r: DeviceBookingRequest): Promise<boolean>
             }
         } else {
             let institution = new URL(possibleDevices[i]).origin;
-            let putReturn = await api.putBookingDevice({ Device: { ID: possibleDevices[i] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, institution + "/booking/manage")
+            let putReturn = await api.bookExperiment({ Experiment: { Devices: [{ ID: possibleDevices[i] }]}, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, {url: institution + "/booking/manage"})
             if (putReturn.status != 200) {
                 continue;
             }
-            let ID = putReturn.body.ReservationID;
+            let ID = putReturn.ReservationID;
 
             let counter = -1;
             while (true) {
@@ -156,11 +160,11 @@ export async function reservateDevice(r: DeviceBookingRequest): Promise<boolean>
                 }
                 await sleep(1000);
 
-                let getReturn = await api.getBookingManageByID({ ID: ID }, institution + "/booking/manage/" + ID);
+                let getReturn = await api.getBooking(institution + "/booking/manage/" + ID);
                 if (putReturn.status !== 200) {
                     continue;
                 }
-                switch (getReturn.body.Booking.Status) {
+                switch (getReturn.Booking.Status) {
                     case "pending":
                     case "active-pending":
                         // Still waiting
@@ -182,7 +186,7 @@ export async function reservateDevice(r: DeviceBookingRequest): Promise<boolean>
                         continue;
                         break;
                     default:
-                        console.log("Unknown API response for getBookingManageByID:", getReturn.body.Booking.Status);
+                        console.log("Unknown API response for getBookingManageByID:", getReturn.Booking.Status);
                         counter += 10;
                         continue;
                         break;

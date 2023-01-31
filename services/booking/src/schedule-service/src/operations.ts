@@ -1,32 +1,31 @@
 import {
     Timeslot,
-} from "../generated/types"
+} from "./generated/types"
 import {
-    postScheduleBodyType,
+    postScheduleRequestBodyType,
     postScheduleSuccessResponseType,
     postScheduleSignature,
-} from "../generated/signatures/schedule"
+} from "./generated/signatures"
 
 import { APIClient } from "@cross-lab-project/api-client"
-import { ConcreteDevice, DeviceGroup, InstantiableCloudDevice, InstantiableBrowserDevice } from "@cross-lab-project/api-client/dist/generated/device/types"
-import { getDevicesByDeviceIdResponseType } from "@cross-lab-project/api-client/dist/generated/device/signatures/devices"
+import { DeviceServiceTypes } from "@cross-lab-project/api-client/dist/generated/types"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, map } from "lodash"
 import dayjs from 'dayjs';
 
 
-import { config } from "../../../common/config"
-import { BelongsToUs, GetIDFromURL } from "../../../common/auth"
-import { timetableAnd, timetableNot } from "../timetable"
+import { config } from "../../common/config"
+import { BelongsToUs, GetIDFromURL } from "../../common/auth"
+import { timetableAnd, timetableNot } from "./timetable"
 
 // TODO: Missing availability since it is not yet well defined
 export const postSchedule: postScheduleSignature = async (body, user) => {
     let api: APIClient = new APIClient(config.OwnURL);
 
-    const laterReq = new Map<string, [number[], number[], postScheduleBodyType]>(); // Device in request, device list, request
+    const laterReq = new Map<string, [number[], number[], postScheduleRequestBodyType]>(); // Device in request, device list, request
 
     let timetables: Timeslot[][][] = []; // Booked: Device in request, device list, actual reserved time slots
-    let availability: Promise<ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice>[][] = []; // Device in request, device list
+    let availability: Promise<DeviceServiceTypes.ConcreteDevice | DeviceServiceTypes.DeviceGroup | DeviceServiceTypes.InstantiableCloudDevice | DeviceServiceTypes.InstantiableBrowserDevice>[][] = []; // Device in request, device list
     let realDevices: string[][] = []; // Device in request, device list
 
 
@@ -36,7 +35,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
         realDevices.push([]);
         timetables.push([]);
         availability.push([]);
-        let r: ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice;
+        let r: DeviceServiceTypes.ConcreteDevice | DeviceServiceTypes.DeviceGroup | DeviceServiceTypes.InstantiableCloudDevice | DeviceServiceTypes.InstantiableBrowserDevice;
         try {
             r = await api.getDevice(body.Experiment.Devices[device].ID, { flat_group: true });
         } catch (err) {
@@ -93,7 +92,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
                     };
                 }
                 if (laterReq.get(d.origin) === undefined) {
-                    let req: postScheduleBodyType = cloneDeep(body);
+                    let req: postScheduleRequestBodyType = cloneDeep(body);
                     req.onlyOwn = true;
                     req.Experiment.Devices = [];
                     req.Combined = false;
@@ -118,7 +117,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
         }
     };
 
-    const lrpromise = new Map<string, [number[], number[], postScheduleBodyType, Promise<postScheduleSuccessResponseType['body']>]>(); // Device in request, device list, request
+    const lrpromise = new Map<string, [number[], number[], postScheduleRequestBodyType, Promise<postScheduleSuccessResponseType['body']>]>(); // Device in request, device list, request
     for (let k of laterReq.keys()) {
         let lr = laterReq.get(k);
         let req = api.getSchedule(lr[2], { url: k + "/booking/schedule" });
@@ -166,7 +165,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
         let free: Timeslot[][] = []
         for (let i = 0; i < timetables[device].length; i++) {
             // Add availability
-            let a: ConcreteDevice | DeviceGroup | InstantiableCloudDevice | InstantiableBrowserDevice;
+            let a: DeviceServiceTypes.ConcreteDevice | DeviceServiceTypes.DeviceGroup | DeviceServiceTypes.InstantiableCloudDevice | DeviceServiceTypes.InstantiableBrowserDevice;
             try {
                 a = await availability[device][i];
             } catch (err) {

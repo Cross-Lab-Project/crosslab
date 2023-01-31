@@ -3,7 +3,7 @@
       security:
         - JWT: []
       parameters:
-        - in: path
+        - $ref: '#/components/parameters/ID'
           name: ID
           schema:
             type: string
@@ -60,7 +60,7 @@
       security:
         - JWT: []
       parameters:
-        - in: path
+        - $ref: '#/components/parameters/ID'
           name: ID
           schema:
             type: string
@@ -95,7 +95,7 @@
       security:
         - JWT: []
       parameters:
-        - in: path
+        - $ref: '#/components/parameters/ID'
           name: ID
           schema:
             type: string

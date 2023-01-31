@@ -5,7 +5,7 @@ import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 
 import { config } from "../../common/config";
-import { randomID } from "./operations/internal";
+import { randomID } from "./internal";
 
 mocha.describe("internal.ts", function () {
     this.timeout(10000);

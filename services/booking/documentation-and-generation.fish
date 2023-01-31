@@ -33,10 +33,10 @@ npx @redocly/openapi-cli bundle src/booking-frontend/dist/openapi.yml --output s
 npx @redocly/openapi-cli bundle src/booking-backend/dist/openapi.yml --output src/booking-backend/dist/openapi.json
 
 cd "$current/src/schedule-service"
-npx openapi-codegen server dist/openapi.json
+npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated
 cd "$current/src/booking-frontend"
-npx openapi-codegen server dist/openapi.json
+npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated
 cd "$current/src/booking-backend"
-npx openapi-codegen server dist/openapi.json
+npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated
 
 cd $current

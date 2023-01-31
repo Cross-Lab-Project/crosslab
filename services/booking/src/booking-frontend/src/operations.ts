@@ -3,22 +3,23 @@ import {
     Timeslot,
     Booking,
     Device
-} from "../generated/types"
+} from "./generated/types"
 import {
     postBookingSignature,
     getBookingByIDSignature,
     deleteBookingByIDSignature,
     patchBookingByIDSignature,
     deleteBookingByIDDestroySignature,
-    postBookingBodyType
-} from "../generated/signatures/booking"
+    postBookingRequestBodyType
+} from "./generated/signatures"
 
 import * as mysql from 'mysql2/promise';
 import * as amqplib from 'amqplib';
+import dayjs from "dayjs";
 
-import { config } from "../../../common/config"
-import { BelongsToUs } from "../../../common/auth"
-import { DeviceBookingRequest } from "../../../booking-backend/src/messageDefinition";
+import { config } from "./../../common/config"
+import { BelongsToUs } from "./../../common/auth"
+import { DeviceBookingRequest } from "./../../booking-backend/src/messageDefinition";
 
 export const postBooking: postBookingSignature = async (body, user) => {
     let connection = await amqplib.connect(config.AmqpUrl);
@@ -49,7 +50,7 @@ export const postBooking: postBookingSignature = async (body, user) => {
 
         // Send devices to backend
         for (let i = 0; i < body.Experiment.Devices.length; i++) {
-            let s = JSON.stringify(new DeviceBookingRequest(bookingID, new URL(body.Experiment.Devices[i].ID), i));
+            let s = JSON.stringify(new DeviceBookingRequest(bookingID, new URL(body.Experiment.Devices[i].ID), i, dayjs(body.Time.Start), dayjs(body.Time.End)));
             if(!channel.sendToQueue("device-booking", Buffer.from(s), {persistent: true})) {
                 throw new Error("amqp queue full");
             }

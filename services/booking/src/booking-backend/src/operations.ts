@@ -1,14 +1,14 @@
 import {
     Booking,
     Timeslot
-} from "../generated/types"
+} from "./generated/types"
 import {
-    putBookingLockByIDSignature,
-    deleteBookingLockByIDSignature,
+    putBookingByIDLockSignature,
+    deleteBookingByIDLockSignature,
     postBookingCallbackByIDSignature
-} from "../generated/signatures/booking"
+} from "./generated/signatures"
 
-export const putBookingLockByID: putBookingLockByIDSignature = async (parameters, user) => {
+export const putBookingByIDLock: putBookingByIDLockSignature = async (parameters, user) => {
     // add your implementation here
     return {
         status: 500,
@@ -16,7 +16,7 @@ export const putBookingLockByID: putBookingLockByIDSignature = async (parameters
     }
 }
 
-export const deleteBookingLockByID: deleteBookingLockByIDSignature = async (parameters, user) => {
+export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (parameters, user) => {
     // add your implementation here
     return {
         status: 500,
