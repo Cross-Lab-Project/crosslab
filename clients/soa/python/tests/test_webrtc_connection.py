@@ -9,12 +9,7 @@ from helpers import AsyncException, wait
 
 from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
-from crosslab.soa_client.schemas import (
-    CreatePeerconnectionMessageService,
-    PartialSignalingMessage,
-    SignalingMessage,
-    SignalingMessageMessageType,
-)
+from crosslab.soa_client.messages import SignalingMessage
 from crosslab.soa_client.service import Service
 
 
@@ -167,13 +162,11 @@ class DataOnly(Service):
 async def test_webrtc_connection_data_only(tiebreaker: bool):
     asyncException = AsyncException()
 
-    serviceConfig = CreatePeerconnectionMessageService.from_dict(
-        {
-            "serviceType": "http://example.com/data-only",
-            "serviceId": "data",
-            "remoteServiceId": "data",
-        }
-    )
+    serviceConfig = {
+        "serviceType": "http://example.com/data-only",
+        "serviceId": "data",
+        "remoteServiceId": "data",
+    }
 
     localService = DataOnly("data")
     remoteService = DataOnly("data")
@@ -184,24 +177,24 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
     local.on("error", lambda error: asyncException.set(error))
     remote.on("error", lambda error: asyncException.set(error))
 
-    async def onLocalSignalingMessage(message: PartialSignalingMessage):
+    async def onLocalSignalingMessage(message: SignalingMessage):
         await remote.handleSignalingMessage(
-            SignalingMessage(
-                SignalingMessageMessageType.SIGNALING,
-                "connection.url",
-                message.content,
-                message.signaling_type,
-            )
+            {
+                "messageType": "signaling",
+                "connectionUrl": "connection.url",
+                "content": message["content"],
+                "signalingType": message["signalingType"],
+            }
         )
 
-    async def onRemoteSignalingMessage(message: PartialSignalingMessage):
+    async def onRemoteSignalingMessage(message: SignalingMessage):
         await local.handleSignalingMessage(
-            SignalingMessage(
-                SignalingMessageMessageType.SIGNALING,
-                "connection.url",
-                message.content,
-                message.signaling_type,
-            )
+            {
+                "messageType": "signaling",
+                "connectionUrl": "connection.url",
+                "content": message["content"],
+                "signalingType": message["signalingType"],
+            }
         )
 
     local.on("signaling", onLocalSignalingMessage)
@@ -234,13 +227,11 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
 async def test_webrtc_connection_video_only(tiebreaker: bool):
     asyncException = AsyncException()
 
-    serviceConfig = CreatePeerconnectionMessageService.from_dict(
-        {
-            "serviceType": "http://example.com/data-only",
-            "serviceId": "data",
-            "remoteServiceId": "data",
-        }
-    )
+    serviceConfig = {
+        "serviceType": "http://example.com/data-only",
+        "serviceId": "data",
+        "remoteServiceId": "data",
+    }
 
     track = DummyTrack()
     localService = VideoOut(track, "data")
@@ -252,24 +243,24 @@ async def test_webrtc_connection_video_only(tiebreaker: bool):
     local.on("error", lambda error: asyncException.set(error))
     remote.on("error", lambda error: asyncException.set(error))
 
-    async def onLocalSignalingMessage(message: PartialSignalingMessage):
+    async def onLocalSignalingMessage(message: SignalingMessage):
         await remote.handleSignalingMessage(
-            SignalingMessage(
-                SignalingMessageMessageType.SIGNALING,
-                "connection.url",
-                message.content,
-                message.signaling_type,
-            )
+            {
+                "messageType": "signaling",
+                "connectionUrl": "connection.url",
+                "content": message["content"],
+                "signalingType": message["signalingType"],
+            }
         )
 
-    async def onRemoteSignalingMessage(message: PartialSignalingMessage):
+    async def onRemoteSignalingMessage(message: SignalingMessage):
         await local.handleSignalingMessage(
-            SignalingMessage(
-                SignalingMessageMessageType.SIGNALING,
-                "connection.url",
-                message.content,
-                message.signaling_type,
-            )
+            {
+                "messageType": "signaling",
+                "connectionUrl": "connection.url",
+                "content": message["content"],
+                "signalingType": message["signalingType"],
+            }
         )
 
     local.on("signaling", onLocalSignalingMessage)

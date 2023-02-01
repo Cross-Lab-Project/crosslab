@@ -1,4 +1,5 @@
 {
+    "python.defaultInterpreterPath": "venv/bin/python",
     "python.formatting.provider": "none",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
@@ -14,24 +15,24 @@
         "black"
     ],
     "files.exclude": {
-        ".mypy_cache": true,
-        "node_modules": true,
         ".pytest_cache": true,
+        ".mypy_cache": true,
         ".tox": true,
-        "**/*.egg-info": true,
+        "node_modules": true,
         "**/__pycache__": true,
+        "**/*.egg-info": true,
         //begin generated
         
         //end generated
     },
     "files.watcherExclude": {
         "dist": true,
-        "node_modules": true,
-        ".mypy_cache": true,
         ".pytest_cache": true,
+        ".mypy_cache": true,
         ".tox": true,
-        "**/*.egg-info": true,
+        "node_modules": true,
         "**/__pycache__": true,
+        "**/*.egg-info": true,
         //begin generated
         
         //end generated

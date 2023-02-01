@@ -12,23 +12,27 @@ The following table shows the status for all jobs in this repository.
 
 |     | build-spec | build | lint | test |
 | --- | --- | --- | --- | --- |
-| helper/development-container |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/development-container/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/development-container/dist/build.log) |  |  |
-| helper/tsdoc-theme |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/build.log) |  |  |
-| helper/openapi-codegeneration |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/build.log) |  |  |
-| helper/crosslab-typescript-addon |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/build.log) |  |  |
-| services/common |   | [![build](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.log) |  |  |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) |  |
-| services/booking |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.log) |  | [![lint](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint.log) |  |
-| services/device |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint.log) |  |
-| services/experiment |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.log) |  |
-| services/federation |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/lint.log) |  |
-| services/update |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/update/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/update/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/update/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/update/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/update/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/update/dist/lint.log) |  |
-| services/openapi |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/openapi/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/openapi/dist/build-spec.log) |  | [![lint](https://ci.goldi-labs.de/crosslab/main/services/openapi/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/openapi/dist/lint.log) |  |
-| services/gateway |   | [![build](https://ci.goldi-labs.de/crosslab/main/services/gateway/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/gateway/dist/build.log) |  |  |
-| clients/api/js |   | [![build](https://ci.goldi-labs.de/crosslab/main/clients/api/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/api/js/dist/build.log) |  |  |
-| clients/api/python |   | [![build](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/api/python/dist/test.log) |
-| clients/soa/python |   | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.log) |
-| clients/soa_services/electricalConnection/python |   | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/test.log) |
+| helper/development-container |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/helper/development-container/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/helper/development-container/dist/build.log) |  |  |
+| helper/tsdoc-theme |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/helper/tsdoc-theme/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/helper/tsdoc-theme/dist/build.log) |  |  |
+| helper/openapi-codegeneration |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/helper/openapi-codegeneration/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/helper/openapi-codegeneration/dist/build.log) |  |  |
+| helper/crosslab-typescript-addon |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/helper/crosslab-typescript-addon/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/helper/crosslab-typescript-addon/dist/build.log) |  |  |
+| services/common |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/common/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/common/dist/build.log) |  |  |
+| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/auth/dist/lint.log) |  |
+| services/booking |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/booking/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/booking/dist/build-spec.log) |  | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/booking/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/booking/dist/lint.log) |  |
+| services/device |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/device/dist/lint.log) |  |
+| services/experiment |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/experiment/dist/lint.log) |  |
+| services/federation |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/federation/dist/lint.log) |  |
+| services/update |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/update/dist/lint.log) |  |
+| services/openapi |  [![build-spec](https://ci.goldi-labs.de/crosslab/ci-cd/services/openapi/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/openapi/dist/build-spec.log) |  | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/services/openapi/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/openapi/dist/lint.log) |  |
+| services/gateway |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/services/gateway/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/services/gateway/dist/build.log) |  |  |
+| clients/api/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/js/dist/build.log) |  |  |
+| clients/api/python |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/api/python/dist/test.log) |
+| clients/soa/python |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/test.log) |
+| clients/soa/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/js/dist/build.log) |  |  |
+| clients/soa_services/electricalConnection/python |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/python/dist/test.log) |
+| clients/soa_services/electricalConnection/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/js/dist/build.log) |  |  |
+| clients/soa_services/webcam/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/webcam/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/webcam/js/dist/build.log) |  |  |
+| clients/soa_services/file/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/file/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/file/js/dist/build.log) |  |  |
 
 [//]: # ({{end}})
 
@@ -47,15 +51,27 @@ graph LR
     clients/api/python:lint[lint]
     clients/api/python:test[test]
   end
+  subgraph clients/soa/js
+    clients/soa/js:build[build]
+  end
   subgraph clients/soa/python
     clients/soa/python:build[build]
     clients/soa/python:lint[lint]
     clients/soa/python:test[test]
   end
+  subgraph clients/soa_services/electricalConnection/js
+    clients/soa_services/electricalConnection/js:build[build]
+  end
   subgraph clients/soa_services/electricalConnection/python
     clients/soa_services/electricalConnection/python:build[build]
     clients/soa_services/electricalConnection/python:lint[lint]
     clients/soa_services/electricalConnection/python:test[test]
+  end
+  subgraph clients/soa_services/file/js
+    clients/soa_services/file/js:build[build]
+  end
+  subgraph clients/soa_services/webcam/js
+    clients/soa_services/webcam/js:build[build]
   end
   subgraph helper/crosslab-typescript-addon
     helper/crosslab-typescript-addon:build[build]
@@ -126,11 +142,14 @@ graph LR
   clients/api/python:build[build] --> clients/soa/python:build[build]
   clients/soa/python:build[build] --> clients/soa/python:lint[lint]
   clients/soa/python:build[build] --> clients/soa/python:test[test]
+  clients/soa/js:build[build] --> clients/soa_services/electricalConnection/js:build[build]
   helper/openapi-codegeneration:build[build] --> clients/soa_services/electricalConnection/python:build[build]
   clients/api/python:build[build] --> clients/soa_services/electricalConnection/python:build[build]
   clients/soa/python:build[build] --> clients/soa_services/electricalConnection/python:build[build]
   clients/soa_services/electricalConnection/python:build[build] --> clients/soa_services/electricalConnection/python:lint[lint]
   clients/soa_services/electricalConnection/python:build[build] --> clients/soa_services/electricalConnection/python:test[test]
+  clients/soa/js:build[build] --> clients/soa_services/file/js:build[build]
+  clients/soa/js:build[build] --> clients/soa_services/webcam/js:build[build]
   helper/openapi-codegeneration:build[build] --> helper/crosslab-typescript-addon:build[build]
   services/auth:build-spec[build-spec] --> services/auth:build[build]
   services/common:build[build] --> services/auth:build[build]

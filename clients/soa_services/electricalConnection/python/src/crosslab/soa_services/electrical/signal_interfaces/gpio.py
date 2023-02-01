@@ -5,8 +5,8 @@ from crosslab.soa_services.electrical import (
     ConstructableSignalInterface,
     SignalInterface,
 )
-from crosslab.soa_services.electrical.schema import (
-    GPIOInterfaceConfiguration,
+from crosslab.soa_services.electrical.messages import (
+    GPIOInterfaceConfig,
     GPIOInterfaceData,
     State,
 )
@@ -23,14 +23,16 @@ class GPIOInterface(SignalInterface):
     interfaceType = "gpio"
     signalState: State
 
-    def __init__(self, configuration: GPIOInterfaceConfiguration):
+    def __init__(self, configuration: GPIOInterfaceConfig):
         super().__init__()
         self.driverStates = dict()
-        self.signalState = State.UNKNOWN
+        self.signalState = "unknown"
         self.configuration = configuration
 
     def changeDriver(self, state: State):
-        data = GPIOInterfaceData(driver=self.configuration.driver or "pc", state=state)
+        data = GPIOInterfaceData(
+            driver=self.configuration.get("driver", "pc"), state=state
+        )
         self.emit("upstreamData", data)
         self.downstreamData(data)
 
@@ -39,7 +41,7 @@ class GPIOInterface(SignalInterface):
             self.emit(
                 "upstreamData",
                 GPIOInterfaceData(
-                    driver=self.configuration.driver or "pc",
+                    driver=self.configuration.get("driver", "pc"),
                     state=self.driverStates["pc"],
                 ),
             )
@@ -47,35 +49,35 @@ class GPIOInterface(SignalInterface):
             self.emit(
                 "upstreamData",
                 GPIOInterfaceData(
-                    driver=self.configuration.driver or "pc",
-                    state=State.UNKNOWN,
+                    driver=self.configuration.get("driver", "pc"),
+                    state="unknown",
                 ),
             )
 
     def downstreamData(self, data: GPIOInterfaceData):
-        self.driverStates[data.driver] = data.state
+        self.driverStates[data["driver"]] = data["state"]
         self.evaluateSignalState()
 
     def evaluateSignalState(self):
         states = set(self.driverStates.values())
 
-        newState: State = State.UNKNOWN
-        if State.ERROR in states:
-            newState = State.ERROR
-        elif State.STRONG_H in states and State.STRONG_L in states:
-            newState = State.ERROR
-        elif State.UNKNOWN in states:
-            newState = State.UNKNOWN
-        elif State.STRONG_H in states:
-            newState = State.STRONG_H
-        elif State.STRONG_L in states:
-            newState = State.STRONG_L
-        elif State.WEAK_H in states and State.WEAK_L in states:
-            newState = State.UNKNOWN
-        elif State.WEAK_H in states:
-            newState = State.WEAK_H
-        elif State.WEAK_L in states:
-            newState = State.WEAK_L
+        newState: State = "unknown"
+        if "error" in states:
+            newState = "error"
+        elif "strongH" in states and "strongL" in states:
+            newState = "error"
+        elif "unknown" in states:
+            newState = "unknown"
+        elif "strongH" in states:
+            newState = "strongH"
+        elif "strongL" in states:
+            newState = "strongL"
+        elif "weakH" in states and "weakL" in states:
+            newState = "unknown"
+        elif "weakH" in states:
+            newState = "weakH"
+        elif "weakL" in states:
+            newState = "weakL"
 
         if newState is not self.signalState:
             data = GPIOSignalChangeEventData(self.signalState, newState)

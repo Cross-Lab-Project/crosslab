@@ -4,7 +4,7 @@ type: object
 properties:
   serviceType:
     type: string
-    const: goldi/electrical
+    const: http://api.goldi-labs.de/serviceTypes/electrical
   interfaces:
     type: array
     items:

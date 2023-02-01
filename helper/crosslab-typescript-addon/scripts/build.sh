@@ -2,5 +2,5 @@
 set -e
 
 rm -rf node_modules
-npm install --install-links
+npm ci --install-links
 npm run build

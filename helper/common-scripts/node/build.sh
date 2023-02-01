@@ -3,10 +3,9 @@ set -e
 
 SCRIPT_DIR=$(dirname "$0")
 
-rm -f package-lock.json
 rm -rf node_modules
 
-npm install --install-links
+npm ci --install-links
 npm run build
 
 mkdir -p dist
