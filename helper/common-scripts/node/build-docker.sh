@@ -65,7 +65,7 @@ for dependency in $(get_local_dependencies package.json); do
     cp $dependency/dist/*.tgz .packages/
 done
 
-cp ./dist/*.tgz .packages/
+cp ./dist/*.tgz .packages/ | true
 
 # build docker image
 docker build -t $TAG .
