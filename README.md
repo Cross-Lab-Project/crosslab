@@ -33,6 +33,7 @@ The following table shows the status for all jobs in this repository.
 | clients/soa_services/electricalConnection/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/electricalConnection/js/dist/build.log) |  |  |
 | clients/soa_services/webcam/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/webcam/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/webcam/js/dist/build.log) |  |  |
 | clients/soa_services/file/js |   | [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/file/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa_services/file/js/dist/build.log) |  |  |
+| integration-test |   |  | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/integration-test/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/integration-test/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/ci-cd/integration-test/dist/test.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/integration-test/dist/test.log) |
 
 [//]: # ({{end}})
 
@@ -84,6 +85,10 @@ graph LR
   end
   subgraph helper/tsdoc-theme
     helper/tsdoc-theme:build[build]
+  end
+  subgraph integration-test
+    integration-test:lint[lint]
+    integration-test:test[test]
   end
   subgraph services/auth
     services/auth:build[build]

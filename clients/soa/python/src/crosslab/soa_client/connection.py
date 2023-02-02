@@ -4,7 +4,7 @@ from typing import Any, Literal, Optional, Union
 
 from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
-from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from crosslab.soa_client.messages import SignalingMessage
 
 MediaStreamTrack = Any
 
