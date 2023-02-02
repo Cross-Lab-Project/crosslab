@@ -9,8 +9,13 @@ import { PeerConnection } from "./peer/connection";
 import { Service } from "./service";
 import { WebRTCPeerConnection } from "./peer/webrtc-connection";
 import WebSocket from "isomorphic-ws";
+import { TypedEmitter } from "tiny-typed-emitter";
 
-export class DeviceHandler {
+export interface DeviceHandlerEvents {
+  connectionsChanged(): void;
+}
+
+export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   ws!: WebSocket;
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
@@ -82,7 +87,11 @@ export class DeviceHandler {
         })
       );
     });
+    connection.on("connectionChanged", () => {
+      this.emit("connectionsChanged");
+    });
     connection.connect();
+    this.emit("connectionsChanged");
   }
 
   private handleSignalingMessage(message: SignalingMessage) {

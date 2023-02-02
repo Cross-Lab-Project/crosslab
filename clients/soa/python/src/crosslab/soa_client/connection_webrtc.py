@@ -31,11 +31,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _receivingChannelMap: Dict[str, Channel]
     _mediaChannelMap: Dict[str, MediaChannel]
     _transeiverMap: Dict[Any, str]
-    _connectedEvent: asyncio.Event
 
     def __init__(self):
-        super().__init__()
-        self._connectedEvent = asyncio.Event()
+        AsyncIOEventEmitter.__init__(self)
+        Connection.__init__(self)
         # config = RTCConfiguration(
         #     [
         #         RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
@@ -53,7 +52,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 self.pc.signalingState,
             )
             if self.pc.connectionState == "connected":
-                self._connectedEvent.set()
+                self.state = "connected"
+                self.emit("connectionChanged")
 
         async def datachannel(datachannel):
             channel = self._receivingChannelMap[datachannel.label]
@@ -149,15 +149,13 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             self._mediaChannelMap[label] = cast(MediaChannel, channel)
 
     async def connect(self):
+        self.state = "connecting"
         self.role = WebRTCRole.Caller if self.tiebreaker else WebRTCRole.Callee
         if self.role == WebRTCRole.Caller:
             await self._createMediaChannels()
             await self._makeOffer()
-            await self._connectedEvent.wait()
-            print("connected Caller")
         elif self.role == WebRTCRole.Callee:
-            await self._connectedEvent.wait()
-            print("connected Callee")
+            pass
 
     async def handleSignalingMessage(self, message: SignalingMessage):
         print("handleSignalingMessage")

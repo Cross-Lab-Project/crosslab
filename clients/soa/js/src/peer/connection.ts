@@ -9,8 +9,10 @@ export type ServiceConfig = {
 };
 export interface PeerConnectionEvents {
   signalingMessage(msg: SignalingMessage): void;
+  connectionChanged(): void;
 }
 export interface PeerConnection extends TypedEmitter<PeerConnectionEvents> {
+  state: "connecting" | "connected" | "disconnected";
   tiebreaker: boolean;
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void;

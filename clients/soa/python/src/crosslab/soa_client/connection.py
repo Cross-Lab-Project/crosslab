@@ -1,9 +1,10 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any, Literal, Optional, Union
+
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 MediaStreamTrack = Any
 
@@ -37,10 +38,12 @@ class DataChannel(Channel, AsyncIOEventEmitter):
 
 class Connection(ABC):
     tiebreaker: bool
+    state: Literal["created", "connecting", "connected", "disconnected"]
 
     def __init__(self) -> None:
         super().__init__()
         self.tiebreaker = False
+        self.state = "created"
 
     @abstractmethod
     async def close(self):

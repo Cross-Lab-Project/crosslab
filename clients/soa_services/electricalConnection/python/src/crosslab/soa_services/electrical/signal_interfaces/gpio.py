@@ -55,7 +55,7 @@ class GPIOInterface(SignalInterface):
             )
 
     def downstreamData(self, data: GPIOInterfaceData):
-        self.driverStates[data["driver"]] = data["state"]
+        self.driverStates[data.get("driver","default")] = data["state"]
         self.evaluateSignalState()
 
     def evaluateSignalState(self):

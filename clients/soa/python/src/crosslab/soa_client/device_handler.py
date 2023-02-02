@@ -3,6 +3,8 @@ from typing import Dict, Optional
 
 import aiohttp
 from crosslab.api_client import APIClient  # type: ignore
+from pyee import AsyncIOEventEmitter
+
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.messages import (
@@ -60,11 +62,12 @@ def derive_endpoints_from_url(url: str, fallback_base_url: Optional[str] = None)
     return base_url, device_url, token_endpoint, ws_endpoint
 
 
-class DeviceHandler:
+class DeviceHandler(AsyncIOEventEmitter):
     _services: Dict[str, Service]
     _connections: Dict[str, Connection]
 
     def __init__(self):
+        super().__init__()
         self._services = dict()
         self._connections = dict()
 
@@ -82,8 +85,10 @@ class DeviceHandler:
         async with client:
             async with aiohttp.ClientSession() as session:
                 token = await client.create_websocket_token(token_endpoint)
+                self.emit("websocketToken", token)
                 self.ws = await session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
+                self.emit("websocketConnected")
 
                 await self._message_loop()
                 await session.close()
@@ -138,7 +143,9 @@ class DeviceHandler:
             await self.ws.send_json(signalingMessage)
 
         connection.on("signaling", onSignalingMessage)
+        connection.on("connectionChanged", lambda: self.emit("connectionsChanged"))
         self._connections[msg["connectionUrl"]] = connection
+        self.emit("connectionsChanged")
         await connection.connect()
 
     async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
