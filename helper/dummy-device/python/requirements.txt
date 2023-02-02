@@ -1,0 +1,10 @@
+-e ../../../clients/api/python
+-e ../../../clients/soa/python
+-e ../../../clients/soa_services/electricalConnection/python
+-e ./
+pytest
+pytest-asyncio
+pytest-aiohttp
+tox
+build
+debugpy

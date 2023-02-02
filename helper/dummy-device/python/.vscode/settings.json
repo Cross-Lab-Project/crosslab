@@ -1,0 +1,28 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "isort.args": ["--profile", "black"],
+  "python.defaultInterpreterPath": "venv/bin/python",
+  "python.analysis.typeCheckingMode": "basic",
+  "files.exclude": {
+    ".tox": true,
+    ".mypy_cache": true,
+    "venv": true
+    //begin generated
+
+    //end generated
+  },
+  "files.watcherExclude": {
+    ".tox": true,
+    ".mypy_cache": true,
+    "venv": true
+    //begin generated
+
+    //end generated
+  }
+}
