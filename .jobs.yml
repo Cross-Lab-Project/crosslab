@@ -20,6 +20,30 @@ helper/crosslab-typescript-addon:
     dependencies:
       - helper/openapi-codegeneration:build
 
+helper/dummy-device/js:
+  - script: lint-code
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+  - script: build
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+
+helper/dummy-device/python:
+  - script: lint
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+      - clients/soa_services/electricalConnection/python:build
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+      - clients/soa_services/electricalConnection/python:build
+
 
 ################################################################################
 # Backend ######################################################################
@@ -202,3 +226,21 @@ clients/soa_services/file/js:
   - script: build
     dependencies:
       - clients/soa/js:build
+
+################################################################################
+# Integration Tests ############################################################
+################################################################################
+
+integration-test:
+  - script: lint
+    dependencies:
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+  - script: test
+    dependencies:
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build

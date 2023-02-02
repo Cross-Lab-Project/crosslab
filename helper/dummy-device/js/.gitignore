@@ -2,3 +2,4 @@ node_modules
 app
 http-dist
 dist
+package.resolved.json
