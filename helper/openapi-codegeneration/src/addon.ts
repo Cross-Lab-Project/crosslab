@@ -105,9 +105,11 @@ const presets: Preset[] = []
  */
 async function loadAddon(addonName: string): Promise<void> {
     console.log(`loading addon "${addonName}"`)
-    const addon = (await import(require.resolve(addonName, {
+    const addon_path = require.resolve(addonName, {
         paths: require.main?.paths
-    }))).default as Addon
+    })
+    console.log(`addon path: ${addon_path}`)
+    const addon = (await import(addon_path)).default as Addon
     filterCollections.push(...addon.filterCollections.map(fc => {
         return {
             ...fc,

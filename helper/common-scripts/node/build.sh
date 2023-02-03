@@ -14,7 +14,8 @@ rm -rf dist/*.tgz
 $SCRIPT_DIR/replace_links_with_version.sh
 mv package.json package.bak
 cp package.resolved.json package.json
-npm pack --pack-destination=./dist/
+file=$(npm pack --pack-destination=./dist/)
+ln -sf $file dist/npm-latest.tgz
 mv package.bak package.json
 
 if [ -f Dockerfile ]; then

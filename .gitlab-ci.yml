@@ -1,9 +1,8 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-image: crosslab/devcontainer:latest
-
 stages:
+  - build-environment
   - build
 
 default:
@@ -19,6 +18,13 @@ workflow:
         BRANCH: $CI_COMMIT_BRANCH
 
 build:
+  image: crosslab/devcontainer:latest
+  stage: build-environment
+  script:
+    - ./scripts/ci.sh --branch $BRANCH
+
+build:
+  image: crosslab/devcontainer:build
   stage: build
   script:
     - ./scripts/ci.sh --branch $BRANCH

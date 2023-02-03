@@ -23,8 +23,8 @@
     "author": "Johannes Nau",
     "license": "UNLICENSED",
     "devDependencies": {
-        "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
-        "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon", 
+        "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration/dist/npm-latest.tgz",
+        "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon/dist/npm-latest.tgz", 
         "@types/body-parser": "^1.19.2",
         "@types/express": "^4.17.13",
         "@types/ldapjs": "^2.2.2",
@@ -48,6 +48,6 @@
         "sqlite3": "^5.0.8",
         "typeorm": "^0.3.6",
         "ws": "^8.8.0",
-        "@crosslab/service-common": "file:../common"
+        "@crosslab/service-common": "file:../common/dist/npm-latest.tgz"
     }
 }

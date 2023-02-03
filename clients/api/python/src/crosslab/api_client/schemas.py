@@ -304,7 +304,8 @@ class PostLoginRequestBody:
         result: dict = {}
         result["password"] = from_str(self.password)
         result["username"] = from_str(self.username)
-        result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
+        if self.method is not None:
+            result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
         return result
 
 
@@ -333,7 +334,8 @@ class PostLoginRequestBodyWrite:
         result: dict = {}
         result["password"] = from_str(self.password)
         result["username"] = from_str(self.username)
-        result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
+        if self.method is not None:
+            result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
         return result
 
 
@@ -362,7 +364,8 @@ class PostLoginRequestBodyRead:
         result: dict = {}
         result["password"] = from_str(self.password)
         result["username"] = from_str(self.username)
-        result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
+        if self.method is not None:
+            result["method"] = from_union([lambda x: to_enum(AuthMethod, x), from_none], self.method)
         return result
 
 
@@ -381,7 +384,8 @@ class PostLogoutRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -400,7 +404,8 @@ class PostLogoutRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -419,7 +424,8 @@ class PostLogoutRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["token"] = from_union([from_str, from_none], self.token)
+        if self.token is not None:
+            result["token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -440,8 +446,10 @@ class GetUsersResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -468,10 +476,14 @@ class GetUsersResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -492,8 +504,10 @@ class GetUsersResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -520,10 +534,14 @@ class GetUsersResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -544,8 +562,10 @@ class GetUsersResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -572,10 +592,14 @@ class GetUsersResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUsersResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -596,8 +620,10 @@ class PostUsersRequestBodyRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -624,10 +650,14 @@ class PostUsersRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -648,8 +678,10 @@ class PostUsersRequestBodyWriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -676,10 +708,14 @@ class PostUsersRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyWriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyWriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -700,8 +736,10 @@ class PostUsersRequestBodyReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -728,10 +766,14 @@ class PostUsersRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -752,8 +794,10 @@ class PostUsersResponseBody201_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -780,10 +824,14 @@ class PostUsersResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -804,8 +852,10 @@ class PostUsersResponseBody201_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -832,10 +882,14 @@ class PostUsersResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -856,8 +910,10 @@ class PostUsersResponseBody201_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -884,10 +940,14 @@ class PostUsersResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersResponseBody201_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -908,8 +968,10 @@ class GetUserResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -936,10 +998,14 @@ class GetUserResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -960,8 +1026,10 @@ class GetUserResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -988,10 +1056,14 @@ class GetUserResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1012,8 +1084,10 @@ class GetUserResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1040,10 +1114,14 @@ class GetUserResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetUserResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1064,8 +1142,10 @@ class PatchUserRequestBodyRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1092,10 +1172,14 @@ class PatchUserRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1116,8 +1200,10 @@ class PatchUserRequestBodyWriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1144,10 +1230,14 @@ class PatchUserRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyWriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyWriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1168,8 +1258,10 @@ class PatchUserRequestBodyReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1196,10 +1288,14 @@ class PatchUserRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1220,8 +1316,10 @@ class PatchUserResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1248,10 +1346,14 @@ class PatchUserResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1272,8 +1374,10 @@ class PatchUserResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1300,10 +1404,14 @@ class PatchUserResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1324,8 +1432,10 @@ class PatchUserResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1352,10 +1462,14 @@ class PatchUserResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1376,8 +1490,10 @@ class PutUserRolesResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1404,10 +1520,14 @@ class PutUserRolesResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1428,8 +1548,10 @@ class PutUserRolesResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1456,10 +1578,14 @@ class PutUserRolesResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1480,8 +1606,10 @@ class PutUserRolesResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1508,10 +1636,14 @@ class PutUserRolesResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1532,8 +1664,10 @@ class GetIdentityResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1560,10 +1694,14 @@ class GetIdentityResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1584,8 +1722,10 @@ class GetIdentityResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1612,10 +1752,14 @@ class GetIdentityResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1636,8 +1780,10 @@ class GetIdentityResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1664,10 +1810,14 @@ class GetIdentityResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetIdentityResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1688,8 +1838,10 @@ class PatchIdentityRequestBodyRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1716,10 +1868,14 @@ class PatchIdentityRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1740,8 +1896,10 @@ class PatchIdentityRequestBodyWriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1768,10 +1926,14 @@ class PatchIdentityRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyWriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyWriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1792,8 +1954,10 @@ class PatchIdentityRequestBodyReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1820,10 +1984,14 @@ class PatchIdentityRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityRequestBodyReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1844,8 +2012,10 @@ class PatchIdentityResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1872,10 +2042,14 @@ class PatchIdentityResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_Role, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_Role, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1896,8 +2070,10 @@ class PatchIdentityResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1924,10 +2100,14 @@ class PatchIdentityResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -1948,8 +2128,10 @@ class PatchIdentityResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
         return result
 
 
@@ -1976,10 +2158,14 @@ class PatchIdentityResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["password"] = from_union([from_str, from_none], self.password)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["username"] = from_union([from_str, from_none], self.username)
+        if self.password is not None:
+            result["password"] = from_union([from_str, from_none], self.password)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchIdentityResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.username is not None:
+            result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
@@ -2029,7 +2215,8 @@ class PostScheduleRequestBodyExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(PurpleDevice, x), self.devices)
         return result
 
@@ -2092,9 +2279,11 @@ class PostScheduleRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Combined"] = from_union([from_bool, from_none], self.combined)
+        if self.combined is not None:
+            result["Combined"] = from_union([from_bool, from_none], self.combined)
         result["Experiment"] = to_class(PostScheduleRequestBodyExperiment, self.experiment)
-        result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
+        if self.only_own is not None:
+            result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
         result["Time"] = to_class(PostScheduleRequestBodyTime, self.time)
         return result
 
@@ -2145,7 +2334,8 @@ class PostScheduleRequestBodyWriteExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(FluffyDevice, x), self.devices)
         return result
 
@@ -2208,9 +2398,11 @@ class PostScheduleRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Combined"] = from_union([from_bool, from_none], self.combined)
+        if self.combined is not None:
+            result["Combined"] = from_union([from_bool, from_none], self.combined)
         result["Experiment"] = to_class(PostScheduleRequestBodyWriteExperiment, self.experiment)
-        result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
+        if self.only_own is not None:
+            result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
         result["Time"] = to_class(PostScheduleRequestBodyWriteTime, self.time)
         return result
 
@@ -2261,7 +2453,8 @@ class PostScheduleRequestBodyReadExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(TentacledDevice, x), self.devices)
         return result
 
@@ -2324,9 +2517,11 @@ class PostScheduleRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Combined"] = from_union([from_bool, from_none], self.combined)
+        if self.combined is not None:
+            result["Combined"] = from_union([from_bool, from_none], self.combined)
         result["Experiment"] = to_class(PostScheduleRequestBodyReadExperiment, self.experiment)
-        result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
+        if self.only_own is not None:
+            result["onlyOwn"] = from_union([from_bool, from_none], self.only_own)
         result["Time"] = to_class(PostScheduleRequestBodyReadTime, self.time)
         return result
 
@@ -2614,7 +2809,8 @@ class PostBookingRequestBodyExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(StickyDevice, x), self.devices)
         return result
 
@@ -2680,7 +2876,8 @@ class PostBookingRequestBody:
         result: dict = {}
         result["Experiment"] = to_class(PostBookingRequestBodyExperiment, self.experiment)
         result["Time"] = to_class(PostBookingRequestBodyTime, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         return result
 
 
@@ -2730,7 +2927,8 @@ class PostBookingRequestBodyWriteExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(IndigoDevice, x), self.devices)
         return result
 
@@ -2789,7 +2987,8 @@ class PostBookingRequestBodyWrite:
         result: dict = {}
         result["Experiment"] = to_class(PostBookingRequestBodyWriteExperiment, self.experiment)
         result["Time"] = to_class(PostBookingRequestBodyWriteTime, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         return result
 
 
@@ -2839,7 +3038,8 @@ class PostBookingRequestBodyReadExperiment:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Description"] = from_union([from_str, from_none], self.description)
+        if self.description is not None:
+            result["Description"] = from_union([from_str, from_none], self.description)
         result["Devices"] = from_list(lambda x: to_class(IndecentDevice, x), self.devices)
         return result
 
@@ -2898,7 +3098,8 @@ class PostBookingRequestBodyRead:
         result: dict = {}
         result["Experiment"] = to_class(PostBookingRequestBodyReadExperiment, self.experiment)
         result["Time"] = to_class(PostBookingRequestBodyReadTime, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         return result
 
 
@@ -3008,9 +3209,12 @@ class PatchBookingRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyDevice, x), x), from_none], self.devices)
-        result["Locked"] = from_union([from_bool, from_none], self.locked)
-        result["Callback"] = from_union([from_str, from_none], self.callback)
+        if self.devices is not None:
+            result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyDevice, x), x), from_none], self.devices)
+        if self.locked is not None:
+            result["Locked"] = from_union([from_bool, from_none], self.locked)
+        if self.callback is not None:
+            result["Callback"] = from_union([from_str, from_none], self.callback)
         return result
 
 
@@ -3063,9 +3267,12 @@ class PatchBookingRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["Locked"] = from_union([from_bool, from_none], self.locked)
-        result["Callback"] = from_union([from_str, from_none], self.callback)
+        if self.devices is not None:
+            result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.locked is not None:
+            result["Locked"] = from_union([from_bool, from_none], self.locked)
+        if self.callback is not None:
+            result["Callback"] = from_union([from_str, from_none], self.callback)
         return result
 
 
@@ -3118,9 +3325,12 @@ class PatchBookingRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["Locked"] = from_union([from_bool, from_none], self.locked)
-        result["Callback"] = from_union([from_str, from_none], self.callback)
+        if self.devices is not None:
+            result["Devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchBookingRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.locked is not None:
+            result["Locked"] = from_union([from_bool, from_none], self.locked)
+        if self.callback is not None:
+            result["Callback"] = from_union([from_str, from_none], self.callback)
         return result
 
 
@@ -3270,10 +3480,12 @@ class GetBookingResponseBody200_Booking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(PurpleTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3387,10 +3599,12 @@ class GetBookingResponseBody200_WriteBooking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(FluffyTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3504,10 +3718,12 @@ class GetBookingResponseBody200_ReadBooking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(TentacledTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3621,10 +3837,12 @@ class PutBookingLockResponseBody200_Booking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(StickyTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3671,8 +3889,10 @@ class PutBookingLockResponseBody200_Token:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Device"] = from_union([from_str, from_none], self.device)
-        result["Token"] = from_union([from_str, from_none], self.token)
+        if self.device is not None:
+            result["Device"] = from_union([from_str, from_none], self.device)
+        if self.token is not None:
+            result["Token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -3782,10 +4002,12 @@ class PutBookingLockResponseBody200_WriteBooking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(IndigoTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3832,8 +4054,10 @@ class PutBookingLockResponseBody200_WriteToken:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Device"] = from_union([from_str, from_none], self.device)
-        result["Token"] = from_union([from_str, from_none], self.token)
+        if self.device is not None:
+            result["Device"] = from_union([from_str, from_none], self.device)
+        if self.token is not None:
+            result["Token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -3943,10 +4167,12 @@ class PutBookingLockResponseBody200_ReadBooking:
         result["Devices"] = from_list(from_str, self.devices)
         result["External"] = from_bool(self.external)
         result["ID"] = from_str(self.id)
-        result["Message"] = from_union([from_str, from_none], self.message)
+        if self.message is not None:
+            result["Message"] = from_union([from_str, from_none], self.message)
         result["Status"] = to_enum(Status, self.status)
         result["Time"] = to_class(IndecentTimeslot, self.time)
-        result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
+        if self.type is not None:
+            result["Type"] = from_union([lambda x: to_enum(TypeEnum, x), from_none], self.type)
         result["You"] = from_bool(self.you)
         return result
 
@@ -3993,8 +4219,10 @@ class PutBookingLockResponseBody200_ReadToken:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["Device"] = from_union([from_str, from_none], self.device)
-        result["Token"] = from_union([from_str, from_none], self.token)
+        if self.device is not None:
+            result["Device"] = from_union([from_str, from_none], self.device)
+        if self.token is not None:
+            result["Token"] = from_union([from_str, from_none], self.token)
         return result
 
 
@@ -4065,11 +4293,16 @@ class GetDevicesResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4103,11 +4336,16 @@ class GetDevicesResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4141,11 +4379,16 @@ class GetDevicesResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4180,9 +4423,12 @@ class PurpleRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -4210,10 +4456,14 @@ class PostDevicesRequestBodyAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(PurpleRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(PurpleRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -4232,7 +4482,8 @@ class PostDevicesRequestBodyDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4289,18 +4540,30 @@ class PostDevicesRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4327,9 +4590,12 @@ class FluffyRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -4357,10 +4623,14 @@ class PostDevicesRequestBodyWriteAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(FluffyRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(FluffyRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -4379,7 +4649,8 @@ class PostDevicesRequestBodyWriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4436,18 +4707,30 @@ class PostDevicesRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4474,9 +4757,12 @@ class TentacledRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -4504,10 +4790,14 @@ class PostDevicesRequestBodyReadAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(TentacledRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(TentacledRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -4526,7 +4816,8 @@ class PostDevicesRequestBodyReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4583,18 +4874,30 @@ class PostDevicesRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4615,8 +4918,10 @@ class PostDevicesResponseBody201_AnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4635,7 +4940,8 @@ class PostDevicesResponseBody201_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4692,18 +4998,30 @@ class PostDevicesResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_Device, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_AnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_Device, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4724,8 +5042,10 @@ class PostDevicesResponseBody201_WriteAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4744,7 +5064,8 @@ class PostDevicesResponseBody201_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4801,18 +5122,30 @@ class PostDevicesResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_WriteDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4833,8 +5166,10 @@ class PostDevicesResponseBody201_ReadAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4853,7 +5188,8 @@ class PostDevicesResponseBody201_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -4910,18 +5246,30 @@ class PostDevicesResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostDevicesResponseBody201_ReadDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -4942,8 +5290,10 @@ class GetDeviceResponseBody200_AnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -4962,7 +5312,8 @@ class GetDeviceResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5019,18 +5370,30 @@ class GetDeviceResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_Device, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_Device, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5051,8 +5414,10 @@ class GetDeviceResponseBody200_WriteAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -5071,7 +5436,8 @@ class GetDeviceResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5128,18 +5494,30 @@ class GetDeviceResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5160,8 +5538,10 @@ class GetDeviceResponseBody200_ReadAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -5180,7 +5560,8 @@ class GetDeviceResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5237,18 +5618,30 @@ class GetDeviceResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetDeviceResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5275,9 +5668,12 @@ class StickyRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -5305,10 +5701,14 @@ class PatchDeviceRequestBodyAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(StickyRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(StickyRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5327,7 +5727,8 @@ class PatchDeviceRequestBodyDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5384,18 +5785,30 @@ class PatchDeviceRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5422,9 +5835,12 @@ class IndigoRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -5452,10 +5868,14 @@ class PatchDeviceRequestBodyWriteAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(IndigoRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(IndigoRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5474,7 +5894,8 @@ class PatchDeviceRequestBodyWriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5531,18 +5952,30 @@ class PatchDeviceRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5569,9 +6002,12 @@ class IndecentRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -5599,10 +6035,14 @@ class PatchDeviceRequestBodyReadAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(IndecentRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(IndecentRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -5621,7 +6061,8 @@ class PatchDeviceRequestBodyReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5678,18 +6119,30 @@ class PatchDeviceRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadAvailabilityRule, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5710,8 +6163,10 @@ class PatchDeviceResponseBody200_AnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -5730,7 +6185,8 @@ class PatchDeviceResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5787,18 +6243,30 @@ class PatchDeviceResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_Device, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_AnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_Device, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5819,8 +6287,10 @@ class PatchDeviceResponseBody200_WriteAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -5839,7 +6309,8 @@ class PatchDeviceResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -5896,18 +6367,30 @@ class PatchDeviceResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -5928,8 +6411,10 @@ class PatchDeviceResponseBody200_ReadAnnouncedAvailability:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -5948,7 +6433,8 @@ class PatchDeviceResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6005,18 +6491,30 @@ class PatchDeviceResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
-        result["code_url"] = from_union([from_str, from_none], self.code_url)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(GetDevicesResponseBody200_Type, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadAnnouncedAvailability, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchDeviceResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.instantiate_url is not None:
+            result["instantiate_url"] = from_union([from_str, from_none], self.instantiate_url)
+        if self.code_url is not None:
+            result["code_url"] = from_union([from_str, from_none], self.code_url)
         return result
 
 
@@ -6037,8 +6535,10 @@ class PurpleTimeSlot:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6091,15 +6591,24 @@ class PurpleConcreteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PurpleTimeSlot, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(PurpleTimeSlot, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         return result
 
 
@@ -6120,8 +6629,10 @@ class PostDeviceResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["deviceToken"] = from_union([from_str, from_none], self.device_token)
-        result["instance"] = from_union([lambda x: to_class(PurpleConcreteDevice, x), from_none], self.instance)
+        if self.device_token is not None:
+            result["deviceToken"] = from_union([from_str, from_none], self.device_token)
+        if self.instance is not None:
+            result["instance"] = from_union([lambda x: to_class(PurpleConcreteDevice, x), from_none], self.instance)
         return result
 
 
@@ -6142,8 +6653,10 @@ class FluffyTimeSlot:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6191,15 +6704,24 @@ class FluffyConcreteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(FluffyTimeSlot, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(FluffyTimeSlot, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         return result
 
 
@@ -6220,8 +6742,10 @@ class PostDeviceResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["deviceToken"] = from_union([from_str, from_none], self.device_token)
-        result["instance"] = from_union([lambda x: to_class(FluffyConcreteDevice, x), from_none], self.instance)
+        if self.device_token is not None:
+            result["deviceToken"] = from_union([from_str, from_none], self.device_token)
+        if self.instance is not None:
+            result["instance"] = from_union([lambda x: to_class(FluffyConcreteDevice, x), from_none], self.instance)
         return result
 
 
@@ -6242,8 +6766,10 @@ class TentacledTimeSlot:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6291,15 +6817,24 @@ class TentacledConcreteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
-        result["owner"] = from_union([from_str, from_none], self.owner)
-        result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(TentacledTimeSlot, x), x), from_none], self.announced_availability)
-        result["connected"] = from_union([from_bool, from_none], self.connected)
-        result["experiment"] = from_union([from_str, from_none], self.experiment)
-        result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.owner is not None:
+            result["owner"] = from_union([from_str, from_none], self.owner)
+        if self.type is not None:
+            result["type"] = from_union([lambda x: to_enum(ConcreteDeviceType, x), from_none], self.type)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.announced_availability is not None:
+            result["announcedAvailability"] = from_union([lambda x: from_list(lambda x: to_class(TentacledTimeSlot, x), x), from_none], self.announced_availability)
+        if self.connected is not None:
+            result["connected"] = from_union([from_bool, from_none], self.connected)
+        if self.experiment is not None:
+            result["experiment"] = from_union([from_str, from_none], self.experiment)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: from_dict(lambda x: x, x), x), from_none], self.services)
         return result
 
 
@@ -6320,8 +6855,10 @@ class PostDeviceResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["deviceToken"] = from_union([from_str, from_none], self.device_token)
-        result["instance"] = from_union([lambda x: to_class(TentacledConcreteDevice, x), from_none], self.instance)
+        if self.device_token is not None:
+            result["deviceToken"] = from_union([from_str, from_none], self.device_token)
+        if self.instance is not None:
+            result["instance"] = from_union([lambda x: to_class(TentacledConcreteDevice, x), from_none], self.instance)
         return result
 
 
@@ -6348,9 +6885,12 @@ class HilariousRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -6379,10 +6919,14 @@ class PurpleAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(HilariousRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(HilariousRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -6409,9 +6953,12 @@ class AmbitiousRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -6440,10 +6987,14 @@ class FluffyAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(AmbitiousRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(AmbitiousRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -6470,9 +7021,12 @@ class CunningRepeat:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["count"] = from_union([from_int, from_none], self.count)
-        result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
-        result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
+        if self.count is not None:
+            result["count"] = from_union([from_int, from_none], self.count)
+        if self.frequency is not None:
+            result["frequency"] = from_union([lambda x: to_enum(Frequency, x), from_none], self.frequency)
+        if self.until is not None:
+            result["until"] = from_union([lambda x: x.isoformat(), from_none], self.until)
         return result
 
 
@@ -6501,10 +7055,14 @@ class TentacledAvailabilityRule:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
-        result["available"] = from_union([from_bool, from_none], self.available)
-        result["repeat"] = from_union([lambda x: to_class(CunningRepeat, x), from_none], self.repeat)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.available is not None:
+            result["available"] = from_union([from_bool, from_none], self.available)
+        if self.repeat is not None:
+            result["repeat"] = from_union([lambda x: to_class(CunningRepeat, x), from_none], self.repeat)
         return result
 
 
@@ -6526,8 +7084,10 @@ class PostDeviceAvailabilityResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6549,8 +7109,10 @@ class PostDeviceAvailabilityResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6572,8 +7134,10 @@ class PostDeviceAvailabilityResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
-        result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
+        if self.end is not None:
+            result["end"] = from_union([lambda x: x.isoformat(), from_none], self.end)
+        if self.start is not None:
+            result["start"] = from_union([lambda x: x.isoformat(), from_none], self.start)
         return result
 
 
@@ -6697,14 +7261,21 @@ class PostDeviceSignalingRequestBody:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(MessageTypeEnum, self.message_type)
-        result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
+        if self.command is not None:
+            result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.connection_type is not None:
+            result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyService, x), x), from_none], self.services)
-        result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
-        result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
-        result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyService, x), x), from_none], self.services)
+        if self.tiebreaker is not None:
+            result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
+        if self.content is not None:
+            result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
+        if self.signaling_type is not None:
+            result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
         return result
 
 
@@ -6773,14 +7344,21 @@ class PostDeviceSignalingRequestBodyWrite:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(MessageTypeEnum, self.message_type)
-        result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
+        if self.command is not None:
+            result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.connection_type is not None:
+            result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyWriteService, x), x), from_none], self.services)
-        result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
-        result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
-        result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyWriteService, x), x), from_none], self.services)
+        if self.tiebreaker is not None:
+            result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
+        if self.content is not None:
+            result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
+        if self.signaling_type is not None:
+            result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
         return result
 
 
@@ -6849,14 +7427,21 @@ class PostDeviceSignalingRequestBodyRead:
     def to_dict(self) -> dict:
         result: dict = {}
         result["messageType"] = to_enum(MessageTypeEnum, self.message_type)
-        result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
+        if self.command is not None:
+            result["command"] = from_union([lambda x: to_enum(CommandEnum, x), from_none], self.command)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.connection_type is not None:
+            result["connectionType"] = from_union([lambda x: to_enum(ConnectionType, x), from_none], self.connection_type)
         result["connectionUrl"] = from_str(self.connection_url)
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyReadService, x), x), from_none], self.services)
-        result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
-        result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
-        result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(PostDeviceSignalingRequestBodyReadService, x), x), from_none], self.services)
+        if self.tiebreaker is not None:
+            result["tiebreaker"] = from_union([from_bool, from_none], self.tiebreaker)
+        if self.content is not None:
+            result["content"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.content)
+        if self.signaling_type is not None:
+            result["signalingType"] = from_union([lambda x: to_enum(SignalingType, x), from_none], self.signaling_type)
         return result
 
 
@@ -6875,7 +7460,8 @@ class GetPeerconnectionsResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6897,8 +7483,10 @@ class GetPeerconnectionsResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_Device, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_Device, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6917,7 +7505,8 @@ class GetPeerconnectionsResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6939,8 +7528,10 @@ class GetPeerconnectionsResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6959,7 +7550,8 @@ class GetPeerconnectionsResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -6981,8 +7573,10 @@ class GetPeerconnectionsResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionsResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7006,9 +7600,12 @@ class PurpleServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7026,7 +7623,8 @@ class PurpleConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(PurpleServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(PurpleServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7048,8 +7646,10 @@ class PostPeerconnectionsRequestBodyDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(PurpleConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(PurpleConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7083,9 +7683,12 @@ class PostPeerconnectionsRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7109,9 +7712,12 @@ class FluffyServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7129,7 +7735,8 @@ class FluffyConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(FluffyServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(FluffyServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7151,8 +7758,10 @@ class PostPeerconnectionsRequestBodyWriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(FluffyConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(FluffyConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7178,9 +7787,12 @@ class PostPeerconnectionsRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7204,9 +7816,12 @@ class TentacledServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7224,7 +7839,8 @@ class TentacledConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(TentacledServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(TentacledServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7246,8 +7862,10 @@ class PostPeerconnectionsRequestBodyReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(TentacledConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(TentacledConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7273,9 +7891,12 @@ class PostPeerconnectionsRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7299,9 +7920,12 @@ class StickyServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7319,7 +7943,8 @@ class StickyConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(StickyServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(StickyServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7341,8 +7966,10 @@ class PostPeerconnectionsResponseBody201_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(StickyConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(StickyConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7368,9 +7995,12 @@ class PostPeerconnectionsResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_Device, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_Device, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7394,9 +8024,12 @@ class IndigoServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7414,7 +8047,8 @@ class IndigoConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(IndigoServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(IndigoServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7436,8 +8070,10 @@ class PostPeerconnectionsResponseBody201_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(IndigoConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(IndigoConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7463,9 +8099,12 @@ class PostPeerconnectionsResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_WriteDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_WriteDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7489,9 +8128,12 @@ class IndecentServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7509,7 +8151,8 @@ class IndecentConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(IndecentServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(IndecentServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7531,8 +8174,10 @@ class PostPeerconnectionsResponseBody201_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(IndecentConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(IndecentConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7558,9 +8203,12 @@ class PostPeerconnectionsResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_ReadDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody201_ReadDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7584,9 +8232,12 @@ class HilariousServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7604,7 +8255,8 @@ class HilariousConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(HilariousServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(HilariousServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7626,8 +8278,10 @@ class PostPeerconnectionsResponseBody202_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(HilariousConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(HilariousConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7653,9 +8307,12 @@ class PostPeerconnectionsResponseBody202:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_Device, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_Device, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7679,9 +8336,12 @@ class AmbitiousServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7699,7 +8359,8 @@ class AmbitiousConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(AmbitiousServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(AmbitiousServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7721,8 +8382,10 @@ class PostPeerconnectionsResponseBody202_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(AmbitiousConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(AmbitiousConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7748,9 +8411,12 @@ class PostPeerconnectionsResponseBody202_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_WriteDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_WriteDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7774,9 +8440,12 @@ class CunningServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7794,7 +8463,8 @@ class CunningConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(CunningServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(CunningServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7816,8 +8486,10 @@ class PostPeerconnectionsResponseBody202_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(CunningConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(CunningConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7843,9 +8515,12 @@ class PostPeerconnectionsResponseBody202_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_ReadDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostPeerconnectionsResponseBody202_ReadDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7869,9 +8544,12 @@ class MagentaServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7889,7 +8567,8 @@ class MagentaConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(MagentaServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(MagentaServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -7911,8 +8590,10 @@ class GetPeerconnectionResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(MagentaConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(MagentaConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -7938,9 +8619,12 @@ class GetPeerconnectionResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_Device, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_Device, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -7964,9 +8648,12 @@ class FriskyServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -7984,7 +8671,8 @@ class FriskyConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(FriskyServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(FriskyServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -8006,8 +8694,10 @@ class GetPeerconnectionResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(FriskyConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(FriskyConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -8033,9 +8723,12 @@ class GetPeerconnectionResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -8059,9 +8752,12 @@ class MischievousServiceConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.remote_service_id is not None:
+            result["remoteServiceId"] = from_union([from_str, from_none], self.remote_service_id)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -8079,7 +8775,8 @@ class MischievousConfig:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["services"] = from_union([lambda x: from_list(lambda x: to_class(MischievousServiceConfig, x), x), from_none], self.services)
+        if self.services is not None:
+            result["services"] = from_union([lambda x: from_list(lambda x: to_class(MischievousServiceConfig, x), x), from_none], self.services)
         return result
 
 
@@ -8101,8 +8798,10 @@ class GetPeerconnectionResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: to_class(MischievousConfig, x), from_none], self.config)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: to_class(MischievousConfig, x), from_none], self.config)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -8128,9 +8827,12 @@ class GetPeerconnectionResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetPeerconnectionResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(PostPeerconnectionsRequestBodyStatus, x), from_none], self.status)
         return result
 
 
@@ -8162,8 +8864,10 @@ class GetExperimentsResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -8186,8 +8890,10 @@ class GetExperimentsResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -8210,8 +8916,10 @@ class GetExperimentsResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
@@ -8232,8 +8940,10 @@ class PostExperimentsRequestBodyBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -8258,8 +8968,10 @@ class PostExperimentsRequestBodyDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -8281,8 +8993,10 @@ class PostExperimentsRequestBodyRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -8313,9 +9027,12 @@ class PurpleParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -8347,9 +9064,12 @@ class PostExperimentsRequestBodyServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(PurpleParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(PurpleParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -8391,13 +9111,20 @@ class PostExperimentsRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -8418,8 +9145,10 @@ class PostExperimentsRequestBodyWriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -8444,8 +9173,10 @@ class PostExperimentsRequestBodyWriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -8467,8 +9198,10 @@ class PostExperimentsRequestBodyWriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -8499,9 +9232,12 @@ class FluffyParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -8533,9 +9269,12 @@ class PostExperimentsRequestBodyWriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(FluffyParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(FluffyParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -8577,13 +9316,20 @@ class PostExperimentsRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyWriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyWriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyWriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -8604,8 +9350,10 @@ class PostExperimentsRequestBodyReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -8630,8 +9378,10 @@ class PostExperimentsRequestBodyReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -8653,8 +9403,10 @@ class PostExperimentsRequestBodyReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -8685,9 +9437,12 @@ class TentacledParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -8719,9 +9474,12 @@ class PostExperimentsRequestBodyReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(TentacledParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(TentacledParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -8763,13 +9521,20 @@ class PostExperimentsRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsRequestBodyReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsRequestBodyReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -8790,8 +9555,10 @@ class PostExperimentsResponseBody201_BookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -8816,8 +9583,10 @@ class PostExperimentsResponseBody201_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -8839,8 +9608,10 @@ class PostExperimentsResponseBody201_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -8871,9 +9642,12 @@ class StickyParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -8905,9 +9679,12 @@ class PostExperimentsResponseBody201_ServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(StickyParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(StickyParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -8949,13 +9726,20 @@ class PostExperimentsResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_BookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Device, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Role, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_BookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Device, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_Role, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -8976,8 +9760,10 @@ class PostExperimentsResponseBody201_WriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9002,8 +9788,10 @@ class PostExperimentsResponseBody201_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9025,8 +9813,10 @@ class PostExperimentsResponseBody201_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9057,9 +9847,12 @@ class IndigoParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -9091,9 +9884,12 @@ class PostExperimentsResponseBody201_WriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndigoParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndigoParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -9135,13 +9931,20 @@ class PostExperimentsResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_WriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_WriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -9162,8 +9965,10 @@ class PostExperimentsResponseBody201_ReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9188,8 +9993,10 @@ class PostExperimentsResponseBody201_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9211,8 +10018,10 @@ class PostExperimentsResponseBody201_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9243,9 +10052,12 @@ class IndecentParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -9277,9 +10089,12 @@ class PostExperimentsResponseBody201_ReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndecentParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(IndecentParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -9321,13 +10136,20 @@ class PostExperimentsResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_ReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody201_ReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody201_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -9348,8 +10170,10 @@ class PostExperimentsResponseBody202_BookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9374,8 +10198,10 @@ class PostExperimentsResponseBody202_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9397,8 +10223,10 @@ class PostExperimentsResponseBody202_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9429,9 +10257,12 @@ class HilariousParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -9463,9 +10294,12 @@ class PostExperimentsResponseBody202_ServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(HilariousParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(HilariousParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -9507,13 +10341,20 @@ class PostExperimentsResponseBody202:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_BookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Device, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Role, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_BookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Device, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_Role, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -9534,8 +10375,10 @@ class PostExperimentsResponseBody202_WriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9560,8 +10403,10 @@ class PostExperimentsResponseBody202_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9583,8 +10428,10 @@ class PostExperimentsResponseBody202_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9615,9 +10462,12 @@ class AmbitiousParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -9649,9 +10499,12 @@ class PostExperimentsResponseBody202_WriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(AmbitiousParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(AmbitiousParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -9693,13 +10546,20 @@ class PostExperimentsResponseBody202_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_WriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_WriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -9720,8 +10580,10 @@ class PostExperimentsResponseBody202_ReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9746,8 +10608,10 @@ class PostExperimentsResponseBody202_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9769,8 +10633,10 @@ class PostExperimentsResponseBody202_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9801,9 +10667,12 @@ class CunningParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -9835,9 +10704,12 @@ class PostExperimentsResponseBody202_ReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(CunningParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(CunningParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -9879,13 +10751,20 @@ class PostExperimentsResponseBody202_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_ReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PostExperimentsResponseBody202_ReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PostExperimentsResponseBody202_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -9906,8 +10785,10 @@ class GetExperimentResponseBody200_BookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -9932,8 +10813,10 @@ class GetExperimentResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -9955,8 +10838,10 @@ class GetExperimentResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -9987,9 +10872,12 @@ class MagentaParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10021,9 +10909,12 @@ class GetExperimentResponseBody200_ServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(MagentaParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(MagentaParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10065,13 +10956,20 @@ class GetExperimentResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_Device, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_Role, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_Device, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_Role, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -10092,8 +10990,10 @@ class GetExperimentResponseBody200_WriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -10118,8 +11018,10 @@ class GetExperimentResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -10141,8 +11043,10 @@ class GetExperimentResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -10173,9 +11077,12 @@ class FriskyParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10207,9 +11114,12 @@ class GetExperimentResponseBody200_WriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(FriskyParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(FriskyParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10251,13 +11161,20 @@ class GetExperimentResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_WriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_WriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -10278,8 +11195,10 @@ class GetExperimentResponseBody200_ReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -10304,8 +11223,10 @@ class GetExperimentResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -10327,8 +11248,10 @@ class GetExperimentResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -10359,9 +11282,12 @@ class MischievousParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10393,9 +11319,12 @@ class GetExperimentResponseBody200_ReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(MischievousParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(MischievousParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10437,13 +11366,20 @@ class GetExperimentResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_ReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(GetExperimentResponseBody200_ReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(GetExperimentResponseBody200_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -10464,8 +11400,10 @@ class PatchExperimentRequestBodyBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -10490,8 +11428,10 @@ class PatchExperimentRequestBodyDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -10513,8 +11453,10 @@ class PatchExperimentRequestBodyRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -10545,9 +11487,12 @@ class BraggadociousParticipant:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10579,9 +11524,12 @@ class PatchExperimentRequestBodyServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(BraggadociousParticipant, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(BraggadociousParticipant, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10623,13 +11571,20 @@ class PatchExperimentRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -10650,8 +11605,10 @@ class PatchExperimentRequestBodyWriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -10676,8 +11633,10 @@ class PatchExperimentRequestBodyWriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -10699,8 +11658,10 @@ class PatchExperimentRequestBodyWriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -10731,9 +11692,12 @@ class Participant1:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10765,9 +11729,12 @@ class PatchExperimentRequestBodyWriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant1, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant1, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10809,13 +11776,20 @@ class PatchExperimentRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyWriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyWriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyWriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -10836,8 +11810,10 @@ class PatchExperimentRequestBodyReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -10862,8 +11838,10 @@ class PatchExperimentRequestBodyReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -10885,8 +11863,10 @@ class PatchExperimentRequestBodyReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -10917,9 +11897,12 @@ class Participant2:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -10951,9 +11934,12 @@ class PatchExperimentRequestBodyReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant2, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant2, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -10995,13 +11981,20 @@ class PatchExperimentRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentRequestBodyReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentRequestBodyReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11022,8 +12015,10 @@ class PatchExperimentResponseBody200_BookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11048,8 +12043,10 @@ class PatchExperimentResponseBody200_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -11071,8 +12068,10 @@ class PatchExperimentResponseBody200_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -11103,9 +12102,12 @@ class Participant3:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -11137,9 +12139,12 @@ class PatchExperimentResponseBody200_ServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant3, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant3, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -11181,13 +12186,20 @@ class PatchExperimentResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Device, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Role, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_BookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Device, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_Role, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11208,8 +12220,10 @@ class PatchExperimentResponseBody200_WriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11234,8 +12248,10 @@ class PatchExperimentResponseBody200_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -11257,8 +12273,10 @@ class PatchExperimentResponseBody200_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -11289,9 +12307,12 @@ class Participant4:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -11323,9 +12344,12 @@ class PatchExperimentResponseBody200_WriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant4, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant4, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -11367,13 +12391,20 @@ class PatchExperimentResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_WriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_WriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11394,8 +12425,10 @@ class PatchExperimentResponseBody200_ReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11420,8 +12453,10 @@ class PatchExperimentResponseBody200_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -11443,8 +12478,10 @@ class PatchExperimentResponseBody200_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -11475,9 +12512,12 @@ class Participant5:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -11509,9 +12549,12 @@ class PatchExperimentResponseBody200_ReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant5, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant5, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -11553,13 +12596,20 @@ class PatchExperimentResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_ReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody200_ReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody200_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11580,8 +12630,10 @@ class PatchExperimentResponseBody202_BookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11606,8 +12658,10 @@ class PatchExperimentResponseBody202_Device:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -11629,8 +12683,10 @@ class PatchExperimentResponseBody202_Role:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -11661,9 +12717,12 @@ class Participant6:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -11695,9 +12754,12 @@ class PatchExperimentResponseBody202_ServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant6, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant6, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -11739,13 +12801,20 @@ class PatchExperimentResponseBody202:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_BookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Device, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Role, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_BookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Device, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_Role, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11766,8 +12835,10 @@ class PatchExperimentResponseBody202_WriteBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11792,8 +12863,10 @@ class PatchExperimentResponseBody202_WriteDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -11815,8 +12888,10 @@ class PatchExperimentResponseBody202_WriteRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -11847,9 +12922,12 @@ class Participant7:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -11881,9 +12959,12 @@ class PatchExperimentResponseBody202_WriteServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant7, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant7, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -11925,13 +13006,20 @@ class PatchExperimentResponseBody202_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_WriteBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_WriteBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_WriteServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -11952,8 +13040,10 @@ class PatchExperimentResponseBody202_ReadBookingTime:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
-        result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
+        if self.end_time is not None:
+            result["endTime"] = from_union([lambda x: x.isoformat(), from_none], self.end_time)
+        if self.start_time is not None:
+            result["startTime"] = from_union([lambda x: x.isoformat(), from_none], self.start_time)
         return result
 
 
@@ -11978,8 +13068,10 @@ class PatchExperimentResponseBody202_ReadDevice:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["device"] = from_union([from_str, from_none], self.device)
-        result["role"] = from_union([from_str, from_none], self.role)
+        if self.device is not None:
+            result["device"] = from_union([from_str, from_none], self.device)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
         return result
 
 
@@ -12001,8 +13093,10 @@ class PatchExperimentResponseBody202_ReadRole:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["description"] = from_union([from_str, from_none], self.description)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.description is not None:
+            result["description"] = from_union([from_str, from_none], self.description)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12033,9 +13127,12 @@ class Participant8:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
-        result["role"] = from_union([from_str, from_none], self.role)
-        result["serviceId"] = from_union([from_str, from_none], self.service_id)
+        if self.config is not None:
+            result["config"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.config)
+        if self.role is not None:
+            result["role"] = from_union([from_str, from_none], self.role)
+        if self.service_id is not None:
+            result["serviceId"] = from_union([from_str, from_none], self.service_id)
         return result
 
 
@@ -12067,9 +13164,12 @@ class PatchExperimentResponseBody202_ReadServiceConfiguration:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
-        result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant8, x), x), from_none], self.participants)
-        result["serviceType"] = from_union([from_str, from_none], self.service_type)
+        if self.configuration is not None:
+            result["configuration"] = from_union([lambda x: from_dict(lambda x: x, x), from_none], self.configuration)
+        if self.participants is not None:
+            result["participants"] = from_union([lambda x: from_list(lambda x: to_class(Participant8, x), x), from_none], self.participants)
+        if self.service_type is not None:
+            result["serviceType"] = from_union([from_str, from_none], self.service_type)
         return result
 
 
@@ -12111,13 +13211,20 @@ class PatchExperimentResponseBody202_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
-        result["url"] = from_union([from_str, from_none], self.url)
-        result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_ReadBookingTime, x), from_none], self.booking_time)
-        result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
-        result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadDevice, x), x), from_none], self.devices)
-        result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadRole, x), x), from_none], self.roles)
-        result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
+        if self.status is not None:
+            result["status"] = from_union([lambda x: to_enum(GetExperimentsResponseBody200_Status, x), from_none], self.status)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        if self.booking_time is not None:
+            result["bookingTime"] = from_union([lambda x: to_class(PatchExperimentResponseBody202_ReadBookingTime, x), from_none], self.booking_time)
+        if self.connections is not None:
+            result["connections"] = from_union([lambda x: from_list(from_str, x), from_none], self.connections)
+        if self.devices is not None:
+            result["devices"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadDevice, x), x), from_none], self.devices)
+        if self.roles is not None:
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadRole, x), x), from_none], self.roles)
+        if self.service_configurations is not None:
+            result["serviceConfigurations"] = from_union([lambda x: from_list(lambda x: to_class(PatchExperimentResponseBody202_ReadServiceConfiguration, x), x), from_none], self.service_configurations)
         return result
 
 
@@ -12147,11 +13254,16 @@ class GetInstitutionsResponseBody200_Element:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12181,11 +13293,16 @@ class GetInstitutionsResponseBody200_WriteElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12215,11 +13332,16 @@ class GetInstitutionsResponseBody200_ReadElement:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12249,11 +13371,16 @@ class PostInstitutionsRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12283,11 +13410,16 @@ class PostInstitutionsRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12317,11 +13449,16 @@ class PostInstitutionsRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12351,11 +13488,16 @@ class PostInstitutionsResponseBody201:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12385,11 +13527,16 @@ class PostInstitutionsResponseBody201_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12419,11 +13566,16 @@ class PostInstitutionsResponseBody201_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12453,11 +13605,16 @@ class GetInstitutionResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12487,11 +13644,16 @@ class GetInstitutionResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12521,11 +13683,16 @@ class GetInstitutionResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12555,11 +13722,16 @@ class PatchInstitutionRequestBody:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12589,11 +13761,16 @@ class PatchInstitutionRequestBodyWrite:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12623,11 +13800,16 @@ class PatchInstitutionRequestBodyRead:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12657,11 +13839,16 @@ class PatchInstitutionResponseBody200:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12691,11 +13878,16 @@ class PatchInstitutionResponseBody200_Write:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 
@@ -12725,11 +13917,16 @@ class PatchInstitutionResponseBody200_Read:
 
     def to_dict(self) -> dict:
         result: dict = {}
-        result["api"] = from_union([from_str, from_none], self.api)
-        result["apiToken"] = from_union([from_str, from_none], self.api_token)
-        result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
-        result["homepage"] = from_union([from_str, from_none], self.homepage)
-        result["name"] = from_union([from_str, from_none], self.name)
+        if self.api is not None:
+            result["api"] = from_union([from_str, from_none], self.api)
+        if self.api_token is not None:
+            result["apiToken"] = from_union([from_str, from_none], self.api_token)
+        if self.federated_api is not None:
+            result["federatedApi"] = from_union([from_str, from_none], self.federated_api)
+        if self.homepage is not None:
+            result["homepage"] = from_union([from_str, from_none], self.homepage)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
         return result
 
 

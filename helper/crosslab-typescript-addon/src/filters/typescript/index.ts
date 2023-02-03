@@ -8,7 +8,7 @@ import {
 } from './resolve'
 import { destructureSchema, schemaToTypeDeclaration } from './typings'
 import { validation_filter } from './validation'
-import { FilterCollection } from '../../../../openapi-codegeneration/dist'
+import { FilterCollection } from '../../../../openapi-codegeneration'
 import { format } from 'prettier'
 
 /**

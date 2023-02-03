@@ -123,7 +123,7 @@ async function main() {
     const schema = yaml.parse(file);
     return JSON.stringify(schema).replace(
       /{[^{}]*"\$ref":"([^"]*)"[^{}]*}/g,
-      (substring, group: string) => {
+      (_substring, group: string) => {
         return loadAndDeref(resolve(join(input, '..', group)));
       }
     );

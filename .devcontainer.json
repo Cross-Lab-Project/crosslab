@@ -19,5 +19,7 @@
 				"onatm.open-in-new-window"
 			]
 		}
-	}
+	},
+
+	"remoteUser": "dev"
 }

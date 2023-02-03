@@ -8,6 +8,7 @@ cd $SCRIPT_DIR/../..
 # Default values
 VERBOSE=false
 SKIP_UPLOAD=false
+SKIP_DOWNLOAD=false
 CLEAN=false
 
 SUBCOMMANDVARS=""
@@ -33,6 +34,11 @@ while [[ $# -gt 0 ]]; do
       SUBCOMMANDVARS="$SUBCOMMANDVARS --web-repository $2"
       shift # past argument
       shift # past value
+      ;;
+
+    --no-download)
+      SKIP_DOWNLOAD=true
+      shift
       ;;
 
     --skip-upload)
@@ -128,8 +134,10 @@ while true; do
           status[$job]="failed"
           ignored_jobs="$ignored_jobs $job"
           runable=false
+          break
         elif [ ${status[$dependency]} = "created" ]; then
           runable=false
+          break
         fi
       done
 
@@ -147,7 +155,7 @@ while true; do
         job_input_hash=$($SCRIPT_DIR/path_hash.sh $job_input_paths)
 
         # Check if we can download job from reopository
-        if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ]; then
+        if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ] && [ $SKIP_DOWNLOAD = false ]; then
           # No hash file, so job is not build try to download cache
           echo_end "${BLUE}⇣ check for remote cache${NC}"
           $SCRIPT_DIR/download_job_artifact.sh --directory ${root[$job]}/dist --hash $job_input_hash $SUBCOMMANDVARS || true

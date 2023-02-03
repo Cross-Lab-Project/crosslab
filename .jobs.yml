@@ -4,6 +4,8 @@
 
 helper/development-container:
   - script: build -t development-container:latest
+    tags:
+      - environment
 
 ################################################################################
 # Helper #######################################################################
