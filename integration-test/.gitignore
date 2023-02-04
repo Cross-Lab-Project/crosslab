@@ -2,3 +2,5 @@ node_modules
 venv
 .npmrc
 dist
+nginx.pid
+db

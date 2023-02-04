@@ -41,7 +41,7 @@ function start_service(service_path: string, env: {[key: string]: string}, clear
   const additional_params = [];
   if (clear) {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    fs.rm(`${service_path}/db`, {recursive: true}, () => {});
+    fs.rm(`db/${service_path}.db`, () => {});
   }
   if (debug) {
     if (typeof debug === 'number') {
@@ -51,7 +51,9 @@ function start_service(service_path: string, env: {[key: string]: string}, clear
     }
   }
 
-  const service = spawn('node', [...additional_params, './app/index.js'], {env: {PATH: process.env.PATH, ...env}, cwd: service_path});
+  const service = spawn('node', [...additional_params, `node_modules/@crosslab/service-${service_path}/app/index.js`], {
+    env: {PATH: process.env.PATH, ...env},
+  });
 
   if (debug) {
     console.log(`Service ${service_path} started with debug port ${debug}. Please attach debugger`);
@@ -104,30 +106,10 @@ export const mochaHooks = {
     console.log('Starting services...');
     this.timeout(20000);
 
-    this.authService = start_service(
-      path.resolve(repository_dir, 'services', 'auth'),
-      {...ENV.common, ...ENV.auth},
-      true,
-      this.debug?.auth?.debug_port,
-    );
-    this.deviceService = start_service(
-      path.resolve(repository_dir, 'services', 'device'),
-      {...ENV.common, ...ENV.device},
-      true,
-      this.debug?.device?.debug_port,
-    );
-    this.experimentService = start_service(
-      path.resolve(repository_dir, 'services', 'experiment'),
-      {...ENV.common, ...ENV.experiment},
-      true,
-      this.debug?.experiment?.debug_port,
-    );
-    this.federationService = start_service(
-      path.resolve(repository_dir, 'services', 'federation'),
-      {...ENV.common, ...ENV.federation},
-      true,
-      this.debug?.federation?.debug_port,
-    );
+    this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, true, this.debug?.auth?.debug_port);
+    this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, true, this.debug?.device?.debug_port);
+    this.experimentService = start_service('experiment', {...ENV.common, ...ENV.experiment}, true, this.debug?.experiment?.debug_port);
+    this.federationService = start_service('federation', {...ENV.common, ...ENV.federation}, true, this.debug?.federation?.debug_port);
     this.gatewayService = start_gateway(path.resolve(repository_dir, 'services', 'gateway'), {...ENV.common, ...ENV.gateway});
 
     // TODO: wait for health check to complete on all services -> needs health check endpoint

@@ -25,6 +25,6 @@ export const ENV = {
     FEDERATION_SERVICE_URL: '127.0.0.1:3003',
     UPDATE_SERVICE_URL: '127.0.0.1:1',
     SERVER_NAME: 'localhost',
-    NGINX_PID_PATH: '/tmp/nginx.pid',
+    NGINX_PID_PATH: 'nginx.pid',
   },
 };

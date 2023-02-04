@@ -1,5 +1,5 @@
 {
-    "name": "@crosslab/service-auth",
+    "name": "@crosslab/dummy-device",
     "dockerName": "auth-service",
     "bin": {
         "dummy-device-js": "./app/index.js"

@@ -32,7 +32,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     super();
     switch (type) {
       case 'js':
-        this.binary = `node${host_debug ? ` --inspect-brk=${host_debug}` : ''} ${repository_dir}/helper/dummy-device/js/app/index.js${
+        this.binary = `node${host_debug ? ` --inspect-brk=${host_debug}` : ''} node_modules/@crosslab/dummy-device/app/index.js${
           debug ? ` --browser-inspect ${debug}` : ''
         }`.split(' ');
         if (host_debug) {
