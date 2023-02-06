@@ -17,7 +17,7 @@ workflow:
         PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
         BRANCH: $CI_COMMIT_BRANCH
 
-build:
+build-environment:
   image: crosslab/devcontainer:latest
   stage: build-environment
   script:
