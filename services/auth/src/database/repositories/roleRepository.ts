@@ -1,8 +1,8 @@
-import { AbstractRepository } from "./abstractRepository";
-import { Role } from "../../generated/types";
-import { RoleModel } from "../model";
-import { scopeRepository } from "./scopeRepository";
-import { AppDataSource } from "../dataSource";
+import { AbstractRepository } from './abstractRepository'
+import { Role } from '../../generated/types'
+import { RoleModel } from '../model'
+import { scopeRepository } from './scopeRepository'
+import { AppDataSource } from '../dataSource'
 
 export class RoleRepository extends AbstractRepository<RoleModel> {
     constructor() {
@@ -13,7 +13,7 @@ export class RoleRepository extends AbstractRepository<RoleModel> {
         this.repository = AppDataSource.getRepository(RoleModel)
     }
 
-    public async write(model: RoleModel, data: Role<"request">): Promise<void> {
+    public async write(model: RoleModel, data: Role<'request'>): Promise<void> {
         if (data.name) {
             model.name = data.name
         }
@@ -22,18 +22,18 @@ export class RoleRepository extends AbstractRepository<RoleModel> {
                 data.scopes.map(async (scope) => {
                     return await scopeRepository.findOneOrFail({
                         where: {
-                            name: scope
-                        }
+                            name: scope,
+                        },
                     })
                 })
             )
         }
     }
 
-    public async format(model: RoleModel): Promise<Role<"response">> {
+    public async format(model: RoleModel): Promise<Role<'response'>> {
         return {
             name: model.name,
-            scopes: await Promise.all(model.scopes.map(scopeRepository.format))
+            scopes: await Promise.all(model.scopes.map(scopeRepository.format)),
         }
     }
 }

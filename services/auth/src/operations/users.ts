@@ -7,8 +7,6 @@ import {
     putUsersByUsernameRolesByRoleNameSignature,
     deleteUsersByUsernameRolesByRoleNameSignature,
 } from '../generated/signatures'
-import { MalformedBodyError } from '@crosslab/service-common'
-import { isRequiredUser } from '../types/typeguards'
 import { userRepository } from '../database/repositories/userRepository'
 import { roleRepository } from '../database/repositories/roleRepository'
 
@@ -30,6 +28,7 @@ export const getUsers: getUsersSignature = async (_user) => {
 }
 
 /**
+ * TODO: check if user is allowed to assign the requested roles
  * This function implements the functionality for handling POST requests on /users endpoint.
  * @param body The body of the request.
  * @param _user The user submitting the request.
@@ -39,10 +38,8 @@ export const getUsers: getUsersSignature = async (_user) => {
 export const postUsers: postUsersSignature = async (body, _user) => {
     console.log(`postUsers called`)
 
-    if (!isRequiredUser(body))
-        throw new MalformedBodyError(`Body is missing required properties`, 400)
-
     const userModel = await userRepository.create(body)
+    await userRepository.save(userModel)
 
     console.log(`postUsers succeeded`)
 
@@ -66,8 +63,8 @@ export const getUsersByUsername: getUsersByUsernameSignature = async (
 
     const userModel = await userRepository.findOneOrFail({
         where: {
-            username: parameters.username
-        }
+            username: parameters.username,
+        },
     })
 
     console.log(`getUsersByUsername succeeded`)
@@ -90,10 +87,10 @@ export const deleteUsersByUsername: deleteUsersByUsernameSignature = async (
 ) => {
     console.log(`deleteUsersByUsername called`)
 
-    const userModel = await userRepository.findOneOrFail({ 
+    const userModel = await userRepository.findOneOrFail({
         where: {
-            username: parameters.username 
-        }
+            username: parameters.username,
+        },
     })
 
     await userRepository.remove(userModel)
@@ -120,11 +117,11 @@ export const patchUsersByUsername: patchUsersByUsernameSignature = async (
     _user
 ) => {
     console.log(`patchUsersByUsername called`)
-    
-    const userModel = await userRepository.findOneOrFail({ 
+
+    const userModel = await userRepository.findOneOrFail({
         where: {
-            username: parameters.username
-        }
+            username: parameters.username,
+        },
     })
 
     await userRepository.write(userModel, body ?? {})
@@ -147,16 +144,16 @@ export const patchUsersByUsername: patchUsersByUsernameSignature = async (
 export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNameSignature =
     async (parameters, _user) => {
         console.log(`putUsersByUsernameRolesByRoleName called`)
-        
-        const userModel = await userRepository.findOneOrFail({ 
+
+        const userModel = await userRepository.findOneOrFail({
             where: {
-                username: parameters.username 
-            }
+                username: parameters.username,
+            },
         })
-        const roleModel = await roleRepository.findOneOrFail({ 
+        const roleModel = await roleRepository.findOneOrFail({
             where: {
-                name: parameters.role_name 
-            }
+                name: parameters.role_name,
+            },
         })
 
         userRepository.addRoleModelToUserModel(userModel, roleModel)
@@ -179,16 +176,16 @@ export const putUsersByUsernameRolesByRoleName: putUsersByUsernameRolesByRoleNam
 export const deleteUsersByUsernameRolesByRoleName: deleteUsersByUsernameRolesByRoleNameSignature =
     async (parameters, _user) => {
         console.log(`deleteUsersByUsernameRolesByRoleName called`)
-        
-        const userModel = await userRepository.findOneOrFail({ 
+
+        const userModel = await userRepository.findOneOrFail({
             where: {
-                username: parameters.username 
-            }
+                username: parameters.username,
+            },
         })
-        const roleModel = await roleRepository.findOneOrFail({ 
+        const roleModel = await roleRepository.findOneOrFail({
             where: {
-                name: parameters.role_name 
-            }
+                name: parameters.role_name,
+            },
         })
 
         userRepository.removeRoleModelFromUserModel(userModel, roleModel)

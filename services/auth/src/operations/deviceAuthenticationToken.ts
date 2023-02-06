@@ -1,4 +1,3 @@
-import { MissingEntityError } from '@crosslab/service-common'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
 import { OwnershipError } from '../types/errors'
@@ -11,40 +10,44 @@ import { tokenRepository } from '../database/repositories/tokenRepository'
  * @param user The user submitting the request.
  * @throws {MissingEntityError} Could not find user.
  */
-export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignature = async (parameters, user) => {
-    console.log(`postDeviceAuthenticationToken called`)
+export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignature =
+    async (parameters, user) => {
+        console.log(`postDeviceAuthenticationToken called`)
 
-    const userModel = await userRepository.findOne({
-        where: {
-            username: user.JWT?.username
-        },
-        relations: {
-            tokens: true
+        const userModel = await userRepository.findOneOrFail({
+            where: {
+                username: user.JWT?.username,
+            },
+            relations: {
+                tokens: true,
+            },
+        })
+
+        const device = await getDevice(parameters.device_url)
+        if (
+            device.owner !== user.JWT?.url &&
+            !userModel.roles.find((role) => role.name === 'deviceservice') &&
+            !userModel.roles.find((role) => role.name === 'superadmin')
+        ) {
+            throw new OwnershipError()
         }
-    })
 
-    if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
+        const tokenModel = await tokenRepository.create({
+            user: userModel.username,
+            scopes: [],
+            device: device.url,
+        })
 
-    const device = await getDevice(parameters.device_url)
-    if (device.owner != user.JWT?.url) throw new OwnershipError()
+        // TODO: replace with function maybe?
+        userModel.tokens = await userModel.tokens
+        userModel.tokens.push(tokenModel)
 
-    const tokenModel = await tokenRepository.create({
-        user: userModel.username,
-        scopes: [],
-        device: device.url
-    })
+        await userRepository.save(userModel)
 
-    // TODO: replace with function maybe?
-    userModel.tokens = await userModel.tokens
-    userModel.tokens.push(tokenModel)
+        console.log(`postDeviceAuthenticationToken succeeded`)
 
-    await userRepository.save(userModel)
-
-    console.log(`postDeviceAuthenticationToken succeeded`)
-
-    return {
-        status: 200,
-        body: tokenModel.token,
+        return {
+            status: 201,
+            body: tokenModel.token,
+        }
     }
-}

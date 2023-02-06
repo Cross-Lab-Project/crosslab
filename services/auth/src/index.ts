@@ -12,7 +12,9 @@ AppDataSource.initialize(dataSourceConfig)
     .then(async () => {
         await initializeDataSource()
 
-        const allowlist = process.env.ALLOWLIST ? parseAllowlist(process.env.ALLOWLIST) : []
+        const allowlist = process.env.ALLOWLIST
+            ? parseAllowlist(process.env.ALLOWLIST)
+            : []
 
         // Resolve Allowlist
         await resolveAllowlist(allowlist)
@@ -27,7 +29,7 @@ AppDataSource.initialize(dataSourceConfig)
 
         const activeKeyModel = await activeKeyRepository.create({
             use: key.use,
-            key: key.uuid
+            key: key.uuid,
         })
 
         await activeKeyRepository.save(activeKeyModel)
@@ -46,10 +48,10 @@ AppDataSource.initialize(dataSourceConfig)
                 },
                 TuiAuth: (_req, _scopes) => {
                     throw new Error('Not implemented')
-                }
-            }
+                },
+            },
         })
-        
+
         app.listen(config.PORT)
         console.log('Initialization finished')
     })

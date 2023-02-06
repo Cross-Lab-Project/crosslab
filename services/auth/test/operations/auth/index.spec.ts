@@ -1,3 +1,3 @@
-import getTest from "./get.spec";
+import getTest from './get.spec'
 
 export default [getTest]

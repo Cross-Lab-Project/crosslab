@@ -1,3 +1,3 @@
-import postTest from "./post.spec";
+import postTest from './post.spec'
 
 export default [postTest]

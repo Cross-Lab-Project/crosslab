@@ -14,7 +14,7 @@ export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
         private_key: await exportJWK(keyPair.privateKey),
         public_key: await exportJWK(keyPair.publicKey),
         use: usage,
-        alg: 'RS256'
+        alg: 'RS256',
     })
 
     await keyRepository.save(keyModel)

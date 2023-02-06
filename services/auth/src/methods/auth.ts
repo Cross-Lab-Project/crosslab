@@ -1,9 +1,7 @@
-import { ActiveKeyModel, KeyModel, UserModel } from '../database/model'
+import { ActiveKeyModel, KeyModel, ScopeModel, UserModel } from '../database/model'
 import { SignJWT, JWTPayload, importJWK } from 'jose'
 import { config } from '../config'
-import {
-    UserType,
-} from '../generated/types'
+import { UserType } from '../generated/types'
 import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
 import { userUrlFromUsername } from './utils'
 
@@ -36,16 +34,19 @@ export async function sign<P extends JWTPayload>(
  */
 export async function signUserToken(
     user: UserModel,
-    activeKey: ActiveKeyModel
+    activeKey: ActiveKeyModel,
+    scopes?: ScopeModel[]
 ): Promise<string> {
     return await sign<UserType>(
         {
             url: userUrlFromUsername(user.username),
             username: user.username,
-            scopes: user.roles
-                .map((role) => role.scopes.map((scope) => scope.name))
-                .flat(1)
-                .filter((value, index, self) => self.indexOf(value) === index),
+            scopes:
+                scopes?.map((scope) => scope.name) ??
+                user.roles
+                    .map((role) => role.scopes.map((scope) => scope.name))
+                    .flat(1)
+                    .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -62,17 +63,20 @@ export async function signUserToken(
 export async function signDeviceToken(
     deviceUrl: string,
     user: UserModel,
-    activeKey: ActiveKeyModel
+    activeKey: ActiveKeyModel,
+    scopes?: ScopeModel[]
 ): Promise<string> {
     return await sign<UserType>(
         {
             url: userUrlFromUsername(user.username),
             username: user.username,
             device: deviceUrl,
-            scopes: user.roles
-                .map((role) => role.scopes.map((s) => s.name))
-                .flat(1)
-                .filter((value, index, self) => self.indexOf(value) === index),
+            scopes:
+                scopes?.map((scope) => scope.name) ??
+                user.roles
+                    .map((role) => role.scopes.map((s) => s.name))
+                    .flat(1)
+                    .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'

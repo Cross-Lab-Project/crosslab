@@ -1,10 +1,6 @@
 import { hash } from 'bcryptjs'
 import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
-import {
-    RoleModel,
-    ScopeModel,
-    UserModel,
-} from './model'
+import { RoleModel, ScopeModel, UserModel } from './model'
 import { activeKeyRepository } from './repositories/activeKeyRepository'
 import { keyRepository } from './repositories/keyRepository'
 import { roleRepository } from './repositories/roleRepository'
@@ -15,7 +11,7 @@ import { userRepository } from './repositories/userRepository'
 export class ApplicationDataSource {
     private dataSource?: DataSource
     public connected: boolean = false
-    
+
     public async initialize(options: DataSourceOptions) {
         this.dataSource = new DataSource(options)
         await this.dataSource.initialize()
@@ -29,16 +25,14 @@ export class ApplicationDataSource {
     }
 
     public async teardown() {
-        if (!this.dataSource) 
-            throw new Error("Data Source has not been initialized!") // TODO: better error
-            
+        if (!this.dataSource) throw new Error('Data Source has not been initialized!') // TODO: better error
+
         await this.dataSource.destroy()
         this.connected = false
     }
 
     public getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
-        if (!this.dataSource) 
-            throw new Error("Data Source has not been initialized!") // TODO: better error
+        if (!this.dataSource) throw new Error('Data Source has not been initialized!') // TODO: better error
 
         return this.dataSource.getRepository(target)
     }

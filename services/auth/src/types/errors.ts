@@ -120,9 +120,12 @@ export class OwnershipError extends ErrorWithStatus {
  */
 export class UninitializedRepositoryError extends ErrorWithStatus {
     constructor(model: Model) {
-        super(`${
-            capitalizeFirstLetter(getModelName(model).toLowerCase())
-        } repository has not been initialized`, 500)
-        this.name = "UninitializedRepositoryError"
+        super(
+            `${capitalizeFirstLetter(
+                getModelName(model).toLowerCase()
+            )} repository has not been initialized`,
+            500
+        )
+        this.name = 'UninitializedRepositoryError'
     }
 }

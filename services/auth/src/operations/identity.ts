@@ -1,8 +1,4 @@
-import {
-    getIdentitySignature,
-    patchIdentitySignature,
-} from '../generated/signatures'
-import { MissingEntityError } from '@crosslab/service-common'
+import { getIdentitySignature, patchIdentitySignature } from '../generated/signatures'
 import { userRepository } from '../database/repositories/userRepository'
 
 /**
@@ -13,14 +9,11 @@ import { userRepository } from '../database/repositories/userRepository'
 export const getIdentity: getIdentitySignature = async (user) => {
     console.log(`getIdentity called`)
 
-    const userModel = await userRepository.findOne({
+    const userModel = await userRepository.findOneOrFail({
         where: {
-            username: user.JWT?.username
-        }
+            username: user.JWT?.username,
+        },
     })
-
-    if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
     console.log(`getIdentity succeeded`)
 
@@ -40,14 +33,11 @@ export const getIdentity: getIdentitySignature = async (user) => {
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
     console.log(`patchIdentity called`)
 
-    const userModel = await userRepository.findOne({ 
+    const userModel = await userRepository.findOneOrFail({
         where: {
-            username: user.JWT?.username 
-        }
+            username: user.JWT?.username,
+        },
     })
-
-    if (!userModel)
-        throw new MissingEntityError(`Could not find user ${user.JWT?.username}`, 404)
 
     await userRepository.write(userModel, body ?? {})
     await userRepository.save(userModel)

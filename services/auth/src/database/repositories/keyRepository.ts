@@ -1,8 +1,8 @@
-import { AbstractRepository } from "./abstractRepository";
-import { Key } from "../../types/types";
-import { KeyModel } from "../model";
-import { AppDataSource } from "../dataSource";
-import { activeKeyRepository } from "./activeKeyRepository";
+import { AbstractRepository } from './abstractRepository'
+import { Key } from '../../types/types'
+import { KeyModel } from '../model'
+import { AppDataSource } from '../dataSource'
+import { activeKeyRepository } from './activeKeyRepository'
 
 export class KeyRepository extends AbstractRepository<KeyModel> {
     constructor() {
@@ -20,21 +20,21 @@ export class KeyRepository extends AbstractRepository<KeyModel> {
         model.use = data.use
     }
 
-    public async format(_model: KeyModel): Promise<Key<"response">> {
+    public async format(_model: KeyModel): Promise<Key<'response'>> {
         return undefined
     }
-    
+
     public async remove(model: KeyModel): Promise<void> {
         if (!this.repository) this.throwUninitializedRepositoryError()
 
         const activeKeyModels = await activeKeyRepository.find({
             where: {
                 key: {
-                    uuid: model.uuid
-                }
-            }
+                    uuid: model.uuid,
+                },
+            },
         })
-        
+
         for (const activeKeyModel of activeKeyModels) {
             await activeKeyRepository.remove(activeKeyModel)
         }

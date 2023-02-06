@@ -18,8 +18,10 @@
         "build": "npm run build-generate-code && npm run build-compile",
         "start": "node app/index.js",
         "dev": "env-cmd -e development npx nodemon src/index.ts",
-        "format": "npx prettier src --write",
-        "test": "nyc --reporter=html --reporter=text env-cmd -e development ts-mocha -p tsconfig.json --require @babel/register test/test.spec.ts"
+        "format:src": "npx prettier src --write",
+        "format:test": "npx prettier test --write",
+        "format": "npm run format:src && npm run format:test",
+        "test": "nyc --reporter=html --reporter=text env-cmd -e development ts-mocha --require @babel/register test/test.spec.ts"
     },
     "author": "Johannes Nau",
     "license": "UNLICENSED",

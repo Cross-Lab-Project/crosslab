@@ -1,84 +1,90 @@
-import { InvalidValueError, MissingEntityError } from "@crosslab/service-common"
-import assert from "assert"
-import { config } from "../../../src/config"
-import { patchIdentity } from "../../../src/operations"
+import { MissingEntityError } from '@crosslab/service-common'
+import assert, { fail } from 'assert'
+import { config } from '../../../src/config'
+import { userRepository } from '../../../src/database/repositories/userRepository'
+import { patchIdentity } from '../../../src/operations'
+import { TestData } from '../../data/index.spec'
+import Mocha from 'mocha'
 
-// TODO: rethink what can be patched for a user
-export default () => describe("PATCH /identity", function () {
-    it("should update the identity of a known user", async function () {
-        const user = {
-            username: "username",
-            url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`,
-            scopes: ["test scope"]
-        }
-        const result = await patchIdentity({
-            username: "newUsername",
-            password: "newPassword"
-        },{
-            JWT: user
-        })
-        assert(result.status === 200)
-        assert(result.body.username === "newUsername")
-        assert(result.body.url === `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/newUsername`)
-        assert(result.body.roles)
-        assert(result.body.roles.length === 1)
-        assert(result.body.roles[0].name === "test role")
+export default function (context: Mocha.Context, testData: TestData) {
+    const suite = new Mocha.Suite('PATCH /identity', context)
 
-        const resultRevert = await patchIdentity({
-            username: "username",
-            password: "password",
-            roles: [{
-                name: "test role"
-            }]
-        },{
-            JWT: user
-        })
-        assert(resultRevert.status === 200)
-        assert(resultRevert.body.username === "username")
-        assert(resultRevert.body.url === `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`)
-        assert(resultRevert.body.roles)
-        assert(resultRevert.body.roles.length === 1)
-        assert(resultRevert.body.roles[0].name === "test role")
-    })
+    suite.addTest(
+        new Mocha.Test('should update the identity of a known user', async function () {
+            const result = await patchIdentity(
+                {
+                    username: 'newsuperadmin',
+                },
+                {
+                    JWT: {
+                        username: testData.users.superadmin.response.username!,
+                        url: testData.users.superadmin.response.url!,
+                        scopes: [],
+                    },
+                }
+            )
 
-    it("should not update the identity of an unknown user", async function () {
-        try {
-            const user = {
-                username: "unknown",
-                url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/unknown`,
-                scopes: ["test scope"]
-            }
-            await patchIdentity({
-                username: "newUsername",
-                password: "newPassword"
-            },{
-                JWT: user
+            assert(result.status === 200)
+            assert(result.body.username === 'newsuperadmin')
+            await userRepository.findOneOrFail({
+                where: {
+                    username: 'newsuperadmin',
+                },
             })
-            assert(false)
-        } catch (error) {
-            assert(error instanceof MissingEntityError)
-            assert(error.status === 404)
-        }
-    })
+        })
+    )
 
-    it("should not allow the user to set an unknown role", async function () {
-        try {
-            const user = {
-                username: "username",
-                url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/unknown`,
-                scopes: ["test scope"]
+    suite.addTest(
+        new Mocha.Test(
+            'should update the identity of a known user with undefined body',
+            async function () {
+                const result = await patchIdentity(undefined, {
+                    JWT: {
+                        username: testData.users.superadmin.response.username!,
+                        url: testData.users.superadmin.response.url!,
+                        scopes: [],
+                    },
+                })
+
+                assert(result.status === 200)
+                assert(result.body.username === 'superadmin')
+                await userRepository.findOneOrFail({
+                    where: {
+                        username: 'superadmin',
+                    },
+                })
             }
-            await patchIdentity({
-                roles: [{
-                    name: "unknown"
-                }]
-            },{
-                JWT: user
-            })
-            assert(false)
-        } catch (error) {
-            assert(error instanceof InvalidValueError)
-            assert(error.status === 400)
-        }
-    })
-})
+        )
+    )
+
+    suite.addTest(
+        new Mocha.Test(
+            'should not update the identity of an unknown user',
+            async function () {
+                try {
+                    await patchIdentity(
+                        {
+                            username: 'newUsername',
+                            password: 'newPassword',
+                        },
+                        {
+                            JWT: {
+                                username: 'unknown',
+                                url: `${config.BASE_URL}${
+                                    config.BASE_URL.endsWith('/') ? '' : '/'
+                                }users/unknown`,
+                                scopes: [],
+                            },
+                        }
+                    )
+                    fail()
+                } catch (error) {
+                    assert(error instanceof MissingEntityError)
+                    assert(error.status === 404)
+                }
+            }
+        )
+    )
+
+    return suite
+}

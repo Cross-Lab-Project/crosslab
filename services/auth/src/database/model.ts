@@ -2,6 +2,7 @@ import { JWK as _JWK } from 'jose'
 import {
     Column,
     Entity,
+    Index,
     JoinTable,
     ManyToMany,
     ManyToOne,
@@ -13,7 +14,7 @@ import { Role, User } from '../generated/types'
 import { ActiveKey, Key, Scope, Token } from '../types/types'
 
 // this solves an nyc error where branches are wrongly detected
-type JWK = _JWK | never 
+type JWK = _JWK | never
 
 @Entity()
 export class ScopeModel {
@@ -23,10 +24,16 @@ export class ScopeModel {
 
 @Entity()
 export class RoleModel {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn("uuid")
+    uuid!: string
+
+    @Index({ unique: true })
+    @Column()
     name!: string
+
     @ManyToMany(() => UserModel, (user) => user.roles)
     users!: Promise<UserModel[]> | UserModel[]
+
     @ManyToMany(() => ScopeModel, { eager: true })
     @JoinTable()
     scopes!: ScopeModel[]
@@ -34,13 +41,20 @@ export class RoleModel {
 
 @Entity()
 export class UserModel {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn("uuid")
+    uuid!: string
+
+    @Index({ unique: true })
+    @Column()
     username!: string
+
     @Column({ nullable: true })
     password?: string
+
     @ManyToMany(() => RoleModel, (role) => role.users, { eager: true })
     @JoinTable()
     roles!: RoleModel[]
+
     @OneToMany(() => TokenModel, (token) => token.user, {
         onDelete: 'CASCADE',
         cascade: true,
@@ -52,12 +66,16 @@ export class UserModel {
 export class TokenModel {
     @PrimaryGeneratedColumn('uuid')
     token!: string
+
     @Column('datetime', { nullable: true })
     expiresOn?: string
+
     @Column({ nullable: true })
     device?: string
+
     @ManyToOne(() => UserModel, (user) => user.tokens, { eager: true })
     user!: UserModel
+
     @ManyToMany(() => ScopeModel, { eager: true })
     @JoinTable()
     scopes!: ScopeModel[]
@@ -67,20 +85,28 @@ export class TokenModel {
 export class KeyModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
+
     @Column()
     use!: string
+
     @Column()
     alg!: string
+
     @Column('simple-json')
     public_key!: JWK
+
     @Column('simple-json')
-    private_key!: JWK 
+    private_key!: JWK
 }
 
 @Entity()
 export class ActiveKeyModel {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('increment')
+    id!: number
+
+    @Column()
     use!: string
+
     @ManyToOne(() => KeyModel, { eager: true })
     key!: KeyModel
 }
@@ -88,12 +114,21 @@ export class ActiveKeyModel {
 /**
  * Type containing all the different models.
  */
-export type Model = ActiveKeyModel | KeyModel | RoleModel | ScopeModel | TokenModel | UserModel
+export type Model =
+    | ActiveKeyModel
+    | KeyModel
+    | RoleModel
+    | ScopeModel
+    | TokenModel
+    | UserModel
 
 /**
- * Type mapping a model and ...(TODO)... to their corresponding data type.
+ * Type mapping a model to their corresponding data type.
  */
-export type ModelType<M extends Model, T extends "request" | "response" | "all" = "all"> = M extends ActiveKeyModel 
+export type ModelType<
+    M extends Model,
+    T extends 'request' | 'response' | 'all' = 'all'
+> = M extends ActiveKeyModel
     ? ActiveKey<T>
     : M extends KeyModel
     ? Key<T>
@@ -115,18 +150,18 @@ export type ModelType<M extends Model, T extends "request" | "response" | "all" 
 export function getModelName(model: Model) {
     switch (model) {
         case ActiveKeyModel:
-            return "Active Key"
+            return 'Active Key'
         case KeyModel:
-            return "Key"
+            return 'Key'
         case RoleModel:
-            return "Role"
+            return 'Role'
         case ScopeModel:
-            return "Scope"
+            return 'Scope'
         case TokenModel:
-            return "Token"
+            return 'Token'
         case UserModel:
-            return "User"
+            return 'User'
         default:
-            return "Unknown"
+            return 'Unknown'
     }
 }

@@ -1,110 +1,127 @@
-import { MissingEntityError } from "@crosslab/service-common"
-import assert, { AssertionError } from "assert"
-import { config } from "../../../src/config"
-import { tokenRepository } from "../../../src/database/repositories/tokenRepository"
-import { userRepository } from "../../../src/database/repositories/userRepository"
-import { postLogout } from "../../../src/operations"
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
+import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
+import { userRepository } from '../../../src/database/repositories/userRepository'
+import { postLogout } from '../../../src/operations'
+import { TestData } from '../../data/index.spec'
 
-export default () => describe("POST /logout", function () {
-    it("should logout the user successfully", async function () {
-        // prepare token
-        const userModel = await userRepository.findOneOrFail({ 
-            where: {
-                username: "username" 
-            }
-        })
-        const tokenModel = await tokenRepository.create({
-            scopes: []
-        })
+export default function (context: Mocha.Context, testData: TestData) {
+    const suite = new Mocha.Suite('POST /logout', context)
 
-        userModel.tokens = await userModel.tokens ?? []
-        userModel.tokens.push(tokenModel)
+    suite.addTest(
+        new Mocha.Test('should logout the user successfully', async function () {
+            const user = testData.users['POST /logout user']
+            const token = testData.tokens['POST /logout valid user token']
 
-        await userRepository.save(userModel)
-
-        // logout
-        const result = await postLogout(
-            {
-                token: tokenModel.token
-            },
-            {
-                JWT: {
-                    username: userModel.username,
-                    url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/${userModel.username}`,
-                    scopes: ["test scope"]
-                }
-            }
-        )
-        assert(result.status === 204, "Status is not equal to 204")
-
-        // check that token was deleted successfully
-        assert(!await tokenRepository.findOne({ 
-            where: {
-                token: tokenModel.token, 
-                user: {
-                    username: userModel.username
-                }
-            }
-        }), "Token still exists after logout")
-
-        const newUserModel = await userRepository.findOneOrFail({
-            where: {
-                username: "username"
-            },
-            relations: {
-                tokens: true
-            }
-        })
-        assert(!(await newUserModel.tokens).find((token) => token.token === tokenModel.token))
-    })
-
-    it("should throw an error if the user is not found", async function () {
-        const user = {
-            username: "unkown",
-            url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/unknown`,
-            scopes: ["test scope"]
-        }
-        try {
-            await postLogout(
+            const result = await postLogout(
                 {
-                    token: "token"
+                    token: token.model.token,
                 },
                 {
-                    JWT: user
+                    JWT: {
+                        username: user.model.username,
+                        url: user.response.url!,
+                        scopes: [],
+                    },
                 }
             )
-            assert(false, "No error was thrown")
-        } catch (error) {
-            // TODO: maybe another error would be better
-            // TODO: maybe harder checks are needed to ensure user belongs to service
-            if (error instanceof AssertionError) throw error
-            assert(error instanceof MissingEntityError, "Wrong error was thrown")
-            assert(error.status === 404, "Wrong status code was returned")
-        }
-    })
 
-    // it("should throw an error if the token does not belong to the user", async function () {
-    //     const user = {
-    //         username: "username",
-    //         url: `${config.BASE_URL}${config.BASE_URL.endsWith("/") ? "" : "/"}users/username`,
-    //         scopes: ["test scope"]
-    //     }
-    //     try {
-    //         await postLogout(
-    //             {
-    //                 token: "wrong"
-    //             },
-    //             {
-    //                 JWT: user
-    //             }
-    //         )
-    //         assert(false, "No error was thrown")
-    //     } catch (error) {
-    //         if (error instanceof AssertionError) throw error
-    //         assert(error instanceof MissingEntityError, "Wrong error was thrown")
-    //         assert(error.status === 404, "Wrong status code was returned")
-    //     }
-    // })
+            assert(result.status === 204)
+            await assert.rejects(
+                tokenRepository.findOneOrFail({
+                    where: {
+                        token: token.model.token,
+                    },
+                }),
+                (error: unknown) => {
+                    assert(error instanceof MissingEntityError)
+                    assert.strictEqual(error.status, 404)
+                    return true
+                }
+            )
 
-    // TODO: think about how logout should handle multiple different tokens
-})
+            const userModel = await userRepository.findOneOrFail({
+                where: {
+                    username: user.model.username,
+                },
+            })
+            assert((await userModel.tokens).length === 0)
+        })
+    )
+
+    suite.addTest(
+        new Mocha.Test(
+            'should throw an error if the user is not found',
+            async function () {
+                const token = testData.tokens['POST /logout valid user token']
+
+                await assert.rejects(
+                    async () =>
+                        postLogout(
+                            {
+                                token: token.model.token,
+                            },
+                            {
+                                JWT: {
+                                    username: 'unknown',
+                                    url: 'http://localhost:3000/users/unknown',
+                                    scopes: [],
+                                },
+                            }
+                        ),
+                    (error) => {
+                        assert(error instanceof MissingEntityError)
+                        assert.strictEqual(error.status, 404)
+                        return true
+                    }
+                )
+            }
+        )
+    )
+
+    suite.addTest(
+        new Mocha.Test(
+            "should not delete a token which doesn't belong to the requesting user",
+            async function () {
+                const user = testData.users['POST /logout user']
+                const token = testData.tokens['superadmin valid user token 1']
+
+                const result = await postLogout(
+                    {
+                        token: token.model.token,
+                    },
+                    {
+                        JWT: {
+                            username: user.model.username,
+                            url: user.response.url!,
+                            scopes: [],
+                        },
+                    }
+                )
+
+                assert(result.status === 204)
+
+                const tokenModel = await tokenRepository.findOneOrFail({
+                    where: {
+                        token: token.model.token,
+                    },
+                })
+                assert.strictEqual(tokenModel.token, token.model.token)
+
+                const userModel = await userRepository.findOneOrFail({
+                    where: {
+                        username: testData.users.superadmin.model.username,
+                    },
+                })
+                assert(
+                    (await userModel.tokens).find(
+                        (tokenModel) => tokenModel.token === token.model.token
+                    )
+                )
+            }
+        )
+    )
+
+    return suite
+}

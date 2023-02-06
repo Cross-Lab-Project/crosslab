@@ -1,7 +1,7 @@
-import { AbstractRepository } from "./abstractRepository";
-import { ScopeModel } from "../model";
-import { AppDataSource } from "../dataSource";
-import { Scope } from "../../types/types";
+import { AbstractRepository } from './abstractRepository'
+import { ScopeModel } from '../model'
+import { AppDataSource } from '../dataSource'
+import { Scope } from '../../types/types'
 
 export class ScopeRepository extends AbstractRepository<ScopeModel> {
     constructor() {
@@ -12,11 +12,11 @@ export class ScopeRepository extends AbstractRepository<ScopeModel> {
         this.repository = AppDataSource.getRepository(ScopeModel)
     }
 
-    public async write(model: ScopeModel, data: Scope<"request">): Promise<void> {
+    public async write(model: ScopeModel, data: Scope<'request'>): Promise<void> {
         model.name = data
     }
 
-    public async format(model: ScopeModel): Promise<Scope<"response">> {
+    public async format(model: ScopeModel): Promise<Scope<'response'>> {
         return model.name
     }
 }

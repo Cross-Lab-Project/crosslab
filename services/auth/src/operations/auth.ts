@@ -1,14 +1,7 @@
 import { getAuthSignature } from '../generated/signatures'
-import {
-    parseBearerToken,
-    signDeviceToken,
-    signUserToken,
-} from '../methods/auth'
-import {
-    ExpiredError,
-    InconsistentDatabaseError,
-} from '../types/errors'
-import { MissingEntityError } from '@crosslab/service-common'
+import { parseBearerToken, signDeviceToken, signUserToken } from '../methods/auth'
+import { ExpiredError } from '../types/errors'
+import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
 import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
 import { tokenRepository } from '../database/repositories/tokenRepository'
 import { allowlist, getAllowlistedUser } from '../methods/allowlist'
@@ -24,18 +17,22 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const HOUR = 60 * 60 * 1000
 
     // Catch missing authorization header (OPTIONS requests)
-    if (!parameters.Authorization && !(parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']])) {
+    if (
+        !parameters.Authorization &&
+        !(parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']])
+    ) {
         return {
             status: 200,
-            headers: {}
+            headers: {},
         }
     }
 
     // Get active key
-    const activeKeys = await activeKeyRepository.find()
-    if (activeKeys.length != 1) {
-        throw new InconsistentDatabaseError('Too many active keys', 500)
-    }
+    const activeKeys = await activeKeyRepository.find({
+        where: {
+            use: 'sig',
+        },
+    })
     const activeKey = activeKeys[0]
 
     // Non Allowlisted Auth
@@ -44,10 +41,10 @@ export const getAuth: getAuthSignature = async (parameters) => {
         const tokenString = parseBearerToken(parameters.Authorization)
         const token = await tokenRepository.findOneOrFail({
             where: {
-                token: tokenString 
-            }
+                token: tokenString,
+            },
         })
-    
+
         if (!token.user) {
             throw new InconsistentDatabaseError(`Token has no associated user`, 500)
         }
@@ -55,19 +52,20 @@ export const getAuth: getAuthSignature = async (parameters) => {
         const user = token.user
 
         // Check if token is expired
-        if (token.expiresOn && new Date(token.expiresOn).getTime() < Date.now())
+        if (token.expiresOn && new Date(token.expiresOn).getTime() < Date.now()) {
             throw new ExpiredError(`Token is expired`, 401)
+        }
 
-        let jwt
+        let jwt: string
         // Check if token has a device
         if (token.device) {
             // Sign device token
             console.log(`signing jwt for device ${token.device}`)
-            jwt = await signDeviceToken(token.device, user, activeKey)
+            jwt = await signDeviceToken(token.device, user, activeKey, token.scopes)
         } else {
             // Sign user token
             console.log(`signing jwt for user ${user.username}`)
-            jwt = await signUserToken(user, activeKey)
+            jwt = await signUserToken(user, activeKey, token.scopes)
         }
 
         // Update token expiration time

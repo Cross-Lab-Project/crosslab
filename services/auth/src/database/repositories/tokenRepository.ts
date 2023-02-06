@@ -1,10 +1,10 @@
-import { AbstractRepository } from "./abstractRepository";
-import { Token } from "../../types/types";
-import { ScopeModel, TokenModel } from "../model";
-import { scopeRepository } from "./scopeRepository";
-import { AppDataSource } from "../dataSource";
-import { FindOptionsRelations } from "typeorm";
-import { userRepository } from "./userRepository";
+import { AbstractRepository } from './abstractRepository'
+import { Token } from '../../types/types'
+import { ScopeModel, TokenModel } from '../model'
+import { scopeRepository } from './scopeRepository'
+import { AppDataSource } from '../dataSource'
+import { FindOptionsRelations } from 'typeorm'
+import { userRepository } from './userRepository'
 
 export class TokenRepository extends AbstractRepository<TokenModel> {
     constructor() {
@@ -15,26 +15,26 @@ export class TokenRepository extends AbstractRepository<TokenModel> {
         this.repository = AppDataSource.getRepository(TokenModel)
     }
 
-    public async write(model: TokenModel, data: Token<"request">): Promise<void> {
+    public async write(model: TokenModel, data: Token<'request'>): Promise<void> {
         model.device = data.device
         model.expiresOn = data.expiresOn
         model.scopes = await Promise.all(
             data.scopes.map(async (scope) => {
-                return await scopeRepository.findOneOrFail({ 
+                return await scopeRepository.findOneOrFail({
                     where: {
-                        name: scope 
-                    }
+                        name: scope,
+                    },
                 })
             })
         )
         model.user = await userRepository.findOneOrFail({
             where: {
-                username: data.user
-            }
+                username: data.user,
+            },
         })
     }
 
-    public async format(_model: TokenModel): Promise<Token<"response">> {
+    public async format(_model: TokenModel): Promise<Token<'response'>> {
         return undefined
     }
 
@@ -44,10 +44,12 @@ export class TokenRepository extends AbstractRepository<TokenModel> {
         }
     }
 
-    protected getDefaultFindOptionsRelations(): FindOptionsRelations<TokenModel> | undefined {
+    protected getDefaultFindOptionsRelations():
+        | FindOptionsRelations<TokenModel>
+        | undefined {
         return {
             scopes: true,
-            user: true
+            user: true,
         }
     }
 }

@@ -13,14 +13,16 @@ export const postLogout: postLogoutSignature = async (body, user) => {
 
     const userModel = await userRepository.findOneOrFail({
         where: {
-            username: user.JWT?.username
+            username: user.JWT?.username,
         },
         relations: {
-            tokens: true
-        }
+            tokens: true,
+        },
     })
 
-    const tokenModel = (await userModel.tokens).find((tokenModel) => tokenModel.token === body.token)
+    const tokenModel = (await userModel.tokens).find(
+        (tokenModel) => tokenModel.token === body.token
+    )
     if (tokenModel) await tokenRepository.remove(tokenModel)
 
     console.log(`postLogout succeeded`)

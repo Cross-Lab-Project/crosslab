@@ -23,10 +23,10 @@ async function createUserToken(
     const tokenModel = await tokenRepository.create({
         user: userModel.username,
         scopes: [],
-        expiresOn: new Date(Date.now() + expiresIn).toISOString()
+        expiresOn: new Date(Date.now() + expiresIn).toISOString(),
     })
-    
-    userModel.tokens = await userModel.tokens ?? []
+
+    userModel.tokens = (await userModel.tokens) ?? []
     userModel.tokens.push(tokenModel)
 
     await userRepository.save(userModel)
@@ -41,8 +41,8 @@ async function createUserToken(
  */
 async function createUserTUI(username: string): Promise<UserModel> {
     const userModel = await userRepository.create({
-        username: "tui:" + username,
-        roles: [{ name: "user" }]
+        username: 'tui:' + username,
+        roles: [{ name: 'user' }],
     })
     userModel.tokens = []
     await userRepository.save(userModel)
@@ -59,10 +59,7 @@ async function createUserTUI(username: string): Promise<UserModel> {
  * @throws {LdapError} Thrown if ldap search does not return any entries.
  * @returns A token on successful login.
  */
-export async function loginTui(
-    username: string,
-    password: string
-): Promise<TokenModel> {
+export async function loginTui(username: string, password: string): Promise<TokenModel> {
     // Initialize Ldap Client
     const client = new LdapClient({
         url: 'ldaps://ldapauth.tu-ilmenau.de:636',
@@ -98,10 +95,10 @@ export async function loginTui(
     }
 
     // Find User with matching Username
-    let userModel = await userRepository.findOne({ 
-        where: { 
-            username: 'tui:' + username 
-        }
+    let userModel = await userRepository.findOne({
+        where: {
+            username: 'tui:' + username,
+        },
     })
 
     // Create new User if no User was found
@@ -125,15 +122,19 @@ export async function loginLocal(
     username: string,
     password: string
 ): Promise<TokenModel> {
-    const userModel = await userRepository.findOne({ 
+    const userModel = await userRepository.findOne({
         where: {
-            username 
-        }
+            username,
+        },
     })
 
     if (!userModel) throw new AuthenticationError(`Invalid login credentials`, 401)
 
-    if (!userModel.password) throw new AuthenticationError(`Password authentication not possible for this user`, 401)
+    if (!userModel.password)
+        throw new AuthenticationError(
+            `Password authentication not possible for this user`,
+            401
+        )
 
     if (!(await compare(password, userModel.password ?? "")))
         throw new AuthenticationError(`Invalid login credentials`, 401)
