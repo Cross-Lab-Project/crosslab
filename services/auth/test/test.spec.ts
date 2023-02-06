@@ -1,8 +1,8 @@
-// import methodsSuite from './methods/index.spec'
-// import databaseSuite from './database/index.spec'
-// import configSpec from './config.spec'
+import methodsSuite from './methods/index.spec'
+import databaseSuite from './database/index.spec'
+import configSpec from './config.spec'
 import operationsSuite from './operations/index.spec'
-// import generatedSuite from './generated/index.spec'
+import generatedSuite from './generated/index.spec'
 
 describe('Authentication Service Tests', function () {
     this.beforeAll(function () {
@@ -11,9 +11,9 @@ describe('Authentication Service Tests', function () {
         console.error = () => undefined
     })
 
-    // databaseSuite()
-    // methodsSuite()
-    // configSpec()
+    databaseSuite()
+    methodsSuite()
+    configSpec()
     operationsSuite()
-    // generatedSuite()
+    generatedSuite()
 })

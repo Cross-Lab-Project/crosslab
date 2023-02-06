@@ -27,7 +27,7 @@ get:
   x-optional-url: true
 post:
   operationId: create_user
-  summary: Create new user
+  summary: Create a user
   tags:
     - user
   security:
@@ -35,10 +35,11 @@ post:
       - users
       - users:create
   requestBody:
+    required: true
     description: User to be created.
     content:
       application/json:
-        $ref: "../content/user.yml"
+        $ref: "../content/user_init.yml"
   responses:
     201:
       description: The JSON representation of the created user.

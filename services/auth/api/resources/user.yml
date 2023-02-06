@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
   operationId: get_user
-  summary: Get user by username
+  summary: Get a user
   tags:
     - user
   security:
@@ -9,7 +9,7 @@ get:
       - users
       - users:list
   parameters:
-    - $ref: "../parameters/username.yml"
+    - $ref: "../parameters/user_id.yml"
   responses:
     200:
       description: The JSON respresentation of the user.
@@ -28,7 +28,7 @@ get:
       description: Server Error.
 patch:
   operationId: update_user
-  summary: Update user by username
+  summary: Update a user
   tags:
     - user
   security:
@@ -36,12 +36,12 @@ patch:
       - users
       - users:edit
   parameters:
-    - $ref: "../parameters/username.yml"
+    - $ref: "../parameters/user_id.yml"
   requestBody:
     description: Updated user
     content:
       application/json:
-        $ref: "../content/user.yml"
+        $ref: "../content/user_update.yml"
   responses:
     200:
       description: The JSON representation of the updated user.
@@ -60,7 +60,7 @@ patch:
       description: Server Error.
 delete:
   operationId: delete_user
-  summary: Delete user by username
+  summary: Delete a user
   tags:
     - user
   security:
@@ -68,7 +68,7 @@ delete:
       - users
       - users:create
   parameters:
-    - $ref: "../parameters/username.yml"
+    - $ref: "../parameters/user_id.yml"
   responses:
     204:
       description: User deleted successfully

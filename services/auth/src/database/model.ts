@@ -24,7 +24,7 @@ export class ScopeModel {
 
 @Entity()
 export class RoleModel {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     uuid!: string
 
     @Index({ unique: true })
@@ -32,16 +32,16 @@ export class RoleModel {
     name!: string
 
     @ManyToMany(() => UserModel, (user) => user.roles)
-    users!: Promise<UserModel[]> | UserModel[]
+    users!: UserModel[]
 
-    @ManyToMany(() => ScopeModel, { eager: true })
+    @ManyToMany(() => ScopeModel)
     @JoinTable()
     scopes!: ScopeModel[]
 }
 
 @Entity()
 export class UserModel {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn('uuid')
     uuid!: string
 
     @Index({ unique: true })
@@ -51,7 +51,7 @@ export class UserModel {
     @Column({ nullable: true })
     password?: string
 
-    @ManyToMany(() => RoleModel, (role) => role.users, { eager: true })
+    @ManyToMany(() => RoleModel, (role) => role.users)
     @JoinTable()
     roles!: RoleModel[]
 
@@ -59,7 +59,7 @@ export class UserModel {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    tokens!: Promise<TokenModel[]> | TokenModel[]
+    tokens!: TokenModel[]
 }
 
 @Entity()
@@ -73,10 +73,10 @@ export class TokenModel {
     @Column({ nullable: true })
     device?: string
 
-    @ManyToOne(() => UserModel, (user) => user.tokens, { eager: true })
+    @ManyToOne(() => UserModel, (user) => user.tokens)
     user!: UserModel
 
-    @ManyToMany(() => ScopeModel, { eager: true })
+    @ManyToMany(() => ScopeModel)
     @JoinTable()
     scopes!: ScopeModel[]
 }
@@ -107,7 +107,7 @@ export class ActiveKeyModel {
     @Column()
     use!: string
 
-    @ManyToOne(() => KeyModel, { eager: true })
+    @ManyToOne(() => KeyModel)
     key!: KeyModel
 }
 

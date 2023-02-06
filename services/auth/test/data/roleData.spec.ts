@@ -1,5 +1,6 @@
 import { RoleModel, UserModel } from '../../src/database/model'
 import { Role } from '../../src/generated/types'
+import { roleUrlFromId } from '../../src/methods/utils'
 import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
@@ -34,11 +35,14 @@ const roleDataWithLinks: RoleDataWithLinks = {
             scopes: ['scope 1', 'scope 2', 'scope 3', 'scope 4', 'scope 5'],
         },
         model: {
+            uuid: '1c7d1e81-a902-464a-b8ba-5a5c88a5ceb4',
             name: 'superadmin',
             scopes: ['scope 1', 'scope 2', 'scope 3', 'scope 4', 'scope 5'],
             users: ['superadmin'],
         },
         response: {
+            id: '1c7d1e81-a902-464a-b8ba-5a5c88a5ceb4',
+            url: roleUrlFromId('1c7d1e81-a902-464a-b8ba-5a5c88a5ceb4'),
             name: 'superadmin',
             scopes: ['scope 1', 'scope 2', 'scope 3', 'scope 4', 'scope 5'],
         },
@@ -49,11 +53,18 @@ const roleDataWithLinks: RoleDataWithLinks = {
             scopes: ['scope 1', 'scope 2', 'scope 3'],
         },
         model: {
+            uuid: 'a386a9cf-04a3-424b-a78b-4f81eb6ea6eb',
             name: 'user',
             scopes: ['scope 1', 'scope 2', 'scope 3'],
-            users: ['superadmin'],
+            users: [
+                'GET /auth user',
+                'POST /device_authentication_token user',
+                'POST /logout user',
+            ],
         },
         response: {
+            id: 'a386a9cf-04a3-424b-a78b-4f81eb6ea6eb',
+            url: roleUrlFromId('a386a9cf-04a3-424b-a78b-4f81eb6ea6eb'),
             name: 'user',
             scopes: ['scope 1', 'scope 2', 'scope 3'],
         },
@@ -64,11 +75,14 @@ const roleDataWithLinks: RoleDataWithLinks = {
             scopes: [],
         },
         model: {
+            uuid: '3bf24ecb-78af-4193-87c7-ccc531c24d57',
             name: 'deviceservice',
             scopes: [],
             users: ['deviceservice'],
         },
         response: {
+            id: '3bf24ecb-78af-4193-87c7-ccc531c24d57',
+            url: roleUrlFromId('3bf24ecb-78af-4193-87c7-ccc531c24d57'),
             name: 'deviceservice',
             scopes: [],
         },

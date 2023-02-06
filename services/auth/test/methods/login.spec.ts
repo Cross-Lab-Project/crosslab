@@ -38,6 +38,7 @@ export default () =>
 
             it('should create a user token correctly', async function () {
                 const USER: UserModel = {
+                    uuid: 'e317fdff-14e8-447b-89f3-799d0773509c',
                     username: 'username',
                     roles: [],
                     tokens: [],
@@ -55,8 +56,8 @@ export default () =>
                 const result = await loginModule.__get__('createUserToken')(USER)
 
                 assert(result.user === USER)
-                assert((await USER.tokens).length === 1)
-                assert((await USER.tokens)[0] === TOKEN)
+                assert(USER.tokens.length === 1)
+                assert(USER.tokens[0] === TOKEN)
                 assert(userRepositorySaveStub.called)
             })
 
@@ -108,6 +109,7 @@ export default () =>
             it('should create a tui user correctly', async function () {
                 const USERNAME = 'username'
                 const USER: UserModel = {
+                    uuid: 'fbdd1a75-c92e-495d-883a-b771b6e95577',
                     username: 'tui:' + USERNAME,
                     roles: [],
                     tokens: [],
@@ -181,6 +183,7 @@ export default () =>
                 })
                 userRepositoryFindOneStub.returns(
                     Promise.resolve({
+                        uuid: '75f565d6-8eb0-42f3-be07-efc02a907daa',
                         username: USERNAME,
                         roles: [],
                         tokens: [],
@@ -209,6 +212,7 @@ export default () =>
                 })
                 userRepositoryFindOneStub.resolves(null)
                 createUserTUIStub.resolves({
+                    uuid: 'd1ded2f7-45c9-4e5f-8c7c-378a2e10ee62',
                     username: 'tui:' + USERNAME,
                     roles: [],
                     tokens: [],
@@ -298,6 +302,7 @@ export default () =>
 
             it('should login with local account with correct credentials', async function () {
                 userRepositoryFindOneStub.resolves({
+                    uuid: '29e51332-8d29-4add-b068-18e8eb863598',
                     username: USERNAME,
                     roles: [],
                     tokens: [],
@@ -327,6 +332,7 @@ export default () =>
 
             it('should throw an AuthenticationError if the provided password is incorrect', async function () {
                 userRepositoryFindOneStub.resolves({
+                    uuid: '848ed2ba-a6bc-4145-899a-848181a541a1',
                     username: USERNAME,
                     roles: [],
                     tokens: [],
@@ -343,6 +349,7 @@ export default () =>
 
             it('should throw an AuthenticationError if the user cannot be logged in via username and password', async function () {
                 userRepositoryFindOneStub.resolves({
+                    uuid: '962356be-597c-4c4e-9e53-a3c81a5dab1a',
                     username: USERNAME,
                     roles: [],
                     tokens: [],

@@ -1,13 +1,14 @@
 import assert from 'assert'
 import { compareSync } from 'bcryptjs'
 import { FindOptionsWhere } from 'typeorm'
-import { config } from '../../../src/config'
 import { UserModel } from '../../../src/database/model'
 import { UserRepository } from '../../../src/database/repositories/userRepository'
-import { User } from '../../../src/generated/types'
+import { User, UserInit, UserUpdate } from '../../../src/generated/types'
 import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 import Mocha from 'mocha'
 import { roleRepositoryTestSuite } from './roleRepository.spec'
+import { userNames } from '../../data/userData.spec'
+import { userUrlFromId } from '../../../src/methods/utils'
 
 class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
     constructor() {
@@ -123,32 +124,43 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
                     assert(JSON.stringify(userModel.roles) === oldRoles)
                 })
         )
+
+        // replace save test suite because of unique username index
+        this.testSuites!.save.tests = this.testSuites!.save.tests.filter(
+            (test) => test.title !== 'should save a valid model'
+        )
+        this.addTestToSuite(
+            'save',
+            (data) =>
+                new Mocha.Test('should save a valid model', async function () {
+                    for (const key of userNames) {
+                        const username = 'new:' + data.entityData[key].request.username!
+                        const password = data.entityData[key].request.password!
+                        const newData = { username, password }
+                        const model = await data.repository.create(newData)
+                        assert(data.validateCreate(model, newData))
+                        const savedModel = await data.repository.save(model)
+                        assert(data.compareModels(model, savedModel))
+                    }
+                })
+        )
     }
 
-    validateCreate(model: UserModel, data?: User<'request'>): boolean {
+    validateCreate(model: UserModel, data?: UserInit<'request'>): boolean {
         if (data) return this.validateWrite(model, data)
 
         assert(model.password === undefined)
-        assert(model.roles === undefined)
+        assert(model.roles.length === 0)
         assert(model.tokens === undefined)
         assert(model.username === undefined)
 
         return true
     }
 
-    validateWrite(model: UserModel, data: User<'request'>): boolean {
+    validateWrite(model: UserModel, data: UserUpdate<'request'>): boolean {
         if (data.password) {
             assert(model.password)
             assert(compareSync(data.password, model.password))
-        }
-
-        if (data.roles) {
-            for (const role of model.roles) {
-                assert(data.roles.find((r) => r.name === role.name))
-            }
-            for (const role of data.roles) {
-                assert(model.roles.find((r) => r.name === role.name))
-            }
         }
 
         // TODO: check how to handle tokens here
@@ -160,22 +172,20 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
 
     validateFormat(model: UserModel, data: User<'response'>): boolean {
         assert(!data.password)
-        assert(Array.isArray(data.roles))
 
-        for (const role of model.roles) {
-            assert(data.roles.find((r) => r.name === role.name))
-        }
-        for (const role of data.roles) {
-            assert(model.roles.find((r) => r.name === role.name))
+        if (data.roles) {
+            assert(Array.isArray(data.roles))
+            for (const role of model.roles) {
+                assert(data.roles.find((r) => r.name === role.name))
+            }
+            for (const role of data.roles) {
+                assert(model.roles.find((r) => r.name === role.name))
+            }
         }
 
-        assert(
-            data.url ===
-                `${config.BASE_URL}${config.BASE_URL.endsWith('/') ? '' : '/'}users/${
-                    model.username
-                }`
-        )
+        assert(data.url === userUrlFromId(model.uuid))
         assert(data.username === model.username)
+        assert(data.id === model.uuid)
 
         return true
     }
@@ -186,9 +196,11 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
         complete?: boolean
     ): boolean {
         if (!complete) {
-            return firstModel.username === secondModel.username
+            return firstModel.uuid === secondModel.uuid
         }
 
+        assert(firstModel.uuid === secondModel.uuid)
+        assert(firstModel.username === secondModel.username)
         assert(firstModel.password === secondModel.password)
 
         for (const role of firstModel.roles) {
@@ -200,33 +212,14 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
 
         // TODO: assert that tokens are identical
 
-        assert(firstModel.username === secondModel.username)
-
         return true
     }
 
     compareFormatted(first: User<'response'>, second: User<'response'>): boolean {
+        if (first.id !== second.id) return false
         if (first.url !== second.url) return false
-
         if (first.username !== second.username) return false
-
-        for (const role of first.roles ?? []) {
-            if (
-                !second.roles?.find((r) =>
-                    roleRepositoryTestSuite.compareFormatted(r, role)
-                )
-            )
-                return false
-        }
-
-        for (const role of second.roles ?? []) {
-            if (
-                !first.roles?.find((r) =>
-                    roleRepositoryTestSuite.compareFormatted(r, role)
-                )
-            )
-                return false
-        }
+        // if (first.roles !== undefined || second.roles !== undefined) return false
 
         return true
     }

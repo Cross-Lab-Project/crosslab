@@ -36,9 +36,15 @@ paths:
     $ref: "./resources/device_authentication_token.yml"
   /users:
     $ref: "./resources/users.yml"
-  /users/{username}:
+  /users/{user_id}:
     $ref: "./resources/user.yml"
-  /users/{username}/roles/{role_name}:
-    $ref: "./resources/user_role.yml"
+  /users/{user_id}/roles:
+    $ref: "./resources/user_roles.yml"
+  /roles:
+    $ref: "./resources/roles.yml"
+  /roles/{role_id}:
+    $ref: "./resources/role.yml"
+  /roles/{role_id}/users:
+    $ref: "./resources/role_users.yml"
   /identity:
     $ref: "./resources/identity.yml"

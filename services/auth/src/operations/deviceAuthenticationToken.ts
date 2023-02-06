@@ -18,9 +18,6 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             where: {
                 username: user.JWT?.username,
             },
-            relations: {
-                tokens: true,
-            },
         })
 
         const device = await getDevice(parameters.device_url)
@@ -38,8 +35,6 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             device: device.url,
         })
 
-        // TODO: replace with function maybe?
-        userModel.tokens = await userModel.tokens
         userModel.tokens.push(tokenModel)
 
         await userRepository.save(userModel)

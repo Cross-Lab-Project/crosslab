@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
 in: path
-name: username
-description: Username of a user.
+name: role_id
+description: ID of a role.
 required: true
 schema:
   type: string

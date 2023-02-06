@@ -9,7 +9,7 @@ import {
     signDeviceToken,
     signUserToken,
 } from '../../src/methods/auth'
-import { userUrlFromUsername } from '../../src/methods/utils'
+import { userUrlFromId } from '../../src/methods/utils'
 
 export default () =>
     describe('auth methods', async function () {
@@ -35,9 +35,11 @@ export default () =>
             TEST_SCOPE_1 = 'Test Scope 1'
             TEST_SCOPE_2 = 'Test Scope 2'
             TEST_USER = {
+                uuid: '7a4cd9c8-1de7-4b61-a049-2c34f7353c55',
                 username: 'username',
                 roles: [
                     {
+                        uuid: '0001bab1-c4dc-47b2-afe1-ba8d7d26d3d5',
                         name: 'Test Role 1',
                         scopes: [
                             {
@@ -47,6 +49,7 @@ export default () =>
                         users: [],
                     },
                     {
+                        uuid: 'f51acfdd-4a0f-4ade-8779-2b6caee7a7ce',
                         name: 'Test Role 2',
                         scopes: [
                             {
@@ -108,9 +111,7 @@ export default () =>
 
                 assert(verfifiedJWT.payload.iat && verfifiedJWT.payload.exp)
                 assert(verfifiedJWT.payload.exp - verfifiedJWT.payload.iat === 7200)
-                assert(
-                    verfifiedJWT.payload.url === userUrlFromUsername(TEST_USER.username)
-                )
+                assert(verfifiedJWT.payload.url === userUrlFromId(TEST_USER.uuid))
                 assert(verfifiedJWT.payload.username === TEST_USER.username)
                 assert(Array.isArray(verfifiedJWT.payload.scopes))
                 assert(verfifiedJWT.payload.scopes.length === 2)
@@ -141,9 +142,7 @@ export default () =>
 
                 assert(verfifiedJWT.payload.iat && verfifiedJWT.payload.exp)
                 assert(verfifiedJWT.payload.exp - verfifiedJWT.payload.iat === 7200)
-                assert(
-                    verfifiedJWT.payload.url === userUrlFromUsername(TEST_USER.username)
-                )
+                assert(verfifiedJWT.payload.url === userUrlFromId(TEST_USER.uuid))
                 assert(verfifiedJWT.payload.username === TEST_USER.username)
                 assert(verfifiedJWT.payload.device === TEST_DEVICE_URL)
                 assert(Array.isArray(verfifiedJWT.payload.scopes))

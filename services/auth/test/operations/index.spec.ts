@@ -7,14 +7,16 @@ import identityTests from './identity/index.spec'
 import loginTests from './login/index.spec'
 import logoutTests from './logout/index.spec'
 import usersTests from './users/index.spec'
+import roleTests from './roles/index.spec'
 
 const tests = [
-    // ...authTests,
-    // ...deviceAuthenticationTokenTests,
-    // ...identityTests,
-    // ...loginTests,
-    // ...logoutTests,
+    ...authTests,
+    ...deviceAuthenticationTokenTests,
+    ...identityTests,
+    ...loginTests,
+    ...logoutTests,
     ...usersTests,
+    ...roleTests,
 ]
 
 export default function () {

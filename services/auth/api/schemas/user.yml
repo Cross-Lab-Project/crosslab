@@ -6,6 +6,9 @@ properties:
     type: string
     format: uri
     readOnly: true
+  id:
+    type: string
+    readOnly: true
   username:
     type: string
   password:

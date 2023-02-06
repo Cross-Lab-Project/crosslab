@@ -1,22 +1,19 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
-put:
-  operationId: add_role_to_user
-  summary: Add new role to user
+get:
+  operationId: list_roles
+  summary: Get all roles
   tags:
-    - user
+    - role
   security:
     - JWT:
-      - users
-      - users:edit
-  parameters:
-    - $ref: "../parameters/username.yml"
-    - $ref: "../parameters/role_name.yml"
+      - roles
+      - roles:list
   responses:
     200:
-      description: The JSON representation of the updated user.
+      description: The JSON representation of the roles.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: "../content/role_list.yml"
     400:
       description: Bad Request.
     401:
@@ -27,23 +24,27 @@ put:
       description: Resource not found.
     500:
       description: Server Error.
-  x-build-url: true
   x-optional-url: true
-delete:
-  operationId: remove_role_from_user
-  summary: Delete role from user
+post:
+  operationId: create_role
+  summary: Create a role
   tags:
-    - user
+    - role
   security:
     - JWT:
-      - users
-      - users:edit
-  parameters:
-    - $ref: "../parameters/username.yml"
-    - $ref: "../parameters/role_name.yml"
+      - roles
+      - roles:create
+  requestBody:
+    description: Role to be created.
+    content:
+      application/json:
+        $ref: "../content/role_init.yml"
   responses:
-    204:
-      description: Role deleted successfully from user.
+    201:
+      description: The JSON representation of the created role.
+      content:
+        application/json:
+          $ref: "../content/role.yml"
     400:
       description: Bad Request.
     401:
@@ -54,5 +55,4 @@ delete:
       description: Resource not found.
     500:
       description: Server Error.
-  x-build-url: true
   x-optional-url: true

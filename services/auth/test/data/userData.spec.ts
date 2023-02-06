@@ -1,6 +1,6 @@
-import { config } from '../../src/config'
 import { UserModel } from '../../src/database/model'
 import { User } from '../../src/generated/types'
+import { userUrlFromId } from '../../src/methods/utils'
 import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveRole, RoleName } from './roleData.spec'
 import { resolveToken, TokenName } from './tokenData.spec'
@@ -39,9 +39,9 @@ const userDataWithLinks: UserDataWithLinks = {
         request: {
             username: 'superadmin',
             password: 'superadmin',
-            roles: ['superadmin', 'user'],
         },
         model: {
+            uuid: '6dcb9c40-b0bd-496a-b5a6-cfd3570d8131',
             username: 'superadmin',
             password: '$2a$10$jA9acOfIQxpzj6X50TcDPugDOb4gXLvdsyEVl.9WUDns1jk565dJS',
             roles: ['superadmin', 'user'],
@@ -52,11 +52,9 @@ const userDataWithLinks: UserDataWithLinks = {
             ],
         },
         response: {
-            url: `${config.BASE_URL}${
-                config.BASE_URL.endsWith('/') ? '' : '/'
-            }users/superadmin`,
+            id: '6dcb9c40-b0bd-496a-b5a6-cfd3570d8131',
+            url: userUrlFromId('6dcb9c40-b0bd-496a-b5a6-cfd3570d8131'),
             username: 'superadmin',
-            roles: ['superadmin', 'user'],
         },
     },
     deviceservice: {
@@ -65,26 +63,25 @@ const userDataWithLinks: UserDataWithLinks = {
             password: 'deviceservice',
         },
         model: {
+            uuid: 'd2389a10-e9f4-4153-8f25-a7018b8ca3df',
             username: 'deviceservice',
             password: '$2a$10$KHBOyR7Sc0DNuKDAf1.Yv.zVnlhwxiarYO7WGoTyLjKxMeHfuhbKm',
             roles: ['deviceservice'],
             tokens: [],
         },
         response: {
-            url: `${config.BASE_URL}${
-                config.BASE_URL.endsWith('/') ? '' : '/'
-            }users/deviceservice`,
+            id: 'd2389a10-e9f4-4153-8f25-a7018b8ca3df',
+            url: userUrlFromId('d2389a10-e9f4-4153-8f25-a7018b8ca3df'),
             username: 'deviceservice',
-            roles: ['deviceservice'],
         },
     },
     'GET /auth user': {
         request: {
             username: 'getauthuser',
             password: '843fdh8qhq2',
-            roles: ['user'],
         },
         model: {
+            uuid: 'cd6c537f-86e7-45a4-8d8e-eece4d46c78d',
             username: 'getauthuser',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
@@ -95,51 +92,45 @@ const userDataWithLinks: UserDataWithLinks = {
             ],
         },
         response: {
-            url: `${config.BASE_URL}${
-                config.BASE_URL.endsWith('/') ? '' : '/'
-            }users/getauthuser`,
+            id: 'cd6c537f-86e7-45a4-8d8e-eece4d46c78d',
+            url: userUrlFromId('cd6c537f-86e7-45a4-8d8e-eece4d46c78d'),
             username: 'getauthuser',
-            roles: ['user'],
         },
     },
     'POST /device_authentication_token user': {
         request: {
             username: 'postdeviceauthenticationtoken',
             password: '843fdh8qhq2',
-            roles: ['user'],
         },
         model: {
+            uuid: '50ccf56b-6032-4d92-9e33-75392912c96e',
             username: 'postdeviceauthenticationtoken',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
             tokens: [],
         },
         response: {
-            url: `${config.BASE_URL}${
-                config.BASE_URL.endsWith('/') ? '' : '/'
-            }users/postdeviceauthenticationtoken`,
+            id: '50ccf56b-6032-4d92-9e33-75392912c96e',
+            url: userUrlFromId('50ccf56b-6032-4d92-9e33-75392912c96e'),
             username: 'postdeviceauthenticationtoken',
-            roles: ['user'],
         },
     },
     'POST /logout user': {
         request: {
             username: 'postlogoutuser',
             password: '843fdh8qhq2',
-            roles: ['user'],
         },
         model: {
+            uuid: '3762b0ee-7032-4c79-82e6-f42f91298799',
             username: 'postlogoutuser',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
             tokens: ['POST /logout valid user token'],
         },
         response: {
-            url: `${config.BASE_URL}${
-                config.BASE_URL.endsWith('/') ? '' : '/'
-            }users/postlogoutuser`,
+            id: '3762b0ee-7032-4c79-82e6-f42f91298799',
+            url: userUrlFromId('3762b0ee-7032-4c79-82e6-f42f91298799'),
             username: 'postlogoutuser',
-            roles: ['user'],
         },
     },
 }
@@ -164,12 +155,6 @@ export function prepareUserData(): UserData {
         }
     }
     for (const key of userNames) {
-        userData[key]!.request!.roles = userDataWithLinks[key].request.roles
-            ? userDataWithLinks[key].request.roles?.map(
-                  (roleName) => resolveRole(roleName, userData).request
-              )
-            : undefined
-
         userData[key]!.model!.roles = userDataWithLinks[key].model.roles
             ? userDataWithLinks[key].model.roles.map(
                   (roleName) => resolveRole(roleName, userData).model
@@ -178,12 +163,6 @@ export function prepareUserData(): UserData {
         userData[key]!.model!.tokens = userDataWithLinks[key].model.tokens
             ? userDataWithLinks[key].model.tokens.map(
                   (tokenName) => resolveToken(tokenName, userData).model
-              )
-            : []
-
-        userData[key]!.response!.roles = userDataWithLinks[key].response.roles
-            ? userDataWithLinks[key].response.roles?.map(
-                  (roleName) => resolveRole(roleName, userData).response
               )
             : []
     }

@@ -3,7 +3,7 @@ import { SignJWT, JWTPayload, importJWK } from 'jose'
 import { config } from '../config'
 import { UserType } from '../generated/types'
 import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
-import { userUrlFromUsername } from './utils'
+import { userUrlFromId } from './utils'
 
 /**
  * This function signs a JWT.
@@ -39,7 +39,7 @@ export async function signUserToken(
 ): Promise<string> {
     return await sign<UserType>(
         {
-            url: userUrlFromUsername(user.username),
+            url: userUrlFromId(user.uuid),
             username: user.username,
             scopes:
                 scopes?.map((scope) => scope.name) ??
@@ -68,7 +68,7 @@ export async function signDeviceToken(
 ): Promise<string> {
     return await sign<UserType>(
         {
-            url: userUrlFromUsername(user.username),
+            url: userUrlFromId(user.uuid),
             username: user.username,
             device: deviceUrl,
             scopes:

@@ -15,6 +15,7 @@ import { TestData } from '../../data/index.spec'
 import * as sinon from 'sinon'
 import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
 import Mocha from 'mocha'
+import { userUrlFromId } from '../../../src/methods/utils'
 
 async function JWTVerify(authorization: string, scopes: string[]) {
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
@@ -61,12 +62,7 @@ async function JWTVerify(authorization: string, scopes: string[]) {
 async function checkJWTByTokenModel(authorization: string, token: TokenModel) {
     for (const scope of token.scopes) {
         const payload = await JWTVerify(authorization, [scope.name])
-        assert(
-            (payload as any).url ===
-                `${config.BASE_URL}${config.BASE_URL.endsWith('/') ? '' : '/'}users/${
-                    token.user.username
-                }`
-        )
+        assert((payload as any).url === userUrlFromId(token.user.uuid))
         assert((payload as any).username === token.user.username)
 
         for (const _scope of token.scopes) {
@@ -82,12 +78,7 @@ async function checkJWTByUserModel(authorization: string, user: UserModel) {
     const scopes = user.roles.flatMap((role) => role.scopes)
     for (const scope of scopes) {
         const payload = await JWTVerify(authorization, [scope.name])
-        assert(
-            (payload as any).url ===
-                `${config.BASE_URL}${config.BASE_URL.endsWith('/') ? '' : '/'}users/${
-                    user.username
-                }`
-        )
+        assert((payload as any).url === userUrlFromId(user.uuid))
         assert((payload as any).username === user.username)
 
         for (const _scope of scopes) {

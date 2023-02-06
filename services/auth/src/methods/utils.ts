@@ -10,12 +10,19 @@ export function capitalizeFirstLetter(string: string) {
 }
 
 /**
- * This function builds the url of an user using its username.
- * @param username The username of the user.
+ * This function builds the url of a user using its id.
+ * @param id The id of the user.
  * @returns The url of the user.
  */
-export function userUrlFromUsername(username: string): string {
-    return (
-        config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'users/' + username
-    )
+export function userUrlFromId(id: string): string {
+    return config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'users/' + id
+}
+
+/**
+ * This function builds the url of a role using its id.
+ * @param id The id of the role.
+ * @returns The url of the role.
+ */
+export function roleUrlFromId(id: string): string {
+    return config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'roles/' + id
 }

@@ -167,6 +167,10 @@ async function createDefaultScopesAndRoles() {
         { name: 'users:create', roles: 'all' },
         { name: 'users:edit', roles: 'all' },
         { name: 'users:list', roles: 'all' },
+        { name: 'roles', roles: 'all' },
+        { name: 'roles:create', roles: 'all' },
+        { name: 'roles:edit', roles: 'all' },
+        { name: 'roles:list', roles: 'all' },
         { name: 'device_token', roles: 'all' },
         { name: 'device_token:create', roles: 'all' },
         { name: 'logout', roles: 'all' },
@@ -196,7 +200,7 @@ async function createDefaultSuperadminUser() {
         },
     })
 
-    if ((await roleSuperadmin.users).length === 0) {
+    if (roleSuperadmin.users.length === 0) {
         const user = userRepository.create()
         user.username = 'superadmin'
         user.password = await hash('superadmin', 10)

@@ -1,10 +1,9 @@
 import { hash } from 'bcryptjs'
 import { AbstractRepository } from './abstractRepository'
-import { User } from '../../generated/types'
-import { userUrlFromUsername } from '../../methods/utils'
+import { User, UserInit, UserUpdate } from '../../generated/types'
+import { userUrlFromId } from '../../methods/utils'
 import { AppDataSource } from '../dataSource'
 import { RoleModel, UserModel } from '../model'
-import { roleRepository } from './roleRepository'
 import { tokenRepository } from './tokenRepository'
 import { FindOptionsRelations } from 'typeorm'
 
@@ -17,40 +16,30 @@ export class UserRepository extends AbstractRepository<UserModel> {
         this.repository = AppDataSource.getRepository(UserModel)
     }
 
-    public async create(data?: User<'request'>): Promise<UserModel> {
-        const userModel = await super.create(data)
-        if (!userModel.roles) userModel.roles = []
+    public async create(data?: UserInit<'request'>): Promise<UserModel> {
+        const model = await super.create(data)
+        model.roles = []
 
-        return userModel
+        return model
     }
 
-    public async write(model: UserModel, data: User<'request'>): Promise<void> {
+    public async write(model: UserModel, data: UserUpdate<'request'>): Promise<void> {
         if (data.username) model.username = data.username
         if (data.password) model.password = await hash(data.password, 10)
-        if (data.roles) {
-            model.roles = []
-            const roleRepository = AppDataSource.getRepository(RoleModel)
-            for (const role of data.roles) {
-                const roleModel = await roleRepository.findOneByOrFail({
-                    name: role.name,
-                })
-                this.addRoleModelToUserModel(model, roleModel)
-            }
-        }
     }
 
     public async format(model: UserModel): Promise<User<'response'>> {
         return {
-            url: userUrlFromUsername(model.username),
+            url: userUrlFromId(model.uuid),
+            id: model.uuid,
             username: model.username,
-            roles: await Promise.all(model.roles.map(roleRepository.format)),
         }
     }
 
     public async remove(model: UserModel): Promise<void> {
         if (!this.repository) this.throwUninitializedRepositoryError()
 
-        for (const tokenModel of await model.tokens) {
+        for (const tokenModel of model.tokens) {
             await tokenRepository.remove(tokenModel)
         }
 
@@ -58,7 +47,7 @@ export class UserRepository extends AbstractRepository<UserModel> {
     }
 
     public addRoleModelToUserModel(userModel: UserModel, roleModel: RoleModel): void {
-        if (!userModel.roles.find((role) => role.name === roleModel.name)) {
+        if (!userModel.roles.find((role) => role.uuid === roleModel.uuid)) {
             userModel.roles.push(roleModel)
         }
     }
@@ -67,10 +56,10 @@ export class UserRepository extends AbstractRepository<UserModel> {
         userModel: UserModel,
         roleModel: RoleModel
     ): void {
-        let index = userModel.roles.findIndex((role) => role.name === roleModel.name)
+        let index = userModel.roles.findIndex((role) => role.uuid === roleModel.uuid)
         while (index !== -1) {
             userModel.roles.splice(index, 1)
-            index = userModel.roles.findIndex((role) => role.name === roleModel.name)
+            index = userModel.roles.findIndex((role) => role.uuid === roleModel.uuid)
         }
     }
 
@@ -78,7 +67,9 @@ export class UserRepository extends AbstractRepository<UserModel> {
         | FindOptionsRelations<UserModel>
         | undefined {
         return {
-            roles: true,
+            roles: {
+                scopes: true,
+            },
             tokens: true,
         }
     }

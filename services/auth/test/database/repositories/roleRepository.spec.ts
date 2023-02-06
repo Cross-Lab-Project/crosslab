@@ -5,6 +5,8 @@ import { Role } from '../../../src/generated/types'
 import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 import Mocha from 'mocha'
 import { scopeRepositoryTestSuite } from './scopeRepository.spec'
+import { roleNames } from '../../data/roleData.spec'
+import { RoleRepository } from '../../../src/database/repositories/roleRepository'
 
 class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
     constructor() {
@@ -13,6 +15,68 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
 
     public async initialize(): Promise<void> {
         await super.initialize()
+        this.addTestToSuite(
+            'additional',
+            (data) =>
+                new Mocha.Test(
+                    'should add user to role only if user is not already present',
+                    async function () {
+                        const repository = data.repository as RoleRepository
+                        const roleModel: RoleModel = await repository.save({
+                            ...data.entityData.user.model,
+                        })
+
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length > 0)
+
+                        const userModel = roleModel.users[0]
+                        roleModel.users = []
+
+                        repository.addUserModelToRoleModel(roleModel, userModel)
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length === 1)
+                        assert(roleModel.users[0] === userModel)
+
+                        repository.addUserModelToRoleModel(roleModel, userModel)
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length === 1)
+                        assert(roleModel.users[0] === userModel)
+                    }
+                )
+        )
+        this.addTestToSuite(
+            'additional',
+            (data) =>
+                new Mocha.Test(
+                    'should remove user from role only if user is present',
+                    async function () {
+                        const repository = data.repository as RoleRepository
+                        const roleModel: RoleModel = await repository.save({
+                            ...data.entityData.user.model,
+                        })
+
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length > 0)
+
+                        const userModel = roleModel.users[0]
+                        const oldLength = roleModel.users.length
+
+                        repository.removeUserModelFromRoleModel(roleModel, userModel)
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length === oldLength - 1)
+                        assert(
+                            !roleModel.users.find((user) => user.uuid === userModel.uuid)
+                        )
+
+                        repository.removeUserModelFromRoleModel(roleModel, userModel)
+                        assert(Array.isArray(roleModel.users))
+                        assert(roleModel.users.length === oldLength - 1)
+                        assert(
+                            !roleModel.users.find((user) => user.uuid === userModel.uuid)
+                        )
+                    }
+                )
+        )
         this.addTestToSuite(
             'additional',
             (data) =>
@@ -39,14 +103,35 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
                     }
                 )
         )
+
+        // replace save test suite because of unique name index
+        this.testSuites!.save.tests = this.testSuites!.save.tests.filter(
+            (test) => test.title !== 'should save a valid model'
+        )
+        this.addTestToSuite(
+            'save',
+            (data) =>
+                new Mocha.Test('should save a valid model', async function () {
+                    for (const key of roleNames) {
+                        const name = 'new:' + data.entityData[key].request.name!
+                        const scopes = data.entityData[key].request.scopes!
+                        const newData = { name, scopes }
+                        const model = await data.repository.create(newData)
+                        assert(data.validateCreate(model, newData))
+                        const savedModel = await data.repository.save(model)
+                        assert(data.compareModels(model, savedModel))
+                    }
+                })
+        )
     }
 
     validateCreate(model: RoleModel, data?: Role<'request'>): boolean {
         if (data) return this.validateWrite(model, data)
 
+        assert(model.uuid === undefined)
         assert(model.name === undefined)
         assert(model.scopes === undefined)
-        assert(model.users === undefined)
+        assert(model.users.length === 0)
 
         return true
     }
@@ -67,7 +152,6 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
                 )
             }
         }
-        assert(model.users === undefined, "Property 'users' is defined")
         return true
     }
 
