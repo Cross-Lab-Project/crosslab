@@ -236,11 +236,23 @@ clients/soa_services/file/js:
 integration-test:
   - script: lint
     dependencies:
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
     - clients/api/js:build
     - clients/soa/js:build
     - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build
   - script: test
     dependencies:
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
     - clients/api/js:build
     - clients/soa/js:build
     - clients/soa_services/electricalConnection/js:build

@@ -46,11 +46,26 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
 
+    --no-upload)
+      SKIP_UPLOAD=true
+      shift
+      ;;
+
     --script)
       if [ -z "$SCRIPT" ]; then
         SCRIPT="$2"
       else
         SCRIPT="$SCRIPT $2"
+      fi
+      shift # past argument
+      shift # past value
+      ;;
+
+    --tag)
+      if [ -z "$TAGS" ]; then
+        TAGS="$2"
+      else
+        TAGS="$TAGS $2"
       fi
       shift # past argument
       shift # past value
@@ -111,6 +126,21 @@ while true; do
         fi
       done
       if [ $is_in_script = false ]; then
+        status[$job]="skipped"
+        continue
+      fi
+    fi
+
+    # skip if tag is not in TAGS
+    if [ ! -z "$TAGS" ]; then
+      is_in_tags=false
+      for t in $TAGS; do
+        if [ ${tags[$job]} = $t ]; then
+          is_in_tags=true
+          break
+        fi
+      done
+      if [ $is_in_tags = false ]; then
         status[$job]="skipped"
         continue
       fi

@@ -53,7 +53,7 @@ for raw_job in $raw_jobs; do
   d=${d/[\"/}
   d=${d/\"]/}
   d=${d//\",\"/$'\n'}
-  d=${d/null/}
+  d=${d/null/default}
   tags[$job_name]=$d
 done
 IFS=$oldIFS
