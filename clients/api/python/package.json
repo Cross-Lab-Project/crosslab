@@ -9,7 +9,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration/dist/npm-latest.tgz",
+    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "nodemon": "^2.0.20"
   }
 }

@@ -45,7 +45,7 @@ function get_local_dependencies() {
 
     # for each dependency, recursively call this function
     for dependency in $dependencies; do
-        d=$(get_local_dependencies $(dirname $dependency)/../package.json)
+        d=$(get_local_dependencies $(dirname $dependency)/package.json)
         # prefix dependency path to each line
         d=$(echo "$d" | sed 's~^~'$dependency/'~')
         # append to dependencies
@@ -62,7 +62,7 @@ function get_local_dependencies() {
 
 # copy dependencies to dist folder
 for dependency in $(get_local_dependencies package.json); do
-    cp $(readlink -f $dependency) .packages/
+    cp $(readlink -f $dependency/dist/npm-latest.tgz) .packages/
 done
 
 cp $(readlink -f ./dist/npm-latest.tgz) .packages/ | true

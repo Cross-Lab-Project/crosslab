@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 
-npm ci --install-links
+npm ci
 npm run lint

@@ -5,7 +5,7 @@ SCRIPT_DIR=$(dirname "$0")
 
 rm -rf node_modules
 
-npm ci --install-links
+npm ci
 npm run build
 
 mkdir -p dist

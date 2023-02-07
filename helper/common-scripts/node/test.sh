@@ -1,4 +1,4 @@
 #!/bin/sh
 
-npm ci --install-links
+npm ci
 npm run test

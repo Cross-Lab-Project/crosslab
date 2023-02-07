@@ -206,6 +206,14 @@ while true; do
         fi
 
         echo_end "${BLUE}running...${NC}"
+
+        # Set Scene for dependencies:
+        for dependency in ${dependencies[$job]}; do
+          if [ -e ${root[$dependency]}/scripts/set-scene.sh ]; then
+            ${root[$dependency]}/scripts/set-scene.sh || true
+          fi
+        done
+
         mkdir -p ${root[$job]}"/dist"
         rm -f ${root[$job]}"/dist/${script[$job]}.badge"
         set +e
