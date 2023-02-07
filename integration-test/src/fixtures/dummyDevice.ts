@@ -17,7 +17,7 @@ export interface DummyDeviceEvents {
 function createPythonEnvironment() {
   // if venv is not created, create it
   if (!fs.existsSync(`${repository_dir}/integration-test/venv`)) {
-    execSync('virtualenv venv && source venv/bin/activate && pip install -r requirements.txt', {cwd: `${repository_dir}/integration-test`});
+    execSync('virtualenv venv && venv/bin/pip install -r requirements.txt', {cwd: `${repository_dir}/integration-test`});
   }
 }
 
@@ -40,7 +40,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
         }
         if (debug) {
           this.debugPrint =
-            (this.debugPrint ? this.debugPrint + 'ņ' : '') + `    js dummy device started with debug port ${debug}. Please attach debugger`;
+            (this.debugPrint ? this.debugPrint + '\n' : '') + `    js dummy device started with debug port ${debug}. Please attach debugger`;
         }
         break;
       case 'python':
@@ -66,6 +66,10 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     if (this.debugPrint) {
       console.log(this.debugPrint);
     }
+
+    /*this.process.stderr.on('data', data => {
+      console.error(data.toString());
+    });*/
 
     let stdout = '';
     this.process.stdout.on('data', data => {

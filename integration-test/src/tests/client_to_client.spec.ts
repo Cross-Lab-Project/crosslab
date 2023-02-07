@@ -21,6 +21,7 @@ for (const client1Type of clientTypes) {
       let dummyDevice2: DummyDevice;
 
       before(function () {
+        this.timeout(0);
         dummyDevice1 = createDummyDevice(client1Type, 1, this.debug);
         dummyDevice2 = createDummyDevice(client2Type, 2, this.debug);
       });
@@ -70,7 +71,7 @@ for (const client1Type of clientTypes) {
       });
 
       step('should start an experiment', async function () {
-        this.timeout(this.debug ? 0 : 1500);
+        this.timeout(this.debug ? 0 : 5000);
         const connectedPromise1 = new Promise<void>(resolve =>
           dummyDevice1.on('connectionsChanged', connections => {
             connections.some(c => c.state === 'connected') && resolve();

@@ -30,9 +30,11 @@ function prepare_service(process: ChildProcessWithoutNullStreams): Service {
   };
   process.stdout.on('data', data => {
     ret.stdout += data;
+    console.log(data.toString());
   });
   process.stderr.on('data', data => {
     ret.stderr += data;
+    console.log(data.toString());
   });
   return ret;
 }
@@ -106,10 +108,10 @@ export const mochaHooks = {
     console.log('Starting services...');
     this.timeout(20000);
 
-    this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, true, this.debug?.auth?.debug_port);
-    this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, true, this.debug?.device?.debug_port);
-    this.experimentService = start_service('experiment', {...ENV.common, ...ENV.experiment}, true, this.debug?.experiment?.debug_port);
-    this.federationService = start_service('federation', {...ENV.common, ...ENV.federation}, true, this.debug?.federation?.debug_port);
+    this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, false, this.debug?.auth?.debug_port);
+    this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, false, this.debug?.device?.debug_port);
+    this.experimentService = start_service('experiment', {...ENV.common, ...ENV.experiment}, false, this.debug?.experiment?.debug_port);
+    this.federationService = start_service('federation', {...ENV.common, ...ENV.federation}, false, this.debug?.federation?.debug_port);
     this.gatewayService = start_gateway(path.resolve(repository_dir, 'services', 'gateway'), {...ENV.common, ...ENV.gateway});
 
     // TODO: wait for health check to complete on all services -> needs health check endpoint

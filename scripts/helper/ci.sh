@@ -195,6 +195,11 @@ while true; do
         if [ "$(cat ${root[$job]}/dist/${script[$job]}.hash 2>/dev/null)" = "$job_input_hash" ]; then
           skipped_jobs="$skipped_jobs $job"
           if [ "$(cat ${root[$job]}/dist/${script[$job]}.status 2>/dev/null)" = "success" ]; then
+            for dependency in ${dependencies[$job]}; do
+              if [ -e ${root[$dependency]}/scripts/set-scene.sh ]; then
+                ${root[$dependency]}/scripts/set-scene.sh || true
+              fi
+            done
             status[$job]="success"
             echo_end "${GREEN}skipped (success)${NC}"
           else
