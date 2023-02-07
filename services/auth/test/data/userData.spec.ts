@@ -35,7 +35,7 @@ type UserDataWithLinks = Record<
 >
 
 const userDataWithLinks: UserDataWithLinks = {
-    superadmin: {
+    'superadmin': {
         request: {
             username: 'superadmin',
             password: 'superadmin',
@@ -57,7 +57,7 @@ const userDataWithLinks: UserDataWithLinks = {
             username: 'superadmin',
         },
     },
-    deviceservice: {
+    'deviceservice': {
         request: {
             username: 'deviceservice',
             password: 'deviceservice',

@@ -1,0 +1,31 @@
+{%- set operations = api | resolveOperations -%}
+{%- set schemes = [] -%}
+{%- set scopes = {} -%}
+
+{%- macro generateScopes() -%}
+{%- for operation in operations -%}
+    {%- if operation.security -%}
+        {%- for securityRequirement in operation.security -%}
+            {%- for key, cScopes in securityRequirement -%}
+                {%- set schemes = (schemes.push(key), schemes) | unique -%}
+                {%- for cScope in cScopes -%}
+                    {%- if not scopes[key] -%}
+                        {%- set scopes = scopes | addProperty(key,[]) -%}
+                    {%- endif -%}
+                    {{- scopes[key] | append(cScope) -}}
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endfor -%}
+    {%- endif -%}
+{%- endfor -%}
+
+export type Scope<T extends '{{ schemes | unique | join("' | '") }}'> =
+    {% for scheme in schemes | unique -%}
+        T extends '{{ scheme }}' ?
+        {%- set currentScopes = scopes[scheme] | unique -%}
+        '{{ currentScopes | join("' | '") }}' | string & {} :
+    {%- endfor -%}
+    never
+{%- endmacro -%}
+
+{{ generateScopes() | prettier }}

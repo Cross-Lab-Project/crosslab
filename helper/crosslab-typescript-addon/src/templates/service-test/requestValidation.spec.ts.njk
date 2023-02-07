@@ -33,12 +33,15 @@ export default () => describe("Request Validation Tests", function () {
         })
     })
 
+    this.beforeEach(function () {
+        JSONSchemaFaker.option({
+            random: seedrandom("request validation tests")
+        })
+    })
+
 {%- for operation in operations %}
 
     it("should return true when validating a valid input for {{ operation.name }}", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input")
-        })
         {%- if operation.parameters and operation.parameters | length > 0 %}
         const schemasParameters: { [k: string]: Schema } = {}
         const fakeParameters: { [k: string]: any } = {}
@@ -65,9 +68,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if operation.parameters | selectattr("required") | length > 0 %}
 
     it("should return false when validating an invalid input for {{ operation.name }} (undefined required parameters)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input undefined required parameters")
-        })
         const fakeParameters = undefined
         {%- if operation.requestBody %}
         const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
@@ -82,9 +82,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- else %}
 
     it("should return true when validating a valid input for {{ operation.name }} (undefined unrequired parameters)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input undefined unrequired parameters")
-        })
         const fakeParameters = undefined
         {%- if operation.requestBody %}
         const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
@@ -98,9 +95,6 @@ export default () => describe("Request Validation Tests", function () {
     })
 
     it("should return false when validating an invalid input for {{ operation.name }} (null parameters)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input null parameters")
-        })
         const fakeParameters = null
         {%- if operation.requestBody %}
         const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
@@ -120,9 +114,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- for selectedParameter in operation.parameters %}
 
     it("should return false when validating an invalid input for {{ operation.name }} (invalid '{{ selectedParameter.name }}'-parameter)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input invalid '{{ selectedParameter.name }}'-parameter")
-        })
         const schemasParameters: { [k: string]: Schema } = {}
         const fakeParameters: { [k: string]: any } = {}
         {%- for parameter in operation.parameters %}
@@ -150,9 +141,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if operation.requestBody %}
 
     it("should return false when validating an invalid input for {{ operation.name }} (invalid body)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input invalid body")
-        })
         {%- if operation.parameters and operation.parameters | length > 0 %}
         const schemasParameters: { [k: string]: Schema } = {}
         const fakeParameters: { [k: string]: any } = {}
@@ -175,9 +163,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if not operation.requestBody.required %}
 
     it("should return true when validating a valid input for {{ operation.name }} (empty not unrequired body)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} input empty unrequired body")
-        })
         {%- if operation.parameters and operation.parameters | length > 0 %}
         const schemasParameters: { [k: string]: Schema } = {}
         const fakeParameters: { [k: string]: any } = {}
@@ -201,9 +186,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- for response in operation.responses %}
 
     it("should return true when validating a valid {{ response.status }} output for {{ operation.name }}", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output")
-        })
         {%- if response.headers and response.headers | length > 0 %}
         const schemasHeaders: { [k: string]: Schema } = {}
         const fakeHeaders: { [k: string]: any } = {}
@@ -230,9 +212,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if response.headers | selectattr("required") | length > 0 %}
 
     it("should return false when validating an invalid {{ response.status }} output for {{ operation.name }} (undefined required headers)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output undefined required headers")
-        })
         const fakeHeaders = undefined
         {%- if response.schema %}
         const schemaBody: Schema = {{ response.schema | stringify(4) | indent(8) }}
@@ -247,9 +226,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- else %}
 
     it("should return true when validating a valid {{ response.status }} output for {{ operation.name }} (undefined unrequired headers)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output undefined unrequired headers")
-        })
         const fakeHeaders = undefined
         {%- if operation.requestBody %}
         const schemaBody: Schema = {{ operation.requestBody.schema | stringify(4) | indent(8) }}
@@ -285,9 +261,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- for selectedHeader in response.headers %}
     
     it("should return false when validating an invalid {{ response.status }} output for {{ operation.name }} (invalid '{{ selectedHeader.name }}'-header)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output invalid '{{ selectedHeader.name }}'-header")
-        })
         const schemasHeaders: { [k: string]: Schema } = {}
         const fakeHeaders: { [k: string]: any } = {}
         {%- for header in response.headers %}
@@ -315,9 +288,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if response.schema %}
 
     it("should return false when validating an invalid {{ response.status }} output for {{ operation.name }} (invalid body)", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output invalid body")
-        })
         {%- if response.headers and response.headers | length > 0 %}
         const schemasHeaders: { [k: string]: Schema } = {}
         const fakeHeaders: { [k: string]: any } = {}
@@ -342,9 +312,6 @@ export default () => describe("Request Validation Tests", function () {
     {%- if operation | getInvalidStatusCode %}
 
     it("should return false when validating an output with an invalid status code for {{ operation.name }}", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ operation.name }} output")
-        })
         {%- if response.headers and response.headers | length > 0 %}
         const schemasHeaders: { [k: string]: Schema } = {}
         const fakeHeaders: { [k: string]: any } = {}

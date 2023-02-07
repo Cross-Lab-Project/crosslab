@@ -7,6 +7,7 @@ import { roleRepository } from './repositories/roleRepository'
 import { scopeRepository } from './repositories/scopeRepository'
 import { tokenRepository } from './repositories/tokenRepository'
 import { userRepository } from './repositories/userRepository'
+import { Scope as CrosslabScope } from '../generated/scopes'
 
 export class ApplicationDataSource {
     private dataSource?: DataSource
@@ -40,20 +41,19 @@ export class ApplicationDataSource {
 
 export const AppDataSource = new ApplicationDataSource()
 
-interface Scope {
-    name: string
-    roles:
-        | (
-              | 'user'
-              | 'developer'
-              | 'auth_service'
-              | 'device_service'
-              | 'experiment_service'
-              | 'federation_service'
-              | 'update_service'
-          )[]
-        | 'all'
-}
+type ScopeRecord = Record<
+    CrosslabScope<'JWT'>,
+    | (
+          | 'user'
+          | 'developer'
+          | 'auth_service'
+          | 'device_service'
+          | 'experiment_service'
+          | 'federation_service'
+          | 'update_service'
+      )[]
+    | 'all'
+>
 
 interface ScopeCollection {
     all: ScopeModel[]
@@ -66,7 +66,7 @@ interface ScopeCollection {
     update_service: ScopeModel[]
 }
 
-async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
+async function createScopes(scopeRecord: ScopeRecord): Promise<ScopeCollection> {
     const scopeCollection: ScopeCollection = {
         all: [],
         user: [],
@@ -78,12 +78,13 @@ async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
         update_service: [],
     }
     const scopeRepository = AppDataSource.getRepository(ScopeModel)
-    for (const scope of scopes) {
+    for (const scopeName in scopeRecord) {
         const scopeModel = scopeRepository.create()
-        scopeModel.name = scope.name
+        scopeModel.name = scopeName
         await scopeRepository.save(scopeModel)
         scopeCollection.all.push(scopeModel)
-        if (scope.roles === 'all') {
+        const roles = scopeRecord[scopeName]
+        if (roles === 'all') {
             scopeCollection.developer.push(scopeModel)
             scopeCollection.user.push(scopeModel)
             scopeCollection.auth_service.push(scopeModel)
@@ -92,7 +93,7 @@ async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
             scopeCollection.federation_service.push(scopeModel)
             scopeCollection.update_service.push(scopeModel)
         } else {
-            for (const role of scope.roles.filter((v, i, s) => s.indexOf(v) === i)) {
+            for (const role of roles.filter((v, i, s) => s.indexOf(v) === i)) {
                 switch (role) {
                     case 'developer':
                         scopeCollection.developer.push(scopeModel)
@@ -123,12 +124,16 @@ async function createScopes(scopes: Scope[]): Promise<ScopeCollection> {
 }
 
 async function createRole(name: string, scopes: ScopeModel[]) {
-    const roleRepository = AppDataSource.getRepository(RoleModel)
-    const existingRole = await roleRepository.findOneBy({ name: name })
+    const existingRole = await roleRepository.findOne({
+        where: {
+            name: name,
+        },
+    })
     if (existingRole === null) {
-        const role = roleRepository.create()
-        role.name = name
-        role.scopes = scopes
+        const role = await roleRepository.create({
+            name,
+            scopes: scopes.map((scope) => scope.name),
+        })
         await roleRepository.save(role)
     } else {
         existingRole.scopes = scopes
@@ -138,43 +143,57 @@ async function createRole(name: string, scopes: ScopeModel[]) {
 
 async function createDefaultScopesAndRoles() {
     // create default scopes
-    const scopeCollection = await createScopes([
-        { name: 'authorized_proxy', roles: 'all' },
-        { name: 'device', roles: 'all' },
-        { name: 'device:create', roles: 'all' },
-        { name: 'device:connect', roles: 'all' },
-        { name: 'device:edit', roles: 'all' },
-        { name: 'device:list', roles: 'all' },
-        { name: 'experiment', roles: 'all' },
-        { name: 'experiment:create', roles: 'all' },
-        { name: 'experiment:edit', roles: 'all' },
-        { name: 'experiment:list', roles: 'all' },
-        { name: 'identity', roles: 'all' },
-        { name: 'identity:edit', roles: 'all' },
-        { name: 'identity:list', roles: 'all' },
-        { name: 'institution', roles: 'all' },
-        { name: 'institution:create', roles: 'all' },
-        { name: 'institution:edit', roles: 'all' },
-        { name: 'institution:list', roles: 'all' },
-        { name: 'peerconnection', roles: 'all' },
-        { name: 'peerconnection:create', roles: 'all' },
-        { name: 'peerconnection:list', roles: 'all' },
-        { name: 'update', roles: 'all' },
-        { name: 'update:create', roles: 'all' },
-        { name: 'update:edit', roles: 'all' },
-        { name: 'update:list', roles: 'all' },
-        { name: 'users', roles: 'all' },
-        { name: 'users:create', roles: 'all' },
-        { name: 'users:edit', roles: 'all' },
-        { name: 'users:list', roles: 'all' },
-        { name: 'roles', roles: 'all' },
-        { name: 'roles:create', roles: 'all' },
-        { name: 'roles:edit', roles: 'all' },
-        { name: 'roles:list', roles: 'all' },
-        { name: 'device_token', roles: 'all' },
-        { name: 'device_token:create', roles: 'all' },
-        { name: 'logout', roles: 'all' },
-    ])
+    const scopeCollection = await createScopes({
+        // auth service scopes
+        'device_token': 'all',
+        'device_token:create': 'all',
+        'identity': 'all',
+        'identity:edit': 'all',
+        'identity:list': 'all',
+        'logout': 'all',
+        'roles': 'all',
+        'roles:create': 'all',
+        'roles:edit': 'all',
+        'roles:list': 'all',
+        'users': 'all',
+        'users:create': 'all',
+        'users:edit': 'all',
+        'users:list': 'all',
+        // device service scopes
+        'device': 'all',
+        'device:create': 'all',
+        'device:connect': 'all',
+        'device:edit': 'all',
+        'device:list': 'all',
+        'device:signal': 'all',
+        'peerconnection': 'all',
+        'peerconnection:create': 'all',
+        'peerconnection:list': 'all',
+        // experiment service scopes
+        'experiment': 'all',
+        'experiment:create': 'all',
+        'experiment:edit': 'all',
+        'experiment:list': 'all',
+        // federation service scopes
+        'authorized_proxy': [
+            'auth_service',
+            'developer',
+            'device_service',
+            'experiment_service',
+            'federation_service',
+            'update_service',
+            'user'
+        ],
+        'institution': 'all',
+        'institution:create': 'all',
+        'institution:edit': 'all',
+        'institution:list': 'all',
+        // update service scopes
+        'update': 'all',
+        'update:create': 'all',
+        'update:edit': 'all',
+        'update:list': 'all',
+    })
 
     // create default roles
     await createRole('superadmin', scopeCollection.all)
@@ -218,10 +237,7 @@ async function createDefaultServiceUser(
         | 'federation_service'
         | 'update_service'
 ) {
-    const userRepository = AppDataSource.getRepository(UserModel)
-    const roleRepository = AppDataSource.getRepository(RoleModel)
-
-    const roleAuthService = await roleRepository.findOneOrFail({
+    const roleService = await roleRepository.findOneOrFail({
         where: {
             name: service,
         },
@@ -231,10 +247,10 @@ async function createDefaultServiceUser(
         },
     })
 
-    if ((await roleAuthService.users).length === 0) {
-        const user = userRepository.create()
+    if (roleService.users.length === 0) {
+        const user = await userRepository.create()
         user.username = service.replace('_', '')
-        user.roles = [roleAuthService]
+        user.roles = [roleService]
         user.tokens = []
         await userRepository.save(user)
     }

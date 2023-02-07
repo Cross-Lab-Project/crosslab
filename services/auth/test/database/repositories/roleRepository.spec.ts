@@ -15,6 +15,8 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
 
     public async initialize(): Promise<void> {
         await super.initialize()
+        if (!this.testSuites) throw new Error('Test suites have not been initialized!')
+
         this.addTestToSuite(
             'additional',
             (data) =>
@@ -105,24 +107,27 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
         )
 
         // replace save test suite because of unique name index
-        this.testSuites!.save.tests = this.testSuites!.save.tests.filter(
-            (test) => test.title !== 'should save a valid model'
+        this.testSuites.save.tests = this.testSuites.save.tests.filter(
+            (test) => !test.title.startsWith('should save a valid model')
         )
-        this.addTestToSuite(
-            'save',
-            (data) =>
-                new Mocha.Test('should save a valid model', async function () {
-                    for (const key of roleNames) {
-                        const name = 'new:' + data.entityData[key].request.name!
-                        const scopes = data.entityData[key].request.scopes!
-                        const newData = { name, scopes }
-                        const model = await data.repository.create(newData)
-                        assert(data.validateCreate(model, newData))
-                        const savedModel = await data.repository.save(model)
-                        assert(data.compareModels(model, savedModel))
-                    }
-                })
-        )
+        for (const key of roleNames) {
+            this.addTestToSuite(
+                'save',
+                (data) =>
+                    new Mocha.Test(
+                        `should save a valid model (${key})`,
+                        async function () {
+                            const name = 'new:' + data.entityData[key].request.name!
+                            const scopes = data.entityData[key].request.scopes!
+                            const newData = { name, scopes }
+                            const model = await data.repository.create(newData)
+                            assert(data.validateCreate(model, newData))
+                            const savedModel = await data.repository.save(model)
+                            assert(data.compareModels(model, savedModel))
+                        }
+                    )
+            )
+        }
     }
 
     validateCreate(model: RoleModel, data?: Role<'request'>): boolean {

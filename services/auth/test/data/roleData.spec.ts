@@ -57,6 +57,7 @@ const roleDataWithLinks: RoleDataWithLinks = {
             name: 'user',
             scopes: ['scope 1', 'scope 2', 'scope 3'],
             users: [
+                'superadmin',
                 'GET /auth user',
                 'POST /device_authentication_token user',
                 'POST /logout user',

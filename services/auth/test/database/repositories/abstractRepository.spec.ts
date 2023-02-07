@@ -191,19 +191,19 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         }
                     )
                 )
-                testSuite.addTest(
-                    new Mocha.Test(
-                        'should create a model from valid data',
-                        async function () {
-                            for (const key of getEntityNames(model)) {
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should create a model from valid data (${key})`,
+                            async function () {
                                 const model = await repository.create(
                                     entityData[key].request
                                 )
                                 assert(validateCreate(model, entityData[key].request))
                             }
-                        }
+                        )
                     )
-                )
+                }
                 testSuite.addTest(
                     new Mocha.Test(
                         'should throw an UninitializedRepositoryError if the repository has not been initialized',
@@ -259,20 +259,20 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
             })(),
             findOne: (() => {
                 const testSuite = new Mocha.Suite('findOne')
-                testSuite.addTest(
-                    new Mocha.Test(
-                        'should find a specific existing model',
-                        async function () {
-                            for (const key of getEntityNames(model)) {
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should find a specific existing model (${key})`,
+                            async function () {
                                 const model = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
                                 assert(model)
                                 assert(compareModels(model, entityData[key].model, false))
                             }
-                        }
+                        )
                     )
-                )
+                }
                 testSuite.addTest(
                     new Mocha.Test(
                         'should return null when the model does not exist',
@@ -303,20 +303,20 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
             })(),
             findOneOrFail: (() => {
                 const testSuite = new Mocha.Suite('findOneOrFail')
-                testSuite.addTest(
-                    new Mocha.Test(
-                        'should find a specific existing model',
-                        async function () {
-                            for (const key of getEntityNames(model)) {
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should find a specific existing model (${key})`,
+                            async function () {
                                 const model = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
                                 assert(model)
                                 assert(compareModels(model, entityData[key].model, false))
                             }
-                        }
+                        )
                     )
-                )
+                }
                 testSuite.addTest(
                     new Mocha.Test(
                         'should throw a MissingEntityError when the model does not exist',
@@ -351,25 +351,28 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
             })(),
             format: (() => {
                 const testSuite = new Mocha.Suite('format')
-                testSuite.addTest(
-                    new Mocha.Test('should correctly format a model', async function () {
-                        for (const key of getEntityNames(model)) {
-                            const formatted = await repository.format(
-                                entityData[key].model
-                            )
-                            assert(validateFormat(entityData[key].model, formatted))
-                        }
-                    })
-                )
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should correctly format a model (${key})`,
+                            async function () {
+                                const formatted = await repository.format(
+                                    entityData[key].model
+                                )
+                                assert(validateFormat(entityData[key].model, formatted))
+                            }
+                        )
+                    )
+                }
                 return testSuite
             })(),
             remove: (() => {
                 const testSuite = new Mocha.Suite('remove')
-                testSuite.addTest(
-                    new Mocha.Test(
-                        'should remove a specific existing model',
-                        async function () {
-                            for (const key of getEntityNames(model)) {
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should remove a specific existing model (${key})`,
+                            async function () {
                                 const model = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
@@ -382,9 +385,9 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                                     })) === null
                                 )
                             }
-                        }
+                        )
                     )
-                )
+                }
                 testSuite.addTest(
                     new Mocha.Test(
                         'should throw an UninitializedRepositoryError if the repository has not been initialized',
@@ -408,16 +411,21 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
             })(),
             save: (() => {
                 const testSuite = new Mocha.Suite('save')
-                testSuite.addTest(
-                    new Mocha.Test('should save a valid model', async function () {
-                        for (const key of getEntityNames(model)) {
-                            const model = await repository.create(entityData[key].request)
-                            assert(validateCreate(model, entityData[key].request))
-                            const savedModel = await repository.save(model)
-                            assert(compareModels(model, savedModel))
-                        }
-                    })
-                )
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should save a valid model (${key})`,
+                            async function () {
+                                const model = await repository.create(
+                                    entityData[key].request
+                                )
+                                assert(validateCreate(model, entityData[key].request))
+                                const savedModel = await repository.save(model)
+                                assert(compareModels(model, savedModel))
+                            }
+                        )
+                    )
+                }
                 testSuite.addTest(
                     new Mocha.Test(
                         'should throw an UninitializedRepositoryError if the repository has not been initialized',
@@ -441,19 +449,19 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
             })(),
             write: (() => {
                 const testSuite = new Mocha.Suite('write')
-                testSuite.addTest(
-                    new Mocha.Test(
-                        'should write valid data to a model correctly',
-                        async function () {
-                            for (const key of getEntityNames(model)) {
+                for (const key of getEntityNames(model)) {
+                    testSuite.addTest(
+                        new Mocha.Test(
+                            `should write valid data to a model correctly (${key})`,
+                            async function () {
                                 const model = await repository.create()
                                 assert(validateCreate(model))
                                 await repository.write(model, entityData[key].request)
                                 assert(validateWrite(model, entityData[key].request))
                             }
-                        }
+                        )
                     )
-                )
+                }
                 return testSuite
             })(),
         }

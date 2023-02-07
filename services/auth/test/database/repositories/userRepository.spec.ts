@@ -6,7 +6,6 @@ import { UserRepository } from '../../../src/database/repositories/userRepositor
 import { User, UserInit, UserUpdate } from '../../../src/generated/types'
 import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 import Mocha from 'mocha'
-import { roleRepositoryTestSuite } from './roleRepository.spec'
 import { userNames } from '../../data/userData.spec'
 import { userUrlFromId } from '../../../src/methods/utils'
 
@@ -17,6 +16,8 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
 
     public async initialize(): Promise<void> {
         await super.initialize()
+        if (!this.testSuites) throw new Error('Test suites have not been initialized!')
+
         this.addTestToSuite(
             'additional',
             (data) =>
@@ -126,24 +127,28 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
         )
 
         // replace save test suite because of unique username index
-        this.testSuites!.save.tests = this.testSuites!.save.tests.filter(
-            (test) => test.title !== 'should save a valid model'
+        this.testSuites.save.tests = this.testSuites.save.tests.filter(
+            (test) => !test.title.startsWith('should save a valid model')
         )
-        this.addTestToSuite(
-            'save',
-            (data) =>
-                new Mocha.Test('should save a valid model', async function () {
-                    for (const key of userNames) {
-                        const username = 'new:' + data.entityData[key].request.username!
-                        const password = data.entityData[key].request.password!
-                        const newData = { username, password }
-                        const model = await data.repository.create(newData)
-                        assert(data.validateCreate(model, newData))
-                        const savedModel = await data.repository.save(model)
-                        assert(data.compareModels(model, savedModel))
-                    }
-                })
-        )
+        for (const key of userNames) {
+            this.addTestToSuite(
+                'save',
+                (data) =>
+                    new Mocha.Test(
+                        `should save a valid model (${key})`,
+                        async function () {
+                            const username =
+                                'new:' + data.entityData[key].request.username!
+                            const password = data.entityData[key].request.password!
+                            const newData = { username, password }
+                            const model = await data.repository.create(newData)
+                            assert(data.validateCreate(model, newData))
+                            const savedModel = await data.repository.save(model)
+                            assert(data.compareModels(model, savedModel))
+                        }
+                    )
+            )
+        }
     }
 
     validateCreate(model: UserModel, data?: UserInit<'request'>): boolean {

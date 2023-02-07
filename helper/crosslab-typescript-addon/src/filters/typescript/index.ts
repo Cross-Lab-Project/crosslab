@@ -347,6 +347,40 @@ function getInvalidStatusCode_filter(operation: SimplifiedOperation) {
     return invalidStatusCodes.length > 0 ? invalidStatusCodes[0] : undefined
 }
 
+function includes_filter(string: string, searchString: string) {
+    return string.includes(searchString)
+}
+
+function addProperty_filter(obj: { [k: string]: any }, propertyName: string, value: any) {
+    obj[propertyName] = value
+}
+
+function append_filter(array: any[], value: any) {
+    array.push(value)
+}
+
+function getPossibleScopeCombinations(security?: OpenAPIV3_1.SecurityRequirementObject[]) {
+    const possibleCombinations: [string,string][][] = []
+    for (const securityRequirement of security ?? []) {
+        let combinations: [string,string][][] = []
+        for (const key in securityRequirement) {
+            const scopes = securityRequirement[key]
+            if (combinations.length === 0) {
+                for (const scope of scopes) {
+                    combinations.push([[key,scope]])
+                }
+            } else {
+                for (const scope of scopes) {
+                    combinations = combinations.map((comb) => [...comb,[key,scope]])
+                }
+            }
+        }
+        possibleCombinations.push(...combinations)
+    }
+
+    return possibleCombinations
+}
+
 /**
  * The filter collection for typescript.
  */
@@ -461,5 +495,21 @@ export const TypeScriptFilterCollection: FilterCollection = {
             name: 'getInvalidStatusCode',
             function: getInvalidStatusCode_filter,
         },
+        {
+            name: 'includes',
+            function: includes_filter
+        },
+        {
+            name: 'addProperty',
+            function: addProperty_filter
+        },
+        {
+            name: 'append',
+            function: append_filter
+        },
+        {
+            name: 'possibleScopeCombinations',
+            function: getPossibleScopeCombinations
+        }
     ],
 }

@@ -41,7 +41,14 @@ const CrosslabTypeScriptAddon: Addon = {
             globals: [],
             tests: [],
             templatesDir: templateDir + '/templates/service-test'
-        }
+        },
+        {
+            name: 'scopes',
+            filterCollections: [TypeScriptFilterCollection],
+            globals: [],
+            tests: [],
+            templatesDir: templateDir + '/templates/scopes',
+        },
     ],
 }
 

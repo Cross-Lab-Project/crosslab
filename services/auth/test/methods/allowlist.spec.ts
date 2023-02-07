@@ -87,6 +87,7 @@ export default () =>
             it('should correctly resolve the allowlist entries', async function () {
                 findUserStub.returns(
                     Promise.resolve(<UserModel>{
+                        uuid: '9a02ad29-567d-45c6-8dc2-5d0c1812a739',
                         username: USERNAME,
                         roles: [],
                         tokens: [],
@@ -199,6 +200,7 @@ export default () =>
 
                 findUserStub.returns(
                     Promise.resolve(<UserModel>{
+                        uuid: '0ddfc948-8010-4456-b3d1-aa9109fe63dd',
                         username: USERNAME,
                         roles: [],
                         tokens: [],

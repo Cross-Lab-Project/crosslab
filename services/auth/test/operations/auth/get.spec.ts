@@ -234,7 +234,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'should authenticate the user associated with the provided valid token instead of the allowlisted user',
             async function () {
                 const result = await getAuth({
-                    Authorization: `Bearer ${validUserToken}`,
+                    'Authorization': `Bearer ${validUserToken}`,
                     'X-Real-IP': allowlistedIP,
                 })
                 assert(result.status === 200)
@@ -252,7 +252,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'should authenticate the allowlisted user even if the provided token is invalid',
             async function () {
                 const result = await getAuth({
-                    Authorization: `Bearer ${invalidToken}`,
+                    'Authorization': `Bearer ${invalidToken}`,
                     'X-Real-IP': allowlistedIP,
                 })
                 assert(result.status === 200)
@@ -270,7 +270,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'should authenticate the allowlisted user even if the provided token is expired',
             async function () {
                 const result = await getAuth({
-                    Authorization: `Bearer ${expiredToken}`,
+                    'Authorization': `Bearer ${expiredToken}`,
                     'X-Real-IP': allowlistedIP,
                 })
                 assert(result.status === 200)
