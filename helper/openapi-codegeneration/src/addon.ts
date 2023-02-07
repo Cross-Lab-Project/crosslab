@@ -1,4 +1,5 @@
 import nunjucks from "nunjucks";
+import path from "path";
 
 /**
  * Interface for an addon.
@@ -105,6 +106,12 @@ const presets: Preset[] = []
  */
 async function loadAddon(addonName: string): Promise<void> {
     console.log(`loading addon "${addonName}"`)
+    const resolve_paths=require.main?.paths ?? [];
+    let cwd_path=process.cwd();
+    while(cwd_path!=="/"){
+        resolve_paths.push(cwd_path+"/node_modules")
+        cwd_path=path.dirname(cwd_path)
+    }
     const addon_path = require.resolve(addonName, {
         paths: require.main?.paths
     })
@@ -144,12 +151,10 @@ export async function activateFilterCollection(filterCollectionName: string, env
 }
 
 /**
- * This function activates a preset by its name.
- * @param presetName The name of the preset to be activated.
- * @param env The nunjucks environment the filters, tests and globals of the preset
- * should be loaded into.
+ * This function returns a preset by its name.
+ * @param presetName The name of the Preset.
  */
-export async function activatePreset(presetName: string, env: nunjucks.Environment) {
+export async function loadPreset(presetName: string) {
     let preset = presets.find(p => p.name === presetName)
     if (!preset) {
         await loadAddon(presetName.split(":")[0])
@@ -157,6 +162,16 @@ export async function activatePreset(presetName: string, env: nunjucks.Environme
         if (!preset)
             throw new Error(`Could not find preset "${presetName}`)
     }
+    return preset
+}
+
+/**
+ * This function activates a preset.
+ * @param preset The Preset to be activated.
+ * @param env The nunjucks environment the filters, tests and globals of the preset
+ * should be loaded into.
+ */
+export async function activatePreset(preset: Preset, env: nunjucks.Environment) {
     preset.filterCollections.forEach(fc => {
         fc.filters.forEach(f => {
             env.addFilter(f.name, f.function)
