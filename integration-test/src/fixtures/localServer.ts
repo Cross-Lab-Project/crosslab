@@ -106,7 +106,7 @@ export const mochaHooks = {
 
   async beforeAll(this: ServerContext & Mocha.Context) {
     console.log('Starting services...');
-    this.timeout(20000);
+    this.timeout(30000);
 
     this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, false, this.debug?.auth?.debug_port);
     this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, false, this.debug?.device?.debug_port);
@@ -116,7 +116,7 @@ export const mochaHooks = {
 
     // TODO: wait for health check to complete on all services -> needs health check endpoint
     // for now just wait 2 seconds
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 15000));
   },
 
   async afterAll(this: ServerContext & Mocha.Context) {
