@@ -1,9 +1,21 @@
-import basicValidationTestSuite from "./basicValidation.spec"
-import requestValidationTestSuite from "./requestValidation.spec"
-import typeguardTestSuite from "./types.spec"
 
-export default () => describe("Generated Tests", function () {
+{%- set securitySchemes = [] -%}
+{%- for securityScheme, value in api.components.securitySchemes -%}
+{%- set securitySchemes = (securitySchemes.push(securityScheme), securitySchemes) -%}
+{%- endfor -%}
+
+{%- macro generateIndex() -%}
+import basicValidationTestSuite from './basicValidation.spec'
+import requestValidationTestSuite from './requestValidation.spec'
+import typeguardTestSuite from './types.spec'
+import routesTestSuite from './routes.spec'
+
+export default () => describe('Generated Tests', function () {
     basicValidationTestSuite()
     requestValidationTestSuite()
     typeguardTestSuite()
+    routesTestSuite()
 })
+{%- endmacro -%}
+
+{{ generateIndex() | prettier }}

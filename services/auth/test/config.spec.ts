@@ -16,7 +16,7 @@ export default () =>
                 'initializeAppConfiguration'
             )
             processExitStub = sinon.stub(process, 'exit')
-            processEnvBackup = process.env
+            processEnvBackup = JSON.parse(JSON.stringify(process.env))
         })
 
         this.beforeEach(function () {

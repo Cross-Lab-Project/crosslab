@@ -43,12 +43,6 @@ AppDataSource.initialize(dataSourceConfig)
         app.initService({
             security: {
                 JWT: JWTVerify(config) as any,
-                AccessToken: (_req, _scopes) => {
-                    throw new Error('Not Implemented')
-                },
-                TuiAuth: (_req, _scopes) => {
-                    throw new Error('Not implemented')
-                },
             },
         })
 

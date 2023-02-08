@@ -1,0 +1,465 @@
+{%- set operations = (api | resolveOperations) -%}
+{%- set securitySchemes = [] -%}
+{%- for securityScheme, value in api.components.securitySchemes -%}
+{%- set securitySchemes = (securitySchemes.push(securityScheme), securitySchemes) -%}
+{%- endfor -%}
+
+{%- macro generateRouteTests() -%}
+import assert, { fail } from 'assert';
+import request from 'supertest';
+import { app } from '../../src/generated';
+import * as sinon from 'sinon';
+import * as requestValidation from '../../src/generated/requestValidation';
+import operations from '../../src/operations';
+import { JSONSchemaFaker } from 'json-schema-faker';
+import RandExp from 'randexp';
+import seedrandom from 'seedrandom';
+import { initServiceOptions, ResponseData, ValidationError } from '../../src/generated/types';
+import rewire from 'rewire';
+
+export default () => describe('Route Tests', function () {
+    let validateInputStub: sinon.SinonStub | undefined
+    let validateOutputStub: sinon.SinonStub | undefined
+    let operationStub: sinon.SinonStub | undefined
+    {%- for securityScheme in securitySchemes %}
+    let {{ securityScheme }}SecurityStub: sinon.SinonStub
+    {%- endfor %}
+    let errorHandlerStub: sinon.SinonStub
+    let defaultErrorHandler: () => any
+    let options: initServiceOptions<'{{ securitySchemes | join("'|'") }}'>
+    
+    this.beforeAll(async function () {
+        const randexpJWT = new RandExp(/^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
+        const randexpMacAddress = new RandExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
+
+        const rngJWT = seedrandom("jwt")
+        const rngMacAddress = seedrandom("mac_address")
+        
+        randexpJWT.randInt = (from, to) => from + (rngJWT() * (to - from)) 
+        randexpMacAddress.randInt = (from, to) => from + (rngMacAddress() * (to - from)) 
+
+        JSONSchemaFaker.format({
+            "jwt": (_) => randexpJWT.gen(),
+            "mac_address": (_) => randexpMacAddress.gen()
+        })
+
+        {% for securityScheme in securitySchemes -%}
+        {{ securityScheme }}SecurityStub = sinon.stub()
+        {%- endfor %}
+
+        defaultErrorHandler = rewire('../../src/generated/index').__get__('defaultErrorHandler')
+
+        options = {
+            security: {
+                {%- for securityScheme in securitySchemes %}
+                '{{ securityScheme }}': {{ securityScheme }}SecurityStub
+                {%- endfor %}
+            },
+            additionalHandlers: [(app) => {
+                app.get('/error_route', (_req, _res, next) => {
+                    const error = new Error("This is an error!")
+                    error.name = ""
+                    next(error)
+                })
+            }],
+            errorHandler: (_err, _req, _res, _next) => {}
+        }
+        errorHandlerStub = sinon.stub(options, 'errorHandler')
+        app.initService(options)
+    })
+
+    this.beforeEach(async function () {
+        validateInputStub = undefined
+        validateOutputStub = undefined
+        operationStub = undefined
+        {%- for securityScheme in securitySchemes %}
+        {{ securityScheme }}SecurityStub.reset()
+        {%- endfor %}
+        errorHandlerStub.callsFake(defaultErrorHandler)
+
+        JSONSchemaFaker.option({
+            random: seedrandom("route tests")
+        })
+    })
+
+    this.afterEach(async function () {
+        if (validateInputStub) validateInputStub.restore()
+        if (validateOutputStub) validateOutputStub.restore()
+        if (operationStub) operationStub.restore()
+        {%- for securityScheme in securitySchemes %}
+        {{ securityScheme }}SecurityStub.reset()
+        {%- endfor %}
+        errorHandlerStub.reset()
+    })
+
+    it('should handle errors without status and name correctly', function (done) {
+        request(app)
+            .get('/error_route')
+            .end((_error, res) => {
+                assert.strictEqual(res.status, 500)
+                assert.strictEqual(res.body.error, 'Error')
+                assert.strictEqual(res.body.message, 'This is an error!')
+                done()
+            })
+    })
+
+    it('should catch missing routes', function (done) {
+        request(app)
+            .get('/undefined_route')
+            .end((_error, res) => {
+                assert.strictEqual(res.status, 404)
+                assert.strictEqual(res.body.status, 404)
+                assert.strictEqual(res.body.error, 'Not found')
+                done()
+            })
+    })
+
+    {% for operation in operations -%}
+    {%- set parameters = undefined -%}
+    {%- if operation.parameters -%}
+    {%- set parameters = operation.parameters | sortByAttribute("in") -%}
+    {%- endif -%}
+    describe('{{ operation.method | upper }} {{ operation.path }} Tests', function () {
+        {% if operation.security and operation.security | length > 0 -%}
+        describe('Security Tests', function () {
+            {% for scopes in operation.security | possibleScopeCombinations -%}
+            xit('should allow access with scopes {{ scopes | stringify }}', function () {
+                fail()
+            })
+
+            {% endfor -%}
+
+            it('should deny access without necessary scopes', function (done) {
+                const error = new Error('Security check failed!')
+                {%- for securityScheme in securitySchemes %}
+                {{ securityScheme }}SecurityStub.rejects(error)
+                {%- endfor %}
+
+                {% if parameters -%}
+
+                {% if parameters['query'] -%}
+                const queryParameters = {
+                    {%- for parameter in parameters['query'] %}
+                    '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                    {%- endfor %}
+                }
+
+                {% endif -%}
+
+                {% if parameters['path'] -%}
+                const pathParameters = {
+                    {%- for parameter in parameters['path'] %}
+                    '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                    {%- endfor %}
+                }
+
+                {% endif -%}
+                {% endif -%}
+
+                const path = '{{ operation.path }}'
+                {%- if parameters and parameters['path'] %}
+                    {%- for parameter in parameters['path'] %}
+                    .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
+                    {%- endfor %}
+                {%- endif %}
+                {%- if parameters and parameters['query'] %}
+                    + '?' +
+                    {%- set query = [] -%}
+                    {%- for parameter in parameters['query'] %}
+                    {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
+                    {%- endfor %}
+                    {{ query | join(" + '&' + ") }}
+                {%- endif %}
+
+                request(app)
+                    .{{ operation.method }}(path)
+                    .end((_error, res) => {
+                        assert.strictEqual(res.status, 500)
+                        assert.strictEqual(res.body.error, 'Error')
+                        assert.strictEqual(res.body.message, 'Request could not be authenticated')
+                        done()
+                    })
+                });
+        })
+
+        {% endif -%}
+
+        it('should call the validation and operation methods correctly', function (done) {
+            validateInputStub = sinon.stub(requestValidation, 'validate{{ operation.name | cap }}Input')
+            validateOutputStub = sinon.stub(requestValidation, 'validate{{ operation.name | cap }}Output')
+            operationStub = sinon.stub(operations, '{{ operation.name }}')
+
+            validateInputStub.returns(true)
+            validateOutputStub.returns(true)
+
+            const mockResponse: ResponseData = {
+                status: 201,
+                headers: {
+                    testUndefined: undefined,
+                    test: 'this is a test header'
+                },
+                body: {
+                    message: 'this is a test body'
+                }
+            }
+            operationStub.resolves(mockResponse)
+
+            {% if parameters -%}
+
+            {% if parameters['header'] -%}
+            const headers = {
+                {%- for parameter in parameters['header'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+
+            {% if parameters['query'] -%}
+            const queryParameters = {
+                {%- for parameter in parameters['query'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+
+            {% if parameters['path'] -%}
+            const pathParameters = {
+                {%- for parameter in parameters['path'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+            {% endif -%}
+
+            {% if (operation.requestBody or operation.isProxyRequest) -%}
+            const body = JSONSchemaFaker.generate({{ operation.requestBody.schema | stringify(4) | indent(12) }})
+
+            {% endif -%}
+
+            const path = '{{ operation.path }}'
+            {%- if parameters and parameters['path'] %}
+                {%- for parameter in parameters['path'] %}
+                .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
+                {%- endfor %}
+            {%- endif %}
+            {%- if parameters and parameters['query'] %}
+                + '?' +
+                {%- set query = [] -%}
+                {%- for parameter in parameters['query'] %}
+                {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
+                {%- endfor %}
+                {{ query | join(" + '&' + ") }}
+            {%- endif %}
+
+            request(app)
+                .{{ operation.method }}(path)
+                {%- if parameters and parameters['header'] %}
+                {%- for parameter in parameters['header'] %}
+                .set('{{ parameter.name }}', headers['{{ parameter.name }}'])
+                {%- endfor %}
+                {%- endif %}
+                {%- if operation.requestBody %}
+                .send(body as any)
+                {%- endif %}
+                .end((_error, res) => {
+                    assert(validateInputStub)
+                    assert.strictEqual(validateInputStub.callCount, 1)
+                    assert(validateInputStub.calledWith(
+                    {%- if parameters -%}
+                    {
+                        {{ '...headers,' if parameters and parameters['header'] }}
+                        {{ '...pathParameters,' if parameters and parameters['path'] }}
+                        {{ '...queryParameters' if parameters and parameters['query'] }}
+                    }
+                    {%- endif -%}
+                    {{ "," if parameters and operation.requestBody }}
+                    {%- if operation.requestBody -%}
+                    body
+                    {%- endif -%}
+                    ))
+                    assert(operationStub)
+                    assert.strictEqual(operationStub.callCount, 1)
+                    assert(operationStub.calledWith(
+                    {%- if parameters -%}
+                    {
+                        {{ '...headers,' if parameters and parameters['header'] }}
+                        {{ '...pathParameters,' if parameters and parameters['path'] }}
+                        {{ '...queryParameters' if parameters and parameters['query'] }}
+                    }
+                    {%- endif -%}
+                    {{ "," if parameters and operation.requestBody }}
+                    {%- if operation.requestBody -%}
+                    body
+                    {%- endif -%}
+                    ))
+                    assert(validateOutputStub)
+                    assert.strictEqual(validateOutputStub.callCount, 1)
+                    assert(validateOutputStub.calledWith(mockResponse))
+                    assert.strictEqual(res.status, 201)
+                    assert.strictEqual(JSON.stringify(res.body), JSON.stringify(mockResponse.body))
+                    done()
+                })
+        })
+
+        it('should throw a ValidationError if the input validation failed', function (done) {
+            validateInputStub = sinon.stub(
+                requestValidation,
+                'validate{{ operation.name | cap }}Input'
+            );
+            validateOutputStub = sinon.stub(
+                requestValidation,
+                'validate{{ operation.name | cap }}Output'
+            );
+            operationStub = sinon.stub(operations, '{{ operation.name }}');
+
+            const testError = new Error("Test Input Validation Error")
+            validateInputStub.callsFake(() => {
+                (requestValidation.validate{{ operation.name | cap }}Input as any).errors = testError
+                return false
+            })
+
+            {% if parameters -%}
+
+            {% if parameters['query'] -%}
+            const queryParameters = {
+                {%- for parameter in parameters['query'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+
+            {% if parameters['path'] -%}
+            const pathParameters = {
+                {%- for parameter in parameters['path'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+            {% endif -%}
+
+            const path = '{{ operation.path }}'
+            {%- if parameters and parameters['path'] %}
+                {%- for parameter in parameters['path'] %}
+                .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
+                {%- endfor %}
+            {%- endif %}
+            {%- if parameters and parameters['query'] %}
+                + '?' +
+                {%- set query = [] -%}
+                {%- for parameter in parameters['query'] %}
+                {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
+                {%- endfor %}
+                {{ query | join(" + '&' + ") }}
+            {%- endif %}
+
+            request(app)
+                .{{ operation.method }}(path)
+                .end((_error, res) => {
+                    assert(validateInputStub);
+                    assert.strictEqual(validateInputStub.callCount, 1);
+                    assert.strictEqual(res.status, 400)
+                    assert.strictEqual(errorHandlerStub.callCount, 1)
+                    const error = errorHandlerStub.args[0][0]
+                    assert(error instanceof ValidationError)
+                    assert(error.errors === testError)
+                    done();
+                });
+        });
+
+        it('should throw a ValidationError if the output validation failed', function (done) {
+            validateInputStub = sinon.stub(
+                requestValidation,
+                'validate{{ operation.name | cap }}Input'
+            );
+            validateOutputStub = sinon.stub(
+                requestValidation,
+                'validate{{ operation.name | cap }}Output'
+            );
+            operationStub = sinon.stub(operations, '{{ operation.name }}');
+
+            validateInputStub.returns(true)
+
+            const testError = new Error("Test Input Validation Error")
+            validateOutputStub.callsFake(() => {
+                (requestValidation.validate{{ operation.name | cap }}Output as any).errors = testError
+                return false
+            })
+
+            {% if parameters -%}
+
+            {% if parameters['query'] -%}
+            const queryParameters = {
+                {%- for parameter in parameters['query'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+
+            {% if parameters['path'] -%}
+            const pathParameters = {
+                {%- for parameter in parameters['path'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
+
+            {% endif -%}
+            {% endif -%}
+
+            const path = '{{ operation.path }}'
+            {%- if parameters and parameters['path'] %}
+                {%- for parameter in parameters['path'] %}
+                .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
+                {%- endfor %}
+            {%- endif %}
+            {%- if parameters and parameters['query'] %}
+                + '?' +
+                {%- set query = [] -%}
+                {%- for parameter in parameters['query'] %}
+                {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
+                {%- endfor %}
+                {{ query | join(" + '&' + ") }}
+            {%- endif %}
+
+            request(app)
+                .{{ operation.method }}(path)
+                .end((_error, res) => {
+                    assert(validateOutputStub);
+                    assert.strictEqual(validateOutputStub.callCount, 1);
+                    assert.strictEqual(res.status, 500)
+                    assert.strictEqual(errorHandlerStub.callCount, 1)
+                    const error = errorHandlerStub.args[0][0]
+                    assert(error instanceof ValidationError)
+                    assert(error.errors === testError)
+                    done();
+                });
+        });
+
+        {%- for response in operation.response %}
+
+        xdescribe('{{ response.status }} Response Tests', function () {
+            it('should set the response status correctly', async function () {
+                fail()
+            })
+
+            it('should set the response headers correctly', async function () {
+                fail()
+            })
+
+            it('should set the response body correctly', async function () {
+                fail()
+            })
+        })
+        {%- endfor %}
+    })
+
+    {% endfor -%}
+})
+{%- endmacro -%}
+
+{{ generateRouteTests() | prettier }}

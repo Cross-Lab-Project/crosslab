@@ -8,16 +8,6 @@
   },
   "components": {
     "securitySchemes": {
-      "TuiAuth": {
-        "type": "http",
-        "scheme": "basic",
-        "description": "Basic authentication using the TUI username and password."
-      },
-      "AccessToken": {
-        "type": "http",
-        "scheme": "bearer",
-        "description": "A token for user authentication."
-      },
       "JWT": {
         "type": "http",
         "scheme": "bearer",

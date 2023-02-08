@@ -25,7 +25,13 @@ const defaultErrorHandler: express.ErrorRequestHandler = (err, req, res, _next) 
     res.status(status).send({ error, message })
 }
 
-app.initService = (options) => {
+app.initService = (optionsInit) => {
+    const options = {
+        additionalHandlers: [],
+        errorHandler: defaultErrorHandler,
+        ...optionsInit
+    }
+
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -33,10 +39,8 @@ app.initService = (options) => {
     app.use("/", router(options))
 
     // add additional handlers
-    if (options.additionalHandlers) {
-        for (const handler of options.additionalHandlers) {
-            handler(app)
-        }
+    for (const handler of options.additionalHandlers) {
+        handler(app)
     }
 
     // catch 404
@@ -45,10 +49,7 @@ app.initService = (options) => {
         res.status(404).send({ status: 404, error: "Not found" })
     })
 
-    if (options.errorHandler)
-        app.use(options.errorHandler)
-    else
-        app.use(defaultErrorHandler)
+    app.use(options.errorHandler)
 }
 {%- endmacro -%}
 {{ generateIndex() | prettier }}

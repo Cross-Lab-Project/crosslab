@@ -11,9 +11,9 @@ describe('Authentication Service Tests', function () {
         console.error = () => undefined
     })
 
+    generatedSuite()
     databaseSuite()
     methodsSuite()
-    configSpec()
     operationsSuite()
-    generatedSuite()
+    configSpec()
 })

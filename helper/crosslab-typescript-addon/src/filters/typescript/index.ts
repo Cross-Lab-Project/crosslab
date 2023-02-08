@@ -240,7 +240,7 @@ function sort_by_attribute_filter(
  * @returns The formatted string
  */
 function prettier_filter(string: string) {
-    return format(string, { parser: 'typescript', tabWidth: 4 })
+    return format(string, { parser: 'typescript', tabWidth: 4, singleQuote: true })
 }
 
 /**

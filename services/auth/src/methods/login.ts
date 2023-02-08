@@ -9,6 +9,7 @@ import { TokenModel, UserModel } from '../database/model'
 import { compare } from 'bcryptjs'
 import { tokenRepository } from '../database/repositories/tokenRepository'
 import { userRepository } from '../database/repositories/userRepository'
+import { roleRepository } from '../database/repositories/roleRepository'
 
 /**
  * This function creates a token for a user.
@@ -42,8 +43,14 @@ async function createUserToken(
 async function createUserTUI(username: string): Promise<UserModel> {
     const userModel = await userRepository.create({
         username: 'tui:' + username,
-        roles: [{ name: 'user' }],
+        password: ''
     })
+    const userRoleModel = await roleRepository.findOneOrFail({
+        where: {
+            name: 'user'
+        }
+    })
+    userModel.roles = [userRoleModel]
     userModel.tokens = []
     await userRepository.save(userModel)
 
