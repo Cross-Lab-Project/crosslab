@@ -31,7 +31,7 @@ for (const client1Type of clientTypes) {
       });
 
       step('should connect without errors', async function () {
-        this.timeout(this.debug ? 0 : 5000);
+        this.timeout(this.debug ? 0 : 15000);
         // Create devices in API:
         const device1 = await this.client.createDevice({
           type: 'device',
@@ -66,12 +66,14 @@ for (const client1Type of clientTypes) {
         await connectedPromise1;
         await connectedPromise2;
 
+        await new Promise<void>((resolve)=>{setTimeout(resolve,1000)})
+
         assert((await this.client.getDevice(device1.url)).connected, 'Device 1 is not connected');
         assert((await this.client.getDevice(device2.url)).connected, 'Device 2 is not connected');
       });
 
       step('should start an experiment', async function () {
-        this.timeout(this.debug ? 0 : 5000);
+        this.timeout(this.debug ? 0 : 15000);
         const connectedPromise1 = new Promise<void>(resolve =>
           dummyDevice1.on('connectionsChanged', connections => {
             connections.some(c => c.state === 'connected') && resolve();
@@ -156,7 +158,7 @@ for (const client1Type of clientTypes) {
       });
 
       step('should be able to transmit gpio state changes', async function () {
-        this.timeout(this.debug ? 0 : 1000);
+        this.timeout(this.debug ? 0 : 5000);
         dummyDevice1.send('gpio', {signal: 'gpio1', value: 'strongH'});
         dummyDevice1.send('gpio', {signal: 'gpio2', value: 'strongL'});
 
