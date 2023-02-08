@@ -52,6 +52,7 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         jq \
         fd-find \
+        gettext-base \
     && sudo pip3 install tox build yq shyaml kas \
     && ln -s $(which fdfind) /usr/bin/fd 
 RUN npm install -g badge-maker
