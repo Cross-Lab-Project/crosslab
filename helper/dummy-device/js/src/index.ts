@@ -46,6 +46,7 @@ async function main() {
     "--headless",
     "--no-sandbox",
     "--disable-gpu",
+    "--disable-dev-shm-usage",
     "--remote-debugging-port=" + chromePort,
     entrypoint,
   ]);
