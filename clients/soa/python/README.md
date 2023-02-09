@@ -2,7 +2,7 @@
 
 |     | build | lint | test |
 | --- | --- | --- | --- |
-| clients/soa/python |  [![build](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/ci-cd/clients/soa/python/dist/test.log) |
+| clients/soa/python |  [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.log) |
 
 [//]: # ({{end}})
 # Python SOA Client
