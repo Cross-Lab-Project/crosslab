@@ -28,5 +28,4 @@ build:
   image: crosslab-devcontainer:build
   stage: build
   script:
-    - ./scripts/ci.sh --branch $BRANCH | true
     - sleep 1800
