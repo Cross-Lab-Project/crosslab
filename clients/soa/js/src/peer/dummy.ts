@@ -7,6 +7,7 @@ export class DummyPeerConnection
     extends TypedEmitter<PeerConnectionEvents>
     implements PeerConnection
 {
+    state: "connecting" | "connected" | "disconnected"="connecting";
     tiebreaker!: boolean;
 
     transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void {

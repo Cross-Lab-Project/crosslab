@@ -1,48 +1,26 @@
 import re
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import aiohttp
 from crosslab.api_client import APIClient  # type: ignore
+from pyee import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
-from crosslab.soa_client.schemas import (
+from crosslab.soa_client.messages import (
     AuthenticationMessage,
-    AuthenticationMessageMessageType,
-    ClosePeerconnectionMessage,
-    ConnectionType,
-    CreatePeerconnectionMessage,
-    PartialSignalingMessage,
+    ClosePeerConnectionMessage,
+    CreatePeerConnectionMessage,
     SignalingMessage,
-    SignalingMessageMessageType,
-    authentication_message_from_dict,
-    authentication_message_to_dict,
-    close_peerconnection_message_from_dict,
-    create_peerconnection_message_from_dict,
 )
 from crosslab.soa_client.service import Service
 
 
-def message_decode(msg: Any):
-    try:
-        return authentication_message_from_dict(msg)
-    except Exception:
-        pass
-    try:
-        return close_peerconnection_message_from_dict(msg)
-    except Exception:
-        pass
-    try:
-        return create_peerconnection_message_from_dict(msg)
-    except Exception:
-        pass
-    raise Exception("Unknown message type")
-
-
 async def receiveMessage(ws: aiohttp.ClientWebSocketResponse):
     msg = await ws.receive()
+    print(msg)
     if msg.type == aiohttp.WSMsgType.TEXT:
-        return message_decode(msg.json())
+        return msg.json()
     else:
         return msg
 
@@ -56,20 +34,13 @@ def cleandict(d):
 async def authenticate(
     ws: aiohttp.ClientWebSocketResponse, device_url: str, token: str
 ):
-    await ws.send_json(
-        cleandict(
-            authentication_message_to_dict(
-                AuthenticationMessage(
-                    AuthenticationMessageMessageType.AUTHENTICATE, None, token
-                )
-            )
-        )
-    )
+    authMessage: AuthenticationMessage = {"messageType": "authenticate", "token": token}
+    await ws.send_json(authMessage)
     try:
         authentification_response = await receiveMessage(ws)
         if (
-            not isinstance(authentification_response, AuthenticationMessage)
-            or not authentification_response.authenticated
+            authentification_response["messageType"] != "authenticate"
+            or not authentification_response["authenticated"]
         ):
             raise Exception()
     except Exception:
@@ -91,11 +62,12 @@ def derive_endpoints_from_url(url: str, fallback_base_url: Optional[str] = None)
     return base_url, device_url, token_endpoint, ws_endpoint
 
 
-class DeviceHandler:
+class DeviceHandler(AsyncIOEventEmitter):
     _services: Dict[str, Service]
     _connections: Dict[str, Connection]
 
     def __init__(self):
+        super().__init__()
         self._services = dict()
         self._connections = dict()
 
@@ -113,8 +85,10 @@ class DeviceHandler:
         async with client:
             async with aiohttp.ClientSession() as session:
                 token = await client.create_websocket_token(token_endpoint)
+                self.emit("websocketToken", token)
                 self.ws = await session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
+                self.emit("websocketConnected")
 
                 await self._message_loop()
                 await session.close()
@@ -122,13 +96,7 @@ class DeviceHandler:
     async def _message_loop(self):
         while True:
             msg = await receiveMessage(self.ws)
-            if isinstance(msg, CreatePeerconnectionMessage):
-                await self._on_create_peerconnection(msg)
-            elif isinstance(msg, ClosePeerconnectionMessage):
-                await self._on_close_peerconnection(msg)
-            elif isinstance(msg, SignalingMessage):
-                await self._on_signaling_message(msg)
-            elif isinstance(msg, aiohttp.WSMessage):
+            if isinstance(msg, aiohttp.WSMessage):
                 if msg.type == aiohttp.WSMsgType.CLOSED:
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSING:
@@ -137,43 +105,56 @@ class DeviceHandler:
                     await self.ws.close()
                     break
                 break
+            elif (
+                msg["messageType"] == "command"
+                and msg["command"] == "createPeerconnection"
+            ):
+                await self._on_create_peerconnection(msg)
+            elif (
+                msg["messageType"] == "command"
+                and msg["command"] == "closePeerconnection"
+            ):
+                await self._on_close_peerconnection(msg)
+            elif msg["messageType"] == "signaling":
+                await self._on_signaling_message(msg)
             else:
                 raise Exception("Unknown message type")
 
-    async def _on_create_peerconnection(self, msg: CreatePeerconnectionMessage):
-        assert msg.connection_url not in self._connections
-        if msg.connection_type == ConnectionType.WEBRTC:
+    async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
+        assert msg["connectionUrl"] not in self._connections
+        if msg["connectionType"] == "webrtc":
             connection = WebRTCPeerConnection()
         else:
             raise Exception("Unknown connection type")
-        connection.tiebreaker = msg.tiebreaker
-        for service_config in msg.services:
-            assert service_config.service_id in self._services  # see Issue #4
-            service = self._services.get(service_config.service_id, None)
+        connection.tiebreaker = msg["tiebreaker"]
+        for service_config in msg["services"]:
+            assert service_config["serviceId"] in self._services  # see Issue #4
+            service = self._services.get(service_config["serviceId"], None)
             assert service is not None  # TODO: Error handling
             service.setupConnection(connection, service_config)
 
-        async def onSignalingMessage(message: PartialSignalingMessage):
-            await self.ws.send_json(
-                SignalingMessage(
-                    SignalingMessageMessageType.SIGNALING,
-                    msg.connection_url,
-                    message.content,
-                    message.signaling_type,
-                )
-            )
+        async def onSignalingMessage(message: dict):
+            signalingMessage: SignalingMessage = {
+                "connectionUrl": msg["connectionUrl"],
+                "content": message["content"],
+                "signalingType": message["signalingType"],
+                "messageType": "signaling",
+            }
+            await self.ws.send_json(signalingMessage)
 
         connection.on("signaling", onSignalingMessage)
-        self._connections[msg.connection_url] = connection
+        connection.on("connectionChanged", lambda: self.emit("connectionsChanged"))
+        self._connections[msg["connectionUrl"]] = connection
+        self.emit("connectionsChanged")
         await connection.connect()
 
-    async def _on_close_peerconnection(self, msg: ClosePeerconnectionMessage):
-        connection = self._connections.get(msg.connection_url, None)
+    async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
+        connection = self._connections.get(msg["connectionUrl"], None)
         assert connection is not None  # TODO: Error handling
         await connection.close()
-        del self._connections[msg.connection_url]
+        del self._connections[msg["connectionUrl"]]
 
     async def _on_signaling_message(self, msg: SignalingMessage):
-        connection = self._connections.get(msg.connection_url, None)
+        connection = self._connections.get(msg["connectionUrl"], None)
         assert connection is not None  # TODO: Error handling
         await connection.handleSignalingMessage(msg)

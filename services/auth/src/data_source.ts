@@ -11,7 +11,7 @@ import {
 
 export const AppDataSource = new DataSource({
     type: 'sqlite',
-    database: 'db/device.db',
+    database: 'db/auth.db',
     synchronize: true,
     entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
 })

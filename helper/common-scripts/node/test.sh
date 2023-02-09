@@ -1,4 +1,7 @@
 #!/bin/sh
 
-npm install --install-links
+rm -rf venv
+rm -rf db
+
+npm ci
 npm run test

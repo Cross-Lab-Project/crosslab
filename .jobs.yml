@@ -4,6 +4,8 @@
 
 helper/development-container:
   - script: build -t development-container:latest
+    tags:
+      - environment
 
 ################################################################################
 # Helper #######################################################################
@@ -19,6 +21,30 @@ helper/crosslab-typescript-addon:
   - script: build
     dependencies:
       - helper/openapi-codegeneration:build
+
+helper/dummy-device/js:
+  - script: lint-code
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+  - script: build
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+
+helper/dummy-device/python:
+  - script: lint
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+      - clients/soa_services/electricalConnection/python:build
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+      - clients/soa_services/electricalConnection/python:build
 
 
 ################################################################################
@@ -169,6 +195,10 @@ clients/soa/python:
     dependencies:
       - clients/soa/python:build
 
+clients/soa/js:
+  - script: build
+
+
 # SOA Service ##################################################################
 
 clients/soa_services/electricalConnection/python:
@@ -183,3 +213,48 @@ clients/soa_services/electricalConnection/python:
   - script: test
     dependencies:
       - clients/soa_services/electricalConnection/python:build
+
+clients/soa_services/electricalConnection/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+
+clients/soa_services/webcam/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+
+clients/soa_services/file/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+
+################################################################################
+# Integration Tests ############################################################
+################################################################################
+
+integration-test:
+  - script: lint
+    dependencies:
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build
+  - script: test
+    dependencies:
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build

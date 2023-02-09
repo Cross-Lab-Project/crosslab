@@ -1,0 +1,1 @@
+../../../helper/common-scripts/node/replace_links_with_version.sh

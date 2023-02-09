@@ -20,4 +20,3 @@ properties:
       - gpio
 required:
   - signals
-  - direction

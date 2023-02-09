@@ -1,30 +1,41 @@
 import asyncio
-import aiohttp.web
 import re
+
+import aiohttp.web
+
 from helpers import AsyncException
+
 
 class WSMock:
     def __init__(self):
         self.protocol = []
 
     def expect(self, message, answer=None):
-        self.protocol.append({"expect": message, "send": answer, "sleep": None, "await": None})
+        self.protocol.append(
+            {"expect": message, "send": answer, "sleep": None, "await": None}
+        )
 
     def send(self, message):
-        self.protocol.append({"expect": None, "send": message, "sleep": None, "await": None})
+        self.protocol.append(
+            {"expect": None, "send": message, "sleep": None, "await": None}
+        )
 
     def sleep(self, seconds):
-        self.protocol.append({"expect": None, "send": None, "sleep": seconds, "await": None})
+        self.protocol.append(
+            {"expect": None, "send": None, "sleep": seconds, "await": None}
+        )
 
     def wait(self, awaitable):
-        self.protocol.append({"expect": None, "send": None, "sleep": None, "await": awaitable})
+        self.protocol.append(
+            {"expect": None, "send": None, "sleep": None, "await": awaitable}
+        )
 
     async def handle(self, request: aiohttp.web.Request, base_url: str):
         self.ws = aiohttp.web.WebSocketResponse()
         await self.ws.prepare(request)
         for message in self.protocol:
             if message["expect"]:
-                assert await self.ws.receive_str(timeout=0.5) == message["expect"].replace(
+                assert await self.ws.receive_str() == message["expect"].replace(
                     "{base_url}", base_url
                 )
             if message["send"]:

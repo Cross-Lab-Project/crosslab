@@ -21,6 +21,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 rm -rf node_modules
-npm install --install-links
+npm ci
 npm run generate
 npm run generate-test

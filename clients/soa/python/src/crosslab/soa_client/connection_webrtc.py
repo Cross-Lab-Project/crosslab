@@ -1,4 +1,3 @@
-import asyncio
 import json
 from enum import Enum
 from typing import Any, Dict, Literal, cast
@@ -19,12 +18,7 @@ from crosslab.soa_client.connection import (
     DataChannel,
     MediaChannel,
 )
-from crosslab.soa_client.schemas import (
-    CreatePeerconnectionMessageService,
-    PartialSignalingMessage,
-    SignalingMessage,
-    SignalingType,
-)
+from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
 
 
 class WebRTCRole(Enum):
@@ -36,11 +30,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _receivingChannelMap: Dict[str, Channel]
     _mediaChannelMap: Dict[str, MediaChannel]
     _transeiverMap: Dict[Any, str]
-    _connectedEvent: asyncio.Event
 
     def __init__(self):
-        super().__init__()
-        self._connectedEvent = asyncio.Event()
+        AsyncIOEventEmitter.__init__(self)
+        Connection.__init__(self)
         # config = RTCConfiguration(
         #     [
         #         RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
@@ -58,7 +51,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 self.pc.signalingState,
             )
             if self.pc.connectionState == "connected":
-                self._connectedEvent.set()
+                self.state = "connected"
+                self.emit("connectionChanged")
 
         async def datachannel(datachannel):
             channel = self._receivingChannelMap[datachannel.label]
@@ -100,25 +94,25 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         await self.pc.close()
         del self.pc
 
-    def _create_label(self, serviceConfig: CreatePeerconnectionMessageService, id: str):
+    def _create_label(self, serviceConfig: ServiceConfig, id: str):
         id1 = (
-            serviceConfig.service_id
+            serviceConfig["serviceId"]
             if self.tiebreaker
-            else serviceConfig.remote_service_id
+            else serviceConfig["remoteServiceId"]
         )
         id2 = (
-            serviceConfig.remote_service_id
+            serviceConfig["remoteServiceId"]
             if self.tiebreaker
-            else serviceConfig.service_id
+            else serviceConfig["serviceId"]
         )
         label = json.dumps(
-            [serviceConfig.service_type, id1, id2, id], separators=(",", ":")
+            [serviceConfig["serviceType"], id1, id2, id], separators=(",", ":")
         )
         return label
 
     def transmit(
         self,
-        serviceConfig: CreatePeerconnectionMessageService,
+        serviceConfig: ServiceConfig,
         id: str,
         channel: Channel,
     ):
@@ -144,7 +138,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
     def receive(
         self,
-        serviceConfig: CreatePeerconnectionMessageService,
+        serviceConfig: ServiceConfig,
         id: str,
         channel: Channel,
     ):
@@ -154,23 +148,21 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             self._mediaChannelMap[label] = cast(MediaChannel, channel)
 
     async def connect(self):
+        self.state = "connecting"
         self.role = WebRTCRole.Caller if self.tiebreaker else WebRTCRole.Callee
         if self.role == WebRTCRole.Caller:
             await self._createMediaChannels()
             await self._makeOffer()
-            await self._connectedEvent.wait()
-            print("connected Caller")
         elif self.role == WebRTCRole.Callee:
-            await self._connectedEvent.wait()
-            print("connected Callee")
+            pass
 
     async def handleSignalingMessage(self, message: SignalingMessage):
         print("handleSignalingMessage")
-        if message.signaling_type == SignalingType.ANSWER:
+        if message["signalingType"] == "answer":
             await self._handleAnswer(message)
-        if message.signaling_type == SignalingType.OFFER:
+        if message["signalingType"] == "offer":
             await self._handleOffer(message)
-        if message.signaling_type == SignalingType.CANDIDATE:
+        if message["signalingType"] == "candidate":
             raise NotImplementedError()
             # await self._handleIceCandidate(message)
 
@@ -181,10 +173,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         offer = self.pc.localDescription
         self.emit(
             "signaling",
-            PartialSignalingMessage(
-                {"type": offer.type, "sdp": self._modifySDP(offer.sdp)},
-                SignalingType.OFFER,
-            ),
+            {
+                "signalingType": "offer",
+                "content": {"type": offer.type, "sdp": self._modifySDP(offer.sdp)},
+            },
         )
 
     async def _makeAnswer(self, offer):
@@ -197,10 +189,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         answer = self.pc.localDescription
         self.emit(
             "signaling",
-            PartialSignalingMessage(
-                {"type": answer.type, "sdp": self._modifySDP(answer.sdp)},
-                SignalingType.ANSWER,
-            ),
+            {
+                "signalingType": "answer",
+                "content": {"type": answer.type, "sdp": self._modifySDP(answer.sdp)},
+            },
         )
 
     async def _acceptAnswer(self, answer: RTCSessionDescription):
@@ -210,14 +202,14 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     async def _handleOffer(self, message: SignalingMessage):
         print("handleOffer")
         offer = RTCSessionDescription(
-            type=message.content["type"], sdp=message.content["sdp"]
+            type=message["content"]["type"], sdp=message["content"]["sdp"]
         )
         await self._makeAnswer(offer)
 
     async def _handleAnswer(self, message: SignalingMessage):
         print("handleAnswer")
         answer = RTCSessionDescription(
-            type=message.content["type"], sdp=message.content["sdp"]
+            type=message["content"]["type"], sdp=message["content"]["sdp"]
         )
         await self._acceptAnswer(answer)
 

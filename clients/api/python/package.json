@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "generate": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../../../services/openapi/dist/openapi.json -t ./template python -o ./src/crosslab/api_client",
-    "generate-test": "node node_modules/@cross-lab-project/openapi-codegen/dist/index.js -i ../../../services/openapi/dist/openapi.json -t ./test_template python -o ./tests",
+    "generate": "npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -t ./template python -o ./src/crosslab/api_client",
+    "generate-test": "npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -t ./test_template python -o ./tests",
     "watch-templates": "nodemon --watch template -e njk --exec \"npm run generate\"",
     "watch-test-templates": "nodemon --watch test_template -e njk --exec \"npm run generate-test\""
   },

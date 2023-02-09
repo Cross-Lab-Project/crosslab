@@ -1,9 +1,8 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-image: crosslab/devcontainer:latest
-
 stages:
+  - build-environment
   - build
 
 default:
@@ -18,8 +17,15 @@ workflow:
         PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
         BRANCH: $CI_COMMIT_BRANCH
 
+build-environment:
+  image: crosslab/devcontainer:latest
+  stage: build-environment
+  script:
+    - ./scripts/ci.sh --tag environment --no-upload --branch $BRANCH
+    - cat ./helper/development-container/dist/crosslab-devcontainer.tar | docker load
+
 build:
+  image: crosslab-devcontainer:build
   stage: build
   script:
     - ./scripts/ci.sh --branch $BRANCH
-    - sleep 1800

@@ -1,5 +1,1 @@
-#!/bin/bash
-set -e
-
-npm install --install-links
-npm run build
+../../../helper/common-scripts/node/build.sh

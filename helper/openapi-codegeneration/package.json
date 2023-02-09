@@ -1,21 +1,24 @@
 {
   "name": "@cross-lab-project/openapi-codegen",
-  "version": "0.1.0",
   "description": "A generator for openapi-specification",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  "types": "./lib/types/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "scripts": {
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "npm run build-compile",
+    "watch": "tsc -w"
   },
-  "main": "dist/index.js",
   "bin": {
-    "openapi-codegen": "dist/index.js"
+    "openapi-codegen": "./lib/cjs/index.js"
   },
   "files": [
-    "dist"
+    "lib"
   ],
-  "scripts": {
-    "build": "tsc",
-    "watch": "tsc -w"
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
   },
   "author": "Johannes Nau",
   "license": "UNLICENSED",

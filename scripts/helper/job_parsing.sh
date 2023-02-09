@@ -4,6 +4,7 @@ declare -A files
 declare -A root
 declare -A script
 declare -A script_args
+declare -A tags
 declare -a job_names
 
 job_name_query='\(.path):\(.script | split(" ")[0])'
@@ -12,8 +13,9 @@ path_query='\(.path)'
 paths_query='\(.paths)'
 script_query='\(.script | split(" ")[0])'
 script_args_query='\(.script | split(" ")[1:] | join(" "))'
+tags_query='\(.tags)'
 
-query="$job_name_query\t$dependencies_query\t$path_query\t$paths_query\t$script_query\t$script_args_query"
+query="$job_name_query\t$dependencies_query\t$path_query\t$paths_query\t$script_query\t$script_args_query\t$tags_query"
 
 raw_jobs=$(cat .jobs.yml | yq -r '. | to_entries | .[] | .key as $k | .value | map({path: $k}+.) | .[] | "'"$query"'\t"')
 
@@ -47,5 +49,11 @@ for raw_job in $raw_jobs; do
   root[$job_name]=$path
   script[$job_name]=$(echo $raw_job | cut -f5)
   script_args[$job_name]=$(echo $raw_job | cut -f6)
+  d=$(echo $raw_job | cut -f7)
+  d=${d/[\"/}
+  d=${d/\"]/}
+  d=${d//\",\"/$'\n'}
+  d=${d/null/default}
+  tags[$job_name]=$d
 done
 IFS=$oldIFS

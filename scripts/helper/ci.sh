@@ -1,13 +1,15 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$(realpath $(dirname "$0"))
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 cd $SCRIPT_DIR/../..
 
 # Default values
 VERBOSE=false
 SKIP_UPLOAD=false
+SKIP_DOWNLOAD=false
+CLEAN=false
 
 SUBCOMMANDVARS=""
 
@@ -34,7 +36,17 @@ while [[ $# -gt 0 ]]; do
       shift # past value
       ;;
 
+    --no-download)
+      SKIP_DOWNLOAD=true
+      shift
+      ;;
+
     --skip-upload)
+      SKIP_UPLOAD=true
+      shift
+      ;;
+
+    --no-upload)
       SKIP_UPLOAD=true
       shift
       ;;
@@ -47,6 +59,21 @@ while [[ $# -gt 0 ]]; do
       fi
       shift # past argument
       shift # past value
+      ;;
+
+    --tag)
+      if [ -z "$TAGS" ]; then
+        TAGS="$2"
+      else
+        TAGS="$TAGS $2"
+      fi
+      shift # past argument
+      shift # past value
+      ;;
+
+    --clean)
+      CLEAN=true
+      shift # past argument
       ;;
 
     -n|--dry-run)
@@ -67,6 +94,11 @@ done
 
 if [ $VERBOSE = false ]; then
   SUBCOMMANDVARS="$SUBCOMMANDVARS -q"
+fi
+
+if [ $CLEAN = true ]; then
+  echo "Cleaning dist directories"
+  rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
 fi
 
 source $SCRIPT_DIR/printing_functions.sh
@@ -99,6 +131,21 @@ while true; do
       fi
     fi
 
+    # skip if tag is not in TAGS
+    if [ ! -z "$TAGS" ]; then
+      is_in_tags=false
+      for t in $TAGS; do
+        if [ ${tags[$job]} = $t ]; then
+          is_in_tags=true
+          break
+        fi
+      done
+      if [ $is_in_tags = false ]; then
+        status[$job]="skipped"
+        continue
+      fi
+    fi
+
     if [ ${status[$job]} = "created" ]; then
       runable=true
       # check if runable (dependencies are build)
@@ -117,8 +164,10 @@ while true; do
           status[$job]="failed"
           ignored_jobs="$ignored_jobs $job"
           runable=false
+          break
         elif [ ${status[$dependency]} = "created" ]; then
           runable=false
+          break
         fi
       done
 
@@ -136,7 +185,7 @@ while true; do
         job_input_hash=$($SCRIPT_DIR/path_hash.sh $job_input_paths)
 
         # Check if we can download job from reopository
-        if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ]; then
+        if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ] && [ $SKIP_DOWNLOAD = false ]; then
           # No hash file, so job is not build try to download cache
           echo_end "${BLUE}⇣ check for remote cache${NC}"
           $SCRIPT_DIR/download_job_artifact.sh --directory ${root[$job]}/dist --hash $job_input_hash $SUBCOMMANDVARS || true
@@ -146,6 +195,11 @@ while true; do
         if [ "$(cat ${root[$job]}/dist/${script[$job]}.hash 2>/dev/null)" = "$job_input_hash" ]; then
           skipped_jobs="$skipped_jobs $job"
           if [ "$(cat ${root[$job]}/dist/${script[$job]}.status 2>/dev/null)" = "success" ]; then
+            for dependency in ${dependencies[$job]}; do
+              if [ -e ${root[$dependency]}/scripts/set-scene.sh ]; then
+                ${root[$dependency]}/scripts/set-scene.sh || true
+              fi
+            done
             status[$job]="success"
             echo_end "${GREEN}skipped (success)${NC}"
           else
@@ -157,6 +211,14 @@ while true; do
         fi
 
         echo_end "${BLUE}running...${NC}"
+
+        # Set Scene for dependencies:
+        for dependency in ${dependencies[$job]}; do
+          if [ -e ${root[$dependency]}/scripts/set-scene.sh ]; then
+            ${root[$dependency]}/scripts/set-scene.sh || true
+          fi
+        done
+
         mkdir -p ${root[$job]}"/dist"
         rm -f ${root[$job]}"/dist/${script[$job]}.badge"
         set +e

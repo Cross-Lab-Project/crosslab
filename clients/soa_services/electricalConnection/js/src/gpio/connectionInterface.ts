@@ -16,13 +16,13 @@ export interface GPIOConfiguration extends ConnectionInterfaceConfiguration {
 }
 
 export enum GPIOState {
-  "Unknown",
-  "Error",
-  "StrongLow",
-  "StrongHigh",
-  "HighZ",
-  "WeakLow",
-  "WeakHigh",
+  "Unknown" = "unknown",
+  "Error" = "error",
+  "StrongLow" = "strongL",
+  "StrongHigh" = "strongH",
+  "HighZ" = "highZ",
+  "WeakLow" = "weakL",
+  "WeakHigh" = "weakH",
 }
 
 interface GPIOInterfaceData {

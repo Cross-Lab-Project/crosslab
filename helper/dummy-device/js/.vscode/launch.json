@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Browser",
+            "request": "attach",
+            "type": "chrome",
+            "port": 9401,
+            "webRoot": "${workspaceFolder}/http-dist",
+            "urlFilter": "*index.html",
+            "restart": false,
+            "timeout": 1000,
+        },
+        {
+            "name": "Node",
+            "type": "node",
+            "request": "attach",
+            "port": 9301,
+            "restart": false,
+            "timeout": 1000,
+        }
+    ]
+}

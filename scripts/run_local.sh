@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$(dirname "$0")
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 cd $SCRIPT_DIR/../
 
@@ -11,24 +11,34 @@ export BASE_URL="http://localhost"
 
 CSI='\x1b['
 
-(cd backend-services/auth && \
+(cd services/auth && \
    PORT=3000 \
    ALLOWLIST=localhost:authservice,localhost:deviceservice,localhost:experimentservice,localhost:federationservice,localhost:updateservice \
-   npm run start 2>&1 | sed 's/^/Auth:'"${CSI}19G"'| /') &
-(cd backend-services/device && PORT=3001 npm run start 2>&1 | sed 's/^/Device:'"${CSI}19G"'| /') &
-(cd backend-services/experiment && PORT=3002 npm run start 2>&1 | sed 's/^/Experiment:'"${CSI}19G"'| /') &
-(cd backend-services/federation && PORT=3003 npm run start 2>&1 | sed 's/^/Federation:'"${CSI}19G"'| /') &
+   NODE_OPTIONS='--inspect=9000' \
+   node ./app/index.js 2>&1 | sed 's/^/Auth:'"${CSI}19G"'| /') &
+(cd services/device && \
+   PORT=3001 \
+   NODE_OPTIONS='--inspect=9001' \
+   node ./app/index.js 2>&1 | sed 's/^/Device:'"${CSI}19G"'| /') &
+(cd services/experiment && \
+   PORT=3002 \
+   NODE_OPTIONS='--inspect=9002' \
+   node ./app/index.js 2>&1 | sed 's/^/Experiment:'"${CSI}19G"'| /') &
+(cd services/federation && \
+   PORT=3003 \
+   NODE_OPTIONS='--inspect=9003' \
+   node ./app/index.js 2>&1 | sed 's/^/Federation:'"${CSI}19G"'| /') &
 
-(cd backend-services/gateway && \
- docker run \
-    -e AUTH_SERVICE_URL="127.0.0.1:3000" \
-    -e DEVICE_SERVICE_URL="127.0.0.1:3001" \
-    -e EXPERIMENT_SERVICE_URL="127.0.0.1:3002" \
-    -e FEDERATION_SERVICE_URL="127.0.0.1:3003" \
-    -e UPDATE_SERVICE_URL="127.0.0.1:1" \
-    -e SERVER_NAME="localhost" \
-    --net host \
- gateway:latest 2>&1 | sed 's/^/Gateway:'"${CSI}19G"'| /') &
+(cd services/gateway && \
+   AUTH_SERVICE_URL="127.0.0.1:3000" \
+   DEVICE_SERVICE_URL="127.0.0.1:3001" \
+   EXPERIMENT_SERVICE_URL="127.0.0.1:3002" \
+   FEDERATION_SERVICE_URL="127.0.0.1:3003" \
+   UPDATE_SERVICE_URL="127.0.0.1:1" \
+   SERVER_NAME="localhost" \
+   NGINX_PID_PATH='/tmp/nginx.pid' \
+   ./scripts/create_config.sh && \
+   nginx -g "daemon off;" '-p' $PWD/conf_compiled, '-c' $PWD/conf_compiled/nginx.conf  2>&1 | sed 's/^/Gateway:'"${CSI}19G"'| /') &
 
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
   

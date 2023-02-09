@@ -4,14 +4,7 @@ import pytest
 from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
 
 from crosslab.soa_services.electrical import ElectricalConnectionService
-from crosslab.soa_services.electrical.schema import Direction
-from crosslab.soa_services.electrical.schema import (
-    ElectricalServiceConfiguration as ServiceConfig,
-)
-from crosslab.soa_services.electrical.schema import (
-    ElectricalServiceConfigurationUpstreamSignalInterfaceConfiguration as InterfaceConfig,
-)
-from crosslab.soa_services.electrical.schema import PurpleSignals, ServiceType, State
+from crosslab.soa_services.electrical.messages import ElectricalServiceConfig
 from crosslab.soa_services.electrical.signal_interfaces.gpio import (
     ConstractableGPIOInterface,
     GPIOInterface,
@@ -63,24 +56,23 @@ def test_gpio_changeDriver(tiebreaker):
 
     ecs.on("newInterface", newInterface)
 
-    serviceConfig = ServiceConfig(
-        interfaces=[
-            InterfaceConfig(
-                interface_id="0",
-                interface_type="gpio",
-                bus_id="0",
-                signals=PurpleSignals("S1"),
-                driver=None,
-                direction=Direction.INOUT,
-            )
+    serviceConfig: ElectricalServiceConfig = {
+        "serviceType": "http://api.goldi-labs.de/serviceTypes/electrical",
+        "interfaces": [
+            {
+                "interfaceId": "0",
+                "interfaceType": "gpio",
+                "busId": "0",
+                "signals": {"gpio": "S1"},
+                "direction": "inout",
+            }
         ],
-        service_type=ServiceType.GOLDI_ELECTRICAL,
-    )
+    }
 
-    ecs.setupConnection(con, serviceConfig.to_dict())
+    ecs.setupConnection(con, serviceConfig)
 
     assert isinstance(interface, GPIOInterface)
-    interface.changeDriver(State.HIGH_Z)
+    interface.changeDriver("highZ")
 
     assert con.messages == {
         "data": [
@@ -92,34 +84,34 @@ def test_gpio_changeDriver(tiebreaker):
 
 def test_gpip_signal_evaluation():
     gpio = GPIOInterface(None)  # type: ignore
-    gpio.driverStates = {"S1": State.HIGH_Z, "S2": State.HIGH_Z}
+    gpio.driverStates = {"S1": "highZ", "S2": "highZ"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.UNKNOWN
-    gpio.driverStates = {"S1": State.STRONG_H, "S2": State.STRONG_L}
+    assert gpio.signalState == "unknown"
+    gpio.driverStates = {"S1": "strongH", "S2": "strongL"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.ERROR
-    gpio.driverStates = {"S1": State.STRONG_H, "S2": State.WEAK_L}
+    assert gpio.signalState == "error"
+    gpio.driverStates = {"S1": "strongH", "S2": "weakL"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.STRONG_H
-    gpio.driverStates = {"S1": State.STRONG_L, "S2": State.WEAK_H}
+    assert gpio.signalState == "strongH"
+    gpio.driverStates = {"S1": "strongL", "S2": "weakH"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.STRONG_L
-    gpio.driverStates = {"S1": State.WEAK_H, "S2": State.WEAK_L}
+    assert gpio.signalState == "strongL"
+    gpio.driverStates = {"S1": "weakH", "S2": "weakL"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.UNKNOWN
-    gpio.driverStates = {"S1": State.WEAK_H, "S2": State.HIGH_Z}
+    assert gpio.signalState == "unknown"
+    gpio.driverStates = {"S1": "weakH", "S2": "highZ"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.WEAK_H
-    gpio.driverStates = {"S1": State.WEAK_L, "S2": State.HIGH_Z}
+    assert gpio.signalState == "weakH"
+    gpio.driverStates = {"S1": "weakL", "S2": "highZ"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.WEAK_L
-    gpio.driverStates = {"S1": State.WEAK_H, "S2": State.HIGH_Z, "S3": State.STRONG_L}
+    assert gpio.signalState == "weakL"
+    gpio.driverStates = {"S1": "weakH", "S2": "highZ", "S3": "strongL"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.STRONG_L
-    gpio.driverStates = {"S1": State.WEAK_H, "S2": State.ERROR}
+    assert gpio.signalState == "strongL"
+    gpio.driverStates = {"S1": "weakH", "S2": "error"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.ERROR
-    gpio.driverStates = {"S1": State.WEAK_H, "S2": State.UNKNOWN}
+    assert gpio.signalState == "error"
+    gpio.driverStates = {"S1": "weakH", "S2": "unknown"}
     gpio.evaluateSignalState()
-    assert gpio.signalState == State.UNKNOWN
+    assert gpio.signalState == "unknown"
     pass

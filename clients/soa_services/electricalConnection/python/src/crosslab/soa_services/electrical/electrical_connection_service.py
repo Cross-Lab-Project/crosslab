@@ -1,19 +1,17 @@
 import json
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_services.electrical import (
     ConstructableSignalInterface,
     SignalInterface,
 )
-from crosslab.soa_services.electrical.schema import (
-    ElectricalServiceConfigurationReadUpstreamSignalInterfaceConfiguration as SignalInterfaceConfiguration,
-)
-from crosslab.soa_services.electrical.schema import (
-    electrical_service_configuration_read_from_dict,
+from crosslab.soa_services.electrical.messages import (
+    ElectricalServiceConfig,
+    SignalInterfaceConfig,
 )
 
 
@@ -47,16 +45,16 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
 
     def _findOrCreateInterface(
         self,
-        interfaceConfig: SignalInterfaceConfiguration,
+        interfaceConfig: SignalInterfaceConfig,
     ):
-        if interfaceConfig.interface_id in self.interfaces:
-            return self.interfaces[interfaceConfig.interface_id]
+        if interfaceConfig["interfaceId"] in self.interfaces:
+            return self.interfaces[interfaceConfig["interfaceId"]]
         else:
             interfaceConstructor = self.interfaces_constructors[
-                interfaceConfig.interface_type
+                interfaceConfig["interfaceType"]
             ]
             interface = interfaceConstructor.create(interfaceConfig)
-            self.interfaces[interfaceConfig.interface_id] = interface
+            self.interfaces[interfaceConfig["interfaceId"]] = interface
             self.emit("newInterface", interface)
             return interface
 
@@ -67,27 +65,26 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
     def setupConnection(
         self,
         connection: Connection,
-        serviceConfig: Any,
+        serviceConfig: ElectricalServiceConfig,
     ):
-        parsedServiceConfig = electrical_service_configuration_read_from_dict(
-            serviceConfig
-        )
         channel = DataChannel()
         channel.on("data", lambda data: self.handleData(data))
         channel.on("open", lambda: self.retransmit())
 
-        for interfaceConfig in parsedServiceConfig.interfaces:
+        for interfaceConfig in serviceConfig["interfaces"]:
             signalInterface = self._findOrCreateInterface(interfaceConfig)
             signalInterface.on(
                 "upstreamData",
-                lambda data, busId=interfaceConfig.bus_id: channel.send(
-                    json.dumps({"busId": busId, "data": data.to_dict()})
+                lambda data, busId=interfaceConfig["busId"]: channel.send(
+                    json.dumps({"busId": busId, "data": data})
                 ),
             )
-            interfaceList = self.interfaces_by_bus_id.get(interfaceConfig.bus_id, None)
+            interfaceList = self.interfaces_by_bus_id.get(
+                interfaceConfig["busId"], None
+            )
             if interfaceList is None:
-                self.interfaces_by_bus_id[interfaceConfig.bus_id] = []
-            self.interfaces_by_bus_id[interfaceConfig.bus_id].append(signalInterface)
+                self.interfaces_by_bus_id[interfaceConfig["busId"]] = []
+            self.interfaces_by_bus_id[interfaceConfig["busId"]].append(signalInterface)
 
         if connection.tiebreaker:
             connection.transmit(serviceConfig, "data", channel)

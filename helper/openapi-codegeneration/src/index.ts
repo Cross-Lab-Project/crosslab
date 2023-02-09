@@ -25,21 +25,14 @@ import { OpenAPIV3_1 } from "openapi-types";
 import { join, resolve } from "path";
 import yaml from "yaml";
 
+import {
+  activateFilterCollection,
+  activatePreset,
+  loadPreset,
+  Preset,
+} from "./addon";
 
-import { activateFilterCollection, activatePreset } from "./addon";
-
-export { Addon, Preset, FilterCollection, Filter, Global } from "./addon"
-
-const env = nunjucks.configure({ autoescape: false, noCache: true });
-env.addFilter("formatPath", formatPath_filter);
-env.addFilter("hasPathParameter", hasPathParameter_filter);
-env.addFilter("upperCamelCase", upperCamelCase_filter);
-env.addFilter("lowerCamelCase", lowerCamelCase_filter);
-env.addFilter("lowerSnakeCase", lowerSnakeCase_filter);
-env.addFilter("replaceRegEx", replaceRegEx_filter);
-env.addFilter("jsf", jsf_filter);
-env.addFilter("permuteOptionalArgs", permuteOptionalArgs_filter);
-env.addFilter("await", await_filter, true);
+export { Addon, Preset, FilterCollection, Filter, Global } from "./addon";
 
 let inputData: InputData;
 let schema_mapping: string[] = [];
@@ -88,11 +81,6 @@ async function transformerToDict(language: string, type: string) {
   return undefined;
 }
 
-env.addGlobal("schemas", schemas);
-env.addGlobal("type", type);
-env.addGlobal("transformerFromDict", transformerFromDict);
-env.addGlobal("transformerToDict", transformerToDict);
-
 async function main() {
   program
     .name("openapi-codegeneration")
@@ -103,19 +91,52 @@ async function main() {
     .requiredOption("-o, --output <string>", "openapi output directory")
     .option("-f, --filters <string...>", "filter collections to load")
     .option("--keep-refs", "keep references")
-    .addOption(new Option("-p, --preset <string>").implies({ template: "" }).conflicts("-f"));
+    .addOption(
+      new Option("-p, --preset <string>")
+        .implies({ template: "" })
+        .conflicts("-f")
+    );
 
   program.parse();
   const options = program.opts();
 
   if (options.filters) {
-    options.filters.foreach((fc: string) => activateFilterCollection(fc, env))
+    options.filters.foreach((fc: string) => activateFilterCollection(fc, env));
   }
 
-  if (options.preset) { 
-    activatePreset(options.preset, env)
+  let templateDir = resolve(__dirname, "../templates", options.template);
+  let preset: undefined | Preset;
+  if (options.preset) {
+    preset = await loadPreset(options.preset);
+    templateDir = preset.templatesDir;
+  }
+  
+  if (options.template.startsWith(".")) {
+    templateDir = resolve(process.cwd(), options.template);
   }
 
+  const env = nunjucks.configure(templateDir, {
+    autoescape: false,
+    noCache: true,
+  });
+  env.addFilter("formatPath", formatPath_filter);
+  env.addFilter("hasPathParameter", hasPathParameter_filter);
+  env.addFilter("upperCamelCase", upperCamelCase_filter);
+  env.addFilter("lowerCamelCase", lowerCamelCase_filter);
+  env.addFilter("lowerSnakeCase", lowerSnakeCase_filter);
+  env.addFilter("replaceRegEx", replaceRegEx_filter);
+  env.addFilter("jsf", jsf_filter);
+  env.addFilter("permuteOptionalArgs", permuteOptionalArgs_filter);
+  env.addFilter("await", await_filter, true);
+  env.addGlobal("schemas", schemas);
+  env.addGlobal("type", type);
+  env.addGlobal("transformerFromDict", transformerFromDict);
+  env.addGlobal("transformerToDict", transformerToDict);
+  
+  if (preset) {
+    activatePreset(preset, env);
+  }
+  
   const inputs: string = options.input;
 
   function loadAndDeref(input: string): string {
@@ -123,8 +144,8 @@ async function main() {
     const schema = yaml.parse(file);
     return JSON.stringify(schema).replace(
       /{[^{}]*"\$ref":"([^"]*)"[^{}]*}/g,
-      (substring, group: string) => {
-        return loadAndDeref(resolve(join(input, '..', group)));
+      (_substring, group: string) => {
+        return loadAndDeref(resolve(join(input, "..", group)));
       }
     );
   }
@@ -134,9 +155,9 @@ async function main() {
   for (const input of inputs) {
     try {
       const openApi = (
-        options["keepRefs"] 
-            ? await SwaggerParser.parse(input) 
-            : await SwaggerParser.validate(input)
+        options["keepRefs"]
+          ? await SwaggerParser.parse(input)
+          : await SwaggerParser.validate(input)
       ) as OpenAPIV3_1.Document;
       if (openApi.openapi !== "3.1.0") {
         console.error(
@@ -155,7 +176,7 @@ async function main() {
     } catch (e) {
       // parse input as normal yaml file
       const schema = JSON.parse(loadAndDeref(input));
-      addJsonSchema(schema.title??input, schema, inputData);
+      addJsonSchema(schema.title ?? input, schema, inputData);
     }
   }
 
@@ -170,15 +191,6 @@ async function main() {
   mkdirSync(outputDir, { recursive: true });
 
   // render all templates in the template directory
-  let templateDir
-  try{
-    templateDir = env.getGlobal("templateDir")
-  } catch {
-    templateDir = resolve(__dirname, "../templates", options.template);
-  }
-  if (options.template.startsWith(".")) {
-    templateDir = resolve(process.cwd(), options.template);
-  }
 
   for (const file of readdirSync(templateDir)) {
     const template = join(templateDir, file);
@@ -250,8 +262,8 @@ function addJsonSchema(
   const _name = lowerSnakeCase_filter(name);
   if (schema) {
     schema_mapping.push(_name);
-    schema_mapping.push(_name+"_write");
-    schema_mapping.push(_name+"_read");
+    schema_mapping.push(_name + "_write");
+    schema_mapping.push(_name + "_read");
     const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
     const schemaInputWrite = new JSONSchemaInput(new FetchingJSONSchemaStore());
     const schemaInputRead = new JSONSchemaInput(new FetchingJSONSchemaStore());
@@ -259,16 +271,28 @@ function addJsonSchema(
     schemas.addInput(schemaInputWrite);
     schemas.addInput(schemaInputRead);
 
-    let schema_string=JSON.stringify(schema)
-    if (schema_string.includes("\"const\":")) {
-      schema_string = schema_string.replace(/"const":("[^"]*")/g,`"enum":[$1]`)
+    let schema_string = JSON.stringify(schema);
+    if (schema_string.includes('"const":')) {
+      schema_string = schema_string.replace(
+        /"const":("[^"]*")/g,
+        `"enum":[$1]`
+      );
     }
 
-    let schema_string_write=schema_string
-    let schema_string_read=schema_string
-    if (schema_string.includes("\"readOnly\":") || schema_string.includes("\"writeOnly\":")) {
-      schema_string_write = schema_string.replace(/"[^\"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,``)
-      schema_string_read = schema_string.replace(/"[^\"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,``)
+    let schema_string_write = schema_string;
+    let schema_string_read = schema_string;
+    if (
+      schema_string.includes('"readOnly":') ||
+      schema_string.includes('"writeOnly":')
+    ) {
+      schema_string_write = schema_string.replace(
+        /"[^\"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,
+        ``
+      );
+      schema_string_read = schema_string.replace(
+        /"[^\"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,
+        ``
+      );
     }
 
     schemaInput.addSource({
@@ -276,11 +300,11 @@ function addJsonSchema(
       schema: schema_string,
     });
     schemaInputWrite.addSource({
-      name: _name+"_write",
+      name: _name + "_write",
       schema: schema_string_write,
     });
     schemaInputRead.addSource({
-      name: _name+"_read",
+      name: _name + "_read",
       schema: schema_string_read,
     });
   }
