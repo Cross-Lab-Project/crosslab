@@ -22,3 +22,4 @@ build:
   stage: build
   script:
     - ./scripts/ci.sh --branch $BRANCH
+    - sleep 1800
