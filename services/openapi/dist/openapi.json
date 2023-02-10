@@ -47,6 +47,15 @@
         "title": "Role",
         "type": "object",
         "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
           "name": {
             "type": "string"
           },
@@ -68,6 +77,10 @@
             "format": "uri",
             "readOnly": true
           },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
           "username": {
             "type": "string"
           },
@@ -82,6 +95,58 @@
             }
           }
         },
+        "x-service-name": "Authentication Service"
+      },
+      "user_init": {
+        "title": "User Init",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "role_init": {
+        "title": "Role Init",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "scopes"
+        ],
         "x-service-name": "Authentication Service"
       },
       "Device": {
@@ -906,20 +971,20 @@
           "x-service-name": "Authentication Service"
         }
       },
-      "username": {
+      "user_id": {
         "in": "path",
-        "name": "username",
-        "description": "Username of a user.",
+        "name": "user_id",
+        "description": "ID of a user.",
         "required": true,
         "schema": {
           "type": "string",
           "x-service-name": "Authentication Service"
         }
       },
-      "role_name": {
+      "role_id": {
         "in": "path",
-        "name": "role_name",
-        "description": "Name of a role.",
+        "name": "role_id",
+        "description": "ID of a role.",
         "required": true,
         "schema": {
           "type": "string",
@@ -1179,7 +1244,7 @@
           }
         },
         "responses": {
-          "200": {
+          "204": {
             "description": "Successfully logged out the user."
           },
           "400": {
@@ -1220,11 +1285,11 @@
             "$ref": "#/components/parameters/device_url"
           }
         ],
-        "summary": "Create a new device authentication token",
-        "description": "This endpoint will generate a new device authentication token.",
+        "summary": "Create a device authentication token",
+        "description": "This endpoint will create a new device authentication token.",
         "responses": {
-          "200": {
-            "description": "The new device authentication token.",
+          "201": {
+            "description": "The created device authentication token.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1263,7 +1328,7 @@
           {
             "JWT": [
               "users",
-              "users:list"
+              "users:read"
             ]
           }
         ],
@@ -1302,7 +1367,7 @@
       },
       "post": {
         "operationId": "create_user",
-        "summary": "Create new user",
+        "summary": "Create a user",
         "tags": [
           "user"
         ],
@@ -1315,11 +1380,12 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "description": "User to be created.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user"
+                "$ref": "#/components/schemas/user_init"
               }
             }
           }
@@ -1355,10 +1421,10 @@
         "x-service-name": "Authentication Service"
       }
     },
-    "/users/{username}": {
+    "/users/{user_id}": {
       "get": {
         "operationId": "get_user",
-        "summary": "Get user by username",
+        "summary": "Get a user",
         "tags": [
           "user"
         ],
@@ -1366,13 +1432,13 @@
           {
             "JWT": [
               "users",
-              "users:list"
+              "users:read"
             ]
           }
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/username"
+            "$ref": "#/components/parameters/user_id"
           }
         ],
         "responses": {
@@ -1406,7 +1472,7 @@
       },
       "patch": {
         "operationId": "update_user",
-        "summary": "Update user by username",
+        "summary": "Update a user",
         "tags": [
           "user"
         ],
@@ -1414,13 +1480,13 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:write"
             ]
           }
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/username"
+            "$ref": "#/components/parameters/user_id"
           }
         ],
         "requestBody": {
@@ -1428,7 +1494,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user"
+                "$ref": "#/components/schemas/user_update"
               }
             }
           }
@@ -1464,7 +1530,7 @@
       },
       "delete": {
         "operationId": "delete_user",
-        "summary": "Delete user by username",
+        "summary": "Delete a user",
         "tags": [
           "user"
         ],
@@ -1472,13 +1538,13 @@
           {
             "JWT": [
               "users",
-              "users:create"
+              "users:delete"
             ]
           }
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/username"
+            "$ref": "#/components/parameters/user_id"
           }
         ],
         "responses": {
@@ -1504,10 +1570,10 @@
         "x-service-name": "Authentication Service"
       }
     },
-    "/users/{username}/roles/{role_name}": {
-      "put": {
-        "operationId": "add_role_to_user",
-        "summary": "Add new role to user",
+    "/users/{user_id}/roles": {
+      "get": {
+        "operationId": "get_roles_of_user",
+        "summary": "Get roles of user",
         "tags": [
           "user"
         ],
@@ -1515,25 +1581,25 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:read"
             ]
           }
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/username"
-          },
-          {
-            "$ref": "#/components/parameters/role_name"
+            "$ref": "#/components/parameters/user_id"
           }
         ],
         "responses": {
           "200": {
-            "description": "The JSON representation of the updated user.",
+            "description": "Roles successfully retrieved.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/user"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  }
                 }
               }
             }
@@ -1558,9 +1624,9 @@
         "x-optional-url": true,
         "x-service-name": "Authentication Service"
       },
-      "delete": {
-        "operationId": "remove_role_from_user",
-        "summary": "Delete role from user",
+      "post": {
+        "operationId": "add_roles_to_user",
+        "summary": "Add roles to user",
         "tags": [
           "user"
         ],
@@ -1568,21 +1634,506 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:write"
             ]
           }
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/username"
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Roles to be added to the user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Roles added successfully."
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "remove_roles_from_user",
+        "summary": "Remove roles from user",
+        "tags": [
+          "user"
+        ],
+        "security": [
           {
-            "$ref": "#/components/parameters/role_name"
+            "JWT": [
+              "users",
+              "users:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Roles to be removed from the user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Roles removed successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles": {
+      "get": {
+        "operationId": "list_roles",
+        "summary": "Get all roles",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "create_role",
+        "summary": "Create a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "Role to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/role_init"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The JSON representation of the created role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles/{role_id}": {
+      "get": {
+        "operationId": "get_role",
+        "summary": "Get a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON respresentation of the role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "patch": {
+        "operationId": "update_role",
+        "summary": "Update a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated role",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/role"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "delete_role",
+        "summary": "Delete a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
           }
         ],
         "responses": {
           "204": {
-            "description": "Role deleted successfully from user."
+            "description": "Role deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles/{role_id}/users": {
+      "get": {
+        "operationId": "get_users_with_role",
+        "summary": "Get users with role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "add_users_to_role",
+        "summary": "Add users to role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Users to be added to the role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Users added successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "remove_users_from_role",
+        "summary": "Remove users from role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Users to be removed from the role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Users removed successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -1608,7 +2159,7 @@
     "/identity": {
       "get": {
         "operationId": "get_identity",
-        "summary": "Get identity of yourself",
+        "summary": "Get identity",
         "tags": [
           "identity"
         ],
@@ -1616,7 +2167,7 @@
           {
             "JWT": [
               "identity",
-              "identity:list"
+              "identity:read"
             ]
           }
         ],
@@ -1651,7 +2202,7 @@
       },
       "patch": {
         "operationId": "update_identity",
-        "summary": "Update identity of yourself",
+        "summary": "Update identity",
         "tags": [
           "identity"
         ],
@@ -1659,7 +2210,7 @@
           {
             "JWT": [
               "identity",
-              "identity:edit"
+              "identity:write"
             ]
           }
         ],
