@@ -1,1 +1,1 @@
-../../helper/common-scripts/node/test.sh
+../../common/node/scripts/test.sh

@@ -1,1 +1,1 @@
-../../../helper/common-scripts/node/build-docker.sh
+/workspaces/crosslab/services/gateway/docker/scripts/build.sh

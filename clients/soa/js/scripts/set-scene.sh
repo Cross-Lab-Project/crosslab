@@ -1,0 +1,1 @@
+../../../../common/node//scripts/set-scene.sh

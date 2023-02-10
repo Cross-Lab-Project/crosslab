@@ -23,6 +23,7 @@
         "format:src": "npx prettier src --write",
         "format:test": "npx prettier test --write",
         "format": "npm-run-all format:*",
+        "lint": "eslint .",
         "test:database": "nyc --temp-dir .nyc_output/database --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/database/index.spec.ts",
         "test:operations": "nyc --temp-dir .nyc_output/operations --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/operations/index.spec.ts",
         "test:index": "nyc --temp-dir .nyc_output/index --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/index.spec.ts",
@@ -41,6 +42,10 @@
     "author": "Johannes Nau",
     "license": "UNLICENSED",
     "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+        "@typescript-eslint/eslint-plugin": "^5.51.0",
+        "@typescript-eslint/parser": "^5.51.0",
+        "eslint": "^8.34.0",
         "@apidevtools/swagger-parser": "^10.1.0",
         "@babel/register": "^7.18.9",
         "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",

@@ -1,1 +1,1 @@
-../../../helper/common-scripts/node/build.sh
+../../../common/node/scripts/build.sh

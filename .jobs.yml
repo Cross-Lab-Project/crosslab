@@ -13,38 +13,43 @@ helper/development-container:
 
 helper/tsdoc-theme:
   - script: build
+  - script: lint
+    dependencies:
+      - helper/tsdoc-theme:build
 
 helper/openapi-codegeneration:
   - script: build
+  - script: lint
+    dependencies:
+      - helper/openapi-codegeneration:build
 
 helper/crosslab-typescript-addon:
   - script: build
     dependencies:
       - helper/openapi-codegeneration:build
-
-helper/dummy-device/js:
-  - script: lint-code
-    dependencies:
-      - clients/api/js:build
-      - clients/soa/js:build
-      - clients/soa_services/electricalConnection/js:build
-  - script: build
-    dependencies:
-      - clients/api/js:build
-      - clients/soa/js:build
-      - clients/soa_services/electricalConnection/js:build
-
-helper/dummy-device/python:
   - script: lint
     dependencies:
-      - clients/api/python:build
-      - clients/soa/python:build
-      - clients/soa_services/electricalConnection/python:build
+      - helper/crosslab-typescript-addon:build
+
+helper/dummy-device/js:
+  - script: build
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+  - script: lint
+    dependencies:
+      - helper/dummy-device/js:build
+
+helper/dummy-device/python:
   - script: build
     dependencies:
       - clients/api/python:build
       - clients/soa/python:build
       - clients/soa_services/electricalConnection/python:build
+  - script: lint
+    dependencies:
+      - helper/dummy-device/python:build
 
 
 ################################################################################
@@ -53,12 +58,15 @@ helper/dummy-device/python:
 
 services/common:
   - script: build
+  - script: lint
+    dependencies:
+      - services/common:build
 
 services/auth:
   - script: build-spec
     paths:
       - ./api
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/auth:build-spec
   - script: build
@@ -68,13 +76,16 @@ services/auth:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
-  - script: test
+  - script: build-docker
+    dependencies:
+      - services/auth:build
+  - script: lint
     dependencies:
       - services/auth:build
 
 services/booking:
   - script: build-spec
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/booking:build-spec
 
@@ -82,7 +93,7 @@ services/device:
   - script: build-spec
     paths:
       - ./api
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/device:build-spec
   - script: build
@@ -92,12 +103,15 @@ services/device:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/device:build
 
 services/experiment:
   - script: build-spec
     paths:
       - ./api
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/experiment:build-spec
   - script: build
@@ -107,12 +121,18 @@ services/experiment:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/experiment:build
+  - script: lint
+    dependencies:
+      - services/experiment:build
 
 services/federation:
   - script: build-spec
     paths:
       - ./api
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/federation:build-spec
   - script: build
@@ -122,12 +142,15 @@ services/federation:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/federation:build
 
 services/update:
   - script: build-spec
     paths:
       - ./api
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/update:build-spec
   - script: build
@@ -137,6 +160,9 @@ services/update:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/update:build
 
 
 services/openapi:
@@ -148,12 +174,15 @@ services/openapi:
       - services/experiment:build-spec
       - services/federation:build-spec
       - services/update:build-spec
-  - script: lint
+  - script: lint-spec
     dependencies:
       - services/openapi:build-spec
 
 services/gateway:
   - script: build
+  - script: build-docker
+    dependencies:
+      - services/gateway:build
 
 
 ################################################################################
@@ -172,6 +201,9 @@ clients/api/js:
       - helper/crosslab-typescript-addon:build
       - helper/tsdoc-theme:build
       - helper/openapi-codegeneration:build
+  - script: lint
+    dependencies:
+      - clients/api/js:build
 
 clients/api/python:
   - script: build
@@ -200,6 +232,9 @@ clients/soa/python:
 
 clients/soa/js:
   - script: build
+  - script: lint
+    dependencies:
+      - clients/soa/js:build
 
 
 # SOA Service ##################################################################
@@ -221,34 +256,31 @@ clients/soa_services/electricalConnection/js:
   - script: build
     dependencies:
       - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/electricalConnection/js:build
 
 clients/soa_services/webcam/js:
   - script: build
     dependencies:
       - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/webcam/js:build
 
 clients/soa_services/file/js:
   - script: build
     dependencies:
       - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/file/js:build
 
 ################################################################################
 # Integration Tests ############################################################
 ################################################################################
 
 integration-test:
-  - script: lint
-    dependencies:
-    - services/common:build
-    - services/auth:build
-    - services/device:build
-    - services/experiment:build
-    - services/federation:build
-    - clients/api/js:build
-    - clients/soa/js:build
-    - clients/soa_services/electricalConnection/js:build
-    - helper/dummy-device/js:build
-    - helper/dummy-device/python:build
   - script: test
     dependencies:
     - services/common:build
@@ -261,3 +293,6 @@ integration-test:
     - clients/soa_services/electricalConnection/js:build
     - helper/dummy-device/js:build
     - helper/dummy-device/python:build
+  - script: lint
+    dependencies:
+    - integration-test:test
