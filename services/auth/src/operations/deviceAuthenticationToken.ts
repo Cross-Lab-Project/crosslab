@@ -3,6 +3,7 @@ import { getDevice } from '../methods/api'
 import { OwnershipError } from '../types/errors'
 import { userRepository } from '../database/repositories/userRepository'
 import { tokenRepository } from '../database/repositories/tokenRepository'
+import { roleRepository } from '../database/repositories/roleRepository'
 
 /**
  * This function implements the functionality for handling POST requests on /device_authentication_token endpoint.
@@ -29,9 +30,15 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             throw new OwnershipError()
         }
 
+        const roleModelDevice = await roleRepository.findOneOrFail({
+            where: {
+                name: 'device',
+            },
+        })
+
         const tokenModel = await tokenRepository.create({
             user: userModel.username,
-            scopes: [],
+            scopes: roleModelDevice.scopes.map((scope) => scope.name),
             device: device.url,
         })
 

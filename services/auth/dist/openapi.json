@@ -429,7 +429,7 @@
           {
             "JWT": [
               "users",
-              "users:list"
+              "users:read"
             ]
           }
         ],
@@ -531,7 +531,7 @@
           {
             "JWT": [
               "users",
-              "users:list"
+              "users:read"
             ]
           }
         ],
@@ -578,7 +578,7 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:write"
             ]
           }
         ],
@@ -635,7 +635,7 @@
           {
             "JWT": [
               "users",
-              "users:create"
+              "users:delete"
             ]
           }
         ],
@@ -677,7 +677,7 @@
           {
             "JWT": [
               "users",
-              "users:list"
+              "users:read"
             ]
           }
         ],
@@ -729,7 +729,7 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:write"
             ]
           }
         ],
@@ -784,7 +784,7 @@
           {
             "JWT": [
               "users",
-              "users:edit"
+              "users:write"
             ]
           }
         ],
@@ -841,7 +841,7 @@
           {
             "JWT": [
               "roles",
-              "roles:list"
+              "roles:read"
             ]
           }
         ],
@@ -942,7 +942,7 @@
           {
             "JWT": [
               "roles",
-              "roles:list"
+              "roles:read"
             ]
           }
         ],
@@ -989,7 +989,7 @@
           {
             "JWT": [
               "roles",
-              "roles:edit"
+              "roles:write"
             ]
           }
         ],
@@ -1046,7 +1046,7 @@
           {
             "JWT": [
               "roles",
-              "roles:create"
+              "roles:delete"
             ]
           }
         ],
@@ -1088,7 +1088,7 @@
           {
             "JWT": [
               "roles",
-              "roles:list"
+              "roles:read"
             ]
           }
         ],
@@ -1140,7 +1140,7 @@
           {
             "JWT": [
               "roles",
-              "roles:edit"
+              "roles:write"
             ]
           }
         ],
@@ -1195,7 +1195,7 @@
           {
             "JWT": [
               "roles",
-              "roles:edit"
+              "roles:write"
             ]
           }
         ],
@@ -1252,7 +1252,7 @@
           {
             "JWT": [
               "identity",
-              "identity:list"
+              "identity:read"
             ]
           }
         ],
@@ -1294,7 +1294,7 @@
           {
             "JWT": [
               "identity",
-              "identity:edit"
+              "identity:write"
             ]
           }
         ],

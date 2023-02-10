@@ -5,7 +5,7 @@
 {%- endfor -%}
 
 {%- macro generateRouteTests() -%}
-import assert, { fail } from 'assert';
+import assert from 'assert';
 import request from 'supertest';
 import { app } from '../../src/generated';
 import * as sinon from 'sinon';
@@ -121,65 +121,56 @@ export default () => describe('Route Tests', function () {
     {%- endif -%}
     describe('{{ operation.method | upper }} {{ operation.path }} Tests', function () {
         {% if operation.security and operation.security | length > 0 -%}
-        describe('Security Tests', function () {
-            {% for scopes in operation.security | possibleScopeCombinations -%}
-            xit('should allow access with scopes {{ scopes | stringify }}', function () {
-                fail()
-            })
+        it('should deny access without necessary scopes', function (done) {
+            const error = new Error('Security check failed!')
+            {%- for securityScheme in securitySchemes %}
+            {{ securityScheme }}SecurityStub.rejects(error)
+            {%- endfor %}
 
-            {% endfor -%}
+            {% if parameters -%}
 
-            it('should deny access without necessary scopes', function (done) {
-                const error = new Error('Security check failed!')
-                {%- for securityScheme in securitySchemes %}
-                {{ securityScheme }}SecurityStub.rejects(error)
+            {% if parameters['query'] -%}
+            const queryParameters = {
+                {%- for parameter in parameters['query'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
                 {%- endfor %}
+            }
 
-                {% if parameters -%}
+            {% endif -%}
 
-                {% if parameters['query'] -%}
-                const queryParameters = {
-                    {%- for parameter in parameters['query'] %}
-                    '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
-                    {%- endfor %}
-                }
+            {% if parameters['path'] -%}
+            const pathParameters = {
+                {%- for parameter in parameters['path'] %}
+                '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
+                {%- endfor %}
+            }
 
-                {% endif -%}
+            {% endif -%}
+            {% endif -%}
 
-                {% if parameters['path'] -%}
-                const pathParameters = {
-                    {%- for parameter in parameters['path'] %}
-                    '{{ parameter.name }}': JSONSchemaFaker.generate({{ parameter.schema | stringify(4) | indent(16) }}) as string,
-                    {%- endfor %}
-                }
+            const path = '{{ operation.path }}'
+            {%- if parameters and parameters['path'] %}
+                {%- for parameter in parameters['path'] %}
+                .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
+                {%- endfor %}
+            {%- endif %}
+            {%- if parameters and parameters['query'] %}
+                + '?' +
+                {%- set query = [] -%}
+                {%- for parameter in parameters['query'] %}
+                {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
+                {%- endfor %}
+                {{ query | join(" + '&' + ") }}
+            {%- endif %}
 
-                {% endif -%}
-                {% endif -%}
-
-                const path = '{{ operation.path }}'
-                {%- if parameters and parameters['path'] %}
-                    {%- for parameter in parameters['path'] %}
-                    .replace('{ {{- parameter.name -}} }', pathParameters['{{ parameter.name }}'])
-                    {%- endfor %}
-                {%- endif %}
-                {%- if parameters and parameters['query'] %}
-                    + '?' +
-                    {%- set query = [] -%}
-                    {%- for parameter in parameters['query'] %}
-                    {%- set query = (query.push("`" + parameter.name + "=${ queryParameters['" + parameter.name + "'] }`"),query) -%}
-                    {%- endfor %}
-                    {{ query | join(" + '&' + ") }}
-                {%- endif %}
-
-                request(app)
-                    .{{ operation.method }}(path)
-                    .end((_error, res) => {
-                        assert.strictEqual(res.status, 500)
-                        assert.strictEqual(res.body.error, 'Error')
-                        assert.strictEqual(res.body.message, 'Request could not be authenticated')
-                        done()
-                    })
-                });
+            request(app)
+                .{{ operation.method }}(path)
+                .end((_error, res) => {
+                    assert.strictEqual(res.status, 500)
+                    assert.strictEqual(res.body.error, 'Error')
+                    assert.strictEqual(res.body.message, 'Request could not be authenticated')
+                    done()
+                })
         })
 
         {% endif -%}
@@ -439,23 +430,6 @@ export default () => describe('Route Tests', function () {
                     done();
                 });
         });
-
-        {%- for response in operation.response %}
-
-        xdescribe('{{ response.status }} Response Tests', function () {
-            it('should set the response status correctly', async function () {
-                fail()
-            })
-
-            it('should set the response headers correctly', async function () {
-                fail()
-            })
-
-            it('should set the response body correctly', async function () {
-                fail()
-            })
-        })
-        {%- endfor %}
     })
 
     {% endfor -%}

@@ -10,7 +10,14 @@ import requestValidationTestSuite from './requestValidation.spec'
 import typeguardTestSuite from './types.spec'
 import routesTestSuite from './routes.spec'
 
-export default () => describe('Generated Tests', function () {
+describe('Generated', function () {
+    this.beforeAll(function () {
+        console.log = (_message: any, ..._optionalParams: any[]) => undefined
+        console.error = (_message: any, ..._optionalParams: any[]) => undefined
+        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
+        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+    })
+    
     basicValidationTestSuite()
     requestValidationTestSuite()
     typeguardTestSuite()

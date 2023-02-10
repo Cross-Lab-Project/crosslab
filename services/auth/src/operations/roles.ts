@@ -36,7 +36,6 @@ export const getRoles: getRolesSignature = async (_user) => {
 export const postRoles: postRolesSignature = async (body, _user) => {
     console.log(`postRoles called`)
 
-    // TODO: maybe check if user is allowed to set these scopes
     const roleModel = await roleRepository.create(body)
     await roleRepository.save(roleModel)
 

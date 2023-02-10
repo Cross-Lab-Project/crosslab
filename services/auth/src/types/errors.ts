@@ -13,16 +13,6 @@ export class DNSResolveError extends Error {
 }
 
 /**
- * This error class should be used if an object contains an invalid value.
- */
-// export class InvalidValueError extends ErrorWithStatus {
-//     constructor(message: string, status?: number) {
-//         super(message, status)
-//         this.name = 'InvalidValueError'
-//     }
-// }
-
-/**
  * This error class should be used if the allowlist is malformed.
  */
 export class MalformedAllowlistError extends Error {
@@ -41,16 +31,6 @@ export class ExpiredError extends ErrorWithStatus {
         this.name = 'ExpiredError'
     }
 }
-
-/**
- * This error class should be used if there is an inconsitency in the database.
- */
-// export class InconsistentDatabaseError extends ErrorWithStatus {
-//     constructor(message: string, status?: number) {
-//         super(message, status)
-//         this.name = 'InconsistentDatabaseError'
-//     }
-// }
 
 /**
  * This error class should be used if an error occurs during authentication.

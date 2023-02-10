@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - users
-      - users:list
+      - users:read
   responses:
     200:
       description: The JSON representation of the users.

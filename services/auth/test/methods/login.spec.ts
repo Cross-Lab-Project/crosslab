@@ -4,6 +4,7 @@ import { Client as LdapClient } from 'ldapts'
 import rewire from 'rewire'
 import * as sinon from 'sinon'
 import { TokenModel, UserModel } from '../../src/database/model'
+import { roleRepository } from '../../src/database/repositories/roleRepository'
 import { tokenRepository } from '../../src/database/repositories/tokenRepository'
 import { userRepository } from '../../src/database/repositories/userRepository'
 import { loginLocal, loginTui } from '../../src/methods/login'
@@ -62,10 +63,11 @@ export default () =>
             })
 
             it('should load the tokens of the user correctly', async function () {
-                const USER: Partial<UserModel> = {
+                const USER: UserModel = {
+                    uuid: '160b23b0-2446-44c9-b629-2f58ebfd43d6',
                     username: 'username',
                     roles: [],
-                    tokens: undefined,
+                    tokens: [],
                 }
                 const TOKEN = {
                     user: USER,
@@ -95,15 +97,24 @@ export default () =>
                 Parameters<typeof userRepository.save>,
                 ReturnType<typeof userRepository.save>
             >
+            let roleRepositoryFindOneOrFailStub: sinon.SinonStub<
+                Parameters<typeof roleRepository.findOneOrFail>,
+                ReturnType<typeof roleRepository.findOneOrFail>
+            >
 
             this.beforeAll(function () {
                 userRepositoryCreateStub = sinon.stub(userRepository, 'create')
                 userRepositorySaveStub = sinon.stub(userRepository, 'save')
+                roleRepositoryFindOneOrFailStub = sinon.stub(
+                    roleRepository,
+                    'findOneOrFail'
+                )
             })
 
             this.afterAll(function () {
                 userRepositoryCreateStub.restore()
                 userRepositorySaveStub.restore()
+                roleRepositoryFindOneOrFailStub.restore()
             })
 
             it('should create a tui user correctly', async function () {

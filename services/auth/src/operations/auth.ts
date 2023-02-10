@@ -28,12 +28,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
     }
 
     // Get active key
-    const activeKeys = await activeKeyRepository.find({
+    const activeKey = await activeKeyRepository.findOneOrFail({
         where: {
             use: 'sig',
         },
     })
-    const activeKey = activeKeys[0]
 
     // Non Allowlisted Auth
     try {

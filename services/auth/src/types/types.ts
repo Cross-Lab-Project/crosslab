@@ -56,5 +56,5 @@ export type AppConfiguration = {
     BASE_URL: string
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
-    ALLOWLIST: AllowlistEntry[]
+    ALLOWLIST: string
 }

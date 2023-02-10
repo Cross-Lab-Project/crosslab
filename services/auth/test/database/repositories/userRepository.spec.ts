@@ -156,7 +156,7 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
 
         assert(model.password === undefined)
         assert(model.roles.length === 0)
-        assert(model.tokens === undefined)
+        assert(model.tokens.length === 0)
         assert(model.username === undefined)
 
         return true
@@ -167,8 +167,6 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
             assert(model.password)
             assert(compareSync(data.password, model.password))
         }
-
-        // TODO: check how to handle tokens here
 
         if (data.username) assert(model.username === data.username)
 
@@ -209,13 +207,18 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
         assert(firstModel.password === secondModel.password)
 
         for (const role of firstModel.roles) {
-            assert(secondModel.roles.find((r) => r.name === role.name))
+            assert(secondModel.roles.find((r) => r.uuid === role.uuid))
         }
         for (const role of secondModel.roles) {
-            assert(firstModel.roles.find((r) => r.name === role.name))
+            assert(firstModel.roles.find((r) => r.uuid === role.uuid))
         }
 
-        // TODO: assert that tokens are identical
+        for (const token of firstModel.tokens) {
+            assert(secondModel.tokens.find((t) => t.token === token.token))
+        }
+        for (const token of secondModel.tokens) {
+            assert(firstModel.tokens.find((t) => t.token === token.token))
+        }
 
         return true
     }
@@ -224,7 +227,7 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
         if (first.id !== second.id) return false
         if (first.url !== second.url) return false
         if (first.username !== second.username) return false
-        // if (first.roles !== undefined || second.roles !== undefined) return false
+        if (first.roles !== undefined || second.roles !== undefined) return false
 
         return true
     }

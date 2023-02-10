@@ -19,6 +19,7 @@ export class UserRepository extends AbstractRepository<UserModel> {
     public async create(data?: UserInit<'request'>): Promise<UserModel> {
         const model = await super.create(data)
         model.roles = []
+        model.tokens = []
 
         return model
     }

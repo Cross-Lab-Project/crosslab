@@ -41,9 +41,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                         tokens: true,
                     },
                 })
-                assert(
-                    (await userModel.tokens).find((token) => token.token === result.body)
-                )
+                assert(userModel.tokens.find((token) => token.token === result.body))
             }
         )
     )

@@ -45,14 +45,10 @@ export abstract class AbstractRepository<M extends Model> {
 
     public async find(options?: FindManyOptions<M>): Promise<M[]> {
         if (!this.repository) this.throwUninitializedRepositoryError()
-        const findOptions: FindManyOptions<M> = options
-            ? {
-                  ...options,
-                  relations: options?.relations ?? this.getDefaultFindOptionsRelations(),
-              }
-            : {
-                  relations: this.getDefaultFindOptionsRelations(),
-              }
+        const findOptions: FindManyOptions<M> = {
+            ...(options ?? {}),
+            relations: options?.relations ?? this.getDefaultFindOptionsRelations(),
+        }
         return await this.repository.find(findOptions)
     }
 

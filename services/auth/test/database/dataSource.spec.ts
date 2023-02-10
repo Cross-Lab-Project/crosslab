@@ -1,4 +1,5 @@
-import assert, { fail } from 'assert'
+import assert from 'assert'
+import rewire from 'rewire'
 import {
     AppDataSource,
     ApplicationDataSource,
@@ -12,10 +13,34 @@ import {
     TokenModel,
     UserModel,
 } from '../../src/database/model'
+import { roleRepository } from '../../src/database/repositories/roleRepository'
+
+function invertMapping(mapping: { [k: string]: string[] }) {
+    const newMapping: { [k: string]: string[] } = {}
+
+    for (const key in mapping) {
+        for (const value of mapping[key]) {
+            if (!newMapping[value]) newMapping[value] = []
+
+            newMapping[value].push(key)
+        }
+    }
+
+    return newMapping
+}
 
 export default () =>
     describe('Data Source Tests', async function () {
         describe('initializeDataSource', async function () {
+            let scopesStandardRolesMapping: { [k: string]: string[] }
+
+            this.beforeAll(async function () {
+                const dataSourceModule = rewire('../../src/database/dataSource.ts')
+                scopesStandardRolesMapping = dataSourceModule.__get__(
+                    'scopesStandardRolesMapping'
+                )
+            })
+
             this.beforeEach(async function () {
                 if (AppDataSource.connected) await AppDataSource.teardown()
 
@@ -38,13 +63,54 @@ export default () =>
             it('should initialize the data source successfully', async function () {
                 await initializeDataSource()
 
-                fail('currently the scopes are not set role specific')
+                const roleModelSuperadmin = await roleRepository.findOneOrFail({
+                    where: {
+                        name: 'superadmin',
+                    },
+                })
+
+                for (const scope in scopesStandardRolesMapping) {
+                    assert(
+                        roleModelSuperadmin.scopes.find(
+                            (scopeModel) => scopeModel.name === scope
+                        )
+                    )
+                }
+
+                for (const scopeModel of roleModelSuperadmin.scopes) {
+                    assert(scopeModel.name in scopesStandardRolesMapping)
+                }
+
+                const invertedMapping = invertMapping(scopesStandardRolesMapping)
+                for (const role in invertedMapping) {
+                    const roleModel = await roleRepository.findOneOrFail({
+                        where: {
+                            name: role,
+                        },
+                    })
+
+                    for (const scope of invertedMapping[role]) {
+                        assert(
+                            roleModel.scopes.find(
+                                (scopeModel) => scopeModel.name === scope
+                            )
+                        )
+                    }
+
+                    for (const scopeModel of roleModel.scopes) {
+                        assert(
+                            invertedMapping[role].find(
+                                (scope) => scope === scopeModel.name
+                            )
+                        )
+                    }
+                }
             })
 
             it('should teardown the data source correctly', async function () {
                 await AppDataSource.teardown()
 
-                fail('needs to be tested further')
+                assert(!AppDataSource.connected)
             })
 
             it('should throw an error on getRepository() if the data source has not been initialized', async function () {
@@ -71,9 +137,59 @@ export default () =>
 
             it('should update the data source correctly', async function () {
                 await initializeDataSource()
+
+                const roleModelSuperadmin = await roleRepository.findOneOrFail({
+                    where: {
+                        name: 'superadmin',
+                    },
+                })
+                roleModelSuperadmin.scopes = []
+                await roleRepository.save(roleModelSuperadmin)
+
                 await initializeDataSource()
 
-                fail('needs to be tested further')
+                const roleModelSuperadminUpdated = await roleRepository.findOneOrFail({
+                    where: {
+                        name: 'superadmin',
+                    },
+                })
+
+                for (const scope in scopesStandardRolesMapping) {
+                    assert(
+                        roleModelSuperadminUpdated.scopes.find(
+                            (scopeModel) => scopeModel.name === scope
+                        )
+                    )
+                }
+
+                for (const scopeModel of roleModelSuperadminUpdated.scopes) {
+                    assert(scopeModel.name in scopesStandardRolesMapping)
+                }
+
+                const invertedMapping = invertMapping(scopesStandardRolesMapping)
+                for (const role in invertedMapping) {
+                    const roleModel = await roleRepository.findOneOrFail({
+                        where: {
+                            name: role,
+                        },
+                    })
+
+                    for (const scope of invertedMapping[role]) {
+                        assert(
+                            roleModel.scopes.find(
+                                (scopeModel) => scopeModel.name === scope
+                            )
+                        )
+                    }
+
+                    for (const scopeModel of roleModel.scopes) {
+                        assert(
+                            invertedMapping[role].find(
+                                (scope) => scope === scopeModel.name
+                            )
+                        )
+                    }
+                }
             })
         })
     })

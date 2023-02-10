@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - roles
-      - roles:list
+      - roles:read
   parameters:
     - $ref: "../parameters/role_id.yml"
   responses:
@@ -34,7 +34,7 @@ patch:
   security:
     - JWT:
       - roles
-      - roles:edit
+      - roles:write
   parameters:
     - $ref: "../parameters/role_id.yml"
   requestBody:
@@ -66,7 +66,7 @@ delete:
   security:
     - JWT:
       - roles
-      - roles:create
+      - roles:delete
   parameters:
     - $ref: "../parameters/role_id.yml"
   responses:

@@ -5,7 +5,7 @@ import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
 
-export const roleNames = ['superadmin', 'user', 'deviceservice'] as const
+export const roleNames = ['superadmin', 'user', 'deviceservice', 'device'] as const
 export type RoleName = (typeof roleNames)[number]
 export type RoleData = Record<RoleName, EntityData<RoleModel>>
 
@@ -68,6 +68,24 @@ const roleDataWithLinks: RoleDataWithLinks = {
             url: roleUrlFromId('a386a9cf-04a3-424b-a78b-4f81eb6ea6eb'),
             name: 'user',
             scopes: ['scope 1', 'scope 2', 'scope 3'],
+        },
+    },
+    device: {
+        request: {
+            name: 'device',
+            scopes: ['scope 1', 'scope 2'],
+        },
+        model: {
+            uuid: 'a386a9cf-04a3-424b-a78b-4f81eb6effeb',
+            name: 'device',
+            scopes: ['scope 1', 'scope 2'],
+            users: [],
+        },
+        response: {
+            id: 'a386a9cf-04a3-424b-a78b-4f81eb6effeb',
+            url: roleUrlFromId('a386a9cf-04a3-424b-a78b-4f81eb6effeb'),
+            name: 'device',
+            scopes: ['scope 1', 'scope 2'],
         },
     },
     deviceservice: {

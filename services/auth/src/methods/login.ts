@@ -23,11 +23,13 @@ async function createUserToken(
 ): Promise<TokenModel> {
     const tokenModel = await tokenRepository.create({
         user: userModel.username,
-        scopes: [],
+        scopes: userModel.roles
+            .flatMap((roleModel) => roleModel.scopes)
+            .map((scopeModel) => scopeModel.name)
+            .filter((v, i, s) => s.indexOf(v) === i),
         expiresOn: new Date(Date.now() + expiresIn).toISOString(),
     })
 
-    userModel.tokens = (await userModel.tokens) ?? []
     userModel.tokens.push(tokenModel)
 
     await userRepository.save(userModel)
@@ -43,14 +45,14 @@ async function createUserToken(
 async function createUserTUI(username: string): Promise<UserModel> {
     const userModel = await userRepository.create({
         username: 'tui:' + username,
-        password: ''
+        password: '',
     })
-    const userRoleModel = await roleRepository.findOneOrFail({
+    const roleModelUser = await roleRepository.findOneOrFail({
         where: {
-            name: 'user'
-        }
+            name: 'user',
+        },
     })
-    userModel.roles = [userRoleModel]
+    userModel.roles = [roleModelUser]
     userModel.tokens = []
     await userRepository.save(userModel)
 

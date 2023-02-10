@@ -15,9 +15,6 @@ export const postLogout: postLogoutSignature = async (body, user) => {
         where: {
             username: user.JWT?.username,
         },
-        relations: {
-            tokens: true,
-        },
     })
 
     const tokenModel = userModel.tokens.find(

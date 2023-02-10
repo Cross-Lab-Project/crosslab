@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - identity
-      - identity:list
+      - identity:read
   responses:
     200:
       description: The JSON representation of the corresponding user.
@@ -32,7 +32,7 @@ patch:
   security:
     - JWT:
       - identity
-      - identity:edit
+      - identity:write
   requestBody:
     description: Updated identity.
     content:

@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - users
-      - users:list
+      - users:read
   parameters:
     - $ref: "../parameters/user_id.yml"
   responses:
@@ -36,7 +36,7 @@ post:
   security:
     - JWT:
       - users
-      - users:edit
+      - users:write
   parameters:
     - $ref: "../parameters/user_id.yml"
   requestBody:
@@ -67,7 +67,7 @@ delete:
   security:
     - JWT:
       - users
-      - users:edit
+      - users:write
   parameters:
     - $ref: "../parameters/user_id.yml"
   requestBody:

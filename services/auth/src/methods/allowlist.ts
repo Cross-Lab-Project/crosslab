@@ -43,7 +43,7 @@ export async function resolveAllowlist(allowlistEntries: AllowlistEntry[]) {
 export async function resolveAllowlistEntry(
     allowlistEntry: AllowlistEntry
 ): Promise<[string, string]> {
-    console.log(`resolveAllowlistEntry called for "${allowlistEntry}"`)
+    console.log(`resolveAllowlistEntry called for "${allowlistEntry.url}"`)
 
     // Resolve the ip of the provided url
     const ip = await new Promise<string>((res) => {
