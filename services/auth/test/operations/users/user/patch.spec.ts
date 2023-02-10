@@ -4,7 +4,7 @@ import Mocha from 'mocha'
 import { userRepository } from '../../../../src/database/repositories/userRepository'
 import { UserUpdate } from '../../../../src/generated/types'
 import { userUrlFromId } from '../../../../src/methods/utils'
-import { patchUsersByUserId } from '../../../../src/operations'
+import { patchUsersByUserId } from '../../../../src/operations/users'
 import { TestData } from '../../../data/index.spec'
 import { userRepositoryTestSuite } from '../../../database/repositories/userRepository.spec'
 

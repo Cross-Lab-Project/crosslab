@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { userRepository } from '../../../src/database/repositories/userRepository'
-import { postLogin } from '../../../src/operations'
+import { postLogin } from '../../../src/operations/login'
 import { AuthenticationError, LdapAuthenticationError } from '../../../src/types/errors'
 import Mocha from 'mocha'
 import { TestData } from '../../data/index.spec'

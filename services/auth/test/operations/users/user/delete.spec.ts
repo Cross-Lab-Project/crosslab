@@ -2,7 +2,7 @@ import { MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
 import { userRepository } from '../../../../src/database/repositories/userRepository'
-import { deleteUsersByUserId } from '../../../../src/operations'
+import { deleteUsersByUserId } from '../../../../src/operations/users'
 import { TestData } from '../../../data/index.spec'
 import { userNames } from '../../../data/userData.spec'
 

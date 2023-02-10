@@ -1,6 +1,6 @@
 import assert from 'assert'
 import Mocha from 'mocha'
-import { getUsers } from '../../../src/operations'
+import { getUsers } from '../../../src/operations/users'
 import { TestData } from '../../data/index.spec'
 import { userNames } from '../../data/userData.spec'
 import { userRepositoryTestSuite } from '../../database/repositories/userRepository.spec'

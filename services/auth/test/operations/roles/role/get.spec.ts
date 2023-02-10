@@ -1,7 +1,7 @@
 import { MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
-import { getRolesByRoleId } from '../../../../src/operations'
+import { getRolesByRoleId } from '../../../../src/operations/roles'
 import { TestData } from '../../../data/index.spec'
 import { roleNames } from '../../../data/roleData.spec'
 import { roleRepositoryTestSuite } from '../../../database/repositories/roleRepository.spec'

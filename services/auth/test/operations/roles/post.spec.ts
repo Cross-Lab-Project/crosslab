@@ -2,7 +2,7 @@ import assert from 'assert'
 import Mocha from 'mocha'
 import { roleRepository } from '../../../src/database/repositories/roleRepository'
 import { RoleInit } from '../../../src/generated/types'
-import { postRoles } from '../../../src/operations'
+import { postRoles } from '../../../src/operations/roles'
 import { TestData } from '../../data/index.spec'
 import { roleRepositoryTestSuite } from '../../database/repositories/roleRepository.spec'
 

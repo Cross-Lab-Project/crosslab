@@ -2,7 +2,7 @@ import assert from 'assert'
 import Mocha from 'mocha'
 import { userRepository } from '../../../src/database/repositories/userRepository'
 import { UserInit } from '../../../src/generated/types'
-import { postUsers } from '../../../src/operations'
+import { postUsers } from '../../../src/operations/users'
 import { TestData } from '../../data/index.spec'
 import { userRepositoryTestSuite } from '../../database/repositories/userRepository.spec'
 

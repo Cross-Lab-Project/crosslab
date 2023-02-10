@@ -3,7 +3,7 @@ import assert from 'assert'
 import Mocha from 'mocha'
 import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
 import { userRepository } from '../../../src/database/repositories/userRepository'
-import { postLogout } from '../../../src/operations'
+import { postLogout } from '../../../src/operations/logout'
 import { TestData } from '../../data/index.spec'
 
 export default function (context: Mocha.Context, testData: TestData) {

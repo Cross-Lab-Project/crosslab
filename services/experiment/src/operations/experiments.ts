@@ -4,19 +4,19 @@ import {
     deleteExperimentsByExperimentIdSignature,
     patchExperimentsByExperimentIdSignature,
     getExperimentsSignature,
-} from "./generated/signatures"
-import { formatExperimentModel } from './database/methods/format'
-import { writeExperimentModel } from './database/methods/write'
-import { bookExperiment, finishExperiment, runExperiment } from './util/experimentStatus'
-import { InconsistentDatabaseError, MissingEntityError } from './types/errors'
+} from "../generated/signatures"
+import { formatExperimentModel } from '../database/methods/format'
+import { writeExperimentModel } from '../database/methods/write'
+import { bookExperiment, finishExperiment, runExperiment } from '../util/experimentStatus'
+import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
 import {
     findAllExperimentModels,
     findExperimentModelById,
-} from './database/methods/find'
-import { createExperimentModel } from './database/methods/create'
-import { saveExperimentModel } from './database/methods/save'
-import { deleteExperimentModelById } from './database/methods/delete'
-import { RequestHandler } from './util/requestHandler'
+} from '../database/methods/find'
+import { createExperimentModel } from '../database/methods/create'
+import { saveExperimentModel } from '../database/methods/save'
+import { deleteExperimentModelById } from '../database/methods/delete'
+import { RequestHandler } from '../util/requestHandler'
 
 /**
  * This function implements the functionality for handling GET requests on
