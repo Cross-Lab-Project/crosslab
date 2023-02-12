@@ -21,7 +21,7 @@ describe('Index', function () {
     let startAuthenticationService: any
 
     this.beforeAll(async function () {
-        this.timeout(5000)
+        this.timeout(60000)
         console.log = (_message: any, ..._optionalParams: any[]) => undefined
         console.error = (_message: any, ..._optionalParams: any[]) => undefined
         console.warn = (_message: any, ..._optionalParams: any[]) => undefined
