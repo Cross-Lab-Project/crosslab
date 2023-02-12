@@ -68,6 +68,9 @@ services/auth:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - clients/api/js:build
+  - script: test
+    dependencies:
+      - services/auth:build
 
 services/booking:
   - script: build-spec

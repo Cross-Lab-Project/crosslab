@@ -195,22 +195,22 @@ async def test_logout(aioresponses: aioresponses):
 
     parameter_list = [{}, ]
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.logout(body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.logout(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.logout(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.logout(url=full_url, body=request, **parameters)
     for parameters in parameter_list:
@@ -338,32 +338,32 @@ async def test_create_device_authentication_token(aioresponses: aioresponses):
 
     parameter_list = [{"device_url": "test_string", }, ]
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'"consectetur in do nisi"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device_authentication_token(**parameters)
-            assert normalize_result(post_device_authentication_token_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            assert normalize_result(post_device_authentication_token_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'"consectetur in do nisi"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device_authentication_token(url=url, **parameters)
-            assert normalize_result(post_device_authentication_token_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            assert normalize_result(post_device_authentication_token_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'"consectetur in do nisi"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device_authentication_token(url=url_variant, **parameters)
-            assert normalize_result(post_device_authentication_token_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            assert normalize_result(post_device_authentication_token_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'"consectetur in do nisi"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device_authentication_token(url=full_url, **parameters)
-            assert normalize_result(post_device_authentication_token_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            assert normalize_result(post_device_authentication_token_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
@@ -489,28 +489,28 @@ async def test_list_users(aioresponses: aioresponses):
 
     parameter_list = [{}, ]
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"password":"nostrud","username":"ea do"},{},{"password":"ad ex qui elit","url":"http://SleWGTWzYqsAOBKYY.njgDCvZUoYAusErYrY1","username":"fugiat Ut commodo ea"},{"url":"https://tCuXFWeX.onDSBw0mZCN","username":"in aute ea","roles":[{"name":"sed ut cillum nostrud consectetur","scopes":["sunt reprehenderit ut","adipisicing","reprehenderit","ipsum"]},{"name":"in dolore"}],"password":"laborum non exercitation id et"},{"password":"adipisicing amet dolore","url":"http://QjEjQB.taiijNQkzMS-0nxY"}]')
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(**parameters)
             assert normalize_result(get_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"password":"nostrud","username":"ea do"},{},{"password":"ad ex qui elit","url":"http://SleWGTWzYqsAOBKYY.njgDCvZUoYAusErYrY1","username":"fugiat Ut commodo ea"},{"url":"https://tCuXFWeX.onDSBw0mZCN","username":"in aute ea","roles":[{"name":"sed ut cillum nostrud consectetur","scopes":["sunt reprehenderit ut","adipisicing","reprehenderit","ipsum"]},{"name":"in dolore"}],"password":"laborum non exercitation id et"},{"password":"adipisicing amet dolore","url":"http://QjEjQB.taiijNQkzMS-0nxY"}]')
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=url, **parameters)
             assert normalize_result(get_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"password":"nostrud","username":"ea do"},{},{"password":"ad ex qui elit","url":"http://SleWGTWzYqsAOBKYY.njgDCvZUoYAusErYrY1","username":"fugiat Ut commodo ea"},{"url":"https://tCuXFWeX.onDSBw0mZCN","username":"in aute ea","roles":[{"name":"sed ut cillum nostrud consectetur","scopes":["sunt reprehenderit ut","adipisicing","reprehenderit","ipsum"]},{"name":"in dolore"}],"password":"laborum non exercitation id et"},{"password":"adipisicing amet dolore","url":"http://QjEjQB.taiijNQkzMS-0nxY"}]')
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=url_variant, **parameters)
             assert normalize_result(get_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"password":"nostrud","username":"ea do"},{},{"password":"ad ex qui elit","url":"http://SleWGTWzYqsAOBKYY.njgDCvZUoYAusErYrY1","username":"fugiat Ut commodo ea"},{"url":"https://tCuXFWeX.onDSBw0mZCN","username":"in aute ea","roles":[{"name":"sed ut cillum nostrud consectetur","scopes":["sunt reprehenderit ut","adipisicing","reprehenderit","ipsum"]},{"name":"in dolore"}],"password":"laborum non exercitation id et"},{"password":"adipisicing amet dolore","url":"http://QjEjQB.taiijNQkzMS-0nxY"}]')
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=full_url, **parameters)
@@ -638,33 +638,33 @@ async def test_create_user(aioresponses: aioresponses):
     url_variant = r'users'
     full_url = BASE_URL+r'/users'
 
-    request_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+    request_dict = json.loads(r'{"username":"occaecat ex exercitation proident dolore","password":"laborum"}')
     request = post_users_request_body_write_from_dict(request_dict)
 
     parameter_list = [{}, ]
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_201_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(body=request, **parameters)
             assert normalize_result(post_users_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_201_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=url, body=request, **parameters)
             assert normalize_result(post_users_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_201_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=url_variant, body=request, **parameters)
             assert normalize_result(post_users_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_201_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=full_url, body=request, **parameters)
@@ -795,21 +795,21 @@ async def test_get_user(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=url, **parameters)
             assert normalize_result(get_user_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=url_variant, **parameters)
             assert normalize_result(get_user_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=full_url, **parameters)
@@ -912,27 +912,27 @@ async def test_update_user(aioresponses: aioresponses):
     url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+    request_dict = json.loads(r'{"username":"tempor","password":"ad"}')
     request = patch_user_request_body_write_from_dict(request_dict)
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=url, body=request, **parameters)
             assert normalize_result(patch_user_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=url_variant, body=request, **parameters)
             assert normalize_result(patch_user_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=full_url, body=request, **parameters)
@@ -1144,237 +1144,1373 @@ async def test_delete_user(aioresponses: aioresponses):
 
 
 @pytest.mark.asyncio
-async def test_add_role_to_user(aioresponses: aioresponses):
-    url = r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+async def test_get_roles_of_user(aioresponses: aioresponses):
+    url = r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_role_to_user(url=url, **parameters)
-            assert normalize_result(put_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            resp = await client.get_roles_of_user(url=url, **parameters)
+            assert normalize_result(get_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_role_to_user(url=url_variant, **parameters)
-            assert normalize_result(put_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            resp = await client.get_roles_of_user(url=url_variant, **parameters)
+            assert normalize_result(get_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_role_to_user(url=full_url, **parameters)
-            assert normalize_result(put_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+            resp = await client.get_roles_of_user(url=full_url, **parameters)
+            assert normalize_result(get_user_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url, **parameters)
+                resp = await client.get_roles_of_user(url=url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url_variant, **parameters)
+                resp = await client.get_roles_of_user(url=url_variant, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=full_url, **parameters)
+                resp = await client.get_roles_of_user(url=full_url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url, **parameters)
+                resp = await client.get_roles_of_user(url=url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url_variant, **parameters)
+                resp = await client.get_roles_of_user(url=url_variant, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=full_url, **parameters)
+                resp = await client.get_roles_of_user(url=full_url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url, **parameters)
+                resp = await client.get_roles_of_user(url=url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url_variant, **parameters)
+                resp = await client.get_roles_of_user(url=url_variant, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=full_url, **parameters)
+                resp = await client.get_roles_of_user(url=full_url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url, **parameters)
+                resp = await client.get_roles_of_user(url=url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url_variant, **parameters)
+                resp = await client.get_roles_of_user(url=url_variant, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=full_url, **parameters)
+                resp = await client.get_roles_of_user(url=full_url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url, **parameters)
+                resp = await client.get_roles_of_user(url=url, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=url_variant, **parameters)
+                resp = await client.get_roles_of_user(url=url_variant, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_role_to_user(url=full_url, **parameters)
+                resp = await client.get_roles_of_user(url=full_url, **parameters)
 
 
 @pytest.mark.asyncio
-async def test_remove_role_from_user(aioresponses: aioresponses):
-    url = r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+async def test_add_roles_to_user(aioresponses: aioresponses):
+    url = r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+
+    request_dict = json.loads(r'["enim","consequat aute Ut sit anim"]')
+    request = post_user_roles_request_body_write_from_dict(request_dict)
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_roles_to_user(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_remove_roles_from_user(aioresponses: aioresponses):
+    url = r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+    full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c/roles'
+
+    request_dict = json.loads(r'["enim","consequat aute Ut sit anim"]')
+    request = delete_user_roles_request_body_write_from_dict(request_dict)
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
-            resp = await client.remove_role_from_user(url=url, **parameters)
+            resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
-            resp = await client.remove_role_from_user(url=url_variant, **parameters)
+            resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
-            resp = await client.remove_role_from_user(url=full_url, **parameters)
+            resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url, **parameters)
+                resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url_variant, **parameters)
+                resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=full_url, **parameters)
+                resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url, **parameters)
+                resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url_variant, **parameters)
+                resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=full_url, **parameters)
+                resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url, **parameters)
+                resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url_variant, **parameters)
+                resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=full_url, **parameters)
+                resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url, **parameters)
+                resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url_variant, **parameters)
+                resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=full_url, **parameters)
+                resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url, **parameters)
+                resp = await client.remove_roles_from_user(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=url_variant, **parameters)
+                resp = await client.remove_roles_from_user(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.remove_role_from_user(url=full_url, **parameters)
+                resp = await client.remove_roles_from_user(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_list_roles(aioresponses: aioresponses):
+    url = r'/roles'
+    url_variant = r'roles'
+    full_url = BASE_URL+r'/roles'
+
+    parameter_list = [{}, ]
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_roles(**parameters)
+            assert normalize_result(get_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_roles(url=url, **parameters)
+            assert normalize_result(get_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_roles(url=url_variant, **parameters)
+            assert normalize_result(get_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"id":"nisi nostrud nulla sit","url":"https://aeUhNJdx.hxjnM137Xzngz--,VAiwP","name":"ipsum ullamco in","scopes":["Ut Duis","non consequat labore dolor Duis","anim elit sed nisi","Ut sunt exercitation non"]},{"name":"mollit qui enim ad Ut","id":"in ut eiusmod"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_roles(url=full_url, **parameters)
+            assert normalize_result(get_roles_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=full_url, **parameters)
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=full_url, **parameters)
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=full_url, **parameters)
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=full_url, **parameters)
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_roles(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_create_role(aioresponses: aioresponses):
+    url = r'/roles'
+    url_variant = r'roles'
+    full_url = BASE_URL+r'/roles'
+
+    request_dict = json.loads(r'{"name":"nulla nisi","scopes":["in amet et in","cupidatat","adipisicing ad","dolore aliqua in","Ut esse ad"]}')
+    request = post_roles_request_body_write_from_dict(request_dict)
+
+    parameter_list = [{}, ]
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_role(body=request, **parameters)
+            assert normalize_result(post_roles_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_role(url=url, body=request, **parameters)
+            assert normalize_result(post_roles_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_role(url=url_variant, body=request, **parameters)
+            assert normalize_result(post_roles_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_role(url=full_url, body=request, **parameters)
+            assert normalize_result(post_roles_response_body201_read_to_dict(resp)) == normalize_result(response_201_dict)
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=full_url, body=request, **parameters)
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=full_url, body=request, **parameters)
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=full_url, body=request, **parameters)
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=full_url, body=request, **parameters)
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_role(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_get_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_role(url=url, **parameters)
+            assert normalize_result(get_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_role(url=url_variant, **parameters)
+            assert normalize_result(get_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_role(url=full_url, **parameters)
+            assert normalize_result(get_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_role(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    request_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+    request = patch_role_request_body_write_from_dict(request_dict)
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_role(url=url, body=request, **parameters)
+            assert normalize_result(patch_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_role(url=url_variant, body=request, **parameters)
+            assert normalize_result(patch_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"scopes":["dolor commodo id in","ut"],"name":"commodo ad nulla nisi et"}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_role(url=full_url, body=request, **parameters)
+            assert normalize_result(patch_role_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_role(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_delete_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_role(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_get_users_with_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_users_with_role(url=url, **parameters)
+            assert normalize_result(get_role_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_users_with_role(url=url_variant, **parameters)
+            assert normalize_result(get_role_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"roles":[{"url":"https://DeURFWCx.onpu.Mw7RTfb2f0l1WRLzoCO5oU","id":"enim anim","name":"non incididunt Duis pariatur minim","scopes":["anim voluptate aute Duis"]}],"url":"https://dhvskgVWHiqwVntPoDQGF.ovePGeHEMw62XGwjeRU8wlzpIq5MThVrmqRhgckA-PLHLyY,zw+oQY"},{"roles":[{"url":"http://guBFBXETlaqfTdLLERbYNLLxZfDPO.cpikrn3,,iXCReR4ttNoe-tMnW,hKH1KPFSPED.4dVYJyHO3rzehHFgRkEY5teKM06BwHocOzVHwyg,"}],"password":"elit esse aute","username":"culpa","url":"http://ulxpvZToDIljIFfbjoFuAGBWNAOtS.fqegaiBJIsMZvyhownQK8JUbyjybkXJh,jzugkWn1ynn,-Ns3FAcYzdlQsMoygSVAjcS"},{"username":"proident Ut ad reprehenderit","roles":[{"url":"http://YfHcCjfNllGG.jvkhcj3bIX7FusXR++ln7ptUnTRvS9tw"},{"name":"aliquip ullamco culpa consequat","id":"in adipisicing","url":"https://PSkjL.rbUkxB9XvO+SAZ-s5iURdPqEn88GdVFYDNTUhtH8XsdZNZFuVC"},{"url":"http://vPvLleEDIbPSRvhKNMrErekJWIK.eibvkaeIbOawfCEA4OcE8mDAn8qofAP0Vr3cpaxvhabQWVecNZOqDCz5oJ3","scopes":["veniam non ut","exercitation commodo elit","adipisicing tempor","cupidatat Ut dolor reprehenderit","reprehenderit ut ipsum et cupidatat"],"id":"velit Excepteur occaecat"}],"url":"https://GXYKIhsWipBeJUIcBNukIdJE.hvVmOk85dI5oEflv,EDD+0-eJOa2qdHKltLPwsg9GJbzaQtJhzdVuNw3KucXXHSJzZckeMPFcGv"},{"roles":[{"url":"https://zjihqqLRdlnACjMmxxukpKeC.dovQ0iw-ZmN6q8sTZyw6F0FTZSbziJGvEeIVH1GN0ttobx0vNnfyrpwTmV5TmlGc2KNvdrmx","id":"elit sint non consectetur do","name":"laborum incididunt exercitation","scopes":["fugiat aute eiusmod aliquip","in eu Lorem","voluptate incididunt dolore dolore"]},{"url":"http://fcJDGAMVZZteWEL.lrZBLoqWr,-OhEIp52w5ni6b1KGQTs.B","scopes":["id labore ut voluptate","ex magna deserunt culpa Ut","aliquip","eu adipisicing dolore aliqua reprehenderit","elit enim commodo"]}],"password":"dolore in","id":"Excepteur dolor consectetur cupidatat","url":"https://LsSgDHAqAGEtaRzEMBLYlkq.keaOZMqdQo6mUVs3RF6NaIKRDy45Edaa6bLzykKVsfHjYxnH+qEgP5HsYmgYrYeX4","username":"cupidatat nostrud esse dolore nulla"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_users_with_role(url=full_url, **parameters)
+            assert normalize_result(get_role_users_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_users_with_role(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_add_users_to_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+
+    request_dict = json.loads(r'["enim","consequat aute Ut sit anim"]')
+    request = post_role_users_request_body_write_from_dict(request_dict)
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.add_users_to_role(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_remove_users_from_role(aioresponses: aioresponses):
+    url = r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    url_variant = r'roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+    full_url = BASE_URL+r'/roles/c799cc2e-cdc5-4143-973a-6f56a5afa82c/users'
+
+    request_dict = json.loads(r'["enim","consequat aute Ut sit anim"]')
+    request = delete_role_users_request_body_write_from_dict(request_dict)
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.remove_users_from_role(url=full_url, body=request, **parameters)
 
 
 @pytest.mark.asyncio
@@ -1385,28 +2521,28 @@ async def test_get_identity(aioresponses: aioresponses):
 
     parameter_list = [{}, ]
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(**parameters)
             assert normalize_result(get_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=url, **parameters)
             assert normalize_result(get_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=url_variant, **parameters)
             assert normalize_result(get_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=full_url, **parameters)
@@ -1534,33 +2670,33 @@ async def test_update_identity(aioresponses: aioresponses):
     url_variant = r'identity'
     full_url = BASE_URL+r'/identity'
 
-    request_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+    request_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
     request = patch_identity_request_body_write_from_dict(request_dict)
 
     parameter_list = [{}, ]
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(body=request, **parameters)
             assert normalize_result(patch_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=url, body=request, **parameters)
             assert normalize_result(patch_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=url_variant, body=request, **parameters)
             assert normalize_result(patch_identity_response_body200_read_to_dict(resp)) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"roles":[{"scopes":["et exercitation tempor cupidatat","Excepteur","non aute qui"],"name":"tempor"},{"name":"proident eiusmod cillum ea irure","scopes":["nisi ex","dolor","in deserunt id cupidatat","consequat"]},{"name":"dolor id","scopes":["nulla consectetur sunt exercitation proident","occaecat","dolor nulla velit"]},{"name":"consequat"},{"scopes":["consectetur","ex officia consequat"],"name":"elit commodo anim cupidatat mollit"}],"password":"occaecat velit do","username":"magna irure elit ea in","url":"https://NulaMBUgYz.twnxAltK7nKQQF,OWxW3soSZrwrzYkbI9+lOyAcHEwAx3B07JbBACdQ1+id"}')
+        response_200_dict = json.loads(r'{"url":"https://wjhCRJVAMrw.qsvc6FSHdo,VugWBeX,e5eUtd-dX6uBD2M7ZYriEcfD+","id":"Lorem","username":"enim magna eu","password":"ut elit quis anim","roles":[{"scopes":["magna culpa dolore","ad laboris amet","laboris","deserunt ullamco eiusmod voluptate","Excepteur ipsum consequat nisi exercitation"],"url":"http://hHdqGncjesLInHvCUzWEKnM.adcCMugPEJR,2x+RQlqh,QgDtridgq","name":"irure magna sed et","id":"ipsum"},{"url":"http://DszIzhdPiXvExSMPFsYnovghHvYrW.joDZz,Yq-izLjyXwqxBdI16MCIOUT31qScyrQBgqbR","id":"deserunt est aliqua","name":"dolore consectetur commodo"}]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=full_url, body=request, **parameters)
