@@ -21,11 +21,11 @@ build-environment:
   image: crosslab/devcontainer:latest
   stage: build-environment
   script:
-    - ./scripts/ci.sh --tag environment --no-upload --branch $BRANCH
+    - ./scripts/ci.sh -v --tag environment --no-upload --branch $BRANCH
     - cat ./helper/development-container/dist/crosslab-devcontainer.tar | docker load
 
 build:
   image: crosslab-devcontainer:build
   stage: build
   script:
-    - ./scripts/ci.sh --branch $BRANCH
+    - ./scripts/ci.sh -v --branch $BRANCH

@@ -93,6 +93,7 @@ async function main() {
     );
   });
 
+  await new Promise((resolve) => setTimeout(resolve, 2000))
   debugging && (await Debugger.pause());
   const expression = "window.app(" + JSON.stringify(options) + ")";
   const appPromise = await (
