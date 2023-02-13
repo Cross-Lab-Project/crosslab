@@ -25,7 +25,7 @@ The following table shows the status for all jobs in this repository.
 | services/experiment |  [![build-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/lint.log) |  | [![lint-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/lint-spec.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/experiment/dist/build-docker.log) |
 | services/federation |  [![build-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build.log) |  |  | [![lint-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/lint-spec.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/federation/dist/build-docker.log) |
 | services/update |  [![build-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build.log) |  |  | [![lint-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/lint-spec.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/update/dist/build-docker.log) |
-| services/openapi |  [![build-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/build-spec.log) |  |  |  | [![lint-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/lint-spec.log) |  |
+| services/openapi |   | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/openapi/dist/lint.log) |  |  |  |
 | services/gateway |   | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/gateway/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/gateway/dist/build.log) |  |  |  | [![build-docker](https://ci.goldi-labs.de/crosslab/housekeeping/services/gateway/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/gateway/dist/build-docker.log) |
 | clients/api/js |   | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/js/dist/lint.log) |  |  |  |
 | clients/api/python |   | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/clients/api/python/dist/test.log) |  |  |
@@ -147,8 +147,8 @@ graph LR
     services/gateway:build-docker[build-docker]
   end
   subgraph services/openapi
-    services/openapi:build-spec[build-spec]
-    services/openapi:lint-spec[lint-spec]
+    services/openapi:build[build]
+    services/openapi:lint[lint]
   end
   subgraph services/update
     services/update:build[build]
@@ -166,12 +166,12 @@ graph LR
   helper/tsdoc-theme:build[build] --> clients/api/js:build[build]
   helper/openapi-codegeneration:build[build] --> clients/api/js:build[build]
   clients/api/js:build[build] --> clients/api/js:lint[lint]
-  services/openapi:build-spec[build-spec] --> clients/api/python:build[build]
+  services/openapi:build[build] --> clients/api/python:build[build]
   helper/openapi-codegeneration:build[build] --> clients/api/python:build[build]
   clients/api/python:build[build] --> clients/api/python:lint[lint]
   clients/api/python:build[build] --> clients/api/python:test[test]
   clients/soa/js:build[build] --> clients/soa/js:lint[lint]
-  services/openapi:build-spec[build-spec] --> clients/soa/python:build[build]
+  services/openapi:build[build] --> clients/soa/python:build[build]
   helper/openapi-codegeneration:build[build] --> clients/soa/python:build[build]
   clients/api/python:build[build] --> clients/soa/python:build[build]
   clients/soa/python:build[build] --> clients/soa/python:lint[lint]
@@ -243,13 +243,13 @@ graph LR
   services/federation:build[build] --> services/federation:build-docker[build-docker]
   services/federation:build-spec[build-spec] --> services/federation:lint-spec[lint-spec]
   services/gateway:build[build] --> services/gateway:build-docker[build-docker]
-  services/auth:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/booking:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/device:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/experiment:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/federation:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/update:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/openapi:build-spec[build-spec] --> services/openapi:lint-spec[lint-spec]
+  services/auth:build-spec[build-spec] --> services/openapi:build[build]
+  services/booking:build-spec[build-spec] --> services/openapi:build[build]
+  services/device:build-spec[build-spec] --> services/openapi:build[build]
+  services/experiment:build-spec[build-spec] --> services/openapi:build[build]
+  services/federation:build-spec[build-spec] --> services/openapi:build[build]
+  services/update:build-spec[build-spec] --> services/openapi:build[build]
+  services/openapi:build[build] --> services/openapi:lint[lint]
   services/update:build-spec[build-spec] --> services/update:build[build]
   services/common:build[build] --> services/update:build[build]
   helper/crosslab-typescript-addon:build[build] --> services/update:build[build]

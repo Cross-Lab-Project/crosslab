@@ -190,7 +190,7 @@ while true; do
         echo_start "${BLUE}> Running $job"
 
         # Calculate input hash
-        job_input_paths="-p ${files[$job]}"
+        job_input_paths="-p ${files[$job]} -p ${root[$job]}/scripts/${script[$job]}.sh"
         for dependency in ${dependencies[$job]}; do
           if [ $dependency = "null" ]; then
             continue

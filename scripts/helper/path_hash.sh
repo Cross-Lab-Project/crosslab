@@ -25,7 +25,7 @@ for path in $PATHS; do
   if [ -f "$path" ]; then
     files="$path"
   else
-    files="$(fd -L -H -tf . $path)"
+    files="$(fd -L -H -tf -E scripts . $path)"
   fi
   if [ -z "$FILES" ]; then
     FILES="$files"

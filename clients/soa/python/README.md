@@ -39,23 +39,23 @@ graph LR
     services/federation:build-spec[build-spec]
   end
   subgraph services/openapi
-    services/openapi:build-spec[build-spec]
+    services/openapi:build[build]
   end
   subgraph services/update
     services/update:build-spec[build-spec]
   end
-  services/openapi:build-spec[build-spec] --> clients/api/python:build[build]
+  services/openapi:build[build] --> clients/api/python:build[build]
   helper/openapi-codegeneration:build[build] --> clients/api/python:build[build]
-  services/openapi:build-spec[build-spec] --> clients/soa/python:build[build]
+  services/openapi:build[build] --> clients/soa/python:build[build]
   helper/openapi-codegeneration:build[build] --> clients/soa/python:build[build]
   clients/api/python:build[build] --> clients/soa/python:build[build]
   clients/soa/python:build[build] --> clients/soa/python:lint[lint]
   clients/soa/python:build[build] --> clients/soa/python:test[test]
-  services/auth:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/booking:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/device:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/experiment:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/federation:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
-  services/update:build-spec[build-spec] --> services/openapi:build-spec[build-spec]
+  services/auth:build-spec[build-spec] --> services/openapi:build[build]
+  services/booking:build-spec[build-spec] --> services/openapi:build[build]
+  services/device:build-spec[build-spec] --> services/openapi:build[build]
+  services/experiment:build-spec[build-spec] --> services/openapi:build[build]
+  services/federation:build-spec[build-spec] --> services/openapi:build[build]
+  services/update:build-spec[build-spec] --> services/openapi:build[build]
 ```
 [//]: # ({{end}})
