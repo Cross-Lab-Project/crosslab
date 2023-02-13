@@ -67,9 +67,9 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
       console.log(this.debugPrint);
     }
 
-    /*this.process.stderr.on('data', data => {
+    this.process.stderr.on('data', data => {
       console.error(data.toString());
-    });*/
+    });
 
     let stdout = '';
     this.process.stdout.on('data', data => {
@@ -77,7 +77,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
       const lines = stdout.split('\n');
       stdout = lines.pop() ?? '';
       for (const line of lines) {
-        //console.log(line);
+        console.log(line);
         const split_line = line.split(' ');
         if (split_line.length >= 1) {
           const event = split_line[0];
