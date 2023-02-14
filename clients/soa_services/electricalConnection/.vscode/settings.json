@@ -1,28 +1,33 @@
 {
     "files.exclude": {
         //begin generated
-        "js/lib": true,
-        "js/node_modules": true,
-        "python/**/*.egg-info": true,
-        "python/.mypy_cache": true,
-        "python/node_modules": true,
-        "python/**/__pycache__": true,
-        "python/.pytest_cache": true,
-        "python/.tox": true,
+        "**/app": true,
+        "**/build": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
         //end generated
     },
     "files.watcherExclude": {
         //begin generated
-        "js/dist": true,
-        "js/lib": true,
-        "js/node_modules": true,
-        "python/dist": true,
-        "python/**/*.egg-info": true,
-        "python/.mypy_cache": true,
-        "python/node_modules": true,
-        "python/**/__pycache__": true,
-        "python/.pytest_cache": true,
-        "python/.tox": true,
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
         //end generated
     }
 }

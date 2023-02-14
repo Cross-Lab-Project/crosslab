@@ -1,6 +1,7 @@
 {
     "files.exclude": {
         //begin generated
+        "api/.vscode": true,
         "**/app": true,
         "**/build": true,
         "**/*.egg-info": true,
@@ -10,6 +11,11 @@
         "**/.packages": true,
         "**/__pycache__": true,
         "**/.pytest_cache": true,
+        "soa_services/electricalConnection/.vscode": true,
+        "soa_services/file/.vscode": true,
+        "soa_services/.vscode": true,
+        "soa_services/webcam/.vscode": true,
+        "soa/.vscode": true,
         "**/.tox": true,
         "**/venv": true,
         //end generated

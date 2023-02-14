@@ -3,6 +3,7 @@
         //begin generated
         "**/app": true,
         "**/build": true,
+        "dummy-device/.vscode": true,
         "**/*.egg-info": true,
         "**/lib": true,
         "**/.mypy_cache": true,
