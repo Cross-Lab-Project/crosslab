@@ -166,7 +166,7 @@ services/update:
 
 
 services/openapi:
-  - script: build-spec
+  - script: build
     dependencies: 
       - services/auth:build-spec
       - services/booking:build-spec
@@ -174,9 +174,9 @@ services/openapi:
       - services/experiment:build-spec
       - services/federation:build-spec
       - services/update:build-spec
-  - script: lint-spec
+  - script: lint
     dependencies:
-      - services/openapi:build-spec
+      - services/openapi:build
 
 services/gateway:
   - script: build
@@ -208,7 +208,7 @@ clients/api/js:
 clients/api/python:
   - script: build
     dependencies:
-      - services/openapi:build-spec
+      - services/openapi:build
       - helper/openapi-codegeneration:build
   - script: lint
     dependencies:
@@ -220,7 +220,7 @@ clients/api/python:
 clients/soa/python:
   - script: build
     dependencies:
-      - services/openapi:build-spec
+      - services/openapi:build
       - helper/openapi-codegeneration:build
       - clients/api/python:build
   - script: lint
