@@ -1,1 +1,1 @@
-/workspaces/crosslab/services/gateway/docker/scripts/build.sh
+../../../common/docker/scripts/build.sh

@@ -1,1 +1,1 @@
-../../../common/node/scripts/lint-code.sh
+../../../common/spec/scripts/lint.sh
