@@ -30,11 +30,11 @@ function prepare_service(process: ChildProcessWithoutNullStreams): Service {
   };
   process.stdout.on('data', data => {
     ret.stdout += data;
-    console.log(data.toString());
+    //console.log(data.toString());
   });
   process.stderr.on('data', data => {
     ret.stderr += data;
-    console.log(data.toString());
+    //console.log(data.toString());
   });
   return ret;
 }
