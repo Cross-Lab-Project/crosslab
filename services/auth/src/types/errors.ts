@@ -1,3 +1,5 @@
+import { Model, getModelName } from '../database/model'
+import { capitalizeFirstLetter } from '../methods/utils'
 import { ErrorWithStatus } from '../generated/types'
 
 /**
@@ -11,32 +13,12 @@ export class DNSResolveError extends Error {
 }
 
 /**
- * This error class should be used if an entity is not found in the database.
+ * This error class should be used if the allowlist is malformed.
  */
-export class MissingEntityError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'MissingEntityError'
-    }
-}
-
-/**
- * This error class should be used if an object contains an invalid value.
- */
-export class InvalidValueError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'InvalidValueError'
-    }
-}
-
-/**
- * This error class should be used if an entry of the allowlist is malformed.
- */
-export class MalformedAllowlistEntryError extends Error {
+export class MalformedAllowlistError extends Error {
     constructor(message: string) {
         super(message)
-        this.name = 'MalformedAllowlistEntryError'
+        this.name = 'MalformedAllowlistError'
     }
 }
 
@@ -47,16 +29,6 @@ export class ExpiredError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
         super(message, status)
         this.name = 'ExpiredError'
-    }
-}
-
-/**
- * This error class should be used if there is an inconsitency in the database.
- */
-export class InconsistentDatabaseError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'InconsistentDatabaseError'
     }
 }
 
@@ -120,5 +92,20 @@ export class OwnershipError extends ErrorWithStatus {
     constructor() {
         super(`User is not the owner of the device`, 403)
         this.name = 'OwnershipError'
+    }
+}
+
+/**
+ * This error class should be used when a repository has not been initialized before use.
+ */
+export class UninitializedRepositoryError extends ErrorWithStatus {
+    constructor(model: Model) {
+        super(
+            `${capitalizeFirstLetter(
+                getModelName(model).toLowerCase()
+            )} repository has not been initialized`,
+            500
+        )
+        this.name = 'UninitializedRepositoryError'
     }
 }

@@ -9,14 +9,14 @@ info:
 
 components:
   securitySchemes:
-    TuiAuth:
-      type: http
-      scheme: basic
-      description: Basic authentication using the TUI username and password.
-    AccessToken:
-      type: http
-      scheme: bearer
-      description: A token for user authentication.
+    # TuiAuth:
+    #   type: http
+    #   scheme: basic
+    #   description: Basic authentication using the TUI username and password.
+    # AccessToken:
+    #   type: http
+    #   scheme: bearer
+    #   description: A token for user authentication.
     JWT:
       type: http
       scheme: bearer
@@ -36,9 +36,15 @@ paths:
     $ref: "./resources/device_authentication_token.yml"
   /users:
     $ref: "./resources/users.yml"
-  /users/{username}:
+  /users/{user_id}:
     $ref: "./resources/user.yml"
-  /users/{username}/roles/{role_name}:
-    $ref: "./resources/user_role.yml"
+  /users/{user_id}/roles:
+    $ref: "./resources/user_roles.yml"
+  /roles:
+    $ref: "./resources/roles.yml"
+  /roles/{role_id}:
+    $ref: "./resources/role.yml"
+  /roles/{role_id}/users:
+    $ref: "./resources/role_users.yml"
   /identity:
     $ref: "./resources/identity.yml"

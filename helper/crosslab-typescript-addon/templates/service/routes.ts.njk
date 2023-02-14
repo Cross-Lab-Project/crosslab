@@ -2,9 +2,11 @@
 {%- set typeDependencies = ["UserData","TypedRequest","ValidationError","initServiceOptions","SecurityScheme"] -%}
 {%- set validationDependencies = [] -%}
 {%- set signatureDependencies = [] -%}
+{%- set operationDependencies = [] -%}
 {%- set operations = api | resolveOperations -%}
 
 {%- for operation in operations -%}
+    {%- set operationDependencies = (operationDependencies.push(operation.name), operationDependencies) -%}
     {%- set validationDependencies = (validationDependencies.push("validate" + (operation.name | cap) + "Input"), validationDependencies) -%}
     {%- set validationDependencies = (validationDependencies.push("validate" + (operation.name | cap) + "Output"), validationDependencies) -%}
     {%- if operation.parameters -%}
@@ -35,7 +37,8 @@
  * and run openapi-codegeneration to regenerate this file.
  */
 import express from "express"
-import * as operations from "../operations"
+
+import operations from "../operations"
 
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
@@ -50,13 +53,7 @@ import {
 } from "./requestValidation"
 
 export default function routes(
-    options: initServiceOptions<SecurityScheme> = {
-        {%- if securityOptionsDefaults | length > 0 %}
-        security: {
-            {{ securityOptionsDefaults | join(",\n\t\t\t") }}
-        }
-        {%- endif %}
-    }
+    options: initServiceOptions<SecurityScheme>
 ): express.Router {
     const router = express.Router()
 
@@ -167,16 +164,14 @@ export default function routes(
                 throw new ValidationError("Response validation failed", (validate{{ operation.name | cap }}Output as any).errors, 500)
             }
 
-            if (result.headers) {
-                for (const headerName in result.headers) {
-                    const header = result.headers[headerName]
-                    if (header) {
-                        res.setHeader(headerName, header)
-                    }
+            for (const headerName in result.headers) {
+                const header = result.headers[headerName]
+                if (header) {
+                    res.setHeader(headerName, header)
                 }
             }
 
-            return res.status(result.status || 200).send(result.body)
+            return res.status(result.status).send(result.body)
         } catch(error) {
             next(error)
             return

@@ -5,6 +5,7 @@ SCRIPT_DIR=$(dirname "$0")
 
 rm -rf node_modules
 
+rm -rf app
 npm ci
 npm run build
 

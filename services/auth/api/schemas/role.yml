@@ -2,6 +2,13 @@
 title: Role
 type: object
 properties: 
+  url:
+    type: string
+    format: uri
+    readOnly: true
+  id:
+    type: string
+    readOnly: true
   name: 
     type: string
   scopes:

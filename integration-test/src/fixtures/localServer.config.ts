@@ -7,7 +7,7 @@ export const ENV = {
   auth: {
     PORT: '3000',
     ALLOWLIST:
-      'localhost:authservice,localhost:deviceservice,localhost:experimentservice,localhost:federationservice,localhost:updateservice',
+      'localhost:superadmin',
   },
   device: {
     PORT: '3001',

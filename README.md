@@ -19,7 +19,7 @@ The following table shows the status for all jobs in this repository.
 | helper/dummy-device/js |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/build.log) |  |  | [![lint-code](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/lint-code.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/lint-code.log) |
 | helper/dummy-device/python |   | [![build](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.log) |  |  |
 | services/common |   | [![build](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.log) |  |  |  |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) |  |  |
+| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.log) |  |
 | services/booking |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.log) |  | [![lint](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint.log) |  |  |
 | services/device |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint.log) |  |  |
 | services/experiment |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.log) |  |  |
@@ -104,6 +104,7 @@ graph LR
     services/auth:build[build]
     services/auth:build-spec[build-spec]
     services/auth:lint[lint]
+    services/auth:test[test]
   end
   subgraph services/booking
     services/booking:build-spec[build-spec]
@@ -204,6 +205,7 @@ graph LR
   helper/openapi-codegeneration:build[build] --> services/auth:build[build]
   clients/api/js:build[build] --> services/auth:build[build]
   services/auth:build-spec[build-spec] --> services/auth:lint[lint]
+  services/auth:build[build] --> services/auth:test[test]
   services/booking:build-spec[build-spec] --> services/booking:lint[lint]
   services/device:build-spec[build-spec] --> services/device:build[build]
   services/common:build[build] --> services/device:build[build]

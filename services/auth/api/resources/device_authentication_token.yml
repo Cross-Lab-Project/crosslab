@@ -9,12 +9,12 @@ post:
       - device_token:create
   parameters:
     - $ref: "../parameters/device_url.yml"
-  summary: Create a new device authentication token
+  summary: Create a device authentication token
   description: |-
-    This endpoint will generate a new device authentication token.
+    This endpoint will create a new device authentication token.
   responses:
-    200:
-      description: The new device authentication token.
+    201:
+      description: The created device authentication token.
       content:
         application/json:
           schema:

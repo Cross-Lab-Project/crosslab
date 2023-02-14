@@ -17,9 +17,9 @@
 #     result = post_logout_request_body_from_dict(json.loads(json_string))
 #     result = post_logout_request_body_write_from_dict(json.loads(json_string))
 #     result = post_logout_request_body_read_from_dict(json.loads(json_string))
-#     result = post_device_authentication_token_response_body200_from_dict(json.loads(json_string))
-#     result = post_device_authentication_token_response_body200_write_from_dict(json.loads(json_string))
-#     result = post_device_authentication_token_response_body200_read_from_dict(json.loads(json_string))
+#     result = post_device_authentication_token_response_body201_from_dict(json.loads(json_string))
+#     result = post_device_authentication_token_response_body201_write_from_dict(json.loads(json_string))
+#     result = post_device_authentication_token_response_body201_read_from_dict(json.loads(json_string))
 #     result = get_users_response_body200_from_dict(json.loads(json_string))
 #     result = get_users_response_body200_write_from_dict(json.loads(json_string))
 #     result = get_users_response_body200_read_from_dict(json.loads(json_string))
@@ -38,9 +38,42 @@
 #     result = patch_user_response_body200_from_dict(json.loads(json_string))
 #     result = patch_user_response_body200_write_from_dict(json.loads(json_string))
 #     result = patch_user_response_body200_read_from_dict(json.loads(json_string))
-#     result = put_user_roles_response_body200_from_dict(json.loads(json_string))
-#     result = put_user_roles_response_body200_write_from_dict(json.loads(json_string))
-#     result = put_user_roles_response_body200_read_from_dict(json.loads(json_string))
+#     result = get_user_roles_response_body200_from_dict(json.loads(json_string))
+#     result = get_user_roles_response_body200_write_from_dict(json.loads(json_string))
+#     result = get_user_roles_response_body200_read_from_dict(json.loads(json_string))
+#     result = post_user_roles_request_body_from_dict(json.loads(json_string))
+#     result = post_user_roles_request_body_write_from_dict(json.loads(json_string))
+#     result = post_user_roles_request_body_read_from_dict(json.loads(json_string))
+#     result = delete_user_roles_request_body_from_dict(json.loads(json_string))
+#     result = delete_user_roles_request_body_write_from_dict(json.loads(json_string))
+#     result = delete_user_roles_request_body_read_from_dict(json.loads(json_string))
+#     result = get_roles_response_body200_from_dict(json.loads(json_string))
+#     result = get_roles_response_body200_write_from_dict(json.loads(json_string))
+#     result = get_roles_response_body200_read_from_dict(json.loads(json_string))
+#     result = post_roles_request_body_from_dict(json.loads(json_string))
+#     result = post_roles_request_body_write_from_dict(json.loads(json_string))
+#     result = post_roles_request_body_read_from_dict(json.loads(json_string))
+#     result = post_roles_response_body201_from_dict(json.loads(json_string))
+#     result = post_roles_response_body201_write_from_dict(json.loads(json_string))
+#     result = post_roles_response_body201_read_from_dict(json.loads(json_string))
+#     result = get_role_response_body200_from_dict(json.loads(json_string))
+#     result = get_role_response_body200_write_from_dict(json.loads(json_string))
+#     result = get_role_response_body200_read_from_dict(json.loads(json_string))
+#     result = patch_role_request_body_from_dict(json.loads(json_string))
+#     result = patch_role_request_body_write_from_dict(json.loads(json_string))
+#     result = patch_role_request_body_read_from_dict(json.loads(json_string))
+#     result = patch_role_response_body200_from_dict(json.loads(json_string))
+#     result = patch_role_response_body200_write_from_dict(json.loads(json_string))
+#     result = patch_role_response_body200_read_from_dict(json.loads(json_string))
+#     result = get_role_users_response_body200_from_dict(json.loads(json_string))
+#     result = get_role_users_response_body200_write_from_dict(json.loads(json_string))
+#     result = get_role_users_response_body200_read_from_dict(json.loads(json_string))
+#     result = post_role_users_request_body_from_dict(json.loads(json_string))
+#     result = post_role_users_request_body_write_from_dict(json.loads(json_string))
+#     result = post_role_users_request_body_read_from_dict(json.loads(json_string))
+#     result = delete_role_users_request_body_from_dict(json.loads(json_string))
+#     result = delete_role_users_request_body_write_from_dict(json.loads(json_string))
+#     result = delete_role_users_request_body_read_from_dict(json.loads(json_string))
 #     result = get_identity_response_body200_from_dict(json.loads(json_string))
 #     result = get_identity_response_body200_write_from_dict(json.loads(json_string))
 #     result = get_identity_response_body200_read_from_dict(json.loads(json_string))
@@ -430,36 +463,48 @@ class PostLogoutRequestBodyRead:
 
 
 class GetUsersResponseBody200_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUsersResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUsersResponseBody200_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUsersResponseBody200_Element:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUsersResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUsersResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUsersResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -468,14 +513,17 @@ class GetUsersResponseBody200_Element:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_Element':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUsersResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUsersResponseBody200_Element(password, roles, url, username)
+        return GetUsersResponseBody200_Element(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -488,36 +536,48 @@ class GetUsersResponseBody200_Element:
 
 
 class GetUsersResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUsersResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUsersResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUsersResponseBody200_WriteElement:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUsersResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUsersResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUsersResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -526,14 +586,17 @@ class GetUsersResponseBody200_WriteElement:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_WriteElement':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUsersResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUsersResponseBody200_WriteElement(password, roles, url, username)
+        return GetUsersResponseBody200_WriteElement(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -546,36 +609,48 @@ class GetUsersResponseBody200_WriteElement:
 
 
 class GetUsersResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUsersResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUsersResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUsersResponseBody200_ReadElement:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUsersResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUsersResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUsersResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -584,14 +659,17 @@ class GetUsersResponseBody200_ReadElement:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUsersResponseBody200_ReadElement':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUsersResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUsersResponseBody200_ReadElement(password, roles, url, username)
+        return GetUsersResponseBody200_ReadElement(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -603,211 +681,115 @@ class GetUsersResponseBody200_ReadElement:
         return result
 
 
-class PostUsersRequestBodyRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostUsersRequestBodyRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersRequestBodyRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
-        return result
-
-
 class PostUsersRequestBody:
-    password: Optional[str]
-    roles: Optional[List[PostUsersRequestBodyRole]]
-    url: Optional[str]
-    username: Optional[str]
+    password: str
+    username: str
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersRequestBodyRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: str, username: str) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersRequestBody':
         assert isinstance(obj, dict)
-        password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PostUsersRequestBodyRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
-        username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersRequestBody(password, roles, url, username)
+        password = from_str(obj.get("password"))
+        username = from_str(obj.get("username"))
+        return PostUsersRequestBody(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        if self.password is not None:
-            result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
-        if self.username is not None:
-            result["username"] = from_union([from_str, from_none], self.username)
-        return result
-
-
-class PostUsersRequestBodyWriteRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostUsersRequestBodyWriteRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersRequestBodyWriteRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        result["password"] = from_str(self.password)
+        result["username"] = from_str(self.username)
         return result
 
 
 class PostUsersRequestBodyWrite:
-    password: Optional[str]
-    roles: Optional[List[PostUsersRequestBodyWriteRole]]
-    url: Optional[str]
-    username: Optional[str]
+    password: str
+    username: str
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersRequestBodyWriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: str, username: str) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersRequestBodyWrite':
         assert isinstance(obj, dict)
-        password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PostUsersRequestBodyWriteRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
-        username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersRequestBodyWrite(password, roles, url, username)
+        password = from_str(obj.get("password"))
+        username = from_str(obj.get("username"))
+        return PostUsersRequestBodyWrite(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        if self.password is not None:
-            result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyWriteRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
-        if self.username is not None:
-            result["username"] = from_union([from_str, from_none], self.username)
-        return result
-
-
-class PostUsersRequestBodyReadRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PostUsersRequestBodyReadRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersRequestBodyReadRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        result["password"] = from_str(self.password)
+        result["username"] = from_str(self.username)
         return result
 
 
 class PostUsersRequestBodyRead:
-    password: Optional[str]
-    roles: Optional[List[PostUsersRequestBodyReadRole]]
-    url: Optional[str]
-    username: Optional[str]
+    password: str
+    username: str
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersRequestBodyReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: str, username: str) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersRequestBodyRead':
         assert isinstance(obj, dict)
-        password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PostUsersRequestBodyReadRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
-        username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersRequestBodyRead(password, roles, url, username)
+        password = from_str(obj.get("password"))
+        username = from_str(obj.get("username"))
+        return PostUsersRequestBodyRead(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
-        if self.password is not None:
-            result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PostUsersRequestBodyReadRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
-        if self.username is not None:
-            result["username"] = from_union([from_str, from_none], self.username)
+        result["password"] = from_str(self.password)
+        result["username"] = from_str(self.username)
         return result
 
 
 class PostUsersResponseBody201_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersResponseBody201_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostUsersResponseBody201_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PostUsersResponseBody201:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PostUsersResponseBody201_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersResponseBody201_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PostUsersResponseBody201_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -816,14 +798,17 @@ class PostUsersResponseBody201:
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PostUsersResponseBody201_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersResponseBody201(password, roles, url, username)
+        return PostUsersResponseBody201(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -836,36 +821,48 @@ class PostUsersResponseBody201:
 
 
 class PostUsersResponseBody201_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersResponseBody201_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostUsersResponseBody201_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PostUsersResponseBody201_Write:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PostUsersResponseBody201_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersResponseBody201_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PostUsersResponseBody201_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -874,14 +871,17 @@ class PostUsersResponseBody201_Write:
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201_Write':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PostUsersResponseBody201_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersResponseBody201_Write(password, roles, url, username)
+        return PostUsersResponseBody201_Write(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -894,36 +894,48 @@ class PostUsersResponseBody201_Write:
 
 
 class PostUsersResponseBody201_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PostUsersResponseBody201_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostUsersResponseBody201_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PostUsersResponseBody201_Read:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PostUsersResponseBody201_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PostUsersResponseBody201_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PostUsersResponseBody201_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -932,14 +944,17 @@ class PostUsersResponseBody201_Read:
     @staticmethod
     def from_dict(obj: Any) -> 'PostUsersResponseBody201_Read':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PostUsersResponseBody201_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PostUsersResponseBody201_Read(password, roles, url, username)
+        return PostUsersResponseBody201_Read(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -952,36 +967,48 @@ class PostUsersResponseBody201_Read:
 
 
 class GetUserResponseBody200_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUserResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserResponseBody200_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUserResponseBody200:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUserResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUserResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUserResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -990,14 +1017,17 @@ class GetUserResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUserResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUserResponseBody200(password, roles, url, username)
+        return GetUserResponseBody200(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1010,36 +1040,48 @@ class GetUserResponseBody200:
 
 
 class GetUserResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUserResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUserResponseBody200_Write:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUserResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUserResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUserResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1048,14 +1090,17 @@ class GetUserResponseBody200_Write:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200_Write':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUserResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUserResponseBody200_Write(password, roles, url, username)
+        return GetUserResponseBody200_Write(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1068,36 +1113,48 @@ class GetUserResponseBody200_Write:
 
 
 class GetUserResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetUserResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetUserResponseBody200_Read:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetUserResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetUserResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetUserResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1106,14 +1163,17 @@ class GetUserResponseBody200_Read:
     @staticmethod
     def from_dict(obj: Any) -> 'GetUserResponseBody200_Read':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetUserResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetUserResponseBody200_Read(password, roles, url, username)
+        return GetUserResponseBody200_Read(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1125,211 +1185,121 @@ class GetUserResponseBody200_Read:
         return result
 
 
-class PatchUserRequestBodyRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchUserRequestBodyRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserRequestBodyRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
-        return result
-
-
 class PatchUserRequestBody:
     password: Optional[str]
-    roles: Optional[List[PatchUserRequestBodyRole]]
-    url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserRequestBodyRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: Optional[str], username: Optional[str]) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserRequestBody':
         assert isinstance(obj, dict)
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PatchUserRequestBodyRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserRequestBody(password, roles, url, username)
+        return PatchUserRequestBody(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
             result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
-class PatchUserRequestBodyWriteRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchUserRequestBodyWriteRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserRequestBodyWriteRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
-        return result
-
-
 class PatchUserRequestBodyWrite:
     password: Optional[str]
-    roles: Optional[List[PatchUserRequestBodyWriteRole]]
-    url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserRequestBodyWriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: Optional[str], username: Optional[str]) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserRequestBodyWrite':
         assert isinstance(obj, dict)
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PatchUserRequestBodyWriteRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserRequestBodyWrite(password, roles, url, username)
+        return PatchUserRequestBodyWrite(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyWriteRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
             result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
-class PatchUserRequestBodyReadRole:
-    name: Optional[str]
-    scopes: Optional[List[str]]
-
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
-        self.name = name
-        self.scopes = scopes
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'PatchUserRequestBodyReadRole':
-        assert isinstance(obj, dict)
-        name = from_union([from_str, from_none], obj.get("name"))
-        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserRequestBodyReadRole(name, scopes)
-
-    def to_dict(self) -> dict:
-        result: dict = {}
-        if self.name is not None:
-            result["name"] = from_union([from_str, from_none], self.name)
-        if self.scopes is not None:
-            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
-        return result
-
-
 class PatchUserRequestBodyRead:
     password: Optional[str]
-    roles: Optional[List[PatchUserRequestBodyReadRole]]
-    url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserRequestBodyReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, password: Optional[str], username: Optional[str]) -> None:
         self.password = password
-        self.roles = roles
-        self.url = url
         self.username = username
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserRequestBodyRead':
         assert isinstance(obj, dict)
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PatchUserRequestBodyReadRole.from_dict, x), from_none], obj.get("roles"))
-        url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserRequestBodyRead(password, roles, url, username)
+        return PatchUserRequestBodyRead(password, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
-        if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PatchUserRequestBodyReadRole, x), x), from_none], self.roles)
-        if self.url is not None:
-            result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
             result["username"] = from_union([from_str, from_none], self.username)
         return result
 
 
 class PatchUserResponseBody200_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchUserResponseBody200_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchUserResponseBody200:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchUserResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchUserResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1338,14 +1308,17 @@ class PatchUserResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchUserResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserResponseBody200(password, roles, url, username)
+        return PatchUserResponseBody200(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1358,36 +1331,48 @@ class PatchUserResponseBody200:
 
 
 class PatchUserResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchUserResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchUserResponseBody200_Write:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchUserResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchUserResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1396,14 +1381,17 @@ class PatchUserResponseBody200_Write:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200_Write':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchUserResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserResponseBody200_Write(password, roles, url, username)
+        return PatchUserResponseBody200_Write(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1416,36 +1404,48 @@ class PatchUserResponseBody200_Write:
 
 
 class PatchUserResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchUserResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchUserResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchUserResponseBody200_Read:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchUserResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchUserResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchUserResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1454,14 +1454,17 @@ class PatchUserResponseBody200_Read:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchUserResponseBody200_Read':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchUserResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchUserResponseBody200_Read(password, roles, url, username)
+        return PatchUserResponseBody200_Read(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1473,57 +1476,750 @@ class PatchUserResponseBody200_Read:
         return result
 
 
-class PutUserRolesResponseBody200_Role:
+class GetUserRolesResponseBody200_Element:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200_Role':
+    def from_dict(obj: Any) -> 'GetUserRolesResponseBody200_Element':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PutUserRolesResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserRolesResponseBody200_Element(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
-class PutUserRolesResponseBody200:
+class GetUserRolesResponseBody200_WriteElement:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetUserRolesResponseBody200_WriteElement':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserRolesResponseBody200_WriteElement(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetUserRolesResponseBody200_ReadElement:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetUserRolesResponseBody200_ReadElement':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetUserRolesResponseBody200_ReadElement(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRolesResponseBody200_Element:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRolesResponseBody200_Element':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRolesResponseBody200_Element(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRolesResponseBody200_WriteElement:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRolesResponseBody200_WriteElement':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRolesResponseBody200_WriteElement(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRolesResponseBody200_ReadElement:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRolesResponseBody200_ReadElement':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRolesResponseBody200_ReadElement(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PostRolesRequestBody:
+    name: str
+    scopes: List[str]
+
+    def __init__(self, name: str, scopes: List[str]) -> None:
+        self.name = name
+        self.scopes = scopes
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesRequestBody':
+        assert isinstance(obj, dict)
+        name = from_str(obj.get("name"))
+        scopes = from_list(from_str, obj.get("scopes"))
+        return PostRolesRequestBody(name, scopes)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["name"] = from_str(self.name)
+        result["scopes"] = from_list(from_str, self.scopes)
+        return result
+
+
+class PostRolesRequestBodyWrite:
+    name: str
+    scopes: List[str]
+
+    def __init__(self, name: str, scopes: List[str]) -> None:
+        self.name = name
+        self.scopes = scopes
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesRequestBodyWrite':
+        assert isinstance(obj, dict)
+        name = from_str(obj.get("name"))
+        scopes = from_list(from_str, obj.get("scopes"))
+        return PostRolesRequestBodyWrite(name, scopes)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["name"] = from_str(self.name)
+        result["scopes"] = from_list(from_str, self.scopes)
+        return result
+
+
+class PostRolesRequestBodyRead:
+    name: str
+    scopes: List[str]
+
+    def __init__(self, name: str, scopes: List[str]) -> None:
+        self.name = name
+        self.scopes = scopes
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesRequestBodyRead':
+        assert isinstance(obj, dict)
+        name = from_str(obj.get("name"))
+        scopes = from_list(from_str, obj.get("scopes"))
+        return PostRolesRequestBodyRead(name, scopes)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        result["name"] = from_str(self.name)
+        result["scopes"] = from_list(from_str, self.scopes)
+        return result
+
+
+class PostRolesResponseBody201:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesResponseBody201':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostRolesResponseBody201(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PostRolesResponseBody201_Write:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesResponseBody201_Write':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostRolesResponseBody201_Write(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PostRolesResponseBody201_Read:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PostRolesResponseBody201_Read':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PostRolesResponseBody201_Read(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRoleResponseBody200:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRoleResponseBody200':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleResponseBody200(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRoleResponseBody200_Write:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRoleResponseBody200_Write':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleResponseBody200_Write(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRoleResponseBody200_Read:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRoleResponseBody200_Read':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleResponseBody200_Read(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleRequestBody:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleRequestBody':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleRequestBody(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleRequestBodyWrite:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleRequestBodyWrite':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleRequestBodyWrite(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleRequestBodyRead:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleRequestBodyRead':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleRequestBodyRead(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleResponseBody200:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleResponseBody200':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleResponseBody200(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleResponseBody200_Write:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleResponseBody200_Write':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleResponseBody200_Write(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class PatchRoleResponseBody200_Read:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'PatchRoleResponseBody200_Read':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchRoleResponseBody200_Read(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRoleUsersResponseBody200_Role:
+    id: Optional[str]
+    name: Optional[str]
+    scopes: Optional[List[str]]
+    url: Optional[str]
+
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
+        self.name = name
+        self.scopes = scopes
+        self.url = url
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_Role':
+        assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
+        name = from_union([from_str, from_none], obj.get("name"))
+        scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleUsersResponseBody200_Role(id, name, scopes, url)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
+        if self.name is not None:
+            result["name"] = from_union([from_str, from_none], self.name)
+        if self.scopes is not None:
+            result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
+        return result
+
+
+class GetRoleUsersResponseBody200_Element:
+    id: Optional[str]
     password: Optional[str]
-    roles: Optional[List[PutUserRolesResponseBody200_Role]]
+    roles: Optional[List[GetRoleUsersResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PutUserRolesResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetRoleUsersResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
         self.username = username
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200':
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_Element':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PutUserRolesResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
+        roles = from_union([lambda x: from_list(GetRoleUsersResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PutUserRolesResponseBody200(password, roles, url, username)
+        return GetRoleUsersResponseBody200_Element(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_Role, x), x), from_none], self.roles)
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetRoleUsersResponseBody200_Role, x), x), from_none], self.roles)
         if self.url is not None:
             result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
@@ -1531,57 +2227,72 @@ class PutUserRolesResponseBody200:
         return result
 
 
-class PutUserRolesResponseBody200_WriteRole:
+class GetRoleUsersResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200_WriteRole':
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PutUserRolesResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleUsersResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
-class PutUserRolesResponseBody200_Write:
+class GetRoleUsersResponseBody200_WriteElement:
+    id: Optional[str]
     password: Optional[str]
-    roles: Optional[List[PutUserRolesResponseBody200_WriteRole]]
+    roles: Optional[List[GetRoleUsersResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PutUserRolesResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetRoleUsersResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
         self.username = username
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200_Write':
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_WriteElement':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PutUserRolesResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
+        roles = from_union([lambda x: from_list(GetRoleUsersResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PutUserRolesResponseBody200_Write(password, roles, url, username)
+        return GetRoleUsersResponseBody200_WriteElement(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_WriteRole, x), x), from_none], self.roles)
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetRoleUsersResponseBody200_WriteRole, x), x), from_none], self.roles)
         if self.url is not None:
             result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
@@ -1589,57 +2300,72 @@ class PutUserRolesResponseBody200_Write:
         return result
 
 
-class PutUserRolesResponseBody200_ReadRole:
+class GetRoleUsersResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200_ReadRole':
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PutUserRolesResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetRoleUsersResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
-class PutUserRolesResponseBody200_Read:
+class GetRoleUsersResponseBody200_ReadElement:
+    id: Optional[str]
     password: Optional[str]
-    roles: Optional[List[PutUserRolesResponseBody200_ReadRole]]
+    roles: Optional[List[GetRoleUsersResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PutUserRolesResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetRoleUsersResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
         self.username = username
 
     @staticmethod
-    def from_dict(obj: Any) -> 'PutUserRolesResponseBody200_Read':
+    def from_dict(obj: Any) -> 'GetRoleUsersResponseBody200_ReadElement':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
-        roles = from_union([lambda x: from_list(PutUserRolesResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
+        roles = from_union([lambda x: from_list(GetRoleUsersResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PutUserRolesResponseBody200_Read(password, roles, url, username)
+        return GetRoleUsersResponseBody200_ReadElement(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
-            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(PutUserRolesResponseBody200_ReadRole, x), x), from_none], self.roles)
+            result["roles"] = from_union([lambda x: from_list(lambda x: to_class(GetRoleUsersResponseBody200_ReadRole, x), x), from_none], self.roles)
         if self.url is not None:
             result["url"] = from_union([from_str, from_none], self.url)
         if self.username is not None:
@@ -1648,36 +2374,48 @@ class PutUserRolesResponseBody200_Read:
 
 
 class GetIdentityResponseBody200_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetIdentityResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetIdentityResponseBody200_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetIdentityResponseBody200:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetIdentityResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1686,14 +2424,17 @@ class GetIdentityResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetIdentityResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetIdentityResponseBody200(password, roles, url, username)
+        return GetIdentityResponseBody200(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1706,36 +2447,48 @@ class GetIdentityResponseBody200:
 
 
 class GetIdentityResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetIdentityResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetIdentityResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetIdentityResponseBody200_Write:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetIdentityResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1744,14 +2497,17 @@ class GetIdentityResponseBody200_Write:
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200_Write':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetIdentityResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetIdentityResponseBody200_Write(password, roles, url, username)
+        return GetIdentityResponseBody200_Write(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1764,36 +2520,48 @@ class GetIdentityResponseBody200_Write:
 
 
 class GetIdentityResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return GetIdentityResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return GetIdentityResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class GetIdentityResponseBody200_Read:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[GetIdentityResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[GetIdentityResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1802,14 +2570,17 @@ class GetIdentityResponseBody200_Read:
     @staticmethod
     def from_dict(obj: Any) -> 'GetIdentityResponseBody200_Read':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(GetIdentityResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return GetIdentityResponseBody200_Read(password, roles, url, username)
+        return GetIdentityResponseBody200_Read(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1822,36 +2593,48 @@ class GetIdentityResponseBody200_Read:
 
 
 class PatchIdentityRequestBodyRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBodyRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityRequestBodyRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityRequestBodyRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityRequestBody:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityRequestBodyRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1860,14 +2643,17 @@ class PatchIdentityRequestBody:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBody':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityRequestBodyRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityRequestBody(password, roles, url, username)
+        return PatchIdentityRequestBody(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1880,36 +2666,48 @@ class PatchIdentityRequestBody:
 
 
 class PatchIdentityRequestBodyWriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBodyWriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityRequestBodyWriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityRequestBodyWriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityRequestBodyWrite:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityRequestBodyWriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyWriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyWriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1918,14 +2716,17 @@ class PatchIdentityRequestBodyWrite:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBodyWrite':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityRequestBodyWriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityRequestBodyWrite(password, roles, url, username)
+        return PatchIdentityRequestBodyWrite(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1938,36 +2739,48 @@ class PatchIdentityRequestBodyWrite:
 
 
 class PatchIdentityRequestBodyReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBodyReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityRequestBodyReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityRequestBodyReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityRequestBodyRead:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityRequestBodyReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityRequestBodyReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -1976,14 +2789,17 @@ class PatchIdentityRequestBodyRead:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityRequestBodyRead':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityRequestBodyReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityRequestBodyRead(password, roles, url, username)
+        return PatchIdentityRequestBodyRead(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -1996,36 +2812,48 @@ class PatchIdentityRequestBodyRead:
 
 
 class PatchIdentityResponseBody200_Role:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200_Role':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityResponseBody200_Role(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityResponseBody200_Role(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityResponseBody200:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityResponseBody200_Role]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_Role]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -2034,14 +2862,17 @@ class PatchIdentityResponseBody200:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityResponseBody200_Role.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityResponseBody200(password, roles, url, username)
+        return PatchIdentityResponseBody200(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -2054,36 +2885,48 @@ class PatchIdentityResponseBody200:
 
 
 class PatchIdentityResponseBody200_WriteRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200_WriteRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityResponseBody200_WriteRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityResponseBody200_WriteRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityResponseBody200_Write:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityResponseBody200_WriteRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_WriteRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -2092,14 +2935,17 @@ class PatchIdentityResponseBody200_Write:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200_Write':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityResponseBody200_WriteRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityResponseBody200_Write(password, roles, url, username)
+        return PatchIdentityResponseBody200_Write(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -2112,36 +2958,48 @@ class PatchIdentityResponseBody200_Write:
 
 
 class PatchIdentityResponseBody200_ReadRole:
+    id: Optional[str]
     name: Optional[str]
     scopes: Optional[List[str]]
+    url: Optional[str]
 
-    def __init__(self, name: Optional[str], scopes: Optional[List[str]]) -> None:
+    def __init__(self, id: Optional[str], name: Optional[str], scopes: Optional[List[str]], url: Optional[str]) -> None:
+        self.id = id
         self.name = name
         self.scopes = scopes
+        self.url = url
 
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200_ReadRole':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         name = from_union([from_str, from_none], obj.get("name"))
         scopes = from_union([lambda x: from_list(from_str, x), from_none], obj.get("scopes"))
-        return PatchIdentityResponseBody200_ReadRole(name, scopes)
+        url = from_union([from_str, from_none], obj.get("url"))
+        return PatchIdentityResponseBody200_ReadRole(id, name, scopes, url)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.name is not None:
             result["name"] = from_union([from_str, from_none], self.name)
         if self.scopes is not None:
             result["scopes"] = from_union([lambda x: from_list(from_str, x), from_none], self.scopes)
+        if self.url is not None:
+            result["url"] = from_union([from_str, from_none], self.url)
         return result
 
 
 class PatchIdentityResponseBody200_Read:
+    id: Optional[str]
     password: Optional[str]
     roles: Optional[List[PatchIdentityResponseBody200_ReadRole]]
     url: Optional[str]
     username: Optional[str]
 
-    def __init__(self, password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+    def __init__(self, id: Optional[str], password: Optional[str], roles: Optional[List[PatchIdentityResponseBody200_ReadRole]], url: Optional[str], username: Optional[str]) -> None:
+        self.id = id
         self.password = password
         self.roles = roles
         self.url = url
@@ -2150,14 +3008,17 @@ class PatchIdentityResponseBody200_Read:
     @staticmethod
     def from_dict(obj: Any) -> 'PatchIdentityResponseBody200_Read':
         assert isinstance(obj, dict)
+        id = from_union([from_str, from_none], obj.get("id"))
         password = from_union([from_str, from_none], obj.get("password"))
         roles = from_union([lambda x: from_list(PatchIdentityResponseBody200_ReadRole.from_dict, x), from_none], obj.get("roles"))
         url = from_union([from_str, from_none], obj.get("url"))
         username = from_union([from_str, from_none], obj.get("username"))
-        return PatchIdentityResponseBody200_Read(password, roles, url, username)
+        return PatchIdentityResponseBody200_Read(id, password, roles, url, username)
 
     def to_dict(self) -> dict:
         result: dict = {}
+        if self.id is not None:
+            result["id"] = from_union([from_str, from_none], self.id)
         if self.password is not None:
             result["password"] = from_union([from_str, from_none], self.password)
         if self.roles is not None:
@@ -14437,27 +15298,27 @@ def post_logout_request_body_read_to_dict(x: PostLogoutRequestBodyRead) -> Any:
     return to_class(PostLogoutRequestBodyRead, x)
 
 
-def post_device_authentication_token_response_body200_from_dict(s: Any) -> str:
+def post_device_authentication_token_response_body201_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def post_device_authentication_token_response_body200_to_dict(x: str) -> Any:
+def post_device_authentication_token_response_body201_to_dict(x: str) -> Any:
     return from_str(x)
 
 
-def post_device_authentication_token_response_body200_write_from_dict(s: Any) -> str:
+def post_device_authentication_token_response_body201_write_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def post_device_authentication_token_response_body200_write_to_dict(x: str) -> Any:
+def post_device_authentication_token_response_body201_write_to_dict(x: str) -> Any:
     return from_str(x)
 
 
-def post_device_authentication_token_response_body200_read_from_dict(s: Any) -> str:
+def post_device_authentication_token_response_body201_read_from_dict(s: Any) -> str:
     return from_str(s)
 
 
-def post_device_authentication_token_response_body200_read_to_dict(x: str) -> Any:
+def post_device_authentication_token_response_body201_read_to_dict(x: str) -> Any:
     return from_str(x)
 
 
@@ -14605,28 +15466,292 @@ def patch_user_response_body200_read_to_dict(x: PatchUserResponseBody200_Read) -
     return to_class(PatchUserResponseBody200_Read, x)
 
 
-def put_user_roles_response_body200_from_dict(s: Any) -> PutUserRolesResponseBody200:
-    return PutUserRolesResponseBody200.from_dict(s)
+def get_user_roles_response_body200_from_dict(s: Any) -> List[GetUserRolesResponseBody200_Element]:
+    return from_list(GetUserRolesResponseBody200_Element.from_dict, s)
 
 
-def put_user_roles_response_body200_to_dict(x: PutUserRolesResponseBody200) -> Any:
-    return to_class(PutUserRolesResponseBody200, x)
+def get_user_roles_response_body200_to_dict(x: List[GetUserRolesResponseBody200_Element]) -> Any:
+    return from_list(lambda x: to_class(GetUserRolesResponseBody200_Element, x), x)
 
 
-def put_user_roles_response_body200_write_from_dict(s: Any) -> PutUserRolesResponseBody200_Write:
-    return PutUserRolesResponseBody200_Write.from_dict(s)
+def get_user_roles_response_body200_write_from_dict(s: Any) -> List[GetUserRolesResponseBody200_WriteElement]:
+    return from_list(GetUserRolesResponseBody200_WriteElement.from_dict, s)
 
 
-def put_user_roles_response_body200_write_to_dict(x: PutUserRolesResponseBody200_Write) -> Any:
-    return to_class(PutUserRolesResponseBody200_Write, x)
+def get_user_roles_response_body200_write_to_dict(x: List[GetUserRolesResponseBody200_WriteElement]) -> Any:
+    return from_list(lambda x: to_class(GetUserRolesResponseBody200_WriteElement, x), x)
 
 
-def put_user_roles_response_body200_read_from_dict(s: Any) -> PutUserRolesResponseBody200_Read:
-    return PutUserRolesResponseBody200_Read.from_dict(s)
+def get_user_roles_response_body200_read_from_dict(s: Any) -> List[GetUserRolesResponseBody200_ReadElement]:
+    return from_list(GetUserRolesResponseBody200_ReadElement.from_dict, s)
 
 
-def put_user_roles_response_body200_read_to_dict(x: PutUserRolesResponseBody200_Read) -> Any:
-    return to_class(PutUserRolesResponseBody200_Read, x)
+def get_user_roles_response_body200_read_to_dict(x: List[GetUserRolesResponseBody200_ReadElement]) -> Any:
+    return from_list(lambda x: to_class(GetUserRolesResponseBody200_ReadElement, x), x)
+
+
+def post_user_roles_request_body_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_user_roles_request_body_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def post_user_roles_request_body_write_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_user_roles_request_body_write_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def post_user_roles_request_body_read_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_user_roles_request_body_read_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_user_roles_request_body_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_user_roles_request_body_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_user_roles_request_body_write_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_user_roles_request_body_write_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_user_roles_request_body_read_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_user_roles_request_body_read_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def get_roles_response_body200_from_dict(s: Any) -> List[GetRolesResponseBody200_Element]:
+    return from_list(GetRolesResponseBody200_Element.from_dict, s)
+
+
+def get_roles_response_body200_to_dict(x: List[GetRolesResponseBody200_Element]) -> Any:
+    return from_list(lambda x: to_class(GetRolesResponseBody200_Element, x), x)
+
+
+def get_roles_response_body200_write_from_dict(s: Any) -> List[GetRolesResponseBody200_WriteElement]:
+    return from_list(GetRolesResponseBody200_WriteElement.from_dict, s)
+
+
+def get_roles_response_body200_write_to_dict(x: List[GetRolesResponseBody200_WriteElement]) -> Any:
+    return from_list(lambda x: to_class(GetRolesResponseBody200_WriteElement, x), x)
+
+
+def get_roles_response_body200_read_from_dict(s: Any) -> List[GetRolesResponseBody200_ReadElement]:
+    return from_list(GetRolesResponseBody200_ReadElement.from_dict, s)
+
+
+def get_roles_response_body200_read_to_dict(x: List[GetRolesResponseBody200_ReadElement]) -> Any:
+    return from_list(lambda x: to_class(GetRolesResponseBody200_ReadElement, x), x)
+
+
+def post_roles_request_body_from_dict(s: Any) -> PostRolesRequestBody:
+    return PostRolesRequestBody.from_dict(s)
+
+
+def post_roles_request_body_to_dict(x: PostRolesRequestBody) -> Any:
+    return to_class(PostRolesRequestBody, x)
+
+
+def post_roles_request_body_write_from_dict(s: Any) -> PostRolesRequestBodyWrite:
+    return PostRolesRequestBodyWrite.from_dict(s)
+
+
+def post_roles_request_body_write_to_dict(x: PostRolesRequestBodyWrite) -> Any:
+    return to_class(PostRolesRequestBodyWrite, x)
+
+
+def post_roles_request_body_read_from_dict(s: Any) -> PostRolesRequestBodyRead:
+    return PostRolesRequestBodyRead.from_dict(s)
+
+
+def post_roles_request_body_read_to_dict(x: PostRolesRequestBodyRead) -> Any:
+    return to_class(PostRolesRequestBodyRead, x)
+
+
+def post_roles_response_body201_from_dict(s: Any) -> PostRolesResponseBody201:
+    return PostRolesResponseBody201.from_dict(s)
+
+
+def post_roles_response_body201_to_dict(x: PostRolesResponseBody201) -> Any:
+    return to_class(PostRolesResponseBody201, x)
+
+
+def post_roles_response_body201_write_from_dict(s: Any) -> PostRolesResponseBody201_Write:
+    return PostRolesResponseBody201_Write.from_dict(s)
+
+
+def post_roles_response_body201_write_to_dict(x: PostRolesResponseBody201_Write) -> Any:
+    return to_class(PostRolesResponseBody201_Write, x)
+
+
+def post_roles_response_body201_read_from_dict(s: Any) -> PostRolesResponseBody201_Read:
+    return PostRolesResponseBody201_Read.from_dict(s)
+
+
+def post_roles_response_body201_read_to_dict(x: PostRolesResponseBody201_Read) -> Any:
+    return to_class(PostRolesResponseBody201_Read, x)
+
+
+def get_role_response_body200_from_dict(s: Any) -> GetRoleResponseBody200:
+    return GetRoleResponseBody200.from_dict(s)
+
+
+def get_role_response_body200_to_dict(x: GetRoleResponseBody200) -> Any:
+    return to_class(GetRoleResponseBody200, x)
+
+
+def get_role_response_body200_write_from_dict(s: Any) -> GetRoleResponseBody200_Write:
+    return GetRoleResponseBody200_Write.from_dict(s)
+
+
+def get_role_response_body200_write_to_dict(x: GetRoleResponseBody200_Write) -> Any:
+    return to_class(GetRoleResponseBody200_Write, x)
+
+
+def get_role_response_body200_read_from_dict(s: Any) -> GetRoleResponseBody200_Read:
+    return GetRoleResponseBody200_Read.from_dict(s)
+
+
+def get_role_response_body200_read_to_dict(x: GetRoleResponseBody200_Read) -> Any:
+    return to_class(GetRoleResponseBody200_Read, x)
+
+
+def patch_role_request_body_from_dict(s: Any) -> PatchRoleRequestBody:
+    return PatchRoleRequestBody.from_dict(s)
+
+
+def patch_role_request_body_to_dict(x: PatchRoleRequestBody) -> Any:
+    return to_class(PatchRoleRequestBody, x)
+
+
+def patch_role_request_body_write_from_dict(s: Any) -> PatchRoleRequestBodyWrite:
+    return PatchRoleRequestBodyWrite.from_dict(s)
+
+
+def patch_role_request_body_write_to_dict(x: PatchRoleRequestBodyWrite) -> Any:
+    return to_class(PatchRoleRequestBodyWrite, x)
+
+
+def patch_role_request_body_read_from_dict(s: Any) -> PatchRoleRequestBodyRead:
+    return PatchRoleRequestBodyRead.from_dict(s)
+
+
+def patch_role_request_body_read_to_dict(x: PatchRoleRequestBodyRead) -> Any:
+    return to_class(PatchRoleRequestBodyRead, x)
+
+
+def patch_role_response_body200_from_dict(s: Any) -> PatchRoleResponseBody200:
+    return PatchRoleResponseBody200.from_dict(s)
+
+
+def patch_role_response_body200_to_dict(x: PatchRoleResponseBody200) -> Any:
+    return to_class(PatchRoleResponseBody200, x)
+
+
+def patch_role_response_body200_write_from_dict(s: Any) -> PatchRoleResponseBody200_Write:
+    return PatchRoleResponseBody200_Write.from_dict(s)
+
+
+def patch_role_response_body200_write_to_dict(x: PatchRoleResponseBody200_Write) -> Any:
+    return to_class(PatchRoleResponseBody200_Write, x)
+
+
+def patch_role_response_body200_read_from_dict(s: Any) -> PatchRoleResponseBody200_Read:
+    return PatchRoleResponseBody200_Read.from_dict(s)
+
+
+def patch_role_response_body200_read_to_dict(x: PatchRoleResponseBody200_Read) -> Any:
+    return to_class(PatchRoleResponseBody200_Read, x)
+
+
+def get_role_users_response_body200_from_dict(s: Any) -> List[GetRoleUsersResponseBody200_Element]:
+    return from_list(GetRoleUsersResponseBody200_Element.from_dict, s)
+
+
+def get_role_users_response_body200_to_dict(x: List[GetRoleUsersResponseBody200_Element]) -> Any:
+    return from_list(lambda x: to_class(GetRoleUsersResponseBody200_Element, x), x)
+
+
+def get_role_users_response_body200_write_from_dict(s: Any) -> List[GetRoleUsersResponseBody200_WriteElement]:
+    return from_list(GetRoleUsersResponseBody200_WriteElement.from_dict, s)
+
+
+def get_role_users_response_body200_write_to_dict(x: List[GetRoleUsersResponseBody200_WriteElement]) -> Any:
+    return from_list(lambda x: to_class(GetRoleUsersResponseBody200_WriteElement, x), x)
+
+
+def get_role_users_response_body200_read_from_dict(s: Any) -> List[GetRoleUsersResponseBody200_ReadElement]:
+    return from_list(GetRoleUsersResponseBody200_ReadElement.from_dict, s)
+
+
+def get_role_users_response_body200_read_to_dict(x: List[GetRoleUsersResponseBody200_ReadElement]) -> Any:
+    return from_list(lambda x: to_class(GetRoleUsersResponseBody200_ReadElement, x), x)
+
+
+def post_role_users_request_body_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_role_users_request_body_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def post_role_users_request_body_write_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_role_users_request_body_write_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def post_role_users_request_body_read_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def post_role_users_request_body_read_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_role_users_request_body_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_role_users_request_body_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_role_users_request_body_write_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_role_users_request_body_write_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
+
+
+def delete_role_users_request_body_read_from_dict(s: Any) -> List[str]:
+    return from_list(from_str, s)
+
+
+def delete_role_users_request_body_read_to_dict(x: List[str]) -> Any:
+    return from_list(from_str, x)
 
 
 def get_identity_response_body200_from_dict(s: Any) -> GetIdentityResponseBody200:

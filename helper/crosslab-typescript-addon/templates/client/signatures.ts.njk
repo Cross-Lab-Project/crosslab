@@ -168,4 +168,11 @@ export namespace {{ serviceName | formatName }}Signatures {
 }
 {%- endfor %}
 {%- endmacro -%}
-{{ generateSignatures() | prettier }}
+
+{# TODO: validate that this works as intended! #}
+{%- set content = generateSignatures() -%}
+{%- if content | includes("Require<") -%}
+    {%- set content = content | replace('import {', 'import {\n\tRequire,') -%}
+{%- endif -%}
+
+{{ content | prettier }}

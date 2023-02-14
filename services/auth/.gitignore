@@ -7,3 +7,6 @@ node_modules
 package.resolved.json
 .packages
 app
+.nyc_output
+coverage
+test/generated

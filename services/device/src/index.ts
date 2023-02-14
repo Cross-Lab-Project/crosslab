@@ -8,7 +8,7 @@ import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
 import { callbackHandling } from './methods/callbacks'
-import { deviceHandling } from './operations'
+import { deviceHandling } from './operations/websocket'
 
 declare global {
     namespace Express {

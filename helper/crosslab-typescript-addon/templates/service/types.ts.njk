@@ -98,7 +98,7 @@ export type Require<Type, Key extends keyof Type> = Partial<Type> & {
 
 {%- for schema in schemas | selectattr("x-typeguard") | select("attrequalto", ["x-standalone", true]) | select("attrequalto", ["x-schema-type", "all"]) %}
 
-export function is{{ schema["x-name"] }}<T extends "request"|"response"|"all" = "all">(obj: any, type?: T): obj is {{ schema["x-name"] }}<T> {
+export function is{{ schema["x-name"] }}<T extends "request"|"response"|"all" = "all">(obj: any, type: "request" | "response" | "all" | T = "all"): obj is {{ schema["x-name"] }}<T> {
     switch (type) {
         case "request":
             return validate{{ schema["x-name"] }}Request(obj)

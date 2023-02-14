@@ -59,19 +59,33 @@ export function validate{{ operation.name | cap }}Input(
     if (parameters) {
         {%- for parameter in operation.parameters %}
         if (
-            {{ "parameters['" + parameter.name + "'] && " if not parameter.required -}}
-            !validate{{ parameter.name | formatName -}}(parameters["{{ parameter.name }}"])
+            !validate{{ parameter.name | formatName -}}(parameters["{{ parameter.name }}"]) 
+            {{- "\n\t\t\t&& parameters['" +  parameter.name + "'] !== undefined" if not parameter.required }}
         ) {
             (validate{{ operation.name | cap }}Input as any).errors = (validate{{ parameter.name | formatName }} as any).errors
             return false
         }
         {%- endfor %}
+    } else {
+        {%- if operation.parameters | selectattr("required") | length > 0 %}
+        return false
+        {%- else %}
+        if (parameters !== undefined) {
+            return false
+        }
+        {%- endif %}
     }
 
     {% endif -%}
 
     {% if operation.requestBody -%}
-    if ({{ "body && " if not operation.requestBody.required -}}!validate{{ operation.name | cap }}RequestBody(body)) {
+    {% if not operation.requestBody.required -%}
+    if (body === undefined) {
+        return true
+    }
+
+    {% endif -%}
+    if (!validate{{ operation.name | cap }}RequestBody(body)) {
         (validate{{ operation.name | cap }}Input as any).errors = (validate{{ operation.name | cap }}RequestBody as any).errors
         return false
     }
@@ -97,13 +111,21 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
         if (response.headers) {
             {%- for header in response.headers %}
             if (
-                {{ "response.headers['" + header.name + "'] && " if not header.required -}} 
                 !validate{{ operation.name | cap }}Header{{ header.name }}(response.headers["{{ header.name }}"])
+                {{ "\n\t\t\t\t&& response.headers['" + header.name + "'] !== undefined " if not header.required -}} 
             ) {
                 (validate{{ operation.name | cap }}Output as any).errors = (validate{{ operation.name | cap }}Header{{ header.name }} as any).errors
                 return false
             }   
             {%- endfor %}
+        } else {
+            {%- if response.headers | selectattr("required") | length > 0 %}
+            return false
+            {%- else %}
+            if (response.headers !== undefined) {
+                return false
+            }
+            {%- endif %}
         }
 
         {% endif -%}

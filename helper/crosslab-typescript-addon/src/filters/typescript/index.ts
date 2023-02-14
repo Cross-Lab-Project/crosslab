@@ -2,6 +2,8 @@ import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName, formatOperation, formatExpressPath } from './format'
 import {
     ExtendedSchema,
+    generateInvalidSchemas,
+    generateSchemasWithoutUnrequired,
     resolveOperations,
     resolveSchemas,
     SimplifiedOperation,
@@ -37,7 +39,8 @@ function typeDeclaration_filter(
         context?: OpenAPIV3_1.SchemaObject[]
     }
 ) {
-    return schemaToTypeDeclaration(schema, { ...options, context: extendedSchemas }).typeDeclaration
+    return schemaToTypeDeclaration(schema, { ...options, context: extendedSchemas })
+        .typeDeclaration
 }
 
 /**
@@ -60,42 +63,48 @@ function typeDependencies_filter(
  * @returns The typings of the schemas.
  */
 function standaloneTypings_filter(extendedSchemas: ExtendedSchema[]) {
-    const standaloneSchemas = extendedSchemas
-        .filter((extendedSchema) => extendedSchema['x-standalone'] && extendedSchema['x-schema-type'] === "all")
-    
-    const mappedStandaloneSchemas = standaloneSchemas
-        .map((extendedSchema) => {
-            const requestSchema = extendedSchemas.find((es) => es['x-location'] === extendedSchema['x-location'] + "_request")
-            const responseSchema = extendedSchemas.find((es) => es['x-location'] === extendedSchema['x-location'] + "_response")
-            if (!requestSchema || !responseSchema)
-                throw new Error("Could not find request-/response-schema")
-            return {
-                all: extendedSchema,
-                request: requestSchema,
-                response: responseSchema,
-            }
-        })
+    const standaloneSchemas = extendedSchemas.filter(
+        (extendedSchema) =>
+            extendedSchema['x-standalone'] && extendedSchema['x-schema-type'] === 'all'
+    )
 
-    return (
-        mappedStandaloneSchemas
-            .map((schemas) => {
-                const name = schemas.all.title ? formatName(schemas.all.title) : 'MISSING_NAME'
-                const tdAll = schemaToTypeDeclaration(schemas.all, {
-                    inline: false,
-                    resolveDirectly: false,
-                    context: standaloneSchemas,
-                })
-                const tdRequest = schemaToTypeDeclaration(schemas.request, {
-                    inline: false,
-                    resolveDirectly: false,
-                    context: standaloneSchemas,
-                })
-                const tdResponse = schemaToTypeDeclaration(schemas.response, {
-                    inline: false,
-                    resolveDirectly: false,
-                    context: standaloneSchemas,
-                })
-                return `
+    const mappedStandaloneSchemas = standaloneSchemas.map((extendedSchema) => {
+        const requestSchema = extendedSchemas.find(
+            (es) => es['x-location'] === extendedSchema['x-location'] + '_request'
+        )
+        const responseSchema = extendedSchemas.find(
+            (es) => es['x-location'] === extendedSchema['x-location'] + '_response'
+        )
+        if (!requestSchema || !responseSchema)
+            throw new Error('Could not find request-/response-schema')
+        return {
+            all: extendedSchema,
+            request: requestSchema,
+            response: responseSchema,
+        }
+    })
+
+    return mappedStandaloneSchemas
+        .map((schemas) => {
+            const name = schemas.all.title
+                ? formatName(schemas.all.title)
+                : 'MISSING_NAME'
+            const tdAll = schemaToTypeDeclaration(schemas.all, {
+                inline: false,
+                resolveDirectly: false,
+                context: standaloneSchemas,
+            })
+            const tdRequest = schemaToTypeDeclaration(schemas.request, {
+                inline: false,
+                resolveDirectly: false,
+                context: standaloneSchemas,
+            })
+            const tdResponse = schemaToTypeDeclaration(schemas.response, {
+                inline: false,
+                resolveDirectly: false,
+                context: standaloneSchemas,
+            })
+            return `
                 ${tdAll.comment}export type ${name}<T extends "request"|"response"|"all" = "all"> = T extends "all" 
                     ? ${tdAll.typeDeclaration}
                     : T extends "request" 
@@ -104,9 +113,8 @@ function standaloneTypings_filter(extendedSchemas: ExtendedSchema[]) {
                     ? ${tdResponse.typeDeclaration}
                     : never
                 `
-            })
-            .join('\n\n')
-    )
+        })
+        .join('\n\n')
 }
 
 /**
@@ -136,14 +144,17 @@ function unique_filter(array: any[]): any[] {
  * This function defines a filter which attempts to resolve the schemas of a given
  * OpenAPI document.
  * @param api The OpenAPI document for which to resolve the schemas.
- * @param isService 
- * If true the UserType schema is added and method path will be used for 
+ * @param isService
+ * If true the UserType schema is added and method path will be used for
  * naming. Otherwise the operationId will be used for naming.
  * @returns
  * The resolved schemas with additional properties 'x-name', 'x-standalone'
  * and 'x-location'.
  */
-function resolveSchemas_filter(api: OpenAPIV3_1.Document, isService: boolean = true): ExtendedSchema[] {
+function resolveSchemas_filter(
+    api: OpenAPIV3_1.Document,
+    isService: boolean = true
+): ExtendedSchema[] {
     return resolveSchemas(api, isService)
 }
 
@@ -187,7 +198,7 @@ function stringify_filter(o: any, indentation: number = 0): string {
 }
 
 /**
- * This function defines a filter which attempts to return an array which only 
+ * This function defines a filter which attempts to return an array which only
  * contains the requested attribute as its elements.
  * @param arr The array to be filtered.
  * @param attributeName The name of the attribute.
@@ -203,20 +214,22 @@ function attribute_filter(arr: any[], attributeName: string): any[] {
  * @param attributeName The name of the attribute to sort the array by.
  * @returns A map containing the subarray for every value of the attribute.
  */
-function sort_by_attribute_filter(arr: any[], attributeName: string): { 
-    [k: string]: any[] 
+function sort_by_attribute_filter(
+    arr: any[],
+    attributeName: string
+): {
+    [k: string]: any[]
 } {
     const sorted: {
         [k: string]: any[]
     } = {}
 
     for (const item of arr) {
-        if (!sorted[item[attributeName]])
-            sorted[item[attributeName]] = []
+        if (!sorted[item[attributeName]]) sorted[item[attributeName]] = []
         sorted[item[attributeName]].push(item)
     }
-    
-    delete sorted["undefined"]
+
+    delete sorted['undefined']
 
     return sorted
 }
@@ -227,7 +240,7 @@ function sort_by_attribute_filter(arr: any[], attributeName: string): {
  * @returns The formatted string
  */
 function prettier_filter(string: string) {
-    return format(string, { parser: 'typescript', tabWidth: 4 })
+    return format(string, { parser: 'typescript', tabWidth: 4, singleQuote: true })
 }
 
 /**
@@ -237,12 +250,19 @@ function prettier_filter(string: string) {
  * @param searchString The search string.
  * @returns True if the given string ends with the search string, else false.
  */
-function endswith_filter(string: string, searchString: string | RegExp) {
-    if (typeof searchString === string)
-        return string.endsWith(searchString as string)
-    
-    const regex: RegExp = new RegExp(searchString)
-    return regex.test(string)
+function endswith_filter(string: string, searchString: string) {
+    return string.endsWith(searchString as string)
+}
+
+/**
+ * This function defines a filter that checks if a given string starts with the
+ * provided search string.
+ * @param string The string to be checked.
+ * @param searchString The search string.
+ * @returns True if the given string ends with the search string, else false.
+ */
+function startswith_filter(string: string, searchString: string) {
+    return string.startsWith(searchString as string)
 }
 
 /**
@@ -268,13 +288,97 @@ function split_filter(string: string, splitString: string) {
  * @returns The destructured schema
  */
 function destructureSchema_filter(
-    schema: OpenAPIV3_1.SchemaObject, 
+    schema: OpenAPIV3_1.SchemaObject,
     options?: {
-        prefixTypes?: string,
+        prefixTypes?: string
         context?: OpenAPIV3_1.SchemaObject[]
     }
 ) {
     return destructureSchema(schema, options)
+}
+
+/**
+ * This function defines a filter that attempts to delete a property of an object.
+ * @param object The object from which to delete the property.
+ * @param key The key of the property to be deleted.
+ */
+function delete_filter(object: any, key: string) {
+    delete object[key]
+}
+
+/**
+ * This function defines a filter that attempts to clone an object.
+ * @param object The object to be cloned.
+ */
+function clone_filter(object: any) {
+    return JSON.parse(JSON.stringify(object))
+}
+
+/**
+ * This function gets an invalid status code for an operation.
+ * @param operation The operation for which to get the invalid status code.
+ * @returns An invalid status code for the provided operation.
+ */
+function getInvalidStatusCode_filter(operation: SimplifiedOperation) {
+    const invalidStatusCodes: number[] = []
+
+    for (let i = 100; i < 600; i++) {
+        invalidStatusCodes.push(i)
+    }
+
+    for (const response of operation.responses ?? []) {
+        if (response.status.endsWith('XX')) {
+            const start = parseInt(response.status.replace(/X/g, '0'))
+            for (let i = start; i < start + 100; i++) {
+                const foundIndex = invalidStatusCodes.findIndex(
+                    (statusCode) => statusCode === i
+                )
+                if (foundIndex > -1) invalidStatusCodes.splice(foundIndex, 1)
+            }
+        } else {
+            const parsedStatusCode = parseInt(response.status)
+            const foundIndex = invalidStatusCodes.findIndex(
+                (statusCode) => statusCode === parsedStatusCode
+            )
+            if (foundIndex > -1) invalidStatusCodes.splice(foundIndex, 1)
+        }
+    }
+
+    return invalidStatusCodes.length > 0 ? invalidStatusCodes[0] : undefined
+}
+
+function includes_filter(string: string, searchString: string) {
+    return string.includes(searchString)
+}
+
+function addProperty_filter(obj: { [k: string]: any }, propertyName: string, value: any) {
+    obj[propertyName] = value
+}
+
+function append_filter(array: any[], value: any) {
+    array.push(value)
+}
+
+function getPossibleScopeCombinations(security?: OpenAPIV3_1.SecurityRequirementObject[]) {
+    const possibleCombinations: [string,string][][] = []
+    for (const securityRequirement of security ?? []) {
+        let combinations: [string,string][][] = []
+        for (const key in securityRequirement) {
+            const scopes = securityRequirement[key]
+            if (combinations.length === 0) {
+                for (const scope of scopes) {
+                    combinations.push([[key,scope]])
+                }
+            } else {
+                for (const scope of scopes) {
+                    combinations = combinations.map((comb) => [...comb,[key,scope]])
+                }
+            }
+        }
+        possibleCombinations.push(...combinations)
+    }
+
+    return possibleCombinations
 }
 
 /**
@@ -349,23 +453,63 @@ export const TypeScriptFilterCollection: FilterCollection = {
         },
         {
             name: 'sortByAttribute',
-            function: sort_by_attribute_filter
+            function: sort_by_attribute_filter,
         },
         {
             name: 'prettier',
-            function: prettier_filter
+            function: prettier_filter,
         },
         {
             name: 'endswith',
-            function: endswith_filter
+            function: endswith_filter,
         },
         {
             name: 'destructureSchema',
-            function: destructureSchema_filter
+            function: destructureSchema_filter,
         },
         {
             name: 'split',
-            function: split_filter
+            function: split_filter,
+        },
+        {
+            name: 'startswith',
+            function: startswith_filter,
+        },
+        {
+            name: 'delete',
+            function: delete_filter,
+        },
+        {
+            name: 'clone',
+            function: clone_filter,
+        },
+        {
+            name: 'generateInvalidSchemas',
+            function: generateInvalidSchemas,
+        },
+        {
+            name: 'generateSchemasWithoutUnrequired',
+            function: generateSchemasWithoutUnrequired,
+        },
+        {
+            name: 'getInvalidStatusCode',
+            function: getInvalidStatusCode_filter,
+        },
+        {
+            name: 'includes',
+            function: includes_filter
+        },
+        {
+            name: 'addProperty',
+            function: addProperty_filter
+        },
+        {
+            name: 'append',
+            function: append_filter
+        },
+        {
+            name: 'possibleScopeCombinations',
+            function: getPossibleScopeCombinations
         }
     ],
 }

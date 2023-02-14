@@ -1,66 +1,60 @@
-#!/usr/bin/env node
-
-import { config } from './config'
-import { AppDataSource, initializeDataSource } from './data_source'
+import { config, dataSourceConfig } from './config'
+import { AppDataSource, initializeDataSource } from './database/dataSource'
 import { app } from './generated'
-import { ActiveKeyModel } from './model'
-import { resolveAllowlistEntry, generateNewKey, jwk } from './methods/utils'
-
+import { generateNewKey, jwk } from './methods/key'
 import { JWTVerify } from '@crosslab/service-common'
+import { activeKeyRepository } from './database/repositories/activeKeyRepository'
+import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
+import { AppConfiguration } from './types/types'
+import { DataSourceOptions } from 'typeorm'
 
-export let allowlist: { [key: string]: string } = {}
+async function startAuthenticationService(
+    config: AppConfiguration,
+    dataSourceConfig: DataSourceOptions
+) {
+    await AppDataSource.initialize(dataSourceConfig)
+    await initializeDataSource()
 
-async function resolveAllowlist() {
-    for (const entry of config.ALLOWLIST) {
-        try {
-            const result = await resolveAllowlistEntry(entry)
-            allowlist[result[0]] = result[1]
-        } catch (error) {
-            console.error(error)
-        }
+    const allowlist = parseAllowlist(config.ALLOWLIST)
+
+    // Resolve Allowlist
+    await resolveAllowlist(allowlist)
+    setInterval(resolveAllowlist, 600000, allowlist)
+
+    // Create new active key
+    const activeSigKey = await activeKeyRepository.findOne({
+        where: {
+            use: 'sig',
+        },
+    })
+    const key = activeSigKey?.key ?? (await generateNewKey())
+    const jwks = JSON.stringify({ keys: [jwk(key)] })
+
+    if (!activeSigKey) {
+        const activeKeyModel = await activeKeyRepository.create({
+            use: key.use,
+            key: key.uuid,
+        })
+        await activeKeyRepository.save(activeKeyModel)
     }
+
+    app.get('/.well-known/jwks.json', (_req, res, _next) => {
+        res.send(jwks)
+    })
+    app.get('/.well-known/openid-configuration', (_req, res, _next) => {
+        res.send({ jwks_uri: '/.well-known/jwks.json' })
+    })
+    app.initService({
+        security: {
+            JWT: JWTVerify(config) as any,
+        },
+    })
+
+    app.listen(config.PORT)
+    console.log('Authentication Service started successfully')
 }
 
-AppDataSource.initialize()
-    .then(async () => {
-        await initializeDataSource()
-
-        // Resolve Allowlist
-        resolveAllowlist()
-        setInterval(resolveAllowlist, 600000)
-
-        // Create new active key
-        const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
-        const key = await generateNewKey()
-        const jwks = JSON.stringify({ keys: [jwk(key)] })
-        for (const activeKey of await activeKeyRepository.find()) {
-            await activeKeyRepository.delete(activeKey)
-        }
-        const activeKey = activeKeyRepository.create()
-        activeKey.key = key
-        activeKey.use = key.use
-        await activeKeyRepository.save(activeKey)
-
-        app.get('/.well-known/jwks.json', (_req, res, _next) => {
-            res.send(jwks)
-        })
-        app.get('/.well-known/openid-configuration', (_req, res, _next) => {
-            res.send({ jwks_uri: '/.well-known/jwks.json' })
-        })
-        app.initService({
-            security: {
-                JWT: JWTVerify(config) as any,
-                AccessToken: (_req, _scopes) => {
-                    throw new Error('Not Implemented')
-                },
-                TuiAuth: (_req, _scopes) => {
-                    throw new Error('Not implemented')
-                }
-            }
-        })
-        app.listen(config.PORT)
-        console.log('Initialization finished')
-    })
-    .catch((error) => {
-        console.error('Error during Data Source initialization:', error)
-    })
+/* istanbul ignore if */
+if (require.main === module) {
+    startAuthenticationService(config, dataSourceConfig)
+}

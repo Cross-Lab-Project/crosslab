@@ -1,44 +1,9 @@
-import { ActiveKeyModel, KeyModel, TokenModel, UserModel } from '../model'
+import { ActiveKeyModel, KeyModel, ScopeModel, UserModel } from '../database/model'
 import { SignJWT, JWTPayload, importJWK } from 'jose'
 import { config } from '../config'
-import { AppDataSource } from '../data_source'
-import { MissingEntityError } from '../types/errors'
-import {
-    UserType,
-} from '../generated/types'
-import { allowlist } from '..'
-
-/**
- * Try to find user associated to allowlisted IP.
- * @param ip IP from the client that is potentially allowlisted.
- * @throws {MissingEntityError} User associated with allowlisted IP needs to exist in the database.
- * @returns The user associated with the allowlisted IP.
- */
-export async function getAllowlistedUser(ip: string): Promise<UserModel> {
-    const userRepository = AppDataSource.getRepository(UserModel)
-
-    console.warn(
-        `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
-    )
-    const user = await userRepository.findOne({
-        where: {
-            username: allowlist[ip],
-        },
-        relations: {
-            roles: {
-                scopes: true,
-            },
-        },
-    })
-
-    if (!user)
-        throw new MissingEntityError(
-            `User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`,
-            500
-        )
-
-    return user
-}
+import { UserType } from '../generated/types'
+import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
+import { userUrlFromId } from './utils'
 
 /**
  * This function signs a JWT.
@@ -58,7 +23,7 @@ export async function sign<P extends JWTPayload>(
         .setIssuedAt()
         .setAudience(config.SECURITY_AUDIENCE)
         .setExpirationTime(expirationTime)
-        .sign(await importJWK(JSON.parse(key.private_key), key.alg))
+        .sign(await importJWK(key.private_key, key.alg))
 }
 
 /**
@@ -69,20 +34,19 @@ export async function sign<P extends JWTPayload>(
  */
 export async function signUserToken(
     user: UserModel,
-    activeKey: ActiveKeyModel
+    activeKey: ActiveKeyModel,
+    scopes?: ScopeModel[]
 ): Promise<string> {
-    const BASE_URL = !config.BASE_URL.endsWith('/')
-        ? config.BASE_URL
-        : config.BASE_URL + '/'
-
     return await sign<UserType>(
         {
-            url: BASE_URL + `/users/${user.username}`,
+            url: userUrlFromId(user.uuid),
             username: user.username,
-            scopes: user.roles
-                .map((r) => r.scopes.map((s) => s.name))
-                .flat(1)
-                .filter((v, i, s) => s.indexOf(v) === i),
+            scopes:
+                scopes?.map((scope) => scope.name) ??
+                user.roles
+                    .map((role) => role.scopes.map((scope) => scope.name))
+                    .flat(1)
+                    .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -99,21 +63,20 @@ export async function signUserToken(
 export async function signDeviceToken(
     deviceUrl: string,
     user: UserModel,
-    activeKey: ActiveKeyModel
+    activeKey: ActiveKeyModel,
+    scopes?: ScopeModel[]
 ): Promise<string> {
-    const BASE_URL = !config.BASE_URL.endsWith('/')
-        ? config.BASE_URL
-        : config.BASE_URL + '/'
-
     return await sign<UserType>(
         {
-            url: BASE_URL + `/users/${user.username}`,
+            url: userUrlFromId(user.uuid),
             username: user.username,
             device: deviceUrl,
-            scopes: user.roles
-                .map((r) => r.scopes.map((s) => s.name))
-                .flat(1)
-                .filter((v, i, s) => s.indexOf(v) === i),
+            scopes:
+                scopes?.map((scope) => scope.name) ??
+                user.roles
+                    .map((role) => role.scopes.map((s) => s.name))
+                    .flat(1)
+                    .filter((value, index, self) => self.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -121,53 +84,22 @@ export async function signDeviceToken(
 }
 
 /**
- * This function parses the string representation of a token from the Authorization parameter
+ * This function parses bearer token from the Authorization parameter
  * @param authorization Authorization parameter from request.
  * @returns String representation of the token.
  */
-export function getTokenStringFromAuthorization(authorization?: string): string {
+export function parseBearerToken(authorization?: string): string {
+    const regex = /^Bearer (\S*)$/
+
     if (!authorization) {
-        // TODO: was - throw new MissingParameterError(`Authorization parameter is missing`, 401)
-        throw new Error(`Authorization parameter is missing`)
+        throw new MissingParameterError(`Authorization parameter is missing`, 401)
     }
 
-    const splitAuthorization = authorization.split(' ')
+    const match = authorization.match(regex)
 
-    if (splitAuthorization.length !== 2) {
-        // TODO: was - throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
-        throw new Error(`Authorization parameter is malformed`)
+    if (!match || match.length !== 2) {
+        throw new MalformedParameterError(`Authorization parameter is malformed`, 401)
     }
 
-    return splitAuthorization[1]
-}
-
-/**
- * This function searches the database for a token matching the provided string.
- * @param tokenString String representation of the token.
- * @returns Token matching the provided string.
- */
-export async function getTokenByTokenString(tokenString: string): Promise<TokenModel> {
-    const tokenRepository = AppDataSource.getRepository(TokenModel)
-
-    const token = await tokenRepository.findOne({
-        where: {
-            token: tokenString,
-        },
-        relations: {
-            user: {
-                roles: {
-                    scopes: true,
-                },
-            },
-        },
-    })
-
-    if (!token) {
-        throw new MissingEntityError(
-            `No matching token found for provided tokenString`,
-            404
-        )
-    }
-
-    return token
+    return match[1]
 }

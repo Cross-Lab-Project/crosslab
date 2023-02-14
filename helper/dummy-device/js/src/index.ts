@@ -54,7 +54,7 @@ async function main() {
     chromium.stderr.on("data", (data: string) => {
       console.log(data.toString());
       if (data.includes("DevTools listening on ws://")) {
-        resolve();
+        setTimeout(resolve, 1000)
       }
     });
   });
@@ -93,6 +93,7 @@ async function main() {
     );
   });
 
+  await new Promise((resolve) => setTimeout(resolve, 500))
   debugging && (await Debugger.pause());
   const expression = "window.app(" + JSON.stringify(options) + ")";
   const appPromise = await (
