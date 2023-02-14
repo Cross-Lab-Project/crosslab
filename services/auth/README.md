@@ -2,7 +2,7 @@
 
 |     | build-spec | build | lint | test |
 | --- | --- | --- | --- | --- |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/authentication_service_tests/services/auth/dist/test.log) |
+| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.log) |
 
 [//]: # ({{end}})
 # Authentication Service
