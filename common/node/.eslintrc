@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json.schemastore.org/eslintrc",
   "root": true,
   "extends": [
     "eslint:recommended",
@@ -8,6 +9,13 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint"
+  ],
+  "ignorePatterns":[
+    "dist/**/*",
+    "lib/**/*",
+    "app/**/*",
+    "http-dist/**/*",
+    "webpack.config.js"
   ],
   "overrides": [
     {
