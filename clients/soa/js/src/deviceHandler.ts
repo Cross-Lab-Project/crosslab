@@ -1,15 +1,16 @@
+import WebSocket from 'isomorphic-ws';
+import {TypedEmitter} from 'tiny-typed-emitter';
+
 import {
+  CreatePeerConnectionMessage,
+  SignalingMessage,
   isCommandMessage,
   isCreatePeerConnectionMessage,
-  CreatePeerConnectionMessage,
   isSignalingMessage,
-  SignalingMessage,
-} from "./deviceMessages";
-import { PeerConnection } from "./peer/connection";
-import { Service } from "./service";
-import { WebRTCPeerConnection } from "./peer/webrtc-connection";
-import WebSocket from "isomorphic-ws";
-import { TypedEmitter } from "tiny-typed-emitter";
+} from './deviceMessages';
+import {PeerConnection} from './peer/connection';
+import {WebRTCPeerConnection} from './peer/webrtc-connection';
+import {Service} from './service';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
@@ -20,22 +21,22 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
 
-  async connect(connectOptions: { endpoint: string; id: string; token: string }) {
+  async connect(connectOptions: {endpoint: string; id: string; token: string}) {
     this.ws = new WebSocket(connectOptions.endpoint);
-    const p = new Promise<void>((resolve) => {
+    const p = new Promise<void>(resolve => {
       this.ws.onopen = () => {
         resolve();
         this.ws.send(
           JSON.stringify({
-            messageType: "authenticate",
+            messageType: 'authenticate',
             deviceUrl: connectOptions.id,
             token: connectOptions.token,
-          })
+          }),
         );
       };
     });
 
-    this.ws.onmessage = (event) => {
+    this.ws.onmessage = event => {
       const message = JSON.parse(event.data as string);
 
       if (isCommandMessage(message)) {
@@ -48,12 +49,12 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       }
     };
 
-    this.ws.onclose = (event) => {
-      console.log("ws closed", event);
+    this.ws.onclose = event => {
+      console.log('ws closed', event);
     };
 
-    this.ws.onerror = (event) => {
-      console.log("ws error", event);
+    this.ws.onerror = event => {
+      console.log('ws error', event);
     };
 
     await p;
@@ -65,44 +66,47 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
   private handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
     if (this.connections.has(message.connectionUrl)) {
-      throw Error("Can not create a connection. Connection Id is already present");
+      throw Error('Can not create a connection. Connection Id is already present');
     }
-    const connection = new WebRTCPeerConnection({iceServers: [{urls: "stun:stun.goldi-labs.de:3478"},{urls:"turn:turn.goldi-labs.de:3478", username:"goldi", credential:"goldi"}]});
+    console.log('creating connection', message);
+    const connection = new WebRTCPeerConnection({}/*{
+      iceServers: [{urls: 'stun:stun.goldi-labs.de:3478'}, {urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi'}],
+    }*/);
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
       const service = this.services.get(serviceConfig.serviceId);
       if (service === undefined) {
-        throw Error("No Service for the service config was found");
+        throw Error('No Service for the service config was found');
       }
       service.setupConnection(connection, serviceConfig);
     }
-    connection.on("signalingMessage", (msg) => {
-      console.log("sending:", msg)
+    connection.on('signalingMessage', msg => {
+      console.log('sending:', msg);
       this.ws.send(
-        JSON.stringify(<SignalingMessage>{
+        JSON.stringify({
           ...msg,
-          messageType: "signaling",
+          messageType: 'signaling',
           connectionUrl: message.connectionUrl,
-        })
+        }),
       );
     });
-    connection.on("connectionChanged", () => {
-      this.emit("connectionsChanged");
+    connection.on('connectionChanged', () => {
+      this.emit('connectionsChanged');
     });
     connection.connect();
-    this.emit("connectionsChanged");
+    this.emit('connectionsChanged');
   }
 
   private handleSignalingMessage(message: SignalingMessage) {
     const connection = this.connections.get(message.connectionUrl);
     if (connection === undefined) {
-      throw Error("No Connection for the signaling message was found");
+      throw Error('No Connection for the signaling message was found');
     }
     connection.handleSignalingMessage(message);
   }
 
   getServiceMeta() {
-    return Array.from(this.services).map((service) => service[1].getMeta());
+    return Array.from(this.services).map(service => service[1].getMeta());
   }
 }

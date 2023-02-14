@@ -29,7 +29,7 @@ export const mochaHooks = {
       } else {
         const [sub_key, index] = key.split('_');
         if (['jsDevice', 'jsDeviceHost', 'pythonDevice'].includes(sub_key)) {
-          if (debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice']) {
+          if (!debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice']) {
             debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice'] = {};
           }
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

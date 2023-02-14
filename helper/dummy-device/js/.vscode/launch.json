@@ -8,7 +8,7 @@
             "name": "Browser",
             "request": "attach",
             "type": "chrome",
-            "port": 9401,
+            "port": 9301,
             "webRoot": "${workspaceFolder}/http-dist",
             "urlFilter": "*index.html",
             "restart": false,

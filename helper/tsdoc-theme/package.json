@@ -1,6 +1,5 @@
 {
   "name": "@cross-lab-project/tsdoc-theme",
-  "version": "0.0.2",
   "description": "A theme for the typedoc-documentation of the crosslab services and clients.",
   "repository": {
     "type": "git",

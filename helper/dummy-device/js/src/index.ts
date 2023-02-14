@@ -1,8 +1,8 @@
-import { spawn } from "child_process";
-import CDP from "chrome-remote-interface";
-import { Option, program } from "commander";
+import {spawn} from 'child_process';
+import CDP from 'chrome-remote-interface';
+import {Option, program} from 'commander';
 
-const entrypoint = __dirname + "/../http-dist/index.html";
+const entrypoint = __dirname + '/../http-dist/index.html';
 
 async function main() {
   interface Options {
@@ -12,22 +12,10 @@ async function main() {
   }
 
   program
-    .addOption(
-      new Option("--url <url>", "URL of the CrossLab instance").env(
-        "CROSSLAB_URL"
-      )
-    )
-    .addOption(
-      new Option("--auth-token <token>", "Token to use for authentication").env(
-        "CROSSLAB_TOKEN"
-      )
-    )
-    .addOption(
-      new Option("--device-url <device-url>", "Device url").env(
-        "CROSSLAB_DEVICE_URL"
-      )
-    )
-    .addOption(new Option("--browser-inspect <port>", "Chrome Debug Port"));
+    .addOption(new Option('--url <url>', 'URL of the CrossLab instance').env('CROSSLAB_URL'))
+    .addOption(new Option('--auth-token <token>', 'Token to use for authentication').env('CROSSLAB_TOKEN'))
+    .addOption(new Option('--device-url <device-url>', 'Device url').env('CROSSLAB_DEVICE_URL'))
+    .addOption(new Option('--browser-inspect <port>', 'Chrome Debug Port'));
 
   program.parse();
 
@@ -38,16 +26,16 @@ async function main() {
     deviceUrl: opts.deviceUrl,
   };
 
-  const chromePort =
-    opts.browserInspect ?? Math.floor(Math.random() * 10000) + 10000;
+  const chromePort = opts.browserInspect ?? Math.floor(Math.random() * 10000) + 10000;
   const debugging = opts.browserInspect !== undefined;
 
-  const chromium = spawn("chromium", [
-    "--headless",
-    "--no-sandbox",
-    "--disable-gpu",
-    "--disable-dev-shm-usage",
-    "--remote-debugging-port=" + chromePort,
+  const chromium = spawn('chromium', [
+    '--headless',
+    '--no-sandbox',
+    '--disable-gpu',
+    '--disable-dev-shm-usage',
+    '--enable-logging=stderr', '--v=6',
+    '--remote-debugging-port=' + chromePort,
     entrypoint,
   ]);
   await new Promise<void>((resolve) => {
@@ -58,24 +46,30 @@ async function main() {
       }
     });
   });
-  console.log("Chromium is ready");
+  chromium.stderr.on('data', (data: string) => {
+    console.log(data.toString());
+  });
+  chromium.stdout.on('data', (data: string) => {
+    console.log(data.toString());
+  });
+  console.log('Chromium is ready');
 
-  const protocol = await CDP({ port: chromePort });
+  const protocol = await CDP({port: chromePort});
 
-  const { Debugger, Runtime, Log } = protocol;
+  const {Debugger, Runtime, Log} = protocol;
   await Runtime.enable();
   await Log.enable();
   await Debugger.enable();
 
-  Log.entryAdded((result) => {
+  Log.entryAdded(result => {
     console.log(result.entry.text);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const previewTransform = (preview: any) => {
-    if ("value" in preview) {
+    if ('value' in preview) {
       return preview.value;
-    } else if (preview.type === "object") {
+    } else if (preview.type === 'object') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ret: any = {};
       for (const prop of preview.properties) {
@@ -87,49 +81,43 @@ async function main() {
     }
   };
 
-  Runtime.consoleAPICalled((result) => {
-    console.log(
-      ...result.args.map((arg) => arg.value ?? previewTransform(arg.preview))
-    );
+  Runtime.consoleAPICalled(result => {
+    console.log(...result.args.map(arg => arg.value ?? previewTransform(arg.preview)));
   });
 
   await new Promise((resolve) => setTimeout(resolve, 500))
   debugging && (await Debugger.pause());
-  const expression = "window.app(" + JSON.stringify(options) + ")";
-  const appPromise = await (
-    await Runtime.evaluate({ expression, silent: false })
-  ).result;
+  const expression = 'window.app(' + JSON.stringify(options) + ')';
+  const appPromise = await (await Runtime.evaluate({expression, silent: false})).result;
   if (appPromise.objectId === undefined) {
-    throw new Error("app() did not return a promise");
+    throw new Error('app() did not return a promise');
   }
   //debugging && console.log(await Debugger.paused());
   //debugging && await Debugger.stepInto();
-  console.log(
-    await Runtime.awaitPromise({ promiseObjectId: appPromise.objectId })
-  );
+  console.log(await Runtime.awaitPromise({promiseObjectId: appPromise.objectId}));
 
-  let stdin = "";
-  process.stdin.on("data", (data) => {
+  let stdin = '';
+  process.stdin.on('data', data => {
     stdin += data.toString();
-    const lines = stdin.split("\n");
-    stdin = lines.pop() ?? "";
+    const lines = stdin.split('\n');
+    stdin = lines.pop() ?? '';
     for (const line of lines) {
       // eslint-disable-next-line prefer-const
-      let [event, argument] = line.split(" ");
+      let [event, argument] = line.split(' ');
       event = event.slice(1, -1);
-      const eventExpression = 'window.event("' + event + '",' + argument + ")";
-      Runtime.evaluate({ expression: eventExpression, silent: false });
+      const eventExpression = 'window.event("' + event + '",' + argument + ')';
+      Runtime.evaluate({expression: eventExpression, silent: false});
     }
   });
 
-  await new Promise<void>((resolve) => {
-    process.on("SIGINT", () => {
+  await new Promise<void>(resolve => {
+    process.on('SIGINT', () => {
       resolve();
     });
   });
-  console.log("[closed]");
+  console.log('[closed]');
   await protocol.close();
-  chromium.kill("SIGKILL");
+  chromium.kill('SIGKILL');
   process.exit();
 }
 
