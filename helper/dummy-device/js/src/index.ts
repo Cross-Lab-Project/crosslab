@@ -29,20 +29,24 @@ async function main() {
   const chromePort = opts.browserInspect ?? Math.floor(Math.random() * 10000) + 10000;
   const debugging = opts.browserInspect !== undefined;
 
-  const chromium = spawn('chromium', [
-    '--headless',
-    '--no-sandbox',
-    '--disable-gpu',
-    '--disable-dev-shm-usage',
-    '--enable-logging=stderr', '--v=6',
-    '--remote-debugging-port=' + chromePort,
-    entrypoint,
-  ]);
-  await new Promise<void>((resolve) => {
-    chromium.stderr.on("data", (data: string) => {
-      console.log(data.toString());
-      if (data.includes("DevTools listening on ws://")) {
-        setTimeout(resolve, 1000)
+  const chromium = spawn(
+    'chromium',
+    [
+      '--headless',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--enable-logging=stderr',
+      '--v=6',
+      '--remote-debugging-port=' + chromePort,
+      entrypoint,
+    ],
+    {env: {}},
+  );
+  await new Promise<void>(resolve => {
+    chromium.stderr.on('data', (data: string) => {
+      if (data.includes('DevTools listening on ws://')) {
+        resolve();
       }
     });
   });
