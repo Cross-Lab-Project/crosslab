@@ -1,8 +1,8 @@
 [//]: # ({{print badges}})
 
-|     | build-spec | build | lint | test |
-| --- | --- | --- | --- | --- |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.log) |
+|     | build-spec | build | lint | lint-spec | build-docker |
+| --- | --- | --- | --- | --- | --- |
+| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/lint.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/lint-spec.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/housekeeping/services/auth/dist/build-docker.log) |
 
 [//]: # ({{end}})
 # Authentication Service
@@ -26,9 +26,10 @@ graph LR
   end
   subgraph services/auth
     services/auth:build[build]
+    services/auth:build-docker[build-docker]
     services/auth:build-spec[build-spec]
     services/auth:lint[lint]
-    services/auth:test[test]
+    services/auth:lint-spec[lint-spec]
   end
   subgraph services/booking
     services/booking:build-spec[build-spec]
@@ -63,7 +64,8 @@ graph LR
   helper/crosslab-typescript-addon:build[build] --> services/auth:build[build]
   helper/openapi-codegeneration:build[build] --> services/auth:build[build]
   clients/api/js:build[build] --> services/auth:build[build]
-  services/auth:build-spec[build-spec] --> services/auth:lint[lint]
-  services/auth:build[build] --> services/auth:test[test]
+  services/auth:build[build] --> services/auth:build-docker[build-docker]
+  services/auth:build[build] --> services/auth:lint[lint]
+  services/auth:build-spec[build-spec] --> services/auth:lint-spec[lint-spec]
 ```
 [//]: # ({{end}})
