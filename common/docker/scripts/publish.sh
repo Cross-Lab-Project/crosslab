@@ -45,15 +45,23 @@ fi
 cd $SCRIPT_DIR/..
 
 # load docker image and check it has the correct tag
-LOADED_TAG=$(cat "./dist/crosslab-devcontainer.tar" | docker load | sed -e 's/^.* //')
-TAG=devcontainer:${VERSION}
+LOADED_TAG=$(cat "./dist/docker-image.tar" | docker load | sed -e 's/^.* //')
+TAG_BASE=${LOADED_TAG%:*}
+TAG=$TAG_BASE:${VERSION}
+if [ "$LOADED_TAG" != "$TAG" ]; then
+  # addional check for build images (devcontainer)
+  if [ "$LOADED_TAG" != "$TAG_BASE:build" ]; then
+    echo "Loaded docker image has wrong tag: $LOADED_TAG"
+    exit 1
+  fi
+fi
 
 # tag image with right prefix
 docker tag $LOADED_TAG $DOCKER_PREFIX/$TAG
 docker push $DOCKER_PREFIX/$TAG
 
 if [ "$LATEST" = true ]; then
-  TAG=devcontainer:latest
+  TAG=$TAG_BASE:latest
   docker tag $LOADED_TAG $DOCKER_PREFIX/$TAG
   docker push $DOCKER_PREFIX/$TAG
 fi

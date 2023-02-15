@@ -59,7 +59,5 @@ cp $(readlink -f ./dist/npm-latest.tgz) .packages/ | true
 docker build -t $TAG .
 
 # Save the container to a tar file
-if [ "$NO_EXPORT" = false ]; then
-  mkdir -p dist
-  docker save $TAG > ./dist/docker-image.tar
-fi
+mkdir -p dist
+docker save $TAG > ./dist/docker-image.tar

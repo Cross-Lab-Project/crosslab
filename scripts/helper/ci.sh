@@ -53,7 +53,7 @@ while [[ $# -gt 0 ]]; do
       ;;
 
     --release)
-      #CLEAN=true
+      CLEAN=true
       SKIP_DOWNLOAD=true
       DEV_VERSION=false
       SUBCOMMANDVARS="$SUBCOMMANDVARS --release"
