@@ -1,9 +1,8 @@
+import { roleRepository } from '../database/repositories/roleRepository'
+import { tokenRepository } from '../database/repositories/tokenRepository'
+import { userRepository } from '../database/repositories/userRepository'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
-import { OwnershipError } from '../types/errors'
-import { userRepository } from '../database/repositories/userRepository'
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { roleRepository } from '../database/repositories/roleRepository'
 
 /**
  * This function implements the functionality for handling POST requests on /device_authentication_token endpoint.
