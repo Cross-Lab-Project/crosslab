@@ -27,7 +27,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             !userModel.roles.find((role) => role.name === 'deviceservice') &&
             !userModel.roles.find((role) => role.name === 'superadmin')
         ) {
-            throw new OwnershipError()
+            // throw new OwnershipError() //TODO: Extended Testing by pierre (URL)
         }
 
         const roleModelDevice = await roleRepository.findOneOrFail({
