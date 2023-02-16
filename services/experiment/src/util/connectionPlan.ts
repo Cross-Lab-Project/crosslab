@@ -51,6 +51,11 @@ export function buildConnectionPlan(
         Pick<Required<DeviceServiceTypes.Peerconnection>, 'devices'>
     > = {}
     for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
+        // HOTFIX: for local services: Don't connect local services to each other
+        // TODO: create a new connection type 'local' as opposed to 'webrtc' and handle it correctly
+        if (serviceConfig.devices[0].url === serviceConfig.devices[1].url) {
+            continue;
+        }
         const lookupKey = `${serviceConfig.devices[0].url}::${serviceConfig.devices[1].url}`
         if (!(lookupKey in peerconnections)) {
             peerconnections[lookupKey] = {
