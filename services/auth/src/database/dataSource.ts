@@ -1,12 +1,11 @@
-import { hash } from 'bcryptjs'
-import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
+import { Scope as CrosslabScope } from '../generated/scopes'
 import { activeKeyRepository } from './repositories/activeKeyRepository'
 import { keyRepository } from './repositories/keyRepository'
 import { roleRepository } from './repositories/roleRepository'
 import { scopeRepository } from './repositories/scopeRepository'
 import { tokenRepository } from './repositories/tokenRepository'
 import { userRepository } from './repositories/userRepository'
-import { Scope as CrosslabScope } from '../generated/scopes'
+import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
 
 export class ApplicationDataSource {
     private dataSource?: DataSource
@@ -78,8 +77,8 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'device:list': standardRoles,
     'device:edit': ['developer'],
     'device:create': ['developer'],
-    'device:connect': ['developer'],
-    'device:signal': ['device', 'developer'],
+    'device:connect': ['developer', 'user', 'device'],
+    'device:signal': ['device', 'user', 'developer'],
     'peerconnection': ['developer', 'experiment_service'],
     'peerconnection:list': standardRoles,
     'peerconnection:create': ['developer', 'experiment_service'],
@@ -217,7 +216,7 @@ async function createDefaultSuperadminUser() {
     if (roleModelSuperadmin.users.length === 0) {
         const userModelSuperadmin = await userRepository.create({
             username: 'superadmin',
-            password: await hash('superadmin', 10),
+            password: 'superadmin',
         })
         userRepository.addRoleModelToUserModel(userModelSuperadmin, roleModelSuperadmin)
         await userRepository.save(userModelSuperadmin)
