@@ -37,6 +37,8 @@ helper/dummy-device/js:
       - clients/api/js:build
       - clients/soa/js:build
       - clients/soa_services/electricalConnection/js:build
+      - clients/soa_services/file/js:build
+      - clients/soa_services/webcam/js:build
   - script: lint
     dependencies:
       - helper/dummy-device/js:build

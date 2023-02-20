@@ -192,6 +192,8 @@ graph LR
   clients/api/js:build[build] --> helper/dummy-device/js:build[build]
   clients/soa/js:build[build] --> helper/dummy-device/js:build[build]
   clients/soa_services/electricalConnection/js:build[build] --> helper/dummy-device/js:build[build]
+  clients/soa_services/file/js:build[build] --> helper/dummy-device/js:build[build]
+  clients/soa_services/webcam/js:build[build] --> helper/dummy-device/js:build[build]
   helper/dummy-device/js:build[build] --> helper/dummy-device/js:lint[lint]
   clients/api/python:build[build] --> helper/dummy-device/python:build[build]
   clients/soa/python:build[build] --> helper/dummy-device/python:build[build]
