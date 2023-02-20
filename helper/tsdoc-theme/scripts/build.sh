@@ -1,6 +1,1 @@
-#!/bin/bash
-set -e
-
-rm -rf node_modules
-npm ci
-npm run build
+../../../common/node/scripts/build.sh

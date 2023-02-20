@@ -1,1 +1,1 @@
-../../../helper/common-scripts/node/set-scene.sh
+../../../common/node/scripts/set-scene.sh

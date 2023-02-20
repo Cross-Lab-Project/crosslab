@@ -15,26 +15,34 @@
         "black"
     ],
     "files.exclude": {
-        ".pytest_cache": true,
-        ".mypy_cache": true,
-        ".tox": true,
-        "node_modules": true,
-        "**/__pycache__": true,
-        "**/*.egg-info": true,
         //begin generated
-        
+        "**/app": true,
+        "**/build": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
         //end generated
     },
     "files.watcherExclude": {
-        "dist": true,
-        ".pytest_cache": true,
-        ".mypy_cache": true,
-        ".tox": true,
-        "node_modules": true,
-        "**/__pycache__": true,
-        "**/*.egg-info": true,
         //begin generated
-        
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
         //end generated
     },
     "python.analysis.typeCheckingMode": "basic",

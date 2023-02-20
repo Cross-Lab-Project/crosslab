@@ -10,6 +10,7 @@ VERBOSE=false
 SKIP_UPLOAD=false
 SKIP_DOWNLOAD=false
 CLEAN=false
+DEV_VERSION=true
 
 SUBCOMMANDVARS=""
 
@@ -48,6 +49,14 @@ while [[ $# -gt 0 ]]; do
 
     --no-upload)
       SKIP_UPLOAD=true
+      shift
+      ;;
+
+    --release)
+      CLEAN=true
+      SKIP_DOWNLOAD=true
+      DEV_VERSION=false
+      SUBCOMMANDVARS="$SUBCOMMANDVARS --release"
       shift
       ;;
 
@@ -91,6 +100,12 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+
+if [ $DEV_VERSION = true ]; then
+  VERSION=$(cat VERSION)-dev.$(git rev-parse --short HEAD)
+else
+  VERSION=$(cat VERSION)
+fi
 
 if [ $VERBOSE = false ]; then
   SUBCOMMANDVARS="$SUBCOMMANDVARS -q"
@@ -175,7 +190,7 @@ while true; do
         echo_start "${BLUE}> Running $job"
 
         # Calculate input hash
-        job_input_paths="-p ${files[$job]}"
+        job_input_paths="-p ${files[$job]} -p ${root[$job]}/scripts/${script[$job]}.sh"
         for dependency in ${dependencies[$job]}; do
           if [ $dependency = "null" ]; then
             continue
@@ -222,7 +237,7 @@ while true; do
         mkdir -p ${root[$job]}"/dist"
         rm -f ${root[$job]}"/dist/${script[$job]}.badge"
         set +e
-        (cd ${root[$job]} && ./scripts/${script[$job]}.sh ${script_args[$job]} > "dist/"${script[$job]}".log" 2>&1); exit_code=$?
+        (cd ${root[$job]} && ./scripts/${script[$job]}.sh ${script_args[$job]} --version ${VERSION} > "dist/"${script[$job]}".log" 2>&1); exit_code=$?
         set -e
         if [ $exit_code -eq 0 ]; then
           status[$job]="success"

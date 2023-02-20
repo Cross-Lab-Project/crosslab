@@ -1,11 +1,11 @@
 {
   "name": "@crosslab/service-federation",
   "dockerName": "federation-service",
-  "bin":{
+  "bin": {
     "crosslab-federation-service": "./app/index.js"
   },
   "files": [
-      "app"
+    "app"
   ],
   "scripts": {
     "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
@@ -17,32 +17,37 @@
     "build": "npm run build-generate-code && npm run build-compile",
     "start": "node app/index.js",
     "dev": "env-cmd -e development npx nodemon src/index.ts",
-    "format": "npx prettier src --write"
+    "format": "npx prettier src --write",
+    "lint": "eslint ."
   },
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
     "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
-    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon", 
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@types/body-parser": "^1.19.2",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.41",
     "@types/node-fetch": "^2.6.1",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.34.0",
     "nodemon": "^2.0.19",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.7.3",
     "prettier": "^2.7.1",
-    "env-cmd": "^10.1.0"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.3"
   },
   "dependencies": {
+    "@crosslab/service-common": "file:../common",
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.20.0",
     "express": "^4.18.1",
+    "jose": "^4.10.0",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.7",
     "sqlite3": "^5.0.8",
-    "typeorm": "^0.3.6",
-    "jose": "^4.10.0",
-    "@crosslab/service-common": "file:../common"
+    "typeorm": "^0.3.6"
   }
 }

@@ -1,20 +1,28 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR=$(cd "$(pwd)/$(dirname "$0")" && pwd)
+SCRIPT_DIR=$(dirname "$0")
 
-cd $SCRIPT_DIR/../
-
-TAG="crosslab/devcontainer:latest"
-
+LATEST=false
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-    -t|--tag)
-      TAG="$2"
+    --version)
+      VERSION="$2"
       shift # past argument
       shift # past value
+      ;;
+
+    --docker-prefix)
+      DOCKER_PREFIX="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
+    --latest)
+      LATEST=true
+      shift # past argument
       ;;
 
     *) # unknown option
@@ -23,6 +31,29 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-cat dist/crosslab-devcontainer.tar | docker load
-docker tag crosslab-devcontainer:build $TAG
-docker push $TAG
+if [ -z "$VERSION" ]; then
+  echo "Missing version"
+  exit 1
+fi
+
+if [ -z "$DOCKER_PREFIX" ]; then
+  echo "Missing docker prefix"
+  exit 1
+fi
+
+
+cd $SCRIPT_DIR/..
+
+# load docker image and check it has the correct tag
+LOADED_TAG=$(cat "./dist/crosslab-devcontainer.tar" | docker load | sed -e 's/^.* //')
+TAG=devcontainer:${VERSION}
+
+# tag image with right prefix
+docker tag $LOADED_TAG $DOCKER_PREFIX/$TAG
+docker push $DOCKER_PREFIX/$TAG
+
+if [ "$LATEST" = true ]; then
+  TAG=devcontainer:latest
+  docker tag $LOADED_TAG $DOCKER_PREFIX/$TAG
+  docker push $DOCKER_PREFIX/$TAG
+fi

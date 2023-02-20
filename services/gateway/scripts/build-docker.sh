@@ -1,1 +1,1 @@
-../../../helper/common-scripts/node/build-docker.sh
+../../../common/docker/scripts/build.sh

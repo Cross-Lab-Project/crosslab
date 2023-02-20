@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json.schemastore.org/eslintrc",
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "ignorePatterns":[
+    "dist/**/*",
+    "lib/**/*",
+    "app/**/*",
+    "http-dist/**/*",
+    "webpack.config.js"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-shadow": [
+          "error"
+        ],
+        "no-shadow": "off",
+        "no-undef": "off",
+        "max-len": [
+          "error",
+          {
+            "code": 150
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -10,15 +10,15 @@
   "author": "Pierre Helbing",
   "license": "UNLICENSED",
   "dependencies": {
-    "@crosslab/service-common": "file:../services/common",
-    "@crosslab/service-auth": "file:../services/auth",
-    "@crosslab/service-device": "file:../services/device",
-    "@crosslab/service-experiment": "file:../services/experiment",
-    "@crosslab/service-federation": "file:../services/federation",
     "@cross-lab-project/api-client": "file:../clients/api/js",
     "@cross-lab-project/soa-client": "file:../clients/soa/js",
     "@cross-lab-project/soa-service-electrical": "file:../clients/soa_services/electricalConnection/js",
     "@crosslab/dummy-device": "file:../helper/dummy-device/js",
+    "@crosslab/service-auth": "file:../services/auth",
+    "@crosslab/service-common": "file:../services/common",
+    "@crosslab/service-device": "file:../services/device",
+    "@crosslab/service-experiment": "file:../services/experiment",
+    "@crosslab/service-federation": "file:../services/federation",
     "@types/mocha": "^9.1.1",
     "@types/mocha-steps": "^1.3.0",
     "mocha": "^10.2.0",
@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.50.0",
-    "@typescript-eslint/parser": "^5.50.0",
-    "eslint": "^8.33.0"
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.34.0"
   }
 }
