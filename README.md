@@ -292,3 +292,17 @@ graph LR
   services/update:build-spec[build-spec] --> services/update:lint-spec[lint-spec]
 ```
 [//]: # ({{end}})
+
+
+## Publishing
+
+run `./scripts/ci.sh --release`
+
+Create `$HOME/.pypirc` with the following content:
+```
+[pypi]
+    username: XXXXXX
+    password: xxxxxxxxxxxxxxxx
+```
+
+run `./scripts/publish.sh --latest`
