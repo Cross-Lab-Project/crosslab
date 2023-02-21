@@ -25,10 +25,10 @@ class MediaChannel(Channel, AsyncIOEventEmitter):
 class DataChannel(Channel, AsyncIOEventEmitter):
     channel_type = "DataChannel"
 
-    def send(self, data: str):
+    def send(self, data: Union[bytes, str]):
         self.emit("upstreamData", data)
 
-    def downstreamData(self, data: str):
+    def downstreamData(self, data: Union[bytes, str]):
         self.emit("data", data)
 
     async def opened(self):
