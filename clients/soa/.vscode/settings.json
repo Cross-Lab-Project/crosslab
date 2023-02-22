@@ -5,6 +5,7 @@
         "**/build": true,
         "./clients/soa_services/electricalConnection/.vscode": true,
         "./clients/soa_services/file/.vscode": true,
+        "./clients/soa_services/message/.vscode": true,
         "./clients/soa_services/.vscode": true,
         "./clients/soa_services/webcam/.vscode": true,
         "**/*.egg-info": true,

@@ -262,6 +262,15 @@ clients/soa_services/electricalConnection/js:
     dependencies:
       - clients/soa_services/electricalConnection/js:build
 
+clients/soa_services/webcam/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/webcam/python:build
+
 clients/soa_services/webcam/js:
   - script: build
     dependencies:
@@ -270,6 +279,15 @@ clients/soa_services/webcam/js:
     dependencies:
       - clients/soa_services/webcam/js:build
 
+clients/soa_services/file/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/file/python:build
+
 clients/soa_services/file/js:
   - script: build
     dependencies:
@@ -277,6 +295,23 @@ clients/soa_services/file/js:
   - script: lint
     dependencies:
       - clients/soa_services/file/js:build
+
+clients/soa_services/message/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/python:build
+
+clients/soa_services/message/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/js:build
 
 ################################################################################
 # Integration Tests ############################################################

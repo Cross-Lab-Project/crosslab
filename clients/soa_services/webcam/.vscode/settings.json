@@ -1,7 +1,6 @@
 {
     "files.exclude": {
         //begin generated
-        
         "**/app": true,
         "**/build": true,
         "**/*.egg-info": true,
@@ -17,7 +16,6 @@
     },
     "files.watcherExclude": {
         //begin generated
-        
         "**/app": true,
         "**/build": true,
         "**/dist": true,

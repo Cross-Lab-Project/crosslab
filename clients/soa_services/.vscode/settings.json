@@ -7,6 +7,7 @@
         "electricalConnection/.vscode": true,
         "file/.vscode": true,
         "**/lib": true,
+        "message/.vscode": true,
         "**/.mypy_cache": true,
         "**/node_modules": true,
         "**/.packages": true,

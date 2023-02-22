@@ -13,6 +13,7 @@
         "**/.pytest_cache": true,
         "soa_services/electricalConnection/.vscode": true,
         "soa_services/file/.vscode": true,
+        "soa_services/message/.vscode": true,
         "soa_services/.vscode": true,
         "soa_services/webcam/.vscode": true,
         "soa/.vscode": true,

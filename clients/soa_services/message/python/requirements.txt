@@ -1,0 +1,8 @@
+-e ../../../api/python
+-e ../../../soa/python
+-e ./
+tox
+pytest
+build
+coverage
+mypy
