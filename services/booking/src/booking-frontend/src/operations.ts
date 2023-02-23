@@ -10,7 +10,8 @@ import {
     deleteBookingByIDSignature,
     patchBookingByIDSignature,
     deleteBookingByIDDestroySignature,
-    postBookingRequestBodyType
+    postBookingRequestBodyType,
+    getBookingByID200ResponseType
 } from "./generated/signatures"
 
 import * as mysql from 'mysql2/promise';
@@ -44,7 +45,7 @@ export const postBooking: postBookingSignature = async (body, user) => {
         let bookingID: bigint = BigInt(rows.insertId);
 
         for (let i = 0; i < body.Experiment.Devices.length; i++) {
-            await db.execute("INSERT INTO (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [bookingID, body.Experiment.Devices[i].ID, i]);
+            await db.execute("INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [bookingID, body.Experiment.Devices[i].ID, i]);
         };
         await db.commit();
 
@@ -84,10 +85,56 @@ export const postBooking: postBookingSignature = async (body, user) => {
 }
 
 export const getBookingByID: getBookingByIDSignature = async (parameters, user) => {
-    // add your implementation here
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await db.beginTransaction();
+
+    let requestID: bigint = BigInt(parameters.ID)
+
+    try {
+        let body:getBookingByID200ResponseType["body"] = {Booking: {ID: parameters.ID, Time: {Start: "", End: ""}, Devices: [], Type: "normal", You: false, External: false, Status: "pending", Message: ""}, Locked: false}
+        // TODO Remove External
+
+        // Read basic information
+        let [rows, fields]: [any, any] = await db.execute("SELECT `start`, `end`, `type`, `status`, `user`, `message` FROM booking WHERE id=?", [requestID]);
+        if(rows.length == 0) {
+            return {
+                status: 404,
+            };
+        }
+        body.Booking.Time.Start = rows[0].start;
+        body.Booking.Time.End = rows[0].end;
+        body.Booking.Type = rows[0].type;
+        body.Booking.Status = rows[0].status;
+        body.Booking.You = rows[0].user == user;
+        body.Message = rows[0].message;
+
+        // Read devices
+        [rows, fields] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE booking=? ORDER BY `originalposition` ASC", [requestID]);
+        for(let i = 0; i < rows.length; i++) {
+            body.Booking.Devices.push(rows[i].originaldevice)
+        }
+
+        return {
+            status: 200,
+            body: body
+        }
+    } catch (err) {
+        db.rollback();
+        db.end();
+
+        return {
+            status: 500,
+            body: err.toString(),
+        }
+    } finally {
+        db.commit();
+        db.end();
+    };
+
     return {
-        status: 200,
-        body: null,
+        status: 500,
+        body: "BUG: method reached end",
     }
 }
 
