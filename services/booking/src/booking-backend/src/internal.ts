@@ -24,7 +24,7 @@ export enum callbackType {
 }
 
 // Handle received callback
-export async function handleCallback(type: callbackType, target: bigint, parameters: any) {
+export async function handleCallback(type: callbackType, targetBooking: bigint, parameters: any) {
     let api: APIClient = new APIClient(config.OwnURL);
 
     let db = await mysql.createConnection(config.BookingDSN);
@@ -32,47 +32,99 @@ export async function handleCallback(type: callbackType, target: bigint, paramet
 
     try {
         switch (type) {
+            // Both cases share a vast amount of code. So combine them here and differentiate later
             case callbackType.DeviceUpdate:
+            case callbackType.BookingUpdate:
                 try {
                     await db.beginTransaction();
                     // Lock booking
-                    let [bookingRow, bookingFields]: [any, any] = await db.execute("SELECT `start`,`end`,`type`,`status` FROM booking WHERE `id`=? FOR UPDATE", [target]);
+                    let [bookingRow, bookingFields]: [any, any] = await db.execute("SELECT `start`,`end`,`type`,`status` FROM booking WHERE `id`=? FOR UPDATE", [targetBooking]);
                     if (bookingRow.length == 0) {
-                        throw Error("Booking (" + target + ") not known");
+                        throw Error("Booking (" + targetBooking + ") not known");
                     }
                     let [start, end]: [dayjs.Dayjs, dayjs.Dayjs] = [dayjs(bookingRow[0].start), dayjs(bookingRow[0].end)];
 
                     // Get device
-                    let [rows, fields]: [any, any] = await db.execute("SELECT `bookeddevice`, `originaldevice`,  FROM `bookeddevices` WHERE booking=? AND originalposition=? FOR UPDATE", [target, parameters.Position]);
+                    let [rows, fields]: [any, any] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `id` FROM bookeddevices WHERE `booking`=? AND `originalposition`=? FOR UPDATE", [targetBooking, parameters.Position]);
 
                     if (rows.length == 0) {
-                        throw Error("Booking, Position (" + target + "," + parameters.Position + ") not known");
+                        throw Error("Booking, Position (" + targetBooking + "," + parameters.Position + ") not known");
                     }
+
+                    let bookedDeviceId: bigint = rows[0].id;
+                    let originalDevice: string = rows[0].originaldevice;
 
                     // Check availability
-                    let device = await api.getDevice(rows[0].bookeddevice);
-                    if (device.type == "group") {
-                        throw Error("Booked device " + rows[0].bookeddevice + " is group");
-                    }
+                    // Here, we need to differentiate 
+                    let available: boolean = true;
 
-                    // If not available: request new device
-                    if (device.type == "device") { // Other devices are always available
-                        let available: boolean = device.connected;
+                    switch (type) {
+                        // Both cases share a vast amount of code. So combine them here and differentiate later
+                        case callbackType.DeviceUpdate:
 
-                        // Check availability if needed
-                        if (available) {
-                            available = false;
-                            for(let i = 0; i < device.announcedAvailability.length; i++) {
-                                if(dayjs(device.announcedAvailability[i].start).isSameOrBefore(start) && dayjs(device.announcedAvailability[i].end).isSameOrAfter(end)) {
-                                    available = true;
-                                    break;
+                            if (!rows[0].local) {
+                                throw Error("Booking must be local for device update");
+                            }
+
+                            let device = await api.getDevice(rows[0].bookeddevice);
+                            if (device.type == "group") {
+                                throw Error("Booked device " + rows[0].bookeddevice + " is group");
+                            }
+
+                            // If not available: request new device
+                            if (device.type == "device") { // Other devices are always available
+                                available = device.connected;
+
+                                // Check availability if needed
+                                if (available) {
+                                    available = false;
+                                    for (let i = 0; i < device.announcedAvailability.length; i++) {
+                                        if (dayjs(device.announcedAvailability[i].start).isSameOrBefore(start) && dayjs(device.announcedAvailability[i].end).isSameOrAfter(end)) {
+                                            available = true;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
-                        }
+                            break;
 
-                        // Act
-                        if(!available) {
-                            // TODO
+                        case callbackType.BookingUpdate:
+                            if (rows[0].local) {
+                                throw Error("Booking must be remote for device update");
+                            }
+
+                            let getReturn = await api.getBooking(rows[0].remotereference);
+                            if (getReturn.Booking.Status == "cancelled" || getReturn.Booking.Status == "rejected") {
+                                available = false;
+                            }
+                            break;
+                        default:
+                            throw ("BUG: Impossible callback type " + type + " in inner switch");
+                    }
+
+                    // Act: Delete reservation and update booking
+                    if (!available) {
+                        await db.commit(); // Free rows for device freeing
+                        await freeDevice(bookedDeviceId);
+
+                        // Now ask for new device
+                        let connection: amqplib.Connection
+                        let channel: amqplib.Channel
+                        try {
+                            connection = await amqplib.connect(config.AmqpUrl);
+                            channel = await connection.createChannel();
+
+                            // Request new device
+                            await channel.assertQueue("device-booking", {
+                                durable: true
+                            });
+                            let s = JSON.stringify(new DeviceBookingRequest(targetBooking, new URL(originalDevice), parameters.Position, start, end));
+                            if (!channel.sendToQueue("device-booking", Buffer.from(s), { persistent: true })) {
+                                throw new Error("amqp queue full");
+                            }
+                        } finally {
+                            channel.close();
+                            connection.close();
                         }
                     }
 
@@ -82,13 +134,6 @@ export async function handleCallback(type: callbackType, target: bigint, paramet
                     db.rollback();
                 }
 
-                break;
-
-            case callbackType.BookingUpdate:
-                // Get booking
-                // Check status
-                // Problems: Book new device
-                // TODO
                 break;
 
             default:
@@ -334,7 +379,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 let a: amqplib.GetMessage = aUnknown as amqplib.GetMessage;
                 let data = ReservationAnswer.fromString(a.content.toString());
                 if (data.Type === ReservationRequest.New && data.Device.toString() === possibleDevices[i] && data.Start.isSame(r.Start) && data.End.isSame(r.End) && data.Successful) {
-                    await db.execute("UPDATE bookeddevices SET `bookeddevice`=? WHERE `booking`=? AND `originalposition`=?", [data.Device, r.BookingID, r.Position])
+                    await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `booking`=? AND `originalposition`=?", [data.Device, data.ReservationID.toString(), true, r.BookingID, r.Position])
                     addDeviceCallback(data.Device, r.BookingID, { "Position": r.Position });
                     await reservationCheckStatus(r.BookingID);
                     return;
@@ -344,9 +389,6 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 continue;
             } finally {
                 if (channel !== undefined) {
-                    if (queueCreated) {
-                        await channel.deleteQueue(returnChannel);
-                    }
                     await channel.close();
                 }
                 if (connection !== undefined) {
@@ -356,9 +398,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
         } else {
             let institution = new URL(possibleDevices[i]).origin;
             let putReturn = await api.bookExperiment({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, { url: institution + "/booking/manage" })
-            if (putReturn.status != 200) {
-                continue;
-            }
+
             let ID = putReturn.ReservationID;
 
             let counter = -1;
@@ -370,9 +410,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 await sleep(1000);
 
                 let getReturn = await api.getBooking(institution + "/booking/manage/" + ID);
-                if (putReturn.status !== 200) {
-                    continue;
-                }
+
                 switch (getReturn.Booking.Status) {
                     case "pending":
                     case "active-pending":
@@ -382,7 +420,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                     case "booked":
                     case "active":
                         // Success
-                        await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=? WHERE `booking`=? AND `originalposition`=?", [possibleDevices[i], getReturn.Booking.ID, r.BookingID, r.Position])
+                        await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `booking`=? AND `originalposition`=?", [possibleDevices[i], getReturn.Booking.ID, false, r.BookingID, r.Position])
                         addBookingCallback(new URL(possibleDevices[i]), r.BookingID, { "Position": r.Position });
                         await reservationCheckStatus(r.BookingID);
                         return;
@@ -411,8 +449,114 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     DeleteBooking(r.BookingID, "rejected");
 }
 
-export async function freeDevice(r: bigint) {
-    // TODO
+export async function freeDevice(internalreference: bigint) {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await db.beginTransaction();
+    try {
+        let [rows, fields]: [any, any] = await db.execute("SELECT `id`, `booking`, `originaldevice`, `originalposition`, `bookeddevice`, `remotereference`, `local` FROM bookeddevices WHERE `id`=? FOR UPDATE", [internalreference]);
+        if (rows.length == 0) {
+            throw Error("Bookeddevice " + internalreference + " not found");
+        }
+
+        let [bookingRow, bookingFields]: [any, any] = await db.execute("SELECT * FROM booking WHERE `id`=? FOR UPDATE", [rows[0].booking]); // Lock booking
+        if (bookingRow.length == 0) {
+            throw Error("Booking " + rows[0].booking + " not found");
+        }
+
+        // Free now
+        if (rows[0].local) {
+            // This is a local device
+            let connection: amqplib.Connection
+            let channel: amqplib.Channel
+            let returnChannel = randomID();
+            let queueCreated = false;
+            try {
+                connection = await amqplib.connect(config.AmqpUrl);
+                channel = await connection.createChannel();
+
+                await channel.assertQueue("device-reservation", {
+                    durable: true
+                });
+
+                await channel.assertQueue(returnChannel, {
+                    durable: false
+                });
+
+                queueCreated = true;
+
+                let m = new ReservationMessage(ReservationRequest.Delete, returnChannel);
+                m.ReservationID = BigInt(rows[0].remotereference);
+
+                channel.sendToQueue("device-reservation", Buffer.from(JSON.stringify(m)));
+
+                let aUnknown: any;
+                let counter = 0;
+                while (true) {
+                    aUnknown = await channel.get(returnChannel, { noAck: true });
+                    if (typeof (aUnknown) !== "boolean" && aUnknown !== null) {
+                        break
+                    }
+                    counter++;
+                    if (counter >= 50) {
+                        throw Error("Did not receive Answer from device-reservation");
+                    }
+                    await sleep(100)
+                }
+
+                let a: amqplib.GetMessage = aUnknown as amqplib.GetMessage;
+                let data = ReservationAnswer.fromString(a.content.toString());
+                if (data.Type !== ReservationRequest.Delete || !data.Successful) {
+                    throw Error("Reservation deletion was not successful");
+                }
+            } finally {
+                if (channel !== undefined) {
+                    if (queueCreated) {
+                        await channel.deleteQueue(returnChannel);
+                    }
+                    await channel.close();
+                }
+                if (connection !== undefined) {
+                    await connection.close();
+                }
+            }
+        } else {
+            // This is a remote devices
+            let api: APIClient = new APIClient(config.OwnURL);
+            await api.deleteBooking(rows[0].remotereference);
+        }
+
+        // Delete form DB
+        switch (bookingRow[0].status) {
+            case "active-rejected":
+            case "active":
+                await db.execute("UPDATE booking SET `status`='active-pending' WHERE `id`=?", [rows[0].booking]);
+                break;
+            case "active-pending":
+            case "pending":
+                // Do nothing since it is still pending
+                break;
+            case "booked":
+                await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [rows[0].booking]);
+                break;
+            case "rejected":
+            case "cancelled":
+                // Do nothing, this is the correct status
+                break;
+            default:
+                throw Error("BUG: Unknown booking status " + bookingRow[0].status);
+        }
+        // Delete from DB
+        await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `id`=?", [null, null, null, internalreference]);
+
+        // Commit
+        db.commit();
+    } catch (err) {
+        db.rollback();
+        throw err;
+    } finally {
+        db.end();
+    }
 }
 
 // Helper
