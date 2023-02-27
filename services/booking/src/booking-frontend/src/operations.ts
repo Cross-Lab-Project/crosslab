@@ -108,6 +108,9 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
         body.Booking.Status = rows[0].status;
         body.Booking.You = rows[0].user == user;
         body.Message = rows[0].message;
+        if(body.Booking.Status === "active" || body.Booking.Status === "active-pending" || body.Booking.Status == "active-rejected") {
+            body.Locked = true;
+        }
 
         // Read devices
         [rows, fields] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE booking=? ORDER BY `originalposition` ASC", [requestID]);

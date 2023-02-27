@@ -576,6 +576,9 @@
           "404": {
             "description": "Request contains unknown ID"
           },
+          "412": {
+            "description": "The current booking status is not correct."
+          },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
             "content": {
@@ -622,6 +625,9 @@
           },
           "404": {
             "description": "Request contains unknown ID"
+          },
+          "412": {
+            "description": "The current booking status is not correct."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",

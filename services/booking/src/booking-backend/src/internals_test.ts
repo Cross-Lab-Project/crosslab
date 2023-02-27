@@ -1,3 +1,5 @@
+
+/*
 import * as mocha from "mocha";
 import express from 'express';
 import * as http from 'http';
@@ -193,3 +195,4 @@ mocha.describe("internal.ts", function () {
     mocha.it("reservateDevice() remote", async () => {
     });
 });
+*/

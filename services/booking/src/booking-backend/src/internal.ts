@@ -633,3 +633,7 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
         await db.end();
     }
 }
+
+export async function calculateToken(id: bigint, db: mysql.Connection ): Promise<{Device: string, Token: string}[]> {
+    return [{Device: "TODO", Token: "TODO"},{Device: "TODO", Token: "TODO"},{Device: "TODO", Token: "TODO"}]
+}
