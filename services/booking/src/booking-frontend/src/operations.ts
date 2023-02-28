@@ -23,6 +23,12 @@ import { BelongsToUs } from "./../../common/auth"
 import { DeviceBookingRequest } from "./../../booking-backend/src/messageDefinition";
 
 export const postBooking: postBookingSignature = async (body, user) => {
+    if (user.JWT === undefined) {
+        return {
+            status: 401,
+        }
+    }
+
     let connection = await amqplib.connect(config.AmqpUrl);
     let channel = await connection.createChannel();
 
@@ -52,11 +58,11 @@ export const postBooking: postBookingSignature = async (body, user) => {
         // Send devices to backend
         for (let i = 0; i < body.Experiment.Devices.length; i++) {
             let s = JSON.stringify(new DeviceBookingRequest(bookingID, new URL(body.Experiment.Devices[i].ID), i, dayjs(body.Time.Start), dayjs(body.Time.End)));
-            if(!channel.sendToQueue("device-booking", Buffer.from(s), {persistent: true})) {
+            if (!channel.sendToQueue("device-booking", Buffer.from(s), { persistent: true })) {
                 throw new Error("amqp queue full");
             }
         }
-        
+
         let r = new URL(config.OwnURL)
 
         return {
@@ -92,12 +98,12 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
     let requestID: bigint = BigInt(parameters.ID)
 
     try {
-        let body:getBookingByID200ResponseType["body"] = {Booking: {ID: parameters.ID, Time: {Start: "", End: ""}, Devices: [], Type: "normal", You: false, External: false, Status: "pending", Message: ""}, Locked: false}
+        let body: getBookingByID200ResponseType["body"] = { Booking: { ID: parameters.ID, Time: { Start: "", End: "" }, Devices: [], Type: "normal", You: false, External: false, Status: "pending", Message: "" }, Locked: false }
         // TODO Remove External
 
         // Read basic information
         let [rows, fields]: [any, any] = await db.execute("SELECT `start`, `end`, `type`, `status`, `user`, `message` FROM booking WHERE id=?", [requestID]);
-        if(rows.length == 0) {
+        if (rows.length == 0) {
             return {
                 status: 404,
             };
@@ -108,13 +114,13 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
         body.Booking.Status = rows[0].status;
         body.Booking.You = rows[0].user == user;
         body.Message = rows[0].message;
-        if(body.Booking.Status === "active" || body.Booking.Status === "active-pending" || body.Booking.Status == "active-rejected") {
+        if (body.Booking.Status === "active" || body.Booking.Status === "active-pending" || body.Booking.Status == "active-rejected") {
             body.Locked = true;
         }
 
         // Read devices
         [rows, fields] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE booking=? ORDER BY `originalposition` ASC", [requestID]);
-        for(let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < rows.length; i++) {
             body.Booking.Devices.push(rows[i].originaldevice)
         }
 
@@ -142,24 +148,218 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
 }
 
 export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, user) => {
-    // add your implementation here
+    let requestID: bigint = BigInt(parameters.ID);
+    let success: boolean = false;
+
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await db.beginTransaction();
+
+    try {
+        let [rows, fields]: [any, any] = await db.execute("SELECT `status`, `user` FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
+        if (rows.length === 0) {
+            return {
+                status: 404,
+            }
+        }
+
+        switch (rows[0].status) {
+            case "pending":
+            case "booked":
+                // Everything ok
+                break;
+            case "active-pending":
+            case "active":
+            case "active-rejected":
+                return {
+                    status: 423,
+                }
+
+            case "rejected":
+            case "cancelled":
+                return {
+                    status: 200,
+                }
+
+            default:
+                throw Error("BUG: unknown status " + rows[0].status);
+                break;
+        }
+
+        if (user.JWT === undefined || rows[0].user != user.JWT.username) {
+            return {
+                status: 401,
+            }
+        }
+
+        // delete booking
+        let connection = await amqplib.connect(config.AmqpUrl);
+        let channel = await connection.createChannel();
+
+        try {
+            await channel.assertQueue("device-freeing", {
+                durable: true
+            });
+
+            let [devicesRows, devicesFields]: [any, any] = await db.execute("SELECT `id` FROM bookeddevices WHERE `booking`=? FOR UPDATE", [requestID]);
+            for (let i = 0; i < devicesRows.length; i++) {
+                if (!channel.sendToQueue("device-freeing", Buffer.from(devicesRows[i].id.toString()), { persistent: true })) {
+                    throw new Error("amqp queue full");
+                }
+            }
+        } finally {
+            channel.close();
+            connection.close();
+        }
+
+        await db.execute("UPDATE booking SET `status`=? WHERE id=?", ["cancelled", requestID]);
+
+        success = true;
+    } catch (err) {
+        return {
+            status: 500,
+            body: err.toString(),
+        }
+    } finally {
+        if (success) {
+            db.commit();
+        } else {
+            db.rollback();
+        }
+        db.end();
+    }
+
+
     return {
         status: 200,
     }
 }
 
 export const patchBookingByID: patchBookingByIDSignature = async (parameters, body, user) => {
-    // add your implementation here
+    let requestID: bigint = BigInt(parameters.ID);
+    let success: boolean = false;
+
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await db.beginTransaction();
+
+    try {
+        let [rows, fields]: [any, any] = await db.execute("SELECT `status`, `user`,`start`,`end` FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
+        if (rows.length === 0) {
+            return {
+                status: 404,
+            }
+        }
+
+        if (typeof(body.Callback) === "string") {
+            // this is adding a callback
+            await db.execute("INSERT INTO bookingcallbacks (`booking`, `url`) VALUES (?,?)", [requestID, body.Callback]);
+        } else if (typeof(body.Devices) !== undefined) {
+            let Devices: Device[] = body.Devices as Device[];
+            if (user.JWT === undefined || rows[0].user != user.JWT.username) {
+                return {
+                    status: 401,
+                }
+            }
+
+            switch (body.Locked) {
+                case true:
+                    if (rows[0].status !== "active" && rows[0].status !== "active-rejected" && rows[0].status !== "active-pending") {
+                        return {
+                            status: 423,
+                        }
+                    }
+                    await db.execute("UPDATE booking SET `status`=? WHERE id=?", ["active-pending", requestID]);
+                    break;
+                case false:
+                    if (rows[0].status !== "booked" && rows[0].status !== "pending") {
+                        return {
+                            status: 423,
+                        }
+                    }
+                    await db.execute("UPDATE booking SET `status`=? WHERE id=?", ["pending", requestID]);
+                    break;
+                case undefined:
+                    return {
+                        status: 500,
+                        body: "BUG: 'Locked' is missing",
+                    }
+                    break;
+                default:
+                    throw Error("BUG: unknown status body.Locked: " + body.Locked);
+                    break;
+            }
+
+            let [deviceRows, deviceFields]: [any, any] = await db.execute("SELECT MAX(`originalposition`) as max FROM bookeddevices WHERE `booking`=?", [requestID]);
+
+            let toadd: number = 0;
+            if (deviceRows.length != 0) {
+                toadd = deviceRows[0].max + 1;
+            }
+
+            let start: string = rows[0].start;
+            let end: string = rows[0].end;
+
+            let connection = await amqplib.connect(config.AmqpUrl);
+            let channel = await connection.createChannel();
+
+            try {
+                for (let i = 0; i < Devices.length; i++) {
+                    await db.execute("INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [requestID, Devices[i].ID, i + toadd]);
+                };
+                await db.commit();
+                db.beginTransaction();
+
+                // Send devices to backend
+                for (let i = 0; i < Devices.length; i++) {
+                    let s = JSON.stringify(new DeviceBookingRequest(requestID, new URL(Devices[i].ID), i + toadd, dayjs(start), dayjs(end)));
+                    if (!channel.sendToQueue("device-booking", Buffer.from(s), { persistent: true })) {
+                        throw new Error("amqp queue full");
+                    }
+                }
+
+            } finally {
+                channel.close();
+                connection.close();
+            }
+        } else {
+            throw Error("Unknown request type")
+        }
+
+
+        success = true;
+    } catch (err) {
+        return {
+            status: 500,
+            body: err.toString(),
+        }
+    } finally {
+        if (success) {
+            db.commit();
+        } else {
+            db.rollback();
+        }
+        db.end();
+    }
+
+    let url = config.OwnURL;
+    if (!url.endsWith("/")) {
+        url = url + "/";
+    }
+    url = url + "booking/manage/" + requestID;
+
     return {
         status: 200,
-        body: null,
+        body: {
+            BookingID: url,
+        },
     }
 }
 
 export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (parameters, user) => {
     // add your implementation here
     return {
-        status: 200
+        status: 500,
+        body: "TODO: Method not implemented",
     }
 }
-

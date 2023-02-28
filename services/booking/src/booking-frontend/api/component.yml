@@ -104,6 +104,8 @@
                     format: uri
         '401':
           description: No authorisation header found.
+        '404':
+          description: Request contains unknown booking ID.
         '423':
           description: >-
             The booking 'locked' status and the requested locked status do not match.
