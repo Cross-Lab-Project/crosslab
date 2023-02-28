@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: list_experiments
   summary: List experiments
   tags:
     - experiment
@@ -13,7 +14,19 @@ get:
       content:
         application/json:
           $ref: '../content/experiment_list.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true
 post:
+  operationId: create_experiment
   summary: Create a new experiment
   tags:
     - experiment
@@ -22,6 +35,7 @@ post:
       - experiment
       - experiment:create
   requestBody:
+    description: The experiment to be created.
     required: true
     content:
       application/json:
@@ -32,3 +46,39 @@ post:
       content:
         application/json:
           $ref: '../content/experiment.yml'
+    202:
+      description: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  callbacks:
+    changed:
+      "{$request.query.changedUrl}":
+        post:
+          security:
+            - JWT:
+              - experiment
+              - experiment:create
+              - experiment:edit
+          summary: Callback for the "experiment-changed" event
+          requestBody:
+            required: true
+            content:
+              application/json:
+                $ref: "../content/experiment_event.yml"
+          responses:
+            2XX:
+              description: The event was successfully processed.
+            410:
+              description: The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference.
+  x-optional-url: true

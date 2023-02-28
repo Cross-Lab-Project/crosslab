@@ -5,12 +5,10 @@
         "allowSyntheticDefaultImports": true,
         "target": "ES2021",
         "lib": [
-            "dom",
             "ES2021"
         ],
         "esModuleInterop": true,
-        "outDir": "dist",
-        "rootDir": "src",
+        "outDir": "app",
         "strict": true,
         "noImplicitAny": true,
         "noUnusedLocals": true,
@@ -20,6 +18,10 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "skipLibCheck": true,
     },
-    "exclude": ["src/generated_modified"]
+    "include": [
+        "src/**/*.ts",
+        "test/**/*.spec.ts"
+    ]
 }

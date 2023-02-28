@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_update
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:list
+  summary: Get update for device
+  parameters:
+    - $ref: "../parameters/device_id.yml"
+    - $ref: "../parameters/current_version.yml"
+  responses:
+    200:
+      description: Device is already up-to-date
+    303:
+      description: New version is available
+      headers:
+        Location:
+          required: true
+          schema:
+            type: string
+            format: uri
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  operationId: patch_update
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:edit
+  summary: Edit update information
+  parameters:
+    - $ref: "../parameters/device_id.yml"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        $ref: "../content/update_information.yml"
+  responses:
+    200:
+      description: Update information edited successfully
+      content:
+        application/json:
+          $ref: "../content/update_information.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+delete:
+  operationId: delete_update
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:create
+  summary: Delete update information
+  parameters:
+    - $ref: "../parameters/device_id.yml"
+  responses:
+    204:
+      description: Update information was deleted successfully
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

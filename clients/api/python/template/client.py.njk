@@ -1,0 +1,171 @@
+import aiohttp
+import re
+from typing import Optional, Any, Dict, List, Tuple, Union
+from crosslab.api_client.schemas import *  # noqa: F403
+from crosslab.api_client.exceptions import AuthorizationException
+
+
+class APIClient:
+    BASE_URL: Optional[str] = None
+    authToken: Optional[str] = None
+
+    def __init__(self, base_url: Optional[str] = None, authToken: Optional[str] = None):
+        if base_url is None:
+            base_url = self.BASE_URL
+        elif base_url.endswith('/'):
+            base_url = base_url[:-1]
+        self.BASE_URL = base_url
+        self.authToken = authToken
+
+    def set_auth_token(self, authToken: str):
+        self.authToken = authToken
+        if self.http_session is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {authToken}'})
+
+    async def __aenter__(self):
+        self.http_session = aiohttp.ClientSession()
+        if self.authToken is not None:
+            self.http_session.headers.update({"Authorization": f'Bearer {self.authToken}'})
+        return self
+
+    async def __aexit__(self, *err):
+        await self.http_session.close()
+
+    async def _fetch(
+        self,
+        url,
+        method: str = "GET",
+        params: Optional[Dict[str, Union[List[str], str]]] = None,
+        body: Any = None,
+        asText=False,
+    ) -> Tuple[int, Any]:
+        fun = {"get": self.http_session.get,
+               "post": self.http_session.post,
+               "patch": self.http_session.patch,
+               "put": self.http_session.put,
+               "delete": self.http_session.delete}.get(method)
+
+        if fun is None:
+            raise Exception("")
+
+        normalized_query = []
+        if params is not None:
+            for key in params:
+                if isinstance(params[key], list):
+                    for value in params[key]:
+                        normalized_query.append(f'{key}={value}')
+                else:
+                    normalized_query.append(f'{key}={params[key]}')
+
+        query_string = ("?" if len(normalized_query) >
+                        0 else "")+"&".join(normalized_query)
+        async with fun(self.BASE_URL+url+query_string, json=body) as resp:
+            if resp.status in [401, 403]:
+                raise AuthorizationException(
+                    resp.headers.get('WWW-Authenticate', ""))
+            if resp.status not in [200, 201, 202, 204, 303]:
+                raise Exception(f'{resp.status}: {await resp.text()}')
+            if asText:
+                return resp.status, await resp.text()
+            else:
+                try:
+                    return resp.status, await resp.json()
+                except aiohttp.ContentTypeError:
+                    return resp.status, await resp.text()
+
+    {%- for path, methods in paths -%}
+    {%- for method, details in methods -%}
+
+        {%- set method_name = (method+"_"+( path | formatPath))%}
+
+        {%- set params = ['self'] %}
+        {%- set query_params = [] %}
+        {%- if details | hasPathParameter -%}
+            {%- set params = (params.push('url: str'), params) %}
+        {%- endif -%}
+        {%- if details.requestBody -%}
+            {%- if details.requestBody.required -%}
+                {%- set params = (params.push('body: '+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )), params) %}
+            {%- else -%}
+                {%- set params = (params.push('body: Optional['+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )+'] = None'), params) %}
+            {%- endif -%}
+            
+        {%- endif -%}
+        {%- for param in details.parameters -%}
+            {%- if param.in != 'path' -%}
+                {%- set paramType = 'UNKNOWN' %}
+                {%- if param.schema.type == 'string' -%}
+                    {%- set paramType = 'str' %}
+                {%- elif param.schema.type == 'boolean' -%}
+                    {%- set paramType = 'bool' %}
+                {%- endif -%}
+                {%- if param.required -%}
+                    {%- set params = (params.push(param.name+': '+paramType), params) %}
+                {%- else -%}
+                    {%- set params = (params.push(param.name+': Optional['+paramType+'] = None'), params) %}
+                {%- endif -%}
+                {%- set query_params = (query_params.push(param.name), query_params) %}
+            {%- endif -%}
+        {%- endfor -%}
+        {%- if not details | hasPathParameter -%}
+            {%- set params = (params.push('url: str = "'+path+'"'), params) %}
+        {%- endif %}
+
+    async def {{ details.operationId | lowerSnakeCase }}({{ params | join(', ') }}):  # noqa: E501
+        """
+        {{details.summary}}
+        {% if details.description %}
+        {{details.description | indent(8)}}
+        {%- endif -%}
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?{{ path
+                                                        | replaceRegEx('^/', '')
+                                                        | replaceRegEx('^(.*?)([^{}]*)$', '($1)($2)?')
+                                                        | replaceRegEx('\{.*?\}', '[^\?]*?')
+                                                        | replaceRegEx('\/', '\\\/')
+                                                      }}$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'{{path | replaceRegEx('^(.*?)([^{}]*)$', '$2')}}'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        {% if details.requestBody -%}
+        # transform body
+        transformedBody = {{transformerToDict('python', method_name+'_request_body_write') | await}}(body) if body else None
+
+        {% endif %}
+        {%- if query_params | length > 0 -%}
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        {% for param in query_params -%}
+        if {{param}}:
+            if isinstance({{param}}, list):
+                query_params['{{param}}'] = {{param}}
+            else:
+                query_params['{{param}}'] = str({{param}})
+        {% endfor -%}
+        {%- endif -%}
+        # make http call
+        status, resp = await self._fetch(valid_url, method="{{method}}"{% if details.requestBody -%} , body=transformedBody{% endif %} {%- if query_params | length > 0 -%}, params=query_params{%- endif -%})
+           
+        # transform response
+        {%- for status, response in details.responses -%}
+            {%- if status >= 200 and status <300 or status == 303 -%}
+                {%- set transformer = transformerFromDict('python', method_name+'_response_body_'+status+'_read') | await -%}
+                {%- if transformer %}
+        if status == {{status}}:
+            return {{transformer}}(resp)
+                {%- else %}
+        if status == {{status}}:
+            return
+                {%- endif -%}
+            {%- endif -%}
+        {%- endfor %}
+        raise Exception(f"Unexpected status code: {status}")
+    {%- endfor -%}
+{%- endfor %}

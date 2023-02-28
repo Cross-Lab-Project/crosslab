@@ -1,14 +1,21 @@
-import { exit } from "process"
+import { exit } from 'process'
 
-function die(reason: string){
+function die(reason: string): string {
     console.error(reason)
     exit(1)
 }
 
+const PORT = parseInt(process.env.PORT ?? '3001')
+const DEFAULT_BASE_URL = 'http://localhost:' + PORT
+
 export const config = {
-    PORT: parseInt(process.env.PORT ?? "3000"),
-    NODE_ENV: process.env.NODE_ENV ?? "development",
-    BASE_URL: process.env.BASE_URL ?? "http://localhost:3000",
-    SECURITY_ISSUER: process.env.SECURITY_ISSUER ?? die("the environment variable SECURITY_ISSUER is not defined!"),
-    SECURITY_AUDIENCE: process.env.SECURITY_AUDIENCE?? die("the environment variable SECURITY_AUDIENCE is not defined!"),
+    PORT: PORT,
+    NODE_ENV: process.env.NODE_ENV ?? 'development',
+    BASE_URL: process.env.BASE_URL ?? DEFAULT_BASE_URL,
+    SECURITY_ISSUER:
+        process.env.SECURITY_ISSUER ??
+        die('the environment variable SECURITY_ISSUER is not defined!'),
+    SECURITY_AUDIENCE:
+        process.env.SECURITY_AUDIENCE ??
+        die('the environment variable SECURITY_AUDIENCE is not defined!'),
 }

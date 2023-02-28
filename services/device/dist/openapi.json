@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Device Service REST API (internal)",
     "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Device Service"
   },
   "components": {
     "securitySchemes": {
@@ -15,6 +16,32 @@
       }
     },
     "schemas": {
+      "authentication_message": {
+        "title": "Authentication Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "authenticate"
+              },
+              "token": {
+                "type": "string"
+              },
+              "authenticated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "messageType"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
       "device_overview": {
         "title": "Device Overview",
         "type": "object",
@@ -38,22 +65,23 @@
             "description": "Type of the device",
             "enum": [
               "device",
-              "group"
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
             ]
           },
           "owner": {
             "type": "string",
-            "format": "uri"
+            "format": "uri",
+            "readOnly": true
           }
-        }
+        },
+        "x-typeguard": true
       },
       "time_slot": {
         "title": "Time Slot",
         "type": "object",
         "properties": {
-          "available": {
-            "type": "boolean"
-          },
           "start": {
             "type": "string",
             "format": "date-time"
@@ -61,31 +89,6 @@
           "end": {
             "type": "string",
             "format": "date-time"
-          },
-          "repeat": {
-            "description": "If specified the time slot is repeated in a fixed offset specified by the freqency",
-            "type": "object",
-            "properties": {
-              "frequency": {
-                "type": "string",
-                "enum": [
-                  "HOURLY",
-                  "DAILY",
-                  "WEEKLY",
-                  "MONTHLY",
-                  "YEARLY"
-                ]
-              },
-              "until": {
-                "description": "Up to this date-time the time slot will be repeated.",
-                "type": "string",
-                "format": "date-time"
-              },
-              "count": {
-                "description": "How often the time slot will be repeated",
-                "type": "integer"
-              }
-            }
           }
         }
       },
@@ -119,6 +122,56 @@
               "experiment": {
                 "type": "string",
                 "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true
+      },
+      "availability_rule": {
+        "title": "Availability Rule",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/time_slot"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "repeat": {
+                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "HOURLY",
+                      "DAILY",
+                      "WEEKLY",
+                      "MONTHLY",
+                      "YEARLY"
+                    ]
+                  },
+                  "until": {
+                    "description": "Up to this date-time the time slot will be repeated.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "count": {
+                    "description": "How often the time slot will be repeated",
+                    "type": "integer"
+                  }
+                }
               }
             }
           }
@@ -151,34 +204,88 @@
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the peerconnection",
-            "format": "uri",
-            "readOnly": true
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
           },
-          "devices": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "description": "URL of the device",
-                  "format": "uri"
-                }
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiate_url": {
+                "type": "string",
+                "format": "uri"
               }
             }
           }
-        }
+        ],
+        "x-typeguard": true
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "code_url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ],
+        "x-typeguard": true
+      },
+      "message": {
+        "title": "Message",
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "messageType"
+        ],
+        "additionalProperties": true,
+        "x-typeguard": true
+      },
+      "command_message": {
+        "title": "Command Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "command"
+              },
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "messageType",
+              "command"
+            ]
+          }
+        ],
+        "x-typeguard": true
       },
       "service_config": {
         "title": "Service Config",
@@ -197,6 +304,177 @@
         },
         "additionalProperties": true
       },
+      "create_peerconnection_message": {
+        "title": "Create Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "createPeerconnection"
+              },
+              "connectionType": {
+                "type": "string",
+                "enum": [
+                  "webrtc",
+                  "websocket"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/service_config",
+                  "required": [
+                    "serviceType",
+                    "serviceId",
+                    "remoteServiceId"
+                  ]
+                }
+              },
+              "tiebreaker": {
+                "type": "boolean"
+              },
+              "config": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "command",
+              "connectionType",
+              "connectionUrl",
+              "services",
+              "tiebreaker"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "close_peerconnection_message": {
+        "title": "Close Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "closePeerconnection"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "command",
+              "connectionUrl"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "signaling_message": {
+        "title": "Signaling Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "signaling"
+              },
+              "signalingType": {
+                "type": "string",
+                "enum": [
+                  "offer",
+                  "answer",
+                  "candidate"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "messageType",
+              "signalingType",
+              "connectionUrl",
+              "content"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        }
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the peerconnection",
+            "format": "uri",
+            "readOnly": true
+          },
+          "devices": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/device_reference"
+            }
+          }
+        }
+      },
+      "configured_device_reference": {
+        "title": "Configured Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_config"
+                }
+              }
+            }
+          }
+        }
+      },
       "peerconnection": {
         "title": "Peerconnection",
         "allOf": [
@@ -211,30 +489,23 @@
                 "minItems": 2,
                 "maxItems": 2,
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "URL of the device",
-                      "format": "uri"
-                    },
-                    "config": {
-                      "type": "object",
-                      "properties": {
-                        "services": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/service_config"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/configured_device_reference"
                 }
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the peerconnection.",
+                "enum": [
+                  "waiting-for-devices",
+                  "connected",
+                  "failed",
+                  "closed"
+                ]
               }
             }
           }
-        ]
+        ],
+        "x-typeguard": true
       }
     },
     "parameters": {
@@ -271,6 +542,19 @@
           "default": false
         }
       },
+      "peerconnection_url": {
+        "in": "query",
+        "name": "peerconnection_url",
+        "description": "URL of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
       "closed_url": {
         "name": "closedUrl",
         "in": "query",
@@ -281,10 +565,20 @@
           "format": "uri"
         }
       },
+      "status_changed_url": {
+        "name": "statusChangedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called if the status of the peerconnection changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
       "peerconnection_id": {
         "in": "path",
         "name": "peerconnection_id",
-        "description": "UUID of the device",
+        "description": "UUID of the peerconnection",
         "required": true,
         "schema": {
           "type": "string",
@@ -309,6 +603,7 @@
   "paths": {
     "/devices": {
       "get": {
+        "operationId": "list_devices",
         "summary": "List devices",
         "tags": [
           "device"
@@ -334,10 +629,27 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_device",
         "summary": "Create a new device",
         "tags": [
           "device"
@@ -356,16 +668,39 @@
           }
         ],
         "requestBody": {
+          "description": "The device to be created.",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -487,6 +822,12 @@
                     },
                     {
                       "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -595,12 +936,37 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "callbacks": {
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -627,6 +993,12 @@
                               },
                               {
                                 "$ref": "#/components/schemas/device_group"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -646,12 +1018,14 @@
               }
             }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/devices/{device_id}": {
       "get": {
-        "summary": "View a registered device.",
+        "operationId": "get_device",
+        "summary": "View a registered device",
         "tags": [
           "device"
         ],
@@ -673,7 +1047,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device",
+            "description": "The JSON Representation of the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -683,6 +1057,12 @@
                     },
                     {
                       "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -792,13 +1172,26 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested device could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
       "patch": {
-        "summary": "Update an existing device.",
+        "operationId": "update_device",
+        "summary": "Update an existing device",
         "tags": [
           "device"
         ],
@@ -819,16 +1212,38 @@
           }
         ],
         "requestBody": {
-          "description": "Update the device",
+          "description": "Updated device.",
           "content": {
             "application/json": {
               "schema": {
+                "title": "Device Init",
                 "anyOf": [
                   {
-                    "$ref": "#/components/schemas/device_concrete"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   {
                     "$ref": "#/components/schemas/device_group"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
                   }
                 ]
               },
@@ -940,7 +1355,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed device",
+            "description": "The JSON Representation of the changed device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -950,6 +1365,12 @@
                     },
                     {
                       "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
                     }
                   ]
                 },
@@ -1059,14 +1480,36 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested device could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "callbacks": {
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -1093,6 +1536,12 @@
                               },
                               {
                                 "$ref": "#/components/schemas/device_group"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
                               }
                             ]
                           }
@@ -1115,6 +1564,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_device",
         "summary": "Delete a registered device",
         "tags": [
           "device"
@@ -1136,15 +1586,139 @@
           "204": {
             "description": "The device was deleted."
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested device could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
+      "post": {
+        "operationId": "instantiate_device",
+        "summary": "Instantiate a cloud instantiable device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_changed_url"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The JSON Representation of the created instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "instance": {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    "deviceToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/device_concrete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/devices/{device_id}/availability": {
       "post": {
-        "summary": "Update the device availability.",
+        "operationId": "add_availability_rules",
+        "summary": "Update the device availability",
         "tags": [
           "device"
         ],
@@ -1162,44 +1736,36 @@
           }
         ],
         "requestBody": {
+          "description": "The availability rules to be applied.",
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "available": {
-                          "type": "boolean",
-                          "description": "if set to false this timeslot will be removed from the available times.",
-                          "default": true
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "$ref": "#/components/schemas/availability"
-                  }
-                ]
+                "title": "Availability Rules",
+                "description": "The availability rule to be applied.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/availability_rule"
+                }
               },
               "examples": {
-                "Make the device always unavailable": {
+                "make_the_device_always_unavailable": {
+                  "description": "Make the device always unavailable",
                   "value": [
                     {
                       "available": false
                     }
                   ]
                 },
-                "Make the device always available": {
+                "make_the_device_always_available": {
+                  "description": "Make the device always available",
                   "value": [
                     {
                       "available": true
                     }
                   ]
                 },
-                "Make the device only available from monday 9:00 through friday 17:00": {
+                "make_the_device_available_from_monday_9_00_through_friday_17_00": {
+                  "description": "Make the device only available from monday 9:00 through friday 17:00",
                   "value": [
                     {
                       "available": true,
@@ -1225,7 +1791,7 @@
         },
         "responses": {
           "200": {
-            "description": "The JSON Representation of the changed device",
+            "description": "The JSON Representation of the changed availability.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1234,15 +1800,28 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested device could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
     },
-    "/devices/{device_id}/token": {
-      "get": {
-        "summary": "Get new token for device.",
+    "/devices/{device_id}/websocket": {
+      "post": {
+        "operationId": "create_websocket_token",
+        "summary": "Create new websocket token for device",
         "tags": [
           "device"
         ],
@@ -1261,7 +1840,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The newly generated token of the device.",
+            "description": "The newly generated websocket token for the device.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1270,14 +1849,94 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested device could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      }
+    },
+    "/devices/{device_id}/signaling": {
+      "post": {
+        "operationId": "send_signaling_message",
+        "summary": "Send signaling message to device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:signal"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/peerconnection_url"
+          }
+        ],
+        "requestBody": {
+          "description": "The signaling message to be sent.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Sig Message",
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/create_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/close_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/signaling_message"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The signaling message was delivered successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
     },
     "/peerconnections": {
       "get": {
+        "operationId": "list_peerconnections",
         "summary": "List Peer Connection",
         "tags": [
           "peerconnection"
@@ -1292,7 +1951,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The list of all peerconnection.",
+            "description": "The list of all peerconnections.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1303,10 +1962,27 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_peerconnection",
         "summary": "Create a new Peer Connection",
         "tags": [
           "peerconnection"
@@ -1322,9 +1998,13 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/closed_url"
+          },
+          {
+            "$ref": "#/components/parameters/status_changed_url"
           }
         ],
         "requestBody": {
+          "description": "The peerconnection to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -1336,7 +2016,7 @@
         },
         "responses": {
           "201": {
-            "description": "The peer connection was created. A JSON representation of the new peer connection is returned.",
+            "description": "The peerconnection was created. A JSON representation of the new peer connection is returned.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1345,16 +2025,46 @@
               }
             }
           },
+          "202": {
+            "description": "The device service will attempt to create the peerconnection as soon as possible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The peer connection could not be created because of an unresolvable device."
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "callbacks": {
           "closed": {
             "{$request.query.closedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-closed\" event",
                 "requestBody": {
-                  "description": "test",
                   "content": {
                     "application/json": {
                       "schema": {
@@ -1381,18 +2091,72 @@
                   }
                 },
                 "responses": {
-                  "201": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          },
+          "status-changed": {
+            "{$request.query.statusChangedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-status-changed\" event",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-status-changed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
                     "description": "The event was successfully processed."
                   }
                 }
               }
             }
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/peerconnections/{peerconnection_id}": {
       "get": {
+        "operationId": "get_peerconnection",
         "summary": "View a peer connection",
         "tags": [
           "peerconnection"
@@ -1407,7 +2171,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The JSON Representation of the device peer connection",
+            "description": "The JSON Representation of the device peer connection.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1416,8 +2180,20 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested peer connection could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "parameters": [
@@ -1427,6 +2203,7 @@
         ]
       },
       "delete": {
+        "operationId": "delete_peerconnection",
         "summary": "Delete a peer connection",
         "tags": [
           "peerconnection"
@@ -1441,10 +2218,22 @@
         ],
         "responses": {
           "204": {
-            "description": "The peer connection was deleted successfully"
+            "description": "The peer connection was deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
           },
           "404": {
-            "description": "The requested peer connection could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "parameters": [

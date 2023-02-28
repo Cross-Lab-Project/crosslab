@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: GPIO Interface Configuration
+type: object
+properties:
+  driver:
+    type: string
+  direction:
+    type: string
+    enum:
+      - in
+      - out
+      - inout
+  signals:
+    type: object
+    properties:
+      gpio:
+        type: string
+    additionalProperties: false
+    required:
+      - gpio
+required:
+  - signals

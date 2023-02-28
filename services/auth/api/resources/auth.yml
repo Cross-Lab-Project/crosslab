@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: auth
+  x-internal: true
+  tags:
+    - authentication
+  security: []
+  summary: Authenticate user
+  description: |-
+    This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.
+    The return code will always be 200, but the JWT will be empty if the authentication failed.
+  parameters:
+    - $ref: "../parameters/authorization.yml"
+    - $ref: "../parameters/x_real_ip.yml"
+    - $ref: "../parameters/x_forwarded_proto.yml"
+  responses:
+    200:
+      description: Return the JWT which represents the authenticated user.
+      headers:
+        Authorization:
+          required: false
+          schema:
+            type: string
+            format: jwt
+            description: The JWT which represents the authenticated user.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

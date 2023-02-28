@@ -16,3 +16,9 @@ allOf:
       experiment:
         type: string
         format: uri
+      services:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
+x-typeguard: true

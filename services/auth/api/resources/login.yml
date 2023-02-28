@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+post:
+  operationId: login
+  tags:
+    - authentication
+  security: []
+  summary: Login user
+  description: |-
+    This endpoint will login a user and return an access token for the use of the microservice architecture.
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          allOf:
+            - $ref: "../schemas/credentials.yml"
+            - type: object
+              properties:
+                method:
+                  $ref: "../schemas/auth_method.yml"
+  responses:
+    201:
+      description: Return the access token.
+      content:
+        application/json:
+          schema:
+            description: The access token.
+            type: string
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-destructure-input: true

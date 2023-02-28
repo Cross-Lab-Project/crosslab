@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_roles_of_user
+  summary: Get roles of user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:read
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  responses:
+    200:
+      description: Roles successfully retrieved.
+      content:
+        application/json:
+          $ref: "../content/role_list.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true
+post:
+  operationId: add_roles_to_user
+  summary: Add roles to user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:write
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  requestBody:
+    description: Roles to be added to the user.
+    content:
+      application/json:
+        $ref: "../content/id_list.yml"
+  responses:
+    204:
+      description: Roles added successfully.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true
+delete:
+  operationId: remove_roles_from_user
+  summary: Remove roles from user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:write
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  requestBody:
+    description: Roles to be removed from the user.
+    content:
+      application/json:
+        $ref: "../content/id_list.yml"
+  responses:
+    204:
+      description: Roles removed successfully.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true

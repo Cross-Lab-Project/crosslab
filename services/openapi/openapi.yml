@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab REST API
+  description: |-
+    This is the OpenAPI description for the CrossLab REST API.
+  version: 0.0.1
+
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: basic
+    JWT:
+      type: http
+      scheme: bearer
+    TuiAuth:
+      type: http
+      scheme: bearer
+
+paths:
+  $ref: './gen/paths.json'

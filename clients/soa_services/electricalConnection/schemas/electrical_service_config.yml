@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Electrical Service Configuration
+type: object
+properties:
+  serviceType:
+    type: string
+    const: http://api.goldi-labs.de/serviceTypes/electrical
+  interfaces:
+    type: array
+    items:
+      $ref: ../schemas/upstream_signal_interface_configuration.yml
+required:
+  - serviceType
+  - interfaces

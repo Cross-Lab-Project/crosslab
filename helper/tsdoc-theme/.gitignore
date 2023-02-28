@@ -1,0 +1,6 @@
+.npmrc
+node_modules
+dist
+lib
+docs
+package.resolved.json

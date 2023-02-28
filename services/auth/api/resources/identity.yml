@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_identity
+  summary: Get identity
+  tags:
+    - identity
+  security:
+    - JWT:
+      - identity
+      - identity:read
+  responses:
+    200:
+      description: The JSON representation of the corresponding user.
+      content: 
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  operationId: update_identity
+  summary: Update identity
+  tags:
+    - identity
+  security:
+    - JWT:
+      - identity
+      - identity:write
+  requestBody:
+    description: Updated identity.
+    content:
+      application/json:
+        $ref: "../content/user.yml"
+  responses:
+    200:
+      description: The JSON representation of the updated user.
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

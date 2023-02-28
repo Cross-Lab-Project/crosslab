@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
+  operationId: get_experiment
   summary: View an experiment.
   tags:
     - experiment
@@ -15,9 +16,18 @@ get:
       content:
         application/json:
           $ref: "../content/experiment.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested experiment could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.
 patch:
+  operationId: update_experiment
   summary: Update an existing experiment.
   description: |
     With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
@@ -43,12 +53,31 @@ patch:
       content:
         application/json:
           $ref: "../content/experiment.yml"
+    202:
+      description: The JSON Representation of the changed experiment, that will be set to running eventually
+      content:
+        application/json:
+          $ref: "../content/experiment.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested experiment could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.
   callbacks:
     changed:
       "{$request.query.changedUrl}":
         post:
+          security:
+            - JWT:
+              - experiment
+              - experiment:create
+              - experiment:edit
+          summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
             content:
@@ -60,6 +89,7 @@ patch:
             410:
               description: The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference.
 delete:
+  operationId: delete_experiment
   summary: Delete an experiment
   tags:
     - experiment
@@ -72,5 +102,13 @@ delete:
   responses:
     204:
       description: The experiment was deleted.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested experiment could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.

@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Device Reference
+type: object
+properties:
+  url:
+    type: string
+    description: URL of the device
+    format: uri

@@ -1,0 +1,31 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build-environment
+  - build
+
+default:
+  before_script:
+    - sudo chown -R $(whoami) .
+    - mkdir -p ~/.ssh/ && cp "$CI_SSH_KEY" ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      variables:
+        PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
+        BRANCH: $CI_COMMIT_BRANCH
+
+build-environment:
+  image: crosslab/devcontainer:latest
+  stage: build-environment
+  script:
+    - ./scripts/ci.sh --tag environment --no-upload --branch $BRANCH
+    - cat ./helper/development-container/dist/crosslab-devcontainer.tar | docker load
+
+build:
+  image: crosslab-devcontainer:build
+  stage: build
+  script:
+    - ./scripts/ci.sh --branch $BRANCH

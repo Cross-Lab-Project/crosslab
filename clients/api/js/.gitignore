@@ -1,0 +1,7 @@
+src/generated
+dist
+lib
+node_modules
+docs
+.npmrc
+package.resolved.json

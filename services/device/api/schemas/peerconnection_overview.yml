@@ -12,9 +12,4 @@ properties:
     minItems: 2
     maxItems: 2
     items:
-      type: object
-      properties:
-        url:
-          type: string
-          description: URL of the device
-          format: uri
+      $ref: "./device_reference.yml"

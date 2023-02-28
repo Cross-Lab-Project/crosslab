@@ -1,0 +1,38 @@
+{
+    "files.exclude": {
+        //begin generated
+        "**/app": true,
+        "**/build": true,
+        "./clients/soa_services/electricalConnection/.vscode": true,
+        "./clients/soa_services/file/.vscode": true,
+        "./clients/soa_services/message/.vscode": true,
+        "./clients/soa_services/.vscode": true,
+        "./clients/soa_services/webcam/.vscode": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
+        //end generated
+    },
+    "files.watcherExclude": {
+        //begin generated
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
+        //end generated
+    }
+}

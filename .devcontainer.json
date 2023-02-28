@@ -1,0 +1,25 @@
+{
+	"name": "Crosslab",
+	"image": "crosslab/devcontainer:latest",
+
+	"runArgs": [
+		// mount docker socker
+		"-v",
+		"/var/run/docker.sock:/var/run/docker.sock"
+    ],
+
+	"overrideCommand": false,
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.black-formatter",
+				"ms-python.isort",
+				"ms-python.vscode-pylan1ce",
+				"ryanluker.vscode-coverage-gutters",
+				"onatm.open-in-new-window"
+			]
+		}
+	},
+
+	"remoteUser": "dev"
+}

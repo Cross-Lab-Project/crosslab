@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Device
+type: object
+properties:
+  device:
+    description: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    type: string
+    format: uri
+  role:
+    type: string
+    description: The name of the device's role.

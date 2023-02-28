@@ -1,0 +1,5409 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrossLab REST API",
+    "description": "This is the OpenAPI description for the CrossLab REST API.",
+    "version": "0.0.1"
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "credentials": {
+        "title": "Credentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "Username of the user.",
+            "type": "string"
+          },
+          "password": {
+            "description": "Password of the user.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "auth_method": {
+        "title": "AuthMethod",
+        "type": "string",
+        "description": "Authentication method.",
+        "enum": [
+          "tui",
+          "local"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "role": {
+        "title": "Role",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/role"
+            }
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "user_init": {
+        "title": "User Init",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "role_init": {
+        "title": "Role Init",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "scopes"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "Device": {
+        "title": "Device",
+        "description": "A device might either be a physical/virtual device or a group of device.",
+        "type": "object",
+        "required": [
+          "ID"
+        ],
+        "properties": {
+          "ID": {
+            "type": "string",
+            "description": "Unique ID of the device. Contains the institution (by having an end point at that institution)",
+            "format": "uri"
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Experiment": {
+        "title": "Experiment",
+        "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
+        "type": "object",
+        "required": [
+          "Devices"
+        ],
+        "properties": {
+          "Devices": {
+            "type": "array",
+            "description": "List of devices used in experiment.",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            }
+          },
+          "Description": {
+            "type": "string",
+            "description": "User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Timeslot": {
+        "title": "Timeslot",
+        "description": "A time slot represents a slice of time used for bookings.",
+        "type": "object",
+        "required": [
+          "Start",
+          "End"
+        ],
+        "properties": {
+          "Start": {
+            "type": "string",
+            "description": "Start time of the booking.",
+            "format": "date-time"
+          },
+          "End": {
+            "type": "string",
+            "description": "End time of the booking.",
+            "format": "date-time"
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Booking": {
+        "title": "Booking",
+        "description": "A booking in the booking system.",
+        "type": "object",
+        "required": [
+          "ID",
+          "Time",
+          "Devices",
+          "Status",
+          "You",
+          "External"
+        ],
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unique ID of the booking."
+          },
+          "Time": {
+            "$ref": "#/components/schemas/Timeslot"
+          },
+          "Devices": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "Type": {
+            "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
+            "type": "string",
+            "enum": [
+              "normal"
+            ]
+          },
+          "Status": {
+            "description": "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
+            "type": "string",
+            "enum": [
+              "pending",
+              "booked",
+              "rejected",
+              "cancelled",
+              "active",
+              "active-pending",
+              "active-rejected"
+            ]
+          },
+          "You": {
+            "type": "boolean",
+            "description": "If true, this booking was done by you."
+          },
+          "External": {
+            "type": "boolean",
+            "description": "Shows whether the booking was done by an external institution."
+          },
+          "Message": {
+            "type": "string",
+            "description": "User readable notes about the status of the booking (e.g. if devices are unknown)."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "device_overview": {
+        "title": "Device Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the device"
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          }
+        },
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "time_slot": {
+        "title": "Time Slot",
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "availability": {
+        "title": "Availability",
+        "description": "A list of time slots that the maintainer of the device announced it is available\n",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/time_slot"
+        },
+        "x-service-name": "Device Service"
+      },
+      "device_concrete": {
+        "title": "Concrete Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "connected": {
+                "description": "If true, the device is connected to the service and can be used.\n",
+                "type": "boolean"
+              },
+              "announcedAvailability": {
+                "$ref": "#/components/schemas/availability"
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "availability_rule": {
+        "title": "Availability Rule",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/time_slot"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "repeat": {
+                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "HOURLY",
+                      "DAILY",
+                      "WEEKLY",
+                      "MONTHLY",
+                      "YEARLY"
+                    ]
+                  },
+                  "until": {
+                    "description": "Up to this date-time the time slot will be repeated.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "count": {
+                    "description": "How often the time slot will be repeated",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_group": {
+        "title": "Device Group",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "URL of the device",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiate_url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "code_url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "message": {
+        "title": "Message",
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "messageType"
+        ],
+        "additionalProperties": true,
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "command_message": {
+        "title": "Command Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "command"
+              },
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "messageType",
+              "command"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "service_config": {
+        "title": "Service Config",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "remoteServiceId": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "x-service-name": "Device Service"
+      },
+      "create_peerconnection_message": {
+        "title": "Create Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "createPeerconnection"
+              },
+              "connectionType": {
+                "type": "string",
+                "enum": [
+                  "webrtc",
+                  "websocket"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/service_config",
+                  "required": [
+                    "serviceType",
+                    "serviceId",
+                    "remoteServiceId"
+                  ]
+                }
+              },
+              "tiebreaker": {
+                "type": "boolean"
+              },
+              "config": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "command",
+              "connectionType",
+              "connectionUrl",
+              "services",
+              "tiebreaker"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "close_peerconnection_message": {
+        "title": "Close Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "closePeerconnection"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "command",
+              "connectionUrl"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "signaling_message": {
+        "title": "Signaling Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "signaling"
+              },
+              "signalingType": {
+                "type": "string",
+                "enum": [
+                  "offer",
+                  "answer",
+                  "candidate"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "messageType",
+              "signalingType",
+              "connectionUrl",
+              "content"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the peerconnection",
+            "format": "uri",
+            "readOnly": true
+          },
+          "devices": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/device_reference"
+            }
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "configured_device_reference": {
+        "title": "Configured Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_config"
+                }
+              }
+            }
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "peerconnection": {
+        "title": "Peerconnection",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/configured_device_reference"
+                }
+              },
+              "status": {
+                "type": "string",
+                "description": "The status of the peerconnection.",
+                "enum": [
+                  "waiting-for-devices",
+                  "connected",
+                  "failed",
+                  "closed"
+                ]
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "experiment_overview": {
+        "title": "Experiment Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the experiment",
+            "format": "uri",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the experiment",
+            "enum": [
+              "created",
+              "booked",
+              "setup",
+              "running",
+              "finished"
+            ]
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "device": {
+        "title": "Device",
+        "type": "object",
+        "properties": {
+          "device": {
+            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string",
+            "description": "The name of the device's role."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "schemas-role": {
+        "title": "role",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name for an experiment role."
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "participant": {
+        "title": "Participant",
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The name of the participant's role."
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "service_configuration": {
+        "title": "Service Configuration",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri",
+            "description": "Type of the service"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          },
+          "participants": {
+            "type": "array",
+            "description": "List of participants for the service",
+            "items": {
+              "$ref": "#/components/schemas/participant"
+            }
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "experiment": {
+        "title": "Experiment",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/schemas-role"
+                }
+              },
+              "connections": {
+                "type": "array",
+                "description": "Connections associated with the experiment",
+                "items": {
+                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "readOnly": true
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "institution": {
+        "title": "Institution",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri"
+          },
+          "api": {
+            "type": "string",
+            "format": "uri"
+          },
+          "federatedApi": {
+            "type": "string",
+            "format": "uri"
+          },
+          "apiToken": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Federation Service"
+      },
+      "update_information": {
+        "title": "UpdateInformation",
+        "description": "Information regarding an update. Contains the id of the device, \nthe name of the latest version and a link to it.\n",
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "latest_version": {
+            "type": "string"
+          },
+          "latest_version_link": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "device_id",
+          "latest_version",
+          "latest_version_link"
+        ],
+        "x-service-name": "Update Service"
+      }
+    },
+    "parameters": {
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "Url of the device.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "user_id": {
+        "in": "path",
+        "name": "user_id",
+        "description": "ID of a user.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "role_id": {
+        "in": "path",
+        "name": "role_id",
+        "description": "ID of a role.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "ID": {
+        "in": "path",
+        "name": "ID",
+        "schema": {
+          "type": "string",
+          "x-service-name": "Booking Service"
+        },
+        "required": true,
+        "description": "ID of Booking"
+      },
+      "device_changed_url": {
+        "name": "changedUrl",
+        "in": "query",
+        "required": false,
+        "description": "**An URL that will be called once the device changes.**\n\nOnce the device was given a changedUrl parameter the contained URL will be called every time a device is changed\nas long as every callback resolves with a successful status code.\n\nIf the callback fails the url MIGHT not be called in the future.\n\nThere can be multiple callbacks registered with the same device.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "UUID of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "908fec03-ee1e-4996-b11a-0ef8fc7d0909"
+        ]
+      },
+      "flat_group": {
+        "in": "query",
+        "name": "flat_group",
+        "description": "If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": false,
+          "x-service-name": "Device Service"
+        }
+      },
+      "peerconnection_url": {
+        "in": "query",
+        "name": "peerconnection_url",
+        "description": "URL of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
+      "closed_url": {
+        "name": "closedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called once the peer connection is closed.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "status_changed_url": {
+        "name": "statusChangedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called if the status of the peerconnection changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "peerconnection_id": {
+        "in": "path",
+        "name": "peerconnection_id",
+        "description": "UUID of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
+      "experiment_id": {
+        "in": "path",
+        "name": "experiment_id",
+        "description": "UUID of the experiment",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Experiment Service"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
+      },
+      "experiment_changed_url": {
+        "name": "changedURL",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called when the experiment status changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Experiment Service"
+        }
+      },
+      "institution_id": {
+        "in": "path",
+        "name": "institution_id",
+        "description": "UUID of the institution",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Federation Service"
+        },
+        "example": [
+          "5202de35-7f61-4eed-a361-e627619f9d19"
+        ]
+      },
+      "parameters-device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "ID of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Update Service"
+        }
+      },
+      "current_version": {
+        "in": "query",
+        "name": "current_version",
+        "description": "Current firmware version of the device",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Update Service"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "operationId": "login",
+        "tags": [
+          "authentication"
+        ],
+        "security": [],
+        "summary": "Login user",
+        "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/credentials"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "method": {
+                        "$ref": "#/components/schemas/auth_method"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Return the access token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "The access token.",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-destructure-input": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": [
+          "authentication"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "logout"
+            ]
+          }
+        ],
+        "summary": "Logout user",
+        "description": "This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The token to be invalidated."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully logged out the user."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/device_authentication_token": {
+      "post": {
+        "operationId": "create_device_authentication_token",
+        "tags": [
+          "authentication"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device_token",
+              "device_token:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_url"
+          }
+        ],
+        "summary": "Create a device authentication token",
+        "description": "This endpoint will create a new device authentication token.",
+        "responses": {
+          "201": {
+            "description": "The created device authentication token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "list_users",
+        "summary": "Get all users",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "create_user",
+        "summary": "Create a user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "User to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user_init"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The JSON representation of the created user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "operationId": "get_user",
+        "summary": "Get a user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON respresentation of the user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "patch": {
+        "operationId": "update_user",
+        "summary": "Update a user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user_update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "delete_user",
+        "summary": "Delete a user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/users/{user_id}/roles": {
+      "get": {
+        "operationId": "get_roles_of_user",
+        "summary": "Get roles of user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "add_roles_to_user",
+        "summary": "Add roles to user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Roles to be added to the user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Roles added successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "remove_roles_from_user",
+        "summary": "Remove roles from user",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "users",
+              "users:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/user_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Roles to be removed from the user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Roles removed successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles": {
+      "get": {
+        "operationId": "list_roles",
+        "summary": "Get all roles",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/role"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "create_role",
+        "summary": "Create a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "Role to be created.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/role_init"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The JSON representation of the created role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles/{role_id}": {
+      "get": {
+        "operationId": "get_role",
+        "summary": "Get a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON respresentation of the role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "patch": {
+        "operationId": "update_role",
+        "summary": "Update a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated role",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/role"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated role.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "delete_role",
+        "summary": "Delete a role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:delete"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Role deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/roles/{role_id}/users": {
+      "get": {
+        "operationId": "get_users_with_role",
+        "summary": "Get users with role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:read"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/user"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "post": {
+        "operationId": "add_users_to_role",
+        "summary": "Add users to role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Users to be added to the role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Users added successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      },
+      "delete": {
+        "operationId": "remove_users_from_role",
+        "summary": "Remove users from role",
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "roles",
+              "roles:write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/role_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Users to be removed from the role.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Users removed successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-build-url": true,
+        "x-optional-url": true,
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/identity": {
+      "get": {
+        "operationId": "get_identity",
+        "summary": "Get identity",
+        "tags": [
+          "identity"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "identity",
+              "identity:read"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the corresponding user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "patch": {
+        "operationId": "update_identity",
+        "summary": "Update identity",
+        "tags": [
+          "identity"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "identity",
+              "identity:write"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "Updated identity.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON representation of the updated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
+    "/schedule": {
+      "post": {
+        "operationId": "get_schedule",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "schedule-service"
+        ],
+        "summary": "Returns the free / booked times for given experiment.",
+        "requestBody": {
+          "description": "Requested experiment and timeframe.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Schedule Request",
+                "type": "object",
+                "required": [
+                  "Experiment",
+                  "Time"
+                ],
+                "properties": {
+                  "Experiment": {
+                    "$ref": "#/components/schemas/Experiment"
+                  },
+                  "Time": {
+                    "$ref": "#/components/schemas/Timeslot"
+                  },
+                  "Combined": {
+                    "type": "boolean",
+                    "description": "If true, show only one timetable per device instead of one for all available physical devices."
+                  },
+                  "onlyOwn": {
+                    "type": "boolean",
+                    "description": "(private) Show only devices of this institution. Give an error if a device of an other institution is requested."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "Device",
+                      "Booked",
+                      "Free"
+                    ],
+                    "properties": {
+                      "Device": {
+                        "type": "string",
+                        "description": "ID of the device (or * if combined)."
+                      },
+                      "Booked": {
+                        "type": "array",
+                        "description": "Array of booked times.",
+                        "items": {
+                          "$ref": "#/components/schemas/Timeslot"
+                        }
+                      },
+                      "Free": {
+                        "type": "array",
+                        "description": "Array of free times.",
+                        "items": {
+                          "$ref": "#/components/schemas/Timeslot"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "onlyOwn was set, but devices not belonging to that institution were requested."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown type IDs. The first unknown ID will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "First unknown device ID."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request contains virtual devices and can thus not be processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "First virtual device ID."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/booking": {
+      "post": {
+        "operationId": "book_experiment",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "tags": [
+          "booking-frontend"
+        ],
+        "summary": "Books an experiment.",
+        "requestBody": {
+          "description": "Experiment, timeframe and type of booking.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Booking Request",
+                "type": "object",
+                "required": [
+                  "Experiment",
+                  "Time"
+                ],
+                "properties": {
+                  "Experiment": {
+                    "$ref": "#/components/schemas/Experiment"
+                  },
+                  "Time": {
+                    "$ref": "#/components/schemas/Timeslot"
+                  },
+                  "Type": {
+                    "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
+                    "type": "string",
+                    "enum": [
+                      "normal"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The booking was accepted. The booking status will display whether the booking of all devices was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "BookingID"
+                  ],
+                  "properties": {
+                    "BookingID": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "ID at which the booking can be managed."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Error description",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/booking/{ID}": {
+      "patch": {
+        "operationId": "update_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-frontend"
+        ],
+        "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
+        "requestBody": {
+          "description": "Devices or callback to be added to the booking.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Devices or Callback",
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Use this request for adding devices.",
+                    "properties": {
+                      "Locked": {
+                        "type": "boolean",
+                        "description": "Expresses whether the devices should be locked. Must match current status of booking."
+                      },
+                      "Devices": {
+                        "type": "array",
+                        "description": "List of devices which should be added.",
+                        "items": {
+                          "$ref": "#/components/schemas/Device"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "description": "Use this request for adding callbacks.",
+                    "properties": {
+                      "Callback": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Callback which should be called at changes."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The booking change was accepted. The booking status will display whether the booking of all devices was successful.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "BookingID"
+                  ],
+                  "properties": {
+                    "BookingID": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "423": {
+            "description": "The booking 'locked' status and the requested locked status do not match."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "delete": {
+        "operationId": "cancel_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-frontend"
+        ],
+        "summary": "Cancels a booking, as long as the booking was originally done by you.",
+        "responses": {
+          "200": {
+            "description": "The booking was cancelled. All associated devices were released."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
+          "423": {
+            "description": "The booking is currently locked, deletion not possible."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "get": {
+        "operationId": "get_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-frontend"
+        ],
+        "summary": "Returns whether a list of devices is currently booked for a user",
+        "responses": {
+          "200": {
+            "description": "Returns the current booking.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "Experiment",
+                    "Booking",
+                    "Time",
+                    "Locked"
+                  ],
+                  "properties": {
+                    "Booking": {
+                      "$ref": "#/components/schemas/Booking"
+                    },
+                    "Locked": {
+                      "type": "boolean",
+                      "description": "Shows if the booking is in a locked status."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown ID"
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error code"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/booking/{ID}/destroy": {
+      "delete": {
+        "operationId": "delete_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-frontend"
+        ],
+        "summary": "Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.",
+        "responses": {
+          "200": {
+            "description": "The booking was cancelled. All associated devices were released."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
+          "423": {
+            "description": "The booking is currently locked, deletion not possible."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/booking/{ID}/lock": {
+      "put": {
+        "operationId": "lock_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-backend"
+        ],
+        "summary": "Locks the current booking so the devices can be used. This sets the status to \"active\" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.",
+        "responses": {
+          "200": {
+            "description": "All devices were booked by user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "Booking",
+                    "Time",
+                    "Tokens"
+                  ],
+                  "properties": {
+                    "Booking": {
+                      "$ref": "#/components/schemas/Booking"
+                    },
+                    "Time": {
+                      "$ref": "#/components/schemas/Timeslot"
+                    },
+                    "Tokens": {
+                      "type": "array",
+                      "description": "A list of access tokens",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "Device": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "Token": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown ID"
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "delete": {
+        "operationId": "unlock_booking",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID"
+          }
+        ],
+        "tags": [
+          "booking-backend"
+        ],
+        "summary": "Unlocks all devices belonging to a booking, status will be set to 'booked'.",
+        "responses": {
+          "200": {
+            "description": "Unlocking was successful."
+          },
+          "401": {
+            "description": "No authorisation header found."
+          },
+          "404": {
+            "description": "Request contains unknown ID"
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/devices": {
+      "get": {
+        "operationId": "list_devices",
+        "summary": "List devices",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all devices.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/device_overview"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Device Service"
+      },
+      "post": {
+        "operationId": "create_device",
+        "summary": "Create a new device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_changed_url"
+          }
+        ],
+        "requestBody": {
+          "description": "The device to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Device Init",
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_group"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
+                  }
+                ]
+              },
+              "examples": {
+                "microcontroller": {
+                  "value": {
+                    "name": "ATmega328P",
+                    "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                    "owner": "https://api.example.com/groups/goldi",
+                    "type": "device",
+                    "services": [
+                      {
+                        "serviceType": "https://api.example.com/services/electrical",
+                        "serviceId": "pins",
+                        "serviceDirection": "prosumer",
+                        "interfaces": [
+                          {
+                            "interfaceType": "gpio",
+                            "availableSignals": {
+                              "gpio": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB3",
+                                "PB4",
+                                "PB5",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "i2c",
+                            "availableSignals": {
+                              "sda": [
+                                "PC4"
+                              ],
+                              "scl": [
+                                "PC5"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "spi",
+                            "roles": [
+                              "master",
+                              "slave"
+                            ],
+                            "availableSignals": {
+                              "miso": [
+                                "PB4"
+                              ],
+                              "mosi": [
+                                "PB3"
+                              ],
+                              "sck": [
+                                "PB5"
+                              ],
+                              "ss-slave": [
+                                "PB2"
+                              ],
+                              "ss-master": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The device was created. A JSON representation of the new device is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/device_concrete"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_group"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Device Service"
+      }
+    },
+    "/devices/{device_id}": {
+      "get": {
+        "operationId": "get_device",
+        "summary": "View a registered device",
+        "tags": [
+          "device"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/flat_group"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "patch": {
+        "operationId": "update_device",
+        "summary": "Update an existing device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_changed_url"
+          }
+        ],
+        "requestBody": {
+          "description": "Updated device.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Device Init",
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/device_concrete"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "announcedAvailability": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/availability_rule"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_group"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_cloud_instantiable"
+                  },
+                  {
+                    "$ref": "#/components/schemas/device_edge_instantiable"
+                  }
+                ]
+              },
+              "examples": {
+                "microcontroller": {
+                  "value": {
+                    "name": "ATmega328P",
+                    "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                    "owner": "https://api.example.com/groups/goldi",
+                    "type": "device",
+                    "services": [
+                      {
+                        "serviceType": "https://api.example.com/services/electrical",
+                        "serviceId": "pins",
+                        "serviceDirection": "prosumer",
+                        "interfaces": [
+                          {
+                            "interfaceType": "gpio",
+                            "availableSignals": {
+                              "gpio": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB3",
+                                "PB4",
+                                "PB5",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "i2c",
+                            "availableSignals": {
+                              "sda": [
+                                "PC4"
+                              ],
+                              "scl": [
+                                "PC5"
+                              ]
+                            }
+                          },
+                          {
+                            "interfaceType": "spi",
+                            "roles": [
+                              "master",
+                              "slave"
+                            ],
+                            "availableSignals": {
+                              "miso": [
+                                "PB4"
+                              ],
+                              "mosi": [
+                                "PB3"
+                              ],
+                              "sck": [
+                                "PB5"
+                              ],
+                              "ss-slave": [
+                                "PB2"
+                              ],
+                              "ss-master": [
+                                "PB0",
+                                "PB1",
+                                "PB2",
+                                "PB6",
+                                "PB7",
+                                "PC0",
+                                "PC1",
+                                "PC2",
+                                "PC3",
+                                "PC4",
+                                "PC5",
+                                "PC6",
+                                "PD0",
+                                "PD1",
+                                "PD2",
+                                "PD3",
+                                "PD4",
+                                "PD5",
+                                "PD6",
+                                "PD7"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_group"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_cloud_instantiable"
+                    },
+                    {
+                      "$ref": "#/components/schemas/device_edge_instantiable"
+                    }
+                  ]
+                },
+                "examples": {
+                  "microcontroller": {
+                    "value": {
+                      "name": "ATmega328P",
+                      "description": "8-bit AVR Microcontroller with 32K Bytes In-System Programmable Flash",
+                      "owner": "https://api.example.com/groups/goldi",
+                      "type": "device",
+                      "services": [
+                        {
+                          "serviceType": "https://api.example.com/services/electrical",
+                          "serviceId": "pins",
+                          "serviceDirection": "prosumer",
+                          "interfaces": [
+                            {
+                              "interfaceType": "gpio",
+                              "availableSignals": {
+                                "gpio": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB3",
+                                  "PB4",
+                                  "PB5",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "i2c",
+                              "availableSignals": {
+                                "sda": [
+                                  "PC4"
+                                ],
+                                "scl": [
+                                  "PC5"
+                                ]
+                              }
+                            },
+                            {
+                              "interfaceType": "spi",
+                              "roles": [
+                                "master",
+                                "slave"
+                              ],
+                              "availableSignals": {
+                                "miso": [
+                                  "PB4"
+                                ],
+                                "mosi": [
+                                  "PB3"
+                                ],
+                                "sck": [
+                                  "PB5"
+                                ],
+                                "ss-slave": [
+                                  "PB2"
+                                ],
+                                "ss-master": [
+                                  "PB0",
+                                  "PB1",
+                                  "PB2",
+                                  "PB6",
+                                  "PB7",
+                                  "PC0",
+                                  "PC1",
+                                  "PC2",
+                                  "PC3",
+                                  "PC4",
+                                  "PC5",
+                                  "PC6",
+                                  "PD0",
+                                  "PD1",
+                                  "PD2",
+                                  "PD3",
+                                  "PD4",
+                                  "PD5",
+                                  "PD6",
+                                  "PD7"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/device_concrete"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_group"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_cloud_instantiable"
+                              },
+                              {
+                                "$ref": "#/components/schemas/device_edge_instantiable"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "delete": {
+        "operationId": "delete_device",
+        "summary": "Delete a registered device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The device was deleted."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "post": {
+        "operationId": "instantiate_device",
+        "summary": "Instantiate a cloud instantiable device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_changed_url"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The JSON Representation of the created instance.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "instance": {
+                      "$ref": "#/components/schemas/device_concrete"
+                    },
+                    "deviceToken": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "device",
+                      "device:edit",
+                      "device:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"device-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "device-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/device_concrete"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted device. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-service-name": "Device Service"
+      }
+    },
+    "/devices/{device_id}/availability": {
+      "post": {
+        "operationId": "add_availability_rules",
+        "summary": "Update the device availability",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "requestBody": {
+          "description": "The availability rules to be applied.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Availability Rules",
+                "description": "The availability rule to be applied.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/availability_rule"
+                }
+              },
+              "examples": {
+                "make_the_device_always_unavailable": {
+                  "description": "Make the device always unavailable",
+                  "value": [
+                    {
+                      "available": false
+                    }
+                  ]
+                },
+                "make_the_device_always_available": {
+                  "description": "Make the device always available",
+                  "value": [
+                    {
+                      "available": true
+                    }
+                  ]
+                },
+                "make_the_device_available_from_monday_9_00_through_friday_17_00": {
+                  "description": "Make the device only available from monday 9:00 through friday 17:00",
+                  "value": [
+                    {
+                      "available": true,
+                      "start": "2022-05-15T09:00:00Z",
+                      "end": "2022-05-20T17:00:00Z",
+                      "repeat": {
+                        "frequency": "WEEKLY"
+                      }
+                    },
+                    {
+                      "available": false,
+                      "start": "2022-05-20T17:00:00Z",
+                      "end": "2022-05-23T09:00:00Z",
+                      "repeat": {
+                        "frequency": "WEEKLY"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed availability.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/availability"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      }
+    },
+    "/devices/{device_id}/websocket": {
+      "post": {
+        "operationId": "create_websocket_token",
+        "summary": "Create new websocket token for device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:connect"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The newly generated websocket token for the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      }
+    },
+    "/devices/{device_id}/signaling": {
+      "post": {
+        "operationId": "send_signaling_message",
+        "summary": "Send signaling message to device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:signal"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/peerconnection_url"
+          }
+        ],
+        "requestBody": {
+          "description": "The signaling message to be sent.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "Sig Message",
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/create_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/close_peerconnection_message"
+                  },
+                  {
+                    "$ref": "#/components/schemas/signaling_message"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The signaling message was delivered successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      }
+    },
+    "/peerconnections": {
+      "get": {
+        "operationId": "list_peerconnections",
+        "summary": "List Peer Connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all peerconnections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/peerconnection_overview"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Device Service"
+      },
+      "post": {
+        "operationId": "create_peerconnection",
+        "summary": "Create a new Peer Connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/closed_url"
+          },
+          {
+            "$ref": "#/components/parameters/status_changed_url"
+          }
+        ],
+        "requestBody": {
+          "description": "The peerconnection to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The peerconnection was created. A JSON representation of the new peer connection is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The device service will attempt to create the peerconnection as soon as possible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "closed": {
+            "{$request.query.closedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-closed\" event",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-closed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          },
+          "status-changed": {
+            "{$request.query.statusChangedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "peerconnection",
+                      "peerconnection:create"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"peerconnection-status-changed\" event",
+                "requestBody": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "peerconnection-status-changed"
+                            ]
+                          },
+                          "peerconnection": {
+                            "$ref": "#/components/schemas/peerconnection"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Device Service"
+      }
+    },
+    "/peerconnections/{peerconnection_id}": {
+      "get": {
+        "operationId": "get_peerconnection",
+        "summary": "View a peer connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the device peer connection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/peerconnection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "delete": {
+        "operationId": "delete_peerconnection",
+        "summary": "Delete a peer connection",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:create"
+            ]
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The peer connection was deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ],
+        "x-service-name": "Device Service"
+      }
+    },
+    "/experiments": {
+      "get": {
+        "operationId": "list_experiments",
+        "summary": "List experiments",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all experiments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/experiment_overview"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Experiment Service"
+      },
+      "post": {
+        "operationId": "create_experiment",
+        "summary": "Create a new experiment",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "The experiment to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/experiment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The experiment was created. A JSON representation of the new experiment is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Experiment Service"
+      }
+    },
+    "/experiments/{experiment_id}": {
+      "get": {
+        "operationId": "get_experiment",
+        "summary": "View an experiment.",
+        "tags": [
+          "experiment"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the experiment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "patch": {
+        "operationId": "update_experiment",
+        "summary": "Update an existing experiment.",
+        "description": "With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.\n",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          },
+          {
+            "$ref": "#/components/parameters/experiment_changed_url"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the experiment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/experiment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed experiment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The JSON Representation of the changed experiment, that will be set to running eventually",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "delete": {
+        "operationId": "delete_experiment",
+        "summary": "Delete an experiment",
+        "tags": [
+          "experiment"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "experiment",
+              "experiment:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/experiment_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The experiment was deleted."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      }
+    },
+    "/institutions": {
+      "get": {
+        "operationId": "list_institutions",
+        "summary": "List institutions",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all institutions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/institution"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Federation Service"
+      },
+      "post": {
+        "operationId": "create_institution",
+        "summary": "Create a new institution",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:create"
+            ]
+          }
+        ],
+        "requestBody": {
+          "description": "The institution to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/institution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The institution was created. A JSON representation of the new institution is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Federation Service"
+      }
+    },
+    "/institutions/{institution_id}": {
+      "get": {
+        "operationId": "get_institution",
+        "summary": "View an institution.",
+        "tags": [
+          "institution"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:list"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the institution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Federation Service"
+      },
+      "patch": {
+        "operationId": "update_institution",
+        "summary": "Update an institution.",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:edit"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the institution",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/institution"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed institution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/institution"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Federation Service"
+      },
+      "delete": {
+        "operationId": "delete_institution",
+        "summary": "Delete an institution",
+        "tags": [
+          "institution"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "institution",
+              "institution:create"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/institution_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The institution was delete."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Federation Service"
+      }
+    },
+    "/updates": {
+      "get": {
+        "operationId": "list_updates",
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:list"
+            ]
+          }
+        ],
+        "summary": "Get update information for all devices",
+        "responses": {
+          "200": {
+            "description": "JSON representation of all update information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/update_information"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Update Service"
+      },
+      "post": {
+        "operationId": "create_update",
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:create"
+            ]
+          }
+        ],
+        "summary": "Create new update information",
+        "requestBody": {
+          "description": "The update to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/update_information"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "JSON representation of the new update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/update_information"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Update Service"
+      }
+    },
+    "/updates/{device_id}": {
+      "get": {
+        "operationId": "get_update",
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:list"
+            ]
+          }
+        ],
+        "summary": "Get update for device",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameters-device_id"
+          },
+          {
+            "$ref": "#/components/parameters/current_version"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device is already up-to-date"
+          },
+          "303": {
+            "description": "New version is available",
+            "headers": {
+              "Location": {
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Update Service"
+      },
+      "patch": {
+        "operationId": "patch_update",
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:edit"
+            ]
+          }
+        ],
+        "summary": "Edit update information",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameters-device_id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/update_information"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update information edited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/update_information"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Update Service"
+      },
+      "delete": {
+        "operationId": "delete_update",
+        "tags": [
+          "update"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "update",
+              "update:create"
+            ]
+          }
+        ],
+        "summary": "Delete update information",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameters-device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Update information was deleted successfully"
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Update Service"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: User
+type: object
+properties: 
+  url:
+    type: string
+    format: uri
+    readOnly: true
+  id:
+    type: string
+    readOnly: true
+  username:
+    type: string
+  password:
+    type: string
+    writeOnly: true
+  roles:
+    type: array
+    items: 
+      $ref: "../schemas/role.yml"

@@ -3,7 +3,8 @@
   "info": {
     "title": "CrossLab Experiment Service REST API (internal)",
     "description": "This is the OpenAPI description of the internal CrossLab Experiment Service REST API.",
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-service-name": "Experiment Service"
   },
   "components": {
     "securitySchemes": {
@@ -16,6 +17,7 @@
     },
     "schemas": {
       "experiment_overview": {
+        "title": "Experiment Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -30,17 +32,30 @@
             "enum": [
               "created",
               "booked",
+              "setup",
               "running",
               "finished"
             ]
           }
         }
       },
-      "name": {
-        "type": "string",
-        "description": "Name for an experiment role."
+      "device": {
+        "title": "Device",
+        "type": "object",
+        "properties": {
+          "device": {
+            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string",
+            "description": "The name of the device's role."
+          }
+        }
       },
       "role": {
+        "title": "role",
         "type": "object",
         "properties": {
           "name": {
@@ -52,7 +67,26 @@
           }
         }
       },
+      "participant": {
+        "title": "Participant",
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The name of the participant's role."
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          }
+        }
+      },
       "service_configuration": {
+        "title": "Service Configuration",
         "type": "object",
         "properties": {
           "serviceType": {
@@ -69,25 +103,13 @@
             "type": "array",
             "description": "List of participants for the service",
             "items": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "$ref": "#/components/schemas/name"
-                },
-                "serviceId": {
-                  "type": "string"
-                },
-                "config": {
-                  "type": "object",
-                  "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-                  "additionalProperties": true
-                }
-              }
+              "$ref": "#/components/schemas/participant"
             }
           }
         }
       },
       "experiment": {
+        "title": "Experiment",
         "allOf": [
           {
             "$ref": "#/components/schemas/experiment_overview"
@@ -112,17 +134,7 @@
                 "type": "array",
                 "description": "Devices associated with the experiment",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "device": {
-                      "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "role": {
-                      "$ref": "#/components/schemas/name"
-                    }
-                  }
+                  "$ref": "#/components/schemas/device"
                 }
               },
               "roles": {
@@ -189,6 +201,7 @@
   "paths": {
     "/experiments": {
       "get": {
+        "operationId": "list_experiments",
         "summary": "List experiments",
         "tags": [
           "experiment"
@@ -214,10 +227,27 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_experiment",
         "summary": "Create a new experiment",
         "tags": [
           "experiment"
@@ -231,6 +261,7 @@
           }
         ],
         "requestBody": {
+          "description": "The experiment to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -250,12 +281,92 @@
                 }
               }
             }
+          },
+          "202": {
+            "description": "The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "callbacks": {
+          "changed": {
+            "{$request.query.changedUrl}": {
+              "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "callbackType": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventType": {
+                            "type": "string",
+                            "enum": [
+                              "experiment-changed"
+                            ]
+                          },
+                          "device": {
+                            "$ref": "#/components/schemas/experiment"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "410": {
+                    "description": "The callback is no longer required for the transmitted experiment. The Service is free to remove the callback reference."
+                  },
+                  "2XX": {
+                    "description": "The event was successfully processed."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-optional-url": true
       }
     },
     "/experiments/{experiment_id}": {
       "get": {
+        "operationId": "get_experiment",
         "summary": "View an experiment.",
         "tags": [
           "experiment"
@@ -284,12 +395,25 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested experiment could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
       "patch": {
+        "operationId": "update_experiment",
         "summary": "Update an existing experiment.",
         "description": "With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.\n",
         "tags": [
@@ -332,14 +456,46 @@
               }
             }
           },
+          "202": {
+            "description": "The JSON Representation of the changed experiment, that will be set to running eventually",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/experiment"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested experiment could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         },
         "callbacks": {
           "changed": {
             "{$request.query.changedUrl}": {
               "post": {
+                "security": [
+                  {
+                    "JWT": [
+                      "experiment",
+                      "experiment:create",
+                      "experiment:edit"
+                    ]
+                  }
+                ],
+                "summary": "Callback for the \"experiment-changed\" event",
                 "requestBody": {
                   "required": true,
                   "content": {
@@ -381,6 +537,7 @@
         }
       },
       "delete": {
+        "operationId": "delete_experiment",
         "summary": "Delete an experiment",
         "tags": [
           "experiment"
@@ -402,8 +559,20 @@
           "204": {
             "description": "The experiment was deleted."
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested experiment could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }

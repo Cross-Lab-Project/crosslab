@@ -1,0 +1,68 @@
+{%- set schemas = (api | resolveSchemas) | selectattr("x-typeguard") | sortByAttribute("x-schema-type") -%}
+
+import { assert } from "console"
+import * as sinon from "sinon"
+import * as basicValidation from "../../src/generated/basicValidation"
+import * as typeguards from "../../src/generated/types"
+
+export default () => describe("TypeGuard Tests", function () {
+    let validateStub: sinon.SinonStub
+    let validateRequestStub: sinon.SinonStub
+    let validateResponseStub: sinon.SinonStub
+
+    this.afterEach(async function () {
+        validateStub.restore()
+        validateRequestStub.restore()
+        validateResponseStub.restore()
+    })
+
+    {%- for schema in schemas["all"] %}
+
+    it("should execute the typeguard for {{ schema["x-name"] }} correctly", function () {
+        validateStub = sinon.stub(basicValidation, "validate{{ schema["x-name"] }}")
+        validateRequestStub = sinon.stub(basicValidation, "validate{{ schema["x-name"] }}Request")
+        validateResponseStub = sinon.stub(basicValidation, "validate{{ schema["x-name"] }}Response")
+
+        typeguards.is{{ schema["x-name"] }}({})
+        assert(validateStub.callCount === 1)
+        assert(validateRequestStub.callCount === 0)
+        assert(validateResponseStub.callCount === 0)
+        typeguards.is{{ schema["x-name"] }}({},"all")
+        assert(validateStub.callCount === 2)
+        assert(validateRequestStub.callCount === 0)
+        assert(validateResponseStub.callCount === 0)
+        typeguards.is{{ schema["x-name"] }}({},"request")
+        assert(validateStub.callCount === 2)
+        assert(validateRequestStub.callCount === 1)
+        assert(validateResponseStub.callCount === 0)
+        typeguards.is{{ schema["x-name"] }}({},"response")
+        assert(validateStub.callCount === 2)
+        assert(validateRequestStub.callCount === 1)
+        assert(validateResponseStub.callCount === 1)
+    })
+    {%- endfor %}
+
+    it("should return true when calling isSuccessResponse with a SuccessResponse", async function () {
+        for (let i = 100; i < 400; i++) {
+            assert(typeguards.isSuccessResponse({ status: i }))
+        }
+    })
+
+    it("should return false when calling isSuccessResponse with an ErrorResponse", async function () {
+        for (let i = 400; i < 600; i++) {
+            assert(!typeguards.isSuccessResponse({ status: i }))
+        }
+    })
+
+    it("should return true when calling isErrorResponse with a ErrorResponse", async function () {
+        for (let i = 400; i < 600; i++) {
+            assert(typeguards.isErrorResponse({ status: i }))
+        }
+    })
+
+    it("should return true when calling isErrorResponse with a SuccessResponse", async function () {
+        for (let i = 100; i < 400; i++) {
+            assert(!typeguards.isErrorResponse({ status: i }))
+        }
+    })
+})

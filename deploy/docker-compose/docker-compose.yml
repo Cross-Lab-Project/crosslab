@@ -1,7 +1,7 @@
 ---
 version: '2'
-services:
 
+services:
   gateway:
     image: crosslab/gateway-service
     ports:
@@ -11,31 +11,65 @@ services:
       - DEVICE_SERVICE_URL=device:8080
       - EXPERIMENT_SERVICE_URL=experiment:8080
       - FEDERATION_SERVICE_URL=federation:8080
-      - LOGS_SERVICE_URL=logs:8080
       - AUTH_SERVICE_URL=auth:8080
+      - UPDATE_SERVICE_URL=update:8080
   auth:
     image: crosslab/auth-service
+    extra_hosts:
+      host.docker.internal: host-gateway
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      BASE_URL: http://host.docker.internal
   device:
     image: crosslab/device-service
+    extra_hosts:
+      host.docker.internal: host-gateway
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      BASE_URL: http://host.docker.internal
+    volumes:
+      - device_db:/app/db
   experiment:
     image: crosslab/experiment-service
+    extra_hosts:
+      host.docker.internal: host-gateway
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      BASE_URL: http://host.docker.internal
+    volumes:
+      - experiment_db:/app/db
   federation:
     image: crosslab/federation-service
+    extra_hosts:
+      host.docker.internal: host-gateway
     environment:
       SECURITY_ISSUER: https://dev.goldi-labs.de
       SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      BASE_URL: http://host.docker.internal
+    volumes:
+      - federation_db:/app/db
+  update:
+    image: crosslab/update-service
+    extra_hosts:
+      host.docker.internal: host-gateway
+    environment:
+      SECURITY_ISSUER: https://dev.goldi-labs.de
+      SECURITY_AUDIENCE: https://dev.goldi-labs.de
+      BASE_URL: http://host.docker.internal
+    volumes:
+      - update_db:/app/db
   logs:
     image: amir20/dozzle
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       DOZZLE_BASE: /logs
+
+volumes:
+  device_db:
+  experiment_db:
+  federation_db:
+  update_db:

@@ -95,6 +95,7 @@ for SWAGGER_PATH in `shyaml keys paths < $1`; do
 
     ESCAPED_PATH=`echo $SWAGGER_PATH | sed -e 's/\./\\\./g'`
     METHODS=`shyaml keys paths.$ESCAPED_PATH < $1 | grep -v parameters | tr '\n' ' '`
+    METHODS=`echo $METHODS 'options '`
     if [ "$METHODS" != "" ]; then
         echo "    limit_except $METHODS{ deny all; }"
     fi

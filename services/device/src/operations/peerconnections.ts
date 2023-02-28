@@ -1,196 +1,233 @@
-import { config } from "../config"
+import { MissingEntityError, InvalidValueError, MissingPropertyError, InconsistentDatabaseError } from "@crosslab/service-common"
 import { AppDataSource } from "../data_source"
-import {
-    getPeerconnectionsSignature,
-	postPeerconnectionsSignature,
-	getPeerconnectionsByPeerconnectionIdSignature,
-	deletePeerconnectionsByPeerconnectionIdSignature
-} from "../generated/signatures/peerconnections"
-import { Peerconnection, ServiceConfig } from "../generated/types"
-import { DeviceReferenceModel, PeerconnectionModel, ServiceConfigModel } from "../model"
-import { CreatePeerConnectionMessage } from "./deviceMessages"
-import { connectedDevices, DeviceBaseURL } from "./devices"
+import { getPeerconnectionsSignature, postPeerconnectionsSignature, getPeerconnectionsByPeerconnectionIdSignature, deletePeerconnectionsByPeerconnectionIdSignature } from "../generated/signatures"
+import { ClosePeerconnectionMessage } from "../generated/types"
+import { apiClient, timeoutMap } from "../globals"
+import { callbackUrl, sendStatusChangedCallback, closedCallbacks, statusChangedCallbacks, sendClosedCallback } from "../methods/callbacks"
+import { formatPeerconnectionOverview } from "../methods/database/format"
+import { writePeerconnection } from "../methods/database/write"
+import { startSignaling } from "../methods/signaling"
+import { peerconnectionUrlFromId } from "../methods/utils"
+import { PeerconnectionModel } from "../model"
 
-const PeerconnectionBaseURL = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'peerconnections/'
-const closedCallbacks = new Map<string,Array<string>>()
-
-function formatServiceConfig(serviceConfig: ServiceConfigModel): ServiceConfig {
-    return {
-        serviceType: serviceConfig.serviceType,
-        serviceId: serviceConfig.serviceId,
-        remoteServiceId: serviceConfig.remoteServiceId
-    }
-}
-
-function formatDevice(device: DeviceReferenceModel) {
-    return {
-        url: device.url,
-        config: device.config ? { services: device.config.map(formatServiceConfig) } : undefined
-    }
-}
-
-function formatPeerconnection(peerconnection: PeerconnectionModel): Peerconnection {
-    return {
-        devices: [formatDevice(peerconnection.deviceA), formatDevice(peerconnection.deviceB)],
-        url: PeerconnectionBaseURL + peerconnection.uuid
-    }
-}
-
-function writeServiceConfig(serviceConfig: ServiceConfigModel, object: ServiceConfig) {
-    if (object.serviceType)
-        serviceConfig.serviceType = object.serviceType
-    if (object.serviceId)
-        serviceConfig.serviceId = object.serviceId
-    if (object.remoteServiceId)
-        serviceConfig.remoteServiceId = object.remoteServiceId
-}
-
-async function writeConfiguredDeviceReference(
-    configuredDeviceReference: DeviceReferenceModel, 
-    object: {
-        url?: string
-        config?: {
-            services?: ServiceConfig[]
-        }
-    }
-) {
-    if (object.url)
-        configuredDeviceReference.url = object.url
-    if (object.config) {
-        if (object.config.services) {
-            const serviceConfigRepository = AppDataSource.getRepository(ServiceConfigModel)
-            configuredDeviceReference.config = []
-            for (const config of object.config.services) {
-                const serviceConfig = serviceConfigRepository.create()
-                writeServiceConfig(serviceConfig, config)
-                await serviceConfigRepository.save(serviceConfig)
-                configuredDeviceReference.config.push(serviceConfig)
-            }
-        }
-    }
-}
-
-async function writePeerconnection(peerconnection: PeerconnectionModel, object: Peerconnection) {
-    if (object.devices) {
-        const deviceReferenceRepository = AppDataSource.getRepository(DeviceReferenceModel)
-        const deviceReferenceA = deviceReferenceRepository.create()
-        const deviceReferenceB = deviceReferenceRepository.create()
-        await writeConfiguredDeviceReference(deviceReferenceA, object.devices[0])
-        await writeConfiguredDeviceReference(deviceReferenceB, object.devices[1])
-        await deviceReferenceRepository.save(deviceReferenceA)
-        await deviceReferenceRepository.save(deviceReferenceB)
-        peerconnection.deviceA = deviceReferenceA
-        peerconnection.deviceB = deviceReferenceB
-    }
-}
-
-// TODO: maybe resolve devices further?
-export const getPeerconnections: getPeerconnectionsSignature = async (_user) => {
+/**
+ * This function implements the functionality for handling GET requests on /peerconnections endpoint.
+ * @param _user The user submitting the request.
+ */
+ export const getPeerconnections: getPeerconnectionsSignature = async (_user) => {
+    console.log(`getPeerconnections called`)
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const peerconnections = await peerconnectionRepository.find({ 
+    const peerconnections = await peerconnectionRepository.find({
         relations: {
-            deviceA: { 
-                config: true
-            },
-            deviceB: { 
-                config: true
-            },
-        }
+            deviceA: true,
+            deviceB: true,
+        },
     })
+
+    console.log(`getPeerconnections succeeded`)
 
     return {
         status: 200,
-        body: peerconnections.map(formatPeerconnection)
+        body: peerconnections.map(formatPeerconnectionOverview),
     }
 }
 
-export const postPeerconnections: postPeerconnectionsSignature = async (parameters, body, _user) => {
+/**
+ * This function implements the functionality for handling POST requests on /peerconnections endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
+export const postPeerconnections: postPeerconnectionsSignature = async (
+    parameters,
+    body,
+    _user
+) => {
+    console.log(`postPeerconnections called`)
     const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnection = peerconnectionRepository.create()
     await writePeerconnection(peerconnection, body)
-    
-    if (peerconnection.deviceA.url?.startsWith(DeviceBaseURL) && peerconnection.deviceB.url?.startsWith(DeviceBaseURL)) {
-        // connection between local devices
-        const idDeviceA = peerconnection.deviceA.url.split("/").at(-1)
-        const idDeviceB = peerconnection.deviceB.url.split("/").at(-1)
-        const wsDeviceA = idDeviceA ? connectedDevices.get(idDeviceA) : undefined
-        const wsDeviceB = idDeviceB ? connectedDevices.get(idDeviceB) : undefined
-        if (!wsDeviceA || !wsDeviceB) {
-            return {
-                status: 404
-            }
-        }
-        const common = <CreatePeerConnectionMessage> {
-            messageType: "command",
-            command: "createPeerConnection",
-            connectiontype: "webrtc",
-            id: peerconnection.uuid
-        }
-        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceA.config?.map(formatServiceConfig), tiebreaker: true}))
-        wsDeviceA.send(JSON.stringify(<CreatePeerConnectionMessage>{...common, services: peerconnection.deviceB.config?.map(formatServiceConfig), tiebreaker: false}))
-    } else {
-        // connection containing at least one remote device
-        throw("Peerconnections of types local/remote and remote/remote are currently not supported!")
+
+    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) {
+        throw new MissingEntityError(`One of the participating devices has no url`, 404)
     }
 
     await peerconnectionRepository.save(peerconnection)
 
+    const deviceA = await apiClient.getDevice(peerconnection.deviceA.url)
+    const deviceB = await apiClient.getDevice(peerconnection.deviceB.url)
+
+    if (deviceA.type !== 'device' || deviceB.type !== 'device') {
+        throw new InvalidValueError(
+            `Cannot establish a peerconnection between devices of type "${deviceA.type}" and "${deviceB.type}"`,
+            400
+        )
+    }
+
+    if (!deviceA.url || !deviceB.url) {
+        throw new MissingPropertyError(
+            `One of the resolved devices does not have an url`,
+            500
+        ) // NOTE: error code
+    }
+
+    if (deviceA.connected && deviceB.connected) {
+        // peerconnection can be started directly
+        await startSignaling(peerconnection)
+    } else {
+        // need to wait for devices to connect
+        // register changed callbacks for devices to get notified when they connect
+        const n_deviceA = await apiClient.updateDevice(
+            deviceA.url,
+            {},
+            { changedUrl: callbackUrl }
+        )
+        const n_deviceB = await apiClient.updateDevice(
+            deviceB.url,
+            {},
+            { changedUrl: callbackUrl }
+        )
+
+        // check that devices still have the correct type
+        if (n_deviceA.type !== 'device' || n_deviceB.type !== 'device') {
+            throw new InvalidValueError(
+                `The type of device ${
+                    deviceA.type !== 'device' ? deviceA.url : deviceB.url
+                } is not "device" anymore`,
+                400
+            )
+        }
+
+        // set timeout for checking if devices are connected
+        timeoutMap.set(
+            peerconnection.uuid, 
+            setTimeout(async () => {
+                console.log('devices did not connect')
+                peerconnection.status = 'failed'
+                await peerconnectionRepository.save(peerconnection)
+                await sendStatusChangedCallback(peerconnection)
+            }, 30000)
+        )
+    }
+
     if (parameters.closedUrl) {
+        console.log(
+            `postPeerconnections: registering closed-callback for ${parameters.closedUrl}`
+        )
         const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
         closedCallbackURLs.push(parameters.closedUrl)
         closedCallbacks.set(peerconnection.uuid, closedCallbackURLs)
     }
 
+    if (parameters.statusChangedUrl) {
+        console.log(
+            `postPeerconnections: registering status-changed-callback for ${parameters.statusChangedUrl}`
+        )
+        const statusChangedCallbackURLs =
+            statusChangedCallbacks.get(peerconnection.uuid) ?? []
+        statusChangedCallbackURLs.push(parameters.statusChangedUrl)
+        statusChangedCallbacks.set(peerconnection.uuid, statusChangedCallbackURLs)
+    }
+
+    console.log(`postPeerconnections succeeded`)
+
     return {
-        status: 201,
-        body: formatPeerconnection(peerconnection)
+        status: peerconnection.status === 'connected' ? 201 : 202,
+        body: formatPeerconnectionOverview(peerconnection),
     }
 }
 
-export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
-    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const peerconnection = await peerconnectionRepository.findOne({ 
-        where: {
-            uuid: parameters.peerconnection_id 
-        },
-        relations: {
-            deviceA: { 
-                config: true
+/**
+ * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature =
+    async (parameters, _user) => {
+        console.log(`getPeerconnectionsByPeerconnectionId called`)
+        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+        const peerconnection = await peerconnectionRepository.findOne({
+            where: {
+                uuid: parameters.peerconnection_id,
             },
-            deviceB: { 
-                config: true
+            relations: {
+                deviceA: true,
+                deviceB: true,
             },
-        }
-    })
+        })
 
-    if (!peerconnection) {
+        if (!peerconnection)
+            throw new MissingEntityError(
+                `Could not find peerconnection ${parameters.peerconnection_id}`,
+                404
+            )
+
+        console.log(`getPeerconnectionsByPeerconnectionId succeeded`)
+
         return {
-            status: 404
+            status: 200,
+            body: formatPeerconnectionOverview(peerconnection),
         }
     }
 
-    return {
-        status: 200,
-        body: formatPeerconnection(peerconnection)
-    }
-}
+/**
+ * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
+    async (parameters, _user) => {
+        console.log(`deletePeerconnectionsByPeerconnectionId called`)
+        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+        const peerconnection = await peerconnectionRepository.findOneOrFail({
+            where: {
+                uuid: parameters.peerconnection_id,
+            },
+            relations: {
+                deviceA: true,
+                deviceB: true,
+            },
+        })
+        const result = await peerconnectionRepository.softDelete({
+            uuid: parameters.peerconnection_id,
+        })
 
-// TODO: send close message to devices?
-export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature = async (parameters, _user) => {
-    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-    const result = await peerconnectionRepository.softDelete({ uuid: parameters.peerconnection_id })
+        if (!result.affected) {
+            throw new MissingEntityError(
+                `Could not find peerconnection ${parameters.peerconnection_id}`,
+                404
+            )
+        }
 
-    if (!result.affected) {
+        if (result.affected > 1) {
+            throw new InconsistentDatabaseError(
+                'Deleted Multiple Peerconnections with same uuid',
+                500
+            )
+        }
+
+        const closePeerconnectionMessage: ClosePeerconnectionMessage = {
+            messageType: 'command',
+            command: 'closePeerconnection',
+            connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
+        }
+
+        await apiClient.sendSignalingMessage(
+            peerconnection.deviceA.url,
+            closePeerconnectionMessage,
+            peerconnectionUrlFromId(peerconnection.uuid)
+        )
+        await apiClient.sendSignalingMessage(
+            peerconnection.deviceB.url,
+            closePeerconnectionMessage,
+            peerconnectionUrlFromId(peerconnection.uuid)
+        )
+
+        await sendClosedCallback(peerconnection)
+
+        console.log(`deletePeerconnectionsByPeerconnectionId succeeded`)
+
         return {
-            status: 404
+            status: 204,
         }
     }
-    
-    if (result.affected > 1) {
-        throw("Deleted Multiple Peerconnection with same uuid")
-    }
-
-    return {
-        status: 204
-    }
-}

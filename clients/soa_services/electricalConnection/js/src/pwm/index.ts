@@ -1,0 +1,1 @@
+export { ConstructablePWMInterface } from "./connectionInterface";

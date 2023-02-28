@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: list_updates
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:list
+  summary: Get update information for all devices
+  responses:
+    200:
+      description: JSON representation of all update information
+      content:
+        application/json:
+          $ref: "../content/update_information_list.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true
+post:
+  operationId: create_update
+  tags:
+    - update
+  security:
+    - JWT:
+      - update
+      - update:create
+  summary: Create new update information
+  requestBody:
+    description: The update to be created.
+    required: true
+    content:
+      application/json:
+        $ref: "../content/update_information.yml"
+  responses:
+    201:
+      description: JSON representation of the new update
+      content:
+        application/json:
+          $ref: "../content/update_information.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true

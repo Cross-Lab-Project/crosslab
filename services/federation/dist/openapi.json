@@ -1,22 +1,18 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "CrossLab Device Service REST API (internal)",
-    "description": "This is the OpenAPI description of the internal CrossLab Device Service REST API.",
-    "version": "0.0.1"
+    "title": "CrossLab Federation Service REST API (internal)",
+    "description": "This is the OpenAPI description of the internal CrossLab Federation Service REST API.",
+    "version": "0.0.1",
+    "x-service-name": "Federation Service"
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "JWT": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+        "description": "As this is the API description of the internal Federation API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
       }
     },
     "schemas": {
@@ -85,6 +81,7 @@
   "paths": {
     "/institutions": {
       "get": {
+        "operationId": "list_institutions",
         "summary": "List institutions",
         "tags": [
           "institution"
@@ -110,10 +107,27 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       },
       "post": {
+        "operationId": "create_institution",
         "summary": "Create a new institution",
         "tags": [
           "institution"
@@ -127,6 +141,7 @@
           }
         ],
         "requestBody": {
+          "description": "The institution to be created.",
           "required": true,
           "content": {
             "application/json": {
@@ -146,13 +161,30 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
-        }
+        },
+        "x-optional-url": true
       }
     },
     "/institutions/{institution_id}": {
       "get": {
-        "summary": "View a institution.",
+        "operationId": "get_institution",
+        "summary": "View an institution.",
         "tags": [
           "institution"
         ],
@@ -180,12 +212,25 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested institution could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
       "patch": {
+        "operationId": "update_institution",
         "summary": "Update an institution.",
         "tags": [
           "institution"
@@ -224,13 +269,26 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested institution could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       },
       "delete": {
-        "summary": "Delete a institution",
+        "operationId": "delete_institution",
+        "summary": "Delete an institution",
         "tags": [
           "institution"
         ],
@@ -251,15 +309,29 @@
           "204": {
             "description": "The institution was delete."
           },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
           "404": {
-            "description": "The requested institution could not be found"
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
           }
         }
       }
     },
     "/proxy": {
       "get": {
+        "operationId": "proxy_get",
         "summary": "Make an authorized GET request to an external resource.",
+        "description": "Proxies a GET request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -275,6 +347,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -294,7 +368,9 @@
         }
       },
       "post": {
+        "operationId": "proxy_post",
         "summary": "Make an authorized POST request to an external resource.",
+        "description": "Proxies a POST request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -310,6 +386,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -329,7 +407,9 @@
         }
       },
       "put": {
+        "operationId": "proxy_put",
         "summary": "Make an authorized PUT request to an external resource.",
+        "description": "Proxies a PUT request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -345,6 +425,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -364,7 +446,9 @@
         }
       },
       "patch": {
+        "operationId": "proxy_patch",
         "summary": "Make an authorized PATCH request to an external resource.",
+        "description": "Proxies a PATCH request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -380,6 +464,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -399,7 +485,9 @@
         }
       },
       "delete": {
+        "operationId": "proxy_delete",
         "summary": "Make an authorized DELETE request to an external resource.",
+        "description": "Proxies a DELETE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -415,6 +503,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -434,7 +524,9 @@
         }
       },
       "head": {
+        "operationId": "proxy_head",
         "summary": "Make an authorized HEAD request to an external resource.",
+        "description": "Proxies a HEAD request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -450,6 +542,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -469,7 +563,9 @@
         }
       },
       "options": {
+        "operationId": "proxy_options",
         "summary": "Make an authorized OPTIONS request to an external resource.",
+        "description": "Proxies an OPTIONS request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -485,6 +581,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."
@@ -504,7 +602,9 @@
         }
       },
       "trace": {
+        "operationId": "proxy_trace",
         "summary": "Make an authorized TRACE request to an external resource.",
+        "description": "Proxies a TRACE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
         "tags": [
           "proxy"
         ],
@@ -520,6 +620,8 @@
             "$ref": "#/components/parameters/url"
           }
         ],
+        "x-proxy-request": true,
+        "x-internal": true,
         "responses": {
           "1XX": {
             "description": "The response of the external resource."

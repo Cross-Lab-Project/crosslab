@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Role
+type: object
+properties: 
+  url:
+    type: string
+    format: uri
+    readOnly: true
+  id:
+    type: string
+    readOnly: true
+  name: 
+    type: string
+  scopes:
+    type: array
+    items:
+      type: string

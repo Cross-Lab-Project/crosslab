@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: list_users
+  summary: Get all users
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:read
+  responses:
+    200:
+      description: The JSON representation of the users.
+      content:
+        application/json:
+          $ref: "../content/user_list.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true
+post:
+  operationId: create_user
+  summary: Create a user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:create
+  requestBody:
+    required: true
+    description: User to be created.
+    content:
+      application/json:
+        $ref: "../content/user_init.yml"
+  responses:
+    201:
+      description: The JSON representation of the created user.
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true

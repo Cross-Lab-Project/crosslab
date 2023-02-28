@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: header
+name: Authorization
+schema:
+  type: string

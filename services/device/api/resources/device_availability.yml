@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
-  summary: Update the device availability.
+  operationId: add_availability_rules
+  summary: Update the device availability
   tags:
     - device
   security:
@@ -10,14 +11,23 @@ post:
   parameters:
     - $ref: "../parameters/device_id.yml"
   requestBody:
+    description: The availability rules to be applied.
     content:
       application/json:
         $ref: "../content/availability_request.yml"
   responses:
     200:
-      description: The JSON Representation of the changed device
+      description: The JSON Representation of the changed availability.
       content:
         application/json:
           $ref: "../content/availability.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
     404:
-      description: The requested device could not be found
+      description: Resource not found.
+    500:
+      description: Server Error.

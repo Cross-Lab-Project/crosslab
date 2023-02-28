@@ -1,0 +1,335 @@
+################################################################################
+# Build Development Container ##################################################
+################################################################################
+
+helper/development-container:
+  - script: build -t development-container:latest
+    tags:
+      - environment
+
+################################################################################
+# Helper #######################################################################
+################################################################################
+
+helper/tsdoc-theme:
+  - script: build
+  - script: lint
+    dependencies:
+      - helper/tsdoc-theme:build
+
+helper/openapi-codegeneration:
+  - script: build
+  - script: lint
+    dependencies:
+      - helper/openapi-codegeneration:build
+
+helper/crosslab-typescript-addon:
+  - script: build
+    dependencies:
+      - helper/openapi-codegeneration:build
+  - script: lint
+    dependencies:
+      - helper/crosslab-typescript-addon:build
+
+helper/dummy-device/js:
+  - script: build
+    dependencies:
+      - clients/api/js:build
+      - clients/soa/js:build
+      - clients/soa_services/electricalConnection/js:build
+      - clients/soa_services/file/js:build
+      - clients/soa_services/webcam/js:build
+  - script: lint
+    dependencies:
+      - helper/dummy-device/js:build
+
+helper/dummy-device/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+      - clients/soa_services/electricalConnection/python:build
+  - script: lint
+    dependencies:
+      - helper/dummy-device/python:build
+
+
+################################################################################
+# Backend ######################################################################
+################################################################################
+
+services/common:
+  - script: build
+  - script: lint
+    dependencies:
+      - services/common:build
+
+services/auth:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/auth:build-spec
+  - script: build
+    dependencies:
+      - services/auth:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/auth:build
+  - script: lint
+    dependencies:
+      - services/auth:build
+
+services/booking:
+  - script: build-spec
+  - script: lint-spec
+    dependencies:
+      - services/booking:build-spec
+
+services/device:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/device:build-spec
+  - script: build
+    dependencies:
+      - services/device:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/device:build
+
+services/experiment:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/experiment:build-spec
+  - script: build
+    dependencies:
+      - services/experiment:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/experiment:build
+  - script: lint
+    dependencies:
+      - services/experiment:build
+
+services/federation:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/federation:build-spec
+  - script: build
+    dependencies:
+      - services/federation:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/federation:build
+
+services/update:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/update:build-spec
+  - script: build
+    dependencies:
+      - services/update:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/update:build
+
+
+services/openapi:
+  - script: build
+    dependencies: 
+      - services/auth:build-spec
+      - services/booking:build-spec
+      - services/device:build-spec
+      - services/experiment:build-spec
+      - services/federation:build-spec
+      - services/update:build-spec
+  - script: lint
+    dependencies:
+      - services/openapi:build
+
+services/gateway:
+  - script: build
+  - script: build-docker
+    dependencies:
+      - services/gateway:build
+
+
+################################################################################
+# Clients ######################################################################
+################################################################################
+
+clients/api/js:
+  - script: build
+    dependencies:
+      - services/auth:build-spec
+      - services/booking:build-spec
+      - services/device:build-spec
+      - services/experiment:build-spec
+      - services/federation:build-spec
+      - services/update:build-spec
+      - helper/crosslab-typescript-addon:build
+      - helper/tsdoc-theme:build
+      - helper/openapi-codegeneration:build
+  - script: lint
+    dependencies:
+      - clients/api/js:build
+
+clients/api/python:
+  - script: build
+    dependencies:
+      - services/openapi:build
+      - helper/openapi-codegeneration:build
+  - script: lint
+    dependencies:
+      - clients/api/python:build
+  - script: test
+    dependencies:
+      - clients/api/python:build
+
+clients/soa/python:
+  - script: build
+    dependencies:
+      - services/openapi:build
+      - helper/openapi-codegeneration:build
+      - clients/api/python:build
+  - script: lint
+    dependencies:
+      - clients/soa/python:build
+  - script: test
+    dependencies:
+      - clients/soa/python:build
+
+clients/soa/js:
+  - script: build
+  - script: lint
+    dependencies:
+      - clients/soa/js:build
+
+
+# SOA Service ##################################################################
+
+clients/soa_services/electricalConnection/python:
+  - script: build
+    dependencies:
+      - helper/openapi-codegeneration:build
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/electricalConnection/python:build
+  - script: test
+    dependencies:
+      - clients/soa_services/electricalConnection/python:build
+
+clients/soa_services/electricalConnection/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/electricalConnection/js:build
+
+clients/soa_services/webcam/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/webcam/python:build
+
+clients/soa_services/webcam/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/webcam/js:build
+
+clients/soa_services/file/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/file/python:build
+
+clients/soa_services/file/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/file/js:build
+
+clients/soa_services/message/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/python:build
+
+clients/soa_services/message/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/js:build
+
+################################################################################
+# Integration Tests ############################################################
+################################################################################
+
+integration-test:
+  - script: test
+    dependencies:
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build
+  - script: lint
+    dependencies:
+    - integration-test:test

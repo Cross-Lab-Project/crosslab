@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_users_with_role
+  summary: Get users with role
+  tags:
+    - role
+  security:
+    - JWT:
+      - roles
+      - roles:read
+  parameters:
+    - $ref: "../parameters/role_id.yml"
+  responses:
+    200:
+      description: Users successfully retrieved.
+      content:
+        application/json:
+          $ref: "../content/user_list.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true
+post:
+  operationId: add_users_to_role
+  summary: Add users to role
+  tags:
+    - role
+  security:
+    - JWT:
+      - roles
+      - roles:write
+  parameters:
+    - $ref: "../parameters/role_id.yml"
+  requestBody:
+    description: Users to be added to the role.
+    content:
+      application/json:
+        $ref: "../content/id_list.yml"
+  responses:
+    204:
+      description: Users added successfully.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true
+delete:
+  operationId: remove_users_from_role
+  summary: Remove users from role
+  tags:
+    - role
+  security:
+    - JWT:
+      - roles
+      - roles:write
+  parameters:
+    - $ref: "../parameters/role_id.yml"
+  requestBody:
+    description: Users to be removed from the role.
+    content:
+      application/json:
+        $ref: "../content/id_list.yml"
+  responses:
+    204:
+      description: Users removed successfully.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-build-url: true
+  x-optional-url: true

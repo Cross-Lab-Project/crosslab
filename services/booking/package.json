@@ -10,7 +10,7 @@
     "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
   },
-  "author": "Johannes Nau",
+  "author": "Johannes Nau & Marcus Soll",
   "license": "UNLICENSED",
   "dependencies": {
     "@cross-lab-project/openapi-codegen": "^0.0.34"

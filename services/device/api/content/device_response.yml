@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  anyOf:
+    - $ref: '../schemas/device_concrete.yml'
+    - $ref: '../schemas/device_group.yml'
+    - $ref: '../schemas/device_cloud_instantiable.yml'
+    - $ref: '../schemas/device_edge_instantiable.yml'
+examples:
+  microcontroller:
+    value:
+      $ref: '../examples/device_microcontroller.yml'

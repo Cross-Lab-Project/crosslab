@@ -1,0 +1,12 @@
+dist
+
+node_modules
+__pycache__
+.pytest_cache
+.mypy_cache
+.tox
+build
+.coverage
+coverage.xml
+
+*.egg-info

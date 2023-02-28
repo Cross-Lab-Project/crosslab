@@ -1,0 +1,84 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_user
+  summary: Get a user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:read
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  responses:
+    200:
+      description: The JSON respresentation of the user.
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  operationId: update_user
+  summary: Update a user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:write
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  requestBody:
+    description: Updated user
+    content:
+      application/json:
+        $ref: "../content/user_update.yml"
+  responses:
+    200:
+      description: The JSON representation of the updated user.
+      content:
+        application/json:
+          $ref: "../content/user.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+delete:
+  operationId: delete_user
+  summary: Delete a user
+  tags:
+    - user
+  security:
+    - JWT:
+      - users
+      - users:delete
+  parameters:
+    - $ref: "../parameters/user_id.yml"
+  responses:
+    204:
+      description: User deleted successfully
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

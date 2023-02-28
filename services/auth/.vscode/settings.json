@@ -1,0 +1,43 @@
+{
+    "files.exclude": {
+        //begin generated
+        "**/app": true,
+        "**/build": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
+        //end generated
+    },
+    "files.watcherExclude": {
+        //begin generated
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/*.egg-info": true,
+        "**/lib": true,
+        "**/.mypy_cache": true,
+        "**/node_modules": true,
+        "**/.packages": true,
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/venv": true,
+        //end generated
+    },
+    "mocha.requires": [
+        "ts-node/register"
+    ],
+    "mocha.env": {
+        "SECURITY_ISSUER": "http://localhost",
+        "SECURITY_AUDIENCE": "http://localhost",
+        "BASE_URL": "http://localhost",
+        "PORT": "3000",
+        "ALLOWLIST": "localhost:superadmin"
+    }
+}

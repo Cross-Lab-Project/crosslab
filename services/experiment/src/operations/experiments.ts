@@ -1,239 +1,224 @@
 import {
-    // ExperimentOverview,
-	Experiment,
-    ServiceConfiguration,
-    Role
-} from "../generated/types"
-import {
+    postExperimentsSignature,
+    getExperimentsByExperimentIdSignature,
+    deleteExperimentsByExperimentIdSignature,
+    patchExperimentsByExperimentIdSignature,
     getExperimentsSignature,
-	postExperimentsSignature,
-	getExperimentsByExperimentIdSignature,
-	deleteExperimentsByExperimentIdSignature,
-	patchExperimentsByExperimentIdSignature
-} from "../generated/signatures/experiments"
-import { AppDataSource } from "../data_source"
-import { 
-    DeviceModel, 
-    ExperimentModel, 
-    ParticipantModel, 
-    PeerconnectionModel, 
-    RoleModel, 
-    ServiceConfigurationModel 
-} from "../model"
-import { config } from "../config"
+} from "../generated/signatures"
+import { formatExperimentModel } from '../database/methods/format'
+import { writeExperimentModel } from '../database/methods/write'
+import { bookExperiment, finishExperiment, runExperiment } from '../util/experimentStatus'
+import { InconsistentDatabaseError, MissingEntityError } from '../types/errors'
+import {
+    findAllExperimentModels,
+    findExperimentModelById,
+} from '../database/methods/find'
+import { createExperimentModel } from '../database/methods/create'
+import { saveExperimentModel } from '../database/methods/save'
+import { deleteExperimentModelById } from '../database/methods/delete'
+import { RequestHandler } from '../util/requestHandler'
 
-const ExperimentBaseUrl = config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'experiments/'
-
-function formatDevice(device: DeviceModel) {
-    return {
-        device: device.url,
-        role: device.role
-    }
-}
-
-function formatRole(role: RoleModel) {
-    return {
-        name: role.name,
-        description: role.description
-    }
-}
-
-function formatParticipant(participant: ParticipantModel) {
-    return {
-        role: participant.role,
-        serviceId: participant.serviceId,
-        config: participant.config ? JSON.parse(participant.config) : undefined
-    }
-}
-
-function formatServiceConfiguration(serviceConfiguration: ServiceConfigurationModel): ServiceConfiguration {
-    return {
-        serviceType: serviceConfiguration.serviceType,
-        configuration: serviceConfiguration.configuration ? JSON.parse(serviceConfiguration.configuration) : undefined,
-        participants: serviceConfiguration.participants ? serviceConfiguration.participants.map(formatParticipant) : undefined
-    }
-}
-
-function formatExperiment(experiment: ExperimentModel): Experiment {
-    return {
-        url: ExperimentBaseUrl + experiment.uuid,
-        bookingTime: {
-            startTime: experiment.bookingStart,
-            endTime: experiment.bookingEnd
-        },
-        status: experiment.status,
-        devices: experiment.devices ? experiment.devices.map(formatDevice) : undefined,
-        roles: experiment.roles ? experiment.roles.map(formatRole) : undefined,
-        connections: experiment.connections ? experiment.connections.map(c => c.url) : undefined,
-        serviceConfigurations: experiment.serviceConfigurations ? experiment.serviceConfigurations.map(formatServiceConfiguration) : undefined
-    }
-}
-
-function writeDevice(device: DeviceModel, object: { device?: string, role?: string }) {
-    if (object.device) device.url = object.device
-    if (object.role) device.role = object.role
-}
-
-function writeRole(role: RoleModel, object: Role) {
-    if (object.name) role.name = object.name
-    if (object.description) role.description = object.description
-}
-
-function writePeerconnection(peerconnection: PeerconnectionModel, object: string) {
-    peerconnection.url = object
-}
-
-function writeParticipant(participant: ParticipantModel, object: { role?: string, serviceId?: string, config?: { serviceId?: string } }) {
-    if (object.role) participant.role = object.role
-    if (object.serviceId) participant.serviceId = object.serviceId
-    if (object.config) participant.config = JSON.stringify(object.config)
-}
-
-async function writeServiceConfiguration(serviceConfiguration: ServiceConfigurationModel, object: ServiceConfiguration) {
-    if (object.serviceType) serviceConfiguration.serviceType = object.serviceType
-    if (object.configuration) serviceConfiguration.configuration = JSON.stringify(object.configuration)
-    if (object.participants) {
-        serviceConfiguration.participants = []
-        const participantRepository = AppDataSource.getRepository(ParticipantModel)
-        for (const p of object.participants) {
-            const participant = participantRepository.create()
-            writeParticipant(participant, p)
-            await participantRepository.save(participant)
-            serviceConfiguration.participants.push(participant)
-        }
-    }
-}
-
-async function writeExperiment(experiment: ExperimentModel, object: Experiment) {
-    if (object.status) experiment.status = object.status
-    if (object.bookingTime) {
-        if (object.bookingTime.startTime) experiment.bookingStart = object.bookingTime.startTime
-        if (object.bookingTime.endTime) experiment.bookingEnd = object.bookingTime.endTime
-    }
-    if (object.devices) {
-        experiment.devices = []
-        const deviceRepository = AppDataSource.getRepository(DeviceModel)
-        for (const d of object.devices) {
-            const device = deviceRepository.create()
-            writeDevice(device, d)
-            await deviceRepository.save(device)
-            experiment.devices.push(device)
-        }
-    }
-    if (object.roles) {
-        experiment.roles = []
-        const roleRepository = AppDataSource.getRepository(RoleModel)
-        for (const r of object.roles) {
-            const role = roleRepository.create()
-            writeRole(role, r)
-            await roleRepository.save(role)
-            experiment.roles.push(role)
-        }
-    }
-    if (object.connections) {
-        experiment.connections = []
-        const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
-        for (const pc of object.connections) {
-            const peerconnection = peerconnectionRepository.create()
-            writePeerconnection(peerconnection, pc)
-            await peerconnectionRepository.save(peerconnection)
-            experiment.connections.push(peerconnection)
-        }
-    }
-    if (object.serviceConfigurations) {
-        experiment.serviceConfigurations = []
-        const serviceConfigurationRepository = AppDataSource.getRepository(ServiceConfigurationModel)
-        for (const sc of object.serviceConfigurations) {
-            const serviceConfiguration = serviceConfigurationRepository.create()
-            await writeServiceConfiguration(serviceConfiguration, sc)
-            await serviceConfigurationRepository.save(serviceConfiguration)
-            experiment.serviceConfigurations.push(serviceConfiguration)
-        }
-    }
-}
-
+/**
+ * This function implements the functionality for handling GET requests on
+ * /experiments endpoint.
+ * @param _user The user submitting the request.
+ */
 export const getExperiments: getExperimentsSignature = async (_user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiments = await experimentRepository.find()
+    const requestHandler: RequestHandler = new RequestHandler('getExperiments')
+    requestHandler.log('info', `Handling GET request on endpoint /experiments`)
 
-    return {
+    const experiments = await requestHandler.executeAsync(findAllExperimentModels)
+
+    const result: ReturnType<getExperimentsSignature> = {
         status: 200,
-        body: experiments.map(formatExperiment)
+        body: experiments.map((e) =>
+            requestHandler.executeSync(formatExperimentModel, e)
+        ),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled GET request on endpoint /experiments`
+    )
+
+    return result
 }
 
+/**
+ * This function implements the functionality for handling POST requests on
+ * /experiments endpoint.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
 export const postExperiments: postExperimentsSignature = async (body, _user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = experimentRepository.create()
-    await writeExperiment(experiment, body)
-    await experimentRepository.save(experiment)
+    const requestHandler: RequestHandler = new RequestHandler('postExperiments')
+    requestHandler.log('info', `Handling POST request on endpoint /experiments`)
 
-    return {
+    const experimentModel = requestHandler.executeSync(createExperimentModel, body)
+    const requestedStatus = body.status
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+
+    if (requestedStatus === 'booked')
+        await requestHandler.executeAsync(bookExperiment, experimentModel)
+    if (requestedStatus === 'running')
+        await requestHandler.executeAsync(runExperiment, experimentModel)
+    if (requestedStatus === 'finished')
+        await requestHandler.executeAsync(finishExperiment, experimentModel)
+    await requestHandler.executeAsync(saveExperimentModel, experimentModel) // NOTE: truly needed?
+
+    const result: ReturnType<postExperimentsSignature> = {
         status: 201,
-        body: formatExperiment(experiment)
+        body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled POST request on endpoint /experiments`
+    )
+
+    return result
 }
 
-export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature = async (parameters, _user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = await experimentRepository.findOne({
-        where: {
-            uuid: parameters.experiment_id
-        },
-        relations: {
-            devices: true,
-            connections: true,
-            roles: true,
-            serviceConfigurations: true
-        }
-    })
+/**
+ * This function implements the functionality for handling GET requests on
+ * /experiments/{experiment_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature = async (
+    parameters,
+    _user
+) => {
+    const requestHandler: RequestHandler = new RequestHandler(
+        'getExperimentsByExperimentId'
+    )
+    requestHandler.log(
+        'info',
+        `Handling GET request on endpoint /experiments/${parameters.experiment_id}`
+    )
 
-    if (!experiment) {
-        return {
-            status: 404
-        }
+    const experimentModel = await requestHandler.executeAsync(
+        findExperimentModelById,
+        parameters.experiment_id
+    )
+
+    if (!experimentModel) {
+        requestHandler.throw(
+            MissingEntityError,
+            `Could not find experiment model ${parameters.experiment_id}`,
+            404
+        )
     }
 
-    return {
+    const result: ReturnType<getExperimentsByExperimentIdSignature> = {
         status: 200,
-        body: formatExperiment(experiment)
+        body: requestHandler.executeSync(formatExperimentModel, experimentModel),
     }
+
+    requestHandler.log(
+        'info',
+        `Successfully handled GET request on endpoint /experiments/${parameters.experiment_id}`
+    )
+
+    return result
 }
 
-export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature = async (parameters, _user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const result = await experimentRepository.softDelete({ uuid: parameters.experiment_id })
+/**
+ * This function implements the functionality for handling DELETE requests on
+ * /experiments/{experiment_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param _user The user submitting the request.
+ */
+export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature =
+    async (parameters, _user) => {
+        const requestHandler: RequestHandler = new RequestHandler(
+            'deleteExperimentsByExperimentId'
+        )
+        requestHandler.log(
+            'info',
+            `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`
+        )
 
-    if (!result.affected) {
+        const result = await requestHandler.executeAsync(
+            deleteExperimentModelById,
+            parameters.experiment_id
+        )
+
+        if (!result.affected) {
+            requestHandler.throw(
+                MissingEntityError,
+                `Could not find experiment model ${parameters.experiment_id}`,
+                404
+            )
+        }
+
+        if (result.affected > 1) {
+            requestHandler.throw(
+                InconsistentDatabaseError,
+                `More than one experiment model with id ${parameters.experiment_id} deleted`,
+                500
+            )
+        }
+
+        requestHandler.log(
+            'info',
+            `Successfully handled DELETE request on endpoint /experiments/${parameters.experiment_id}`
+        )
+
         return {
-            status: 404
+            status: 204,
         }
     }
-    
-    if (result.affected > 1) {
-        // TBD
-    }
 
-    return {
-        status: 204
-    }
-}
+/**
+ * This function implements the functionality for handling PATCH requests on
+ * /experiment/{experiment_id} endpoint.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ * @param _user The user submitting the request.
+ */
+export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
+    async (parameters, body, _user) => {
+        const requestHandler: RequestHandler = new RequestHandler(
+            'patchExperimentsByExperimentId'
+        )
+        requestHandler.log(
+            'info',
+            `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`
+        )
 
-export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature = async (parameters, body, _user) => {
-    const experimentRepository = AppDataSource.getRepository(ExperimentModel)
-    const experiment = await experimentRepository.findOneBy({ uuid: parameters.experiment_id })
+        const experimentModel = await requestHandler.executeAsync(
+            findExperimentModelById,
+            parameters.experiment_id
+        )
 
-    if (!experiment) {
-        return {
-            status: 404
+        if (!experimentModel) {
+            requestHandler.throw(
+                MissingEntityError,
+                `Could not find experiment model ${parameters.experiment_id}`,
+                404
+            )
         }
-    }
 
-    await writeExperiment(experiment, body)
-    await experimentRepository.save(experiment)
+        if (body) requestHandler.executeSync(writeExperimentModel, experimentModel, body)
 
-    return {
-        status: 200,
-        body: formatExperiment(experiment)
+        if (experimentModel.status === 'booked')
+            await requestHandler.executeAsync(bookExperiment, experimentModel)
+        if (experimentModel.status === 'running')
+            await requestHandler.executeAsync(runExperiment, experimentModel)
+        if (experimentModel.status === 'finished')
+            await requestHandler.executeAsync(finishExperiment, experimentModel)
+        await requestHandler.executeAsync(saveExperimentModel, experimentModel)
+
+        const result: ReturnType<patchExperimentsByExperimentIdSignature> = {
+            status: 200,
+            body: requestHandler.executeSync(formatExperimentModel, experimentModel),
+        }
+
+        requestHandler.log(
+            'info',
+            `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`
+        )
+
+        return result
     }
-}
