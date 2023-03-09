@@ -1,9 +1,9 @@
-import { ScopeModel } from '../../src/database/model'
-import { EntityData } from './index.spec'
+import { ScopeRepository } from '../../src/database/repositories/scopeRepository'
+import { EntityData } from '@crosslab/service-common'
 
 export const scopeNames = ['scope 1', 'scope 2', 'scope 3', 'scope 4', 'scope 5'] as const
 export type ScopeName = (typeof scopeNames)[number]
-export type ScopeData = Record<ScopeName, EntityData<ScopeModel>>
+export type ScopeData = Record<ScopeName, EntityData<ScopeRepository>>
 
 const scopeData: ScopeData = {
     'scope 1': {
@@ -43,7 +43,7 @@ const scopeData: ScopeData = {
     },
 }
 
-export function resolveScope(scopeName: ScopeName): EntityData<ScopeModel> {
+export function resolveScope(scopeName: ScopeName): EntityData<ScopeRepository> {
     return scopeData[scopeName]
 }
 

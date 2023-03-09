@@ -1,16 +1,22 @@
-import { AbstractRepository } from './abstractRepository'
 import { ActiveKey } from '../../types/types'
 import { ActiveKeyModel } from '../model'
 import { keyRepository } from './keyRepository'
-import { AppDataSource } from '../dataSource'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
 import { FindOptionsRelations } from 'typeorm'
 
-export class ActiveKeyRepository extends AbstractRepository<ActiveKeyModel> {
+export class ActiveKeyRepository extends AbstractRepository<
+    ActiveKeyModel,
+    ActiveKey<'request'>,
+    ActiveKey<'response'>
+> {
     constructor() {
-        super(ActiveKeyModel)
+        super('Active Key')
     }
 
-    public initialize(): void {
+    public initialize(AppDataSource: AbstractApplicationDataSource): void {
         this.repository = AppDataSource.getRepository(ActiveKeyModel)
     }
 

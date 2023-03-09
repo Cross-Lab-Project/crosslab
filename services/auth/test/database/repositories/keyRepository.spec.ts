@@ -1,12 +1,24 @@
+import { AppDataSource } from '../../../src/database/dataSource'
+import { KeyModel } from '../../../src/database/model'
+import {
+    KeyRepository,
+    keyRepository,
+} from '../../../src/database/repositories/keyRepository'
+import { Key } from '../../../src/types/types'
+import { KeyName } from '../../data/keyData.spec'
+import { initTestDatabase } from './index.spec'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
-import { KeyModel } from '../../../src/database/model'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
-import { Key } from '../../../src/types/types'
 
-class KeyRepositoryTestSuite extends AbstractRepositoryTestSuite<KeyModel> {
+class KeyRepositoryTestSuite extends AbstractRepositoryTestSuite<KeyName, KeyRepository> {
+    protected name = 'keys' as const
+    protected repository = keyRepository
+    protected getEntityData = async () => (await initTestDatabase())['keys']
+    protected RepositoryClass = KeyRepository
+
     constructor() {
-        super(KeyModel)
+        super(AppDataSource)
     }
 
     validateCreate(model: KeyModel, data?: Key<'request'>): boolean {
