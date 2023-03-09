@@ -1,14 +1,20 @@
-import { AbstractRepository } from './abstractRepository'
-import { ScopeModel } from '../model'
-import { AppDataSource } from '../dataSource'
 import { Scope } from '../../types/types'
+import { ScopeModel } from '../model'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
 
-export class ScopeRepository extends AbstractRepository<ScopeModel> {
+export class ScopeRepository extends AbstractRepository<
+    ScopeModel,
+    Scope<'request'>,
+    Scope<'response'>
+> {
     constructor() {
-        super(ScopeModel)
+        super('Scope')
     }
 
-    public initialize(): void {
+    public initialize(AppDataSource: AbstractApplicationDataSource): void {
         this.repository = AppDataSource.getRepository(ScopeModel)
     }
 

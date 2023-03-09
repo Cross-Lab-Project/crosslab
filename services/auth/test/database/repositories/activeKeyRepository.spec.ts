@@ -1,12 +1,27 @@
+import { AppDataSource } from '../../../src/database/dataSource'
+import { ActiveKeyModel } from '../../../src/database/model'
+import {
+    ActiveKeyRepository,
+    activeKeyRepository,
+} from '../../../src/database/repositories/activeKeyRepository'
+import { ActiveKey } from '../../../src/types/types'
+import { ActiveKeyName } from '../../data/activeKeyData.spec'
+import { initTestDatabase } from './index.spec'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
-import { ActiveKeyModel } from '../../../src/database/model'
-import { ActiveKey } from '../../../src/types/types'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 
-class ActiveKeyRepositoryTest extends AbstractRepositoryTestSuite<ActiveKeyModel> {
+class ActiveKeyRepositoryTest extends AbstractRepositoryTestSuite<
+    ActiveKeyName,
+    ActiveKeyRepository
+> {
+    protected name = 'active keys' as const
+    protected repository = activeKeyRepository
+    protected getEntityData = async () => (await initTestDatabase())['active keys']
+    protected RepositoryClass = ActiveKeyRepository
+
     constructor() {
-        super(ActiveKeyModel)
+        super(AppDataSource)
     }
 
     validateCreate(model: ActiveKeyModel, data?: ActiveKey<'request'>): boolean {

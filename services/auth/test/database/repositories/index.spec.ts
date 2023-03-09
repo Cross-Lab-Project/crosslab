@@ -1,4 +1,3 @@
-import { DataSourceOptions } from 'typeorm'
 import { AppDataSource } from '../../../src/database/dataSource'
 import {
     ScopeModel,
@@ -28,6 +27,7 @@ import { roleRepositoryTestSuite } from './roleRepository.spec'
 import { scopeRepositoryTestSuite } from './scopeRepository.spec'
 import { tokenRepositoryTestSuite } from './tokenRepository.spec'
 import { userRepositoryTestSuite } from './userRepository.spec'
+import { DataSourceOptions } from 'typeorm'
 
 const repositoryTestSuites = [
     activeKeyRepositoryTestSuite,
@@ -81,7 +81,7 @@ export async function initTestDatabase(): Promise<TestData> {
     }
 
     for (const activeKeyName of activeKeyNames) {
-        await activeKeyRepository.save(testData.activeKeys[activeKeyName].model)
+        await activeKeyRepository.save(testData['active keys'][activeKeyName].model)
     }
 
     for (const roleName of roleNames) {

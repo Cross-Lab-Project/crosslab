@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
+import { KeyRepository } from '../../src/database/repositories/keyRepository'
+import { EntityData } from '@crosslab/service-common'
 import { JWK } from 'jose'
-import { KeyModel } from '../../src/database/model'
-import { EntityData } from './index.spec'
 
 export const keyNames = ['key 1', 'GET /auth key'] as const
 export type KeyName = (typeof keyNames)[number]
-export type KeyData = Record<KeyName, EntityData<KeyModel>>
+export type KeyData = Record<KeyName, EntityData<KeyRepository>>
 
 const keys: Record<KeyName, { private: JWK; public: JWK }> = {
     'key 1': {

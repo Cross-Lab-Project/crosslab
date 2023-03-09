@@ -1,9 +1,10 @@
 import { UserModel } from '../../src/database/model'
+import { UserRepository } from '../../src/database/repositories/userRepository'
 import { User } from '../../src/generated/types'
 import { userUrlFromId } from '../../src/methods/utils'
-import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveRole, RoleName } from './roleData.spec'
 import { resolveToken, TokenName } from './tokenData.spec'
+import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
 
 export const userNames = [
     'superadmin',
@@ -13,7 +14,7 @@ export const userNames = [
     'POST /logout user',
 ] as const
 export type UserName = (typeof userNames)[number]
-export type UserData = Record<UserName, EntityData<UserModel>>
+export type UserData = Record<UserName, EntityData<UserRepository>>
 
 type UserWithLinks<T extends 'all' | 'request' | 'response' = 'all'> = ReplaceWith<
     User<T>,
