@@ -1,5 +1,5 @@
 import Ajv from 'ajv'
-import { format } from 'prettier'
+// import { format } from 'prettier'
 import standaloneCode from 'ajv/dist/standalone'
 import addFormats from 'ajv-formats'
 import { ExtendedSchema } from './resolve'
@@ -37,5 +37,5 @@ export function validation_filter(schemas: ExtendedSchema[]) {
                 schema['x-name'].slice(1)
         ] = schema['x-location']
     }
-    return format(standaloneCode(ajv, mapping), { parser: 'babel', tabWidth: 4 })
+    return standaloneCode(ajv, mapping)
 }
