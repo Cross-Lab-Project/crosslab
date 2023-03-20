@@ -3,7 +3,7 @@ import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../gener
 import { ClosePeerconnectionMessage } from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { sendClosedCallback } from '../../../methods/callbacks'
-import { peerconnectionUrlFromId } from '../../../methods/utils'
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
 
 /**
  * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.

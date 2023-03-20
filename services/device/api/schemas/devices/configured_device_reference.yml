@@ -12,4 +12,6 @@ properties:
       services:
         type: array
         items:
-          $ref: './service_config.yml'
+          $ref: './services/service_config.yml'
+required:
+  - url

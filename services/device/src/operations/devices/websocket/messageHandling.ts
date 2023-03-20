@@ -1,7 +1,7 @@
-import { ConcreteDeviceModel } from '../database/model'
-import { SignalingMessage, Message, isSignalingMessage } from '../generated/types'
-import { apiClient } from '../globals'
-import { deviceUrlFromId } from './utils'
+import { ConcreteDeviceModel } from '../../../database/model'
+import { SignalingMessage, Message, isSignalingMessage } from '../../../generated/types'
+import { apiClient } from '../../../globals'
+import { deviceUrlFromId } from '../../../methods/urlFromId'
 import {
     MissingPropertyError,
     UnrelatedPeerconnectionError,

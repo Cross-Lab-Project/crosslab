@@ -1,7 +1,7 @@
-import { MissingPropertyError } from "@crosslab/service-common"
-import { deviceRepository } from "../../../database/repositories/device"
-import { patchDevicesByDeviceIdSignature } from "../../../generated/signatures"
-import { changedCallbacks, sendChangedCallback } from "../../../methods/callbacks"
+import { deviceRepository } from '../../../database/repositories/device'
+import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures'
+import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks'
+import { MissingPropertyError } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.

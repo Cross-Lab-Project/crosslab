@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Peerconnection
 allOf:
-  - $ref: ./peerconnection_overview.yml
+  - $ref: ./peerconnection_common.yml
   - type: object
     properties:
       devices:
@@ -9,10 +9,11 @@ allOf:
         minItems: 2
         maxItems: 2
         items:
-          $ref: "./configured_device_reference.yml"
+          $ref: "../devices/configured_device_reference.yml"
       status:
         type: string
         description: The status of the peerconnection.
+        readOnly: true
         enum:
           - waiting-for-devices
           - connected

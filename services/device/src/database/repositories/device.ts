@@ -1,12 +1,12 @@
 import {
+    Device,
     DeviceOverview,
     isConcreteDevice,
     isDeviceGroup,
     isInstantiableBrowserDevice,
     isInstantiableCloudDevice,
 } from '../../generated/types'
-import { Device, DeviceModel } from '../../types/device'
-import { DeviceOverviewModel } from '../model'
+import { DeviceModel, DeviceOverviewModel } from '../model'
 import { concreteDeviceRepository } from './device/concreteDevice'
 import { deviceGroupRepository } from './device/deviceGroup'
 import { DeviceOverviewRepository } from './device/deviceOverview'

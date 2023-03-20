@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
-title: Peerconnection Overview
 type: object
 properties:
   url:
@@ -7,12 +6,6 @@ properties:
     description: URL of the peerconnection
     format: uri
     readOnly: true
-  devices:
-    type: array
-    minItems: 2
-    maxItems: 2
-    items:
-      $ref: "./device_reference.yml"
   type:
     type: string
     description: Type of the peerconnection

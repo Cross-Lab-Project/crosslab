@@ -103,6 +103,28 @@
           "$ref": "#/components/schemas/time_slot"
         }
       },
+      "service_description": {
+        "title": "Service Description",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "serviceDirection": {
+            "type": "string",
+            "enum": [
+              "consumer",
+              "producer",
+              "prosumer"
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
       "device_concrete": {
         "title": "Concrete Device",
         "allOf": [
@@ -131,56 +153,13 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/service_description"
                 }
               }
             }
           }
         ],
         "x-typeguard": true
-      },
-      "availability_rule": {
-        "title": "Availability Rule",
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/time_slot"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "available": {
-                "type": "boolean"
-              },
-              "repeat": {
-                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
-                "type": "object",
-                "properties": {
-                  "frequency": {
-                    "type": "string",
-                    "enum": [
-                      "HOURLY",
-                      "DAILY",
-                      "WEEKLY",
-                      "MONTHLY",
-                      "YEARLY"
-                    ]
-                  },
-                  "until": {
-                    "description": "Up to this date-time the time slot will be repeated.",
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "count": {
-                    "description": "How often the time slot will be repeated",
-                    "type": "integer"
-                  }
-                }
-              }
-            }
-          }
-        ]
       },
       "device_reference": {
         "title": "Device Reference",
@@ -238,8 +217,7 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/service_description"
                 }
               }
             }
@@ -266,14 +244,149 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/service_description"
                 }
               }
             }
           }
         ],
         "x-typeguard": true
+      },
+      "device_init": {
+        "title": "Device Init",
+        "anyOf": [
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/device_concrete"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "device"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/device_group"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "group"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/device_cloud_instantiable"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "cloud instantiable"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/device_edge_instantiable"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "const": "edge instantiable"
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "device": {
+        "title": "Device",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_group"
+          }
+        ]
+      },
+      "availability_rule": {
+        "title": "Availability Rule",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/time_slot"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "repeat": {
+                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "HOURLY",
+                      "DAILY",
+                      "WEEKLY",
+                      "MONTHLY",
+                      "YEARLY"
+                    ]
+                  },
+                  "until": {
+                    "description": "Up to this date-time the time slot will be repeated.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "count": {
+                    "description": "How often the time slot will be repeated",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        ]
       },
       "message": {
         "title": "Message",
@@ -454,8 +567,7 @@
         ],
         "x-typeguard": true
       },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
+      "peerconnection_common": {
         "type": "object",
         "properties": {
           "url": {
@@ -463,14 +575,6 @@
             "description": "URL of the peerconnection",
             "format": "uri",
             "readOnly": true
-          },
-          "devices": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-              "$ref": "#/components/schemas/device_reference"
-            }
           },
           "type": {
             "type": "string",
@@ -481,6 +585,27 @@
             ]
           }
         }
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_common"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            }
+          }
+        ]
       },
       "configured_device_reference": {
         "title": "Configured Device Reference",
@@ -502,13 +627,16 @@
               }
             }
           }
-        }
+        },
+        "required": [
+          "url"
+        ]
       },
       "peerconnection": {
         "title": "Peerconnection",
         "allOf": [
           {
-            "$ref": "#/components/schemas/peerconnection_overview"
+            "$ref": "#/components/schemas/peerconnection_common"
           },
           {
             "type": "object",
@@ -524,6 +652,7 @@
               "status": {
                 "type": "string",
                 "description": "The status of the peerconnection.",
+                "readOnly": true,
                 "enum": [
                   "waiting-for-devices",
                   "connected",
@@ -702,36 +831,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device_init"
               },
               "examples": {
                 "microcontroller": {
@@ -845,20 +945,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -1080,20 +1167,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -1245,36 +1319,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device_init"
               },
               "examples": {
                 "microcontroller": {
@@ -1388,20 +1433,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {

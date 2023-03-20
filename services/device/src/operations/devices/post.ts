@@ -1,6 +1,6 @@
-import { deviceRepository } from "../../database/repositories/device"
-import { postDevicesSignature } from "../../generated/signatures"
-import { changedCallbacks } from "../../methods/callbacks"
+import { deviceRepository } from '../../database/repositories/device'
+import { postDevicesSignature } from '../../generated/signatures'
+import { changedCallbacks } from '../../methods/callbacks'
 
 /**
  * This function implements the functionality for handling POST requests on /devices endpoint.

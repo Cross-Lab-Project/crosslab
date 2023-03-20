@@ -1,6 +1,5 @@
-import { DeviceGroup, DeviceReference } from '../../../generated/types'
+import { Device, DeviceGroup, DeviceReference } from '../../../generated/types'
 import { apiClient } from '../../../globals'
-import { Device } from '../../../types/device'
 import { DeviceGroupModel } from '../../model'
 import { DeviceOverviewRepository } from './deviceOverview'
 import {

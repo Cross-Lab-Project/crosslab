@@ -1,5 +1,5 @@
 import { DeviceOverview } from '../../../generated/types'
-import { deviceUrlFromId } from '../../../methods/utils'
+import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { DeviceOverviewModel } from '../../model'
 import { AbstractRepository } from '@crosslab/service-common'
 

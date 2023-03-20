@@ -12,7 +12,7 @@ allOf:
         type: boolean
         readOnly: true
       announcedAvailability:
-        $ref: "../schemas/availability.yml"
+        $ref: "./availability/availability.yml"
         readOnly: true
       experiment:
         type: string
@@ -20,6 +20,5 @@ allOf:
       services:
         type: array
         items:
-          type: object
-          additionalProperties: true
+          $ref: ./services/service_description.yml
 x-typeguard: true

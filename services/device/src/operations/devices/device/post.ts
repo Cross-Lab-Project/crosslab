@@ -1,10 +1,14 @@
-import { ForbiddenOperationError, InvalidValueError, MissingPropertyError } from "@crosslab/service-common"
-import { deviceRepository } from "../../../database/repositories/device"
-import { postDevicesByDeviceIdSignature } from "../../../generated/signatures"
-import { ConcreteDevice } from "../../../generated/types"
-import { apiClient } from "../../../globals"
-import { changedCallbacks } from "../../../methods/callbacks"
-import { deviceUrlFromId } from "../../../methods/utils"
+import { deviceRepository } from '../../../database/repositories/device'
+import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
+import { ConcreteDevice } from '../../../generated/types'
+import { apiClient } from '../../../globals'
+import { changedCallbacks } from '../../../methods/callbacks'
+import { deviceUrlFromId } from '../../../methods/urlFromId'
+import {
+    ForbiddenOperationError,
+    InvalidValueError,
+    MissingPropertyError,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.

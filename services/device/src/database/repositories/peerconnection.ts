@@ -1,5 +1,5 @@
 import { Peerconnection } from '../../generated/types'
-import { peerconnectionUrlFromId } from '../../methods/utils'
+import { peerconnectionUrlFromId } from '../../methods/urlFromId'
 import { PeerconnectionModel } from '../model'
 import {
     AbstractApplicationDataSource,
@@ -32,7 +32,6 @@ export class PeerconnectionRepository extends AbstractRepository<
         data: Peerconnection<'request'>
     ): Promise<void> {
         if (data.type) model.type = data.type
-        if (data.status) model.status = data.status
 
         if (data.devices && data.devices.length !== 2) {
             throw new InvalidValueError(
