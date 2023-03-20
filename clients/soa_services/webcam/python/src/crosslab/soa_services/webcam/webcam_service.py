@@ -1,4 +1,4 @@
-from aiortc import MediaStreamTrack
+from aiortc import MediaStreamTrack  # type: ignore
 from crosslab.soa_client.connection import Connection, MediaChannel
 from crosslab.soa_client.service import Service
 

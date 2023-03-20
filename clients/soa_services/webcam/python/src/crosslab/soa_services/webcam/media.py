@@ -4,7 +4,7 @@ import socket
 import subprocess
 from typing import Optional
 
-from aiortc import MediaStreamTrack
+from aiortc import MediaStreamTrack  # type: ignore
 
 
 class UDPTrack(MediaStreamTrack):
