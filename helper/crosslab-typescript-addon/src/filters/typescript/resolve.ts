@@ -1,6 +1,6 @@
-import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName, formatOperation } from './format'
 import { userTypeSchema } from './schemas/userType'
+import { OpenAPIV3_1 } from 'openapi-types'
 
 /**
  * This type extends a SchemaObject with the properties 'x-name', 'x-standalone',
@@ -339,17 +339,78 @@ export function resolveSchemas(
     ) as ExtendedSchema[]
 
     for (const extendedSchema of _extendedSchemas) {
-        const readonlyRegex = /"[^"]*?":{[^{}]*?"readOnly":true[^{}]*?},?/gms
-        const writeonlyRegex = /"[^"]*?":{[^{}]*?"writeOnly":true[^{}]*?},?/gms
+        const readonlyRegex = /"[^\"]*?":{[^{}]*?"readOnly":true/gms
+        const writeonlyRegex = /"[^\"]*?":{[^{}]*?"writeOnly":true/gms
 
         const stringifiedExtendedSchema = JSON.stringify(extendedSchema)
+
+        const requestRegexMatches = stringifiedExtendedSchema.matchAll(readonlyRegex)
+        const requestMatches = []
+        for (const match of requestRegexMatches) {
+            let index = match.index ?? 0
+            let open = 0
+            let started = false
+
+            while (!started || open !== 0) {
+                if (stringifiedExtendedSchema.at(index) === '{') {
+                    started = true
+                    open++
+                } else if (stringifiedExtendedSchema.at(index) === '}') {
+                    open--
+                }
+                index++
+            }
+
+            requestMatches.push(stringifiedExtendedSchema.slice(match.index ?? 0, index))
+        }
+
+        const responseRegexMatches = stringifiedExtendedSchema.matchAll(writeonlyRegex)
+        const responseMatches = []
+        for (const match of responseRegexMatches) {
+            let index = match.index ?? 0
+            let open = 0
+            let started = false
+
+            while (!started || open !== 0) {
+                if (stringifiedExtendedSchema.at(index) === '{') {
+                    started = true
+                    open++
+                } else if (stringifiedExtendedSchema.at(index) === '}') {
+                    open--
+                }
+                index++
+            }
+
+            responseMatches.push(stringifiedExtendedSchema.slice(match.index ?? 0, index))
+        }
+
         const stringifiedRequestSchema = stringifiedExtendedSchema
-            .replace(readonlyRegex, '')
+            .replace(
+                RegExp(
+                    `(?:${requestMatches
+                        .map((match) => match.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'))
+                        .join('|')})`,
+                    'gms'
+                ),
+                ''
+            )
+            .replace(/,,/g, '')
             .replace(/,}/g, '}')
+            .replace(/{,/g, '{')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_request"')
         const stringifiedResponseSchema = stringifiedExtendedSchema
-            .replace(writeonlyRegex, '')
+            .replace(
+                RegExp(
+                    `(?:${responseMatches
+                        .map((match) => match.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'))
+                        .join('|')})`,
+                    'gms'
+                ),
+                ''
+            )
+            .replace(/,,/g, '')
             .replace(/,}/g, '}')
+            .replace(/{,/g, '{')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_response"')
 
         const requestSchema = JSON.parse(stringifiedRequestSchema) as ExtendedSchema
