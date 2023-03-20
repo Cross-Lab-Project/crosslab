@@ -3,7 +3,7 @@ import {JSONSchemaFaker} from 'deterministic-json-schema-faker';
 import seedrandom from 'seedrandom';
 
 export function formatPath_filter(path: string) {
-  let splitPath = path.split("/").slice(1);
+  const splitPath = path.split("/").slice(1);
   return splitPath
     .map((el) => {
       if (el.startsWith("{") && el.endsWith("}")) el = "#";
