@@ -1,3 +1,21 @@
+PREFIX=""
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    --prefix)
+      PREFIX="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
+    *) # unknown option
+      shift # past argument
+    ;;
+  esac
+done
+
 declare -A dependencies
 declare -A status
 declare -A files
@@ -22,13 +40,13 @@ raw_jobs=$(cat .jobs.yml | yq -r '. | to_entries | .[] | .key as $k | .value | m
 oldIFS="$IFS"
 IFS=$'\n'
 for raw_job in $raw_jobs; do
-  job_name=$(echo $raw_job | cut -f1)
+  job_name="$PREFIX$(echo $raw_job | cut -f1)"
   job_names+=($job_name)
 
   d=$(echo $raw_job | cut -f2)
-  d=${d/[\"/}
+  d=${d/[\"/"$PREFIX"}
   d=${d/\"]/}
-  d=${d//\",\"/$'\n'}
+  d=${d//\",\"/$'\n'"$PREFIX"}
   d=${d/null/}
   dependencies[$job_name]=$d
 
@@ -41,12 +59,12 @@ for raw_job in $raw_jobs; do
   paths=${paths//\",\"/$'\n'}
   paths=${paths/null/}
   if [ -n "$paths" ]; then
-    files[$job_name]=$(echo $paths | sed "s#\.\/#$path\/#g")
+    files[$job_name]=$(realpath $(echo $paths | sed "s#\.\/#$path\/#g"))
   else
-    files[$job_name]=$path
+    files[$job_name]=$(realpath $path)
   fi
 
-  root[$job_name]=$path
+  root[$job_name]=$(realpath $path)
   script[$job_name]=$(echo $raw_job | cut -f5)
   script_args[$job_name]=$(echo $raw_job | cut -f6)
   d=$(echo $raw_job | cut -f7)

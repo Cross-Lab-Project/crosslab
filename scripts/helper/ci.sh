@@ -19,6 +19,12 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    --include)
+      INCLUDE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+
     --branch)
       SUBCOMMANDVARS="$SUBCOMMANDVARS --branch $2"
       shift # past argument
@@ -118,8 +124,28 @@ fi
 
 source $SCRIPT_DIR/printing_functions.sh
 
-# load .jobs.yaml
+if [ ! -z $INCLUDE ]; then
+  echo "Parsing $INCLUDE/jobs.yml..."
+  cd $SCRIPT_DIR/../../$INCLUDE
+  source $SCRIPT_DIR/job_parsing.sh --prefix $INCLUDE/
 
+  for job in "${job_names[@]}"; do
+    if [ "$(cat ${root[$job]}/dist/${script[$job]}.status 2>/dev/null)" = "success" ]; then
+      for dependency in ${dependencies[$job]}; do
+        if [ -e ${root[$dependency]}/scripts/set-scene.sh ]; then
+          ${root[$dependency]}/scripts/set-scene.sh || true
+        fi
+      done
+      status[$job]="success"
+    else
+      status[$job]="failed"
+      failed_jobs="$failed_jobs $job"
+    fi
+  done
+fi
+
+cd $SCRIPT_DIR/../..
+# load .jobs.yaml
 echo_start "Parsing .jobs.yml..."
 source $SCRIPT_DIR/job_parsing.sh
 echo_end "Done"
