@@ -81,7 +81,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
                 ] as OpenAPIV3_1.OperationObject
 
                 // Create SimplifiedOperation with known properties
-                let simplifiedOperation: SimplifiedOperation = {
+                const simplifiedOperation: SimplifiedOperation = {
                     name: formatOperation(path, method),
                     path: path,
                     method: method,
@@ -193,7 +193,7 @@ export function resolveOperations(api: OpenAPIV3_1.Document): SimplifiedOperatio
  */
 export function resolveSchemas(
     api: OpenAPIV3_1.Document,
-    isService: boolean = true
+    isService = true
 ): ExtendedSchema[] {
     const extendedSchemas: ExtendedSchema[] = []
 
@@ -339,8 +339,8 @@ export function resolveSchemas(
     ) as ExtendedSchema[]
 
     for (const extendedSchema of _extendedSchemas) {
-        const readonlyRegex = /"[^\"]*?":{[^{}]*?"readOnly":true[^{}]*?},?/gms
-        const writeonlyRegex = /"[^\"]*?":{[^{}]*?"writeOnly":true[^{}]*?},?/gms
+        const readonlyRegex = /"[^"]*?":{[^{}]*?"readOnly":true[^{}]*?},?/gms
+        const writeonlyRegex = /"[^"]*?":{[^{}]*?"writeOnly":true[^{}]*?},?/gms
 
         const stringifiedExtendedSchema = JSON.stringify(extendedSchema)
         const stringifiedRequestSchema = stringifiedExtendedSchema
@@ -379,7 +379,7 @@ export function resolveSchemas(
  */
 export function generateInvalidSchemas(
     schema: OpenAPIV3_1.SchemaObject,
-    prefix: string = 'schema'
+    prefix = 'schema'
 ): {
     schema: OpenAPIV3_1.SchemaObject
     path: string
@@ -553,6 +553,7 @@ export function generateInvalidSchemas(
             }
             break
         case 'array':
+            // eslint-disable-next-line no-case-declarations
             const invalidItemsSchemas = generateInvalidSchemas(
                 schema.items,
                 `${prefix}.items`
@@ -583,7 +584,7 @@ export function generateInvalidSchemas(
  */
 export function generateSchemasWithoutUnrequired(
     schema: OpenAPIV3_1.SchemaObject,
-    prefix: string = 'schema'
+    prefix = 'schema'
 ): {
     schema: OpenAPIV3_1.SchemaObject
     path: string
