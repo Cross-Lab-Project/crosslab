@@ -11,6 +11,7 @@ allOf:
         enum:
           - webrtc
           - websocket
+          - local
       connectionUrl:
         type: string
         format: uri

@@ -1,4 +1,14 @@
+import {
+    DeviceOverviewModel,
+    ConcreteDeviceModel,
+    InstantiableDeviceOverviewModel,
+    InstantiableCloudDeviceModel,
+    InstantiableBrowserDeviceModel,
+    DeviceGroupModel,
+    PeerconnectionModel,
+} from './database/model'
 import { exit } from 'process'
+import { DataSourceOptions } from 'typeorm'
 
 function die(reason: string): string {
     console.error(reason)
@@ -18,4 +28,19 @@ export const config = {
     SECURITY_AUDIENCE:
         process.env.SECURITY_AUDIENCE ??
         die('the environment variable SECURITY_AUDIENCE is not defined!'),
+}
+
+export const dataSourceConfig: DataSourceOptions = {
+    type: 'sqlite',
+    database: 'db/device.db',
+    synchronize: true,
+    entities: [
+        DeviceOverviewModel,
+        ConcreteDeviceModel,
+        InstantiableDeviceOverviewModel,
+        InstantiableCloudDeviceModel,
+        InstantiableBrowserDeviceModel,
+        DeviceGroupModel,
+        PeerconnectionModel,
+    ],
 }

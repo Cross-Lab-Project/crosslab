@@ -1,12 +1,24 @@
-import { AppDataSource } from '../data_source'
-import { TimeSlotModel, AvailabilityRuleModel } from '../model'
+import { AvailabilityRule, TimeSlot } from '../generated/types'
+
+type TimeSlotModel = {
+    start: number
+    end: number
+}
+
+type RemoveIndex<T> = {
+    [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K]
+}
+type AvailabilityRuleModel = Omit<RemoveIndex<AvailabilityRule>, 'start' | 'end'> & {
+    start?: number
+    end?: number
+}
 
 /**
  * This function sorts a list of timeslots in ascending order of their start times.
  * @param availability The list of timeslots to be sorted.
  * @returns The sorted list of timeslots.
  */
-export function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
+function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
     console.log('availability before sort:', JSON.stringify(availability, null, 4))
     availability.sort((a, b) => {
         if (a.start < b.start) return -1
@@ -22,9 +34,7 @@ export function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
  * @param availability The list of timeslots in which to merge overlapping timeslots.
  * @returns The list of timeslots with no overlap.
  */
-export function mergeOverlappingTimeSlots(
-    availability: TimeSlotModel[]
-): TimeSlotModel[] {
+function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
     console.log('availability before merge:', JSON.stringify(availability, null, 4))
     for (let i = 0; i < availability.length; i++) {
         if (i < availability.length - 1) {
@@ -45,15 +55,13 @@ export function mergeOverlappingTimeSlots(
  * @param end The end time of the inverted list of timeslots.
  * @returns The inverted list of timeslots.
  */
-export function invertTimeSlots(
+function invertTimeSlots(
     availability: TimeSlotModel[],
     start: number,
     end: number
 ): TimeSlotModel[] {
     if (availability.length === 0) return []
     console.log('availability before invert:', JSON.stringify(availability, null, 4))
-
-    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
 
     // sort by starttime
     availability = sortTimeSlots(availability)
@@ -64,26 +72,29 @@ export function invertTimeSlots(
     const newAvailability: TimeSlotModel[] = []
 
     // create first timeslot
-    const firstTimeSlot = timeSlotRepository.create()
-    firstTimeSlot.start = start
-    firstTimeSlot.end = availability[0].start
+    const firstTimeSlot: TimeSlotModel = {
+        start,
+        end: availability[0].start,
+    }
 
     if (firstTimeSlot.start !== firstTimeSlot.end) newAvailability.push(firstTimeSlot)
 
     // create intermediate timeslots
     for (let i = 0; i < availability.length; i++) {
         if (i < availability.length - 1) {
-            const timeSlot = timeSlotRepository.create()
-            timeSlot.start = availability[i].end
-            timeSlot.end = availability[i + 1].start
+            const timeSlot: TimeSlotModel = {
+                start: availability[i].end,
+                end: availability[i + 1].start,
+            }
             newAvailability.push(timeSlot)
         }
     }
 
     // create last timeslot
-    const lastTimeSlot = timeSlotRepository.create()
-    lastTimeSlot.start = availability[availability.length - 1].end
-    lastTimeSlot.end = end
+    const lastTimeSlot: TimeSlotModel = {
+        start: availability[-1].end,
+        end,
+    }
 
     if (lastTimeSlot.start !== lastTimeSlot.end) newAvailability.push(lastTimeSlot)
 
@@ -100,7 +111,7 @@ export function invertTimeSlots(
  * @param end The end time for deriving the timeslots.
  * @returns The list of timeslots containing the newly added timeslots.
  */
-export function addTimeSlotsFromRule(
+function addTimeSlotsFromRule(
     availability: TimeSlotModel[],
     availabilityRule: AvailabilityRuleModel,
     start: number,
@@ -110,20 +121,20 @@ export function addTimeSlotsFromRule(
         'availability before adding timeslots from rule:',
         JSON.stringify(availability, null, 4)
     )
-    const timeSlotRepository = AppDataSource.getRepository(TimeSlotModel)
-    const timeSlot = timeSlotRepository.create()
-    ;(timeSlot.start =
-        availabilityRule.start && availabilityRule.start >= start
-            ? availabilityRule.start
-            : start),
-        (timeSlot.end =
+    const timeSlot: TimeSlotModel = {
+        start:
+            availabilityRule.start && availabilityRule.start >= start
+                ? availabilityRule.start
+                : start,
+        end:
             availabilityRule.end && availabilityRule.end <= end
                 ? availabilityRule.end
-                : end)
+                : end,
+    }
 
-    if (availabilityRule.frequency && availabilityRule.end) {
+    if (availabilityRule.repeat?.frequency && availabilityRule.end) {
         let frequency = 0
-        switch (availabilityRule.frequency) {
+        switch (availabilityRule.repeat.frequency) {
             case 'HOURLY':
                 frequency = 60 * 60 * 1000
                 break
@@ -144,15 +155,16 @@ export function addTimeSlotsFromRule(
             timeSlot.start = start
             timeSlot.end = end
         }
-        const until = availabilityRule.until ?? end
-        let count = availabilityRule.count
+        const until = availabilityRule.repeat.until ?? end
+        let count = availabilityRule.repeat.count
 
-        let currentTimeSlot = timeSlotRepository.create()
-        currentTimeSlot.start =
-            availabilityRule.start !== undefined
-                ? availabilityRule.start + frequency
-                : start
-        currentTimeSlot.end = availabilityRule.end + frequency
+        let currentTimeSlot: TimeSlotModel = {
+            start:
+                availabilityRule.start !== undefined
+                    ? availabilityRule.start + frequency
+                    : start,
+            end: availabilityRule.end + frequency,
+        }
 
         while (until < currentTimeSlot.end - frequency) {
             if (until !== undefined) {
@@ -168,14 +180,9 @@ export function addTimeSlotsFromRule(
             if (currentTimeSlot.start < start) currentTimeSlot.start = start
             if (currentTimeSlot.end > end) currentTimeSlot.end = end
             availability.push(currentTimeSlot)
-            const newCurrentTimeSlot = timeSlotRepository.create()
-
-            if (availabilityRule.start) {
-                newCurrentTimeSlot.start = currentTimeSlot.start + frequency
-                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
-            } else {
-                newCurrentTimeSlot.start = start
-                newCurrentTimeSlot.end = currentTimeSlot.end + frequency
+            const newCurrentTimeSlot: TimeSlotModel = {
+                start: availabilityRule.start ? currentTimeSlot.start + frequency : start,
+                end: currentTimeSlot.end + frequency,
             }
 
             currentTimeSlot = newCurrentTimeSlot
@@ -198,7 +205,7 @@ export function addTimeSlotsFromRule(
  * @param end The end time for the availability rule.
  * @returns The list of timeslots containing the changes of the applied availability rule.
  */
-export function applyAvailabilityRule(
+function applyAvailabilityRule(
     availability: TimeSlotModel[],
     availabilityRule: AvailabilityRuleModel,
     start: number,
@@ -245,13 +252,33 @@ export function applyAvailabilityRule(
  * @returns The list of timeslots containing the changes of the applied availability rules.
  */
 export function applyAvailabilityRules(
-    availability: TimeSlotModel[],
-    availabilityRules: AvailabilityRuleModel[],
+    availability: Required<TimeSlot>[],
+    availabilityRules: AvailabilityRule[],
     start: number,
     end: number
-) {
+): Required<TimeSlot>[] {
+    let newAvailability = availability.map((timeSlot) => {
+        return {
+            start: Date.parse(timeSlot.start),
+            end: Date.parse(timeSlot.end),
+        }
+    })
     for (const availabilityRule of availabilityRules) {
-        availability = applyAvailabilityRule(availability, availabilityRule, start, end)
+        newAvailability = applyAvailabilityRule(
+            newAvailability,
+            {
+                ...availabilityRule,
+                start: Date.parse(availabilityRule.start ?? ''),
+                end: Date.parse(availabilityRule.end ?? ''),
+            },
+            start,
+            end
+        )
     }
-    return availability
+    return newAvailability.map((timeSlotModel) => {
+        return {
+            start: new Date(timeSlotModel.start).toISOString(),
+            end: new Date(timeSlotModel.end).toISOString(),
+        }
+    })
 }

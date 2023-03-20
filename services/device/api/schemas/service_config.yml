@@ -9,4 +9,8 @@ properties:
     type: string
   remoteServiceId:
     type: string
+required:
+  - serviceType
+  - serviceId
+  - remoteServiceId
 additionalProperties: true
