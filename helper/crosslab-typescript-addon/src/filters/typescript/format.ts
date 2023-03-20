@@ -8,7 +8,7 @@
 export function formatOperation(
     path: string,
     method: string,
-    capitalize: boolean = false
+    capitalize = false
 ) {
     const splitPath = path.replace(/\{/g, '_by_').replace(/\}/g, '').split('/')
     const formattedPath = splitPath
@@ -32,7 +32,7 @@ export function formatOperation(
  * @param capitalize determines whether the first letter should be capitalized
  * @returns formatted name
  */
-export function formatName(name: string, capitalize: boolean = true) {
+export function formatName(name: string, capitalize = true) {
     const split = name.split(/[ _-]/)
     const result = split
         .map((el) => {

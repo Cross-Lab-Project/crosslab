@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName } from './format'
 
@@ -32,7 +33,7 @@ export function destructureSchema(
         prefixTypes?: string
         context?: OpenAPIV3_1.SchemaObject[]
     },
-    first: boolean = true
+    first = true
 ): DestructuredSchema {
     const destructuredSchema: DestructuredSchema = []
 
@@ -116,7 +117,7 @@ export function schemaToTypeDeclaration(
     options.schemaType = options.schemaType ?? 'all'
     options.prefixTypes = options.prefixTypes ?? ''
 
-    let comment = schema.description
+    const comment = schema.description
         ? `/**\n * ${schema.description.replace(/\n/g, '')}\n */\n`
         : ''
 

@@ -18,7 +18,7 @@ export function validation_filter(schemas: ExtendedSchema[]) {
     })
     ajv.addFormat(
         'jwt',
-        /^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/
+        /^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-+/=]*)/
     )
     ajv.addFormat('mac_address', /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
     addFormats(ajv)

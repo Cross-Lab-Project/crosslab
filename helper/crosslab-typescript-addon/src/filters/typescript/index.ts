@@ -153,7 +153,7 @@ function unique_filter(array: any[]): any[] {
  */
 function resolveSchemas_filter(
     api: OpenAPIV3_1.Document,
-    isService: boolean = true
+    isService = true
 ): ExtendedSchema[] {
     return resolveSchemas(api, isService)
 }
@@ -193,7 +193,7 @@ function strings_filter(arr: string[]): string[] {
  * @param indentation The indentation to be used during JSON.stringify.
  * @returns The stringified object.
  */
-function stringify_filter(o: any, indentation: number = 0): string {
+function stringify_filter(o: any, indentation = 0): string {
     return JSON.stringify(o, null, indentation)
 }
 
