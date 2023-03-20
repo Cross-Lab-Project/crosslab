@@ -2,8 +2,8 @@
 import { config, dataSourceConfig } from './config'
 import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
-import { callbackHandling } from './methods/callbacks'
-import { deviceHandling } from './operations/websocket'
+import { callbackHandling } from './operations/callbacks'
+import { websocketHandling } from './operations/devices'
 import { JWTVerify } from '@crosslab/service-common'
 import { IncomingMessage } from 'http'
 import { Socket } from 'net'
@@ -49,7 +49,7 @@ AppDataSource.initialize(dataSourceConfig)
         const wsServer = new WebSocket.Server({ noServer: true })
         app.wsListeners = new Map()
         app.ws = (path, listener) => app.wsListeners.set(path, listener)
-        deviceHandling(app)
+        websocketHandling(app)
         const server = app.listen(config.PORT)
         server.on(
             'upgrade',

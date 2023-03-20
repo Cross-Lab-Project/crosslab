@@ -1,105 +1,99 @@
 import { AvailabilityRule, TimeSlot } from '../generated/types'
+import { RemoveIndex } from '@crosslab/service-common'
 
 type TimeSlotModel = {
     start: number
     end: number
 }
 
-type RemoveIndex<T> = {
-    [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K]
-}
 type AvailabilityRuleModel = Omit<RemoveIndex<AvailabilityRule>, 'start' | 'end'> & {
     start?: number
     end?: number
 }
 
 /**
- * This function sorts a list of timeslots in ascending order of their start times.
- * @param availability The list of timeslots to be sorted.
- * @returns The sorted list of timeslots.
+ * This function applies a list of availability rules to a list of timeslots.
+ * @param availability The list of timeslots to which to apply the availability rule.
+ * @param availabilityRules The list of availability rules to be applied.
+ * @param start The start time for the availability rules.
+ * @param end The end time for the availability rules.
+ * @returns The list of timeslots containing the changes of the applied availability rules.
  */
-function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
-    console.log('availability before sort:', JSON.stringify(availability, null, 4))
-    availability.sort((a, b) => {
-        if (a.start < b.start) return -1
-        if (a.start > b.start) return 1
-        return 0
-    })
-    console.log('availability after sort:', JSON.stringify(availability, null, 4))
-    return availability
-}
-
-/**
- * This function merges overlapping timeslots of a list of timeslots.
- * @param availability The list of timeslots in which to merge overlapping timeslots.
- * @returns The list of timeslots with no overlap.
- */
-function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
-    console.log('availability before merge:', JSON.stringify(availability, null, 4))
-    for (let i = 0; i < availability.length; i++) {
-        if (i < availability.length - 1) {
-            if (availability[i + 1].start <= availability[i].end) {
-                availability = availability.splice(i + 1, 1)
-                i--
-            }
-        }
-    }
-    console.log('availability after merge:', JSON.stringify(availability, null, 4))
-    return availability
-}
-
-/**
- * This function inverts a list of timeslots.
- * @param availability The list of timeslots to invert.
- * @param start The start time of the inverted list of timeslots.
- * @param end The end time of the inverted list of timeslots.
- * @returns The inverted list of timeslots.
- */
-function invertTimeSlots(
-    availability: TimeSlotModel[],
+export function applyAvailabilityRules(
+    availability: Required<TimeSlot>[],
+    availabilityRules: AvailabilityRule[],
     start: number,
     end: number
-): TimeSlotModel[] {
-    if (availability.length === 0) return []
-    console.log('availability before invert:', JSON.stringify(availability, null, 4))
-
-    // sort by starttime
-    availability = sortTimeSlots(availability)
-
-    // merge timeslots
-    availability = mergeOverlappingTimeSlots(availability)
-
-    const newAvailability: TimeSlotModel[] = []
-
-    // create first timeslot
-    const firstTimeSlot: TimeSlotModel = {
-        start,
-        end: availability[0].start,
-    }
-
-    if (firstTimeSlot.start !== firstTimeSlot.end) newAvailability.push(firstTimeSlot)
-
-    // create intermediate timeslots
-    for (let i = 0; i < availability.length; i++) {
-        if (i < availability.length - 1) {
-            const timeSlot: TimeSlotModel = {
-                start: availability[i].end,
-                end: availability[i + 1].start,
-            }
-            newAvailability.push(timeSlot)
+): Required<TimeSlot>[] {
+    let newAvailability = availability.map((timeSlot) => {
+        return {
+            start: Date.parse(timeSlot.start),
+            end: Date.parse(timeSlot.end),
         }
+    })
+    for (const availabilityRule of availabilityRules) {
+        newAvailability = applyAvailabilityRule(
+            newAvailability,
+            {
+                ...availabilityRule,
+                start: Date.parse(availabilityRule.start ?? ''),
+                end: Date.parse(availabilityRule.end ?? ''),
+            },
+            start,
+            end
+        )
     }
+    return newAvailability.map((timeSlotModel) => {
+        return {
+            start: new Date(timeSlotModel.start).toISOString(),
+            end: new Date(timeSlotModel.end).toISOString(),
+        }
+    })
+}
 
-    // create last timeslot
-    const lastTimeSlot: TimeSlotModel = {
-        start: availability[-1].end,
-        end,
+/**
+ * This function applies an availability rule to a list of timeslots.
+ * @param availability The list of timeslots to which to apply the availability rule.
+ * @param availabilityRule The availability rule to be applied.
+ * @param start The start time for the availability rule.
+ * @param end The end time for the availability rule.
+ * @returns The list of timeslots containing the changes of the applied availability rule.
+ */
+function applyAvailabilityRule(
+    availability: TimeSlotModel[],
+    availabilityRule: AvailabilityRuleModel,
+    start: number,
+    end: number
+) {
+    if (availabilityRule.available === true || availabilityRule.available === undefined) {
+        console.log('applying availability rule for available = true')
+
+        // add all new timeslots
+        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
+
+        // sort by starttime
+        availability = sortTimeSlots(availability)
+
+        // merge timeslots
+        availability = mergeOverlappingTimeSlots(availability)
+    } else {
+        console.log('applying availability rule for available = false')
+
+        // invert availability
+        availability = invertTimeSlots(availability, start, end)
+
+        // add all new timeslots
+        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
+
+        // sort by starttime
+        availability = sortTimeSlots(availability)
+
+        // merge timeslots
+        availability = mergeOverlappingTimeSlots(availability)
+
+        // invert availability
+        availability = invertTimeSlots(availability, start, end)
     }
-
-    if (lastTimeSlot.start !== lastTimeSlot.end) newAvailability.push(lastTimeSlot)
-
-    availability = newAvailability
-    console.log('availability after invert:', JSON.stringify(availability, null, 4))
     return availability
 }
 
@@ -198,87 +192,91 @@ function addTimeSlotsFromRule(
 }
 
 /**
- * This function applies an availability rule to a list of timeslots.
- * @param availability The list of timeslots to which to apply the availability rule.
- * @param availabilityRule The availability rule to be applied.
- * @param start The start time for the availability rule.
- * @param end The end time for the availability rule.
- * @returns The list of timeslots containing the changes of the applied availability rule.
+ * This function sorts a list of timeslots in ascending order of their start times.
+ * @param availability The list of timeslots to be sorted.
+ * @returns The sorted list of timeslots.
  */
-function applyAvailabilityRule(
-    availability: TimeSlotModel[],
-    availabilityRule: AvailabilityRuleModel,
-    start: number,
-    end: number
-) {
-    if (availabilityRule.available === true || availabilityRule.available === undefined) {
-        console.log('applying availability rule for available = true')
-
-        // add all new timeslots
-        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
-
-        // sort by starttime
-        availability = sortTimeSlots(availability)
-
-        // merge timeslots
-        availability = mergeOverlappingTimeSlots(availability)
-    } else {
-        console.log('applying availability rule for available = false')
-
-        // invert availability
-        availability = invertTimeSlots(availability, start, end)
-
-        // add all new timeslots
-        availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
-
-        // sort by starttime
-        availability = sortTimeSlots(availability)
-
-        // merge timeslots
-        availability = mergeOverlappingTimeSlots(availability)
-
-        // invert availability
-        availability = invertTimeSlots(availability, start, end)
-    }
+function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
+    console.log('availability before sort:', JSON.stringify(availability, null, 4))
+    availability.sort((a, b) => {
+        if (a.start < b.start) return -1
+        if (a.start > b.start) return 1
+        return 0
+    })
+    console.log('availability after sort:', JSON.stringify(availability, null, 4))
     return availability
 }
 
 /**
- * This function applies a list of availability rules to a list of timeslots.
- * @param availability The list of timeslots to which to apply the availability rule.
- * @param availabilityRules The list of availability rules to be applied.
- * @param start The start time for the availability rules.
- * @param end The end time for the availability rules.
- * @returns The list of timeslots containing the changes of the applied availability rules.
+ * This function merges overlapping timeslots of a list of timeslots.
+ * @param availability The list of timeslots in which to merge overlapping timeslots.
+ * @returns The list of timeslots with no overlap.
  */
-export function applyAvailabilityRules(
-    availability: Required<TimeSlot>[],
-    availabilityRules: AvailabilityRule[],
+function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
+    console.log('availability before merge:', JSON.stringify(availability, null, 4))
+    for (let i = 0; i < availability.length; i++) {
+        if (i < availability.length - 1) {
+            if (availability[i + 1].start <= availability[i].end) {
+                availability = availability.splice(i + 1, 1)
+                i--
+            }
+        }
+    }
+    console.log('availability after merge:', JSON.stringify(availability, null, 4))
+    return availability
+}
+
+/**
+ * This function inverts a list of timeslots.
+ * @param availability The list of timeslots to invert.
+ * @param start The start time of the inverted list of timeslots.
+ * @param end The end time of the inverted list of timeslots.
+ * @returns The inverted list of timeslots.
+ */
+function invertTimeSlots(
+    availability: TimeSlotModel[],
     start: number,
     end: number
-): Required<TimeSlot>[] {
-    let newAvailability = availability.map((timeSlot) => {
-        return {
-            start: Date.parse(timeSlot.start),
-            end: Date.parse(timeSlot.end),
-        }
-    })
-    for (const availabilityRule of availabilityRules) {
-        newAvailability = applyAvailabilityRule(
-            newAvailability,
-            {
-                ...availabilityRule,
-                start: Date.parse(availabilityRule.start ?? ''),
-                end: Date.parse(availabilityRule.end ?? ''),
-            },
-            start,
-            end
-        )
+): TimeSlotModel[] {
+    if (availability.length === 0) return []
+    console.log('availability before invert:', JSON.stringify(availability, null, 4))
+
+    // sort by starttime
+    availability = sortTimeSlots(availability)
+
+    // merge timeslots
+    availability = mergeOverlappingTimeSlots(availability)
+
+    const newAvailability: TimeSlotModel[] = []
+
+    // create first timeslot
+    const firstTimeSlot: TimeSlotModel = {
+        start,
+        end: availability[0].start,
     }
-    return newAvailability.map((timeSlotModel) => {
-        return {
-            start: new Date(timeSlotModel.start).toISOString(),
-            end: new Date(timeSlotModel.end).toISOString(),
+
+    if (firstTimeSlot.start !== firstTimeSlot.end) newAvailability.push(firstTimeSlot)
+
+    // create intermediate timeslots
+    for (let i = 0; i < availability.length; i++) {
+        if (i < availability.length - 1) {
+            const timeSlot: TimeSlotModel = {
+                start: availability[i].end,
+                end: availability[i + 1].start,
+            }
+            newAvailability.push(timeSlot)
         }
-    })
+    }
+
+    // create last timeslot
+    const lastTimeSlot: TimeSlotModel = {
+        start: availability[-1].end,
+        end,
+    }
+
+    if (lastTimeSlot.start !== lastTimeSlot.end) newAvailability.push(lastTimeSlot)
+
+    availability = newAvailability
+    console.log('availability after invert:', JSON.stringify(availability, null, 4))
+    return availability
 }

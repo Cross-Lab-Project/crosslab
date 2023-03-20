@@ -15,6 +15,12 @@ import {
     ManyToOne,
 } from 'typeorm'
 
+export type DeviceModel =
+    | ConcreteDeviceModel
+    | DeviceGroupModel
+    | InstantiableBrowserDeviceModel
+    | InstantiableCloudDeviceModel
+
 @Entity({ name: 'Device' })
 @TableInheritance({
     column: {

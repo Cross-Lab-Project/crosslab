@@ -1,12 +1,12 @@
-import { AppDataSource } from '../database/dataSource'
-import { ConcreteDeviceModel } from '../database/model'
+import { AppDataSource } from '../../../database/dataSource'
+import { ConcreteDeviceModel } from '../../../database/model'
 import {
     isMessage,
     isAuthenticationMessage,
     AuthenticationMessage,
-} from '../generated/types'
-import { sendChangedCallback } from '../methods/callbacks'
-import { handleDeviceMessage } from '../methods/messageHandling'
+} from '../../../generated/types'
+import { sendChangedCallback } from '../../../methods/callbacks'
+import { handleDeviceMessage } from './messageHandling'
 import WebSocket from 'ws'
 
 export const connectedDevices = new Map<string, WebSocket>()
@@ -15,7 +15,7 @@ export const connectedDevices = new Map<string, WebSocket>()
  * This function adds the /devices/ws endpoint, including its functionality, to an express application.
  * @param app The express application to add the /devices/ws endpoint to.
  */
-export function deviceHandling(app: Express.Application) {
+export function websocketHandling(app: Express.Application) {
     // TODO: close Peerconnections that have device as participant when websocket connection is closed?
     app.ws('/devices/websocket', (ws) => {
         // authenticate and start heartbeat

@@ -19,7 +19,7 @@ allOf:
         type: array
         items:
           type: object
-          $ref: "../service_config.yml"
+          $ref: "../devices/services/service_config.yml"
           required:
             - serviceType
             - serviceId

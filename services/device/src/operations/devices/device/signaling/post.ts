@@ -1,9 +1,14 @@
-import { ForbiddenOperationError, MissingPropertyError, UnrelatedPeerconnectionError, MissingEntityError } from "@crosslab/service-common"
-import { deviceRepository } from "../../../../database/repositories/device"
-import { postDevicesByDeviceIdSignalingSignature } from "../../../../generated/signatures"
-import { apiClient } from "../../../../globals"
-import { deviceUrlFromId } from "../../../../methods/utils"
-import { connectedDevices } from "../../../websocket"
+import { connectedDevices } from '../..'
+import { deviceRepository } from '../../../../database/repositories/device'
+import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures'
+import { apiClient } from '../../../../globals'
+import { deviceUrlFromId } from '../../../../methods/urlFromId'
+import {
+    ForbiddenOperationError,
+    MissingPropertyError,
+    UnrelatedPeerconnectionError,
+    MissingEntityError,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id}/signaling endpoint.

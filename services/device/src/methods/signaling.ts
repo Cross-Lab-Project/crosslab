@@ -3,7 +3,7 @@ import { PeerconnectionModel } from '../database/model'
 import { CreatePeerconnectionMessage } from '../generated/types'
 import { apiClient } from '../globals'
 import { sendStatusChangedCallback } from './callbacks'
-import { peerconnectionUrlFromId } from './utils'
+import { peerconnectionUrlFromId } from './urlFromId'
 import Queue from 'queue'
 
 class SignalingQueue {
