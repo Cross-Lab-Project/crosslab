@@ -9,7 +9,7 @@ import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'type
 
 export class ApplicationDataSource {
     private dataSource?: DataSource
-    public connected: boolean = false
+    public connected = false
 
     public async initialize(options: DataSourceOptions) {
         this.dataSource = new DataSource(options)

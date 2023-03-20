@@ -40,14 +40,12 @@ const repositoryTestSuites = [
 
 export default () =>
     describe('Repositories', async function () {
-        let suite: Mocha.Suite = this
-
         it('Should setup the repository tests', async function () {
             this.timeout(0)
 
             for (const repositoryTestSuite of repositoryTestSuites) {
                 await repositoryTestSuite.initialize()
-                suite.addSuite(repositoryTestSuite.execute())
+                this.addSuite(repositoryTestSuite.execute())
             }
         })
     })

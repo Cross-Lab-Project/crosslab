@@ -186,8 +186,8 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                     new Mocha.Test(
                         'should create a model from empty data',
                         async function () {
-                            const model = await repository.create()
-                            assert(validateCreate(model))
+                            const innerModel = await repository.create()
+                            assert(validateCreate(innerModel))
                         }
                     )
                 )
@@ -196,10 +196,10 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should create a model from valid data (${key})`,
                             async function () {
-                                const model = await repository.create(
+                                const innerModel = await repository.create(
                                     entityData[key].request
                                 )
-                                assert(validateCreate(model, entityData[key].request))
+                                assert(validateCreate(innerModel, entityData[key].request))
                             }
                         )
                     )
@@ -232,8 +232,8 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         const models = await repository.find()
                         for (const key of getEntityNames(model)) {
                             assert(
-                                models.find((model) =>
-                                    compareModels(model, entityData[key].model, false)
+                                models.find((m) =>
+                                    compareModels(m, entityData[key].model, false)
                                 ),
                                 `Did not find model for entity data "${key}"`
                             )
@@ -264,11 +264,11 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should find a specific existing model (${key})`,
                             async function () {
-                                const model = await repository.findOne({
+                                const innerModel = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
-                                assert(model)
-                                assert(compareModels(model, entityData[key].model, false))
+                                assert(innerModel)
+                                assert(compareModels(innerModel, entityData[key].model, false))
                             }
                         )
                     )
@@ -277,10 +277,10 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                     new Mocha.Test(
                         'should return null when the model does not exist',
                         async function () {
-                            const model = await repository.findOne({
+                            const innerModel = await repository.findOne({
                                 where: getFindOptionsWhere(),
                             })
-                            assert(model === null)
+                            assert(innerModel === null)
                         }
                     )
                 )
@@ -308,11 +308,11 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should find a specific existing model (${key})`,
                             async function () {
-                                const model = await repository.findOne({
+                                const innerModel = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
-                                assert(model)
-                                assert(compareModels(model, entityData[key].model, false))
+                                assert(innerModel)
+                                assert(compareModels(innerModel, entityData[key].model, false))
                             }
                         )
                     )
@@ -373,12 +373,12 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should remove a specific existing model (${key})`,
                             async function () {
-                                const model = await repository.findOne({
+                                const innerModel = await repository.findOne({
                                     where: getFindOptionsWhere(entityData[key].model),
                                 })
-                                assert(model)
-                                assert(compareModels(model, entityData[key].model, false))
-                                await repository.remove(model)
+                                assert(innerModel)
+                                assert(compareModels(innerModel, entityData[key].model, false))
+                                await repository.remove(innerModel)
                                 assert(
                                     (await repository.findOne({
                                         where: getFindOptionsWhere(entityData[key].model),
@@ -416,12 +416,12 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should save a valid model (${key})`,
                             async function () {
-                                const model = await repository.create(
+                                const innerModel = await repository.create(
                                     entityData[key].request
                                 )
-                                assert(validateCreate(model, entityData[key].request))
-                                const savedModel = await repository.save(model)
-                                assert(compareModels(model, savedModel))
+                                assert(validateCreate(innerModel, entityData[key].request))
+                                const savedModel = await repository.save(innerModel)
+                                assert(compareModels(innerModel, savedModel))
                             }
                         )
                     )
@@ -454,10 +454,10 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
                         new Mocha.Test(
                             `should write valid data to a model correctly (${key})`,
                             async function () {
-                                const model = await repository.create()
-                                assert(validateCreate(model))
-                                await repository.write(model, entityData[key].request)
-                                assert(validateWrite(model, entityData[key].request))
+                                const innerModel = await repository.create()
+                                assert(validateCreate(innerModel))
+                                await repository.write(innerModel, entityData[key].request)
+                                assert(validateWrite(innerModel, entityData[key].request))
                             }
                         )
                     )
@@ -502,7 +502,7 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
         const newEntityData = getFromTestData(this.testData, this.model)
 
         for (const key in newEntityData) {
-            ;(this.entityData as any)[key] = (newEntityData as any)[key]
+            (this.entityData as any)[key] = (newEntityData as any)[key]
         }
     }
 
@@ -510,9 +510,8 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
         const testSuites = this.testSuites
         const testSuite = new Mocha.Suite(`${getModelName(this.model)} Repository Test`)
         for (const suite in testSuites) {
-            const reference = this
             testSuites[suite].beforeEach(async function () {
-                await reference.resetDatabase()
+                await this.resetDatabase()
             })
             testSuite.addSuite(testSuites[suite])
         }
