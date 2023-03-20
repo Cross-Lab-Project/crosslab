@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
-import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName } from './format'
+import { OpenAPIV3_1 } from 'openapi-types'
 
 /**
  * Interface for the property of a destructured schema.
@@ -278,8 +278,19 @@ export function schemaToTypeDeclaration(
                 (schema as OpenAPIV3_1.ArraySchemaObject).items,
                 options
             )
+
+            let min = 'undefined'
+            let max = 'undefined'
+
+            if (schema.minItems) min = schema.minItems.toString()
+            if (schema.maxItems) max = schema.maxItems.toString()
+
+            if (schema.minItems && schema.maxItems && schema.minItems > schema.maxItems) {
+                throw new Error('minItems needs to be smaller than maxItems!')
+            }
+
             return {
-                typeDeclaration: `${td.typeDeclaration}[]`,
+                typeDeclaration: `SizedTuple<${td.typeDeclaration},${min},${max}>`,
                 typeDependencies: td.typeDependencies,
                 comment: comment,
             }
