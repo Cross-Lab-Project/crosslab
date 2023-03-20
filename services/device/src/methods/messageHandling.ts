@@ -1,8 +1,22 @@
+import { ConcreteDeviceModel } from '../database/model'
 import { SignalingMessage, Message, isSignalingMessage } from '../generated/types'
 import { apiClient } from '../globals'
-import { ConcreteDeviceModel } from '../model'
-import { MissingPropertyError, UnrelatedPeerconnectionError } from '../types/errors'
 import { deviceUrlFromId } from './utils'
+import {
+    MissingPropertyError,
+    UnrelatedPeerconnectionError,
+} from '@crosslab/service-common'
+
+/**
+ * This function handles a message for a device.
+ * @param device The device for which to handle the message.
+ * @param message The message to be handled.
+ */
+export function handleDeviceMessage(device: ConcreteDeviceModel, message: Message) {
+    if (isSignalingMessage(message)) {
+        handleSignalingMessage(device, message)
+    }
+}
 
 /**
  * This function handles a signaling message for a device.
@@ -45,16 +59,5 @@ async function handleSignalingMessage(
             'Something went wrong while trying to send the signaling message:',
             error
         )
-    }
-}
-
-/**
- * This function handles a message for a device.
- * @param device The device for which to handle the message.
- * @param message The message to be handled.
- */
-export function handleDeviceMessage(device: ConcreteDeviceModel, message: Message) {
-    if (isSignalingMessage(message)) {
-        handleSignalingMessage(device, message)
     }
 }

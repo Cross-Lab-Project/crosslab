@@ -6,7 +6,12 @@ allOf:
     properties:
       type:
         const: edge instantiable
-      code_url:
+      codeUrl:
         type: string
         format: uri
+      services:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
 x-typeguard: true

@@ -6,3 +6,5 @@ properties:
     type: string
     description: URL of the device
     format: uri
+required:
+  - url

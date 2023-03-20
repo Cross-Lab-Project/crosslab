@@ -1,18 +1,65 @@
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from '../database/dataSource'
+import { PeerconnectionModel } from '../database/model'
 import { CreatePeerconnectionMessage } from '../generated/types'
 import { apiClient } from '../globals'
-import { PeerconnectionModel } from '../model'
 import { sendStatusChangedCallback } from './callbacks'
-import { formatServiceConfig } from './database/format'
 import { peerconnectionUrlFromId } from './utils'
+import Queue from 'queue'
+
+class SignalingQueue {
+    private queue: Queue
+
+    constructor() {
+        this.queue = new Queue({
+            autostart: true,
+            concurrency: 1,
+        })
+    }
+
+    public addPeerconnection(peerconnection: PeerconnectionModel) {
+        this.queue.push(async function () {
+            try {
+                await startSignaling(peerconnection.uuid)
+            } catch (error) {
+                if (error instanceof Error) console.log(error.message)
+                else console.log(error)
+            }
+        })
+    }
+}
+
+export const signalingQueue = new SignalingQueue()
 
 /**
  * This function starts the signaling process for a peerconnection.
  * @param peerconnection The peerconnection the signaling process should be started for.
  * @throws Throws errors of the {@link apiClient.sendSignalingMessage | sendSignalingMessage()} function of the api-client.
  */
-export async function startSignaling(peerconnection: PeerconnectionModel) {
-    console.log(`Starting signaling for ${peerconnection.uuid}`)
+async function startSignaling(peerconnectionId: string) {
+    console.log(`Starting signaling for ${peerconnectionId}`)
+    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+
+    const peerconnection = await peerconnectionRepository.findOneOrFail({
+        where: {
+            uuid: peerconnectionId,
+        },
+        relations: {
+            deviceA: {
+                config: true,
+            },
+            deviceB: {
+                config: true,
+            },
+        },
+    })
+
+    if (peerconnection.status !== 'waiting-for-devices') {
+        console.log(
+            `status of peerconnection '${peerconnection.uuid}' is not 'waiting-for-devices', '${peerconnection.status}'`
+        )
+        return
+    }
+
     const common = <CreatePeerconnectionMessage>{
         messageType: 'command',
         command: 'createPeerconnection',
@@ -20,38 +67,36 @@ export async function startSignaling(peerconnection: PeerconnectionModel) {
         connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
     }
 
-    if (peerconnection.status !== "waiting-for-devices") {
-        return 
-    }
-
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnection.deviceA.config
-            ? peerconnection.deviceA.config.map(formatServiceConfig) as any
+        services: peerconnection.deviceA.config?.services
+            ? peerconnection.deviceA.config.services
             : [],
         tiebreaker: false,
     }
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnection.deviceB.config
-            ? peerconnection.deviceB.config.map(formatServiceConfig) as any
+        services: peerconnection.deviceB.config?.services
+            ? peerconnection.deviceB.config.services
             : [],
         tiebreaker: true,
     }
 
     // TODO: check what problems may occur here and address them accordingly
-    await apiClient.sendSignalingMessage(
+    const response1 = apiClient.sendSignalingMessage(
         peerconnection.deviceA.url,
         createPeerConnectionMessageA,
         peerconnectionUrlFromId(peerconnection.uuid)
     )
 
-    await apiClient.sendSignalingMessage(
+    const response2 = apiClient.sendSignalingMessage(
         peerconnection.deviceB.url,
         createPeerConnectionMessageB,
         peerconnectionUrlFromId(peerconnection.uuid)
     )
+
+    await Promise.all([response1, response2])
 
     // NOTE: this behaviour should maybe be changed later on
     peerconnection.status = 'connected'

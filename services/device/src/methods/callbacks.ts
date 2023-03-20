@@ -1,7 +1,8 @@
-import express from 'express'
-import fetch from 'node-fetch'
 import { config } from '../config'
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from '../database/dataSource'
+import { PeerconnectionModel } from '../database/model'
+import { deviceRepository } from '../database/repositories/device'
+import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import {
     isConcreteDevice,
     isDeviceGroup,
@@ -9,16 +10,14 @@ import {
     isInstantiableCloudDevice,
 } from '../generated/types'
 import { apiClient, timeoutMap } from '../globals'
-import { PeerconnectionModel } from '../model'
-import { InvalidValueError, MalformedBodyError } from '../types/errors'
-import { DeviceModel } from '../types/helper'
-import { formatDevice, formatPeerconnection } from './database/format'
-import { startSignaling } from './signaling'
+import { DeviceModel } from '../types/device'
+import { signalingQueue } from './signaling'
+import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common'
+import express from 'express'
+import fetch from 'node-fetch'
 
 export const callbackUrl: string =
-    config.BASE_URL +
-    (config.BASE_URL.endsWith('/') ? '' : '/') +
-    'callbacks/device'
+    config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'callbacks/device'
 export const changedCallbacks = new Map<string, Array<string>>()
 export const closedCallbacks = new Map<string, Array<string>>()
 export const statusChangedCallbacks = new Map<string, Array<string>>()
@@ -133,31 +132,37 @@ async function handleDeviceChangedEventCallback(callback: any): Promise<200 | 41
             400 // NOTE: error code
         )
     }
-    const pendingConnectionsA = await AppDataSource.getRepository(PeerconnectionModel).find({
+    const pendingConnectionsA = await AppDataSource.getRepository(
+        PeerconnectionModel
+    ).find({
         where: {
+            status: 'waiting-for-devices',
             deviceA: {
-                url: device.url
-            }
+                url: device.url,
+            },
         },
         relations: {
             deviceA: true,
-            deviceB: true
-        }
+            deviceB: true,
+        },
     })
-    const pendingConnectionsB = await AppDataSource.getRepository(PeerconnectionModel).find({
+    const pendingConnectionsB = await AppDataSource.getRepository(
+        PeerconnectionModel
+    ).find({
         where: {
+            status: 'waiting-for-devices',
             deviceB: {
-                url: device.url
-            }
+                url: device.url,
+            },
         },
         relations: {
             deviceA: true,
-            deviceB: true
-        }
+            deviceB: true,
+        },
     })
     const pendingConnections = [...pendingConnectionsA, ...pendingConnectionsB]
     if (pendingConnections.length === 0) {
-        return 410
+        return 410 // TODO: check if 410 is the right choice here
     }
     for (const pendingConnection of pendingConnections) {
         const deviceA = await apiClient.getDevice(pendingConnection.deviceA.url)
@@ -165,7 +170,7 @@ async function handleDeviceChangedEventCallback(callback: any): Promise<200 | 41
 
         if (deviceA.connected && deviceB.connected) {
             clearTimeout(timeoutMap.get(pendingConnection.uuid))
-            await startSignaling(pendingConnection)
+            signalingQueue.addPeerconnection(pendingConnection)
             timeoutMap.delete(pendingConnection.uuid)
         }
     }
@@ -186,11 +191,9 @@ export async function sendChangedCallback(device: DeviceModel) {
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'device-changed',
-                device: await formatDevice(device),
+                device: await deviceRepository.format(device),
             }),
-            headers: [
-                ["Content-Type", "application/json"]
-            ]
+            headers: [['Content-Type', 'application/json']],
         })
 
         if (res.status === 410) {
@@ -215,11 +218,9 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnnection-closed',
-                peerconnection: formatPeerconnection(peerconnection),
+                peerconnection: await peerconnectionRepository.format(peerconnection),
             }),
-            headers: [
-                ["Content-Type", "application/json"]
-            ]
+            headers: [['Content-Type', 'application/json']],
         })
 
         if (res.status === 410) {
@@ -240,17 +241,17 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
     console.log(`Sending statusChangedCallback for peerconnection ${peerconnection.uuid}`)
     const urls = statusChangedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
-        console.log(`Sending statusChangedCallback for peerconnection ${peerconnection.uuid} to url ${url}`)
+        console.log(
+            `Sending statusChangedCallback for peerconnection ${peerconnection.uuid} to url ${url}`
+        )
         const res = await fetch(url, {
             method: 'post',
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnection-status-changed',
-                peerconnection: formatPeerconnection(peerconnection),
+                peerconnection: await peerconnectionRepository.format(peerconnection),
             }),
-            headers: [
-                ["Content-Type", "application/json"]
-            ]
+            headers: [['Content-Type', 'application/json']],
         })
 
         if (res.status === 410) {

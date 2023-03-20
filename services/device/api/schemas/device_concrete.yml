@@ -10,9 +10,10 @@ allOf:
         description: |
           If true, the device is connected to the service and can be used.
         type: boolean
-        #readOnly: true
+        readOnly: true
       announcedAvailability:
         $ref: "../schemas/availability.yml"
+        readOnly: true
       experiment:
         type: string
         format: uri

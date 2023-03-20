@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-
+import { config, dataSourceConfig } from './config'
+import { AppDataSource } from './database/dataSource'
+import { app } from './generated/index'
+import { callbackHandling } from './methods/callbacks'
+import { deviceHandling } from './operations/websocket'
 import { JWTVerify } from '@crosslab/service-common'
 import { IncomingMessage } from 'http'
 import { Socket } from 'net'
 import WebSocket from 'ws'
-import { config } from './config'
-import { AppDataSource } from './data_source'
-import { app } from './generated/index'
-import { callbackHandling } from './methods/callbacks'
-import { deviceHandling } from './operations/websocket'
 
 declare global {
     namespace Express {
@@ -20,7 +19,7 @@ declare global {
     }
 }
 
-AppDataSource.initialize()
+AppDataSource.initialize(dataSourceConfig)
     .then(() => {
         app.use((req, _res, next) => {
             for (const param in req.query) {
@@ -43,11 +42,9 @@ AppDataSource.initialize()
 
         app.initService({
             security: {
-                JWT: JWTVerify(config) as any
+                JWT: JWTVerify(config) as any,
             },
-            additionalHandlers: [
-                callbackHandling
-            ]
+            additionalHandlers: [callbackHandling],
         })
         const wsServer = new WebSocket.Server({ noServer: true })
         app.wsListeners = new Map()
@@ -65,6 +62,7 @@ AppDataSource.initialize()
                 }
             }
         )
+        console.log('Device Service started successfully')
     })
     .catch((err) => {
         console.error('Error during Data Source initialization:', err)

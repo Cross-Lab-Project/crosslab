@@ -25,4 +25,6 @@ properties:
     type: string
     format: uri
     readOnly: true
+required:
+  - url
 x-typeguard: true

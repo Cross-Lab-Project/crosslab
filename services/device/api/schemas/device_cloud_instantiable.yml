@@ -6,7 +6,12 @@ allOf:
     properties:
       type:
         const: cloud instantiable
-      instantiate_url:
+      instantiateUrl:
         type: string
         format: uri
+      services:
+        type: array
+        items:
+          type: object
+          additionalProperties: true
 x-typeguard: true

@@ -13,3 +13,9 @@ properties:
     maxItems: 2
     items:
       $ref: "./device_reference.yml"
+  type:
+    type: string
+    description: Type of the peerconnection
+    enum:
+      - local
+      - webrtc

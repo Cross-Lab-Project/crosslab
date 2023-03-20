@@ -76,6 +76,9 @@
             "readOnly": true
           }
         },
+        "required": [
+          "url"
+        ],
         "x-typeguard": true
       },
       "time_slot": {
@@ -114,10 +117,12 @@
               },
               "connected": {
                 "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean"
+                "type": "boolean",
+                "readOnly": true
               },
               "announcedAvailability": {
-                "$ref": "#/components/schemas/availability"
+                "$ref": "#/components/schemas/availability",
+                "readOnly": true
               },
               "experiment": {
                 "type": "string",
@@ -177,6 +182,20 @@
           }
         ]
       },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
       "device_group": {
         "title": "Device Group",
         "allOf": [
@@ -192,14 +211,7 @@
               "devices": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "URL of the device",
-                      "format": "uri"
-                    }
-                  }
+                  "$ref": "#/components/schemas/device_reference"
                 }
               }
             }
@@ -219,9 +231,16 @@
               "type": {
                 "const": "cloud instantiable"
               },
-              "instantiate_url": {
+              "instantiateUrl": {
                 "type": "string",
                 "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
               }
             }
           }
@@ -240,9 +259,16 @@
               "type": {
                 "const": "edge instantiable"
               },
-              "code_url": {
+              "codeUrl": {
                 "type": "string",
                 "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
               }
             }
           }
@@ -302,6 +328,11 @@
             "type": "string"
           }
         },
+        "required": [
+          "serviceType",
+          "serviceId",
+          "remoteServiceId"
+        ],
         "additionalProperties": true
       },
       "create_peerconnection_message": {
@@ -320,7 +351,8 @@
                 "type": "string",
                 "enum": [
                   "webrtc",
-                  "websocket"
+                  "websocket",
+                  "local"
                 ]
               },
               "connectionUrl": {
@@ -422,17 +454,6 @@
         ],
         "x-typeguard": true
       },
-      "device_reference": {
-        "title": "Device Reference",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri"
-          }
-        }
-      },
       "peerconnection_overview": {
         "title": "Peerconnection Overview",
         "type": "object",
@@ -450,6 +471,14 @@
             "items": {
               "$ref": "#/components/schemas/device_reference"
             }
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the peerconnection",
+            "enum": [
+              "local",
+              "webrtc"
+            ]
           }
         }
       },
