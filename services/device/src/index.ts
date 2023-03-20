@@ -36,6 +36,11 @@ AppDataSource.initialize()
             }
             next()
         })
+
+        app.get('/device/status', (_req, res) => {
+            res.send({ status: 'ok' })
+        });
+
         app.initService({
             security: {
                 JWT: JWTVerify(config) as any

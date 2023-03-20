@@ -27,6 +27,10 @@ AppDataSource.initialize()
             }
         }));
 
+        app.get('/experiment/status', (_req, res) => {
+            res.send({ status: 'ok' })
+        });
+
         app.initService({
             security: { 
                 "JWT": JWTVerify(config) as any

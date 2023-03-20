@@ -1,9 +1,9 @@
-import {APIClient} from '@cross-lab-project/api-client';
-import {ChildProcessWithoutNullStreams, execSync, spawn} from 'child_process';
+import { APIClient } from '@cross-lab-project/api-client';
+import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import {ENV} from './localServer.config';
+import { ENV } from './localServer.config';
 
 const repository_dir = path.resolve(__filename, '../../../../');
 
@@ -74,6 +74,27 @@ function start_gateway(gateway_path: string, env: {[key: string]: string}) {
   return prepare_service(service);
 }
 
+async function wait_for_health_check(endpoint: string, timeout = 10000) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      const res = await fetch(endpoint)
+      if (res.status === 200) {
+        return;
+      } else {
+        // ignore
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    await new Promise(resolve => setTimeout(resolve, 200));
+    timeout -= 200;
+    if (timeout <= 0) {
+      throw new Error('Timeout:' + endpoint + ' not ready');
+    }
+  }
+}
+
 export const mochaHooks = {
   async beforeEach(this: ServerContext & Mocha.Context) {
     this.client = new APIClient(ENV.common.BASE_URL);
@@ -106,7 +127,7 @@ export const mochaHooks = {
 
   async beforeAll(this: ServerContext & Mocha.Context) {
     console.log('Starting services...');
-    this.timeout(30000);
+    this.timeout(0);
 
     this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, false, this.debug?.auth?.debug_port);
     this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, false, this.debug?.device?.debug_port);
@@ -114,9 +135,13 @@ export const mochaHooks = {
     this.federationService = start_service('federation', {...ENV.common, ...ENV.federation}, false, this.debug?.federation?.debug_port);
     this.gatewayService = start_gateway(path.resolve(repository_dir, 'services', 'gateway'), {...ENV.common, ...ENV.gateway});
 
-    // TODO: wait for health check to complete on all services -> needs health check endpoint
-    // for now just wait 2 seconds
-    await new Promise(resolve => setTimeout(resolve, 15000));
+    await Promise.all([
+        wait_for_health_check(ENV.common.BASE_URL + '/gateway/status'),
+        wait_for_health_check(ENV.common.BASE_URL + '/auth/status'),
+        wait_for_health_check(ENV.common.BASE_URL + '/device/status'),
+        wait_for_health_check(ENV.common.BASE_URL + '/experiment/status'),
+        wait_for_health_check(ENV.common.BASE_URL + '/federation/status')
+      ]);
   },
 
   async afterAll(this: ServerContext & Mocha.Context) {

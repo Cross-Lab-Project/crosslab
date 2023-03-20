@@ -40,12 +40,17 @@ async function startAuthenticationService(
         await activeKeyRepository.save(activeKeyModel)
     }
 
-    app.get('/.well-known/jwks.json', (_req, res, _next) => {
+    app.get('/.well-known/jwks.json', (_req, res) => {
         res.send(jwks)
     })
-    app.get('/.well-known/openid-configuration', (_req, res, _next) => {
+    app.get('/.well-known/openid-configuration', (_req, res) => {
         res.send({ jwks_uri: '/.well-known/jwks.json' })
     })
+    
+    app.get('/auth/status', (_req, res) => {
+        res.send({ status: 'ok' })
+    });
+
     app.initService({
         security: {
             JWT: JWTVerify(config) as any,
