@@ -27,13 +27,13 @@ export const logger: Logger = createLogger({
     ],
 })
 
-type Tail<T extends unknown[]> = T extends [infer _Head, ...infer Tail] ? Tail : never
+type Tail<T extends unknown[]> = T extends [infer _Head, ...infer _Tail] ? _Tail : never
 
 export class RequestHandler {
     private id: number
     private currentFunctionName?: string
     private logEntries: LogEntry[]
-    private static currentIndex: number = 0
+    private static currentIndex = 0
     private static logger: Logger = logger
 
     constructor(functionName?: string) {
