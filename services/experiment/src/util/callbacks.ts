@@ -212,6 +212,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
                     `Experiment model is missing property "connections"`
                 ) // NOTE: error code
             
+            // eslint-disable-next-line no-case-declarations
             let connected = true
             for (const pc of experimentModel.connections) {
                 if ((await getPeerconnection(requestHandler, pc.url)).status !== "connected") {

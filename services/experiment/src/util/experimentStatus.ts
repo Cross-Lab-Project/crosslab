@@ -169,7 +169,7 @@ export async function runExperiment(
             deviceChangedCallbacks.push(instance.url)
 
             // instantiate cloud instantiable devices
-            const experimentUrl = requestHandler.executeSync(
+            const requestHandlerExperimentUrl = requestHandler.executeSync(
                 experimentUrlFromId,
                 experimentModel.uuid
             )
@@ -179,7 +179,7 @@ export async function runExperiment(
                     resolvedDevice,
                     instance.url,
                     deviceToken,
-                    experimentUrl
+                    requestHandlerExperimentUrl
                 )
             }
         }
@@ -189,6 +189,7 @@ export async function runExperiment(
     // try {
     //     const { Booking: booking, Time: _timeslot, Tokens: _deviceTokenMapping } = await lockBooking(experimentModel.bookingID)
     //     if (booking.Status !== "active") {
+    // eslint-disable-next-line max-len
     //         throw new InvalidBookingError(`The booking ${experimentModel.bookingID} is invalid for the experiment ${experimentUrlFromId(experimentModel.uuid)}`)
     //     }
     // } catch (error) {
