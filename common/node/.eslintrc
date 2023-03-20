@@ -11,6 +11,8 @@
     "@typescript-eslint"
   ],
   "ignorePatterns":[
+    "src/generated/**/*",
+    "test/generated/**/*",
     "dist/**/*",
     "lib/**/*",
     "app/**/*",
