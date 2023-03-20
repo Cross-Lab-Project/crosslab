@@ -181,7 +181,7 @@ export default () =>
 
             it('should login with tui account with correct credentials', async function () {
                 const loginModule = rewire('../../src/methods/login')
-                const createUserTokenStub = sinon.stub()
+                const innerCreateUserTokenStub = sinon.stub()
 
                 ldapClientBindStub.resolves()
                 ldapClientSearchStub.resolves({
@@ -202,10 +202,10 @@ export default () =>
                 )
 
                 await loginModule.__with__({
-                    createUserToken: createUserTokenStub,
+                    createUserToken: innerCreateUserTokenStub,
                 })(async function () {
                     await loginModule.__get__('loginTui')(USERNAME, PASSWORD)
-                    assert(createUserTokenStub.lastCall.args[0].username === USERNAME)
+                    assert(innerCreateUserTokenStub.lastCall.args[0].username === USERNAME)
                 })
             })
 

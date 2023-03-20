@@ -11,13 +11,13 @@ import { AppConfiguration } from './types/types'
 import { DataSourceOptions } from 'typeorm'
 
 async function startAuthenticationService(
-    config: AppConfiguration,
-    dataSourceConfig: DataSourceOptions
+    appConfig: AppConfiguration,
+    options: DataSourceOptions
 ) {
-    await AppDataSource.initialize(dataSourceConfig)
+    await AppDataSource.initialize(options)
     await initializeDataSource()
 
-    const allowlist = parseAllowlist(config.ALLOWLIST)
+    const allowlist = parseAllowlist(appConfig.ALLOWLIST)
 
     // Resolve Allowlist
     await resolveAllowlist(allowlist)
@@ -53,11 +53,11 @@ async function startAuthenticationService(
 
     app.initService({
         security: {
-            JWT: JWTVerify(config) as any,
+            JWT: JWTVerify(appConfig) as any,
         },
     })
 
-    app.listen(config.PORT)
+    app.listen(appConfig.PORT)
     console.log('Authentication Service started successfully')
 }
 

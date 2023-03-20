@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { JWK } from 'jose'
 import { KeyModel } from '../../src/database/model'
 import { EntityData } from './index.spec'

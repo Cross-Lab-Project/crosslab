@@ -18,7 +18,7 @@ export const postLogout: postLogoutSignature = async (body, user) => {
     })
 
     const tokenModel = userModel.tokens.find(
-        (tokenModel) => tokenModel.token === body.token
+        (tm) => tm.token === body.token
     )
     if (tokenModel) await tokenRepository.remove(tokenModel)
 

@@ -19,7 +19,7 @@ import { roleRepository } from '../database/repositories/roleRepository'
  */
 async function createUserToken(
     userModel: UserModel,
-    expiresIn: number = 3600000
+    expiresIn = 3600000
 ): Promise<TokenModel> {
     const tokenModel = await tokenRepository.create({
         user: userModel.username,
