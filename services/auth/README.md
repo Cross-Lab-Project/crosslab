@@ -2,7 +2,7 @@
 
 |     | build-spec | build | lint | lint-spec | build-docker |
 | --- | --- | --- | --- | --- | --- |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/lint.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/lint-spec.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/nak/services/auth/dist/build-docker.log) |
+| /workspaces/crosslab/services/auth |   |  |  |  |  |
 
 [//]: # ({{end}})
 # Authentication Service
@@ -12,41 +12,41 @@
 ```mermaid
 graph LR
 %%{init:{'flowchart':{'nodeSpacing': 20, 'rankSpacing': 80, 'curve': 'linear', 'useMaxWidth': false}}}%%
-  subgraph clients/api/js
+  subgraph /workspaces/crosslab/clients/api/js
     clients/api/js:build[build]
   end
-  subgraph helper/crosslab-typescript-addon
+  subgraph /workspaces/crosslab/helper/crosslab-typescript-addon
     helper/crosslab-typescript-addon:build[build]
   end
-  subgraph helper/openapi-codegeneration
+  subgraph /workspaces/crosslab/helper/openapi-codegeneration
     helper/openapi-codegeneration:build[build]
   end
-  subgraph helper/tsdoc-theme
+  subgraph /workspaces/crosslab/helper/tsdoc-theme
     helper/tsdoc-theme:build[build]
   end
-  subgraph services/auth
+  subgraph /workspaces/crosslab/services/auth
     services/auth:build[build]
     services/auth:build-docker[build-docker]
     services/auth:build-spec[build-spec]
     services/auth:lint[lint]
     services/auth:lint-spec[lint-spec]
   end
-  subgraph services/booking
+  subgraph /workspaces/crosslab/services/booking
     services/booking:build-spec[build-spec]
   end
-  subgraph services/common
+  subgraph /workspaces/crosslab/services/common
     services/common:build[build]
   end
-  subgraph services/device
+  subgraph /workspaces/crosslab/services/device
     services/device:build-spec[build-spec]
   end
-  subgraph services/experiment
+  subgraph /workspaces/crosslab/services/experiment
     services/experiment:build-spec[build-spec]
   end
-  subgraph services/federation
+  subgraph /workspaces/crosslab/services/federation
     services/federation:build-spec[build-spec]
   end
-  subgraph services/update
+  subgraph /workspaces/crosslab/services/update
     services/update:build-spec[build-spec]
   end
   services/auth:build-spec[build-spec] --> clients/api/js:build[build]
