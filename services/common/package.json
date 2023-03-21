@@ -1,14 +1,21 @@
 {
   "name": "@crosslab/service-common",
   "types": "./lib/types/index.d.ts",
-  "main": "./lib/index.js",
+  "main": "./lib/cjs/index.js",
   "scripts": {
-    "build": "tsc",
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "npm run build-compile",
     "lint": "eslint ."
   },
   "files": [
     "lib"
   ],
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "dependencies": {
