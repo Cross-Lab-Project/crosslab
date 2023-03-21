@@ -394,7 +394,7 @@ export function resolveSchemas(
                 ),
                 ''
             )
-            .replace(/,,/g, '')
+            .replace(/,,+/g, ',')
             .replace(/,}/g, '}')
             .replace(/{,/g, '{')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_request"')
@@ -408,7 +408,7 @@ export function resolveSchemas(
                 ),
                 ''
             )
-            .replace(/,,/g, '')
+            .replace(/,,+/g, ',')
             .replace(/,}/g, '}')
             .replace(/{,/g, '{')
             .replace(/"\$ref":"(.*?)"/g, '"$ref":"$1_response"')

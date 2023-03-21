@@ -3,7 +3,7 @@ import { OpenAPIV3_1 } from 'openapi-types'
 /**
  * Schema for the type UserType.
  */
-export const userTypeSchema = <OpenAPIV3_1.SchemaObject>{
+export const userTypeSchema: OpenAPIV3_1.SchemaObject & { 'x-typeguard': boolean } = {
     title: 'User Type',
     type: 'object',
     properties: {
