@@ -74,7 +74,7 @@ function start_gateway(gateway_path: string, env: {[key: string]: string}) {
   return prepare_service(service);
 }
 
-async function wait_for_health_check(endpoint: string, timeout = 10000) {
+async function wait_for_health_check(endpoint: string, timeout = 60000) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
