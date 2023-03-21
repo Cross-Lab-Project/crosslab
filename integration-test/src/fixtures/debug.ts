@@ -33,11 +33,13 @@ function log(file="test.log", data: string, level: "log" | "err" = "log", testNa
   data=data.replaceAll("\n", "\n"+prefix);
   data = prefix + data;
 
-  if(!fileStreams.has(file)){
-    fileStreams.set(file, createWriteStream("./dist/"+file));
-    fileStreams.get(file)!.write("================== "+testName+"\n");
+  let stream = fileStreams.get(file);
+  if(!stream){
+    stream = createWriteStream("./dist/"+file)
+    fileStreams.set(file, stream);
+    stream.write("================== "+testName+"\n");
   }
-  fileStreams.get(file)!.write(data+"\n");
+  stream.write(data+"\n");
 }
 
 export const mochaHooks = {
@@ -74,7 +76,8 @@ export const mochaHooks = {
   async beforeEach(this: DebugContext & Mocha.Context) {
     const testName=this.currentTest?.titlePath().join(": ")??"unknown test";
     for (const file of fileStreams.keys()){
-      fileStreams.get(file)!.write("================== "+testName+"\n");
+      const stream=fileStreams.get(file)
+      stream && stream.write("================== "+testName+"\n");
     }
     this.log = (file, data, level)=>log(file, data, level, testName);
   }

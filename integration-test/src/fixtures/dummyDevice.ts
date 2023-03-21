@@ -31,7 +31,13 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   log_file: string;
   context: Mocha.Context & ServerContext;
 
-  constructor(type: 'js' | 'python', debug: boolean | number = false, host_debug: boolean | number = false, log_file: string, context: Mocha.Context & ServerContext) {
+  constructor(
+    type: 'js' | 'python',
+    debug: boolean | number = false,
+    host_debug: boolean | number = false,
+    log_file: string,
+    context: Mocha.Context & ServerContext
+  ) {
     super();
     switch (type) {
       case 'js':
