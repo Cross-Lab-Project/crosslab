@@ -306,6 +306,255 @@
             "readOnly": true
           }
         },
+        "required": [
+          "url",
+          "type"
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_overview_init": {
+        "title": "Device Overview Init",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the device",
+            "writeOnly": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc.",
+            "writeOnly": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
+            ],
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "service_description": {
+        "title": "Service Description",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "serviceDirection": {
+            "type": "string",
+            "enum": [
+              "consumer",
+              "producer",
+              "prosumer"
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable_init": {
+        "title": "Instantiable Cloud Device Init",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_init"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable",
+                "writeOnly": true
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_concrete_init": {
+        "title": "Concrete Device Init",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_init"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device",
+                "writeOnly": true
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable_init": {
+        "title": "Instantiable Browser Device Init",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_init"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable",
+                "writeOnly": true
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_group_init": {
+        "title": "Device Group Init",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_init"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group",
+                "writeOnly": true
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                },
+                "writeOnly": true
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_init": {
+        "title": "Device Init",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable_init"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete_init"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable_init"
+          },
+          {
+            "$ref": "#/components/schemas/device_group_init"
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
@@ -347,10 +596,12 @@
               },
               "connected": {
                 "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean"
+                "type": "boolean",
+                "readOnly": true
               },
               "announcedAvailability": {
-                "$ref": "#/components/schemas/availability"
+                "$ref": "#/components/schemas/availability",
+                "readOnly": true
               },
               "experiment": {
                 "type": "string",
@@ -359,14 +610,226 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/service_description"
                 }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_group": {
+        "title": "Device Group",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device": {
+        "title": "Device",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_group"
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_overview_update": {
+        "title": "Device Overview Update",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the device",
+            "writeOnly": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc.",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable_update": {
+        "title": "Instantiable Cloud Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
               }
             }
           }
         ],
-        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_concrete_update": {
+        "title": "Concrete Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "experiment": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable_update": {
+        "title": "Instantiable Browser Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "codeUrl": {
+                "type": "string",
+                "format": "uri",
+                "writeOnly": true
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                },
+                "writeOnly": true
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_group_update": {
+        "title": "Device Group Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                },
+                "writeOnly": true
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_update": {
+        "title": "Device Update",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_group_update"
+          }
+        ],
         "x-service-name": "Device Service"
       },
       "availability_rule": {
@@ -410,81 +873,6 @@
             }
           }
         ],
-        "x-service-name": "Device Service"
-      },
-      "device_group": {
-        "title": "Device Group",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "group"
-              },
-              "devices": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "URL of the device",
-                      "format": "uri"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device_cloud_instantiable": {
-        "title": "Instantiable Cloud Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "cloud instantiable"
-              },
-              "instantiate_url": {
-                "type": "string",
-                "format": "uri"
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device_edge_instantiable": {
-        "title": "Instantiable Browser Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "edge instantiable"
-              },
-              "code_url": {
-                "type": "string",
-                "format": "uri"
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
         "x-service-name": "Device Service"
       },
       "message": {
@@ -542,6 +930,11 @@
             "type": "string"
           }
         },
+        "required": [
+          "serviceType",
+          "serviceId",
+          "remoteServiceId"
+        ],
         "additionalProperties": true,
         "x-service-name": "Device Service"
       },
@@ -561,7 +954,8 @@
                 "type": "string",
                 "enum": [
                   "webrtc",
-                  "websocket"
+                  "websocket",
+                  "local"
                 ]
               },
               "connectionUrl": {
@@ -666,20 +1060,7 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
-      "device_reference": {
-        "title": "Device Reference",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri"
-          }
-        },
-        "x-service-name": "Device Service"
-      },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
+      "peerconnection_common": {
         "type": "object",
         "properties": {
           "url": {
@@ -688,15 +1069,37 @@
             "format": "uri",
             "readOnly": true
           },
-          "devices": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-              "$ref": "#/components/schemas/device_reference"
-            }
+          "type": {
+            "type": "string",
+            "description": "Type of the peerconnection",
+            "enum": [
+              "local",
+              "webrtc"
+            ]
           }
         },
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_common"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            }
+          }
+        ],
         "x-service-name": "Device Service"
       },
       "configured_device_reference": {
@@ -720,13 +1123,16 @@
             }
           }
         },
+        "required": [
+          "url"
+        ],
         "x-service-name": "Device Service"
       },
       "peerconnection": {
         "title": "Peerconnection",
         "allOf": [
           {
-            "$ref": "#/components/schemas/peerconnection_overview"
+            "$ref": "#/components/schemas/peerconnection_common"
           },
           {
             "type": "object",
@@ -742,6 +1148,7 @@
               "status": {
                 "type": "string",
                 "description": "The status of the peerconnection.",
+                "readOnly": true,
                 "enum": [
                   "waiting-for-devices",
                   "connected",
@@ -779,7 +1186,7 @@
         },
         "x-service-name": "Experiment Service"
       },
-      "device": {
+      "schemas-device": {
         "title": "Device",
         "type": "object",
         "properties": {
@@ -878,7 +1285,7 @@
                 "type": "array",
                 "description": "Devices associated with the experiment",
                 "items": {
-                  "$ref": "#/components/schemas/device"
+                  "$ref": "#/components/schemas/schemas-device"
                 }
               },
               "roles": {
@@ -2926,36 +3333,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device_init"
               },
               "examples": {
                 "microcontroller": {
@@ -3069,20 +3447,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -3305,20 +3670,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -3471,36 +3823,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device_update"
               },
               "examples": {
                 "microcontroller": {
@@ -3614,20 +3937,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {

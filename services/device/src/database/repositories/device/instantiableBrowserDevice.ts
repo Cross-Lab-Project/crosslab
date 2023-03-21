@@ -1,4 +1,8 @@
-import { InstantiableBrowserDevice } from '../../../generated/types'
+import {
+    InstantiableBrowserDevice,
+    InstantiableBrowserDeviceInit,
+    InstantiableBrowserDeviceUpdate,
+} from '../../../generated/types'
 import { InstantiableBrowserDeviceModel } from '../../model'
 import { DeviceOverviewRepository } from './deviceOverview'
 import {
@@ -19,9 +23,17 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(InstantiableBrowserDeviceModel)
     }
 
+    async create(
+        data?: InstantiableBrowserDeviceInit<'request'>
+    ): Promise<InstantiableBrowserDeviceModel> {
+        const model = await super.create(data)
+        model.type = 'edge instantiable'
+        return model
+    }
+
     async write(
         model: InstantiableBrowserDeviceModel,
-        data: InstantiableBrowserDevice<'request'>
+        data: InstantiableBrowserDeviceUpdate<'request'>
     ) {
         await DeviceOverviewRepository.write(model, data)
 

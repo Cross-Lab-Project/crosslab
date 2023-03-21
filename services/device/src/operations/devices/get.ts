@@ -13,6 +13,8 @@ export const getDevices: getDevicesSignature = async (_user) => {
 
     return {
         status: 200,
-        body: await Promise.all(devices.map(deviceRepository.formatOverview)),
+        body: await Promise.all(
+            devices.map((device) => deviceRepository.format(device, { overview: true }))
+        ),
     }
 }

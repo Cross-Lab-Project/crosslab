@@ -1,4 +1,8 @@
-import { InstantiableCloudDevice } from '../../../generated/types'
+import {
+    InstantiableCloudDevice,
+    InstantiableCloudDeviceInit,
+    InstantiableCloudDeviceUpdate,
+} from '../../../generated/types'
 import { InstantiableCloudDeviceModel } from '../../model'
 import { DeviceOverviewRepository } from './deviceOverview'
 import {
@@ -19,9 +23,17 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(InstantiableCloudDeviceModel)
     }
 
+    async create(
+        data?: InstantiableCloudDeviceInit<'request'>
+    ): Promise<InstantiableCloudDeviceModel> {
+        const model = await super.create(data)
+        model.type = 'cloud instantiable'
+        return model
+    }
+
     async write(
         model: InstantiableCloudDeviceModel,
-        data: InstantiableCloudDevice<'request'>
+        data: InstantiableCloudDeviceUpdate<'request'>
     ) {
         await DeviceOverviewRepository.write(model, data)
 
