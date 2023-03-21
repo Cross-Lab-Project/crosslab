@@ -1,4 +1,8 @@
-import { ConcreteDevice } from '../../../generated/types'
+import {
+    ConcreteDevice,
+    ConcreteDeviceInit,
+    ConcreteDeviceUpdate,
+} from '../../../generated/types'
 import { ConcreteDeviceModel } from '../../model'
 import { DeviceOverviewRepository } from './deviceOverview'
 import {
@@ -19,9 +23,15 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(ConcreteDeviceModel)
     }
 
+    async create(data?: ConcreteDeviceInit<'request'>): Promise<ConcreteDeviceModel> {
+        const model = await super.create(data)
+        model.type = 'device'
+        return model
+    }
+
     async write(
         model: ConcreteDeviceModel,
-        data: ConcreteDevice<'request'>
+        data: ConcreteDeviceUpdate<'request'>
     ): Promise<void> {
         await DeviceOverviewRepository.write(model, data)
 

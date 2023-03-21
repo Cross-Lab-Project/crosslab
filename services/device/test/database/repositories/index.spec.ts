@@ -10,7 +10,7 @@ import {
 } from '../../../src/database/model'
 import { deviceRepository } from '../../../src/database/repositories/device'
 import { peerconnectionRepository } from '../../../src/database/repositories/peerconnection'
-import { deviceNames } from '../../data/device.spec'
+import { deviceNames } from '../../data/devices/index.spec'
 import { prepareTestData, TestData } from '../../data/index.spec'
 import { peerconnectionNames } from '../../data/peerconnections/index.spec'
 import { deviceRepositoryTestSuite } from './device.spec'

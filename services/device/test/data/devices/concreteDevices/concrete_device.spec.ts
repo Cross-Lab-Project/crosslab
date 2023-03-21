@@ -1,4 +1,4 @@
-import { DeviceRepository } from '../../../src/database/repositories/device'
+import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice'
 import { EntityData } from '@crosslab/service-common'
 
 const uuid = '32348c89-f302-408f-8582-cb9783c74fbb'
@@ -7,7 +7,7 @@ const name = 'Concrete Device Example'
 const description = 'An example for a concrete device'
 const owner = 'http://localhost/users/superadmin'
 
-const concrete_device: EntityData<DeviceRepository> = {
+const concrete_device: EntityData<ConcreteDeviceRepository> = {
     request: {
         type,
         name,

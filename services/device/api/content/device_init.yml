@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
-  $ref: ../schemas/devices/device_init.yml
+  $ref: ../schemas/devices/init/device_init.yml
 examples:
   microcontroller:
     value:

@@ -1,11 +1,4 @@
-import {
-    Device,
-    DeviceOverview,
-    isConcreteDevice,
-    isDeviceGroup,
-    isInstantiableBrowserDevice,
-    isInstantiableCloudDevice,
-} from '../../generated/types'
+import { Device, DeviceInit, DeviceUpdate } from '../../generated/types'
 import { DeviceModel, DeviceOverviewModel } from '../model'
 import { concreteDeviceRepository } from './device/concreteDevice'
 import { deviceGroupRepository } from './device/deviceGroup'
@@ -15,7 +8,6 @@ import { instantiableCloudDeviceRepository } from './device/instantiableCloudDev
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
-    InvalidValueError,
 } from '@crosslab/service-common'
 
 export class DeviceRepository extends AbstractRepository<
@@ -31,47 +23,41 @@ export class DeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(DeviceOverviewModel)
     }
 
-    async write(model: DeviceModel, data: Device<'request'>): Promise<void> {
+    async create(data?: DeviceInit<'request'>): Promise<DeviceModel> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+        if (!data) return await super.create()
+
+        switch (data.type) {
+            case 'cloud instantiable':
+                return instantiableCloudDeviceRepository.create(data)
+            case 'device':
+                return concreteDeviceRepository.create(data)
+            case 'edge instantiable':
+                return instantiableBrowserDeviceRepository.create(data)
+            case 'group':
+                return deviceGroupRepository.create(data)
+        }
+    }
+
+    async write(model: DeviceModel, data: DeviceUpdate<'request'>): Promise<void> {
         switch (model.type) {
             case 'cloud instantiable':
-                if (!isInstantiableCloudDevice(data)) {
-                    throw new InvalidValueError(
-                        `Provided data cannot be used to update the given device`,
-                        400
-                    )
-                }
                 return await instantiableCloudDeviceRepository.write(model, data)
             case 'device':
-                if (!isConcreteDevice(data)) {
-                    throw new InvalidValueError(
-                        `Provided data cannot be used to update the given device`,
-                        400
-                    )
-                }
                 return await concreteDeviceRepository.write(model, data)
             case 'edge instantiable':
-                if (!isInstantiableBrowserDevice(data)) {
-                    throw new InvalidValueError(
-                        `Provided data cannot be used to update the given device`,
-                        400
-                    )
-                }
                 return await instantiableBrowserDeviceRepository.write(model, data)
             case 'group':
-                if (!isDeviceGroup(data)) {
-                    throw new InvalidValueError(
-                        `Provided data cannot be used to update the given device`,
-                        400
-                    )
-                }
                 return await deviceGroupRepository.write(model, data)
         }
     }
 
     async format(
         model: DeviceModel,
-        options?: { flatGroup?: boolean }
+        options?: { flatGroup?: boolean; overview?: boolean }
     ): Promise<Device<'response'>> {
+        if (options?.overview) return await DeviceOverviewRepository.format(model)
+
         switch (model.type) {
             case 'cloud instantiable':
                 return await instantiableCloudDeviceRepository.format(model)
@@ -82,10 +68,6 @@ export class DeviceRepository extends AbstractRepository<
             case 'group':
                 return await deviceGroupRepository.format(model, options?.flatGroup)
         }
-    }
-
-    async formatOverview(model: DeviceModel): Promise<DeviceOverview<'response'>> {
-        return await DeviceOverviewRepository.format(model)
     }
 }
 

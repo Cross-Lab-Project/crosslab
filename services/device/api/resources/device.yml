@@ -43,7 +43,7 @@ patch:
     description: Updated device.
     content:
       application/json:
-        $ref: "../content/device_body.yml"
+        $ref: "../content/device_update.yml"
   responses:
     200:
       description: The JSON Representation of the changed device.
