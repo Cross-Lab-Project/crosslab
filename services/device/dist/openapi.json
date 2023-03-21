@@ -1319,7 +1319,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/device_init"
+                "$ref": "#/components/schemas/device"
               },
               "examples": {
                 "microcontroller": {

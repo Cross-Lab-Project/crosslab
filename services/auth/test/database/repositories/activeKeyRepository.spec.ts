@@ -11,7 +11,7 @@ import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
 
-class ActiveKeyRepositoryTest extends AbstractRepositoryTestSuite<
+class ActiveKeyRepositoryTestSuite extends AbstractRepositoryTestSuite<
     ActiveKeyName,
     ActiveKeyRepository
 > {
@@ -72,4 +72,4 @@ class ActiveKeyRepositoryTest extends AbstractRepositoryTestSuite<
     }
 }
 
-export const activeKeyRepositoryTestSuite = new ActiveKeyRepositoryTest()
+export const activeKeyRepositoryTestSuite = new ActiveKeyRepositoryTestSuite()
