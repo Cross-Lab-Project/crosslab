@@ -1,7 +1,7 @@
 import { DeviceRepository } from '../../src/database/repositories/device'
 import { PeerconnectionRepository } from '../../src/database/repositories/peerconnection'
-import { deviceData, DeviceName } from './device.spec'
-import { peerconnectionData, PeerconnectionName } from './peerconnection.spec'
+import { deviceData, DeviceName } from './devices/index.spec'
+import { peerconnectionData, PeerconnectionName } from './peerconnections/index.spec'
 import { GenericTestData } from '@crosslab/service-common'
 
 export type TestData = GenericTestData<

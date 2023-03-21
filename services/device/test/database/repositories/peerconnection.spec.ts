@@ -5,7 +5,7 @@ import {
     PeerconnectionRepository,
 } from '../../../src/database/repositories/peerconnection'
 import { Peerconnection } from '../../../src/generated/types'
-import { PeerconnectionName } from '../../data/peerconnection.spec'
+import { PeerconnectionName } from '../../data/peerconnections/index.spec'
 import { initTestDatabase } from './index.spec'
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import { FindOptionsWhere } from 'typeorm'

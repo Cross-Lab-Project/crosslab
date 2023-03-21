@@ -41,7 +41,7 @@ post:
     required: true
     content:
       application/json:
-        $ref: "../content/device_body.yml"
+        $ref: "../content/device_init.yml"
   responses:
     201:
       description: The device was created. A JSON representation of the new device is returned.
