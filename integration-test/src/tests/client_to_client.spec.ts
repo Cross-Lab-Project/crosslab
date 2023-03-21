@@ -8,6 +8,7 @@ const clientTypes: ('js' | 'python')[] = ['js', 'python'];
 function createDummyDevice(type: 'js' | 'python', index: number, context: Mocha.Context) {
   switch (type) {
     case 'js':
+      // eslint-disable-next-line max-len
       return new DummyDevice(type, context.debug?.jsDevice?.[index]?.debug_port, context.debug?.jsDeviceHost?.[index]?.debug_port, `test-js-device${index}.log`, context);
     case 'python':
       return new DummyDevice(type, context.debug?.pythonDevice?.[index]?.debug_port, undefined, `test-python-device${index}.log`, context);

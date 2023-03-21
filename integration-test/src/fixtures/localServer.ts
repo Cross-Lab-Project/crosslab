@@ -39,7 +39,13 @@ function prepare_service(name: string, process: ChildProcessWithoutNullStreams, 
   return ret;
 }
 
-function start_service(service_path: string, env: {[key: string]: string}, clear = false, debug: boolean | number = false, context: ServerContext & Mocha.Context) {
+function start_service(
+    service_path: string,
+    env: {[key: string]: string},
+    clear = false,
+    debug: boolean | number = false,
+    context: ServerContext & Mocha.Context
+  ) {
   const additional_params = [];
   if (clear) {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
