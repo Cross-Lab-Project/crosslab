@@ -2,7 +2,7 @@
 
 |     | build | lint | test |
 | --- | --- | --- | --- |
-| clients/soa/python |  [![build](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/nak/clients/soa/python/dist/test.log) |
+| /workspaces/crosslab/clients/soa/python |   |  |  |
 
 [//]: # ({{end}})
 # Python SOA Client
@@ -12,36 +12,36 @@
 ```mermaid
 graph LR
 %%{init:{'flowchart':{'nodeSpacing': 20, 'rankSpacing': 80, 'curve': 'linear', 'useMaxWidth': false}}}%%
-  subgraph clients/api/python
+  subgraph /workspaces/crosslab/clients/api/python
     clients/api/python:build[build]
   end
-  subgraph clients/soa/python
+  subgraph /workspaces/crosslab/clients/soa/python
     clients/soa/python:build[build]
     clients/soa/python:lint[lint]
     clients/soa/python:test[test]
   end
-  subgraph helper/openapi-codegeneration
+  subgraph /workspaces/crosslab/helper/openapi-codegeneration
     helper/openapi-codegeneration:build[build]
   end
-  subgraph services/auth
+  subgraph /workspaces/crosslab/services/auth
     services/auth:build-spec[build-spec]
   end
-  subgraph services/booking
+  subgraph /workspaces/crosslab/services/booking
     services/booking:build-spec[build-spec]
   end
-  subgraph services/device
+  subgraph /workspaces/crosslab/services/device
     services/device:build-spec[build-spec]
   end
-  subgraph services/experiment
+  subgraph /workspaces/crosslab/services/experiment
     services/experiment:build-spec[build-spec]
   end
-  subgraph services/federation
+  subgraph /workspaces/crosslab/services/federation
     services/federation:build-spec[build-spec]
   end
-  subgraph services/openapi
+  subgraph /workspaces/crosslab/services/openapi
     services/openapi:build[build]
   end
-  subgraph services/update
+  subgraph /workspaces/crosslab/services/update
     services/update:build-spec[build-spec]
   end
   services/openapi:build[build] --> clients/api/python:build[build]
