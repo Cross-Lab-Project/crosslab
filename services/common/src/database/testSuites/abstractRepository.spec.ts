@@ -92,6 +92,12 @@ export abstract class AbstractRepositoryTestSuite<
     this.testSuites[suiteName] = suite(this.repositoryTestData);
   }
 
+  public removeSuite(suiteName: SuiteName) {
+    if (!this.testSuites || !this.repositoryTestData)
+      throw new Error('Test suite has not been initialized');
+    delete this.testSuites[suiteName];
+  }
+
   protected async resetDatabase() {
     if (this.AppDataSource.connected) {
       await this.AppDataSource.teardown();
