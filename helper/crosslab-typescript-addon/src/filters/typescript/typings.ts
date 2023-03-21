@@ -290,7 +290,10 @@ export function schemaToTypeDeclaration(
             }
 
             return {
-                typeDeclaration: `SizedTuple<${td.typeDeclaration},${min},${max}>`,
+                typeDeclaration:
+                    min !== 'undefined' || max !== 'undefined'
+                        ? `SizedTuple<${td.typeDeclaration},${min},${max}>`
+                        : `${td.typeDeclaration}[]`,
                 typeDependencies: td.typeDependencies,
                 comment: comment,
             }

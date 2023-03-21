@@ -1,4 +1,3 @@
-import { OpenAPIV3_1 } from 'openapi-types'
 import { formatName, formatOperation, formatExpressPath } from './format'
 import {
     ExtendedSchema,
@@ -11,6 +10,7 @@ import {
 import { destructureSchema, schemaToTypeDeclaration } from './typings'
 import { validation_filter } from './validation'
 import { FilterCollection } from '@cross-lab-project/openapi-codegen'
+import { OpenAPIV3_1 } from 'openapi-types'
 import { format } from 'prettier'
 
 /**
@@ -359,19 +359,21 @@ function append_filter(array: any[], value: any) {
     array.push(value)
 }
 
-function getPossibleScopeCombinations(security?: OpenAPIV3_1.SecurityRequirementObject[]) {
-    const possibleCombinations: [string,string][][] = []
+function getPossibleScopeCombinations(
+    security?: OpenAPIV3_1.SecurityRequirementObject[]
+) {
+    const possibleCombinations: [string, string][][] = []
     for (const securityRequirement of security ?? []) {
-        let combinations: [string,string][][] = []
+        let combinations: [string, string][][] = []
         for (const key in securityRequirement) {
             const scopes = securityRequirement[key]
             if (combinations.length === 0) {
                 for (const scope of scopes) {
-                    combinations.push([[key,scope]])
+                    combinations.push([[key, scope]])
                 }
             } else {
                 for (const scope of scopes) {
-                    combinations = combinations.map((comb) => [...comb,[key,scope]])
+                    combinations = combinations.map((comb) => [...comb, [key, scope]])
                 }
             }
         }
@@ -497,19 +499,19 @@ export const TypeScriptFilterCollection: FilterCollection = {
         },
         {
             name: 'includes',
-            function: includes_filter
+            function: includes_filter,
         },
         {
             name: 'addProperty',
-            function: addProperty_filter
+            function: addProperty_filter,
         },
         {
             name: 'append',
-            function: append_filter
+            function: append_filter,
         },
         {
             name: 'possibleScopeCombinations',
-            function: getPossibleScopeCombinations
-        }
+            function: getPossibleScopeCombinations,
+        },
     ],
 }

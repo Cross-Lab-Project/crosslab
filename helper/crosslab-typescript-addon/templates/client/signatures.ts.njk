@@ -174,5 +174,8 @@ export namespace {{ serviceName | formatName }}Signatures {
 {%- if content | includes("Require<") -%}
     {%- set content = content | replace('import {', 'import {\n\tRequire,') -%}
 {%- endif -%}
+{%- if content | includes("SizedTuple<") -%}
+    {%- set content = content | replace('import {', 'import {\n\tSizedTuple,') -%}
+{%- endif -%}
 
 {{ content | prettier }}

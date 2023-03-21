@@ -1,8 +1,8 @@
+import { ExtendedSchema } from './resolve'
 import Ajv from 'ajv'
+import addFormats from 'ajv-formats'
 // import { format } from 'prettier'
 import standaloneCode from 'ajv/dist/standalone'
-import addFormats from 'ajv-formats'
-import { ExtendedSchema } from './resolve'
 
 /**
  * This function defines a filter which can be used to generate the basic schema
