@@ -2,7 +2,7 @@ import assert from 'assert';
 import Mocha from 'mocha';
 
 import {AbstractRepository} from '../abstractRepository';
-import {ModelType, RepositoryTestData} from './types.spec';
+import {ModelType, RepositoryTestData, RequestType} from './types.spec';
 
 export function testSuiteWrite<
   K extends string,
@@ -19,7 +19,7 @@ export function testSuiteWrite<
           assert(repositoryTestData.validateCreate(model));
           await repositoryTestData.repository.write(
             model,
-            repositoryTestData.entityData[key].request,
+            repositoryTestData.entityData[key].request as Partial<RequestType<R>>,
           );
           assert(
             repositoryTestData.validateWrite(

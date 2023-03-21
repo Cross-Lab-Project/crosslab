@@ -43,7 +43,7 @@ export abstract class AbstractRepository<
     return model;
   }
 
-  abstract write(model: M, data: RQ): Promise<void>;
+  abstract write(model: M, data: Partial<RQ>): Promise<void>;
 
   public async save(model: M): Promise<M> {
     if (!this.repository) this.throwUninitializedRepositoryError();
