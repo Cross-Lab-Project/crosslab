@@ -4,6 +4,7 @@ import {ChildProcessWithoutNullStreams, execSync, spawn} from 'child_process';
 import fs from 'fs';
 import {resolve} from 'path';
 import {TypedEmitter} from 'tiny-typed-emitter';
+import { ServerContext } from './localServer';
 
 const repository_dir = resolve(__filename, '../../../../');
 
@@ -27,8 +28,10 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   private process: ChildProcessWithoutNullStreams | undefined;
 
   public url = '';
+  log_file: string;
+  context: Mocha.Context & ServerContext;
 
-  constructor(type: 'js' | 'python', debug: boolean | number = false, host_debug: boolean | number = false) {
+  constructor(type: 'js' | 'python', debug: boolean | number = false, host_debug: boolean | number = false, log_file: string, context: Mocha.Context & ServerContext) {
     super();
     switch (type) {
       case 'js':
@@ -54,10 +57,13 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
         }
         break;
     }
+    this.log_file = log_file;
+    this.context = context;
   }
 
   public async start(client: APIClient, deviceUrl: string) {
     assert(this.process === undefined, 'Device already started');
+    this.context.log(this.log_file, "starting device", 'log');
     this.url = deviceUrl;
 
     const cli = ['--url', client.url, '--auth-token', client.accessToken, '--device-url', deviceUrl];
@@ -68,16 +74,16 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     }
 
     this.process.stderr.on('data', data => {
-      console.error(data.toString());
+      this.context.log(this.log_file, data.toString(), 'err');
     });
 
     let stdout = '';
     this.process.stdout.on('data', data => {
+      this.context.log(this.log_file, data.toString(), 'log');
       stdout += data.toString();
       const lines = stdout.split('\n');
       stdout = lines.pop() ?? '';
       for (const line of lines) {
-        console.log(line);
         const split_line = line.split(' ');
         if (split_line.length >= 1) {
           const event = split_line[0];

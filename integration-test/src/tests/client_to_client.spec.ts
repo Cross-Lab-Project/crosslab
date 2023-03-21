@@ -5,12 +5,12 @@ import {DummyDevice} from '../fixtures/dummyDevice';
 
 const clientTypes: ('js' | 'python')[] = ['js', 'python'];
 
-function createDummyDevice(type: 'js' | 'python', index: number, debug: Mocha.Context['debug']) {
+function createDummyDevice(type: 'js' | 'python', index: number, context: Mocha.Context) {
   switch (type) {
     case 'js':
-      return new DummyDevice(type, debug?.jsDevice?.[index]?.debug_port, debug?.jsDeviceHost?.[index]?.debug_port);
+      return new DummyDevice(type, context.debug?.jsDevice?.[index]?.debug_port, context.debug?.jsDeviceHost?.[index]?.debug_port, `test-js-device${index}.log`, context);
     case 'python':
-      return new DummyDevice(type, debug?.pythonDevice?.[index]?.debug_port);
+      return new DummyDevice(type, context.debug?.pythonDevice?.[index]?.debug_port, undefined, `test-python-device${index}.log`, context);
   }
 }
 
@@ -22,8 +22,8 @@ for (const client1Type of clientTypes) {
 
       before(function () {
         this.timeout(0);
-        dummyDevice1 = createDummyDevice(client1Type, 1, this.debug);
-        dummyDevice2 = createDummyDevice(client2Type, 2, this.debug);
+        dummyDevice1 = createDummyDevice(client1Type, 1, this);
+        dummyDevice2 = createDummyDevice(client2Type, 2, this);
       });
       after(() => {
         dummyDevice1.stop();
