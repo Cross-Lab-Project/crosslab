@@ -40,12 +40,15 @@ const repositoryTestSuites = [
 
 export default () =>
     describe('Repositories', async function () {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const suite: Mocha.Suite = this
+
         it('Should setup the repository tests', async function () {
             this.timeout(0)
 
             for (const repositoryTestSuite of repositoryTestSuites) {
                 await repositoryTestSuite.initialize()
-                this.addSuite(repositoryTestSuite.execute())
+                suite.addSuite(repositoryTestSuite.execute())
             }
         })
     })
