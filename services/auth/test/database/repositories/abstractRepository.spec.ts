@@ -510,8 +510,10 @@ export abstract class AbstractRepositoryTestSuite<M extends Model> {
         const testSuites = this.testSuites
         const testSuite = new Mocha.Suite(`${getModelName(this.model)} Repository Test`)
         for (const suite in testSuites) {
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            const reference = this
             testSuites[suite].beforeEach(async function () {
-                await this.resetDatabase()
+                await reference.resetDatabase()
             })
             testSuite.addSuite(testSuites[suite])
         }

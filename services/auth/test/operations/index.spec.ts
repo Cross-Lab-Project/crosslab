@@ -21,6 +21,8 @@ const tests = [
 
 describe('Operations', function () {
     let testData: TestData
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const suite: Mocha.Suite = this
 
     this.beforeAll(async function () {
         console.log = (_message: any, ..._optionalParams: any[]) => undefined
@@ -42,7 +44,7 @@ describe('Operations', function () {
 
     it('should initialize the test data', async function () {
         for (const test of tests) {
-            this.addSuite(test(this.ctx, testData))
+            suite.addSuite(test(this.ctx, testData))
         }
     })
 })
