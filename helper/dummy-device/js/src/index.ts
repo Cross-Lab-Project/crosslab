@@ -57,6 +57,7 @@ async function main() {
     console.log(data.toString());
   });
   console.log('Chromium is ready');
+  await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for target to be ready
 
   const protocol = await CDP({port: chromePort});
 
