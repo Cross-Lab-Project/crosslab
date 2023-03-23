@@ -69,6 +69,21 @@ export class DeviceRepository extends AbstractRepository<
                 return await deviceGroupRepository.format(model, options?.flatGroup)
         }
     }
+
+    async save(model: DeviceModel): Promise<DeviceModel> {
+        if (!this.repository) this.throwUninitializedRepositoryError()
+
+        switch (model.type) {
+            case 'cloud instantiable':
+                return await instantiableCloudDeviceRepository.save(model)
+            case 'device':
+                return await concreteDeviceRepository.save(model)
+            case 'edge instantiable':
+                return await instantiableBrowserDeviceRepository.save(model)
+            case 'group':
+                return await deviceGroupRepository.save(model)
+        }
+    }
 }
 
 export const deviceRepository = new DeviceRepository()

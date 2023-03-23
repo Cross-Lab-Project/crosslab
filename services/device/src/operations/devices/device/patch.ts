@@ -1,7 +1,7 @@
 import { deviceRepository } from '../../../database/repositories/device'
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks'
-import { MissingPropertyError } from '@crosslab/service-common'
+import { deviceUrlFromId } from '../../../methods/urlFromId'
 
 /**
  * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.
@@ -22,33 +22,21 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
         where: { uuid: parameters.device_id },
     })
 
+    await deviceRepository.write(device, body ?? {})
+    await deviceRepository.save(device)
+
+    await sendChangedCallback(device)
+
     if (parameters.changedUrl) {
         console.log(
-            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+            `registering changed-callback for device '${deviceUrlFromId(
+                device.uuid
+            )}' to '${parameters.changedUrl}'`
         )
         const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(device.uuid, changedCallbackURLs)
     }
-
-    if (!body || Object.keys(body).length === 0) {
-        console.log(
-            `patchDevicesByDeviceId succeeded: no changes applied due to empty body`
-        )
-        return {
-            status: 200,
-            body: await deviceRepository.format(device),
-        }
-    }
-
-    if (!device.type) {
-        throw new MissingPropertyError(`Device model is missing a type`)
-    }
-
-    await deviceRepository.write(device, body)
-    await deviceRepository.save(device)
-
-    await sendChangedCallback(device)
 
     console.log(`patchDevicesByDeviceId succeeded`)
 

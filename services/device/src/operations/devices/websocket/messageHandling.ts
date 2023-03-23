@@ -1,63 +1,70 @@
 import { ConcreteDeviceModel } from '../../../database/model'
-import { SignalingMessage, Message, isSignalingMessage } from '../../../generated/types'
+import {
+    SignalingMessage,
+    Message,
+    isSignalingMessage,
+    isConnectionStateChangedMessage,
+    ConnectionStateChangedMessage,
+} from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
-import {
-    MissingPropertyError,
-    UnrelatedPeerconnectionError,
-} from '@crosslab/service-common'
+import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
 
 /**
  * This function handles a message for a device.
- * @param device The device for which to handle the message.
+ * @param deviceModel The device for which to handle the message.
  * @param message The message to be handled.
  */
-export function handleDeviceMessage(device: ConcreteDeviceModel, message: Message) {
+export async function handleDeviceMessage(
+    deviceModel: ConcreteDeviceModel,
+    message: Message
+) {
     if (isSignalingMessage(message)) {
-        handleSignalingMessage(device, message)
+        await handleSignalingMessage(deviceModel, message)
+    } else if (isConnectionStateChangedMessage(message)) {
+        await handleConnectionStateChangedMessage(deviceModel, message)
     }
 }
 
 /**
  * This function handles a signaling message for a device.
- * @param device The device for which to handle the signaling message.
+ * @param deviceModel The device for which to handle the signaling message.
  * @param message The signaling message to be handled.
  */
 async function handleSignalingMessage(
-    device: ConcreteDeviceModel,
+    deviceModel: ConcreteDeviceModel,
     message: SignalingMessage
 ) {
     const peerconnection = await apiClient.getPeerconnection(message.connectionUrl)
 
-    if (!peerconnection.devices)
-        throw new MissingPropertyError('Peerconnection has no devices')
-
     const deviceA = peerconnection.devices[0]
     const deviceB = peerconnection.devices[1]
 
-    let peerDeviceUrl
-    if (deviceA.url === deviceUrlFromId(device.uuid)) {
-        peerDeviceUrl = deviceB.url
-    } else if (deviceB.url === deviceUrlFromId(device.uuid)) {
-        peerDeviceUrl = deviceA.url
-    } else {
+    let peerDeviceUrl: string | undefined = undefined
+    if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url
+    if (deviceB.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceA.url
+    if (!peerDeviceUrl) {
         throw new UnrelatedPeerconnectionError(
-            'Device is not taking part in peerconnection.'
+            'Device is not taking part in peerconnection.',
+            400
         )
     }
 
-    if (!peerDeviceUrl) throw new MissingPropertyError('Peer device is missing its url')
+    await apiClient.sendSignalingMessage(peerDeviceUrl, message, message.connectionUrl)
+}
 
-    try {
-        await apiClient.sendSignalingMessage(
-            peerDeviceUrl,
-            message,
-            message.connectionUrl
-        )
-    } catch (error) {
-        console.error(
-            'Something went wrong while trying to send the signaling message:',
-            error
-        )
-    }
+/**
+ * This function handles a connection-state-changed message for a device.
+ * @param deviceModel The device for which the connection state changed
+ * @param message The connection-state-changed message.
+ */
+async function handleConnectionStateChangedMessage(
+    deviceModel: ConcreteDeviceModel,
+    message: ConnectionStateChangedMessage
+) {
+    await apiClient.patchPeerconnectionDeviceStatus(
+        message.connectionUrl,
+        { status: message.status },
+        deviceUrlFromId(deviceModel.uuid)
+    )
 }

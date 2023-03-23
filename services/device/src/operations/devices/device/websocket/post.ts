@@ -1,8 +1,7 @@
-import { MissingEntityError } from "@crosslab/service-common"
-import { randomUUID } from "crypto"
-import { AppDataSource } from "../../../../database/dataSource"
-import { ConcreteDeviceModel } from "../../../../database/model"
-import { postDevicesByDeviceIdWebsocketSignature } from "../../../../generated/signatures"
+import { AppDataSource } from '../../../../database/dataSource'
+import { ConcreteDeviceModel } from '../../../../database/model'
+import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
+import { randomUUID } from 'crypto'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id}/token endpoint.
@@ -12,28 +11,25 @@ import { postDevicesByDeviceIdWebsocketSignature } from "../../../../generated/s
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
     async (parameters, _user) => {
-        console.log(`postDevicesByDeviceIdToken called`)
+        console.log(`postDevicesByDeviceIdWebsocket called`)
+
         const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-        const device = await deviceRepository.findOneBy({ uuid: parameters.device_id })
+        const deviceModel = await deviceRepository.findOneByOrFail({
+            uuid: parameters.device_id,
+        })
 
-        if (!device)
-            throw new MissingEntityError(
-                `Could not find device ${parameters.device_id}`,
-                404
-            )
-
-        device.token = randomUUID()
-        await deviceRepository.save(device)
+        deviceModel.token = randomUUID()
+        await deviceRepository.save(deviceModel)
 
         setTimeout(async () => {
-            device.token = undefined
-            await deviceRepository.save(device)
+            deviceModel.token = undefined
+            await deviceRepository.save(deviceModel)
         }, 300000)
 
-        console.log(`postDevicesByDeviceIdToken succeeded`)
+        console.log(`postDevicesByDeviceIdWebsocket succeeded`)
 
         return {
             status: 200,
-            body: device.token,
+            body: deviceModel.token,
         }
     }

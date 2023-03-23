@@ -10,6 +10,4 @@ allOf:
         type: array
         items:
           $ref: ./device_reference.yml
-    required:
-    - type
 x-typeguard: true

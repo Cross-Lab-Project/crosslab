@@ -10,3 +10,5 @@ allOf:
         maxItems: 2
         items:
           $ref: "../devices/device_reference.yml"
+    required:
+      - devices

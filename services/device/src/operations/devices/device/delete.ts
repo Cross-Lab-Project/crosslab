@@ -1,5 +1,5 @@
-import { deviceRepository } from "../../../database/repositories/device"
-import { deleteDevicesByDeviceIdSignature } from "../../../generated/signatures"
+import { deviceRepository } from '../../../database/repositories/device'
+import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures'
 
 /**
  * This function implements the functionality for handling DELETE requests on /devices/{device_id} endpoint.
@@ -12,11 +12,12 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     _user
 ) => {
     console.log(`deleteDevicesByDeviceId called`)
-    const device = await deviceRepository.findOneOrFail({
+
+    const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    await deviceRepository.remove(device)
+    await deviceRepository.remove(deviceModel)
 
     console.log(`deleteDevicesByDeviceId succeeded`)
 

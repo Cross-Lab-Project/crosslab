@@ -7,12 +7,13 @@ import { getPeerconnectionsSignature } from '../../generated/signatures'
  */
 export const getPeerconnections: getPeerconnectionsSignature = async (_user) => {
     console.log(`getPeerconnections called`)
-    const peerconnections = await peerconnectionRepository.find()
+
+    const peerconnectionModels = await peerconnectionRepository.find()
 
     console.log(`getPeerconnections succeeded`)
 
     return {
         status: 200,
-        body: peerconnections.map(peerconnectionRepository.formatOverview),
+        body: peerconnectionModels.map(peerconnectionRepository.formatOverview),
     }
 }

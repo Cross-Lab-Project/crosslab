@@ -21,7 +21,7 @@ export function callbackHandling(app: express.Application) {
                     return res.status(await handleEventCallback(callback)).send()
                 default:
                     throw new InvalidValueError(
-                        `Callbacks of type "${req.body.callbackType}" are not supported`,
+                        `Callbacks of type '${req.body.callbackType}' are not supported`,
                         400
                     )
             }
@@ -40,12 +40,12 @@ export function callbackHandling(app: express.Application) {
 function getCallbackType(callback: any) {
     if (typeof callback.callbackType !== 'string') {
         throw new MalformedBodyError(
-            'Property "callbackType" needs to be of type string',
+            "Property 'callbackType' needs to be of type string",
             400
         )
     }
     if (!callback.callbackType) {
-        throw new MalformedBodyError('Callbacks require property "callbackType"', 400)
+        throw new MalformedBodyError("Callbacks require property 'callbackType'", 400)
     }
     return callback.callbackType as string
 }

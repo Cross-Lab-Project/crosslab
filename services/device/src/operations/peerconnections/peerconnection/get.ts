@@ -10,7 +10,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
     async (parameters, _user) => {
         console.log(`getPeerconnectionsByPeerconnectionId called`)
 
-        const peerconnection = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
         })
 
@@ -18,6 +18,6 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
 
         return {
             status: 200,
-            body: await peerconnectionRepository.format(peerconnection),
+            body: await peerconnectionRepository.format(peerconnectionModel),
         }
     }

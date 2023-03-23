@@ -12,25 +12,18 @@ type AvailabilityRuleModel = Omit<RemoveIndex<AvailabilityRule>, 'start' | 'end'
 }
 
 /**
- * This function applies a list of availability rules to a list of timeslots.
- * @param availability The list of timeslots to which to apply the availability rule.
+ * This function calculates a list of timeslots from a list of availability rules.
  * @param availabilityRules The list of availability rules to be applied.
  * @param start The start time for the availability rules.
  * @param end The end time for the availability rules.
- * @returns The list of timeslots containing the changes of the applied availability rules.
+ * @returns The list of available timeslots.
  */
-export function applyAvailabilityRules(
-    availability: Required<TimeSlot>[],
+export function calculateAvailability(
     availabilityRules: AvailabilityRule[],
     start: number,
     end: number
 ): Required<TimeSlot>[] {
-    let newAvailability = availability.map((timeSlot) => {
-        return {
-            start: Date.parse(timeSlot.start),
-            end: Date.parse(timeSlot.end),
-        }
-    })
+    let newAvailability: TimeSlotModel[] = []
     for (const availabilityRule of availabilityRules) {
         newAvailability = applyAvailabilityRule(
             newAvailability,

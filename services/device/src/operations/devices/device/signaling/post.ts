@@ -5,7 +5,6 @@ import { apiClient } from '../../../../globals'
 import { deviceUrlFromId } from '../../../../methods/urlFromId'
 import {
     ForbiddenOperationError,
-    MissingPropertyError,
     UnrelatedPeerconnectionError,
     MissingEntityError,
 } from '@crosslab/service-common'
@@ -23,14 +22,14 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
         console.log(`postDevicesByDeviceIdSignaling called`)
 
         // Get device
-        const device = await deviceRepository.findOneOrFail({
+        const deviceModel = await deviceRepository.findOneOrFail({
             where: { uuid: parameters.device_id },
         })
 
         // Make sure device is a concrete device
-        if (device.type !== 'device')
+        if (deviceModel.type !== 'device')
             throw new ForbiddenOperationError(
-                `Cannot send signaling message to device with type ${device.type}`,
+                `Cannot send signaling message to device with type '${deviceModel.type}'`,
                 400
             )
 
@@ -38,17 +37,12 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
         const peerconnection = await apiClient.getPeerconnection(
             parameters.peerconnection_url
         )
-        if (!peerconnection.devices)
-            throw new MissingPropertyError(
-                `Peerconnection does not have any devices`,
-                404
-            )
         const deviceA = peerconnection.devices[0]
         const deviceB = peerconnection.devices[1]
 
         if (
-            !(deviceA.url === deviceUrlFromId(device.uuid)) &&
-            !(deviceB.url === deviceUrlFromId(device.uuid))
+            !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&
+            !(deviceB.url === deviceUrlFromId(deviceModel.uuid))
         ) {
             throw new UnrelatedPeerconnectionError(
                 `Device is not part of the peerconnection`,
@@ -56,15 +50,15 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
             )
         }
 
-        const ws = connectedDevices.get(parameters.device_id)
+        const webSocket = connectedDevices.get(parameters.device_id)
 
-        if (!ws)
+        if (!webSocket)
             throw new MissingEntityError(
                 `Could not find websocket connection for device ${parameters.device_id}`,
                 404
             )
 
-        ws.send(JSON.stringify(body))
+        webSocket.send(JSON.stringify(body))
 
         console.log(`postDevicesByDeviceIdSignaling succeeded`)
 
