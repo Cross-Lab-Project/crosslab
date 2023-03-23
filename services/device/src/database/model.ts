@@ -112,7 +112,7 @@ export abstract class PeerconnectionModel {
     uuid!: string
     @Column()
     type!: 'local' | 'webrtc'
-    @Column()
+    @Column('varchar')
     status!: ConnectionStatus
     @Column('simple-json')
     deviceA!: ConfiguredDeviceReference & { status: ConnectionStatus }

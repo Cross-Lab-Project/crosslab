@@ -25,6 +25,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
 
     async create(data?: ConcreteDeviceInit<'request'>): Promise<ConcreteDeviceModel> {
         const model = await super.create(data)
+        model.type = 'device'
         return model
     }
 

@@ -27,6 +27,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
         data?: InstantiableCloudDeviceInit<'request'>
     ): Promise<InstantiableCloudDeviceModel> {
         const model = await super.create(data)
+        model.type = 'cloud instantiable'
         return model
     }
 
