@@ -42,6 +42,34 @@
         ],
         "x-typeguard": true
       },
+      "connection_state_changed_message": {
+        "title": "Connection State Changed Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "connection-state-changed"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "status": {
+                "$ref": "#/components/schemas/peerconnection_status"
+              }
+            },
+            "required": [
+              "connectionUrl",
+              "status"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
       "device_overview": {
         "title": "Device Overview",
         "type": "object",
@@ -78,7 +106,8 @@
         },
         "required": [
           "url",
-          "type"
+          "type",
+          "name"
         ],
         "x-typeguard": true
       },
@@ -109,7 +138,8 @@
           }
         },
         "required": [
-          "type"
+          "type",
+          "name"
         ]
       },
       "service_description": {
@@ -310,10 +340,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true
@@ -371,10 +398,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true
@@ -401,10 +425,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true
@@ -427,10 +448,7 @@
                   "$ref": "#/components/schemas/device_reference"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true
@@ -801,6 +819,19 @@
         ],
         "x-typeguard": true
       },
+      "peerconnection_status": {
+        "title": "Connection Status",
+        "type": "string",
+        "description": "The status of the peerconnection.",
+        "enum": [
+          "new",
+          "connecting",
+          "connected",
+          "disconnected",
+          "failed",
+          "closed"
+        ]
+      },
       "peerconnection_common": {
         "type": "object",
         "properties": {
@@ -817,8 +848,15 @@
               "local",
               "webrtc"
             ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/peerconnection_status"
           }
-        }
+        },
+        "required": [
+          "url",
+          "type"
+        ]
       },
       "peerconnection_overview": {
         "title": "Peerconnection Overview",
@@ -837,7 +875,10 @@
                   "$ref": "#/components/schemas/device_reference"
                 }
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ]
       },
@@ -882,19 +923,11 @@
                 "items": {
                   "$ref": "#/components/schemas/configured_device_reference"
                 }
-              },
-              "status": {
-                "type": "string",
-                "description": "The status of the peerconnection.",
-                "readOnly": true,
-                "enum": [
-                  "waiting-for-devices",
-                  "connected",
-                  "failed",
-                  "closed"
-                ]
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ],
         "x-typeguard": true
@@ -979,6 +1012,16 @@
         "example": [
           "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
         ]
+      },
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "URL of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     }
   },
@@ -2534,6 +2577,70 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ]
+      }
+    },
+    "/peerconnections/{peerconnection_id}/device_status": {
+      "patch": {
+        "operationId": "patch_peerconnection_device_status",
+        "summary": "Sets the peerconnection status of a single device.",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The JSON Representation of the device peer connection.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/peerconnection_status"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_url"
           }
         ]
       }

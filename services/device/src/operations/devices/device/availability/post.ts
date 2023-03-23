@@ -1,6 +1,6 @@
 import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures'
-import { applyAvailabilityRules } from '../../../../methods/availability'
+import { calculateAvailability } from '../../../../methods/availability'
 import { sendChangedCallback } from '../../../../methods/callbacks'
 import { ForbiddenOperationError } from '@crosslab/service-common'
 
@@ -16,36 +16,35 @@ const YEAR = 365 * 24 * 60 * 60 * 1000
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature =
     async (parameters, body, _user) => {
         console.log(`postDevicesByDeviceIdAvailability called`)
-        const device = await deviceRepository.findOneOrFail({
+
+        const deviceModel = await deviceRepository.findOneOrFail({
             where: { uuid: parameters.device_id },
         })
 
-        if (device.type !== 'device') {
+        if (deviceModel.type !== 'device') {
             throw new ForbiddenOperationError(
-                `Can only the availability for a device of type 'device', not for type '${device.type}'`
+                `Can only update the availability for a device of type 'device', not for type '${deviceModel.type}'`
             )
         }
 
-        device.availabilityRules ??= []
-        device.availabilityRules.push(...(body ?? []))
+        deviceModel.availabilityRules ??= []
+        deviceModel.availabilityRules.push(...(body ?? []))
 
-        device.announcedAvailability = []
         const start = Date.now()
         const end = start + YEAR
-        device.announcedAvailability = applyAvailabilityRules(
-            device.announcedAvailability,
-            device.availabilityRules,
+        deviceModel.announcedAvailability = calculateAvailability(
+            deviceModel.availabilityRules,
             start,
             end
         )
 
-        await deviceRepository.save(device)
-        await sendChangedCallback(device)
+        await deviceRepository.save(deviceModel)
+        await sendChangedCallback(deviceModel)
 
         console.log(`postDevicesByDeviceIdAvailability succeeded`)
 
         return {
             status: 200,
-            body: device.announcedAvailability,
+            body: deviceModel.announcedAvailability,
         }
     }

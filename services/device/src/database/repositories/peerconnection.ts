@@ -22,7 +22,7 @@ export class PeerconnectionRepository extends AbstractRepository<
 
     async create(data?: Peerconnection<'request'>): Promise<PeerconnectionModel> {
         const model = await super.create(data)
-        model.status = 'waiting-for-devices'
+        model.status = 'new'
 
         return model
     }
@@ -49,8 +49,8 @@ export class PeerconnectionRepository extends AbstractRepository<
                 )
             }
 
-            model.deviceA = deviceA
-            model.deviceB = deviceB
+            model.deviceA = { ...deviceA, status: 'new' }
+            model.deviceB = { ...deviceB, status: 'new' }
         }
     }
 

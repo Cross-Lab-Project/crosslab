@@ -8,11 +8,7 @@ import {
     statusChangedCallbacks,
 } from '../../methods/callbacks'
 import { signalingQueue } from '../../methods/signaling'
-import {
-    MissingEntityError,
-    InvalidValueError,
-    MissingPropertyError,
-} from '@crosslab/service-common'
+import { InvalidValueError } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /peerconnections endpoint.
@@ -27,34 +23,23 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 ) => {
     console.log(`postPeerconnections called`)
 
-    const peerconnection = await peerconnectionRepository.create(body)
+    const peerconnectionModel = await peerconnectionRepository.create(body)
 
-    if (!peerconnection.deviceA.url || !peerconnection.deviceB.url) {
-        throw new MissingEntityError(`One of the participating devices has no url`, 404)
-    }
+    await peerconnectionRepository.save(peerconnectionModel)
 
-    await peerconnectionRepository.save(peerconnection)
-
-    const deviceA = await apiClient.getDevice(peerconnection.deviceA.url)
-    const deviceB = await apiClient.getDevice(peerconnection.deviceB.url)
+    const deviceA = await apiClient.getDevice(peerconnectionModel.deviceA.url)
+    const deviceB = await apiClient.getDevice(peerconnectionModel.deviceB.url)
 
     if (deviceA.type !== 'device' || deviceB.type !== 'device') {
         throw new InvalidValueError(
-            `Cannot establish a peerconnection between devices of type "${deviceA.type}" and "${deviceB.type}"`,
+            `Cannot establish a peerconnection between devices of type '${deviceA.type}' and '${deviceB.type}'`,
             400
         )
     }
 
-    if (!deviceA.url || !deviceB.url) {
-        throw new MissingPropertyError(
-            `One of the resolved devices does not have an url`,
-            500
-        ) // NOTE: error code
-    }
-
     if (deviceA.connected && deviceB.connected) {
         // peerconnection can be started directly
-        signalingQueue.addPeerconnection(peerconnection)
+        signalingQueue.addPeerconnection(peerconnectionModel)
     } else {
         // need to wait for devices to connect
         // register changed callbacks for devices to get notified when they connect
@@ -72,48 +57,50 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         // check that devices still have the correct type
         if (n_deviceA.type !== 'device' || n_deviceB.type !== 'device') {
             throw new InvalidValueError(
-                `The type of device ${
-                    deviceA.type !== 'device' ? deviceA.url : deviceB.url
-                } is not "device" anymore`,
+                `Cannot establish a peerconnection between devices of type '${deviceA.type}' and '${deviceB.type}'`,
                 400
             )
         }
 
         // set timeout for checking if devices are connected
         timeoutMap.set(
-            peerconnection.uuid,
+            peerconnectionModel.uuid,
             setTimeout(async () => {
-                console.log('devices did not connect')
-                peerconnection.status = 'failed'
-                await peerconnectionRepository.save(peerconnection)
-                await sendStatusChangedCallback(peerconnection)
+                try {
+                    console.log('devices did not connect')
+                    peerconnectionModel.status = 'failed'
+                    await peerconnectionRepository.save(peerconnectionModel)
+                    await sendStatusChangedCallback(peerconnectionModel)
+                } catch (error) {
+                    console.error(error)
+                }
             }, 30000)
         )
     }
 
     if (parameters.closedUrl) {
         console.log(
-            `postPeerconnections: registering closed-callback for ${parameters.closedUrl}`
+            `postPeerconnections: registering closed-callback for '${parameters.closedUrl}'`
         )
-        const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid) ?? []
+        const closedCallbackURLs = closedCallbacks.get(peerconnectionModel.uuid) ?? []
         closedCallbackURLs.push(parameters.closedUrl)
-        closedCallbacks.set(peerconnection.uuid, closedCallbackURLs)
+        closedCallbacks.set(peerconnectionModel.uuid, closedCallbackURLs)
     }
 
     if (parameters.statusChangedUrl) {
         console.log(
-            `postPeerconnections: registering status-changed-callback for ${parameters.statusChangedUrl}`
+            `postPeerconnections: registering status-changed-callback for '${parameters.statusChangedUrl}'`
         )
         const statusChangedCallbackURLs =
-            statusChangedCallbacks.get(peerconnection.uuid) ?? []
+            statusChangedCallbacks.get(peerconnectionModel.uuid) ?? []
         statusChangedCallbackURLs.push(parameters.statusChangedUrl)
-        statusChangedCallbacks.set(peerconnection.uuid, statusChangedCallbackURLs)
+        statusChangedCallbacks.set(peerconnectionModel.uuid, statusChangedCallbackURLs)
     }
 
     console.log(`postPeerconnections succeeded`)
 
     return {
-        status: peerconnection.status === 'connected' ? 201 : 202,
-        body: await peerconnectionRepository.format(peerconnection),
+        status: peerconnectionModel.status === 'connected' ? 201 : 202,
+        body: await peerconnectionRepository.format(peerconnectionModel),
     }
 }

@@ -20,6 +20,8 @@ components:
   schemas:
     authentication_message:
       $ref: "./schemas/messages/authentication_message.yml"
+    connection_state_changed_message:
+      $ref: "./schemas/messages/connection_state_changed_message.yml"
 tags:
   - name: device
     description: |-
@@ -42,3 +44,5 @@ paths:
     $ref: "./resources/peerconnections.yml"
   /peerconnections/{peerconnection_id}:
     $ref: "./resources/peerconnection.yml"
+  /peerconnections/{peerconnection_id}/device_status:
+    $ref: "./resources/peerconnection_device_status.yml"

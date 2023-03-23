@@ -2,6 +2,7 @@ import { config } from '../config'
 import { DeviceModel, PeerconnectionModel } from '../database/model'
 import { deviceRepository } from '../database/repositories/device'
 import { peerconnectionRepository } from '../database/repositories/peerconnection'
+import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId'
 import fetch from 'node-fetch'
 
 export const callbackUrl: string =
@@ -11,14 +12,18 @@ export const closedCallbacks = new Map<string, Array<string>>()
 export const statusChangedCallbacks = new Map<string, Array<string>>()
 
 /**
- * This function sends a "device-changed" callback.
+ * This function sends a 'device-changed' callback.
  * @param device The device for which to send the callback.
  */
 export async function sendChangedCallback(device: DeviceModel) {
-    console.log(`Sending changedCallback for device ${device.uuid}`)
     const urls = changedCallbacks.get(device.uuid) ?? []
     for (const url of urls) {
-        console.log(`Sending changedCallback for device ${device.uuid} to url ${url}`)
+        console.log(
+            `Sending changed-callback for device '${deviceUrlFromId(
+                device.uuid
+            )}' to '${url}'`
+        )
+
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({
@@ -40,12 +45,18 @@ export async function sendChangedCallback(device: DeviceModel) {
 }
 
 /**
- * This function sends a "peerconnection-closed" callback.
+ * This function sends a 'peerconnection-closed' callback.
  * @param peerconnection The peerconnection for which to send the callback.
  */
 export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
     const urls = closedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
+        console.log(
+            `Sending closed-callback for peerconnection '${peerconnectionUrlFromId(
+                peerconnection.uuid
+            )}' to '${url}'`
+        )
+
         const res = await fetch(url, {
             method: 'post',
             body: JSON.stringify({
@@ -67,15 +78,16 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
 }
 
 /**
- * This function sends a "peerconnection-status-changed" callback.
+ * This function sends a 'peerconnection-status-changed' callback.
  * @param peerconnection The peerconnection for which to send the callback.
  */
 export async function sendStatusChangedCallback(peerconnection: PeerconnectionModel) {
-    console.log(`Sending statusChangedCallback for peerconnection ${peerconnection.uuid}`)
     const urls = statusChangedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
         console.log(
-            `Sending statusChangedCallback for peerconnection ${peerconnection.uuid} to url ${url}`
+            `Sending status-changed-callback for peerconnection '${peerconnectionUrlFromId(
+                peerconnection.uuid
+            )}' to '${url}'`
         )
         const res = await fetch(url, {
             method: 'post',

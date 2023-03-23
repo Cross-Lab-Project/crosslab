@@ -12,3 +12,8 @@ properties:
     enum:
       - local
       - webrtc
+  status:
+    $ref: ./peerconnection_status.yml
+required:
+  - url
+  - type

@@ -2,7 +2,7 @@ import { peerconnectionRepository } from '../../../database/repositories/peercon
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
 import { ClosePeerconnectionMessage } from '../../../generated/types'
 import { apiClient } from '../../../globals'
-import { sendClosedCallback } from '../../../methods/callbacks'
+import { sendClosedCallback, sendStatusChangedCallback } from '../../../methods/callbacks'
 import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
 
 /**
@@ -14,35 +14,43 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     async (parameters, _user) => {
         console.log(`deletePeerconnectionsByPeerconnectionId called`)
 
-        const peerconnection = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await peerconnectionRepository.findOne({
             where: { uuid: parameters.peerconnection_id },
         })
 
-        await peerconnectionRepository.remove(peerconnection)
+        if (!peerconnectionModel)
+            return {
+                status: 204,
+            }
 
-        if (peerconnection.status === 'connected') {
+        if (
+            peerconnectionModel.status === 'connecting' ||
+            peerconnectionModel.status === 'connected' ||
+            peerconnectionModel.status === 'disconnected'
+        ) {
             const closePeerconnectionMessage: ClosePeerconnectionMessage = {
                 messageType: 'command',
                 command: 'closePeerconnection',
-                connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
+                connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
             }
 
-            if (peerconnection.deviceA.url && peerconnection.deviceB.url) {
-                await apiClient.sendSignalingMessage(
-                    peerconnection.deviceA.url,
-                    closePeerconnectionMessage,
-                    peerconnectionUrlFromId(peerconnection.uuid)
-                )
+            await apiClient.sendSignalingMessage(
+                peerconnectionModel.deviceA.url,
+                closePeerconnectionMessage,
+                peerconnectionUrlFromId(peerconnectionModel.uuid)
+            )
 
-                await apiClient.sendSignalingMessage(
-                    peerconnection.deviceB.url,
-                    closePeerconnectionMessage,
-                    peerconnectionUrlFromId(peerconnection.uuid)
-                )
-            }
+            await apiClient.sendSignalingMessage(
+                peerconnectionModel.deviceB.url,
+                closePeerconnectionMessage,
+                peerconnectionUrlFromId(peerconnectionModel.uuid)
+            )
 
-            await sendClosedCallback(peerconnection)
+            await sendClosedCallback(peerconnectionModel)
+            await sendStatusChangedCallback(peerconnectionModel)
         }
+
+        await peerconnectionRepository.remove(peerconnectionModel)
 
         console.log(`deletePeerconnectionsByPeerconnectionId succeeded`)
 

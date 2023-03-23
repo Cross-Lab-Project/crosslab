@@ -11,23 +11,23 @@ import { changedCallbacks } from '../../methods/callbacks'
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     console.log(`postDevices called`)
 
-    const device = await deviceRepository.create(body)
-    device.owner = user.JWT?.url
-    await deviceRepository.save(device)
+    const deviceModel = await deviceRepository.create(body)
+    deviceModel.owner = user.JWT?.url
+    await deviceRepository.save(deviceModel)
 
     if (parameters.changedUrl) {
         console.log(
-            `registering changed-callback for device ${device.uuid} to ${parameters.changedUrl}`
+            `registering changed-callback for device ${deviceModel.uuid} to '${parameters.changedUrl}'`
         )
-        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
+        const changedCallbackURLs = changedCallbacks.get(deviceModel.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(device.uuid, changedCallbackURLs)
+        changedCallbacks.set(deviceModel.uuid, changedCallbackURLs)
     }
 
     console.log(`postDevices succeeded`)
 
     return {
         status: 201,
-        body: await deviceRepository.format(device),
+        body: await deviceRepository.format(deviceModel),
     }
 }

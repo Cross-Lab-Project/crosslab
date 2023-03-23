@@ -12,14 +12,16 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     _user
 ) => {
     console.log(`getDevicesByDeviceId called`)
-    const device = await deviceRepository.findOneOrFail({
+
+    const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
     console.log(`getDevicesByDeviceId succeeded`)
+
     return {
         status: 200,
-        body: await deviceRepository.format(device, {
+        body: await deviceRepository.format(deviceModel, {
             flatGroup: parameters.flat_group,
         }),
     }

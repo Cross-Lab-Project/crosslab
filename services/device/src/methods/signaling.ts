@@ -2,7 +2,6 @@ import { AppDataSource } from '../database/dataSource'
 import { PeerconnectionModel } from '../database/model'
 import { CreatePeerconnectionMessage } from '../generated/types'
 import { apiClient } from '../globals'
-import { sendStatusChangedCallback } from './callbacks'
 import { peerconnectionUrlFromId } from './urlFromId'
 import Queue from 'queue'
 
@@ -21,8 +20,7 @@ class SignalingQueue {
             try {
                 await startSignaling(peerconnection.uuid)
             } catch (error) {
-                if (error instanceof Error) console.log(error.message)
-                else console.log(error)
+                console.error(error)
             }
         })
     }
@@ -37,9 +35,9 @@ export const signalingQueue = new SignalingQueue()
  */
 async function startSignaling(peerconnectionId: string) {
     console.log(`Starting signaling for ${peerconnectionId}`)
-    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
 
-    const peerconnection = await peerconnectionRepository.findOneOrFail({
+    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
+    const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
         where: {
             uuid: peerconnectionId,
         },
@@ -53,9 +51,11 @@ async function startSignaling(peerconnectionId: string) {
         },
     })
 
-    if (peerconnection.status !== 'waiting-for-devices') {
+    if (peerconnectionModel.status !== 'new') {
         console.log(
-            `status of peerconnection '${peerconnection.uuid}' is not 'waiting-for-devices', '${peerconnection.status}'`
+            `status of peerconnection '${peerconnectionUrlFromId(
+                peerconnectionModel.uuid
+            )}' is not 'new', '${peerconnectionModel.status}'`
         )
         return
     }
@@ -64,43 +64,38 @@ async function startSignaling(peerconnectionId: string) {
         messageType: 'command',
         command: 'createPeerconnection',
         connectionType: 'webrtc',
-        connectionUrl: peerconnectionUrlFromId(peerconnection.uuid),
+        connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
     }
 
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnection.deviceA.config?.services
-            ? peerconnection.deviceA.config.services
+        services: peerconnectionModel.deviceA.config?.services
+            ? peerconnectionModel.deviceA.config.services
             : [],
         tiebreaker: false,
     }
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnection.deviceB.config?.services
-            ? peerconnection.deviceB.config.services
+        services: peerconnectionModel.deviceB.config?.services
+            ? peerconnectionModel.deviceB.config.services
             : [],
         tiebreaker: true,
     }
 
-    // TODO: check what problems may occur here and address them accordingly
-    const response1 = apiClient.sendSignalingMessage(
-        peerconnection.deviceA.url,
+    // TODO: find out how to handle the different possible errors
+    peerconnectionModel.status = 'connecting'
+    await peerconnectionRepository.save(peerconnectionModel)
+
+    await apiClient.sendSignalingMessage(
+        peerconnectionModel.deviceA.url,
         createPeerConnectionMessageA,
-        peerconnectionUrlFromId(peerconnection.uuid)
+        peerconnectionUrlFromId(peerconnectionModel.uuid)
     )
 
-    const response2 = apiClient.sendSignalingMessage(
-        peerconnection.deviceB.url,
+    await apiClient.sendSignalingMessage(
+        peerconnectionModel.deviceB.url,
         createPeerConnectionMessageB,
-        peerconnectionUrlFromId(peerconnection.uuid)
+        peerconnectionUrlFromId(peerconnectionModel.uuid)
     )
-
-    await Promise.all([response1, response2])
-
-    // NOTE: this behaviour should maybe be changed later on
-    peerconnection.status = 'connected'
-    await AppDataSource.getRepository(PeerconnectionModel).save(peerconnection)
-
-    await sendStatusChangedCallback(peerconnection)
 }

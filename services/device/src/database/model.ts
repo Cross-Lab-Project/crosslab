@@ -1,7 +1,9 @@
 import {
     AvailabilityRule,
+    ConfiguredDeviceReference,
+    ConnectionStatus,
     DeviceReference,
-    Peerconnection,
+    ServiceDescription,
     TimeSlot,
 } from '../generated/types'
 import {
@@ -33,7 +35,7 @@ export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    name?: string
+    name!: string
     @Column({ nullable: true })
     description?: string
     @Column()
@@ -68,7 +70,7 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
     @Column()
     token?: string
     @Column('simple-json')
-    services?: { [k: string]: any }[]
+    services?: ServiceDescription[]
     @ManyToOne(
         () => InstantiableDeviceOverviewModel,
         (instantiableDevice) => instantiableDevice.instances
@@ -91,7 +93,7 @@ export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewMode
     @Column()
     instantiateUrl?: string
     @Column('simple-json')
-    services?: { [k: string]: any }[]
+    services?: ServiceDescription[]
 }
 
 @ChildEntity('edge instantiable')
@@ -101,7 +103,7 @@ export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewMo
     @Column()
     codeUrl?: string
     @Column('simple-json')
-    services?: { [k: string]: any }[]
+    services?: ServiceDescription[]
 }
 
 @Entity({ name: 'Peerconnection' })
@@ -109,31 +111,13 @@ export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    type?: 'local' | 'webrtc'
+    type!: 'local' | 'webrtc'
     @Column()
-    status!: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
+    status!: ConnectionStatus
     @Column('simple-json')
-    deviceA!: NonNullable<Peerconnection['devices']>[number] & {
-        url: string
-        config?: {
-            services?: {
-                serviceType: string
-                serviceId: string
-                remoteServiceId: string
-            }[]
-        }
-    }
+    deviceA!: ConfiguredDeviceReference & { status: ConnectionStatus }
     @Column('simple-json')
-    deviceB!: NonNullable<Peerconnection['devices']>[number] & {
-        url: string
-        config?: {
-            services?: {
-                serviceType: string
-                serviceId: string
-                remoteServiceId: string
-            }[]
-        }
-    }
+    deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus }
     @DeleteDateColumn()
     deletedAt?: Date
 }

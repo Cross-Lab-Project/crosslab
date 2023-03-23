@@ -7,14 +7,17 @@ import { getDevicesSignature } from '../../generated/signatures'
  */
 export const getDevices: getDevicesSignature = async (_user) => {
     console.log(`getDevices called`)
-    const devices = await deviceRepository.find()
+
+    const deviceModels = await deviceRepository.find()
 
     console.log(`getDevices succeeded`)
 
     return {
         status: 200,
         body: await Promise.all(
-            devices.map((device) => deviceRepository.format(device, { overview: true }))
+            deviceModels.map((device) =>
+                deviceRepository.format(device, { overview: true })
+            )
         ),
     }
 }

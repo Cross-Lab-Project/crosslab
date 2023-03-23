@@ -28,4 +28,5 @@ properties:
 required:
   - url
   - type
+  - name
 x-typeguard: true

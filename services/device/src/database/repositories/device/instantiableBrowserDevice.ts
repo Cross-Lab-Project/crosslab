@@ -27,7 +27,6 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
         data?: InstantiableBrowserDeviceInit<'request'>
     ): Promise<InstantiableBrowserDeviceModel> {
         const model = await super.create(data)
-        model.type = 'edge instantiable'
         return model
     }
 
