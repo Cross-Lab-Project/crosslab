@@ -1,1 +1,131 @@
-{{ schemas('python') | await }}
+{%- macro typeToPython(type, schema, name, renderSubSchema = false, required = true) -%}
+    {%- if renderSubSchema -%}
+        {%- if type=="array" -%}
+            {{ typeToPython(schema.items.type, schema.items, name+"Items", true) }}
+        {%- elif type == "object" or "allOf" in schema or "anyOf" in schema -%}
+            {{ render_schema(schema, name) }}
+        {%- endif -%}
+    {%- else -%}
+        {%- if not required -%}NotRequired[{%- endif -%}
+        {%- if type=="string" -%}
+            {%- if "const" in schema -%}
+                Literal["{{ schema.const }}"]
+            {%- elif "enum" in schema -%}
+                {%- set comma = joiner(', ') -%}
+                Literal[{%- for e in schema.enum -%}{{ comma() }}"{{ e }}"{%- endfor -%}]
+            {%- else -%}
+                str
+            {%- endif -%}
+        {%- elif type=="integer" -%}
+            int
+        {%- elif type=="number" -%}
+            float
+        {%- elif type=="boolean" -%}
+            bool
+        {%- elif type=="array" -%}
+            List[{{ typeToPython(schema.items.type, schema.items, name+"Items") }}]
+        {%- elif type == "object" or "allOf" in schema or "anyOf" in schema -%}
+            {{ name }}
+        {%- else -%}
+            {{type}}
+        {%- endif -%}
+        {%- if not required -%}]{%- endif -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_object_schema(schema, name) -%}
+    {%- set space = joiner("\n\n") -%}
+    {%- for property, value in schema.properties -%}
+        {%- set ret = typeToPython(value.type, value, name + (property | capitalize), true, true ) -%}
+        {%- if ret | length -%}{{ space() }}{{ ret }}{%- endif -%}
+    {%- endfor-%}
+{{ space() }}class {{ name }}(TypedDict):
+    """
+    {% if schema.description -%}
+    {{ schema.description | indent(4) }}
+    {%- endif -%}
+    Properties:
+    {%- for property, value in schema.properties %}
+    - {{ property }}{%- if value.description -%}: {{ value.description }}{%- endif -%}
+    {%- endfor %}
+    """
+    {%- for property, value in schema.properties %}
+    {{ property }}: {{ typeToPython(value.type, value, name + (property | capitalize), false, "required" in schema and property in schema.required) }}
+    {%- endfor %}
+{% endmacro -%}
+
+{%- macro render_allOf_schema(schema, name) -%}
+    {{ render_schema(schema | jsonSchemaCombineAllOf, name) }}
+{%- endmacro -%}
+
+{%- macro render_anyOf_schema(schema, name) -%}
+    {%- set space = joiner("\n\n") -%}
+    {%- for subSchema in schema.anyOf -%}
+        {{ space() }}{{ render_schema(subSchema, name+"Alt"+loop.index) }}
+    {%- endfor -%}
+    {{ space() }}{{ name }} = Union[
+    {%- set comma = joiner(', ') -%}
+    {%- for subSchema in schema.anyOf -%}
+        {{ comma() }}{{ name+"Alt"+loop.index }}
+    {%- endfor -%}
+    ]
+{% endmacro -%}
+
+{%- macro render_schema(schema, name) -%}
+    {%- if schema.type == "object" -%}
+        {{ render_object_schema(schema, name) }}
+    {%- elif "allOf" in schema -%}
+        {{ render_allOf_schema(schema, name) }}
+    {%- elif "anyOf" in schema -%}
+        {{ render_anyOf_schema(schema, name) }}
+    {%- else -%}
+        {%- set ret = typeToPython(schema.type, schema, name, true) -%}
+        {%- if ret | length -%}{{ ret + "\n\n"}}{%- endif -%}
+        {{ "" + name }}: TypeAlias = {{ typeToPython(schema.type, schema, name) + "\n" }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_responses_schema(responses, name) -%}
+    {%- set resp = [] -%}
+    {%- for status, response in responses -%}
+        {%- if response.content -%}
+            {%- for contentType, content in response.content -%}
+                {%- if contentType == "application/json" -%}
+                    {%- set resp = (resp.push({status: status, schema: content.schema}), resp) -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if resp | length == 0 -%}
+        {{ name }}: TypeAlias = None {{- "\n" }}
+    {%- else -%}
+        {%- set space = joiner("\n\n") -%}
+        {%- for response in resp -%}
+            {{ space() }}{{ render_schema(response.schema, name+response.status) }}
+        {%- endfor -%}
+        {%- if resp | length == 1 -%}
+            {{ space() }}{{ name }}: TypeAlias = {{ name+resp[0].status + "\n" }}
+        {%- else -%}
+            {%- set comma = joiner(', ') -%}
+            {{ space() }}{{ name }}: TypeAlias = Union[{%- for response in resp -%}{{ comma() }}{{ name+response.status }}{%- endfor -%}]{{ "\n" }}
+        {%- endif -%}    
+    {%- endif -%}
+{%- endmacro -%}
+
+
+from typing import List, Literal, TypedDict, Union
+
+from typing_extensions import TypeAlias, NotRequired
+
+
+{% set space = joiner("\n\n") -%}
+{%- for path, methods in paths -%}
+    {%- for method, details in methods -%}
+        {%- if details.requestBody -%}
+            {{ space() }}{{ render_schema(details.requestBody.content["application/json"].schema, details.operationId | upperCamelCase + "Request") }}
+        {%- endif -%}
+        {%- if details.responses -%}
+            {{ space() }}{{ render_responses_schema(details.responses, details.operationId | upperCamelCase + "Response") }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}

@@ -1,10 +1,19 @@
 {
-    "python.testing.pytestArgs": [
-        "."
-    ],
+    "python.defaultInterpreterPath": "venv/bin/python",
+    "python.formatting.provider": "none",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.linting.enabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
     "files.exclude": {
         //begin generated
         "**/app": true,
@@ -35,5 +44,10 @@
         "**/.tox": true,
         "**/venv": true,
         //end generated
-    }
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.exclude": [
+        ".tox",
+        "dist"
+    ]
 }

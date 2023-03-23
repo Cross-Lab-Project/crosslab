@@ -1,8 +1,92 @@
 import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
-from crosslab.api_client.schemas import *  # noqa: F403
 from crosslab.api_client.exceptions import AuthorizationException
+
+from crosslab.api_client.schemas import (
+    LoginRequest,
+    LoginResponse,
+    LogoutRequest,
+    LogoutResponse,
+    CreateDeviceAuthenticationTokenResponse,
+    ListUsersResponse,
+    CreateUserRequest,
+    CreateUserResponse,
+    GetUserResponse,
+    UpdateUserRequest,
+    UpdateUserResponse,
+    DeleteUserResponse,
+    GetRolesOfUserResponse,
+    AddRolesToUserRequest,
+    AddRolesToUserResponse,
+    RemoveRolesFromUserRequest,
+    RemoveRolesFromUserResponse,
+    ListRolesResponse,
+    CreateRoleRequest,
+    CreateRoleResponse,
+    GetRoleResponse,
+    UpdateRoleRequest,
+    UpdateRoleResponse,
+    DeleteRoleResponse,
+    GetUsersWithRoleResponse,
+    AddUsersToRoleRequest,
+    AddUsersToRoleResponse,
+    RemoveUsersFromRoleRequest,
+    RemoveUsersFromRoleResponse,
+    GetIdentityResponse,
+    UpdateIdentityRequest,
+    UpdateIdentityResponse,
+    GetScheduleRequest,
+    GetScheduleResponse,
+    BookExperimentRequest,
+    BookExperimentResponse,
+    UpdateBookingRequest,
+    UpdateBookingResponse,
+    CancelBookingResponse,
+    GetBookingResponse,
+    DeleteBookingResponse,
+    LockBookingResponse,
+    UnlockBookingResponse,
+    ListDevicesResponse,
+    CreateDeviceRequest,
+    CreateDeviceResponse,
+    GetDeviceResponse,
+    UpdateDeviceRequest,
+    UpdateDeviceResponse,
+    DeleteDeviceResponse,
+    InstantiateDeviceResponse,
+    AddAvailabilityRulesRequest,
+    AddAvailabilityRulesResponse,
+    CreateWebsocketTokenResponse,
+    SendSignalingMessageRequest,
+    SendSignalingMessageResponse,
+    ListPeerconnectionsResponse,
+    CreatePeerconnectionRequest,
+    CreatePeerconnectionResponse,
+    GetPeerconnectionResponse,
+    DeletePeerconnectionResponse,
+    ListExperimentsResponse,
+    CreateExperimentRequest,
+    CreateExperimentResponse,
+    GetExperimentResponse,
+    UpdateExperimentRequest,
+    UpdateExperimentResponse,
+    DeleteExperimentResponse,
+    ListInstitutionsResponse,
+    CreateInstitutionRequest,
+    CreateInstitutionResponse,
+    GetInstitutionResponse,
+    UpdateInstitutionRequest,
+    UpdateInstitutionResponse,
+    DeleteInstitutionResponse,
+    ListUpdatesResponse,
+    CreateUpdateRequest,
+    CreateUpdateResponse,
+    GetUpdateResponse,
+    PatchUpdateRequest,
+    PatchUpdateResponse,
+    DeleteUpdateResponse
+)
 
 
 class APIClient:
@@ -73,7 +157,7 @@ class APIClient:
                 except aiohttp.ContentTypeError:
                     return resp.status, await resp.text()
 
-    async def login(self, body: PostLoginRequestBodyWrite, url: str = "/login"):  # noqa: E501
+    async def login(self, body: LoginRequest, url: str = "/login") -> LoginResponse:  # noqa: E501
         """
         Login user
         
@@ -88,19 +172,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/login'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_login_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_login_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def logout(self, body: PostLogoutRequestBodyWrite, url: str = "/logout"):  # noqa: E501
+    async def logout(self, body: LogoutRequest, url: str = "/logout") -> LogoutResponse:  # noqa: E501
         """
         Logout user
         
@@ -115,19 +195,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/logout'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_logout_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_device_authentication_token(self, device_url: str, url: str = "/device_authentication_token"):  # noqa: E501
+    async def create_device_authentication_token(self, device_url: str, url: str = "/device_authentication_token") -> CreateDeviceAuthenticationTokenResponse:  # noqa: E501
         """
         Create a device authentication token
         
@@ -150,15 +226,16 @@ class APIClient:
                 query_params['device_url'] = device_url
             else:
                 query_params['device_url'] = str(device_url)
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", params=query_params)
            
         # transform response
         if status == 201:
-            return post_device_authentication_token_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_users(self, url: str = "/users"):  # noqa: E501
+    async def list_users(self, url: str = "/users") -> ListUsersResponse:  # noqa: E501
         """
         Get all users
         """  # noqa: E501
@@ -172,16 +249,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_users_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_user(self, body: PostUsersRequestBodyWrite, url: str = "/users"):  # noqa: E501
+    async def create_user(self, body: CreateUserRequest, url: str = "/users") -> CreateUserResponse:  # noqa: E501
         """
         Create a user
         """  # noqa: E501
@@ -195,19 +271,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_users_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_users_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_user(self, url: str):  # noqa: E501
+    async def get_user(self, url: str) -> GetUserResponse:  # noqa: E501
         """
         Get a user
         """  # noqa: E501
@@ -221,16 +293,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_user_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_user(self, url: str, body: Optional[PatchUserRequestBodyWrite] = None):  # noqa: E501
+    async def update_user(self, url: str, body: Optional[UpdateUserRequest] = None) -> UpdateUserResponse:  # noqa: E501
         """
         Update a user
         """  # noqa: E501
@@ -244,19 +315,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_user_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_user_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_user(self, url: str):  # noqa: E501
+    async def delete_user(self, url: str) -> DeleteUserResponse:  # noqa: E501
         """
         Delete a user
         """  # noqa: E501
@@ -270,16 +337,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_roles_of_user(self, url: str):  # noqa: E501
+    async def get_roles_of_user(self, url: str) -> GetRolesOfUserResponse:  # noqa: E501
         """
         Get roles of user
         """  # noqa: E501
@@ -293,16 +359,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/roles'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_user_roles_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_roles_to_user(self, url: str, body: Optional[List[str]] = None):  # noqa: E501
+    async def add_roles_to_user(self, url: str, body: Optional[AddRolesToUserRequest] = None) -> AddRolesToUserResponse:  # noqa: E501
         """
         Add roles to user
         """  # noqa: E501
@@ -316,19 +381,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/roles'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_user_roles_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def remove_roles_from_user(self, url: str, body: Optional[List[str]] = None):  # noqa: E501
+    async def remove_roles_from_user(self, url: str, body: Optional[RemoveRolesFromUserRequest] = None) -> RemoveRolesFromUserResponse:  # noqa: E501
         """
         Remove roles from user
         """  # noqa: E501
@@ -342,19 +403,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/roles'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = delete_user_roles_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="delete", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="delete", body=body)
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_roles(self, url: str = "/roles"):  # noqa: E501
+    async def list_roles(self, url: str = "/roles") -> ListRolesResponse:  # noqa: E501
         """
         Get all roles
         """  # noqa: E501
@@ -368,16 +425,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/roles'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_roles_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_role(self, body: Optional[PostRolesRequestBodyWrite] = None, url: str = "/roles"):  # noqa: E501
+    async def create_role(self, url: str = "/roles", body: Optional[CreateRoleRequest] = None) -> CreateRoleResponse:  # noqa: E501
         """
         Create a role
         """  # noqa: E501
@@ -391,19 +447,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/roles'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_roles_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_roles_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_role(self, url: str):  # noqa: E501
+    async def get_role(self, url: str) -> GetRoleResponse:  # noqa: E501
         """
         Get a role
         """  # noqa: E501
@@ -417,16 +469,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_role_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_role(self, url: str, body: Optional[PatchRoleRequestBodyWrite] = None):  # noqa: E501
+    async def update_role(self, url: str, body: Optional[UpdateRoleRequest] = None) -> UpdateRoleResponse:  # noqa: E501
         """
         Update a role
         """  # noqa: E501
@@ -440,19 +491,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_role_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_role_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_role(self, url: str):  # noqa: E501
+    async def delete_role(self, url: str) -> DeleteRoleResponse:  # noqa: E501
         """
         Delete a role
         """  # noqa: E501
@@ -466,16 +513,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_users_with_role(self, url: str):  # noqa: E501
+    async def get_users_with_role(self, url: str) -> GetUsersWithRoleResponse:  # noqa: E501
         """
         Get users with role
         """  # noqa: E501
@@ -489,16 +535,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_role_users_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_users_to_role(self, url: str, body: Optional[List[str]] = None):  # noqa: E501
+    async def add_users_to_role(self, url: str, body: Optional[AddUsersToRoleRequest] = None) -> AddUsersToRoleResponse:  # noqa: E501
         """
         Add users to role
         """  # noqa: E501
@@ -512,19 +557,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_role_users_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def remove_users_from_role(self, url: str, body: Optional[List[str]] = None):  # noqa: E501
+    async def remove_users_from_role(self, url: str, body: Optional[RemoveUsersFromRoleRequest] = None) -> RemoveUsersFromRoleResponse:  # noqa: E501
         """
         Remove users from role
         """  # noqa: E501
@@ -538,19 +579,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = delete_role_users_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="delete", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="delete", body=body)
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_identity(self, url: str = "/identity"):  # noqa: E501
+    async def get_identity(self, url: str = "/identity") -> GetIdentityResponse:  # noqa: E501
         """
         Get identity
         """  # noqa: E501
@@ -564,16 +601,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/identity'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_identity_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_identity(self, body: Optional[PatchIdentityRequestBodyWrite] = None, url: str = "/identity"):  # noqa: E501
+    async def update_identity(self, url: str = "/identity", body: Optional[UpdateIdentityRequest] = None) -> UpdateIdentityResponse:  # noqa: E501
         """
         Update identity
         """  # noqa: E501
@@ -587,19 +623,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/identity'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_identity_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_identity_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_schedule(self, body: Optional[PostScheduleRequestBodyWrite] = None, url: str = "/schedule"):  # noqa: E501
+    async def get_schedule(self, url: str = "/schedule", body: Optional[GetScheduleRequest] = None) -> GetScheduleResponse:  # noqa: E501
         """
         Returns the free / booked times for given experiment.
         """  # noqa: E501
@@ -613,19 +645,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/schedule'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_schedule_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 200:
-            return post_schedule_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def book_experiment(self, body: Optional[PostBookingRequestBodyWrite] = None, url: str = "/booking"):  # noqa: E501
+    async def book_experiment(self, url: str = "/booking", body: Optional[BookExperimentRequest] = None) -> BookExperimentResponse:  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501
@@ -639,19 +667,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/booking'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_booking_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 200:
-            return post_booking_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_booking(self, url: str, body: PatchBookingRequestBodyWrite):  # noqa: E501
+    async def update_booking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
         """
         Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
         """  # noqa: E501
@@ -665,19 +689,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_booking_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_booking_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def cancel_booking(self, url: str):  # noqa: E501
+    async def cancel_booking(self, url: str) -> CancelBookingResponse:  # noqa: E501
         """
         Cancels a booking, as long as the booking was originally done by you.
         """  # noqa: E501
@@ -691,16 +711,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 200:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_booking(self, url: str):  # noqa: E501
+    async def get_booking(self, url: str) -> GetBookingResponse:  # noqa: E501
         """
         Returns whether a list of devices is currently booked for a user
         """  # noqa: E501
@@ -714,16 +733,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_booking_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_booking(self, url: str):  # noqa: E501
+    async def delete_booking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
         """
         Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
         """  # noqa: E501
@@ -737,16 +755,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/destroy'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 200:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def lock_booking(self, url: str):  # noqa: E501
+    async def lock_booking(self, url: str) -> LockBookingResponse:  # noqa: E501
         """
         Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
         """  # noqa: E501
@@ -760,16 +777,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/lock'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="put")
            
         # transform response
         if status == 200:
-            return put_booking_lock_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def unlock_booking(self, url: str):  # noqa: E501
+    async def unlock_booking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
         """
         Unlocks all devices belonging to a booking, status will be set to 'booked'.
         """  # noqa: E501
@@ -783,16 +799,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/lock'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 200:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_devices(self, url: str = "/devices"):  # noqa: E501
+    async def list_devices(self, url: str = "/devices") -> ListDevicesResponse:  # noqa: E501
         """
         List devices
         """  # noqa: E501
@@ -806,16 +821,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/devices'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_devices_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_device(self, body: PostDevicesRequestBodyWrite, changedUrl: Optional[str] = None, url: str = "/devices"):  # noqa: E501
+    async def create_device(self, body: CreateDeviceRequest, url: str = "/devices", changedUrl: Optional[str] = None) -> CreateDeviceResponse:  # noqa: E501
         """
         Create a new device
         """  # noqa: E501
@@ -830,9 +844,6 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        # transform body
-        transformedBody = post_devices_request_body_write_to_dict(body) if body else None
-
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedUrl:
@@ -840,15 +851,16 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
+        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
            
         # transform response
         if status == 201:
-            return post_devices_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_device(self, url: str, flat_group: Optional[bool] = None):  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None) -> GetDeviceResponse:  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -870,15 +882,16 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
            
         # transform response
         if status == 200:
-            return get_device_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_device(self, url: str, body: Optional[PatchDeviceRequestBodyWrite] = None, changedUrl: Optional[str] = None):  # noqa: E501
+    async def update_device(self, url: str, body: Optional[UpdateDeviceRequest] = None, changedUrl: Optional[str] = None) -> UpdateDeviceResponse:  # noqa: E501
         """
         Update an existing device
         """  # noqa: E501
@@ -893,9 +906,6 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        # transform body
-        transformedBody = patch_device_request_body_write_to_dict(body) if body else None
-
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedUrl:
@@ -903,15 +913,16 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody, params=query_params)
+        status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
            
         # transform response
         if status == 200:
-            return patch_device_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_device(self, url: str):  # noqa: E501
+    async def delete_device(self, url: str) -> DeleteDeviceResponse:  # noqa: E501
         """
         Delete a registered device
         """  # noqa: E501
@@ -925,16 +936,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def instantiate_device(self, url: str, changedUrl: Optional[str] = None):  # noqa: E501
+    async def instantiate_device(self, url: str, changedUrl: Optional[str] = None) -> InstantiateDeviceResponse:  # noqa: E501
         """
         Instantiate a cloud instantiable device
         """  # noqa: E501
@@ -956,15 +966,16 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", params=query_params)
            
         # transform response
         if status == 201:
-            return post_device_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_availability_rules(self, url: str, body: Optional[List[FluffyAvailabilityRule]] = None):  # noqa: E501
+    async def add_availability_rules(self, url: str, body: Optional[AddAvailabilityRulesRequest] = None) -> AddAvailabilityRulesResponse:  # noqa: E501
         """
         Update the device availability
         """  # noqa: E501
@@ -978,19 +989,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/availability'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_device_availability_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 200:
-            return post_device_availability_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_websocket_token(self, url: str):  # noqa: E501
+    async def create_websocket_token(self, url: str) -> CreateWebsocketTokenResponse:  # noqa: E501
         """
         Create new websocket token for device
         """  # noqa: E501
@@ -1004,16 +1011,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/websocket'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="post")
            
         # transform response
         if status == 200:
-            return post_device_websocket_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def send_signaling_message(self, url: str, body: PostDeviceSignalingRequestBodyWrite, peerconnection_url: str):  # noqa: E501
+    async def send_signaling_message(self, url: str, body: SendSignalingMessageRequest, peerconnection_url: str) -> SendSignalingMessageResponse:  # noqa: E501
         """
         Send signaling message to device
         """  # noqa: E501
@@ -1028,9 +1034,6 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        # transform body
-        transformedBody = post_device_signaling_request_body_write_to_dict(body) if body else None
-
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if peerconnection_url:
@@ -1038,15 +1041,16 @@ class APIClient:
                 query_params['peerconnection_url'] = peerconnection_url
             else:
                 query_params['peerconnection_url'] = str(peerconnection_url)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
+        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
            
         # transform response
         if status == 200:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_peerconnections(self, url: str = "/peerconnections"):  # noqa: E501
+    async def list_peerconnections(self, url: str = "/peerconnections") -> ListPeerconnectionsResponse:  # noqa: E501
         """
         List Peer Connection
         """  # noqa: E501
@@ -1060,16 +1064,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/peerconnections'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_peerconnections_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_peerconnection(self, body: PostPeerconnectionsRequestBodyWrite, closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None, url: str = "/peerconnections"):  # noqa: E501
+    async def create_peerconnection(self, body: CreatePeerconnectionRequest, url: str = "/peerconnections", closedUrl: Optional[str] = None, statusChangedUrl: Optional[str] = None) -> CreatePeerconnectionResponse:  # noqa: E501
         """
         Create a new Peer Connection
         """  # noqa: E501
@@ -1084,9 +1087,6 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        # transform body
-        transformedBody = post_peerconnections_request_body_write_to_dict(body) if body else None
-
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if closedUrl:
@@ -1099,17 +1099,18 @@ class APIClient:
                 query_params['statusChangedUrl'] = statusChangedUrl
             else:
                 query_params['statusChangedUrl'] = str(statusChangedUrl)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody, params=query_params)
+        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
            
         # transform response
         if status == 201:
-            return post_peerconnections_response_body201_read_from_dict(resp)
+            return resp
         if status == 202:
-            return post_peerconnections_response_body202_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_peerconnection(self, url: str):  # noqa: E501
+    async def get_peerconnection(self, url: str) -> GetPeerconnectionResponse:  # noqa: E501
         """
         View a peer connection
         """  # noqa: E501
@@ -1123,16 +1124,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_peerconnection_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_peerconnection(self, url: str):  # noqa: E501
+    async def delete_peerconnection(self, url: str) -> DeletePeerconnectionResponse:  # noqa: E501
         """
         Delete a peer connection
         """  # noqa: E501
@@ -1146,16 +1146,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_experiments(self, url: str = "/experiments"):  # noqa: E501
+    async def list_experiments(self, url: str = "/experiments") -> ListExperimentsResponse:  # noqa: E501
         """
         List experiments
         """  # noqa: E501
@@ -1169,16 +1168,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/experiments'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_experiments_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_experiment(self, body: PostExperimentsRequestBodyWrite, url: str = "/experiments"):  # noqa: E501
+    async def create_experiment(self, body: CreateExperimentRequest, url: str = "/experiments") -> CreateExperimentResponse:  # noqa: E501
         """
         Create a new experiment
         """  # noqa: E501
@@ -1192,21 +1190,17 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/experiments'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_experiments_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_experiments_response_body201_read_from_dict(resp)
+            return resp
         if status == 202:
-            return post_experiments_response_body202_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_experiment(self, url: str):  # noqa: E501
+    async def get_experiment(self, url: str) -> GetExperimentResponse:  # noqa: E501
         """
         View an experiment.
         """  # noqa: E501
@@ -1220,16 +1214,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_experiment_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_experiment(self, url: str, body: Optional[PatchExperimentRequestBodyWrite] = None, changedURL: Optional[str] = None):  # noqa: E501
+    async def update_experiment(self, url: str, body: Optional[UpdateExperimentRequest] = None, changedURL: Optional[str] = None) -> UpdateExperimentResponse:  # noqa: E501
         """
         Update an existing experiment.
         
@@ -1248,9 +1241,6 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        # transform body
-        transformedBody = patch_experiment_request_body_write_to_dict(body) if body else None
-
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         if changedURL:
@@ -1258,17 +1248,18 @@ class APIClient:
                 query_params['changedURL'] = changedURL
             else:
                 query_params['changedURL'] = str(changedURL)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody, params=query_params)
+        status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
            
         # transform response
         if status == 200:
-            return patch_experiment_response_body200_read_from_dict(resp)
+            return resp
         if status == 202:
-            return patch_experiment_response_body202_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_experiment(self, url: str):  # noqa: E501
+    async def delete_experiment(self, url: str) -> DeleteExperimentResponse:  # noqa: E501
         """
         Delete an experiment
         """  # noqa: E501
@@ -1282,16 +1273,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_institutions(self, url: str = "/institutions"):  # noqa: E501
+    async def list_institutions(self, url: str = "/institutions") -> ListInstitutionsResponse:  # noqa: E501
         """
         List institutions
         """  # noqa: E501
@@ -1305,16 +1295,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/institutions'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_institutions_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_institution(self, body: PostInstitutionsRequestBodyWrite, url: str = "/institutions"):  # noqa: E501
+    async def create_institution(self, body: CreateInstitutionRequest, url: str = "/institutions") -> CreateInstitutionResponse:  # noqa: E501
         """
         Create a new institution
         """  # noqa: E501
@@ -1328,19 +1317,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/institutions'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_institutions_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_institutions_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_institution(self, url: str):  # noqa: E501
+    async def get_institution(self, url: str) -> GetInstitutionResponse:  # noqa: E501
         """
         View an institution.
         """  # noqa: E501
@@ -1354,16 +1339,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_institution_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_institution(self, url: str, body: Optional[PatchInstitutionRequestBodyWrite] = None):  # noqa: E501
+    async def update_institution(self, url: str, body: Optional[UpdateInstitutionRequest] = None) -> UpdateInstitutionResponse:  # noqa: E501
         """
         Update an institution.
         """  # noqa: E501
@@ -1377,19 +1361,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_institution_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_institution_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_institution(self, url: str):  # noqa: E501
+    async def delete_institution(self, url: str) -> DeleteInstitutionResponse:  # noqa: E501
         """
         Delete an institution
         """  # noqa: E501
@@ -1403,16 +1383,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_updates(self, url: str = "/updates"):  # noqa: E501
+    async def list_updates(self, url: str = "/updates") -> ListUpdatesResponse:  # noqa: E501
         """
         Get update information for all devices
         """  # noqa: E501
@@ -1426,16 +1405,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/updates'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
-            return get_updates_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_update(self, body: PostUpdatesRequestBodyWrite, url: str = "/updates"):  # noqa: E501
+    async def create_update(self, body: CreateUpdateRequest, url: str = "/updates") -> CreateUpdateResponse:  # noqa: E501
         """
         Create new update information
         """  # noqa: E501
@@ -1449,19 +1427,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/updates'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = post_updates_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:
-            return post_updates_response_body201_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_update(self, url: str, current_version: Optional[str] = None):  # noqa: E501
+    async def get_update(self, url: str, current_version: Optional[str] = None) -> GetUpdateResponse:  # noqa: E501
         """
         Get update for device
         """  # noqa: E501
@@ -1483,17 +1457,18 @@ class APIClient:
                 query_params['current_version'] = current_version
             else:
                 query_params['current_version'] = str(current_version)
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
            
         # transform response
         if status == 200:
-            return
+            return resp
         if status == 303:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def patch_update(self, url: str, body: PatchUpdateRequestBodyWrite):  # noqa: E501
+    async def patch_update(self, url: str, body: PatchUpdateRequest) -> PatchUpdateResponse:  # noqa: E501
         """
         Edit update information
         """  # noqa: E501
@@ -1507,19 +1482,15 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # transform body
-        transformedBody = patch_update_request_body_write_to_dict(body) if body else None
-
         # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=transformedBody)
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
            
         # transform response
         if status == 200:
-            return patch_update_response_body200_read_from_dict(resp)
+            return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_update(self, url: str):  # noqa: E501
+    async def delete_update(self, url: str) -> DeleteUpdateResponse:  # noqa: E501
         """
         Delete update information
         """  # noqa: E501
@@ -1533,11 +1504,10 @@ class APIClient:
         valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
         if status == 204:
-            return
+            return resp
         raise Exception(f"Unexpected status code: {status}")
