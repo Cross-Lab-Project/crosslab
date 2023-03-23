@@ -1,8 +1,21 @@
 import aiohttp
 import re
 from typing import Optional, Any, Dict, List, Tuple, Union
-from crosslab.api_client.schemas import *  # noqa: F403
 from crosslab.api_client.exceptions import AuthorizationException
+
+from crosslab.api_client.schemas import (
+    {% set comma = joiner(",\n    ") -%}
+{%- for path, methods in paths -%}
+    {%- for method, details in methods -%}
+        {%- if details.requestBody -%}
+            {{ comma() }}{{ details.operationId | upperCamelCase + "Request" }}
+        {%- endif -%}
+        {%- if details.responses -%}
+            {{ comma() }}{{ details.operationId | upperCamelCase + "Response" }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor %}
+)
 
 
 class APIClient:
@@ -76,18 +89,17 @@ class APIClient:
     {%- for path, methods in paths -%}
     {%- for method, details in methods -%}
 
-        {%- set method_name = (method+"_"+( path | formatPath))%}
-
         {%- set params = ['self'] %}
+        {%- set optionalParams = [] %}
         {%- set query_params = [] %}
         {%- if details | hasPathParameter -%}
             {%- set params = (params.push('url: str'), params) %}
         {%- endif -%}
         {%- if details.requestBody -%}
             {%- if details.requestBody.required -%}
-                {%- set params = (params.push('body: '+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )), params) %}
+                {%- set params = (params.push('body: ' + details.operationId | upperCamelCase + "Request" ), params) %}
             {%- else -%}
-                {%- set params = (params.push('body: Optional['+(type('python', (method_name+'_request_body_write') | lowerSnakeCase) | await )+'] = None'), params) %}
+                {%- set optionalParams = (optionalParams.push('body: Optional[' + details.operationId | upperCamelCase + "Request" + '] = None'), optionalParams) %}
             {%- endif -%}
             
         {%- endif -%}
@@ -102,16 +114,19 @@ class APIClient:
                 {%- if param.required -%}
                     {%- set params = (params.push(param.name+': '+paramType), params) %}
                 {%- else -%}
-                    {%- set params = (params.push(param.name+': Optional['+paramType+'] = None'), params) %}
+                    {%- set optionalParams = (optionalParams.push(param.name+': Optional['+paramType+'] = None'), optionalParams) %}
                 {%- endif -%}
                 {%- set query_params = (query_params.push(param.name), query_params) %}
             {%- endif -%}
         {%- endfor -%}
         {%- if not details | hasPathParameter -%}
             {%- set params = (params.push('url: str = "'+path+'"'), params) %}
-        {%- endif %}
+        {%- endif -%}
+        {%- for param in optionalParams -%}
+            {%- set params = (params.push(param), params) %}
+        {%- endfor %}
 
-    async def {{ details.operationId | lowerSnakeCase }}({{ params | join(', ') }}):  # noqa: E501
+    async def {{ details.operationId | lowerSnakeCase }}({{ params | join(', ') }}) -> {{ details.operationId | upperCamelCase + "Response" }}:  # noqa: E501
         """
         {{details.summary}}
         {% if details.description %}
@@ -134,12 +149,8 @@ class APIClient:
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
 
-        {% if details.requestBody -%}
-        # transform body
-        transformedBody = {{transformerToDict('python', method_name+'_request_body_write') | await}}(body) if body else None
+        {%- if query_params | length > 0 %}
 
-        {% endif %}
-        {%- if query_params | length > 0 -%}
         # build query params
         query_params: Dict[str, Union[List[str], str]] = {}
         {% for param in query_params -%}
@@ -149,21 +160,15 @@ class APIClient:
             else:
                 query_params['{{param}}'] = str({{param}})
         {% endfor -%}
-        {%- endif -%}
+        {%- endif %}
         # make http call
-        status, resp = await self._fetch(valid_url, method="{{method}}"{% if details.requestBody -%} , body=transformedBody{% endif %} {%- if query_params | length > 0 -%}, params=query_params{%- endif -%})
+        status, resp = await self._fetch(valid_url, method="{{method}}"{% if details.requestBody -%} , body=body{% endif %} {%- if query_params | length > 0 -%}, params=query_params{%- endif -%})
            
         # transform response
         {%- for status, response in details.responses -%}
-            {%- if status >= 200 and status <300 or status == 303 -%}
-                {%- set transformer = transformerFromDict('python', method_name+'_response_body_'+status+'_read') | await -%}
-                {%- if transformer %}
+            {%- if status >= 200 and status <300 or status == 303 %}
         if status == {{status}}:
-            return {{transformer}}(resp)
-                {%- else %}
-        if status == {{status}}:
-            return
-                {%- endif -%}
+            return resp
             {%- endif -%}
         {%- endfor %}
         raise Exception(f"Unexpected status code: {status}")

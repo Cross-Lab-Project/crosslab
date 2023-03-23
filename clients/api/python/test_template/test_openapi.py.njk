@@ -44,7 +44,7 @@ async with APIClient(BASE_URL) as client:
     {%- else %}
     {{_make_request(operation_id, request_body_param, url)}}
         {%- if response_transformer %}
-    assert normalize_result({{response_transformer}}(resp)) == normalize_result(response_{{status}}_dict)
+    assert normalize_result(resp) == normalize_result(response_{{status}}_dict)
         {%- endif -%}
     {%- endif %}
 {%- endmacro %}
@@ -102,8 +102,7 @@ async def test_{{details.operationId  | lowerSnakeCase}}(aioresponses: aiorespon
         {%- if details.requestBody %}
             {%- if details.requestBody.content["application/json"].schema %}
 
-    request_dict = json.loads(r'{{details.requestBody.content["application/json"].schema | jsf | dump}}')
-    request = {{transformerFromDict('python', method_name+'_request_body_write') | await }}(request_dict)
+    request = json.loads(r'{{details.requestBody.content["application/json"].schema | jsf | dump}}')
                 {%- set request_body_param="request" -%}
             {%- endif -%}
         {%- endif %}
@@ -112,6 +111,7 @@ async def test_{{details.operationId  | lowerSnakeCase}}(aioresponses: aiorespon
         {%- for status, response in details.responses %}
             {%- set response_transformer = transformerToDict('python', method_name+'_response_body_'+status+'_read') | await %}
             {%- if not details | hasPathParameter %}
+
     for parameters in parameter_list:
         {{ set_mock_response(status, method_name, method, full_url, response) | indent(8) }}
         {{ make_request_and_assert(details.operationId, request_body_param, status, response_transformer, url) | indent(8) }}

@@ -14,10 +14,12 @@ import {
   formatPath_filter,
   hasPathParameter_filter,
   jsf_filter,
+  jsonSchemaCombineAllOf_meta_filter,
   lowerCamelCase_filter,
   lowerSnakeCase_filter,
   permuteOptionalArgs_filter,
   replaceRegEx_filter,
+  resolveRef_meta_filter,
   upperCamelCase_filter,
 } from "./filter";
 import { readdirSync, writeFileSync, mkdirSync, readFileSync } from "fs";
@@ -185,6 +187,9 @@ async function main() {
     ...api,
     schemas,
   };
+
+  env.addFilter("resolveRef", resolveRef_meta_filter(api));
+  env.addFilter("jsonSchemaCombineAllOf", jsonSchemaCombineAllOf_meta_filter(api));
 
   const outputDir = resolve(process.cwd(), options.output);
   // make sure outputDir exists
