@@ -28,6 +28,7 @@ export class DeviceGroupRepository extends AbstractRepository<
 
     async create(data?: DeviceGroupInit<'request'>): Promise<DeviceGroupModel> {
         const model = await super.create(data)
+        model.type = 'group'
         return model
     }
 
