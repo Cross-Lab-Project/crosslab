@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 HELPER=$SCRIPT_DIR/../helper
 
 
@@ -54,20 +55,43 @@ function diagram(){
   # Print subgraphs
   old_root=""
   for job in $sorted_job_names; do
-    if [[ ! "${root[$job]}" == "$old_root" ]]; then
+    r="${root[$job]}"
+    r="${r#"$GIT_DIR"/}"
+    if [[ ! "${r}" == "$old_root" ]]; then
       [[ "$old_root" == "" ]] || result="$result"$'\n''  end'
-      result="$result"$'\n''  subgraph '"${root[$job]}"
-      old_root=${root[$job]}
+      result="$result"$'\n''  subgraph '"${r}"
+      old_root=${r}
     fi
     result="$result"$'\n'"    $job[${script[$job]}]"
   done
   result="$result"$'\n''  end'
 
   # print dependencies
+  deps=""
   for job in $sorted_job_names; do
     for dependency in ${dependencies[$job]}; do
-      result="$result"$'\n'"  $dependency[${script[$dependency]}] --> $job[${script[$job]}]"
+      jobA="$dependency[${script[$dependency]}]"
+      jobB="$job[${script[$job]}]"
+      jobARoot=$(echo "$jobA" | sed 's/:.*//g')
+      jobBRoot=$(echo "$jobB" | sed 's/:.*//g')
+      if [[ "$jobARoot" != "$1" ]]; then
+        jobA="$jobARoot"
+      fi
+      if [[ "$jobBRoot" != "$1" ]]; then
+        jobB="$jobBRoot"
+      fi
+      deps="$deps"$'\n'"$jobA#$jobB"
     done
+  done
+
+  deps=$(echo "$deps" | sort | uniq)
+
+  for dep in $deps; do
+    depA=$(echo $dep | cut -d'#' -f1)
+    depB=$(echo $dep | cut -d'#' -f2)
+    if [[ "$depA" != "$depB" ]]; then
+      result="$result"$'\n'"$depA --> $depB"
+    fi
   done
 
   result="$result"$'\n''```'
