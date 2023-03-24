@@ -2,7 +2,7 @@
 
 |     | build | lint | test |
 | --- | --- | --- | --- |
-| /workspaces/crosslab/clients/soa/python |   |  |  |
+| /workspaces/crosslab/clients/soa/python |  [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/python/dist/test.log) |
 
 [//]: # ({{end}})
 # Python SOA Client
@@ -12,50 +12,50 @@
 ```mermaid
 graph LR
 %%{init:{'flowchart':{'nodeSpacing': 20, 'rankSpacing': 80, 'curve': 'linear', 'useMaxWidth': false}}}%%
-  subgraph /workspaces/crosslab/clients/api/python
+  subgraph clients/api/python
     clients/api/python:build[build]
   end
-  subgraph /workspaces/crosslab/clients/soa/python
+  subgraph clients/soa/python
     clients/soa/python:build[build]
     clients/soa/python:lint[lint]
     clients/soa/python:test[test]
   end
-  subgraph /workspaces/crosslab/helper/openapi-codegeneration
+  subgraph helper/openapi-codegeneration
     helper/openapi-codegeneration:build[build]
   end
-  subgraph /workspaces/crosslab/services/auth
+  subgraph services/auth
     services/auth:build-spec[build-spec]
   end
-  subgraph /workspaces/crosslab/services/booking
+  subgraph services/booking
     services/booking:build-spec[build-spec]
   end
-  subgraph /workspaces/crosslab/services/device
+  subgraph services/device
     services/device:build-spec[build-spec]
   end
-  subgraph /workspaces/crosslab/services/experiment
+  subgraph services/experiment
     services/experiment:build-spec[build-spec]
   end
-  subgraph /workspaces/crosslab/services/federation
+  subgraph services/federation
     services/federation:build-spec[build-spec]
   end
-  subgraph /workspaces/crosslab/services/openapi
+  subgraph services/openapi
     services/openapi:build[build]
   end
-  subgraph /workspaces/crosslab/services/update
+  subgraph services/update
     services/update:build-spec[build-spec]
   end
-  services/openapi:build[build] --> clients/api/python:build[build]
-  helper/openapi-codegeneration:build[build] --> clients/api/python:build[build]
-  services/openapi:build[build] --> clients/soa/python:build[build]
-  helper/openapi-codegeneration:build[build] --> clients/soa/python:build[build]
-  clients/api/python:build[build] --> clients/soa/python:build[build]
-  clients/soa/python:build[build] --> clients/soa/python:lint[lint]
-  clients/soa/python:build[build] --> clients/soa/python:test[test]
-  services/auth:build-spec[build-spec] --> services/openapi:build[build]
-  services/booking:build-spec[build-spec] --> services/openapi:build[build]
-  services/device:build-spec[build-spec] --> services/openapi:build[build]
-  services/experiment:build-spec[build-spec] --> services/openapi:build[build]
-  services/federation:build-spec[build-spec] --> services/openapi:build[build]
-  services/update:build-spec[build-spec] --> services/openapi:build[build]
+clients/api/python --> clients/soa/python:build[build]
+clients/soa/python:build[build] --> clients/soa/python:lint[lint]
+clients/soa/python:build[build] --> clients/soa/python:test[test]
+helper/openapi-codegeneration --> clients/api/python
+helper/openapi-codegeneration --> clients/soa/python:build[build]
+services/auth --> services/openapi
+services/booking --> services/openapi
+services/device --> services/openapi
+services/experiment --> services/openapi
+services/federation --> services/openapi
+services/openapi --> clients/api/python
+services/openapi --> clients/soa/python:build[build]
+services/update --> services/openapi
 ```
 [//]: # ({{end}})

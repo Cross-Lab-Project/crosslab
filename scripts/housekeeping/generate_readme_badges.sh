@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 HELPER=$SCRIPT_DIR/../helper
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -53,8 +54,6 @@ if [ -z "$WEB_REPOSITORY" ]; then
   exit 1
 fi
 
-PREFIX="$WEB_REPOSITORY/$BRANCH/"
-
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 BLUE='\033[0;34m'
@@ -67,6 +66,8 @@ echo -en "Parsing .jobs.yml..."
 source $HELPER/job_parsing.sh
 echo -e "${CSI}77GDone"
 
+PREFIX="$WEB_REPOSITORY/$BRANCH/"
+
 function jobs_for_prefix(){
     for job in ${job_names[@]}; do
       if [[ $job == $1* ]]; then
@@ -76,7 +77,7 @@ function jobs_for_prefix(){
 }
 
 function badges(){
-  script_order=$(echo build-spec build lint test | tr ' ' '\n')
+  script_order=$(echo build-spec lint-spec build lint test | tr ' ' '\n')
 
   all_job_names="$(jobs_for_prefix $1)"
 
@@ -99,9 +100,11 @@ function badges(){
       echo ""
       echo -n "| ${root[$job]} | "
       for script in $script_names; do
-        j="${root[$job]}:$script"
+        r="${root[$job]}"
+        r="${r#"$GIT_DIR"/}"
+        j="$r:$script"
         if [ ${script[$j]} ]; then
-          echo -n " [![${script[$j]}]($PREFIX${root[$j]}/dist/${script[$j]}.badge)]($PREFIX${root[$j]}/dist/${script[$j]}.log) |"
+          echo -n " [![${script[$j]}]($PREFIX${r}/dist/${script[$j]}.badge)]($PREFIX${r}/dist/${script[$j]}.log) |"
         else
           echo -n "  |"
         fi
