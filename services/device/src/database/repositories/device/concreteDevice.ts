@@ -1,8 +1,4 @@
-import {
-    ConcreteDevice,
-    ConcreteDeviceInit,
-    ConcreteDeviceUpdate,
-} from '../../../generated/types'
+import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types'
 import { ConcreteDeviceModel } from '../../model'
 import { DeviceOverviewRepository } from './deviceOverview'
 import {
@@ -23,7 +19,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(ConcreteDeviceModel)
     }
 
-    async create(data?: ConcreteDeviceInit<'request'>): Promise<ConcreteDeviceModel> {
+    async create(data?: ConcreteDevice<'request'>): Promise<ConcreteDeviceModel> {
         const model = await super.create(data)
         model.type = 'device'
         return model
@@ -34,7 +30,6 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         data: ConcreteDeviceUpdate<'request'>
     ): Promise<void> {
         await DeviceOverviewRepository.write(model, data)
-
         if (data.experiment) model.experiment = data.experiment
         if (data.services) model.services = data.services
     }
@@ -43,7 +38,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         return {
             ...(await DeviceOverviewRepository.format(model)),
             type: 'device',
-            announcedAvailability: model.announcedAvailability,
+            announcedAvailability: model.announcedAvailability ?? [],
             connected: model.connected,
             experiment: model.experiment,
             services: model.services,

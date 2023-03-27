@@ -5,9 +5,11 @@ import {
     PeerconnectionRepository,
 } from '../../../src/database/repositories/peerconnection'
 import { Peerconnection } from '../../../src/generated/types'
+import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId'
 import { PeerconnectionName } from '../../data/peerconnections/index.spec'
 import { initTestDatabase } from './index.spec'
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
 
 class PeerconnectionRepositoryTestSuite extends AbstractRepositoryTestSuite<
@@ -27,18 +29,42 @@ class PeerconnectionRepositoryTestSuite extends AbstractRepositoryTestSuite<
         model: PeerconnectionModel,
         data?: Peerconnection<'request'>
     ): boolean {
-        throw new Error('Method not implemented.')
+        if (!data) return true
+
+        assert(this.validateWrite(model, data))
+
+        return true
     }
 
     validateWrite(model: PeerconnectionModel, data: Peerconnection<'request'>): boolean {
-        throw new Error('Method not implemented.')
+        if (data.devices) {
+            assert(
+                JSON.stringify(model.deviceA) ===
+                    JSON.stringify({ ...data.devices[0], status: 'new' })
+            )
+            assert(
+                JSON.stringify(model.deviceB) ===
+                    JSON.stringify({ ...data.devices[1], status: 'new' })
+            )
+        }
+        if (data.type) assert(model.type === data.type)
+
+        return true
     }
 
     validateFormat(
         model: PeerconnectionModel,
         data: Peerconnection<'response'>
     ): boolean {
-        throw new Error('Method not implemented.')
+        assert(
+            JSON.stringify(data.devices) ===
+                JSON.stringify([model.deviceA, model.deviceB])
+        )
+        assert(data.status === model.status)
+        assert(data.type === model.type)
+        assert(data.url === peerconnectionUrlFromId(model.uuid))
+
+        return true
     }
 
     compareModels(
@@ -46,20 +72,39 @@ class PeerconnectionRepositoryTestSuite extends AbstractRepositoryTestSuite<
         secondModel: PeerconnectionModel,
         complete?: boolean
     ): boolean {
-        throw new Error('Method not implemented.')
+        const sameId = firstModel.uuid === secondModel.uuid
+
+        if (!complete) return sameId
+
+        assert(firstModel.deletedAt === secondModel.deletedAt)
+        assert(JSON.stringify(firstModel.deviceA) === JSON.stringify(secondModel.deviceA))
+        assert(JSON.stringify(firstModel.deviceB) === JSON.stringify(secondModel.deviceB))
+        assert(firstModel.status === secondModel.status)
+        assert(firstModel.type === secondModel.type)
+
+        return true
     }
 
     compareFormatted(
         first: Peerconnection<'response'>,
         second: Peerconnection<'response'>
     ): boolean {
-        throw new Error('Method not implemented.')
+        let isEqual = true
+
+        isEqual &&= JSON.stringify(first.devices) === JSON.stringify(second.devices)
+        isEqual &&= first.status === second.status
+        isEqual &&= first.type === second.type
+        isEqual &&= first.url === second.url
+
+        return isEqual
     }
 
     getFindOptionsWhere(
         model?: PeerconnectionModel
     ): FindOptionsWhere<PeerconnectionModel> {
-        throw new Error('Method not implemented.')
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

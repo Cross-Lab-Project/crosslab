@@ -18,30 +18,30 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 ) => {
     console.log(`patchDevicesByDeviceId called`)
 
-    const device = await deviceRepository.findOneOrFail({
+    const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    await deviceRepository.write(device, body ?? {})
-    await deviceRepository.save(device)
+    await deviceRepository.write(deviceModel, body ?? { type: deviceModel.type })
+    await deviceRepository.save(deviceModel)
 
-    await sendChangedCallback(device)
+    await sendChangedCallback(deviceModel)
 
     if (parameters.changedUrl) {
         console.log(
             `registering changed-callback for device '${deviceUrlFromId(
-                device.uuid
+                deviceModel.uuid
             )}' to '${parameters.changedUrl}'`
         )
-        const changedCallbackURLs = changedCallbacks.get(device.uuid) ?? []
+        const changedCallbackURLs = changedCallbacks.get(deviceModel.uuid) ?? []
         changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(device.uuid, changedCallbackURLs)
+        changedCallbacks.set(deviceModel.uuid, changedCallbackURLs)
     }
 
     console.log(`patchDevicesByDeviceId succeeded`)
 
     return {
         status: 200,
-        body: await deviceRepository.format(device),
+        body: await deviceRepository.format(deviceModel),
     }
 }

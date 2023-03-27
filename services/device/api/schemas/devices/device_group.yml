@@ -9,5 +9,5 @@ allOf:
       devices:
         type: array
         items:
-          $ref: ./device_reference.yml
+          $ref: ./references/device_reference.yml
 x-typeguard: true

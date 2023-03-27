@@ -6,7 +6,6 @@ import {
 } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
 import {
     InstantiableBrowserDevice,
-    InstantiableBrowserDeviceInit,
     InstantiableBrowserDeviceUpdate,
 } from '../../../../src/generated/types'
 import { InstantiableBrowserDeviceName } from '../../../data/devices/instantiableBrowserDevices/index.spec'
@@ -32,7 +31,7 @@ class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTes
 
     validateCreate(
         model: InstantiableBrowserDeviceModel,
-        data?: InstantiableBrowserDeviceInit<'request'>
+        data?: InstantiableBrowserDevice<'request'>
     ): boolean {
         if (!data) return true
 
@@ -90,23 +89,21 @@ class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTes
         first: InstantiableBrowserDevice<'response'>,
         second: InstantiableBrowserDevice<'response'>
     ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.compareFormatted(first, second))
-        assert(first.codeUrl === second.codeUrl)
-        assert(JSON.stringify(first.services) === JSON.stringify(second.services))
+        let isEqual = true
 
-        return true
+        isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
+        isEqual &&= first.codeUrl === second.codeUrl
+        isEqual &&= JSON.stringify(first.services) === JSON.stringify(second.services)
+
+        return isEqual
     }
 
     getFindOptionsWhere(
         model?: InstantiableBrowserDeviceModel
     ): FindOptionsWhere<InstantiableBrowserDeviceModel> {
-        return model
-            ? {
-                  uuid: model?.uuid,
-              }
-            : {
-                  uuid: '',
-              }
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

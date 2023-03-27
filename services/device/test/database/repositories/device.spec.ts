@@ -4,7 +4,7 @@ import {
     deviceRepository,
     DeviceRepository,
 } from '../../../src/database/repositories/device'
-import { Device, DeviceInit, DeviceUpdate } from '../../../src/generated/types'
+import { Device, DeviceUpdate } from '../../../src/generated/types'
 import { deviceData, DeviceName, deviceNames } from '../../data/devices/index.spec'
 import { concreteDeviceRepositoryTestSuite } from './device/concreteDevice.spec'
 import { deviceGroupRepositoryTestSuite } from './device/deviceGroup.spec'
@@ -43,6 +43,7 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
                         `should write valid data to a model correctly (${key})`,
                         async function () {
                             const model = await data.repository.create({
+                                name: deviceData[key].request.name,
                                 type: deviceData[key].request.type,
                             })
                             assert(data.validateCreate(model))
@@ -62,10 +63,7 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
         })
     }
 
-    validateCreate(
-        model: DeviceModel,
-        data?: DeviceInit<'request'> | undefined
-    ): boolean {
+    validateCreate(model: DeviceModel, data?: Device<'request'> | undefined): boolean {
         if (!data) return true
 
         switch (model.type) {
@@ -176,34 +174,30 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
     compareFormatted(first: Device<'response'>, second: Device<'response'>): boolean {
         switch (first.type) {
             case 'cloud instantiable':
-                assert(first.type === second.type)
+                if (!(first.type === second.type)) return false
                 return instantiableCloudDeviceRepositoryTestSuite.compareFormatted(
                     first,
                     second
                 )
             case 'device':
-                assert(first.type === second.type)
+                if (!(first.type === second.type)) return false
                 return concreteDeviceRepositoryTestSuite.compareFormatted(first, second)
             case 'edge instantiable':
-                assert(first.type === second.type)
+                if (!(first.type === second.type)) return false
                 return instantiableBrowserDeviceRepositoryTestSuite.compareFormatted(
                     first,
                     second
                 )
             case 'group':
-                assert(first.type === second.type)
+                if (!(first.type === second.type)) return false
                 return deviceGroupRepositoryTestSuite.compareFormatted(first, second)
         }
     }
 
     getFindOptionsWhere(model?: DeviceModel): FindOptionsWhere<DeviceModel> {
-        return model
-            ? {
-                  uuid: model?.uuid,
-              }
-            : {
-                  uuid: '',
-              }
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

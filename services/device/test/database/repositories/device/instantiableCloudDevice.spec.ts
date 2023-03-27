@@ -6,7 +6,6 @@ import {
 } from '../../../../src/database/repositories/device/instantiableCloudDevice'
 import {
     InstantiableCloudDevice,
-    InstantiableCloudDeviceInit,
     InstantiableCloudDeviceUpdate,
 } from '../../../../src/generated/types'
 import { InstantiableCloudDeviceName } from '../../../data/devices/instantiableCloudDevices/index.spec'
@@ -32,7 +31,7 @@ class InstantiableCloudDeviceRepositoryTestSuite extends AbstractRepositoryTestS
 
     validateCreate(
         model: InstantiableCloudDeviceModel,
-        data?: InstantiableCloudDeviceInit<'request'>
+        data?: InstantiableCloudDevice<'request'>
     ): boolean {
         if (!data) return true
 
@@ -90,23 +89,21 @@ class InstantiableCloudDeviceRepositoryTestSuite extends AbstractRepositoryTestS
         first: InstantiableCloudDevice<'response'>,
         second: InstantiableCloudDevice<'response'>
     ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.compareFormatted(first, second))
-        assert(first.instantiateUrl === second.instantiateUrl)
-        assert(JSON.stringify(first.services) === JSON.stringify(second.services))
+        let isEqual = true
 
-        return true
+        isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
+        isEqual &&= first.instantiateUrl === second.instantiateUrl
+        isEqual &&= JSON.stringify(first.services) === JSON.stringify(second.services)
+
+        return isEqual
     }
 
     getFindOptionsWhere(
         model?: InstantiableCloudDeviceModel
     ): FindOptionsWhere<InstantiableCloudDeviceModel> {
-        return model
-            ? {
-                  uuid: model?.uuid,
-              }
-            : {
-                  uuid: '',
-              }
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

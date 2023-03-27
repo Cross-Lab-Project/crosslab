@@ -1,4 +1,4 @@
-import { Device, DeviceInit, DeviceUpdate } from '../../generated/types'
+import { Device, DeviceUpdate } from '../../generated/types'
 import { DeviceModel, DeviceOverviewModel } from '../model'
 import { concreteDeviceRepository } from './device/concreteDevice'
 import { deviceGroupRepository } from './device/deviceGroup'
@@ -8,6 +8,7 @@ import { instantiableCloudDeviceRepository } from './device/instantiableCloudDev
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
+    InvalidValueError,
 } from '@crosslab/service-common'
 
 export class DeviceRepository extends AbstractRepository<
@@ -23,7 +24,7 @@ export class DeviceRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(DeviceOverviewModel)
     }
 
-    async create(data?: DeviceInit<'request'>): Promise<DeviceModel> {
+    async create(data?: Device<'request'>): Promise<DeviceModel> {
         if (!this.repository) this.throwUninitializedRepositoryError()
         if (!data) return await super.create()
 
@@ -42,12 +43,32 @@ export class DeviceRepository extends AbstractRepository<
     async write(model: DeviceModel, data: DeviceUpdate<'request'>): Promise<void> {
         switch (model.type) {
             case 'cloud instantiable':
+                if (data.type !== model.type)
+                    throw new InvalidValueError(
+                        `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
+                        400
+                    )
                 return await instantiableCloudDeviceRepository.write(model, data)
             case 'device':
+                if (data.type !== model.type)
+                    throw new InvalidValueError(
+                        `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
+                        400
+                    )
                 return await concreteDeviceRepository.write(model, data)
             case 'edge instantiable':
+                if (data.type !== model.type)
+                    throw new InvalidValueError(
+                        `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
+                        400
+                    )
                 return await instantiableBrowserDeviceRepository.write(model, data)
             case 'group':
+                if (data.type !== model.type)
+                    throw new InvalidValueError(
+                        `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
+                        400
+                    )
                 return await deviceGroupRepository.write(model, data)
         }
     }

@@ -1,11 +1,12 @@
-# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+ # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Device Group Update
 allOf:
   - $ref: ./device_overview_update.yml
   - type: object
     properties:
+      type:
+        const: group
       devices:
         type: array
         items:
-          $ref: ../device_reference.yml
-        writeOnly: true
+          $ref: ../references/device_reference.yml

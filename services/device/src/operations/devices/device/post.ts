@@ -1,10 +1,19 @@
 import { deviceRepository } from '../../../database/repositories/device'
 import { concreteDeviceRepository } from '../../../database/repositories/device/concreteDevice'
 import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
+import { ErrorWithStatus } from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { changedCallbacks } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { ForbiddenOperationError } from '@crosslab/service-common'
+
+// TODO: rethink how to handle this problem (required JWT user)
+export class UnauthorizedError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = 'UnauthorizedError'
+    }
+}
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
@@ -18,6 +27,9 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     user
 ) => {
     console.log(`postDevicesByDeviceId called`)
+
+    // TODO: rethink how to handle this problem (required JWT user)
+    if (!user.JWT) throw new UnauthorizedError('User is not authorized')
 
     const instantiableDeviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },

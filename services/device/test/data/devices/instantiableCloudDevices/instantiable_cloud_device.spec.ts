@@ -1,4 +1,5 @@
 import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice'
+import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
 import { EntityData } from '@crosslab/service-common'
 
 const uuid = '15d9de70-3646-4d05-a83b-3c70862c0b98'
@@ -24,7 +25,7 @@ const instantiable_cloud_device: EntityData<InstantiableCloudDeviceRepository> =
         instantiateUrl,
     },
     response: {
-        url: 'http://localhost/devices/32348c89-f302-408f-8582-cb9783c74fbb',
+        url: deviceUrlFromId(uuid),
         type,
         name,
         description,
