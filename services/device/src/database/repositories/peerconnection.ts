@@ -35,7 +35,8 @@ export class PeerconnectionRepository extends AbstractRepository<
 
         if (data.devices && data.devices.length !== 2) {
             throw new InvalidValueError(
-                `Peerconnections need exactly 2 devices, received ${data.devices?.length}`
+                `Peerconnections need exactly 2 devices, received ${data.devices?.length}`,
+                400
             )
         }
 
@@ -45,7 +46,8 @@ export class PeerconnectionRepository extends AbstractRepository<
 
             if (!deviceA.url || !deviceB.url) {
                 throw new InvalidValueError(
-                    'One of the provided devices does not have a url'
+                    'One of the provided devices does not have a url',
+                    400
                 )
             }
 
