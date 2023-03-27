@@ -6,12 +6,7 @@ import { config } from '../config'
  * @returns The url of the device.
  */
 export function deviceUrlFromId(deviceÍd: string): string {
-    return (
-        config.BASE_URL +
-        (config.BASE_URL.endsWith('/') ? '' : '/') +
-        'devices/' +
-        deviceÍd
-    )
+    return (config.BASE_URL + '/devices/' + deviceÍd).replace('//devices', '/devices')
 }
 
 /**
@@ -20,10 +15,8 @@ export function deviceUrlFromId(deviceÍd: string): string {
  * @returns The url of the peerconnection.
  */
 export function peerconnectionUrlFromId(peerconnectionId: string): string {
-    return (
-        config.BASE_URL +
-        (config.BASE_URL.endsWith('/') ? '' : '/') +
-        'peerconnections/' +
-        peerconnectionId
+    return (config.BASE_URL + '/peerconnections/' + peerconnectionId).replace(
+        '//peerconnections',
+        '/peerconnections'
     )
 }
