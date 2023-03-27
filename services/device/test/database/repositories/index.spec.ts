@@ -14,10 +14,18 @@ import { deviceNames } from '../../data/devices/index.spec'
 import { prepareTestData, TestData } from '../../data/index.spec'
 import { peerconnectionNames } from '../../data/peerconnections/index.spec'
 import { deviceRepositoryTestSuite } from './device.spec'
+import { concreteDeviceRepositoryTestSuite } from './device/concreteDevice.spec'
+import { deviceGroupRepositoryTestSuite } from './device/deviceGroup.spec'
+import { instantiableBrowserDeviceRepositoryTestSuite } from './device/instantiableBrowserDevice.spec'
+import { instantiableCloudDeviceRepositoryTestSuite } from './device/instantiableCloudDevice.spec'
 import { peerconnectionRepositoryTestSuite } from './peerconnection.spec'
 import { DataSourceOptions } from 'typeorm'
 
 const repositoryTestSuites = [
+    concreteDeviceRepositoryTestSuite,
+    deviceGroupRepositoryTestSuite,
+    instantiableBrowserDeviceRepositoryTestSuite,
+    instantiableCloudDeviceRepositoryTestSuite,
     deviceRepositoryTestSuite,
     peerconnectionRepositoryTestSuite,
 ]

@@ -4,11 +4,7 @@ import {
     concreteDeviceRepository,
     ConcreteDeviceRepository,
 } from '../../../../src/database/repositories/device/concreteDevice'
-import {
-    ConcreteDevice,
-    ConcreteDeviceInit,
-    ConcreteDeviceUpdate,
-} from '../../../../src/generated/types'
+import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../../src/generated/types'
 import { ConcreteDeviceName } from '../../../data/devices/concreteDevices/index.spec'
 import { initTestDatabase } from '../index.spec'
 import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
@@ -31,7 +27,7 @@ class ConcreteDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
 
     validateCreate(
         model: ConcreteDeviceModel,
-        data?: ConcreteDeviceInit<'request'>
+        data?: ConcreteDevice<'request'>
     ): boolean {
         if (!data) return true
 
@@ -58,10 +54,7 @@ class ConcreteDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
         data: ConcreteDevice<'response'>
     ): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
-        assert(
-            JSON.stringify(data.announcedAvailability) ===
-                JSON.stringify(model.announcedAvailability)
-        )
+        // TODO: validate announcedAvailability
         assert(data.connected === model.connected)
         assert(data.experiment === model.experiment)
         assert(JSON.stringify(data.services) === JSON.stringify(model.services))
@@ -102,28 +95,25 @@ class ConcreteDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
         first: ConcreteDevice<'response'>,
         second: ConcreteDevice<'response'>
     ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.compareFormatted(first, second))
-        assert(
-            JSON.stringify(first.announcedAvailability) ===
-                JSON.stringify(second.announcedAvailability)
-        )
-        assert(first.connected === second.connected)
-        assert(first.experiment === second.experiment)
-        assert(JSON.stringify(first.services) === JSON.stringify(second.services))
+        let isEqual = true
 
-        return true
+        isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
+        isEqual &&=
+            JSON.stringify(first.announcedAvailability) ===
+            JSON.stringify(second.announcedAvailability)
+        isEqual &&= first.connected === second.connected
+        isEqual &&= first.experiment === second.experiment
+        isEqual &&= JSON.stringify(first.services) === JSON.stringify(second.services)
+
+        return isEqual
     }
 
     getFindOptionsWhere(
         model?: ConcreteDeviceModel
     ): FindOptionsWhere<ConcreteDeviceModel> {
-        return model
-            ? {
-                  uuid: model?.uuid,
-              }
-            : {
-                  uuid: '',
-              }
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

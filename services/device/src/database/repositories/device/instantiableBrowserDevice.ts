@@ -1,6 +1,5 @@
 import {
     InstantiableBrowserDevice,
-    InstantiableBrowserDeviceInit,
     InstantiableBrowserDeviceUpdate,
 } from '../../../generated/types'
 import { InstantiableBrowserDeviceModel } from '../../model'
@@ -24,7 +23,7 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
     }
 
     async create(
-        data?: InstantiableBrowserDeviceInit<'request'>
+        data?: InstantiableBrowserDevice<'request'>
     ): Promise<InstantiableBrowserDeviceModel> {
         const model = await super.create(data)
         model.type = 'edge instantiable'

@@ -5,8 +5,16 @@ properties:
   name:
     type: string
     description: Name of the device
-    writeOnly: true
   description:
     type: string
     description: Extended description of the device, features, etc.
-    writeOnly: true
+  type:
+    type: string
+    description: Type of the device
+    enum:
+      - device
+      - group
+      - edge instantiable
+      - cloud instantiable
+required:
+  - type

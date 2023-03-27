@@ -1,4 +1,5 @@
 import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
+import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
 import { EntityData } from '@crosslab/service-common'
 
 const uuid = '3742d2bd-8259-4dba-8908-f54dba68ba69'
@@ -24,7 +25,7 @@ const instantiable_browser_device: EntityData<InstantiableBrowserDeviceRepositor
         codeUrl,
     },
     response: {
-        url: 'http://localhost/devices/32348c89-f302-408f-8582-cb9783c74fbb',
+        url: deviceUrlFromId(uuid),
         type,
         name,
         description,

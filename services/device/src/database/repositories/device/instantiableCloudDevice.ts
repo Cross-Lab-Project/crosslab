@@ -1,6 +1,5 @@
 import {
     InstantiableCloudDevice,
-    InstantiableCloudDeviceInit,
     InstantiableCloudDeviceUpdate,
 } from '../../../generated/types'
 import { InstantiableCloudDeviceModel } from '../../model'
@@ -24,7 +23,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
     }
 
     async create(
-        data?: InstantiableCloudDeviceInit<'request'>
+        data?: InstantiableCloudDevice<'request'>
     ): Promise<InstantiableCloudDeviceModel> {
         const model = await super.create(data)
         model.type = 'cloud instantiable'

@@ -1,6 +1,6 @@
 dist/*
 !dist/openapi.json
-src/generated
+generated
 node_modules
 .npmrc
 *.db
@@ -8,3 +8,4 @@ package.resolved.json
 .packages
 app
 .nyc_output
+coverage

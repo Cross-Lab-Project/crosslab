@@ -29,4 +29,5 @@ required:
   - url
   - type
   - name
+  - owner
 x-typeguard: true

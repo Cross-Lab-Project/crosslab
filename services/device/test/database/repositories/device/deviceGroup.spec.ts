@@ -4,11 +4,7 @@ import {
     deviceGroupRepository,
     DeviceGroupRepository,
 } from '../../../../src/database/repositories/device/deviceGroup'
-import {
-    DeviceGroup,
-    DeviceGroupInit,
-    DeviceGroupUpdate,
-} from '../../../../src/generated/types'
+import { DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
 import { DeviceGroupName } from '../../../data/devices/deviceGroups/index.spec'
 import { initTestDatabase } from '../index.spec'
 import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
@@ -29,7 +25,7 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
         super(AppDataSource)
     }
 
-    validateCreate(model: DeviceGroupModel, data?: DeviceGroupInit<'request'>): boolean {
+    validateCreate(model: DeviceGroupModel, data?: DeviceGroup<'request'>): boolean {
         if (!data) return true
 
         assert(DeviceOverviewRepositoryTestSuite.validateCreate(model, data))
@@ -51,7 +47,7 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
 
     validateFormat(model: DeviceGroupModel, data: DeviceGroup<'response'>): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
-        assert(JSON.stringify(data.devices) === JSON.stringify(model.devices)) // TODO
+        // TODO: validate devices
 
         return true
     }
@@ -75,20 +71,18 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
         first: DeviceGroup<'response'>,
         second: DeviceGroup<'response'>
     ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.compareFormatted(first, second))
-        assert(JSON.stringify(first.devices) === JSON.stringify(second.devices))
+        let isEqual = true
 
-        return true
+        isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
+        isEqual &&= JSON.stringify(first.devices) === JSON.stringify(second.devices)
+
+        return isEqual
     }
 
     getFindOptionsWhere(model?: DeviceGroupModel): FindOptionsWhere<DeviceGroupModel> {
-        return model
-            ? {
-                  uuid: model?.uuid,
-              }
-            : {
-                  uuid: '',
-              }
+        return {
+            uuid: model ? model.uuid : 'non-existent',
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import { DeviceOverviewModel } from '../../../../src/database/model'
 import { DeviceOverviewRepository } from '../../../../src/database/repositories/device/deviceOverview'
 import {
-    DeviceInit,
+    Device,
     DeviceOverview,
     DeviceOverviewUpdate,
 } from '../../../../src/generated/types'
@@ -14,10 +14,7 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
     DeviceName,
     DeviceOverviewRepository
 > {
-    static validateCreate(
-        model: DeviceOverviewModel,
-        data?: DeviceInit<'request'>
-    ): boolean {
+    static validateCreate(model: DeviceOverviewModel, data?: Device<'request'>): boolean {
         if (!data) return true
 
         assert(model.type === data.type)
@@ -71,12 +68,14 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
         first: DeviceOverview<'response'>,
         second: DeviceOverview<'response'>
     ): boolean {
-        assert(first.description === second.description)
-        assert(first.name === second.name)
-        assert(first.owner === second.owner)
-        assert(first.type === second.type)
-        assert(first.url === second.url)
+        let isEqual = true
 
-        return true
+        isEqual &&= first.description === second.description
+        isEqual &&= first.name === second.name
+        isEqual &&= first.owner === second.owner
+        isEqual &&= first.type === second.type
+        isEqual &&= first.url === second.url
+
+        return isEqual
     }
 }

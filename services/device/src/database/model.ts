@@ -41,7 +41,7 @@ export abstract class DeviceOverviewModel {
     @Column()
     type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
     @Column({ nullable: true })
-    owner?: string
+    owner!: string
     @DeleteDateColumn()
     deletedAt?: Date
 }

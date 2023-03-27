@@ -4,12 +4,12 @@ allOf:
   - $ref: ./device_overview_update.yml
   - type: object
     properties:
+      type:
+        const: cloud instantiable
       instantiateUrl:
         type: string
         format: uri
-        writeOnly: true
       services:
         type: array
         items:
           $ref: ../services/service_description.yml
-        writeOnly: true

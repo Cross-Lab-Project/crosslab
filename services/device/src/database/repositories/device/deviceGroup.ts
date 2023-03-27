@@ -1,7 +1,6 @@
 import {
     Device,
     DeviceGroup,
-    DeviceGroupInit,
     DeviceGroupUpdate,
     DeviceReference,
 } from '../../../generated/types'
@@ -26,7 +25,7 @@ export class DeviceGroupRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(DeviceGroupModel)
     }
 
-    async create(data?: DeviceGroupInit<'request'>): Promise<DeviceGroupModel> {
+    async create(data?: DeviceGroup<'request'>): Promise<DeviceGroupModel> {
         const model = await super.create(data)
         model.type = 'group'
         return model
