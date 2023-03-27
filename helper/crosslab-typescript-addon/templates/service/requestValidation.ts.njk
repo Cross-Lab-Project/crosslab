@@ -102,7 +102,7 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
     if (response.status < 100 || response.status >= 600) return false
 
     {% for response in operation.responses -%}
-    {%- if response.status | endswith("XX") %}
+    {%- if response.status | endsWith("XX") %}
     if (response.status >= {{ (response.status | replace("X","0") | int) }} && response.status < {{ (response.status | replace("X","0") | int) + 100 }} ) {
     {%- else %}
     if (response.status === {{ response.status }}) {

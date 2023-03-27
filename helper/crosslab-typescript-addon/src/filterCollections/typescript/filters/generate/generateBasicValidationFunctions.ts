@@ -1,7 +1,7 @@
-import { ExtendedSchema } from './resolve'
+import { ExtendedSchema } from '../../types'
+import { Filter } from '@cross-lab-project/openapi-codegen'
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
-// import { format } from 'prettier'
 import standaloneCode from 'ajv/dist/standalone'
 
 /**
@@ -10,7 +10,7 @@ import standaloneCode from 'ajv/dist/standalone'
  * @param schemas The schemas for which to generate the validation functions.
  * @returns The validation functions as a string of code.
  */
-export function validation_filter(schemas: ExtendedSchema[]) {
+function generateBasicValidationFunctions(schemas: ExtendedSchema[]) {
     const ajv: Ajv = new Ajv({
         code: { source: true, esm: true },
         verbose: true,
@@ -38,4 +38,9 @@ export function validation_filter(schemas: ExtendedSchema[]) {
         ] = schema['x-location']
     }
     return standaloneCode(ajv, mapping)
+}
+
+export const generateBasicValidationFunctionsFilter: Filter = {
+    name: 'generateBasicValidationFunctions',
+    function: generateBasicValidationFunctions,
 }

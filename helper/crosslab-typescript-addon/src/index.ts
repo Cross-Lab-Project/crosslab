@@ -1,4 +1,4 @@
-import { TypeScriptFilterCollection } from './filters/typescript'
+import { TypeScriptFilterCollection } from './filterCollections/typescript'
 import { attributeEqualTo } from './tests'
 import { Addon } from '@cross-lab-project/openapi-codegen'
 import path from 'path'
@@ -43,7 +43,12 @@ const CrosslabTypeScriptAddon: Addon = {
             name: 'service:test',
             filterCollections: [TypeScriptFilterCollection],
             globals: [],
-            tests: [],
+            tests: [
+                {
+                    name: 'attrequalto',
+                    function: attributeEqualTo,
+                },
+            ],
             templatesDir: templateDir + '/templates/service-test',
         },
         {

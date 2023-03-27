@@ -40,7 +40,7 @@ export default () => describe("Basic Validation Tests", function () {
         })
         {% set standardSchema = schema | clone -%}
         {% for key, value in standardSchema -%}
-            {%- if key | startswith("x-") -%}
+            {%- if key | startsWith("x-") -%}
                 {{ standardSchema | delete(key) }}
             {%- endif -%}
         {% endfor -%}
@@ -59,7 +59,7 @@ export default () => describe("Basic Validation Tests", function () {
         })
         {% set standardSchemaWithoutUnrequired = schemaWithoutUnrequired.schema | clone -%}
         {% for key, value in standardSchemaWithoutUnrequired -%}
-            {%- if key | startswith("x-") -%}
+            {%- if key | startsWith("x-") -%}
                 {{ standardSchemaWithoutUnrequired | delete(key) }}
             {%- endif -%}
         {% endfor -%}
@@ -89,7 +89,7 @@ export default () => describe("Basic Validation Tests", function () {
         })
         {% set standardInvalidSchema = invalidSchema.schema | clone -%}
         {% for key, value in standardInvalidSchema -%}
-            {%- if key | startswith("x-") -%}
+            {%- if key | startsWith("x-") -%}
                 {{ standardInvalidSchema | delete(key) }}
             {%- endif -%}
         {% endfor -%}

@@ -38,7 +38,7 @@ export type {{ operation.name }}Signature = (
                     {%- for securityMethod, scopes in securityRequirement -%}
                         {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
                     {%- endfor -%}
-                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | strings | join("|")) + ">"), userDataTypes) -%}
+                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | toStrings | join("|")) + ">"), userDataTypes) -%}
                 {%- endfor -%}
             {%- else -%}
                 {%- set userDataTypes = ["undefined"] -%}
@@ -119,7 +119,7 @@ export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" 
  * Typing for a response with status {{ response.status }} to a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export interface {{ operation.name }}{{ response.status }}ResponseType extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
-    status: {{ ("NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 100) + ">") if (response.status | endswith("XX")) else response.status }}
+    status: {{ ("NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 100) + ">") if (response.status | endsWith("XX")) else response.status }}
     headers{{ "?" if not response.headers }}: {
         {% for header in response.headers -%}
         "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas, { "schemaType": "response" }) | indent(8) if header.schema else "undefined" }},
