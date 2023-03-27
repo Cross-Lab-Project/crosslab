@@ -201,7 +201,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
@@ -218,7 +218,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
@@ -232,7 +232,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
@@ -248,7 +248,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders as any," if response.headers and response.headers | length > 0 }}
         }))
@@ -278,7 +278,7 @@ export default () => describe("Request Validation Tests", function () {
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         {%- endif %}
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
@@ -301,7 +301,7 @@ export default () => describe("Request Validation Tests", function () {
         const schemaBody: Schema = {{ { "not": response.schema } | stringify(4) | indent(8) }}
         const fakeBody = JSONSchemaFaker.generate(schemaBody)
         assert(!validate{{ operation.name | cap }}Output({
-            {{ "status: " }}{{ response.status if not response.status | endswith("XX") else response.status[0] + "00" }}{{ "," }}
+            {{ "status: " }}{{ response.status if not response.status | endsWith("XX") else response.status[0] + "00" }}{{ "," }}
             {{- "\n\t\t\tbody: fakeBody," if response.schema }}
             {{- "\n\t\t\theaders: fakeHeaders," if response.headers and response.headers | length > 0 }}
         }))
