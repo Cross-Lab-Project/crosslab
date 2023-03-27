@@ -308,7 +308,9 @@
         },
         "required": [
           "url",
-          "type"
+          "type",
+          "name",
+          "owner"
         ],
         "x-typeguard": true,
         "x-service-name": "Device Service"
@@ -340,7 +342,8 @@
           }
         },
         "required": [
-          "type"
+          "type",
+          "name"
         ],
         "x-service-name": "Device Service"
       },
@@ -549,10 +552,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true,
@@ -613,10 +613,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true,
@@ -644,10 +641,7 @@
                   "$ref": "#/components/schemas/service_description"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true,
@@ -671,10 +665,7 @@
                   "$ref": "#/components/schemas/device_reference"
                 }
               }
-            },
-            "required": [
-              "type"
-            ]
+            }
           }
         ],
         "x-typeguard": true,
@@ -717,6 +708,7 @@
       },
       "device_cloud_instantiable_update": {
         "title": "Instantiable Cloud Device Update",
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview_update"
@@ -739,10 +731,12 @@
             }
           }
         ],
+        "additionalProperties": false,
         "x-service-name": "Device Service"
       },
       "device_concrete_update": {
         "title": "Concrete Device Update",
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview_update"
@@ -765,10 +759,12 @@
             }
           }
         ],
+        "additionalProperties": false,
         "x-service-name": "Device Service"
       },
       "device_edge_instantiable_update": {
         "title": "Instantiable Browser Device Update",
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview_update"
@@ -791,10 +787,12 @@
             }
           }
         ],
+        "additionalProperties": false,
         "x-service-name": "Device Service"
       },
       "device_group_update": {
         "title": "Device Group Update",
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/device_overview_update"
@@ -812,6 +810,7 @@
             }
           }
         ],
+        "additionalProperties": false,
         "x-service-name": "Device Service"
       },
       "device_update": {
@@ -1060,6 +1059,20 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
+      "peerconnection_status": {
+        "title": "Connection Status",
+        "type": "string",
+        "description": "The status of the peerconnection.",
+        "enum": [
+          "new",
+          "connecting",
+          "connected",
+          "disconnected",
+          "failed",
+          "closed"
+        ],
+        "x-service-name": "Device Service"
+      },
       "peerconnection_common": {
         "type": "object",
         "properties": {
@@ -1076,8 +1089,15 @@
               "local",
               "webrtc"
             ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/peerconnection_status"
           }
         },
+        "required": [
+          "url",
+          "type"
+        ],
         "x-service-name": "Device Service"
       },
       "peerconnection_overview": {
@@ -1097,7 +1117,10 @@
                   "$ref": "#/components/schemas/device_reference"
                 }
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ],
         "x-service-name": "Device Service"
@@ -1144,19 +1167,11 @@
                 "items": {
                   "$ref": "#/components/schemas/configured_device_reference"
                 }
-              },
-              "status": {
-                "type": "string",
-                "description": "The status of the peerconnection.",
-                "readOnly": true,
-                "enum": [
-                  "waiting-for-devices",
-                  "connected",
-                  "failed",
-                  "closed"
-                ]
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ],
         "x-typeguard": true,
@@ -1493,6 +1508,17 @@
         "example": [
           "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
         ]
+      },
+      "parameters-device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "URL of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
       },
       "experiment_id": {
         "in": "path",
@@ -4813,6 +4839,71 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ],
+        "x-service-name": "Device Service"
+      }
+    },
+    "/peerconnections/{peerconnection_id}/device_status": {
+      "patch": {
+        "operationId": "patch_peerconnection_device_status",
+        "summary": "Sets the peerconnection status of a single device.",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The JSON Representation of the device peer connection.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/peerconnection_status"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          },
+          {
+            "$ref": "#/components/parameters/parameters-device_url"
           }
         ],
         "x-service-name": "Device Service"
