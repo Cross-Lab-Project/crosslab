@@ -13,7 +13,7 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
     console.log(`postDevices called`)
 
     // TODO: rethink how to handle this problem (required JWT user)
-    if (!user.JWT) throw new UnauthorizedError('User is not authorized')
+    if (!user.JWT) throw new UnauthorizedError('User is not authorized', 401)
 
     const deviceModel = await deviceRepository.create(body)
     deviceModel.owner = user.JWT?.url

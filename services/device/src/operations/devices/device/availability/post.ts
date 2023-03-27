@@ -23,7 +23,8 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
 
         if (deviceModel.type !== 'device') {
             throw new ForbiddenOperationError(
-                `Can only update the availability for a device of type 'device', not for type '${deviceModel.type}'`
+                `Can only update the availability for a device of type 'device', not for type '${deviceModel.type}'`,
+                400
             )
         }
 

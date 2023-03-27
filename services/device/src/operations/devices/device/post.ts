@@ -29,7 +29,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     console.log(`postDevicesByDeviceId called`)
 
     // TODO: rethink how to handle this problem (required JWT user)
-    if (!user.JWT) throw new UnauthorizedError('User is not authorized')
+    if (!user.JWT) throw new UnauthorizedError('User is not authorized', 401)
 
     const instantiableDeviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
@@ -40,9 +40,9 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         instantiableDeviceModel.type !== 'edge instantiable'
     )
         throw new ForbiddenOperationError(
-            `Cannot create new instance of device ${deviceUrlFromId(
+            `Cannot create new instance of device '${deviceUrlFromId(
                 instantiableDeviceModel.uuid
-            )} since it has type "${instantiableDeviceModel.type}"`,
+            )}' since it has type '${instantiableDeviceModel.type}'`,
             400
         )
 
