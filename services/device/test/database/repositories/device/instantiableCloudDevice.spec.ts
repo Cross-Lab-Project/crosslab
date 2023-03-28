@@ -59,7 +59,9 @@ class InstantiableCloudDeviceRepositoryTestSuite extends AbstractRepositoryTestS
     ): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
         assert(data.instantiateUrl === model.instantiateUrl)
-        assert(JSON.stringify(data.services) === JSON.stringify(model.services))
+        assert(
+            JSON.stringify(data.services) === JSON.stringify(model.services ?? undefined)
+        )
 
         return true
     }

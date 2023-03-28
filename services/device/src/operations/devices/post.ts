@@ -23,9 +23,7 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         console.log(
             `registering changed-callback for device ${deviceModel.uuid} to '${parameters.changedUrl}'`
         )
-        const changedCallbackURLs = changedCallbacks.get(deviceModel.uuid) ?? []
-        changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(deviceModel.uuid, changedCallbackURLs)
+        changedCallbacks.set(deviceModel.uuid, [parameters.changedUrl])
     }
 
     console.log(`postDevices succeeded`)

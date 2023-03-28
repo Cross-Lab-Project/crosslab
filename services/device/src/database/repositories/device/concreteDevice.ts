@@ -22,6 +22,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     async create(data?: ConcreteDevice<'request'>): Promise<ConcreteDeviceModel> {
         const model = await super.create(data)
         model.type = 'device'
+        model.connected = false
         return model
     }
 
@@ -39,9 +40,9 @@ export class ConcreteDeviceRepository extends AbstractRepository<
             ...(await DeviceOverviewRepository.format(model)),
             type: 'device',
             announcedAvailability: model.announcedAvailability ?? [],
-            connected: model.connected,
-            experiment: model.experiment,
-            services: model.services,
+            connected: model.connected ?? false,
+            experiment: model.experiment ?? undefined,
+            services: model.services ?? undefined,
         }
     }
 }
