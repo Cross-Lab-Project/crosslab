@@ -1,5 +1,5 @@
-import { AppDataSource } from '../database/dataSource'
 import { PeerconnectionModel } from '../database/model'
+import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import { CreatePeerconnectionMessage } from '../generated/types'
 import { apiClient } from '../globals'
 import { peerconnectionUrlFromId } from './urlFromId'
@@ -24,6 +24,10 @@ class SignalingQueue {
             }
         })
     }
+
+    public isEmpty(): boolean {
+        return this.queue.length === 0
+    }
 }
 
 export const signalingQueue = new SignalingQueue()
@@ -36,7 +40,6 @@ export const signalingQueue = new SignalingQueue()
 async function startSignaling(peerconnectionId: string) {
     console.log(`Starting signaling for ${peerconnectionId}`)
 
-    const peerconnectionRepository = AppDataSource.getRepository(PeerconnectionModel)
     const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
         where: {
             uuid: peerconnectionId,
@@ -63,23 +66,19 @@ async function startSignaling(peerconnectionId: string) {
     const common = <CreatePeerconnectionMessage>{
         messageType: 'command',
         command: 'createPeerconnection',
-        connectionType: 'webrtc',
+        connectionType: peerconnectionModel.type,
         connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
     }
 
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnectionModel.deviceA.config?.services
-            ? peerconnectionModel.deviceA.config.services
-            : [],
+        services: peerconnectionModel.deviceA.config?.services ?? [],
         tiebreaker: false,
     }
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
         ...common,
-        services: peerconnectionModel.deviceB.config?.services
-            ? peerconnectionModel.deviceB.config.services
-            : [],
+        services: peerconnectionModel.deviceB.config?.services ?? [],
         tiebreaker: true,
     }
 
