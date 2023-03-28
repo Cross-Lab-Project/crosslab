@@ -1,4 +1,6 @@
 import { DeviceModel, PeerconnectionModel } from '../../src/database/model'
+import { deviceRepository } from '../../src/database/repositories/device'
+import { peerconnectionRepository } from '../../src/database/repositories/peerconnection'
 import {
     changedCallbacks,
     closedCallbacks,
@@ -51,6 +53,58 @@ export default () =>
             fetchStub.restore()
         })
 
+        async function checkArgsDevice() {
+            for (let i = 0; i < fetchStub.callCount; i++) {
+                assert(fetchStub.args[i][0] === CALLBACK_URLS[i])
+                assert(fetchStub.args[i][1]?.method === 'POST')
+                assert(
+                    fetchStub.args[i][1]?.body ===
+                        JSON.stringify({
+                            callbackType: 'event',
+                            eventType: 'device-changed',
+                            device: await deviceRepository.format(TEST_DEVICE_MODEL),
+                        })
+                )
+                const headers = fetchStub.args[i][1]?.headers
+                await checkHeaders(headers)
+            }
+        }
+
+        async function checkArgsPeerconnection(
+            eventType: 'peerconnection-closed' | 'peerconnection-status-changed'
+        ) {
+            for (let i = 0; i < fetchStub.callCount; i++) {
+                assert(fetchStub.args[i][0] === CALLBACK_URLS[i])
+                assert(fetchStub.args[i][1]?.method === 'POST')
+                assert(
+                    fetchStub.args[i][1]?.body ===
+                        JSON.stringify({
+                            callbackType: 'event',
+                            eventType,
+                            peerconnection: await peerconnectionRepository.format(
+                                TEST_PEERCONNECTION_MODEL
+                            ),
+                        })
+                )
+                const headers = fetchStub.args[i][1]?.headers
+                await checkHeaders(headers)
+            }
+        }
+
+        async function checkHeaders(headers?: fetchModule.HeadersInit | undefined) {
+            assert(headers)
+            assert(typeof headers.values !== 'string')
+            const headersValues = headers.values()
+            const firstHeader = headersValues.next()
+            assert(Array.isArray(firstHeader.value))
+            assert(!firstHeader.done)
+            assert(firstHeader.value.length === 2)
+            assert(firstHeader.value[0] === 'Content-Type')
+            assert(firstHeader.value[1] === 'application/json')
+            const secondHeader = headersValues.next()
+            assert(secondHeader.done && secondHeader.value === undefined)
+        }
+
         describe('sendChangedCallback', function () {
             it('should not send anything if no callback urls are registered', async function () {
                 assert(!changedCallbacks.get(TEST_DEVICE_MODEL.uuid))
@@ -74,6 +128,7 @@ export default () =>
                     JSON.stringify(changedCallbacks.get(TEST_DEVICE_MODEL.uuid)) ===
                         JSON.stringify(CALLBACK_URLS)
                 )
+                await checkArgsDevice()
             })
 
             it('should remove callback url on 410 response', async function () {
@@ -98,6 +153,7 @@ export default () =>
                     JSON.stringify(changedCallbacks.get(TEST_DEVICE_MODEL.uuid)) ===
                         JSON.stringify([CALLBACK_URLS[1]])
                 )
+                await checkArgsDevice()
             })
         })
 
@@ -125,6 +181,7 @@ export default () =>
                         closedCallbacks.get(TEST_PEERCONNECTION_MODEL.uuid)
                     ) === JSON.stringify(CALLBACK_URLS)
                 )
+                await checkArgsPeerconnection('peerconnection-closed')
             })
 
             it('should remove callback url on 410 response', async function () {
@@ -150,6 +207,7 @@ export default () =>
                         closedCallbacks.get(TEST_PEERCONNECTION_MODEL.uuid)
                     ) === JSON.stringify([CALLBACK_URLS[1]])
                 )
+                await checkArgsPeerconnection('peerconnection-closed')
             })
         })
 
@@ -177,6 +235,7 @@ export default () =>
                         statusChangedCallbacks.get(TEST_PEERCONNECTION_MODEL.uuid)
                     ) === JSON.stringify(CALLBACK_URLS)
                 )
+                await checkArgsPeerconnection('peerconnection-status-changed')
             })
 
             it('should remove callback url on 410 response', async function () {
@@ -202,6 +261,7 @@ export default () =>
                         statusChangedCallbacks.get(TEST_PEERCONNECTION_MODEL.uuid)
                     ) === JSON.stringify([CALLBACK_URLS[1]])
                 )
+                await checkArgsPeerconnection('peerconnection-status-changed')
             })
         })
     })

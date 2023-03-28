@@ -26,6 +26,7 @@ export async function sendChangedCallback(device: DeviceModel) {
             )}' to '${url}'`
         )
 
+        // TODO: error handling
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({
@@ -61,10 +62,10 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
 
         // TODO: error handling
         const res = await fetch(url, {
-            method: 'post',
+            method: 'POST',
             body: JSON.stringify({
                 callbackType: 'event',
-                eventType: 'peerconnnection-closed',
+                eventType: 'peerconnection-closed',
                 peerconnection: await peerconnectionRepository.format(peerconnection),
             }),
             headers: [['Content-Type', 'application/json']],
@@ -92,8 +93,10 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
                 peerconnection.uuid
             )}' to '${url}'`
         )
+
+        // TODO: error handling
         const res = await fetch(url, {
-            method: 'post',
+            method: 'POST',
             body: JSON.stringify({
                 callbackType: 'event',
                 eventType: 'peerconnection-status-changed',
