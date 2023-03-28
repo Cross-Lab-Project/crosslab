@@ -59,7 +59,9 @@ class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTes
     ): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
         assert(data.codeUrl === model.codeUrl)
-        assert(JSON.stringify(data.services) === JSON.stringify(model.services))
+        assert(
+            JSON.stringify(data.services) === JSON.stringify(model.services ?? undefined)
+        )
 
         return true
     }

@@ -47,7 +47,7 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
             ...(await DeviceOverviewRepository.format(model)),
             type: 'edge instantiable',
             codeUrl: model.codeUrl,
-            services: model.services,
+            services: model.services ?? undefined,
         }
     }
 }

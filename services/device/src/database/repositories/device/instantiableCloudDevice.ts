@@ -47,7 +47,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
             ...(await DeviceOverviewRepository.format(model)),
             type: 'cloud instantiable',
             instantiateUrl: model.instantiateUrl,
-            services: model.services,
+            services: model.services ?? undefined,
         }
     }
 }
