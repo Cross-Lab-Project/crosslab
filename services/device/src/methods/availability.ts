@@ -1,5 +1,5 @@
 import { AvailabilityRule, TimeSlot } from '../generated/types'
-import { RemoveIndex } from '@crosslab/service-common'
+import { InvalidValueError, RemoveIndex } from '@crosslab/service-common'
 
 type TimeSlotModel = {
     start: number
@@ -23,10 +23,13 @@ export function calculateAvailability(
     start: number,
     end: number
 ): Required<TimeSlot>[] {
-    let newAvailability: TimeSlotModel[] = []
+    if (start > end)
+        throw new InvalidValueError("calculateAvailability called with 'start' > 'end'")
+
+    let availability: TimeSlotModel[] = []
     for (const availabilityRule of availabilityRules) {
-        newAvailability = applyAvailabilityRule(
-            newAvailability,
+        availability = applyAvailabilityRule(
+            availability,
             {
                 ...availabilityRule,
                 start: Date.parse(availabilityRule.start ?? ''),
@@ -36,7 +39,7 @@ export function calculateAvailability(
             end
         )
     }
-    return newAvailability.map((timeSlotModel) => {
+    return availability.map((timeSlotModel) => {
         return {
             start: new Date(timeSlotModel.start).toISOString(),
             end: new Date(timeSlotModel.end).toISOString(),
@@ -109,17 +112,11 @@ function addTimeSlotsFromRule(
         JSON.stringify(availability, null, 4)
     )
     const timeSlot: TimeSlotModel = {
-        start:
-            availabilityRule.start && availabilityRule.start >= start
-                ? availabilityRule.start
-                : start,
-        end:
-            availabilityRule.end && availabilityRule.end <= end
-                ? availabilityRule.end
-                : end,
+        start: availabilityRule.start || start,
+        end: availabilityRule.end || end,
     }
 
-    if (availabilityRule.repeat?.frequency && availabilityRule.end) {
+    if (availabilityRule.repeat) {
         let frequency = 0
         switch (availabilityRule.repeat.frequency) {
             case 'HOURLY':
@@ -131,57 +128,47 @@ function addTimeSlotsFromRule(
             case 'WEEKLY':
                 frequency = 7 * 24 * 60 * 60 * 1000
                 break
-            case 'MONTHLY':
-                frequency = 28 * 7 * 24 * 60 * 60 * 1000 // not very precise since months vary in length
-                break
-            case 'YEARLY':
-                frequency = 365 * 7 * 24 * 60 * 60 * 1000 // not taking leap years into account
-                break
         }
-        if (frequency < timeSlot.end - timeSlot.start) {
-            timeSlot.start = start
-            timeSlot.end = end
-        }
-        const until = availabilityRule.repeat.until ?? end
+        const until = Date.parse(availabilityRule.repeat.until ?? '') || end
         let count = availabilityRule.repeat.count
+        if (frequency <= timeSlot.end - timeSlot.start && !count) {
+            timeSlot.end = until
+        }
 
         let currentTimeSlot: TimeSlotModel = {
-            start:
-                availabilityRule.start !== undefined
-                    ? availabilityRule.start + frequency
-                    : start,
-            end: availabilityRule.end + frequency,
+            start: timeSlot.start + frequency,
+            end: timeSlot.end + frequency,
         }
 
-        while (until < currentTimeSlot.end - frequency) {
-            if (until !== undefined) {
-                if (until < currentTimeSlot.start) break
-                if (!availabilityRule.start && until < currentTimeSlot.end - frequency)
-                    break
-            }
-            if (count !== undefined) {
-                if (!count) break
-                count--
-            }
+        while (until >= currentTimeSlot.start && until >= currentTimeSlot.end) {
+            if (count !== undefined && !count--) break
 
-            if (currentTimeSlot.start < start) currentTimeSlot.start = start
-            if (currentTimeSlot.end > end) currentTimeSlot.end = end
             availability.push(currentTimeSlot)
-            const newCurrentTimeSlot: TimeSlotModel = {
-                start: availabilityRule.start ? currentTimeSlot.start + frequency : start,
+
+            currentTimeSlot = {
+                start: currentTimeSlot.start + frequency,
                 end: currentTimeSlot.end + frequency,
             }
-
-            currentTimeSlot = newCurrentTimeSlot
         }
     }
 
     availability.push(timeSlot)
+
     console.log(
         'availability after adding timeslots from rule:',
         JSON.stringify(availability, null, 4)
     )
     return availability
+        .map((ts) => {
+            return {
+                start: Math.max(ts.start, start),
+                end: Math.min(ts.end, end),
+            }
+        })
+        .filter((ts) => {
+            if (ts.start >= ts.end) return false
+            return true
+        })
 }
 
 /**
@@ -207,16 +194,28 @@ function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
  */
 function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
     console.log('availability before merge:', JSON.stringify(availability, null, 4))
+
+    const mergedAvailability: TimeSlotModel[] = []
+    let currentIndex = 0
     for (let i = 0; i < availability.length; i++) {
+        if (mergedAvailability.length === 0) mergedAvailability.push(availability[i])
         if (i < availability.length - 1) {
-            if (availability[i + 1].start <= availability[i].end) {
-                availability = availability.splice(i + 1, 1)
-                i--
+            if (availability[i + 1].start <= mergedAvailability[currentIndex].end) {
+                mergedAvailability[currentIndex] = {
+                    start: mergedAvailability[currentIndex].start,
+                    end:
+                        availability[i + 1].end > mergedAvailability[currentIndex].end
+                            ? availability[i + 1].end
+                            : mergedAvailability[currentIndex].end,
+                }
+            } else {
+                mergedAvailability.push(availability[i + 1])
+                currentIndex++
             }
         }
     }
-    console.log('availability after merge:', JSON.stringify(availability, null, 4))
-    return availability
+    console.log('availability after merge:', JSON.stringify(mergedAvailability, null, 4))
+    return mergedAvailability
 }
 
 /**
@@ -263,7 +262,7 @@ function invertTimeSlots(
 
     // create last timeslot
     const lastTimeSlot: TimeSlotModel = {
-        start: availability[-1].end,
+        start: availability.reverse()[0].end,
         end,
     }
 
