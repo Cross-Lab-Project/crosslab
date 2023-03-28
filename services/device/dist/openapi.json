@@ -467,9 +467,7 @@
                     "enum": [
                       "HOURLY",
                       "DAILY",
-                      "WEEKLY",
-                      "MONTHLY",
-                      "YEARLY"
+                      "WEEKLY"
                     ]
                   },
                   "until": {
@@ -481,7 +479,10 @@
                     "description": "How often the time slot will be repeated",
                     "type": "integer"
                   }
-                }
+                },
+                "required": [
+                  "frequency"
+                ]
               }
             }
           }

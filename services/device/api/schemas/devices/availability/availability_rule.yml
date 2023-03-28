@@ -17,8 +17,6 @@ allOf:
               - HOURLY
               - DAILY
               - WEEKLY
-              - MONTHLY
-              - YEARLY
           until:
             description: Up to this date-time the time slot will be repeated.
             type: string
@@ -26,3 +24,5 @@ allOf:
           count:
             description: How often the time slot will be repeated
             type: integer
+        required:
+        - frequency
