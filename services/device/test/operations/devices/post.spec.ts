@@ -27,6 +27,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.afterAll(function () {
         getDeviceStub.restore()
+        console.debug('afterAll executed')
     })
 
     async function createDevice(
@@ -94,7 +95,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                         await postDevices(
                             {},
                             testData.devices['concrete device'].request,
-                            {}
+                            testData.userData
                         )
                     },
                     (error) => {

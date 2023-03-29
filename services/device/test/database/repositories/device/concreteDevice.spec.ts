@@ -54,11 +54,14 @@ class ConcreteDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
         data: ConcreteDevice<'response'>
     ): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
-        // TODO: validate announcedAvailability
         assert(data.connected === (model.connected ?? false))
         assert(data.experiment === (model.experiment ?? undefined))
         assert(
             JSON.stringify(data.services) === JSON.stringify(model.services ?? undefined)
+        )
+        assert(
+            JSON.stringify(model.announcedAvailability) ===
+                JSON.stringify(data.announcedAvailability)
         )
 
         return true

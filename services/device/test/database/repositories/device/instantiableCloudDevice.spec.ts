@@ -19,7 +19,7 @@ class InstantiableCloudDeviceRepositoryTestSuite extends AbstractRepositoryTestS
     InstantiableCloudDeviceName,
     InstantiableCloudDeviceRepository
 > {
-    protected name = 'concrete devices' as const
+    protected name = 'instantiable cloud devices' as const
     protected repository = instantiableCloudDeviceRepository
     protected getEntityData = async () =>
         (await initTestDatabase())['instantiable cloud devices']

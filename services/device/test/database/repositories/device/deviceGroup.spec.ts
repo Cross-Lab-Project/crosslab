@@ -4,8 +4,10 @@ import {
     deviceGroupRepository,
     DeviceGroupRepository,
 } from '../../../../src/database/repositories/device/deviceGroup'
-import { DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
+import { Device, DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
 import { DeviceGroupName } from '../../../data/devices/deviceGroups/index.spec'
+import { prepareTestData } from '../../../data/index.spec'
+import { deviceRepositoryTestSuite } from '../device.spec'
 import { initTestDatabase } from '../index.spec'
 import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
@@ -16,8 +18,9 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
     DeviceGroupName,
     DeviceGroupRepository
 > {
-    protected name = 'concrete devices' as const
+    protected name = 'device groups' as const
     protected repository = deviceGroupRepository
+    protected testData = prepareTestData()
     protected getEntityData = async () => (await initTestDatabase())['device groups']
     protected RepositoryClass = DeviceGroupRepository
 
@@ -45,9 +48,26 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
         return true
     }
 
-    validateFormat(model: DeviceGroupModel, data: DeviceGroup<'response'>): boolean {
+    validateFormat(
+        model: DeviceGroupModel,
+        data: DeviceGroup<'response'>,
+        flatten?: boolean
+    ): boolean {
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
-        // TODO: validate devices
+
+        for (const device of data.devices ?? []) {
+            if (flatten) assert(device.type !== 'group')
+            const searchedDeviceModel = Object.entries(this.testData.devices).find(
+                (entry) => entry[1].response.url === device.url
+            )?.[1].model
+            assert(searchedDeviceModel)
+            assert(
+                deviceRepositoryTestSuite.validateFormat(
+                    searchedDeviceModel,
+                    device as Device
+                )
+            )
+        }
 
         return true
     }
