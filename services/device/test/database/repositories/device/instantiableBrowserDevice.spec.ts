@@ -19,7 +19,7 @@ class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTes
     InstantiableBrowserDeviceName,
     InstantiableBrowserDeviceRepository
 > {
-    protected name = 'concrete devices' as const
+    protected name = 'instantiable browser devices' as const
     protected repository = instantiableBrowserDeviceRepository
     protected getEntityData = async () =>
         (await initTestDatabase())['instantiable browser devices']

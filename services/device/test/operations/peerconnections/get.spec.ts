@@ -10,7 +10,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.addTest(
         new Mocha.Test('should get all peerconnections', async function () {
-            const result = await getPeerconnections({})
+            const result = await getPeerconnections(testData.userData)
             assert(result.status === 200)
 
             for (const peerconnectionName of peerconnectionNames) {

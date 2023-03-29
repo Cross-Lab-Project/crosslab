@@ -111,7 +111,11 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
         }
     }
 
-    validateFormat(model: DeviceModel, data: Device<'response'>): boolean {
+    validateFormat(
+        model: DeviceModel,
+        data: Device<'response'>,
+        options?: { flatten?: boolean }
+    ): boolean {
         switch (model.type) {
             case 'cloud instantiable':
                 assert(data?.type === model.type)
@@ -130,7 +134,11 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
                 )
             case 'group':
                 assert(data?.type === model.type)
-                return deviceGroupRepositoryTestSuite.validateFormat(model, data)
+                return deviceGroupRepositoryTestSuite.validateFormat(
+                    model,
+                    data,
+                    options?.flatten
+                )
         }
     }
 

@@ -47,7 +47,7 @@ export default () =>
 export async function initTestDatabase(): Promise<TestData> {
     const dataSourceConfig: DataSourceOptions = {
         type: 'sqlite',
-        database: 'test/db/test.db',
+        database: ':memory:',
         synchronize: true,
         dropSchema: true,
         entities: [

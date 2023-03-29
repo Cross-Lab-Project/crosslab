@@ -52,7 +52,10 @@ export class DeviceGroupRepository extends AbstractRepository<
         return {
             ...(await DeviceOverviewRepository.format(model)),
             type: 'group',
-            devices: devices,
+            devices: devices.filter(
+                (value, index, array) =>
+                    array.findIndex((device) => device.url === value.url) === index
+            ),
         }
     }
 

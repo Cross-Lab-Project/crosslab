@@ -10,7 +10,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.addTest(
         new Mocha.Test('should get all devices', async function () {
-            const result = await getDevices({})
+            const result = await getDevices(testData.userData)
             assert(result.status === 200)
 
             for (const deviceName of deviceNames) {
