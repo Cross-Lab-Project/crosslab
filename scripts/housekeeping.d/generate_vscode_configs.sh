@@ -26,10 +26,10 @@ EOF
     done
 done
 
-config_paths=$(LC_CTYPE=en_US.utf8 LC_COLLATE=C echo "$config_paths" | sort)
+config_paths=$(LC_CTYPE=C LC_COLLATE=C echo "$config_paths" | sort)
 
 # get excludes from toplevel
-topdir=$(echo "$config_paths" | tail -n 1)
+topdir=$(echo "$config_paths" | head -n 1)
 topdir_toplevel=$(dirname $(dirname $topdir))
 content=$(cat $topdir)
 content=$(python3 -c "import re;print(re.sub(r'(\n.*\/\/begin generated[\s\S]*?\/\/end generated)', '', \"\"\"$content\"\"\"))")
@@ -69,8 +69,8 @@ for config_path in $config_paths; do
             files_exclude=$files_exclude$NL'"'$rel_path'/.vscode": true,'
         fi
     done
-    files_exclude=$(LC_CTYPE=en_US.utf8 LC_COLLATE=C echo "$files_exclude" | sort | uniq -u | sed 's/^/        /')
-    files_watcherExclude=$(LC_CTYPE=en_US.utf8 LC_COLLATE=C echo "$files_watcherExclude" | sort | uniq -u | sed 's/^/        /')
+    files_exclude=$(LC_CTYPE=C LC_COLLATE=C echo "$files_exclude" | sort | uniq -u | sed 's/^/        /')
+    files_watcherExclude=$(LC_CTYPE=C LC_COLLATE=C echo "$files_watcherExclude" | sort | uniq -u | sed 's/^/        /')
     content=$(cat $config_path)
     cp "$config_path" "$config_path.bak"
     # remove generated code

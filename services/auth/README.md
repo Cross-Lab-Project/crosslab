@@ -56,11 +56,11 @@ helper/openapi-codegeneration --> clients/api/js
 helper/openapi-codegeneration --> helper/crosslab-typescript-addon
 helper/openapi-codegeneration --> services/auth:build[build]
 helper/tsdoc-theme --> clients/api/js
-services/auth:build[build] --> services/auth:build-docker[build-docker]
-services/auth:build[build] --> services/auth:lint[lint]
 services/auth:build-spec[build-spec] --> clients/api/js
 services/auth:build-spec[build-spec] --> services/auth:build[build]
 services/auth:build-spec[build-spec] --> services/auth:lint-spec[lint-spec]
+services/auth:build[build] --> services/auth:build-docker[build-docker]
+services/auth:build[build] --> services/auth:lint[lint]
 services/booking --> clients/api/js
 services/common --> services/auth:build[build]
 services/device --> clients/api/js
