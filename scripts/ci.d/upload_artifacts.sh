@@ -64,7 +64,7 @@ if [ -z "$REPOSITORY" ]; then
   exit 1
 fi
 
-dist_paths=$( LC_CTYPE=en_US.utf8 LC_COLLATE=C echo "${root[@]}" | tr ' ' $"\n" | sort | uniq | sed 's/$/\/dist/' | sed "s#$GIT_DIR/##")
+dist_paths=$( LC_CTYPE=C LC_COLLATE=C echo "${root[@]}" | tr ' ' $"\n" | sort | uniq | sed 's/$/\/dist/' | sed "s#$GIT_DIR/##")
 hash_files=$(fd -Ig '*.hash' $dist_paths | sed "s#$GIT_DIR/##")
 
 ref=$(git rev-parse HEAD)
