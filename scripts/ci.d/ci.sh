@@ -292,6 +292,19 @@ while true; do
   break
 done
 
+if [ -z "$TAGS" ]; then
+  echo_start "${BLUE}> Housekeeping${NC}"
+  set +e
+  ($SCRIPT_DIR/../housekeeping.sh --check > /dev/null 2>&1); exit_code=$?
+  set -e
+  if [ $exit_code -eq 0 ]; then
+    echo_end "${GREEN}success${NC}"
+  else
+    echo_end "${RED}failed${NC}"
+    failed_jobs="$failed_jobs housekeeping"
+  fi
+fi
+
 if [ $SKIP_UPLOAD = false ]; then
   echo ""
   echo_start "${BLUE}> Uploading artifacts${NC}"
