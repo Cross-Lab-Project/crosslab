@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
-HELPER=$SCRIPT_DIR/../helper
+HELPER_DIR=$(cd "$SCRIPT_DIR/../helper.d" && pwd)
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
@@ -63,7 +63,7 @@ CSI="\033["
 
 # load .jobs.yaml
 echo -en "Parsing .jobs.yml..."
-source $HELPER/job_parsing.sh
+source $HELPER_DIR/job_parsing.sh
 echo -e "${CSI}77GDone"
 
 PREFIX="$WEB_REPOSITORY/$BRANCH/"
@@ -114,7 +114,7 @@ function badges(){
   done
 }
 
-for file in $($HELPER/find_files.sh */README.md); do
+for file in $(fd -gp '*/README.md'); do
   echo -en "${BLUE}❯ Writing $file"
   path=$(dirname $file)
   if [[ "$path" == "." ]]; then
