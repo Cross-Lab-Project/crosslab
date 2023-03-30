@@ -280,7 +280,6 @@ while true; do
 
         echo "${status[$job]}" > "${root[$job]}/dist/${script[$job]}.status"
         echo "$job_input_hash" > "${root[$job]}/dist/${script[$job]}.hash"
-        echo "$job_input_hash printed" 
         
         if [ ! -e ${root[$job]}/dist/${script[$job]}.badge ]; then
           $SCRIPT_DIR/create_badge.sh -j $job
