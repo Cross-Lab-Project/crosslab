@@ -5,6 +5,8 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 HELPER_DIR=$(cd "$SCRIPT_DIR/../helper.d" && pwd)
 
+cd "$GIT_DIR"
+
 # Read the commands
 while [[ $# -gt 0 ]]; do
   key="$1"

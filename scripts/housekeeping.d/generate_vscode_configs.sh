@@ -1,6 +1,9 @@
 #!/bin/bash
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
+
+cd "$GIT_DIR"
 
 config_paths=$($SCRIPT_DIR/find_files.sh '*.vscode/settings.json')
 NL=$'\n'
