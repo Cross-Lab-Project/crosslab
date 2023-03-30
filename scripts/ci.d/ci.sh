@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 HELPER_DIR=$(cd "$SCRIPT_DIR/../helper.d" && pwd)
 
 cd $SCRIPT_DIR/../..
@@ -230,7 +231,9 @@ while true; do
         if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ] && [ $SKIP_DOWNLOAD = false ]; then
           # No hash file, so job is not build try to download cache
           echo_end "${BLUE}⇣ check for remote cache${NC}"
-          $SCRIPT_DIR/download_job_artifact.sh --directory ${root[$job]}/dist --hash $job_input_hash $SUBCOMMANDVARS || true
+          r="${root[$job]}"
+          r="${r#"$GIT_DIR"/}"
+          $SCRIPT_DIR/download_job_artifact.sh --directory $r/dist --hash $job_input_hash $SUBCOMMANDVARS || true
         fi
 
         # Check if job hash is the same
