@@ -1,1 +1,1 @@
-from crosslab.api_client.client import APIClient
+from crosslab.api_client.improved_client import APIClient

@@ -101,10 +101,16 @@ class APIClient:
         self.BASE_URL = base_url
         self.authToken = authToken
 
-    def set_auth_token(self, authToken: str):
+    def set_auth_token(self, authToken: Optional[str]):
         self.authToken = authToken
         if self.http_session is not None:
-            self.http_session.headers.update({"Authorization": f'Bearer {authToken}'})
+            if authToken is not None:
+                self.http_session.headers.update(
+                    {"Authorization": f"Bearer {authToken}"}
+                )
+            else:
+                if "Authorization" in self.http_session.headers:
+                    del self.http_session.headers["Authorization"]
 
     async def __aenter__(self):
         self.http_session = aiohttp.ClientSession()
