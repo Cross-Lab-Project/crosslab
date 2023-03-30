@@ -34,4 +34,4 @@ for path in $PATHS; do
   fi
 done
 
-(IFS=$'\n'; LC_COLLATE=C sha1sum $FILES | cut -c 1-40 | sort | sha1sum | cut -c 1-40)
+(IFS=$'\n'; LC_CTYPE=en_US.utf8 LC_COLLATE=C sha1sum $FILES | cut -c 1-40 | sort | sha1sum | cut -c 1-40)
