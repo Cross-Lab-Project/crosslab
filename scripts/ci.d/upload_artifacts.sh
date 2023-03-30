@@ -54,9 +54,9 @@ if [ -z "$REPOSITORY" ]; then
   exit 1
 fi
 
-hash_files=$($SCRIPT_DIR/find_files.sh '*/dist/*.hash')
+hash_files=$(fd -Igp  '*/dist/*.hash')
 hash_files=${hash_files//.\//}
-dist_paths=$($SCRIPT_DIR/find_files.sh '*/dist')
+dist_paths=$(fd -gp  '*/dist')
 dist_paths=${dist_paths//.\//}
 
 ref=$(git rev-parse HEAD)

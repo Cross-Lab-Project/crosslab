@@ -23,7 +23,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$JOB" ]; then
-    jobs=$($SCRIPT_DIR/find_files.sh '*/dist/*.status')
+    jobs=$(fd -Igp '*/dist/*.status')
 else
     jobs=${JOB/:/\/dist\/}".status"
 fi

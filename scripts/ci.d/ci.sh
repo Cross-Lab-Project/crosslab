@@ -2,6 +2,7 @@
 set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+HELPER_DIR=$(cd "$SCRIPT_DIR/../helper.d" && pwd)
 
 cd $SCRIPT_DIR/../..
 
@@ -122,12 +123,12 @@ if [ $CLEAN = true ]; then
   rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
 fi
 
-source $SCRIPT_DIR/printing_functions.sh
+source $HELPER_DIR/printing_functions.sh
 
 if [ ! -z $INCLUDE ]; then
   echo "Parsing $INCLUDE/jobs.yml..."
   cd $SCRIPT_DIR/../../$INCLUDE
-  source $SCRIPT_DIR/job_parsing.sh --prefix $INCLUDE/
+  source $HELPER_DIR/job_parsing.sh --prefix $INCLUDE/
 
   for job in "${job_names[@]}"; do
     if [ "$(cat ${root[$job]}/dist/${script[$job]}.status 2>/dev/null)" = "success" ]; then
@@ -147,7 +148,7 @@ fi
 cd $SCRIPT_DIR/../..
 # load .jobs.yaml
 echo_start "Parsing .jobs.yml..."
-source $SCRIPT_DIR/job_parsing.sh
+source $HELPER_DIR/job_parsing.sh
 echo_end "Done"
 
 skipped_jobs=""
@@ -223,7 +224,7 @@ while true; do
           fi
           job_input_paths="$job_input_paths -p ${root[$dependency]}/dist/${script[$dependency]}.hash"
         done
-        job_input_hash=$($SCRIPT_DIR/path_hash.sh $job_input_paths)
+        job_input_hash=$($HELPER_DIR/path_hash.sh $job_input_paths)
 
         # Check if we can download job from reopository
         if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ] && [ $SKIP_DOWNLOAD = false ]; then

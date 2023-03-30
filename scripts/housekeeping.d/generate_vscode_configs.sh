@@ -2,8 +2,7 @@
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
-#config_paths=$(git ls-files --recurse-submodules | grep .vscode/settings.json)
-config_paths=$($SCRIPT_DIR/../helper/find_files.sh '*.vscode/settings.json')
+config_paths=$($SCRIPT_DIR/find_files.sh '*.vscode/settings.json')
 NL=$'\n'
 
 for config_path in $config_paths; do
