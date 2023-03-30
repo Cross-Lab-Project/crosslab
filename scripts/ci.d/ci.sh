@@ -228,7 +228,7 @@ while true; do
         job_input_hash=$($HELPER_DIR/path_hash.sh $job_input_paths)
 
         # Check if we can download job from reopository
-        if [ ! -e ${root[$job]}/dist/${script[$job]}.hash ] && [ $SKIP_DOWNLOAD = false ]; then
+        if [ ! "$(cat ${root[$job]}/dist/${script[$job]}.hash 2>/dev/null)" = "$job_input_hash" ] && [ $SKIP_DOWNLOAD = false ]; then
           # No hash file, so job is not build try to download cache
           echo_end "${BLUE}⇣ check for remote cache${NC}"
           r="${root[$job]}"
@@ -280,6 +280,7 @@ while true; do
 
         echo "${status[$job]}" > "${root[$job]}/dist/${script[$job]}.status"
         echo "$job_input_hash" > "${root[$job]}/dist/${script[$job]}.hash"
+        echo "$job_input_hash printed" 
         
         if [ ! -e ${root[$job]}/dist/${script[$job]}.badge ]; then
           $SCRIPT_DIR/create_badge.sh -j $job
