@@ -99,11 +99,11 @@ function badges(){
   old_root=""
   for job in $sorted_job_names; do
     if [[ ! "${root[$job]}" == "$old_root" ]]; then
+      r="${root[$job]}"
+      r="${r#"$GIT_DIR"/}"
       echo ""
-      echo -n "| ${root[$job]} | "
+      echo -n "| $r | "
       for script in $script_names; do
-        r="${root[$job]}"
-        r="${r#"$GIT_DIR"/}"
         j="$r:$script"
         if [ ${script[$j]} ]; then
           echo -n " [![${script[$j]}]($PREFIX${r}/dist/${script[$j]}.badge)]($PREFIX${r}/dist/${script[$j]}.log) |"
