@@ -2,8 +2,11 @@
 set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+GIT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
+HELPER_DIR=$(cd "$SCRIPT_DIR/../helper.d" && pwd)
 
-cd $SCRIPT_DIR/../..
+
+cd "$GIT_DIR"
 
 # Default values
 DRY_RUN=false
@@ -47,17 +50,22 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+source $HELPER_DIR/printing_functions.sh
+
 $QUIET || echo
+
+$QUIET || echo -en "Parsing .jobs.yml..."
+source $HELPER_DIR/job_parsing.sh
+$QUIET || echo -e "${CSI}77GDone"
+
 
 if [ -z "$REPOSITORY" ]; then
   $QUIET || echo "No repository given"
   exit 1
 fi
 
-hash_files=$(fd -Igp  '*/dist/*.hash')
-hash_files=${hash_files//.\//}
-dist_paths=$(fd -gp  '*/dist')
-dist_paths=${dist_paths//.\//}
+dist_paths=$(echo "${root[@]}" | tr ' ' $"\n" | sort | uniq | sed 's/$/\/dist/' | sed "s#$GIT_DIR/##")
+hash_files=$(fd -Ig '*.hash' $dist_paths | sed "s#$GIT_DIR/##")
 
 ref=$(git rev-parse HEAD)
 
