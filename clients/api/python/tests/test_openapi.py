@@ -4,7 +4,7 @@ from aioresponses import aioresponses
 import json
 import datetime
 
-from crosslab.api_client import APIClient
+from crosslab.api_client.client import APIClient
 from crosslab.api_client.schemas import *  # noqa: F403
 
 BASE_URL = 'https://api.example.com'
