@@ -32,7 +32,7 @@ export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 export type initServiceOptions<T extends SecurityScheme> = {
     {%- if securitySchemes | length > 0 %}
     security: {
-        [k in T]: <P,B,Q>(req: TypedRequest<P,B,Q>, scopes: string[]) => Promise<UserType> | UserType | undefined
+        [k in T]: <P,B,Q>(req: TypedRequest<P,B,Q>, scopes: string[]) => Promise<UserType> | UserType
     }
     {%- endif %}
     errorHandler?: ErrorRequestHandler
@@ -40,7 +40,7 @@ export type initServiceOptions<T extends SecurityScheme> = {
 }
 
 export type UserData<T extends SecurityScheme> = {
-    [k in T]?: UserType
+    [k in T]: UserType
 }
 
 export interface ResponseData {

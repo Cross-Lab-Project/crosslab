@@ -73,7 +73,11 @@ export default () => describe('Route Tests', function () {
         validateOutputStub = undefined
         operationStub = undefined
         {%- for securityScheme in securitySchemes %}
-        {{ securityScheme }}SecurityStub.reset()
+        {{ securityScheme }}SecurityStub.resolves({
+            url: "http://localhost/users/{{ securityScheme }}user",
+            username: "{{ securityScheme }}user",
+            scopes: []
+        })
         {%- endfor %}
         errorHandlerStub.callsFake(defaultErrorHandler)
 
