@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 import aiohttp
 from crosslab.api_client import APIClient  # type: ignore
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection

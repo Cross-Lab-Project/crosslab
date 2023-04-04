@@ -65,6 +65,9 @@ class VideoOut(Service):
         channel = MediaChannel(self._track)
         connection.transmit(serviceConfig, "video", channel)
 
+    def teardownConnection(self, connection: Connection):
+        self._track.stop()
+
 
 class VideoIn(Service):
     service_type = "http://example.com/video-out"
@@ -93,6 +96,10 @@ class VideoIn(Service):
         channel = MediaChannel()
         channel.on("track", self._onTrack)
         connection.receive(serviceConfig, "video", channel)
+
+    def teardownConnection(self, connection: Connection):
+        if self.receiveCoroutine:
+            self.receiveCoroutine.cancel()
 
     def _onTrack(self, track: MediaStreamTrack):
         self._track = track
@@ -155,9 +162,6 @@ class DataOnly(Service):
 
 
 @pytest.mark.asyncio
-@pytest.mark.filterwarnings(
-    "ignore:This version of cryptography contains a temporary pyOpenSSL fallback path"
-)
 @pytest.mark.parametrize("tiebreaker", [True, False])
 async def test_webrtc_connection_data_only(tiebreaker: bool):
     asyncException = AsyncException()
@@ -285,3 +289,6 @@ async def test_webrtc_connection_video_only(tiebreaker: bool):
         assert len(remoteService.received_frame_pts) == 1
     finally:
         await wait([local.close(), remote.close()], asyncException)
+
+    localService.teardownConnection(local)
+    remoteService.teardownConnection(remote)
