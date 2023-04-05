@@ -84,7 +84,7 @@ function badges(){
   all_job_names="$(jobs_for_prefix $1)"
 
   script_names=$(echo $all_job_names | tr " " "\n" | sed 's/^[^:]*://')
-  script_names=$(LC_CTYPE=C LC_COLLATE=C echo "$script_order"$'\n'"$script_names"$'\n'"$script_names" | nl | sort -k2,2 -s | uniq -d -f1 | uniq -f1 | sort -n | cut -f2)
+  script_names=$(echo "$script_order"$'\n'"$script_names"$'\n'"$script_names" | nl | LC_ALL=C sort -k2,2 -s | uniq -d -f1 | uniq -f1 | LC_ALL=C sort -n | cut -f2)
   sorted_job_names=$(echo $all_job_names | tr " " "\n")
 
   echo -n "|     |"

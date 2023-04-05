@@ -26,7 +26,7 @@ EOF
     done
 done
 
-config_paths=$(LC_CTYPE=C LC_COLLATE=C echo "$config_paths" | sort)
+config_paths=$(echo "$config_paths" | LC_ALL=C sort)
 
 # get excludes from toplevel
 topdir=$(echo "$config_paths" | head -n 1)
@@ -69,8 +69,8 @@ for config_path in $config_paths; do
             files_exclude=$files_exclude$NL'"'$rel_path'/.vscode": true,'
         fi
     done
-    files_exclude=$(LC_CTYPE=C LC_COLLATE=C echo "$files_exclude" | sort | uniq -u | sed 's/^/        /')
-    files_watcherExclude=$(LC_CTYPE=C LC_COLLATE=C echo "$files_watcherExclude" | sort | uniq -u | sed 's/^/        /')
+    files_exclude=$(echo "$files_exclude" | LC_ALL=C sort | uniq -u | sed 's/^/        /')
+    files_watcherExclude=$(echo "$files_watcherExclude" | LC_ALL=C sort | uniq -u | sed 's/^/        /')
     content=$(cat $config_path)
     cp "$config_path" "$config_path.bak"
     # remove generated code
