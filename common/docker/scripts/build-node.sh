@@ -44,7 +44,7 @@ function get_local_dependencies() {
     dependencies=$(echo "$dependencies" | sed 's~/$~~')
 
     # remove duplicates
-    dependencies=$(LC_CTYPE=C LC_COLLATE=C echo "$dependencies" | sort | uniq)
+    dependencies=$(echo "$dependencies" | LC_ALL=C sort | uniq)
     echo "$dependencies"
 }
 
