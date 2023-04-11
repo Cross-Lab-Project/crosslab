@@ -13,6 +13,7 @@ info:
 
     To facillitate communication between the different services, a message broker will be used.
   version: 1.0.0
+  x-service-name: Booking Service
 servers:
   - url: /v1
 tags:
