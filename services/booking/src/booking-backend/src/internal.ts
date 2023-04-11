@@ -276,6 +276,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
 
     if (rows[0].status === "rejected" || rows[0].status === "cancelled" || rows[0].status === "active-rejected") {
         // Get early out - this booking will not success anyway
+        return;
     }
     await db.end();
 

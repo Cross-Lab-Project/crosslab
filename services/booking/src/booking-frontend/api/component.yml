@@ -1,5 +1,6 @@
   /booking:
     post:
+      operationId: 'newBooking'
       security:
         - JWT: []
       tags:
@@ -53,6 +54,7 @@
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/{ID}:
     patch:
+      operationId: 'updateBooking'
       security:
         - JWT: []
       parameters:
@@ -122,6 +124,7 @@
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
     delete:
+      operationId: 'deleteBooking'
       security:
         - JWT: []
       parameters:
@@ -158,6 +161,7 @@
           description: >-
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
     get:
+      operationId: 'getBooking'
       security:
         - JWT: []
       parameters:
@@ -207,6 +211,7 @@
             Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
   /booking/{ID}/destroy:
     delete:
+      operationId: 'destroyBooking'
       security:
         - JWT: []
       parameters:

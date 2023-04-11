@@ -15,7 +15,7 @@ import dayjs from 'dayjs';
 
 
 import { config } from "../../common/config"
-import { BelongsToUs, GetIDFromURL } from "../../common/auth"
+import { BelongsToUs } from "../../common/auth"
 import { timetableAnd, timetableNot } from "./timetable"
 
 // TODO: Missing availability since it is not yet well defined
