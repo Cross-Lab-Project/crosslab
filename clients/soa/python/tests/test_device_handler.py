@@ -9,44 +9,7 @@ from helpers import AsyncException, wait
 from crosslab.soa_client.connection import DataChannel
 from crosslab.soa_client.device_handler import DeviceHandler
 from crosslab.soa_client.service import Service
-
-
-class DataOnly(Service):
-    service_type = "goldi/legacy/message"
-    service_direction = "inout"
-    service_id: str
-
-    channels: List[DataChannel]
-    messages = []
-
-    def __init__(self, serviceId: str):
-        super().__init__()
-        self.channels = list()
-        self.service_id = serviceId
-
-    def getMeta(self):
-        return {
-            "serviceType": self.service_type,
-            "serviceId": self.service_id,
-            "serviceDirection": self.service_direction,
-        }
-
-    def setupConnection(self, connection, serviceConfig):
-        channel = DataChannel()
-        channel.on("data", lambda data: self.handleData(data))
-        self.channels.append(channel)
-
-        if connection.tiebreaker:
-            connection.transmit(serviceConfig, "data", channel)
-        else:
-            connection.receive(serviceConfig, "data", channel)
-
-    def handleData(self, data: str):
-        self.messages.append(data)
-
-    def _send(self, *args, data: str):
-        for channel in self.channels:
-            channel.send(data)
+from crosslab.soa_client.test_helper.service_stub import ServiceStub
 
 
 @pytest.mark.asyncio
@@ -85,7 +48,7 @@ async def test_create_peerconnection(mock_server):
 
     dh = DeviceHandler()
 
-    dataOnlyService = DataOnly("local")
+    dataOnlyService = ServiceStub("local", dataChannel=True)
     dh.add_service(dataOnlyService)
     await wait(dh.connect(base_url + "/devices/123"), mock_server.async_exception)
 

@@ -16,6 +16,7 @@ The following table shows the status for all jobs in this repository.
 | helper/tsdoc-theme |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/tsdoc-theme/dist/lint.log) |  |  |
 | helper/openapi-codegeneration |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/openapi-codegeneration/dist/lint.log) |  |  |
 | helper/crosslab-typescript-addon |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/crosslab-typescript-addon/dist/lint.log) |  |  |
+| helper/python-test-helper |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/helper/python-test-helper/dist/test.log) |  |
 | helper/dummy-device/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/js/dist/lint.log) |  |  |
 | helper/dummy-device/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.log) |  |  |
 | services/common |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/common/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/lint.log) |  |  |
@@ -33,11 +34,11 @@ The following table shows the status for all jobs in this repository.
 | clients/soa/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa/js/dist/lint.log) |  |  |
 | clients/soa_services/electricalConnection/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/python/dist/test.log) |  |
 | clients/soa_services/electricalConnection/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/electricalConnection/js/dist/lint.log) |  |  |
-| clients/soa_services/webcam/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/lint.log) |  |  |
+| clients/soa_services/webcam/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/python/dist/test.log) |  |
 | clients/soa_services/webcam/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/webcam/js/dist/lint.log) |  |  |
-| clients/soa_services/file/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/lint.log) |  |  |
+| clients/soa_services/file/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/python/dist/test.log) |  |
 | clients/soa_services/file/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/file/js/dist/lint.log) |  |  |
-| clients/soa_services/message/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/lint.log) |  |  |
+| clients/soa_services/message/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/python/dist/test.log) |  |
 | clients/soa_services/message/js |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/js/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/js/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/js/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/clients/soa_services/message/js/dist/lint.log) |  |  |
 | integration-test |   |  |  | [![lint](https://ci.goldi-labs.de/crosslab/main/integration-test/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/integration-test/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/integration-test/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/integration-test/dist/test.log) |  |
 
@@ -84,6 +85,7 @@ graph LR
   subgraph clients/soa_services/file/python
     clients/soa_services/file/python:build[build]
     clients/soa_services/file/python:lint[lint]
+    clients/soa_services/file/python:test[test]
   end
   subgraph clients/soa_services/message/js
     clients/soa_services/message/js:build[build]
@@ -92,6 +94,7 @@ graph LR
   subgraph clients/soa_services/message/python
     clients/soa_services/message/python:build[build]
     clients/soa_services/message/python:lint[lint]
+    clients/soa_services/message/python:test[test]
   end
   subgraph clients/soa_services/webcam/js
     clients/soa_services/webcam/js:build[build]
@@ -100,6 +103,7 @@ graph LR
   subgraph clients/soa_services/webcam/python
     clients/soa_services/webcam/python:build[build]
     clients/soa_services/webcam/python:lint[lint]
+    clients/soa_services/webcam/python:test[test]
   end
   subgraph helper/crosslab-typescript-addon
     helper/crosslab-typescript-addon:build[build]
@@ -119,6 +123,11 @@ graph LR
   subgraph helper/openapi-codegeneration
     helper/openapi-codegeneration:build[build]
     helper/openapi-codegeneration:lint[lint]
+  end
+  subgraph helper/python-test-helper
+    helper/python-test-helper:build[build]
+    helper/python-test-helper:lint[lint]
+    helper/python-test-helper:test[test]
   end
   subgraph helper/tsdoc-theme
     helper/tsdoc-theme:build[build]
@@ -225,6 +234,11 @@ helper/openapi-codegeneration --> services/device
 helper/openapi-codegeneration --> services/experiment
 helper/openapi-codegeneration --> services/federation
 helper/openapi-codegeneration --> services/update
+helper/python-test-helper --> clients/soa/python
+helper/python-test-helper --> clients/soa_services/electricalConnection/python
+helper/python-test-helper --> clients/soa_services/file/python
+helper/python-test-helper --> clients/soa_services/message/python
+helper/python-test-helper --> clients/soa_services/webcam/python
 helper/tsdoc-theme --> clients/api/js
 services/auth --> clients/api/js
 services/auth --> integration-test

@@ -23,6 +23,10 @@ graph LR
   subgraph helper/openapi-codegeneration
     helper/openapi-codegeneration:build[build]
   end
+  subgraph helper/python-test-helper
+    helper/python-test-helper:build[build]
+    helper/python-test-helper:test[test]
+  end
   subgraph services/auth
     services/auth:build-spec[build-spec]
   end
@@ -49,6 +53,7 @@ clients/soa/python:build[build] --> clients/soa/python:lint[lint]
 clients/soa/python:build[build] --> clients/soa/python:test[test]
 helper/openapi-codegeneration --> clients/api/python
 helper/openapi-codegeneration --> clients/soa/python:build[build]
+helper/python-test-helper --> clients/soa/python:test[test]
 services/auth --> services/openapi
 services/booking --> services/openapi
 services/device --> services/openapi

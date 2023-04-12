@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import Any, Dict, Literal, cast
+from typing import Any, Dict, List, Literal, cast
 
 from aiortc import (  # type: ignore
     RTCConfiguration,
@@ -30,6 +30,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _receivingChannelMap: Dict[str, Channel]
     _mediaChannelMap: Dict[str, MediaChannel]
     _transeiverMap: Dict[Any, str]
+    _dataChannels: List[DataChannel]
 
     def __init__(self):
         AsyncIOEventEmitter.__init__(self)
@@ -82,6 +83,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         self._receivingChannelMap = dict()
         self._mediaChannelMap = dict()
         self._transeiverMap = dict()
+        self._dataChannels = list()
 
     async def _on_track(self, track: RTCTrackEvent):
         transeiver = track.transceiver
@@ -92,6 +94,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
     async def close(self):
         await self.pc.close()
+        for channel in self._dataChannels:
+            channel.close()
+
         del self.pc
 
     def _create_label(self, serviceConfig: ServiceConfig, id: str):
@@ -121,6 +126,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             self._mediaChannelMap[label] = cast(MediaChannel, channel)
         else:
             dchannel = cast(DataChannel, channel)
+            self._dataChannels.append(dchannel)
             datachannel = self.pc.createDataChannel(label)
 
             async def upstreamData(data):
@@ -146,6 +152,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         self._receivingChannelMap[label] = channel
         if channel.channel_type == "MediaChannel":
             self._mediaChannelMap[label] = cast(MediaChannel, channel)
+        else:
+            self._dataChannels.append(cast(DataChannel, channel))
 
     async def connect(self):
         self.state = "connecting"
