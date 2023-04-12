@@ -61,7 +61,7 @@ class GPIOInterface(SignalInterface):
     def evaluateSignalState(self):
         states = set(self.driverStates.values())
 
-        newState: State = "unknown"
+        newState: State = "highZ"
         if "error" in states:
             newState = "error"
         elif "strongH" in states and "strongL" in states:

@@ -1,5 +1,6 @@
 -e ../../../api/python
 -e ../../../soa/python
+-e ../../../../helper/python-test-helper
 -e ./
 tox
 pytest

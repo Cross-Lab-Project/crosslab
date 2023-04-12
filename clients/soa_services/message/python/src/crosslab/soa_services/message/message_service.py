@@ -3,7 +3,7 @@ from typing import Literal, Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_services.message.messages import (
     MessageServiceConfig,
@@ -35,6 +35,9 @@ class MessageService__Producer(Service):
         else:
             connection.receive(serviceConfig, "data", self.channel)
 
+    def teardownConnection(self, connection: Connection):
+        pass
+
     async def sendMessage(self, message: str, message_type: Literal["info", "error"]):
         self.channel.send(json.dumps({"messageType": message_type, "message": message}))
 
@@ -64,6 +67,9 @@ class MessageService__Consumer(Service, AsyncIOEventEmitter):
             connection.transmit(serviceConfig, "data", self.channel)
         else:
             connection.receive(serviceConfig, "data", self.channel)
+
+    def teardownConnection(self, connection: Connection):
+        pass
 
     def handleData(self, data: Union[str, bytes]):
         if isinstance(data, str):
