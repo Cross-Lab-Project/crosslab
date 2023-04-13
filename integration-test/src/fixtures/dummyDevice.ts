@@ -109,6 +109,10 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
         }
       }
     });
+
+    for (const {event, data} of this._sendList) {
+      this.send(event, data);
+    }
   }
 
   public async stop() {
@@ -116,11 +120,16 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.process.kill('SIGINT');
   }
 
+  _sendList: {event: string, data: unknown}[] = [];
   public send(event: 'gpio', data: {signal: string; value: 'strongH' | 'strongL'}): void;
+  public send(event: string, data: unknown): void;
   public send(event: string, data: unknown) {
-    assert(this.process !== undefined, 'Device not started');
-    this.process.stdin.cork();
-    this.process.stdin.write('[' + event + '] ' + JSON.stringify(data) + '\n');
-    this.process.stdin.uncork();
+    if(this.process !== undefined){
+      this.process.stdin.cork();
+      this.process.stdin.write('[' + event + '] ' + JSON.stringify(data) + '\n');
+      this.process.stdin.uncork();
+    }else{
+      this._sendList.push({event, data});
+    }
   }
 }
