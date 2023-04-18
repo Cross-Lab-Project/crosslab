@@ -21,6 +21,9 @@ const concrete_device: EntityData<ConcreteDeviceRepository> = {
         description,
         owner,
         announcedAvailability: [],
+        services: [],
+        availabilityRules: [],
+        connected: false,
     },
     response: {
         url: deviceUrlFromId(uuid),
@@ -30,6 +33,7 @@ const concrete_device: EntityData<ConcreteDeviceRepository> = {
         owner,
         connected: false,
         announcedAvailability: [],
+        services: [],
     },
 }
 

@@ -3,7 +3,7 @@ import {
     InstantiableCloudDeviceUpdate,
 } from '../../../generated/types'
 import { InstantiableCloudDeviceModel } from '../../model'
-import { DeviceOverviewRepository } from './deviceOverview'
+import { deviceOverviewRepository } from './deviceOverview'
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
@@ -34,7 +34,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
         model: InstantiableCloudDeviceModel,
         data: InstantiableCloudDeviceUpdate<'request'>
     ) {
-        await DeviceOverviewRepository.write(model, data)
+        await deviceOverviewRepository.write(model, data)
 
         model.instantiateUrl = data.instantiateUrl
         model.services = data.services
@@ -44,7 +44,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
         model: InstantiableCloudDeviceModel
     ): Promise<InstantiableCloudDevice<'response'>> {
         return {
-            ...(await DeviceOverviewRepository.format(model)),
+            ...(await deviceOverviewRepository.format(model)),
             type: 'cloud instantiable',
             instantiateUrl: model.instantiateUrl,
             services: model.services ?? undefined,

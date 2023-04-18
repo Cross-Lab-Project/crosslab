@@ -1,8 +1,8 @@
 import { Device, DeviceUpdate } from '../../generated/types'
-import { DeviceModel, DeviceOverviewModel } from '../model'
+import { DeviceModel } from '../model'
 import { concreteDeviceRepository } from './device/concreteDevice'
 import { deviceGroupRepository } from './device/deviceGroup'
-import { DeviceOverviewRepository } from './device/deviceOverview'
+import { deviceOverviewRepository } from './device/deviceOverview'
 import { instantiableBrowserDeviceRepository } from './device/instantiableBrowserDevice'
 import { instantiableCloudDeviceRepository } from './device/instantiableCloudDevice'
 import {
@@ -10,33 +10,41 @@ import {
     AbstractRepository,
     InvalidValueError,
 } from '@crosslab/service-common'
+import { FindManyOptions, FindOneOptions, In } from 'typeorm'
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
     Device<'request'>,
     Device<'response'>
 > {
+    private isInitialized: boolean = false
+
     constructor() {
         super('Device')
     }
 
     initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(DeviceOverviewModel)
+        deviceOverviewRepository.initialize(AppDataSource)
+        concreteDeviceRepository.initialize(AppDataSource)
+        deviceGroupRepository.initialize(AppDataSource)
+        instantiableBrowserDeviceRepository.initialize(AppDataSource)
+        instantiableCloudDeviceRepository.initialize(AppDataSource)
+
+        this.isInitialized = true
     }
 
-    async create(data?: Device<'request'>): Promise<DeviceModel> {
-        if (!this.repository) this.throwUninitializedRepositoryError()
-        if (!data) return await super.create()
+    async create(data: Device<'request'>): Promise<DeviceModel> {
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
 
         switch (data.type) {
             case 'cloud instantiable':
-                return instantiableCloudDeviceRepository.create(data)
+                return await instantiableCloudDeviceRepository.create(data)
             case 'device':
-                return concreteDeviceRepository.create(data)
+                return await concreteDeviceRepository.create(data)
             case 'edge instantiable':
-                return instantiableBrowserDeviceRepository.create(data)
+                return await instantiableBrowserDeviceRepository.create(data)
             case 'group':
-                return deviceGroupRepository.create(data)
+                return await deviceGroupRepository.create(data)
         }
     }
 
@@ -75,10 +83,8 @@ export class DeviceRepository extends AbstractRepository<
 
     async format(
         model: DeviceModel,
-        options?: { flatGroup?: boolean; overview?: boolean }
+        options?: { flatGroup?: boolean }
     ): Promise<Device<'response'>> {
-        if (options?.overview) return await DeviceOverviewRepository.format(model)
-
         switch (model.type) {
             case 'cloud instantiable':
                 return await instantiableCloudDeviceRepository.format(model)
@@ -92,7 +98,7 @@ export class DeviceRepository extends AbstractRepository<
     }
 
     async save(model: DeviceModel): Promise<DeviceModel> {
-        if (!this.repository) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
 
         switch (model.type) {
             case 'cloud instantiable':
@@ -103,6 +109,114 @@ export class DeviceRepository extends AbstractRepository<
                 return await instantiableBrowserDeviceRepository.save(model)
             case 'group':
                 return await deviceGroupRepository.save(model)
+        }
+    }
+
+    async find(
+        options?: FindManyOptions<DeviceModel> | undefined
+    ): Promise<DeviceModel[]> {
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+
+        const foundDevices = []
+        const deviceOverviews = await deviceOverviewRepository.find(options)
+
+        const deviceTypes = [
+            'device',
+            'group',
+            'edge instantiable',
+            'cloud instantiable',
+        ] as const
+
+        const repositoryMapping = {
+            'device': concreteDeviceRepository,
+            'group': deviceGroupRepository,
+            'edge instantiable': instantiableBrowserDeviceRepository,
+            'cloud instantiable': instantiableCloudDeviceRepository,
+        } as const
+
+        for (const type of deviceTypes) {
+            const devices = deviceOverviews.filter((device) => device.type === type)
+
+            if (devices.length > 0) {
+                foundDevices.push(
+                    ...(await repositoryMapping[type].find({
+                        where: {
+                            uuid: In(
+                                devices.map((concreteDevice) => concreteDevice.uuid)
+                            ),
+                        },
+                    }))
+                )
+            }
+        }
+
+        return foundDevices
+    }
+
+    async findOne(options: FindOneOptions<DeviceModel>): Promise<DeviceModel | null> {
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+
+        const deviceOverview = await deviceOverviewRepository.findOne(options)
+
+        if (!deviceOverview) return null
+
+        switch (deviceOverview.type) {
+            case 'cloud instantiable':
+                return await instantiableCloudDeviceRepository.findOne({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'device':
+                return await concreteDeviceRepository.findOne({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'edge instantiable':
+                return await instantiableBrowserDeviceRepository.findOne({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'group':
+                return await deviceGroupRepository.findOne({
+                    where: { uuid: deviceOverview.uuid },
+                })
+        }
+    }
+
+    async findOneOrFail(options: FindOneOptions<DeviceModel>): Promise<DeviceModel> {
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+
+        const deviceOverview = await deviceOverviewRepository.findOneOrFail(options)
+
+        switch (deviceOverview.type) {
+            case 'cloud instantiable':
+                return await instantiableCloudDeviceRepository.findOneOrFail({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'device':
+                return await concreteDeviceRepository.findOneOrFail({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'edge instantiable':
+                return await instantiableBrowserDeviceRepository.findOneOrFail({
+                    where: { uuid: deviceOverview.uuid },
+                })
+            case 'group':
+                return await deviceGroupRepository.findOneOrFail({
+                    where: { uuid: deviceOverview.uuid },
+                })
+        }
+    }
+
+    async remove(model: DeviceModel): Promise<void> {
+        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+
+        switch (model.type) {
+            case 'cloud instantiable':
+                return await instantiableCloudDeviceRepository.remove(model)
+            case 'device':
+                return await concreteDeviceRepository.remove(model)
+            case 'edge instantiable':
+                return await instantiableBrowserDeviceRepository.remove(model)
+            case 'group':
+                return await deviceGroupRepository.remove(model)
         }
     }
 }

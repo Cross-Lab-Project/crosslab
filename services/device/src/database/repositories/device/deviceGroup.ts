@@ -6,7 +6,7 @@ import {
 } from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { DeviceGroupModel } from '../../model'
-import { DeviceOverviewRepository } from './deviceOverview'
+import { deviceOverviewRepository } from './deviceOverview'
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
@@ -35,9 +35,9 @@ export class DeviceGroupRepository extends AbstractRepository<
         model: DeviceGroupModel,
         data: DeviceGroupUpdate<'request'>
     ): Promise<void> {
-        await DeviceOverviewRepository.write(model, data)
+        await deviceOverviewRepository.write(model, data)
 
-        model.devices = data.devices
+        model.devices = data.devices ?? []
     }
 
     async format(
@@ -45,12 +45,12 @@ export class DeviceGroupRepository extends AbstractRepository<
         flatGroup?: boolean
     ): Promise<DeviceGroup<'response'>> {
         const devices: Device[] = await this.resolveDeviceReferences(
-            model.devices ?? [],
+            model.devices,
             flatGroup
         )
 
         return {
-            ...(await DeviceOverviewRepository.format(model)),
+            ...(await deviceOverviewRepository.format(model)),
             type: 'group',
             devices: devices.filter(
                 (value, index, array) =>
@@ -71,9 +71,7 @@ export class DeviceGroupRepository extends AbstractRepository<
             if (!device) continue
 
             if (device.type === 'group' && flatGroup) {
-                devices.push(
-                    ...(await this.resolveDeviceReferences(device.devices ?? []))
-                )
+                devices.push(...(await this.resolveDeviceReferences(device.devices)))
             } else {
                 devices.push(device)
             }

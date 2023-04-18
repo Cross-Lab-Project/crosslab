@@ -1,14 +1,25 @@
 import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { DeviceOverviewModel } from '../../model'
-import { AbstractRepository } from '@crosslab/service-common'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
 
-export abstract class DeviceOverviewRepository extends AbstractRepository<
+class DeviceOverviewRepository extends AbstractRepository<
     DeviceOverviewModel,
     DeviceOverview<'request'>,
     DeviceOverview<'response'>
 > {
-    static async write(
+    constructor() {
+        super('Device Overview')
+    }
+
+    initialize(AppDataSource: AbstractApplicationDataSource): void {
+        this.repository = AppDataSource.getRepository(DeviceOverviewModel)
+    }
+
+    async write(
         model: DeviceOverviewModel,
         data: DeviceOverviewUpdate<'request'>
     ): Promise<void> {
@@ -16,7 +27,7 @@ export abstract class DeviceOverviewRepository extends AbstractRepository<
         if (data.description) model.description = data.description
     }
 
-    static async format(model: DeviceOverviewModel): Promise<DeviceOverview<'response'>> {
+    async format(model: DeviceOverviewModel): Promise<DeviceOverview<'response'>> {
         return {
             url: deviceUrlFromId(model.uuid),
             type: model.type,
@@ -26,3 +37,5 @@ export abstract class DeviceOverviewRepository extends AbstractRepository<
         }
     }
 }
+
+export const deviceOverviewRepository = new DeviceOverviewRepository()

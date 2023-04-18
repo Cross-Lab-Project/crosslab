@@ -45,12 +45,12 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         // register changed callbacks for devices to get notified when they connect
         const n_deviceA = await apiClient.updateDevice(
             deviceA.url,
-            {},
+            { type: 'device' },
             { changedUrl: callbackUrl }
         )
         const n_deviceB = await apiClient.updateDevice(
             deviceB.url,
-            {},
+            { type: 'device' },
             { changedUrl: callbackUrl }
         )
 

@@ -3,7 +3,7 @@ import {
     InstantiableBrowserDeviceUpdate,
 } from '../../../generated/types'
 import { InstantiableBrowserDeviceModel } from '../../model'
-import { DeviceOverviewRepository } from './deviceOverview'
+import { deviceOverviewRepository } from './deviceOverview'
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
@@ -34,7 +34,7 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
         model: InstantiableBrowserDeviceModel,
         data: InstantiableBrowserDeviceUpdate<'request'>
     ) {
-        await DeviceOverviewRepository.write(model, data)
+        await deviceOverviewRepository.write(model, data)
 
         model.codeUrl = data.codeUrl
         model.services = data.services
@@ -44,7 +44,7 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
         model: InstantiableBrowserDeviceModel
     ): Promise<InstantiableBrowserDevice<'response'>> {
         return {
-            ...(await DeviceOverviewRepository.format(model)),
+            ...(await deviceOverviewRepository.format(model)),
             type: 'edge instantiable',
             codeUrl: model.codeUrl,
             services: model.services ?? undefined,

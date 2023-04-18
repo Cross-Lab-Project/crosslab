@@ -19,7 +19,6 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.beforeAll(function () {
         getDeviceStub = sinon.stub(apiClient, 'getDevice')
         getDeviceStub.callsFake(async (url, options) => {
-            console.debug(url.split('/').at(-1) ?? 'non-existent')
             const result = await getDevicesByDeviceId(
                 {
                     device_id: url.split('/').at(-1) ?? 'non-existent',
@@ -28,7 +27,6 @@ export default function (context: Mocha.Context, testData: TestData) {
                 testData.userData
             )
             assert(result.status === 200)
-            console.debug(result.body.name)
             return result.body
         })
     })

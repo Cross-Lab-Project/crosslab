@@ -61,6 +61,11 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
 
             return testSuite
         })
+
+        // remove this test since input is needed for this repository's create function
+        this.testSuites.create.tests = this.testSuites.create.tests.filter(
+            (test) => test.title !== 'should create a model from empty data'
+        )
     }
 
     validateCreate(model: DeviceModel, data?: Device<'request'> | undefined): boolean {
