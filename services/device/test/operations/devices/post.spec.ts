@@ -1,7 +1,7 @@
 import { DeviceRepository } from '../../../src/database/repositories/device'
 import { apiClient } from '../../../src/globals'
 import { changedCallbacks } from '../../../src/methods/callbacks'
-import { postDevices, UnauthorizedError } from '../../../src/operations/devices'
+import { postDevices } from '../../../src/operations/devices'
 import { deviceNames } from '../../data/devices/index.spec'
 import { TestData } from '../../data/index.spec'
 import { deviceRepositoryTestSuite } from '../../database/repositories/device.spec'
@@ -27,7 +27,6 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.afterAll(function () {
         getDeviceStub.restore()
-        console.debug('afterAll executed')
     })
 
     async function createDevice(
@@ -64,13 +63,16 @@ export default function (context: Mocha.Context, testData: TestData) {
         assert(changedCallbacks.get(device.model.uuid) === changedUrl)
     }
 
-    suite.addTest(
-        new Mocha.Test('should create a new device', async function () {
-            for (const deviceName of deviceNames) {
-                await createDevice(testData.devices[deviceName])
-            }
-        })
-    )
+    for (const deviceName of deviceNames) {
+        suite.addTest(
+            new Mocha.Test(
+                `should create a new device (${deviceName})`,
+                async function () {
+                    await createDevice(testData.devices[deviceName])
+                }
+            )
+        )
+    }
 
     suite.addTest(
         new Mocha.Test(
@@ -82,28 +84,6 @@ export default function (context: Mocha.Context, testData: TestData) {
                         `http://localhost/callbacks/${deviceName}`
                     )
                 }
-            }
-        )
-    )
-
-    suite.addTest(
-        new Mocha.Test(
-            'should throw an error if no UserData for JWT is provided',
-            async function () {
-                await assert.rejects(
-                    async () => {
-                        await postDevices(
-                            {},
-                            testData.devices['concrete device'].request,
-                            testData.userData
-                        )
-                    },
-                    (error) => {
-                        assert(error instanceof UnauthorizedError)
-                        assert(error.status === 401)
-                        return true
-                    }
-                )
             }
         )
     )

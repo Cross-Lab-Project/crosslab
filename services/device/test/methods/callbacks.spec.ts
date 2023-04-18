@@ -34,6 +34,10 @@ export default () =>
                 uuid: 'ea2a852d-b16c-45e0-819f-0af793bb596e',
                 name: 'Test Device',
                 owner: 'http://localhost',
+                announcedAvailability: [],
+                availabilityRules: [],
+                connected: false,
+                services: [],
             }
             TEST_PEERCONNECTION_MODEL = {
                 uuid: 'ea2a852d-b16c-45e0-819f-0af793bb596e',

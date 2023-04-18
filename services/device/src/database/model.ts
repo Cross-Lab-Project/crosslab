@@ -60,17 +60,17 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
     @Column()
     type!: 'device'
     @Column()
-    connected?: boolean
+    connected!: boolean
     @Column('simple-json')
-    announcedAvailability?: Required<TimeSlot>[]
+    announcedAvailability!: Required<TimeSlot>[]
     @Column('simple-json')
-    availabilityRules?: AvailabilityRule[]
+    availabilityRules!: AvailabilityRule[]
     @Column()
     experiment?: string
     @Column()
     token?: string
     @Column('simple-json')
-    services?: ServiceDescription[]
+    services!: ServiceDescription[]
     @ManyToOne(
         () => InstantiableDeviceOverviewModel,
         (instantiableDevice) => instantiableDevice.instances
@@ -83,7 +83,7 @@ export class DeviceGroupModel extends DeviceOverviewModel {
     @Column()
     type!: 'group'
     @Column('simple-json')
-    devices?: DeviceReference[]
+    devices!: DeviceReference[]
 }
 
 @ChildEntity('cloud instantiable')

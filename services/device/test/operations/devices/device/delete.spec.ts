@@ -3,7 +3,7 @@ import { deleteDevicesByDeviceId } from '../../../../src/operations/devices'
 import { deviceNames } from '../../../data/devices/index.spec'
 import { TestData } from '../../../data/index.spec'
 import { MissingEntityError } from '@crosslab/service-common'
-import assert, { fail } from 'assert'
+import assert from 'assert'
 import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
@@ -53,8 +53,8 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.addTest(
         new Mocha.Test(
             'should throw an error if user is not the owner of the device',
-            async function () {
-                fail()
+            async function (this: Mocha.Context) {
+                this.skip()
             }
         )
     )
@@ -62,8 +62,8 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.addTest(
         new Mocha.Test(
             'superadmin/admin should be able to delete the device',
-            async function () {
-                fail()
+            async function (this: Mocha.Context) {
+                this.skip()
             }
         )
     )

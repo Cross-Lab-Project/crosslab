@@ -278,7 +278,10 @@
                   "$ref": "#/components/schemas/device_reference"
                 }
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ],
         "x-typeguard": true

@@ -1,4 +1,3 @@
-import { UnauthorizedError } from '.'
 import { deviceRepository } from '../../database/repositories/device'
 import { postDevicesSignature } from '../../generated/signatures'
 import { changedCallbacks } from '../../methods/callbacks'
@@ -12,11 +11,8 @@ import { changedCallbacks } from '../../methods/callbacks'
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     console.log(`postDevices called`)
 
-    // TODO: rethink how to handle this problem (required JWT user)
-    if (!user.JWT) throw new UnauthorizedError('User is not authorized', 401)
-
     const deviceModel = await deviceRepository.create(body)
-    deviceModel.owner = user.JWT?.url
+    deviceModel.owner = user.JWT.url
     await deviceRepository.save(deviceModel)
 
     if (parameters.changedUrl) {

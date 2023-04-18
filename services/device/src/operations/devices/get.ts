@@ -1,4 +1,5 @@
 import { deviceRepository } from '../../database/repositories/device'
+import { deviceOverviewRepository } from '../../database/repositories/device/deviceOverview'
 import { getDevicesSignature } from '../../generated/signatures'
 
 /**
@@ -15,9 +16,7 @@ export const getDevices: getDevicesSignature = async (_user) => {
     return {
         status: 200,
         body: await Promise.all(
-            deviceModels.map((device) =>
-                deviceRepository.format(device, { overview: true })
-            )
+            deviceModels.map((device) => deviceOverviewRepository.format(device))
         ),
     }
 }
