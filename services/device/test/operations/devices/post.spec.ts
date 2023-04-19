@@ -5,6 +5,7 @@ import { postDevices } from '../../../src/operations/devices'
 import { deviceNames } from '../../data/devices/index.spec'
 import { TestData } from '../../data/index.spec'
 import { deviceRepositoryTestSuite } from '../../database/repositories/device.spec'
+import { addTest } from '../index.spec'
 import { EntityData } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
@@ -64,28 +65,22 @@ export default function (context: Mocha.Context, testData: TestData) {
     }
 
     for (const deviceName of deviceNames) {
-        suite.addTest(
-            new Mocha.Test(
-                `should create a new device (${deviceName})`,
-                async function () {
-                    await createDevice(testData.devices[deviceName])
-                }
-            )
-        )
+        addTest(suite, `should create a new device (${deviceName})`, async function () {
+            await createDevice(testData.devices[deviceName])
+        })
     }
 
-    suite.addTest(
-        new Mocha.Test(
-            'should create a new device and register a callback url',
-            async function () {
-                for (const deviceName of deviceNames) {
-                    createDevice(
-                        testData.devices[deviceName],
-                        `http://localhost/callbacks/${deviceName}`
-                    )
-                }
+    addTest(
+        suite,
+        'should create a new device and register a callback url',
+        async function () {
+            for (const deviceName of deviceNames) {
+                createDevice(
+                    testData.devices[deviceName],
+                    `http://localhost/callbacks/${deviceName}`
+                )
             }
-        )
+        }
     )
 
     return suite

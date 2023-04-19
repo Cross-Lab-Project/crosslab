@@ -19,10 +19,12 @@ export default () =>
                     rules: AvailabilityRule[]
                     availability: Availability
                 }[] = [
+                    // empty rules
                     {
                         rules: [],
                         availability: [],
                     },
+                    // always available
                     {
                         rules: [{ available: true }],
                         availability: [
@@ -32,10 +34,12 @@ export default () =>
                             },
                         ],
                     },
+                    // never available
                     {
                         rules: [{ available: false }],
                         availability: [],
                     },
+                    // one rule without repeat
                     {
                         rules: [
                             {
@@ -51,6 +55,7 @@ export default () =>
                             },
                         ],
                     },
+                    // one rule with HOURLY repeat (count limiting)
                     {
                         rules: [
                             {
@@ -71,6 +76,7 @@ export default () =>
                             }
                         }),
                     },
+                    // one rule with DAILY repeat (until limiting)
                     {
                         rules: [
                             {
@@ -91,6 +97,7 @@ export default () =>
                             }
                         }),
                     },
+                    // one rule with WEEKLY repeat (until stopping second repeat)
                     {
                         rules: [
                             {
@@ -111,6 +118,7 @@ export default () =>
                             },
                         ],
                     },
+                    // one rule with WEEKLY repeat (until allowing second repeat)
                     {
                         rules: [
                             {
@@ -135,6 +143,7 @@ export default () =>
                             },
                         ],
                     },
+                    // multiple overlapping and some invalid rules
                     {
                         rules: [
                             {
@@ -176,6 +185,7 @@ export default () =>
                             },
                         ],
                     },
+                    // one rule with HOURLY repeat (end - start > frequency)
                     {
                         rules: [
                             {
@@ -192,6 +202,7 @@ export default () =>
                             },
                         ],
                     },
+                    // multiple overlapping rules
                     {
                         rules: [
                             {

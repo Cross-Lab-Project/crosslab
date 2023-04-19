@@ -3,8 +3,17 @@ import { TestData } from '../data/index.spec'
 import { initTestDatabase } from '../database/repositories/index.spec'
 import deviceTests from './devices/index.spec'
 import peerconnectionTests from './peerconnections/index.spec'
+import Mocha from 'mocha'
 
 const tests = [...deviceTests, ...peerconnectionTests]
+
+export function addTest(
+    suite: Mocha.Suite,
+    name: string,
+    fn?: Mocha.Func | Mocha.AsyncFunc
+) {
+    suite.addTest(new Mocha.Test(name, fn))
+}
 
 describe('Operations', function () {
     let testData: TestData
