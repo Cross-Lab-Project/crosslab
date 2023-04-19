@@ -59,8 +59,8 @@ def test_gpio_changeDriver(tiebreaker):
 
     assert con.messages == {
         "data": [
-            '{"busId": "0", "data": {"driver": "pc", "state": "unknown"}}',
-            '{"busId": "0", "data": {"driver": "pc", "state": "highZ"}}',
+            '{"busId": "0", "data": {"driver": "default", "state": "unknown"}}',
+            '{"busId": "0", "data": {"driver": "default", "state": "highZ"}}',
         ]
     }
 
@@ -81,13 +81,13 @@ def test_gpio_signalChange(tiebreaker):
     ecs.on("newInterface", newInterface)
     ecs.setupConnection(con, serviceConfig)
     con.channels["data"].emit(
-        "data", '{"busId": "0", "data": {"driver": "pc", "state": "weakH"}}'
+        "data", '{"busId": "0", "data": {"driver": "default", "state": "weakH"}}'
     )
     assert signalChanges == ["weakH"]
 
 
 def test_gpip_signal_evaluation():
-    gpio = GPIOInterface(None)  # type: ignore
+    gpio = GPIOInterface({})  # type: ignore
 
     gpio.driverStates = {"S1": "highZ", "S2": "unknown"}
     gpio.evaluateSignalState()

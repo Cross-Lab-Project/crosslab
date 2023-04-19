@@ -4,7 +4,8 @@ import {ChildProcessWithoutNullStreams, execSync, spawn} from 'child_process';
 import fs from 'fs';
 import {resolve} from 'path';
 import {TypedEmitter} from 'tiny-typed-emitter';
-import { ServerContext } from './localServer';
+
+import {ServerContext} from './localServer';
 
 const repository_dir = resolve(__filename, '../../../../');
 
@@ -26,6 +27,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   private binary: string[];
   private debugPrint?: string;
   private process: ChildProcessWithoutNullStreams | undefined;
+  private ready = false;
 
   public url = '';
   log_file: string;
@@ -36,7 +38,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     debug: boolean | number = false,
     host_debug: boolean | number = false,
     log_file: string,
-    context: Mocha.Context & ServerContext
+    context: Mocha.Context & ServerContext,
   ) {
     super();
     switch (type) {
@@ -49,7 +51,8 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
         }
         if (debug) {
           this.debugPrint =
-            (this.debugPrint ? this.debugPrint + '\n' : '') + `    js dummy device started with debug port ${debug}. Please attach debugger`;
+            (this.debugPrint ? this.debugPrint + '\n' : '') +
+            `    js dummy device started with debug port ${debug}. Please attach debugger`;
         }
         break;
       case 'python':
@@ -69,7 +72,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
 
   public async start(client: APIClient, deviceUrl: string) {
     assert(this.process === undefined, 'Device already started');
-    this.context.log(this.log_file, "starting device", 'log');
+    this.context.log(this.log_file, 'starting device', 'log');
     this.url = deviceUrl;
 
     const cli = ['--url', client.url, '--auth-token', client.accessToken, '--device-url', deviceUrl];
@@ -106,13 +109,14 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
           if (event == `[gpio]`) {
             this.emit('gpio', JSON.parse(param));
           }
+          if (event == `[ready]`) {
+            this.ready = true;
+            this._sendList.forEach(d => { this.send(d.event, d.data); });
+            this._sendList = [];
+          }
         }
       }
     });
-
-    for (const {event, data} of this._sendList) {
-      this.send(event, data);
-    }
   }
 
   public async stop() {
@@ -120,15 +124,15 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.process.kill('SIGINT');
   }
 
-  _sendList: {event: string, data: unknown}[] = [];
+  _sendList: {event: string; data: unknown}[] = [];
   public send(event: 'gpio', data: {signal: string; value: 'strongH' | 'strongL'}): void;
   public send(event: string, data: unknown): void;
   public send(event: string, data: unknown) {
-    if(this.process !== undefined){
+    if (this.ready && this.process) {
       this.process.stdin.cork();
       this.process.stdin.write('[' + event + '] ' + JSON.stringify(data) + '\n');
       this.process.stdin.uncork();
-    }else{
+    } else {
       this._sendList.push({event, data});
     }
   }

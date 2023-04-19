@@ -93,6 +93,12 @@ export class ElectricalConnectionService
     );
   }
 
+  retransmit(){
+    for (const i of this.interfaces.values()){
+      i.retransmit();
+    }
+  }
+
   setupConnection(
     connection: PeerConnection,
     serviceConfig: ServiceConfiguration
@@ -102,7 +108,7 @@ export class ElectricalConnectionService
     const channel = new DataChannel();
     channel.ondata = this.handleData.bind(this);
     channel.ready().then(() => {
-      this.initializeConnection();
+      this.retransmit();
     });
 
     for (const interfaceConfig of serviceConfig.interfaces) {

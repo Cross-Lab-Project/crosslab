@@ -43,18 +43,18 @@ async function main() {
     ],
     {env: {}},
   );
+  chromium.stderr.on('data', (data: string) => {
+    console.log(data.toString());
+  });
+  chromium.stdout.on('data', (data: string) => {
+    console.log(data.toString());
+  });
   await new Promise<void>(resolve => {
     chromium.stderr.on('data', (data: string) => {
       if (data.includes('DevTools listening on ws://')) {
         resolve();
       }
     });
-  });
-  chromium.stderr.on('data', (data: string) => {
-    console.log(data.toString());
-  });
-  chromium.stdout.on('data', (data: string) => {
-    console.log(data.toString());
   });
   console.log('Chromium is ready');
   await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for target to be ready
@@ -114,6 +114,8 @@ async function main() {
       Runtime.evaluate({expression: eventExpression, silent: false});
     }
   });
+
+  console.log('[ready]');
 
   await new Promise<void>(resolve => {
     process.on('SIGINT', () => {

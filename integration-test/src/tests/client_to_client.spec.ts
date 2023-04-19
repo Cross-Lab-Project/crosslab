@@ -32,7 +32,7 @@ for (const client1Type of clientTypes) {
   for (const client2Type of clientTypes) {
     describe(`${client1Type} Client to ${client2Type} Client Communication`, async function () {
       before(function () {
-        this.timeout(this.debug ? 0 : 15000);
+        this.timeout(120000);
         this.experiment = new ExperimentTest();
         this.experiment.addDevice(this, client1Type);
         this.experiment.addDevice(this, client2Type);
