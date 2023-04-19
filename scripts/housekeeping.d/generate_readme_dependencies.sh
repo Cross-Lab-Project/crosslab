@@ -51,7 +51,7 @@ function diagram(){
 
   all_job_names=$(all_dependencies_for_prefix $1)
 
-  sorted_job_names=$(LC_CTYPE=C LC_COLLATE=C echo $all_job_names | tr " " "\n" | sort | uniq)
+  sorted_job_names=$(echo $all_job_names | tr " " "\n" | LC_ALL=C sort | uniq)
 
   # Print subgraphs
   old_root=""
@@ -85,7 +85,7 @@ function diagram(){
     done
   done
 
-  deps=$(LC_CTYPE=C LC_COLLATE=C echo "$deps" | sort | uniq)
+  deps=$(echo "$deps" | LC_ALL=C sort | uniq)
 
   for dep in $deps; do
     depA=$(echo $dep | cut -d'#' -f1)

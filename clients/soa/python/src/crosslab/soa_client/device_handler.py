@@ -1,9 +1,10 @@
+import asyncio
 import re
 from typing import Dict, Optional
 
 import aiohttp
 from crosslab.api_client import APIClient  # type: ignore
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
@@ -131,7 +132,10 @@ class DeviceHandler(AsyncIOEventEmitter):
             assert service_config["serviceId"] in self._services  # see Issue #4
             service = self._services.get(service_config["serviceId"], None)
             assert service is not None  # TODO: Error handling
-            service.setupConnection(connection, service_config)
+            if asyncio.iscoroutinefunction(service.setupConnection):
+                await service.setupConnection(connection, service_config)
+            else:
+                service.setupConnection(connection, service_config)
 
         async def onSignalingMessage(message: dict):
             signalingMessage: SignalingMessage = {

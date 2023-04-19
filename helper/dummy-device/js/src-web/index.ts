@@ -11,6 +11,7 @@ const sendEvent = (eventName: string, data?: unknown) => {
 };
 
 const gpios = new Map<string, GPIO.GPIOInterface>();
+const default_signal_state = new Map<string, GPIO.GPIOState>();
 
 async function app(options: {baseUrl: string; authToken: string; deviceUrl: string}) {
   const client = new APIClient(options.baseUrl);
@@ -28,16 +29,16 @@ async function app(options: {baseUrl: string; authToken: string; deviceUrl: stri
       let value = 'unknown';
       switch (signalChangeEvent.state) {
         case GPIO.GPIOState.StrongHigh:
-          value = 'strongL';
-          break;
-        case GPIO.GPIOState.StrongLow:
           value = 'strongH';
           break;
+        case GPIO.GPIOState.StrongLow:
+          value = 'strongL';
+          break;
         case GPIO.GPIOState.WeakHigh:
-          value = 'weakL';
+          value = 'weakH';
           break;
         case GPIO.GPIOState.WeakLow:
-          value = 'weakH';
+          value = 'weakL';
           break;
       }
       sendEvent('gpio', {
@@ -46,6 +47,10 @@ async function app(options: {baseUrl: string; authToken: string; deviceUrl: stri
       });
     });
     gpios.set(gpioInterface.configuration.signals.gpio, gpioInterface);
+    if (default_signal_state.has(gpioInterface.configuration.signals.gpio)){
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      gpioInterface.changeDriver(default_signal_state.get(gpioInterface.configuration.signals.gpio)!);
+    }
   });
   electrical.addInterface(gpio);
   deviceHandler.addService(electrical);
@@ -73,20 +78,25 @@ function event(eventName: string, data?: any) {
   if (eventName === 'gpio') {
     let state = GPIO.GPIOState.Unknown;
     switch (data.value) {
-      case 'strongL':
+      case 'strongH':
         state = GPIO.GPIOState.StrongHigh;
         break;
-      case 'strongH':
+      case 'strongL':
         state = GPIO.GPIOState.StrongLow;
         break;
-      case 'weakL':
+      case 'weakH':
         state = GPIO.GPIOState.WeakHigh;
         break;
-      case 'weakH':
+      case 'weakL':
         state = GPIO.GPIOState.WeakLow;
         break;
     }
-    gpios.get(data.signal)?.changeDriver(state as GPIO.GPIOState);
+    if (gpios.has(data.signal)){
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      gpios.get(data.signal)!.changeDriver(state);
+    }else{
+      default_signal_state.set(data.signal, state);
+    }
   }
 }
 

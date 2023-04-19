@@ -22,6 +22,9 @@ class UDPTrack(MediaStreamTrack):
     def recv(self):
         return
 
+    def stop(self):
+        self.sock.close()
+
 
 class GstTrack(UDPTrack):
     def __init__(self, pipeline, port: Optional[int] = None, kind="video") -> None:

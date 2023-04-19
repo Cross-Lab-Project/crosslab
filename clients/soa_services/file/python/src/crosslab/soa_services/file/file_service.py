@@ -3,7 +3,7 @@ from typing import Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
 
@@ -30,6 +30,9 @@ class FileService__Producer(Service):
         else:
             connection.receive(serviceConfig, "data", self.channel)
 
+    def teardownConnection(self, connection: Connection):
+        pass
+
     async def sendFile(self, file_type: str, content: bytes):
         self.channel.send(json.dumps({"fileType": file_type, "length": len(content)}))
         self.channel.send(content)
@@ -52,12 +55,15 @@ class FileService__Consumer(Service, AsyncIOEventEmitter):
         }
 
     def setupConnection(self, connection: Connection, serviceConfig: FileServiceConfig):
-        self.channel = DataChannel()
-        self.channel.on("data", lambda data: self.handleData(data))
+        channel = DataChannel()
+        channel.on("data", lambda data: self.handleData(data))
         if connection.tiebreaker:
-            connection.transmit(serviceConfig, "data", self.channel)
+            connection.transmit(serviceConfig, "data", channel)
         else:
-            connection.receive(serviceConfig, "data", self.channel)
+            connection.receive(serviceConfig, "data", channel)
+
+    def teardownConnection(self, connection: Connection):
+        pass
 
     def handleData(self, data: Union[str, bytes]):
         if isinstance(data, str):

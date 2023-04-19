@@ -29,7 +29,7 @@ npm run build
 mkdir -p dist
 rm -rf dist/*.tgz
 
-dependencies_replacement=$(LC_CTYPE=C LC_COLLATE=C cat package.json | jq -r '.dependencies + .devDependencies + .peerDependencies | .[]' | grep -E '^file:' | sort | uniq)
+dependencies_replacement=$(cat package.json | jq -r '.dependencies + .devDependencies + .peerDependencies | .[]' | grep -E '^file:' | LC_ALL=C sort | uniq)
 sed_expression=""
 for dependency in $dependencies_replacement; do
     dependency_path=$(echo "$dependency" | sed 's/file://')

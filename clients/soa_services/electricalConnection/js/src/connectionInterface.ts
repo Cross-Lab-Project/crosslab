@@ -15,6 +15,7 @@ export interface ConnectionInterface extends TypedEmitter<ConnectionInterfaceEve
   readonly configuration: ConnectionInterfaceConfiguration;
 
   downstreamData(data: unknown): void;
+  retransmit(): void;
 }
 
 export interface ConstructableConnectionInterface {
