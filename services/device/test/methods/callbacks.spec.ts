@@ -99,12 +99,14 @@ export default () =>
             assert(headers)
             assert(typeof headers.values !== 'string')
             const headersValues = headers.values()
+
             const firstHeader = headersValues.next()
             assert(Array.isArray(firstHeader.value))
             assert(!firstHeader.done)
             assert(firstHeader.value.length === 2)
             assert(firstHeader.value[0] === 'Content-Type')
             assert(firstHeader.value[1] === 'application/json')
+
             const secondHeader = headersValues.next()
             assert(secondHeader.done && secondHeader.value === undefined)
         }
