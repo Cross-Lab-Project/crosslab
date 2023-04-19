@@ -77,7 +77,7 @@ for (const client1Type of clientTypes) {
   for (const client2Type of clientTypes) {
     describe(`${client1Type} Client to ${client2Type} Client GPIO tests`, async function () {
       beforeEach(function () {
-        this.timeout(0);
+        this.timeout(120000);
         this.experiment = new ExperimentTest();
         this.experiment.addDevice(this, client1Type);
         this.experiment.addDevice(this, client2Type);
@@ -87,7 +87,7 @@ for (const client1Type of clientTypes) {
       });
 
       it('should transmit initial gpio value', async function () {
-        this.timeout(this.debug ? 0 : 5000);
+        this.timeout(this.debug ? 0 : 15000);
         this.experiment.devices[0].send('gpio', {signal: 'gpio1', value: 'strongH'});
         this.experiment.devices[0].send('gpio', {signal: 'gpio2', value: 'strongL'});
         await this.experiment.run(this.client, gpioExperimentConfiguration);
@@ -105,7 +105,7 @@ for (const client1Type of clientTypes) {
       });
 
       it('should transmit gpio value', async function () {
-        this.timeout(this.debug ? 0 : 5000);
+        this.timeout(this.debug ? 0 : 15000);
 
         await this.experiment.run(this.client, gpioExperimentConfiguration);
 

@@ -10,9 +10,10 @@
             "type": "chrome",
             "port": 9301,
             "webRoot": "${workspaceFolder}/http-dist",
-            "urlFilter": "*index.html",
-            "restart": false,
-            "timeout": 1000,
+            "browserAttachLocation": "workspace",
+            //"urlFilter": "*index.html",
+            //"restart": false,
+            //"timeout": 1000,
         },
         {
             "name": "Node",

@@ -12,6 +12,7 @@ import debugpy
 from crosslab.api_client import APIClient
 from crosslab.soa_client.device_handler import DeviceHandler
 from crosslab.soa_services.electrical import ElectricalConnectionService
+from crosslab.soa_services.electrical.messages import State
 from crosslab.soa_services.electrical.signal_interfaces.gpio import (
     ConstractableGPIOInterface,
     GPIOInterface,
@@ -30,6 +31,7 @@ signal_names = [
 ]
 
 interfaces: Dict[str, GPIOInterface] = dict()
+default_signal_state: Dict[str, State] = dict()
 
 
 def signal_changed(name: str, data: GPIOSignalChangeEventData):
@@ -50,13 +52,17 @@ def newInterface(interface):
         name = interface.configuration["signals"]["gpio"]
         interface.on("signalChange", partial(signal_changed, name))
         interfaces[name] = interface
+        if name in default_signal_state:
+            interface.changeDriver(default_signal_state[name])
 
 
 async def stdin_reader():
+    global default_signal_state
     loop = asyncio.get_event_loop()
     reader = asyncio.StreamReader(loop=loop)
     protocol = asyncio.StreamReaderProtocol(reader)
     await loop.connect_read_pipe(lambda: protocol, sys.stdin)
+    print("[ready]")
     while True:
         print("reading line")
         line = (await reader.readline()).decode()
@@ -77,7 +83,7 @@ async def stdin_reader():
                 else:
                     interfaces[data["signal"]].changeDriver("unknown")
             else:
-                print("unknown signal", data["signal"])
+                default_signal_state[data["signal"]] = data["value"]
         print("line", line)
 
 

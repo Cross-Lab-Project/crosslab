@@ -1,10 +1,8 @@
-import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Literal, Optional, Union
 
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
 from crosslab.soa_client.messages import SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 MediaStreamTrack = Any
 
@@ -40,7 +38,6 @@ class DataChannel(Channel, AsyncIOEventEmitter):
         self.emit("data", data)
 
     async def opened(self):
-        await asyncio.sleep(0.05)
         self.emit("open")
 
     def close(self):

@@ -53,7 +53,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           this.off('eventsChanged', callback);
         }
       };
-      this.on('eventsChanged', callback);
+      if(this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount){
+        resolve();
+      }else{
+        this.on('eventsChanged', callback);
+      }
     });
   }
 
