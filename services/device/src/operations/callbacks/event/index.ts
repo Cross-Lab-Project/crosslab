@@ -17,12 +17,14 @@ export async function handleEventCallback(callback: {
             400
         )
     }
+
     if (typeof callback.eventType !== 'string') {
         throw new MalformedBodyError(
-            "Property 'callbackType' needs to be of type 'string'",
+            "Property 'eventType' needs to be of type 'string'",
             400
         )
     }
+
     switch (callback.eventType) {
         case 'device-changed':
             return await handleDeviceChangedEventCallback(callback)

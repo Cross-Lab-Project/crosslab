@@ -29,26 +29,22 @@ export async function handleDeviceChangedEventCallback(callback: {
     const device = callback.device
 
     if (
-        !isConcreteDevice(device) &&
-        !isDeviceGroup(device) &&
-        !isInstantiableBrowserDevice(device) &&
-        !isInstantiableCloudDevice(device)
+        !isConcreteDevice(device, 'response') &&
+        !isDeviceGroup(device, 'response') &&
+        !isInstantiableBrowserDevice(device, 'response') &&
+        !isInstantiableCloudDevice(device, 'response')
     ) {
         throw new MalformedBodyError('Property "device" is not a valid device', 400)
     }
 
-    if (!device.url) {
-        throw new MalformedBodyError('Property "device" is missing url', 400)
-    }
-
-    if (isConcreteDevice(device)) {
+    if (isConcreteDevice(device, 'response')) {
         return await handleConcreteDevice(device)
     } else {
         return 410
     }
 }
 
-async function handleConcreteDevice(concreteDevice: ConcreteDevice) {
+async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) {
     const pendingConnectionsA = await peerconnectionRepository.find({
         where: {
             status: 'connecting',
@@ -67,7 +63,10 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice) {
         },
     })
 
-    const pendingConnections = [...pendingConnectionsA, ...pendingConnectionsB]
+    const pendingConnections = [...pendingConnectionsA, ...pendingConnectionsB].filter(
+        (peerconnection, index, array) =>
+            array.findIndex((pc) => pc.uuid === peerconnection.uuid) === index
+    )
 
     for (const pendingConnection of pendingConnections) {
         const deviceA = await apiClient.getDevice(pendingConnection.deviceA.url)
