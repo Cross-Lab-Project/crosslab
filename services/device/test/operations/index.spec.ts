@@ -1,11 +1,12 @@
 import { AppDataSource } from '../../src/database/dataSource'
 import { TestData } from '../data/index.spec'
 import { initTestDatabase } from '../database/repositories/index.spec'
+import callbackTest from './callbacks/index.spec'
 import deviceTests from './devices/index.spec'
 import peerconnectionTests from './peerconnections/index.spec'
 import Mocha from 'mocha'
 
-const tests = [...deviceTests, ...peerconnectionTests]
+const tests = [...deviceTests, ...peerconnectionTests, callbackTest]
 
 export function addTest(
     suite: Mocha.Suite,
