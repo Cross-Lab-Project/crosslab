@@ -65,11 +65,7 @@ class NoReferenceLeaks:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_val is not None:
             raise exc_val
-        gc.collect(2)
-        gc.collect(1)
-        gc.collect(0)
-        gc.collect(1)
-        gc.collect(2)
+        gc.collect()
         exitObjects = get_all_objects()
         enterIds = set([id(o) for o in self._enterObjects])
         enterIds.add(id(self))
