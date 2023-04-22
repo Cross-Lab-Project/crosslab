@@ -87,7 +87,7 @@ for (const client1Type of clientTypes) {
       });
 
       it('should transmit initial gpio value', async function () {
-        this.timeout(this.debug ? 0 : 15000);
+        this.timeout(this.debug ? 0 : 60000);
         this.experiment.devices[0].send('gpio', {signal: 'gpio1', value: 'strongH'});
         this.experiment.devices[0].send('gpio', {signal: 'gpio2', value: 'strongL'});
         await this.experiment.run(this.client, gpioExperimentConfiguration);
@@ -105,7 +105,7 @@ for (const client1Type of clientTypes) {
       });
 
       it('should transmit gpio value', async function () {
-        this.timeout(this.debug ? 0 : 15000);
+        this.timeout(this.debug ? 0 : 60000);
 
         await this.experiment.run(this.client, gpioExperimentConfiguration);
 

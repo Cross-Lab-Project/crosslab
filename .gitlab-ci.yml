@@ -17,11 +17,11 @@ workflow:
         PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
         BRANCH: $CI_COMMIT_BRANCH
         RELEASE: ''
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG!=""'
-      variables:
-        PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
-        BRANCH: CI_COMMIT_TAG
-        RELEASE: '--release'
+#   - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG!=""'
+#     variables:
+#       PIPELINE_NAME: 'Branch pipeline: $CI_COMMIT_BRANCH'
+#       BRANCH: CI_COMMIT_TAG
+#       RELEASE: '--release'
 
 build-environment:
   image: crosslab/devcontainer:latest
@@ -34,4 +34,4 @@ build:
   image: crosslab-devcontainer:build
   stage: build
   script:
-    - ./scripts/ci.sh --clean --no-download --branch $BRANCH $RELEASE
+    - ./scripts/ci.sh --branch $BRANCH $RELEASE

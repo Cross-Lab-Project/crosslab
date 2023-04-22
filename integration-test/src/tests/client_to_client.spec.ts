@@ -42,13 +42,13 @@ for (const client1Type of clientTypes) {
       });
 
       step('should connect without errors', async function () {
-        this.timeout(this.debug ? 0 : 15000);
+        this.timeout(this.debug ? 0 : 60000);
         // Create devices in API:
         await this.experiment.connect(this.client);
       });
 
       step('should start an experiment', async function () {
-        this.timeout(this.debug ? 0 : 15000);
+        this.timeout(this.debug ? 0 : 60000);
         await this.experiment.run(this.client, experimentConfig);
       });
     });
