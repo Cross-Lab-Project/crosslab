@@ -9,7 +9,7 @@ cd $SCRIPT_DIR/../..
 
 # Default values
 VERBOSE=false
-SKIP_UPLOAD=false
+SKIP_UPLOAD=true
 SKIP_DOWNLOAD=false
 CLEAN=false
 DEV_VERSION=true
@@ -52,6 +52,11 @@ while [[ $# -gt 0 ]]; do
 
     --skip-upload)
       SKIP_UPLOAD=true
+      shift
+      ;;
+
+    --upload)
+      SKIP_UPLOAD=false
       shift
       ;;
 
