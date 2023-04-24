@@ -1,4 +1,5 @@
-import { formatName, formatOperation } from '../format'
+import { formatName } from '../filters/format/formatName'
+import { formatOperation } from '../filters/format/formatOperation'
 import { userTypeSchema } from '../schemas/userType'
 import { ExtendedSchema } from '../types'
 import { removeReadOnly, removeWriteOnly } from './removeReadWriteOnly'

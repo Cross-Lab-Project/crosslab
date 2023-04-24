@@ -1,4 +1,4 @@
-import { formatName } from '../format'
+import { formatName } from '../filters/format/formatName'
 import { ExtendedSchema } from '../types'
 import { handleAllOf } from './keywords/allOf'
 import { handleAnyOf } from './keywords/anyOf'
