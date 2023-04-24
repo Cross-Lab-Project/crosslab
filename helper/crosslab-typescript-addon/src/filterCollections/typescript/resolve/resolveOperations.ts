@@ -1,4 +1,5 @@
-import { formatName, formatOperation } from '../format'
+import { formatName } from '../filters/format/formatName'
+import { formatOperation } from '../filters/format/formatOperation'
 import { SimplifiedOperation, SimplifiedParameter, SimplifiedResponse } from '../types'
 import { OpenAPIV3_1 } from 'openapi-types'
 
@@ -37,13 +38,13 @@ function parsePathItem(
             method as OpenAPIV3_1.HttpMethods
         ] as OpenAPIV3_1.OperationObject
 
-        simplifiedOperations.push(parseMethod(path, method, operation))
+        simplifiedOperations.push(parseOperation(path, method, operation))
     }
 
     return simplifiedOperations
 }
 
-function parseMethod(
+function parseOperation(
     path: string,
     method: string,
     operation: OpenAPIV3_1.OperationObject

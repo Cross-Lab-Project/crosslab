@@ -1,4 +1,4 @@
-import { formatName } from '../format'
+import { formatName } from '../filters/format/formatName'
 import { DestructuredSchema, ExtendedSchema } from '../types'
 import { generateTyping } from './typing'
 import { OpenAPIV3_1 } from 'openapi-types'

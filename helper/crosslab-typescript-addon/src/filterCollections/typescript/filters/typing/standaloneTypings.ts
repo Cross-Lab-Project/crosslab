@@ -1,6 +1,6 @@
-import { formatName } from '../../format'
 import { ExtendedSchema } from '../../types'
 import { generateTyping } from '../../typings/typing'
+import { formatName } from '../format/formatName'
 import { Filter } from '@cross-lab-project/openapi-codegen'
 
 /**
