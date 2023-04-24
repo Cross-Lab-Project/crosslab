@@ -14,41 +14,39 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     async (parameters, _user) => {
         console.log(`deletePeerconnectionsByPeerconnectionId called`)
 
-        const peerconnectionModel = await peerconnectionRepository.findOne({
+        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
         })
 
-        if (!peerconnectionModel)
-            return {
-                status: 204,
-            }
+        const closePeerconnectionMessage: ClosePeerconnectionMessage = {
+            messageType: 'command',
+            command: 'closePeerconnection',
+            connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
+        }
 
-        if (
-            peerconnectionModel.status === 'connecting' ||
-            peerconnectionModel.status === 'connected' ||
-            peerconnectionModel.status === 'disconnected'
-        ) {
-            const closePeerconnectionMessage: ClosePeerconnectionMessage = {
-                messageType: 'command',
-                command: 'closePeerconnection',
-                connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
-            }
-
+        // TODO: handle possible errors
+        try {
             await apiClient.sendSignalingMessage(
                 peerconnectionModel.deviceA.url,
                 closePeerconnectionMessage,
                 peerconnectionUrlFromId(peerconnectionModel.uuid)
             )
+        } catch (error) {
+            console.error(error)
+        }
 
+        try {
             await apiClient.sendSignalingMessage(
                 peerconnectionModel.deviceB.url,
                 closePeerconnectionMessage,
                 peerconnectionUrlFromId(peerconnectionModel.uuid)
             )
-
-            await sendClosedCallback(peerconnectionModel)
-            await sendStatusChangedCallback(peerconnectionModel)
+        } catch (error) {
+            console.error(error)
         }
+
+        await sendClosedCallback(peerconnectionModel)
+        await sendStatusChangedCallback(peerconnectionModel)
 
         await peerconnectionRepository.remove(peerconnectionModel)
 

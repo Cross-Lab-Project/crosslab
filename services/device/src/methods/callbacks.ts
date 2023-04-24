@@ -26,23 +26,27 @@ export async function sendChangedCallback(device: DeviceModel) {
             )}' to '${url}'`
         )
 
-        // TODO: error handling
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({
-                callbackType: 'event',
-                eventType: 'device-changed',
-                device: await deviceRepository.format(device),
-            }),
-            headers: [['Content-Type', 'application/json']],
-        })
+        // TODO: proper error handling
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    callbackType: 'event',
+                    eventType: 'device-changed',
+                    device: await deviceRepository.format(device),
+                }),
+                headers: [['Content-Type', 'application/json']],
+            })
 
-        if (res.status === 410) {
-            const changedCallbackURLs = changedCallbacks.get(device.uuid)
-            changedCallbacks.set(
-                device.uuid,
-                changedCallbackURLs?.filter((cb_url) => cb_url != url)
-            )
+            if (res.status === 410) {
+                const changedCallbackURLs = changedCallbacks.get(device.uuid)
+                changedCallbacks.set(
+                    device.uuid,
+                    changedCallbackURLs?.filter((cb_url) => cb_url != url)
+                )
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }
@@ -60,23 +64,27 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
             )}' to '${url}'`
         )
 
-        // TODO: error handling
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({
-                callbackType: 'event',
-                eventType: 'peerconnection-closed',
-                peerconnection: await peerconnectionRepository.format(peerconnection),
-            }),
-            headers: [['Content-Type', 'application/json']],
-        })
+        // TODO: proper error handling
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    callbackType: 'event',
+                    eventType: 'peerconnection-closed',
+                    peerconnection: await peerconnectionRepository.format(peerconnection),
+                }),
+                headers: [['Content-Type', 'application/json']],
+            })
 
-        if (res.status === 410) {
-            const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid)
-            closedCallbacks.set(
-                peerconnection.uuid,
-                closedCallbackURLs?.filter((cb_url) => cb_url != url)
-            )
+            if (res.status === 410) {
+                const closedCallbackURLs = closedCallbacks.get(peerconnection.uuid)
+                closedCallbacks.set(
+                    peerconnection.uuid,
+                    closedCallbackURLs?.filter((cb_url) => cb_url != url)
+                )
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }
@@ -94,23 +102,27 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
             )}' to '${url}'`
         )
 
-        // TODO: error handling
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({
-                callbackType: 'event',
-                eventType: 'peerconnection-status-changed',
-                peerconnection: await peerconnectionRepository.format(peerconnection),
-            }),
-            headers: [['Content-Type', 'application/json']],
-        })
+        // TODO: proper error handling
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                body: JSON.stringify({
+                    callbackType: 'event',
+                    eventType: 'peerconnection-status-changed',
+                    peerconnection: await peerconnectionRepository.format(peerconnection),
+                }),
+                headers: [['Content-Type', 'application/json']],
+            })
 
-        if (res.status === 410) {
-            const statusCallbackURLs = statusChangedCallbacks.get(peerconnection.uuid)
-            statusChangedCallbacks.set(
-                peerconnection.uuid,
-                statusCallbackURLs?.filter((cb_url) => cb_url != url)
-            )
+            if (res.status === 410) {
+                const statusCallbackURLs = statusChangedCallbacks.get(peerconnection.uuid)
+                statusChangedCallbacks.set(
+                    peerconnection.uuid,
+                    statusCallbackURLs?.filter((cb_url) => cb_url != url)
+                )
+            }
+        } catch (error) {
+            console.error(error)
         }
     }
 }

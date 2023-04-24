@@ -40,22 +40,23 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
         const oldStatus = peerconnectionModel.status
 
         if (
-            peerconnectionModel.deviceA.status === 'failed' ||
-            peerconnectionModel.deviceB.status === 'failed'
-        ) {
-            peerconnectionModel.status = 'failed'
-        } else if (
+            peerconnectionModel.status === 'closed' ||
             peerconnectionModel.deviceA.status === 'closed' ||
             peerconnectionModel.deviceB.status === 'closed'
         ) {
             peerconnectionModel.status = 'closed'
+        } else if (
+            peerconnectionModel.deviceA.status === 'failed' ||
+            peerconnectionModel.deviceB.status === 'failed'
+        ) {
+            peerconnectionModel.status = 'failed'
         } else if (
             peerconnectionModel.deviceA.status === 'disconnected' ||
             peerconnectionModel.deviceB.status === 'disconnected'
         ) {
             peerconnectionModel.status = 'disconnected'
         } else if (
-            peerconnectionModel.deviceA.status === 'connecting' &&
+            peerconnectionModel.deviceA.status === 'connecting' ||
             peerconnectionModel.deviceB.status === 'connecting'
         ) {
             peerconnectionModel.status = 'connecting'
@@ -64,10 +65,14 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
             peerconnectionModel.deviceB.status === 'connected'
         ) {
             peerconnectionModel.status = 'connected'
+        } else {
+            peerconnectionModel.status = 'new'
         }
 
         if (peerconnectionModel.status !== oldStatus)
             await sendStatusChangedCallback(peerconnectionModel)
+
+        await peerconnectionRepository.save(peerconnectionModel)
 
         console.log(`patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded`)
 

@@ -53,7 +53,5 @@ export default function (context: Mocha.Context, testData: TestData) {
         }
     )
 
-    addTest(suite, '')
-
     return suite
 }
