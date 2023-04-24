@@ -1,22 +1,32 @@
-import { AppDataSource } from '../../../../database/dataSource'
-import { ConcreteDeviceModel } from '../../../../database/model'
+import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
+import {
+    ForbiddenOperationError,
+    MissingEntityError as _MissingEntityError,
+} from '@crosslab/service-common'
 import { randomUUID } from 'crypto'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id}/token endpoint.
  * @param parameters The parameters of the request.
  * @param _user The user submitting the request.
- * @throws {MissingEntityError} Thrown if device is not found in the database.
+ * @throws {_MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
     async (parameters, _user) => {
         console.log(`postDevicesByDeviceIdWebsocket called`)
 
-        const deviceRepository = AppDataSource.getRepository(ConcreteDeviceModel)
-        const deviceModel = await deviceRepository.findOneByOrFail({
-            uuid: parameters.device_id,
+        const deviceModel = await deviceRepository.findOneOrFail({
+            where: {
+                uuid: parameters.device_id,
+            },
         })
+
+        if (deviceModel.type !== 'device')
+            throw new ForbiddenOperationError(
+                "A websocket token may only be requested for a device of type 'device'",
+                400
+            )
 
         deviceModel.token = randomUUID()
         await deviceRepository.save(deviceModel)
