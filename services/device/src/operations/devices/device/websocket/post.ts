@@ -1,7 +1,7 @@
 import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
 import {
-    ForbiddenOperationError,
+    ImpossibleOperationError,
     MissingEntityError as _MissingEntityError,
 } from '@crosslab/service-common'
 import { randomUUID } from 'crypto'
@@ -23,7 +23,7 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
         })
 
         if (deviceModel.type !== 'device')
-            throw new ForbiddenOperationError(
+            throw new ImpossibleOperationError(
                 "A websocket token may only be requested for a device of type 'device'",
                 400
             )

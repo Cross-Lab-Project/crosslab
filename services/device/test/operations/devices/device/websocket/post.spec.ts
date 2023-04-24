@@ -2,7 +2,7 @@ import { deviceRepository } from '../../../../../src/database/repositories/devic
 import { postDevicesByDeviceIdWebsocket } from '../../../../../src/operations/devices'
 import { TestData } from '../../../../data/index.spec'
 import { addTest } from '../../../index.spec'
-import { ForbiddenOperationError, MissingEntityError } from '@crosslab/service-common'
+import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
 import * as sinon from 'sinon'
@@ -57,7 +57,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     addTest(
         suite,
-        "should throw a ForbiddenOperationError if the device is not of type 'device'",
+        "should throw a ImpossibleOperationError if the device is not of type 'device'",
         async function () {
             await assert.rejects(
                 async () => {
@@ -69,7 +69,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     )
                 },
                 (error) => {
-                    assert(error instanceof ForbiddenOperationError)
+                    assert(error instanceof ImpossibleOperationError)
                     assert.strictEqual(error.status, 400)
                     return true
                 }

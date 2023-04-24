@@ -8,7 +8,7 @@ import {
 import { TestData } from '../../../../data/index.spec'
 import { addTest } from '../../../index.spec'
 import {
-    ForbiddenOperationError,
+    ImpossibleOperationError,
     MissingEntityError,
     UnrelatedPeerconnectionError,
 } from '@crosslab/service-common'
@@ -77,7 +77,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     addTest(
         suite,
-        "should throw a ForbiddenOperationError if type of requested device is not 'device'",
+        "should throw a ImpossibleOperationError if type of requested device is not 'device'",
         async function () {
             await assert.rejects(
                 async () => {
@@ -91,7 +91,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     )
                 },
                 (error) => {
-                    assert(error instanceof ForbiddenOperationError)
+                    assert(error instanceof ImpossibleOperationError)
                     assert.strictEqual(error.status, 400)
                     return true
                 }

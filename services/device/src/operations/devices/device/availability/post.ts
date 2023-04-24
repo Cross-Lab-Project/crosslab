@@ -2,7 +2,7 @@ import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures'
 import { calculateAvailability } from '../../../../methods/availability'
 import { sendChangedCallback } from '../../../../methods/callbacks'
-import { ForbiddenOperationError } from '@crosslab/service-common'
+import { ImpossibleOperationError } from '@crosslab/service-common'
 
 const YEAR = 365 * 24 * 60 * 60 * 1000
 
@@ -22,7 +22,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         })
 
         if (deviceModel.type !== 'device') {
-            throw new ForbiddenOperationError(
+            throw new ImpossibleOperationError(
                 `Can only update the availability for a device of type 'device', not for type '${deviceModel.type}'`,
                 400
             )

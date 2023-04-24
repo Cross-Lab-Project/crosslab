@@ -39,7 +39,7 @@ export class UnrelatedPeerconnectionError extends ErrorWithStatus {
 }
 
 /**
- * This error class should be used if an object is missing a needed property.
+ * This error class should be used if an operation is forbidden for the user.
  */
 export class ForbiddenOperationError extends ErrorWithStatus {
   constructor(message: string, status?: number) {
@@ -47,6 +47,16 @@ export class ForbiddenOperationError extends ErrorWithStatus {
     this.name = 'ForbiddenOperationError';
   }
 }
+
+/**
+ * This error class should be used if an operation is impossible.
+ */
+export class ImpossibleOperationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+      super(message, status);
+      this.name = 'ImpossibleOperationError';
+    }
+  }
 
 /**
  * This error class should be used if an object contains an invalid value.
