@@ -4,7 +4,7 @@ import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/s
 import { apiClient } from '../../../../globals'
 import { deviceUrlFromId } from '../../../../methods/urlFromId'
 import {
-    ForbiddenOperationError,
+    ImpossibleOperationError,
     UnrelatedPeerconnectionError,
     MissingEntityError,
 } from '@crosslab/service-common'
@@ -28,7 +28,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
 
         // Make sure device is a concrete device
         if (deviceModel.type !== 'device')
-            throw new ForbiddenOperationError(
+            throw new ImpossibleOperationError(
                 `Cannot send signaling message to device with type '${deviceModel.type}'`,
                 400
             )

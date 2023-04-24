@@ -8,7 +8,7 @@ import { instantiableCloudDeviceNames } from '../../../data/devices/instantiable
 import { TestData } from '../../../data/index.spec'
 import { concreteDeviceRepositoryTestSuite } from '../../../database/repositories/device/concreteDevice.spec'
 import { addTest } from '../../index.spec'
-import { ForbiddenOperationError, MissingEntityError } from '@crosslab/service-common'
+import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
 import * as sinon from 'sinon'
@@ -79,7 +79,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     addTest(
         suite,
-        'should throw a ForbiddenOperationError if the device is not instantiable',
+        'should throw a ImpossibleOperationError if the device is not instantiable',
         async function () {
             const deviceModels = [
                 testData['concrete devices']['concrete device'].model,
@@ -97,7 +97,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                         )
                     },
                     (error) => {
-                        assert(error instanceof ForbiddenOperationError)
+                        assert(error instanceof ImpossibleOperationError)
                         assert(error.status === 400)
                         return true
                     }

@@ -4,14 +4,14 @@ import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { apiClient } from '../../../globals'
 import { changedCallbacks } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
-import { ForbiddenOperationError } from '@crosslab/service-common'
+import { ImpossibleOperationError } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
  * @param parameters The parameters of the request.
  * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
- * @throws {ForbiddenOperationError} Thrown if device is not instantiable.
+ * @throws {ImpossibleOperationError} Thrown if device is not instantiable.
  */
 export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     parameters,
@@ -27,7 +27,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         instantiableDeviceModel.type !== 'cloud instantiable' &&
         instantiableDeviceModel.type !== 'edge instantiable'
     )
-        throw new ForbiddenOperationError(
+        throw new ImpossibleOperationError(
             `Cannot create new instance of device '${deviceUrlFromId(
                 instantiableDeviceModel.uuid
             )}' since it has type '${instantiableDeviceModel.type}'`,
