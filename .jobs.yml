@@ -84,6 +84,9 @@ services/auth:
   - script: lint
     dependencies:
       - services/auth:build
+  - script: test
+    dependencies:
+      - services/auth:build
 
 services/booking:
   - script: build-spec
@@ -108,6 +111,9 @@ services/device:
   - script: build-docker
     dependencies:
       - services/device:build
+  - script: test
+    dependencies:
+      - services/auth:build
 
 services/experiment:
   - script: build-spec

@@ -65,6 +65,8 @@ from crosslab.api_client.schemas import (
     CreatePeerconnectionResponse,
     GetPeerconnectionResponse,
     DeletePeerconnectionResponse,
+    PatchPeerconnectionDeviceStatusRequest,
+    PatchPeerconnectionDeviceStatusResponse,
     ListExperimentsResponse,
     CreateExperimentRequest,
     CreateExperimentResponse,
@@ -1157,6 +1159,37 @@ class APIClient:
            
         # transform response
         if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def patch_peerconnection_device_status(self, url: str, body: PatchPeerconnectionDeviceStatusRequest, device_url: str) -> PatchPeerconnectionDeviceStatusResponse:  # noqa: E501
+        """
+        Sets the peerconnection status of a single device.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(peerconnections\/[^?]*?)(\/device_status)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/device_status'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if device_url:
+            if isinstance(device_url, list):
+                query_params['device_url'] = device_url
+            else:
+                query_params['device_url'] = str(device_url)
+        
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
+           
+        # transform response
+        if status == 201:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 

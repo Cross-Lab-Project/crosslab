@@ -190,14 +190,14 @@ export async function startCloudDeviceInstance(
     experimentUrl: string
 ) {
     try {
-        if (!device.instantiate_url)
+        if (!device.instantiateUrl)
             requestHandler.throw(
                 MissingPropertyError,
                 'Resolved instantiable cloud device does not have an instantiate url',
                 500
             ) // NOTE: error code?
         await fetch(
-            device.instantiate_url +
+            device.instantiateUrl +
                 new URLSearchParams([
                     ['device_url', deviceUrl],
                     ['token', token],

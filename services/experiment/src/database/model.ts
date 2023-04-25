@@ -5,6 +5,7 @@ import {
     DeleteDateColumn,
     ManyToOne,
     OneToMany,
+    PrimaryColumn,
 } from 'typeorm'
 
 @Entity({ name: 'Experiment' })
@@ -72,12 +73,8 @@ export class DeviceModel {
 
 @Entity({ name: 'Peerconnection' })
 export class PeerconnectionModel {
-    @PrimaryGeneratedColumn('uuid')
-    uuid!: string
-    @Column({ unique: true })
+    @PrimaryColumn()
     url!: string
-    @Column()
-    status?: 'waiting-for-devices' | 'connected' | 'failed' | 'closed'
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.connections)
     experiment!: ExperimentModel
 }
@@ -87,7 +84,7 @@ export class ServiceConfigurationModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    serviceType?: string
+    serviceType!: string
     @Column("simple-json")
     configuration?: {
         [k: string]: any
@@ -109,7 +106,7 @@ export class ParticipantModel {
     @Column()
     role?: string
     @Column()
-    serviceId?: string
+    serviceId!: string
     @Column("simple-json")
     config?: {
         [k: string]: any

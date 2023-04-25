@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { config, dataSourceConfig } from './config'
 import { AppDataSource, initializeDataSource } from './database/dataSource'
 import { app } from './generated'
