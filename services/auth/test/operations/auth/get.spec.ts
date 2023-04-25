@@ -99,7 +99,6 @@ export default function (context: Mocha.Context, testData: TestData) {
     let allowlistedIP: string
 
     suite.beforeAll(function () {
-        this.timeout(0)
         expiredToken = testData.tokens['GET /auth expired token'].model.token
         invalidToken = 'invalid'
         validDeviceToken = testData.tokens['GET /auth valid device token'].model.token

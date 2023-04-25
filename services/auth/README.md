@@ -1,8 +1,8 @@
 [//]: # ({{print badges}})
 
-|     | build-spec | lint-spec | build | lint | build-docker |
-| --- | --- | --- | --- | --- | --- |
-| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.log) |
+|     | build-spec | lint-spec | build | lint | test | build-docker |
+| --- | --- | --- | --- | --- | --- | --- |
+| services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.log) |
 
 [//]: # ({{end}})
 # Authentication Service
@@ -30,6 +30,7 @@ graph LR
     services/auth:build-spec[build-spec]
     services/auth:lint[lint]
     services/auth:lint-spec[lint-spec]
+    services/auth:test[test]
   end
   subgraph services/booking
     services/booking:build-spec[build-spec]
@@ -56,11 +57,12 @@ helper/openapi-codegeneration --> clients/api/js
 helper/openapi-codegeneration --> helper/crosslab-typescript-addon
 helper/openapi-codegeneration --> services/auth:build[build]
 helper/tsdoc-theme --> clients/api/js
+services/auth:build[build] --> services/auth:build-docker[build-docker]
+services/auth:build[build] --> services/auth:lint[lint]
+services/auth:build[build] --> services/auth:test[test]
 services/auth:build-spec[build-spec] --> clients/api/js
 services/auth:build-spec[build-spec] --> services/auth:build[build]
 services/auth:build-spec[build-spec] --> services/auth:lint-spec[lint-spec]
-services/auth:build[build] --> services/auth:build-docker[build-docker]
-services/auth:build[build] --> services/auth:lint[lint]
 services/booking --> clients/api/js
 services/common --> services/auth:build[build]
 services/device --> clients/api/js

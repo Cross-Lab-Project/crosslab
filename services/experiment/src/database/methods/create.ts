@@ -66,7 +66,6 @@ export function createPeerconnectionModel(
     peerconnectionUrl: string
 ): PeerconnectionModel {
     const peerconnectionModel = peerconnectionRepository.create()
-    peerconnectionModel.status = "waiting-for-devices"
     requestHandler.executeSync(
         writePeerconnectionModel,
         peerconnectionModel,

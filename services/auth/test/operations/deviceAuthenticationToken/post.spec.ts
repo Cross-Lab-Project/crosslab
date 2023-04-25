@@ -15,7 +15,11 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.beforeAll(function () {
         getDeviceStub = sinon.stub(API, 'getDevice')
         getDeviceStub.resolves({
-            owner: testData.users['POST /device_authentication_token user'].response.url,
+            type: "device",
+            url: "https://localhost/devices/39db5f84-2ed1-491d-b0e1-f48463a6b748",
+            name: "Test Device",
+            owner: testData.users['POST /device_authentication_token user'].response.url!,
+
         })
     })
 

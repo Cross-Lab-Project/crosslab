@@ -170,9 +170,6 @@ async function handlePeerconnectionStatusChangedEventCallback(
     if (!DeviceServiceTypes.isPeerconnection(peerconnection)) {
         throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
     }
-    if (!peerconnection.url) {
-        throw new MissingPropertyError('Property "peerconnection" is missing property "url"', 400)
-    }
     if (!peerconnectionStatusChangedCallbacks.includes(peerconnection.url)) {
         return 410 // TODO: find a solution for this problem (race condition)
     }
@@ -192,7 +189,6 @@ async function handlePeerconnectionStatusChangedEventCallback(
             500
         ) // NOTE: error code
 
-    peerconnectionModel.status = peerconnection.status
     const experimentModel = peerconnectionModel.experiment
     if (!experimentModel)
         requestHandler.throw(
@@ -200,7 +196,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
             `Peerconnection model is missing property "experiment"`
         ) // NOTE: error code
 
-    switch (peerconnectionModel.status) {
+    switch (peerconnection.status) {
         case 'closed':
             // TODO: handle status closed
             break
@@ -209,7 +205,8 @@ async function handlePeerconnectionStatusChangedEventCallback(
             if (!experimentModel.connections)
                 requestHandler.throw(
                     MissingPropertyError,
-                    `Experiment model is missing property "connections"`
+                    `Experiment model is missing property "connections"`,
+                    400
                 ) // NOTE: error code
             
             // eslint-disable-next-line no-case-declarations
@@ -230,8 +227,14 @@ async function handlePeerconnectionStatusChangedEventCallback(
         case 'failed':
             // TODO: handle status failed
             break
-        case 'waiting-for-devices':
-            // TODO: handle status waiting-for-devices
+        case 'new':
+            // TODO: handle status new
+            break
+        case 'connecting':
+            // TODO: handle status connecting
+            break
+        case 'disconnected':
+            // TODO: handle status disconnected
             break
     }
     return 200
