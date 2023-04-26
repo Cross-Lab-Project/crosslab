@@ -6,7 +6,7 @@ import {RepositoryTestData, ResponseType} from './types.spec';
 
 export function testSuiteFormat<
   K extends string,
-  R extends AbstractRepository<{}, unknown, unknown>,
+  R extends AbstractRepository<object, unknown, unknown>,
 >(repositoryTestData: RepositoryTestData<K, R>) {
   const testSuite = new Mocha.Suite('format');
 

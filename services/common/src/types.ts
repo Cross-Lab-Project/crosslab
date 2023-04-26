@@ -8,7 +8,7 @@ export type RemoveIndex<T> = {
 
 export type SubstituteType<T, A, B> = T extends A
   ? B
-  : T extends {}
+  : T extends object
   ? {[K in keyof T]: SubstituteType<T[K], A, B>}
   : T;
 

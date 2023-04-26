@@ -40,13 +40,13 @@ export function generateTyping(
     options.schemaType ??= 'all'
     options.prefixDirectlyResolved ??= ''
 
-    let comment = schema.description
+    const comment = schema.description
         ? `/**\n * ${schema.description.replace(/\n/g, '\n * ')}\n */\n`
         : ''
 
     const contextSchema = options.context.find(
-        (contextSchema) =>
-            contextSchema.title === schema.title && contextSchema['x-standalone']
+        (ctxSchema) =>
+            ctxSchema.title === schema.title && ctxSchema['x-standalone']
     )
 
     // Handle subtype and different required properties

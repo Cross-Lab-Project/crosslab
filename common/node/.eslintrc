@@ -10,8 +10,10 @@
     "dist/**/*",
     "lib/**/*",
     "app/**/*",
+    "docs/**/*",
     "http-dist/**/*",
-    "webpack.config.js"
+    "webpack.config.js",
+    "addShebang.js"
   ],
   "overrides": [
     {

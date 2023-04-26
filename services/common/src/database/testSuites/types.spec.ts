@@ -17,40 +17,40 @@ export type CustomRecord<K extends string | number | symbol, T> = Record<K, T> &
   [k: string]: T;
 };
 
-export interface EntityData<R extends AbstractRepository<{}, unknown, unknown>> {
+export interface EntityData<R extends AbstractRepository<object, unknown, unknown>> {
   model: R extends AbstractRepository<infer M, unknown, unknown> ? M : never;
-  request: R extends AbstractRepository<{}, infer RQ, unknown> ? RQ : never;
-  response: R extends AbstractRepository<{}, unknown, infer RSP> ? RSP : never;
+  request: R extends AbstractRepository<object, infer RQ, unknown> ? RQ : never;
+  response: R extends AbstractRepository<object, unknown, infer RSP> ? RSP : never;
 }
 
 export type GenericTestData<
-  D extends [string, string, AbstractRepository<{}, unknown, unknown>][],
+  D extends [string, string, AbstractRepository<object, unknown, unknown>][],
 > = D extends [
-  infer H extends [string, string, AbstractRepository<{}, unknown, unknown>],
-  ...infer T extends [string, string, AbstractRepository<{}, unknown, unknown>][],
+  infer H extends [string, string, AbstractRepository<object, unknown, unknown>],
+  ...infer T extends [string, string, AbstractRepository<object, unknown, unknown>][],
 ]
   ? {
       [k in H[0]]: PartialTestData<H[1], H[2]>;
     } & GenericTestData<T>
-  : {};
+  : object;
 
 export type PartialTestData<
   K extends string,
-  R extends AbstractRepository<{}, unknown, unknown>,
+  R extends AbstractRepository<object, unknown, unknown>,
 > = Record<K, EntityData<R>>;
 
-export type ModelType<R extends AbstractRepository<{}, unknown, unknown>> =
+export type ModelType<R extends AbstractRepository<object, unknown, unknown>> =
   R extends AbstractRepository<infer M, unknown, unknown> ? M : never;
 
-export type RequestType<R extends AbstractRepository<{}, unknown, unknown>> =
-  R extends AbstractRepository<{}, infer RQ, unknown> ? RQ : never;
+export type RequestType<R extends AbstractRepository<object, unknown, unknown>> =
+  R extends AbstractRepository<object, infer RQ, unknown> ? RQ : never;
 
-export type ResponseType<R extends AbstractRepository<{}, unknown, unknown>> =
-  R extends AbstractRepository<{}, unknown, infer RSP> ? RSP : never;
+export type ResponseType<R extends AbstractRepository<object, unknown, unknown>> =
+  R extends AbstractRepository<object, unknown, infer RSP> ? RSP : never;
 
 export type RepositoryTestData<
   K extends string,
-  R extends AbstractRepository<{}, unknown, unknown>,
+  R extends AbstractRepository<object, unknown, unknown>,
 > = {
   entityData: PartialTestData<K, R>;
   repository: R;

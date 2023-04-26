@@ -8,7 +8,7 @@ import { OpenAPIV3_1 } from 'openapi-types'
  */
 export function generateSchemasWithoutUnrequired(
     schema: OpenAPIV3_1.SchemaObject,
-    prefix: string = 'schema'
+    prefix = 'schema'
 ): {
     schema: OpenAPIV3_1.SchemaObject
     path: string

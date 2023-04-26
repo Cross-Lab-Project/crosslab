@@ -19,7 +19,7 @@ import {testSuiteWrite} from './write.spec';
  */
 export abstract class AbstractRepositoryTestSuite<
   K extends string,
-  R extends AbstractRepository<{}, unknown, unknown>,
+  R extends AbstractRepository<object, unknown, unknown>,
 > {
   protected entityData?: PartialTestData<K, R>;
   protected testSuites?: CustomRecord<SuiteName, Mocha.Suite>;
@@ -113,9 +113,9 @@ export abstract class AbstractRepositoryTestSuite<
     const testSuites = this.testSuites;
     const testSuite = new Mocha.Suite(`${this.repository.name} Repository Test`);
     for (const suite in testSuites) {
-      const reference = this;
+      const boundResetDatabase = this.resetDatabase.bind(this);
       testSuites[suite].beforeEach(async function () {
-        await reference.resetDatabase();
+        await boundResetDatabase();
       });
       testSuite.addSuite(testSuites[suite]);
     }

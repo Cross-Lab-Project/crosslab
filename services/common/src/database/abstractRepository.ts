@@ -17,8 +17,8 @@ import {AbstractApplicationDataSource} from './abstractDataSource';
  */
 export abstract class AbstractRepository<
   M extends ObjectLiteral,
-  RQ extends unknown,
-  RSP extends unknown,
+  RQ,
+  RSP,
 > {
   public name: string;
   protected repository?: Repository<M>;

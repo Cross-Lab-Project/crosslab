@@ -4,6 +4,6 @@ import { OpenAPIV3_1 } from 'openapi-types'
 
 export const resolveSchemasFilter: Filter = {
     name: 'resolveSchemas',
-    function: (api: OpenAPIV3_1.Document, isService: boolean = true) =>
+    function: (api: OpenAPIV3_1.Document, isService = true) =>
         resolveSchemas(api, isService),
 }

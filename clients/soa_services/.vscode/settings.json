@@ -1,6 +1,16 @@
 {
     "files.exclude": {
         //begin generated
+        "**/*.egg-info": true,
+        "**/.mypy_cache": true,
+        "**/.packages": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/__pycache__": true,
+        "**/app": true,
+        "**/build": true,
+        "**/node_modules": true,
+        "**/venv": true,
         "electricalConnection/.vscode": true,
         "file/.vscode": true,
         "message/.vscode": true,
@@ -9,7 +19,18 @@
     },
     "files.watcherExclude": {
         //begin generated
-
+        "**/*.egg-info": true,
+        "**/.mypy_cache": true,
+        "**/.packages": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/__pycache__": true,
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/lib": true,
+        "**/node_modules": true,
+        "**/venv": true,
         //end generated
     }
 }

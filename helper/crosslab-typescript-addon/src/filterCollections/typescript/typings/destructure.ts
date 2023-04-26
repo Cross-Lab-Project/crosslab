@@ -9,7 +9,7 @@ export function destructureSchema(
         prefixDirectlyResolved?: string
         context?: ExtendedSchema[]
     },
-    first: boolean = true
+    first = true
 ): DestructuredSchema {
     const destructuredSchema: DestructuredSchema = []
 
