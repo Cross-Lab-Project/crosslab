@@ -11,7 +11,7 @@
     "lib/**/*",
     "app/**/*",
     "http-dist/**/*",
-    "webpack.config.js"
+    "/*.js"
   ],
   "overrides": [
     {
