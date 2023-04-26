@@ -1,10 +1,4 @@
-import {
-  FindManyOptions,
-  FindOneOptions,
-  FindOptionsRelations,
-  ObjectLiteral,
-  Repository,
-} from 'typeorm';
+import {FindManyOptions, FindOneOptions, FindOptionsRelations, ObjectLiteral, Repository} from 'typeorm';
 
 import {MissingEntityError, UninitializedRepositoryError} from '../errors';
 import {AbstractApplicationDataSource} from './abstractDataSource';
@@ -15,11 +9,7 @@ import {AbstractApplicationDataSource} from './abstractDataSource';
  * @typeParam RQ - Type of possible request.
  * @typeParam RSP - Type of possible response.
  */
-export abstract class AbstractRepository<
-  M extends ObjectLiteral,
-  RQ extends unknown,
-  RSP extends unknown,
-> {
+export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
   public name: string;
   protected repository?: Repository<M>;
 
@@ -28,9 +18,7 @@ export abstract class AbstractRepository<
   }
 
   protected throwUninitializedRepositoryError(): never {
-    throw new UninitializedRepositoryError(
-      `${this.name} Repository has not been initialized!`,
-    );
+    throw new UninitializedRepositoryError(`${this.name} Repository has not been initialized!`);
   }
 
   abstract initialize(AppDataSource: AbstractApplicationDataSource): void;
@@ -77,10 +65,7 @@ export abstract class AbstractRepository<
     const model = await this.repository.findOne(findOptions);
 
     if (!model) {
-      throw new MissingEntityError(
-        `The requested ${this.name} does not exist in the database`,
-        404,
-      );
+      throw new MissingEntityError(`The requested ${this.name} does not exist in the database`, 404);
     }
 
     return model;

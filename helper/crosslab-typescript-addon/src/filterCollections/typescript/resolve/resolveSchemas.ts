@@ -17,7 +17,7 @@ import { OpenAPIV3_1 } from 'openapi-types'
  */
 export function resolveSchemas(
     inputApi: OpenAPIV3_1.Document,
-    isService: boolean = true
+    isService = true
 ): ExtendedSchema[] {
     const extendedSchemas: ExtendedSchema[] = []
     const api = JSON.parse(JSON.stringify(inputApi)) as OpenAPIV3_1.Document

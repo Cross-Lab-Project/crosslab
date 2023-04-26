@@ -9,7 +9,7 @@ import { OpenAPIV3_1 } from 'openapi-types'
  */
 export function generateInvalidSchemas(
     schema: OpenAPIV3_1.SchemaObject,
-    prefix: string = 'schema'
+    prefix = 'schema'
 ): {
     schema: OpenAPIV3_1.SchemaObject
     path: string
@@ -179,7 +179,7 @@ export function generateInvalidSchemas(
                 }
             }
             break
-        case 'array':
+        case 'array': {
             const invalidItemsSchemas = generateInvalidSchemas(
                 schema.items,
                 `${prefix}.items`
@@ -195,6 +195,7 @@ export function generateInvalidSchemas(
                 })
             }
             break
+        }
         default:
             break
     }

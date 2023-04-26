@@ -6,7 +6,7 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @param indentation The indentation to be used during JSON.stringify.
  * @returns The stringified object.
  */
-function stringify(object: any, indentation: number = 0): string {
+function stringify(object: any, indentation = 0): string {
     return JSON.stringify(object, null, indentation)
 }
 

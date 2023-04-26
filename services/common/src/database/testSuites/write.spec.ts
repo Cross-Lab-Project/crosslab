@@ -6,7 +6,7 @@ import {ModelType, RepositoryTestData, RequestType} from './types.spec';
 
 export function testSuiteWrite<
   K extends string,
-  R extends AbstractRepository<{}, unknown, unknown>,
+  R extends AbstractRepository<object, unknown, unknown>,
 >(repositoryTestData: RepositoryTestData<K, R>) {
   const testSuite = new Mocha.Suite('write');
 

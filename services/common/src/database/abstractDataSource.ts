@@ -2,7 +2,7 @@ import {DataSource, DataSourceOptions, EntityTarget, ObjectLiteral} from 'typeor
 
 export abstract class AbstractApplicationDataSource {
   private dataSource?: DataSource;
-  public connected: boolean = false;
+  public connected = false;
 
   protected abstract initializeRepositories(): void;
 
