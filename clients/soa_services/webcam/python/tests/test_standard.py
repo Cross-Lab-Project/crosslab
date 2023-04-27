@@ -11,7 +11,7 @@ from crosslab.soa_services.webcam.media import UDPTrack
 def test_teardown_reference_leaks(tiebreaker):
     con = ConnectionStub(tiebreaker)
 
-    stream = UDPTrack(4789)
+    stream = UDPTrack(4789 + tiebreaker)
 
     ws = WebcamService__Producer(stream, "test")
 
