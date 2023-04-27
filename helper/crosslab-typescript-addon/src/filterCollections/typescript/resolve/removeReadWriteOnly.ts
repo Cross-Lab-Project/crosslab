@@ -2,8 +2,9 @@ import { ExtendedSchema } from '../types'
 import { OpenAPIV3_1 } from 'openapi-types'
 
 export function removeReadOnly(schema: ExtendedSchema): ExtendedSchema {
+    const newSchema = removeReadOrWriteOnly(schema, 'readOnly')
     return {
-        ...removeReadOrWriteOnly(schema, 'readOnly'),
+        ...appendToRefs(newSchema, "_request"),
         'x-location': schema['x-location'],
         'x-name': schema['x-name'],
         'x-schema-type': schema['x-schema-type'],
@@ -13,14 +14,21 @@ export function removeReadOnly(schema: ExtendedSchema): ExtendedSchema {
 }
 
 export function removeWriteOnly(schema: ExtendedSchema): ExtendedSchema {
+    const newSchema = removeReadOrWriteOnly(schema, 'writeOnly')
     return {
-        ...removeReadOrWriteOnly(schema, 'writeOnly'),
+        ...appendToRefs(newSchema, "_response"),
         'x-location': schema['x-location'],
         'x-name': schema['x-name'],
         'x-schema-type': schema['x-schema-type'],
         'x-service-name': schema['x-service-name'],
         'x-standalone': schema['x-standalone'],
     }
+}
+
+function appendToRefs(schema: OpenAPIV3_1.SchemaObject, appendString: string) {
+    const stringifiedSchema = JSON.stringify(schema)
+    const appendedStringifiedSchema = stringifiedSchema.replace(/"(\$ref":".*?)"/g, `"$1${appendString}"`)
+    return JSON.parse(appendedStringifiedSchema)
 }
 
 function removeReadOrWriteOnly(

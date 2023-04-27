@@ -44,14 +44,14 @@ async function startSignaling(peerconnectionId: string) {
         where: {
             uuid: peerconnectionId,
         },
-        relations: {
-            deviceA: {
-                config: true,
-            },
-            deviceB: {
-                config: true,
-            },
-        },
+        // relations: {
+        //     deviceA: {
+        //         config: true,
+        //     },
+        //     deviceB: {
+        //         config: true,
+        //     },
+        // },
     })
 
     if (peerconnectionModel.status !== 'new') {

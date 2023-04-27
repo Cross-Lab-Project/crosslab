@@ -45,6 +45,7 @@ export const config = initializeAppConfiguration()
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
     database: 'db/device.db',
+    synchronize: true,
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,

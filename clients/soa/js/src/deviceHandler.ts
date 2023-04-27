@@ -23,9 +23,33 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
   async connect(connectOptions: {endpoint: string; id: string; token: string}) {
     this.ws = new WebSocket(connectOptions.endpoint);
-    const p = new Promise<void>(resolve => {
+    const p = new Promise<void>((resolve, reject) => {
       this.ws.onopen = () => {
-        resolve();
+        this.ws.onmessage = authenticationEvent => {
+            const authenticationMessage = JSON.parse(authenticationEvent.data as string)
+            if (authenticationMessage.messageType === "authenticate") {
+                if (authenticationMessage.authenticated) {
+                    resolve()
+                }
+                else reject("Authentication failed")
+            } else {
+                reject(`Èxpected message with messageType 'authenticate', received '${authenticationMessage.messageType}'`)
+            }
+
+            this.ws.onmessage = event => {
+                const message = JSON.parse(event.data as string);
+          
+                if (isCommandMessage(message)) {
+                  if (isCreatePeerConnectionMessage(message)) {
+                    this.handleCreatePeerConnectionMessage(message);
+                  }
+                }
+                if (isSignalingMessage(message)) {
+                  this.handleSignalingMessage(message);
+                }
+            };
+        }
+        
         this.ws.send(
           JSON.stringify({
             messageType: 'authenticate',
@@ -35,19 +59,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
         );
       };
     });
-
-    this.ws.onmessage = event => {
-      const message = JSON.parse(event.data as string);
-
-      if (isCommandMessage(message)) {
-        if (isCreatePeerConnectionMessage(message)) {
-          this.handleCreatePeerConnectionMessage(message);
-        }
-      }
-      if (isSignalingMessage(message)) {
-        this.handleSignalingMessage(message);
-      }
-    };
 
     this.ws.onclose = event => {
       console.log('ws closed', event);

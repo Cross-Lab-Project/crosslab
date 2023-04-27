@@ -41,9 +41,7 @@ import {
     {{ signatureDependencies | unique | join(",\n\t") }}
 } from "./signatures"
 
-import {
-    {{ validationDependencies | unique | join(",\n\t") }}
-} from "./basicValidation"
+import * as basicValidation from "./basicValidation"
 
 {%- for operation in operations %}
 
@@ -59,10 +57,10 @@ export function validate{{ operation.name | cap }}Input(
     if (parameters) {
         {%- for parameter in operation.parameters %}
         if (
-            !validate{{ parameter.name | formatName -}}(parameters["{{ parameter.name }}"]) 
+            !basicValidation.validate{{ parameter.name | formatName -}}Request(parameters["{{ parameter.name }}"]) 
             {{- "\n\t\t\t&& parameters['" +  parameter.name + "'] !== undefined" if not parameter.required }}
         ) {
-            (validate{{ operation.name | cap }}Input as any).errors = (validate{{ parameter.name | formatName }} as any).errors
+            (validate{{ operation.name | cap }}Input as any).errors = (basicValidation.validate{{ parameter.name | formatName }}Request as any).errors
             return false
         }
         {%- endfor %}
@@ -85,8 +83,8 @@ export function validate{{ operation.name | cap }}Input(
     }
 
     {% endif -%}
-    if (!validate{{ operation.name | cap }}RequestBody(body)) {
-        (validate{{ operation.name | cap }}Input as any).errors = (validate{{ operation.name | cap }}RequestBody as any).errors
+    if (!basicValidation.validate{{ operation.name | cap }}RequestBodyRequest(body)) {
+        (validate{{ operation.name | cap }}Input as any).errors = (basicValidation.validate{{ operation.name | cap }}RequestBodyRequest as any).errors
         return false
     }
 
@@ -111,10 +109,10 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
         if (response.headers) {
             {%- for header in response.headers %}
             if (
-                !validate{{ operation.name | cap }}Header{{ header.name }}(response.headers["{{ header.name }}"])
+                !basicValidation.validate{{ operation.name | cap }}Header{{ header.name }}Response(response.headers["{{ header.name }}"])
                 {{ "\n\t\t\t\t&& response.headers['" + header.name + "'] !== undefined " if not header.required -}} 
             ) {
-                (validate{{ operation.name | cap }}Output as any).errors = (validate{{ operation.name | cap }}Header{{ header.name }} as any).errors
+                (validate{{ operation.name | cap }}Output as any).errors = (basicValidation.validate{{ operation.name | cap }}Header{{ header.name }}Response as any).errors
                 return false
             }   
             {%- endfor %}
@@ -130,8 +128,8 @@ export function validate{{ operation.name | cap }}Output(response: ResponseData)
 
         {% endif -%}
         {% if response.schema -%}
-        if (!validate{{ operation.name | cap }}Response{{ response.status }}(response.body)) {
-            (validate{{ operation.name | cap }}Output as any).errors = (validate{{ operation.name | cap }}Response{{ response.status }} as any).errors
+        if (!basicValidation.validate{{ operation.name | cap }}Response{{ response.status }}Response(response.body)) {
+            (validate{{ operation.name | cap }}Output as any).errors = (basicValidation.validate{{ operation.name | cap }}Response{{ response.status }}Response as any).errors
             return false
         }
 
