@@ -13,7 +13,7 @@
         "**/__pycache__": true,
         "**/*.egg-info": true,
         "**/build": true,
-        // "**/lib": true,
+        "**/lib": true,
         "**/app": true,
         "**/venv": true,
         "**/.packages": true,
