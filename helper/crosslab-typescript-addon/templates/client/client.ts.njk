@@ -260,7 +260,7 @@ export class APIClient {
         {#- Destructure request body schema #}
         {%- set destructured = (
             operation.requestBody.schema | destructureSchema({ 
-                "prefixTypes": (operation.serviceName | formatName) + "Types." 
+                "prefixDirectlyResolved": (operation.serviceName | formatName) + "Types." 
             })
         ) if operation.requestBody else [] %}
 
@@ -278,7 +278,7 @@ export class APIClient {
             {%- if operation.parameters %}
                 {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) %}
                     {%- if parameter.in != "path" or buildUrl %}
-                        {{ parameter.name }}: {{ parameter.schema | typeDeclaration({ "prefixTypes": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
+                        {{ parameter.name }}: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
                     {%- endif %}
                 {%- endfor %}
             {%- endif %}
@@ -295,7 +295,7 @@ export class APIClient {
                     {#- Add optional parameters #}
                     {%- if operation.parameters %}
                         {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) %}
-                            {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixTypes": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
+                            {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
                         {%- endfor %}
                     {%- endif %}
                     {{- "url?: string" if optionalUrl -}}
@@ -372,7 +372,7 @@ export class APIClient {
             {#- Add declaration of request body if defined #}
             {%- if operation.requestBody -%}
             {{- bodyName + ": " -}}
-            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixTypes": types + ".", "schemaType": "request" }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
+            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixDirectlyResolved": types + ".", "schemaType": "request" }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
             {%- endif -%}
 
             {#- Add declaration of parameters and optional url if defined #}

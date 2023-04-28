@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Device Group
+allOf:
+  - $ref: ./device_overview.yml
+  - type: object
+    properties:
+      type:
+        const: group
+      devices:
+        type: array
+        items:
+          $ref: ./references/device_reference.yml
+    required:
+    - devices
+x-typeguard: true

@@ -801,11 +801,11 @@ class ListDevicesResponse200Items(TypedDict):
     - type: Type of the device
     - owner
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device", "group", "edge instantiable", "cloud instantiable"]]
-    owner: NotRequired[str]
+    type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
+    owner: str
 
 
 ListDevicesResponse200: TypeAlias = List[ListDevicesResponse200Items]
@@ -814,16 +814,16 @@ ListDevicesResponse200: TypeAlias = List[ListDevicesResponse200Items]
 ListDevicesResponse: TypeAlias = ListDevicesResponse200
 
 
-class CreateDeviceRequestAlt1AnnouncedavailabilityItems(TypedDict):
-    """
-    Properties:
-    """
-
-
 class CreateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceRequestAlt1(TypedDict):
@@ -834,30 +834,38 @@ class CreateDeviceRequestAlt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - connected: If true, the device is connected to the service and can be used.
-
-    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
-
-    - experiment
+    - instantiateUrl
     - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
-    connected: NotRequired[bool]
-    announcedAvailability: NotRequired[List[CreateDeviceRequestAlt1AnnouncedavailabilityItems]]
-    experiment: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    owner: str
+    instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt1ServicesItems]]
 
 
-class CreateDeviceRequestAlt2DevicesItems(TypedDict):
+class CreateDeviceRequestAlt2AnnouncedavailabilityItems(TypedDict):
     """
     Properties:
-    - url: URL of the device
+    - start
+    - end
     """
-    url: NotRequired[str]
+    start: NotRequired[str]
+    end: NotRequired[str]
+
+
+class CreateDeviceRequestAlt2ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceRequestAlt2(TypedDict):
@@ -868,14 +876,34 @@ class CreateDeviceRequestAlt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - devices
+    - connected: If true, the device is connected to the service and can be used.
+
+    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
+
+    - experiment
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["group"]]
-    owner: NotRequired[str]
-    devices: NotRequired[List[CreateDeviceRequestAlt2DevicesItems]]
+    type: Literal["device"]
+    owner: str
+    connected: NotRequired[bool]
+    announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
+    experiment: NotRequired[str]
+    services: NotRequired[List[CreateDeviceRequestAlt2ServicesItems]]
+
+
+class CreateDeviceRequestAlt3ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceRequestAlt3(TypedDict):
@@ -886,14 +914,24 @@ class CreateDeviceRequestAlt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - instantiate_url
+    - codeUrl
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["cloud instantiable"]]
-    owner: NotRequired[str]
-    instantiate_url: NotRequired[str]
+    type: Literal["edge instantiable"]
+    owner: str
+    codeUrl: NotRequired[str]
+    services: NotRequired[List[CreateDeviceRequestAlt3ServicesItems]]
+
+
+class CreateDeviceRequestAlt4DevicesItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the device
+    """
+    url: str
 
 
 class CreateDeviceRequestAlt4(TypedDict):
@@ -904,33 +942,29 @@ class CreateDeviceRequestAlt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - code_url
+    - devices
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["edge instantiable"]]
-    owner: NotRequired[str]
-    code_url: NotRequired[str]
+    type: Literal["group"]
+    owner: str
+    devices: List[CreateDeviceRequestAlt4DevicesItems]
 
 
 CreateDeviceRequest = Union[CreateDeviceRequestAlt1, CreateDeviceRequestAlt2, CreateDeviceRequestAlt3, CreateDeviceRequestAlt4]
 
 
-class CreateDeviceResponse201Alt1AnnouncedavailabilityItems(TypedDict):
-    """
-    Properties:
-    - start
-    - end
-    """
-    start: NotRequired[str]
-    end: NotRequired[str]
-
-
 class CreateDeviceResponse201Alt1ServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceResponse201Alt1(TypedDict):
@@ -941,30 +975,38 @@ class CreateDeviceResponse201Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - connected: If true, the device is connected to the service and can be used.
-
-    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
-
-    - experiment
+    - instantiateUrl
     - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
-    connected: NotRequired[bool]
-    announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt1AnnouncedavailabilityItems]]
-    experiment: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    owner: str
+    instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt1ServicesItems]]
 
 
-class CreateDeviceResponse201Alt2DevicesItems(TypedDict):
+class CreateDeviceResponse201Alt2AnnouncedavailabilityItems(TypedDict):
     """
     Properties:
-    - url: URL of the device
+    - start
+    - end
     """
-    url: NotRequired[str]
+    start: NotRequired[str]
+    end: NotRequired[str]
+
+
+class CreateDeviceResponse201Alt2ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceResponse201Alt2(TypedDict):
@@ -975,14 +1017,34 @@ class CreateDeviceResponse201Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - devices
+    - connected: If true, the device is connected to the service and can be used.
+
+    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
+
+    - experiment
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["group"]]
-    owner: NotRequired[str]
-    devices: NotRequired[List[CreateDeviceResponse201Alt2DevicesItems]]
+    type: Literal["device"]
+    owner: str
+    connected: NotRequired[bool]
+    announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
+    experiment: NotRequired[str]
+    services: NotRequired[List[CreateDeviceResponse201Alt2ServicesItems]]
+
+
+class CreateDeviceResponse201Alt3ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreateDeviceResponse201Alt3(TypedDict):
@@ -993,14 +1055,24 @@ class CreateDeviceResponse201Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - instantiate_url
+    - codeUrl
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["cloud instantiable"]]
-    owner: NotRequired[str]
-    instantiate_url: NotRequired[str]
+    type: Literal["edge instantiable"]
+    owner: str
+    codeUrl: NotRequired[str]
+    services: NotRequired[List[CreateDeviceResponse201Alt3ServicesItems]]
+
+
+class CreateDeviceResponse201Alt4DevicesItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the device
+    """
+    url: str
 
 
 class CreateDeviceResponse201Alt4(TypedDict):
@@ -1011,14 +1083,14 @@ class CreateDeviceResponse201Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - code_url
+    - devices
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["edge instantiable"]]
-    owner: NotRequired[str]
-    code_url: NotRequired[str]
+    type: Literal["group"]
+    owner: str
+    devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
 
 CreateDeviceResponse201 = Union[CreateDeviceResponse201Alt1, CreateDeviceResponse201Alt2, CreateDeviceResponse201Alt3, CreateDeviceResponse201Alt4]
@@ -1027,20 +1099,16 @@ CreateDeviceResponse201 = Union[CreateDeviceResponse201Alt1, CreateDeviceRespons
 CreateDeviceResponse: TypeAlias = CreateDeviceResponse201
 
 
-class GetDeviceResponse200Alt1AnnouncedavailabilityItems(TypedDict):
-    """
-    Properties:
-    - start
-    - end
-    """
-    start: NotRequired[str]
-    end: NotRequired[str]
-
-
 class GetDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class GetDeviceResponse200Alt1(TypedDict):
@@ -1051,30 +1119,38 @@ class GetDeviceResponse200Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - connected: If true, the device is connected to the service and can be used.
-
-    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
-
-    - experiment
+    - instantiateUrl
     - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
-    connected: NotRequired[bool]
-    announcedAvailability: NotRequired[List[GetDeviceResponse200Alt1AnnouncedavailabilityItems]]
-    experiment: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    owner: str
+    instantiateUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt1ServicesItems]]
 
 
-class GetDeviceResponse200Alt2DevicesItems(TypedDict):
+class GetDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
     """
     Properties:
-    - url: URL of the device
+    - start
+    - end
     """
-    url: NotRequired[str]
+    start: NotRequired[str]
+    end: NotRequired[str]
+
+
+class GetDeviceResponse200Alt2ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class GetDeviceResponse200Alt2(TypedDict):
@@ -1085,14 +1161,34 @@ class GetDeviceResponse200Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - devices
+    - connected: If true, the device is connected to the service and can be used.
+
+    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
+
+    - experiment
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["group"]]
-    owner: NotRequired[str]
-    devices: NotRequired[List[GetDeviceResponse200Alt2DevicesItems]]
+    type: Literal["device"]
+    owner: str
+    connected: NotRequired[bool]
+    announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
+    experiment: NotRequired[str]
+    services: NotRequired[List[GetDeviceResponse200Alt2ServicesItems]]
+
+
+class GetDeviceResponse200Alt3ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class GetDeviceResponse200Alt3(TypedDict):
@@ -1103,14 +1199,24 @@ class GetDeviceResponse200Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - instantiate_url
+    - codeUrl
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["cloud instantiable"]]
-    owner: NotRequired[str]
-    instantiate_url: NotRequired[str]
+    type: Literal["edge instantiable"]
+    owner: str
+    codeUrl: NotRequired[str]
+    services: NotRequired[List[GetDeviceResponse200Alt3ServicesItems]]
+
+
+class GetDeviceResponse200Alt4DevicesItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the device
+    """
+    url: str
 
 
 class GetDeviceResponse200Alt4(TypedDict):
@@ -1121,14 +1227,14 @@ class GetDeviceResponse200Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - code_url
+    - devices
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["edge instantiable"]]
-    owner: NotRequired[str]
-    code_url: NotRequired[str]
+    type: Literal["group"]
+    owner: str
+    devices: List[GetDeviceResponse200Alt4DevicesItems]
 
 
 GetDeviceResponse200 = Union[GetDeviceResponse200Alt1, GetDeviceResponse200Alt2, GetDeviceResponse200Alt3, GetDeviceResponse200Alt4]
@@ -1137,123 +1243,125 @@ GetDeviceResponse200 = Union[GetDeviceResponse200Alt1, GetDeviceResponse200Alt2,
 GetDeviceResponse: TypeAlias = GetDeviceResponse200
 
 
-class UpdateDeviceRequestAlt1AnnouncedavailabilityItems(TypedDict):
-    """
-    Properties:
-    """
-
-
 class UpdateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceRequestAlt1(TypedDict):
     """
     Properties:
-    - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
-    - connected: If true, the device is connected to the service and can be used.
-
-    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
-
-    - experiment
+    - instantiateUrl
     - services
     """
-    url: NotRequired[str]
     name: NotRequired[str]
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
-    connected: NotRequired[bool]
-    announcedAvailability: NotRequired[List[UpdateDeviceRequestAlt1AnnouncedavailabilityItems]]
-    experiment: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt1ServicesItems]]
 
 
-class UpdateDeviceRequestAlt2DevicesItems(TypedDict):
+class UpdateDeviceRequestAlt2ServicesItems(TypedDict):
     """
     Properties:
-    - url: URL of the device
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
-    url: NotRequired[str]
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceRequestAlt2(TypedDict):
     """
     Properties:
-    - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
-    - devices
+    - experiment
+    - services
     """
-    url: NotRequired[str]
     name: NotRequired[str]
     description: NotRequired[str]
-    type: NotRequired[Literal["group"]]
-    owner: NotRequired[str]
-    devices: NotRequired[List[UpdateDeviceRequestAlt2DevicesItems]]
+    type: Literal["device"]
+    experiment: NotRequired[str]
+    services: NotRequired[List[UpdateDeviceRequestAlt2ServicesItems]]
+
+
+class UpdateDeviceRequestAlt3ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceRequestAlt3(TypedDict):
     """
     Properties:
-    - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
-    - instantiate_url
+    - codeUrl
+    - services
     """
-    url: NotRequired[str]
     name: NotRequired[str]
     description: NotRequired[str]
-    type: NotRequired[Literal["cloud instantiable"]]
-    owner: NotRequired[str]
-    instantiate_url: NotRequired[str]
+    type: Literal["edge instantiable"]
+    codeUrl: NotRequired[str]
+    services: NotRequired[List[UpdateDeviceRequestAlt3ServicesItems]]
+
+
+class UpdateDeviceRequestAlt4DevicesItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the device
+    """
+    url: str
 
 
 class UpdateDeviceRequestAlt4(TypedDict):
     """
     Properties:
-    - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
-    - code_url
+    - devices
     """
-    url: NotRequired[str]
     name: NotRequired[str]
     description: NotRequired[str]
-    type: NotRequired[Literal["edge instantiable"]]
-    owner: NotRequired[str]
-    code_url: NotRequired[str]
+    type: Literal["group"]
+    devices: NotRequired[List[UpdateDeviceRequestAlt4DevicesItems]]
 
 
 UpdateDeviceRequest = Union[UpdateDeviceRequestAlt1, UpdateDeviceRequestAlt2, UpdateDeviceRequestAlt3, UpdateDeviceRequestAlt4]
 
 
-class UpdateDeviceResponse200Alt1AnnouncedavailabilityItems(TypedDict):
-    """
-    Properties:
-    - start
-    - end
-    """
-    start: NotRequired[str]
-    end: NotRequired[str]
-
-
 class UpdateDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceResponse200Alt1(TypedDict):
@@ -1264,30 +1372,38 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - connected: If true, the device is connected to the service and can be used.
-
-    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
-
-    - experiment
+    - instantiateUrl
     - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
-    connected: NotRequired[bool]
-    announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt1AnnouncedavailabilityItems]]
-    experiment: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    owner: str
+    instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt1ServicesItems]]
 
 
-class UpdateDeviceResponse200Alt2DevicesItems(TypedDict):
+class UpdateDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
     """
     Properties:
-    - url: URL of the device
+    - start
+    - end
     """
-    url: NotRequired[str]
+    start: NotRequired[str]
+    end: NotRequired[str]
+
+
+class UpdateDeviceResponse200Alt2ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceResponse200Alt2(TypedDict):
@@ -1298,14 +1414,34 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - devices
+    - connected: If true, the device is connected to the service and can be used.
+
+    - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
+
+    - experiment
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["group"]]
-    owner: NotRequired[str]
-    devices: NotRequired[List[UpdateDeviceResponse200Alt2DevicesItems]]
+    type: Literal["device"]
+    owner: str
+    connected: NotRequired[bool]
+    announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
+    experiment: NotRequired[str]
+    services: NotRequired[List[UpdateDeviceResponse200Alt2ServicesItems]]
+
+
+class UpdateDeviceResponse200Alt3ServicesItems(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class UpdateDeviceResponse200Alt3(TypedDict):
@@ -1316,14 +1452,24 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - instantiate_url
+    - codeUrl
+    - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["cloud instantiable"]]
-    owner: NotRequired[str]
-    instantiate_url: NotRequired[str]
+    type: Literal["edge instantiable"]
+    owner: str
+    codeUrl: NotRequired[str]
+    services: NotRequired[List[UpdateDeviceResponse200Alt3ServicesItems]]
+
+
+class UpdateDeviceResponse200Alt4DevicesItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the device
+    """
+    url: str
 
 
 class UpdateDeviceResponse200Alt4(TypedDict):
@@ -1334,14 +1480,14 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
-    - code_url
+    - devices
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["edge instantiable"]]
-    owner: NotRequired[str]
-    code_url: NotRequired[str]
+    type: Literal["group"]
+    owner: str
+    devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
 
 UpdateDeviceResponse200 = Union[UpdateDeviceResponse200Alt1, UpdateDeviceResponse200Alt2, UpdateDeviceResponse200Alt3, UpdateDeviceResponse200Alt4]
@@ -1366,7 +1512,13 @@ class InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems(TypedDict):
 class InstantiateDeviceResponse201InstanceServicesItems(TypedDict):
     """
     Properties:
+    - serviceType
+    - serviceId
+    - serviceDirection
     """
+    serviceType: NotRequired[str]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class InstantiateDeviceResponse201Instance(TypedDict):
@@ -1384,11 +1536,11 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     - experiment
     - services
     """
-    url: NotRequired[str]
-    name: NotRequired[str]
+    url: str
+    name: str
     description: NotRequired[str]
-    type: NotRequired[Literal["device"]]
-    owner: NotRequired[str]
+    type: Literal["device"]
+    owner: str
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1401,8 +1553,8 @@ class InstantiateDeviceResponse201(TypedDict):
     - instance
     - deviceToken
     """
-    instance: NotRequired[InstantiateDeviceResponse201Instance]
-    deviceToken: NotRequired[str]
+    instance: InstantiateDeviceResponse201Instance
+    deviceToken: str
 
 
 InstantiateDeviceResponse: TypeAlias = InstantiateDeviceResponse201
@@ -1470,7 +1622,7 @@ class SendSignalingMessageRequestAlt1(TypedDict):
     """
     messageType: Literal["command"]
     command: Literal["createPeerconnection"]
-    connectionType: Literal["webrtc", "websocket"]
+    connectionType: Literal["webrtc", "websocket", "local"]
     connectionUrl: str
     services: List[SendSignalingMessageRequestAlt1ServicesItems]
     tiebreaker: bool
@@ -1520,17 +1672,21 @@ class ListPeerconnectionsResponse200ItemsDevicesItems(TypedDict):
     Properties:
     - url: URL of the device
     """
-    url: NotRequired[str]
+    url: str
 
 
 class ListPeerconnectionsResponse200Items(TypedDict):
     """
     Properties:
     - url: URL of the peerconnection
+    - type: Type of the peerconnection
+    - status: The status of the peerconnection.
     - devices
     """
-    url: NotRequired[str]
-    devices: NotRequired[List[ListPeerconnectionsResponse200ItemsDevicesItems]]
+    url: str
+    type: Literal["local", "webrtc"]
+    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    devices: List[ListPeerconnectionsResponse200ItemsDevicesItems]
 
 
 ListPeerconnectionsResponse200: TypeAlias = List[ListPeerconnectionsResponse200Items]
@@ -1546,9 +1702,9 @@ class CreatePeerconnectionRequestDevicesItemsConfigServicesItems(TypedDict):
     - serviceId
     - remoteServiceId
     """
-    serviceType: NotRequired[str]
-    serviceId: NotRequired[str]
-    remoteServiceId: NotRequired[str]
+    serviceType: str
+    serviceId: str
+    remoteServiceId: str
 
 
 class CreatePeerconnectionRequestDevicesItemsConfig(TypedDict):
@@ -1565,7 +1721,7 @@ class CreatePeerconnectionRequestDevicesItems(TypedDict):
     - url: URL of the device
     - config
     """
-    url: NotRequired[str]
+    url: str
     config: NotRequired[CreatePeerconnectionRequestDevicesItemsConfig]
 
 
@@ -1573,12 +1729,14 @@ class CreatePeerconnectionRequest(TypedDict):
     """
     Properties:
     - url: URL of the peerconnection
-    - devices
+    - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - devices
     """
-    url: NotRequired[str]
-    devices: NotRequired[List[CreatePeerconnectionRequestDevicesItems]]
-    status: NotRequired[Literal["waiting-for-devices", "connected", "failed", "closed"]]
+    url: str
+    type: Literal["local", "webrtc"]
+    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    devices: List[CreatePeerconnectionRequestDevicesItems]
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
@@ -1588,9 +1746,9 @@ class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
     - serviceId
     - remoteServiceId
     """
-    serviceType: NotRequired[str]
-    serviceId: NotRequired[str]
-    remoteServiceId: NotRequired[str]
+    serviceType: str
+    serviceId: str
+    remoteServiceId: str
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfig(TypedDict):
@@ -1607,7 +1765,7 @@ class CreatePeerconnectionResponse201DevicesItems(TypedDict):
     - url: URL of the device
     - config
     """
-    url: NotRequired[str]
+    url: str
     config: NotRequired[CreatePeerconnectionResponse201DevicesItemsConfig]
 
 
@@ -1615,12 +1773,14 @@ class CreatePeerconnectionResponse201(TypedDict):
     """
     Properties:
     - url: URL of the peerconnection
-    - devices
+    - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - devices
     """
-    url: NotRequired[str]
-    devices: NotRequired[List[CreatePeerconnectionResponse201DevicesItems]]
-    status: NotRequired[Literal["waiting-for-devices", "connected", "failed", "closed"]]
+    url: str
+    type: Literal["local", "webrtc"]
+    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    devices: List[CreatePeerconnectionResponse201DevicesItems]
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
@@ -1630,9 +1790,9 @@ class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
     - serviceId
     - remoteServiceId
     """
-    serviceType: NotRequired[str]
-    serviceId: NotRequired[str]
-    remoteServiceId: NotRequired[str]
+    serviceType: str
+    serviceId: str
+    remoteServiceId: str
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfig(TypedDict):
@@ -1649,7 +1809,7 @@ class CreatePeerconnectionResponse202DevicesItems(TypedDict):
     - url: URL of the device
     - config
     """
-    url: NotRequired[str]
+    url: str
     config: NotRequired[CreatePeerconnectionResponse202DevicesItemsConfig]
 
 
@@ -1657,12 +1817,14 @@ class CreatePeerconnectionResponse202(TypedDict):
     """
     Properties:
     - url: URL of the peerconnection
-    - devices
+    - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - devices
     """
-    url: NotRequired[str]
-    devices: NotRequired[List[CreatePeerconnectionResponse202DevicesItems]]
-    status: NotRequired[Literal["waiting-for-devices", "connected", "failed", "closed"]]
+    url: str
+    type: Literal["local", "webrtc"]
+    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    devices: List[CreatePeerconnectionResponse202DevicesItems]
 
 
 CreatePeerconnectionResponse: TypeAlias = Union[CreatePeerconnectionResponse201, CreatePeerconnectionResponse202]
@@ -1675,9 +1837,9 @@ class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
     - serviceId
     - remoteServiceId
     """
-    serviceType: NotRequired[str]
-    serviceId: NotRequired[str]
-    remoteServiceId: NotRequired[str]
+    serviceType: str
+    serviceId: str
+    remoteServiceId: str
 
 
 class GetPeerconnectionResponse200DevicesItemsConfig(TypedDict):
@@ -1694,7 +1856,7 @@ class GetPeerconnectionResponse200DevicesItems(TypedDict):
     - url: URL of the device
     - config
     """
-    url: NotRequired[str]
+    url: str
     config: NotRequired[GetPeerconnectionResponse200DevicesItemsConfig]
 
 
@@ -1702,18 +1864,31 @@ class GetPeerconnectionResponse200(TypedDict):
     """
     Properties:
     - url: URL of the peerconnection
-    - devices
+    - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - devices
     """
-    url: NotRequired[str]
-    devices: NotRequired[List[GetPeerconnectionResponse200DevicesItems]]
-    status: NotRequired[Literal["waiting-for-devices", "connected", "failed", "closed"]]
+    url: str
+    type: Literal["local", "webrtc"]
+    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    devices: List[GetPeerconnectionResponse200DevicesItems]
 
 
 GetPeerconnectionResponse: TypeAlias = GetPeerconnectionResponse200
 
 
 DeletePeerconnectionResponse: TypeAlias = None
+
+
+class PatchPeerconnectionDeviceStatusRequest(TypedDict):
+    """
+    Properties:
+    - status: The status of the peerconnection.
+    """
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+
+
+PatchPeerconnectionDeviceStatusResponse: TypeAlias = None
 
 
 class ListExperimentsResponse200Items(TypedDict):

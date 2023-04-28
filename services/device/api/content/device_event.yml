@@ -12,7 +12,7 @@ schema:
         - device-changed
     device:
       anyOf:
-        - $ref: "../schemas/device_concrete.yml"
-        - $ref: "../schemas/device_group.yml"
-        - $ref: '../schemas/device_cloud_instantiable.yml'
-        - $ref: '../schemas/device_edge_instantiable.yml'
+        - $ref: "../schemas/devices/device_concrete.yml"
+        - $ref: "../schemas/devices/device_group.yml"
+        - $ref: '../schemas/devices/device_cloud_instantiable.yml'
+        - $ref: '../schemas/devices/device_edge_instantiable.yml'

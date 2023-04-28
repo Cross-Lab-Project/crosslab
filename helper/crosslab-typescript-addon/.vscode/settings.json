@@ -29,5 +29,8 @@
         "**/node_modules": true,
         "**/venv": true,
         //end generated
+    },
+    "[njk]": {
+        "editor.formatOnSave": false
     }
 }

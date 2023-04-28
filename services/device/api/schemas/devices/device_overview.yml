@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Device Overview
+type: object
+properties:
+  url:
+    type: string
+    description: URL of the device
+    format: uri
+    readOnly: true
+  name:
+    type: string
+    description: Name of the device
+  description:
+    type: string
+    description: Extended description of the device, features, etc.
+  type:
+    type: string
+    description: Type of the device
+    enum:
+      - device
+      - group
+      - edge instantiable
+      - cloud instantiable
+  owner:
+    type: string
+    format: uri
+    readOnly: true
+required:
+  - url
+  - type
+  - name
+  - owner
+x-typeguard: true

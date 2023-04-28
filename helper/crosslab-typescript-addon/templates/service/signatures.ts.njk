@@ -38,7 +38,7 @@ export type {{ operation.name }}Signature = (
                     {%- for securityMethod, scopes in securityRequirement -%}
                         {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
                     {%- endfor -%}
-                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | strings | join("|")) + ">"), userDataTypes) -%}
+                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | toStrings | join("|")) + ">"), userDataTypes) -%}
                 {%- endfor -%}
             {%- else -%}
                 {%- set userDataTypes = ["undefined"] -%}
@@ -119,7 +119,7 @@ export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" 
  * Typing for a response with status {{ response.status }} to a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export interface {{ operation.name }}{{ response.status }}ResponseType extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
-    status: {{ ("Status" + response.status) if (response.status | endswith("XX")) else response.status }}
+    status: {{ ("NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 100) + ">") if (response.status | endsWith("XX")) else response.status }}
     headers{{ "?" if not response.headers }}: {
         {% for header in response.headers -%}
         "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas, { "schemaType": "response" }) | indent(8) if header.schema else "undefined" }},
@@ -169,51 +169,10 @@ export interface {{ operation.name }}{{ response.status }}ResponseType extends {
  * and run openapi-codegeneration to regenerate this file.
  */
 import {
-    {{ "Require," if signatures | includes("Require<") }}
+    {{- "\n\tSizedTuple," if signatures | includes("SizedTuple<") }}
+    {{- "\n\tRequire," if signatures | includes("Require<") }}
+    {{- "\n\tNumericRange," if signatures | includes("NumericRange<") }}
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
 } from "./types"
-
-{%- set hasStatus1XX = false -%}
-{%- set hasStatus2XX = false -%}
-{%- set hasStatus3XX = false -%}
-{%- set hasStatus4XX = false -%}
-{%- set hasStatus5XX = false -%}
-
-{%- for operation in operations -%}
-    {%- for response in operation.responses -%}
-        {%- if response.status == "1XX" -%}
-            {%- set hasStatus1XX = true -%}
-        {%- elif response.status == "2XX" -%}
-            {%- set hasStatus2XX = true -%}
-        {%- elif response.status == "3XX" -%}
-            {%- set hasStatus3XX = true -%}
-        {%- elif response.status == "4XX" -%}
-            {%- set hasStatus4XX = true -%}
-        {%- elif response.status == "5XX" -%}
-            {%- set hasStatus5XX = true -%}
-        {%- endif -%}
-    {%- endfor -%}
-{%- endfor -%}
-
-{%- if hasStatus1XX %}
-
-type Status1XX = {{ range(100,200) | join("|") }}
-{%- endif %}
-{%- if hasStatus2XX %}
-{{- "\n" if not (hasStatus1XX)}}
-type Status2XX = {{ range(200,300) | join("|") }}
-{%- endif %}
-{%- if hasStatus3XX %}
-{{- "\n" if not (hasStatus1XX and hasStatus2XX)}}
-type Status3XX = {{ range(300,400) | join("|") }}
-{%- endif %}
-{%- if hasStatus4XX %}
-{{- "\n" if not (hasStatus1XX and hasStatus2XX and hasStatus3XX)}}
-type Status4XX = {{ range(400,500) | join("|") }}
-{%- endif %}
-{%- if hasStatus5XX %}
-{{- "\n" if not (hasStatus1XX and hasStatus2XX and hasStatus3XX and hasStatus4XX)}}
-type Status5XX = {{ range(500,600) | join("|") }}
-{%- endif %}
 
 {{ signatures | prettier }}

@@ -1,9 +1,9 @@
-import { TypeScriptFilterCollection } from './filters/typescript'
-import { Addon } from '@cross-lab-project/openapi-codegen'
+import { TypeScriptFilterCollection } from './filterCollections/typescript'
 import { attributeEqualTo } from './tests'
+import { Addon } from '@cross-lab-project/openapi-codegen'
 import path from 'path'
 
-const templateDir=path.resolve(__dirname, '../../')
+const templateDir = path.resolve(__dirname, '../../')
 
 const CrosslabTypeScriptAddon: Addon = {
     filterCollections: [TypeScriptFilterCollection],
@@ -12,35 +12,44 @@ const CrosslabTypeScriptAddon: Addon = {
             name: 'service',
             filterCollections: [TypeScriptFilterCollection],
             globals: [],
-            tests: [{
-                name: "attrequalto",
-                function: attributeEqualTo
-            }],
+            tests: [
+                {
+                    name: 'attrequalto',
+                    function: attributeEqualTo,
+                },
+            ],
             templatesDir: templateDir + '/templates/service',
         },
         {
             name: 'client',
             filterCollections: [TypeScriptFilterCollection],
             globals: [],
-            tests: [{
-                name: "attrequalto",
-                function: attributeEqualTo
-            }],
-            templatesDir: templateDir + '/templates/client'
+            tests: [
+                {
+                    name: 'attrequalto',
+                    function: attributeEqualTo,
+                },
+            ],
+            templatesDir: templateDir + '/templates/client',
         },
         {
             name: 'client:basicValidation',
             filterCollections: [TypeScriptFilterCollection],
             globals: [],
             tests: [],
-            templatesDir: templateDir + '/templates/client-basicValidation'
+            templatesDir: templateDir + '/templates/client-basicValidation',
         },
         {
             name: 'service:test',
             filterCollections: [TypeScriptFilterCollection],
             globals: [],
-            tests: [],
-            templatesDir: templateDir + '/templates/service-test'
+            tests: [
+                {
+                    name: 'attrequalto',
+                    function: attributeEqualTo,
+                },
+            ],
+            templatesDir: templateDir + '/templates/service-test',
         },
         {
             name: 'scopes',

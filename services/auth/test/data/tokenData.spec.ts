@@ -1,8 +1,9 @@
 import { TokenModel, UserModel } from '../../src/database/model'
+import { TokenRepository } from '../../src/database/repositories/tokenRepository'
 import { Token } from '../../src/types/types'
-import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
+import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
 
 export const tokenNames = [
     'superadmin expired token',
@@ -14,7 +15,7 @@ export const tokenNames = [
     'POST /logout valid user token',
 ] as const
 export type TokenName = (typeof tokenNames)[number]
-export type TokenData = Record<TokenName, EntityData<TokenModel>>
+export type TokenData = Record<TokenName, EntityData<TokenRepository>>
 
 type TokenWithLinks<T extends 'all' | 'request' | 'response' = 'all'> = T extends
     | 'all'
@@ -139,7 +140,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
 export function resolveToken(
     tokenName: TokenName,
     userData: Subset<UserData>
-): EntityData<TokenModel> {
+): EntityData<TokenRepository> {
     return {
         request: {
             ...tokenDataWithLinks[tokenName].request,

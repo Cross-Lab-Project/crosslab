@@ -12,7 +12,7 @@ import { experimentUrlFromId, getUrlOrInstanceUrl } from './url'
 export function buildConnectionPlan(
     requestHandler: RequestHandler,
     experiment: ExperimentModel
-): DeviceServiceTypes.Peerconnection[] {
+): DeviceServiceTypes.Peerconnection<"request">[] {
     const experimentUrl = requestHandler.executeSync(experimentUrlFromId, experiment.uuid)
     requestHandler.log('info', `Building connection plan for experiment ${experimentUrl}`)
     console.log('building connection plan for experiment', experiment.uuid)
@@ -48,7 +48,7 @@ export function buildConnectionPlan(
 
     const peerconnections: Record<
         string,
-        Pick<Required<DeviceServiceTypes.Peerconnection>, 'devices'>
+        DeviceServiceTypes.Peerconnection<"request">
     > = {}
     for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
         // HOTFIX: for local services: Don't connect local services to each other
@@ -59,6 +59,7 @@ export function buildConnectionPlan(
         const lookupKey = `${serviceConfig.devices[0].url}::${serviceConfig.devices[1].url}`
         if (!(lookupKey in peerconnections)) {
             peerconnections[lookupKey] = {
+                type: "webrtc",
                 devices: [
                     {
                         url: requestHandler.executeSync(

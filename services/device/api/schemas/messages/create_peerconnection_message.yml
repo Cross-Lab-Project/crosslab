@@ -11,6 +11,7 @@ allOf:
         enum:
           - webrtc
           - websocket
+          - local
       connectionUrl:
         type: string
         format: uri
@@ -18,7 +19,7 @@ allOf:
         type: array
         items:
           type: object
-          $ref: "../service_config.yml"
+          $ref: "../devices/services/service_config.yml"
           required:
             - serviceType
             - serviceId

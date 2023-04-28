@@ -1,17 +1,30 @@
+import { AppDataSource } from '../../../src/database/dataSource'
+import { UserModel } from '../../../src/database/model'
+import {
+    userRepository,
+    UserRepository,
+} from '../../../src/database/repositories/userRepository'
+import { User, UserInit, UserUpdate } from '../../../src/generated/types'
+import { userUrlFromId } from '../../../src/methods/utils'
+import { UserName, userNames } from '../../data/userData.spec'
+import { initTestDatabase } from './index.spec'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import assert from 'assert'
 import { compareSync } from 'bcryptjs'
-import { FindOptionsWhere } from 'typeorm'
-import { UserModel } from '../../../src/database/model'
-import { UserRepository } from '../../../src/database/repositories/userRepository'
-import { User, UserInit, UserUpdate } from '../../../src/generated/types'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 import Mocha from 'mocha'
-import { userNames } from '../../data/userData.spec'
-import { userUrlFromId } from '../../../src/methods/utils'
+import { FindOptionsWhere } from 'typeorm'
 
-class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<UserModel> {
+class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<
+    UserName,
+    UserRepository
+> {
+    protected name = 'users' as const
+    protected repository = userRepository
+    protected getEntityData = async () => (await initTestDatabase())['users']
+    protected RepositoryClass = UserRepository
+
     constructor() {
-        super(UserModel)
+        super(AppDataSource)
     }
 
     public async initialize(): Promise<void> {

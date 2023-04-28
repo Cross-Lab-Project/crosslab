@@ -42,6 +42,34 @@
         ],
         "x-typeguard": true
       },
+      "connection_state_changed_message": {
+        "title": "Connection State Changed Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "connection-state-changed"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "status": {
+                "$ref": "#/components/schemas/peerconnection_status"
+              }
+            },
+            "required": [
+              "connectionUrl",
+              "status"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
       "device_overview": {
         "title": "Device Overview",
         "type": "object",
@@ -76,6 +104,61 @@
             "readOnly": true
           }
         },
+        "required": [
+          "url",
+          "type",
+          "name",
+          "owner"
+        ],
+        "x-typeguard": true
+      },
+      "service_description": {
+        "title": "Service Description",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "serviceDirection": {
+            "type": "string",
+            "enum": [
+              "consumer",
+              "producer",
+              "prosumer"
+            ]
+          }
+        },
+        "additionalProperties": true
+      },
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
         "x-typeguard": true
       },
       "time_slot": {
@@ -114,10 +197,12 @@
               },
               "connected": {
                 "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean"
+                "type": "boolean",
+                "readOnly": true
               },
               "announcedAvailability": {
-                "$ref": "#/components/schemas/availability"
+                "$ref": "#/components/schemas/availability",
+                "readOnly": true
               },
               "experiment": {
                 "type": "string",
@@ -126,14 +211,242 @@
               "services": {
                 "type": "array",
                 "items": {
-                  "type": "object",
-                  "additionalProperties": true
+                  "$ref": "#/components/schemas/service_description"
                 }
               }
             }
           }
         ],
         "x-typeguard": true
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "device_group": {
+        "title": "Device Group",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            },
+            "required": [
+              "devices"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device": {
+        "title": "Device",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_group"
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_overview_update": {
+        "title": "Device Overview Update",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the device"
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "device_cloud_instantiable_update": {
+        "title": "Instantiable Cloud Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "device_concrete_update": {
+        "title": "Concrete Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "device_edge_instantiable_update": {
+        "title": "Instantiable Browser Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "device_group_update": {
+        "title": "Device Group Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "device_update": {
+        "title": "Device Update",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_group_update"
+          }
+        ]
       },
       "availability_rule": {
         "title": "Availability Rule",
@@ -157,9 +470,7 @@
                     "enum": [
                       "HOURLY",
                       "DAILY",
-                      "WEEKLY",
-                      "MONTHLY",
-                      "YEARLY"
+                      "WEEKLY"
                     ]
                   },
                   "until": {
@@ -171,83 +482,14 @@
                     "description": "How often the time slot will be repeated",
                     "type": "integer"
                   }
-                }
+                },
+                "required": [
+                  "frequency"
+                ]
               }
             }
           }
         ]
-      },
-      "device_group": {
-        "title": "Device Group",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "group"
-              },
-              "devices": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "URL of the device",
-                      "format": "uri"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true
-      },
-      "device_cloud_instantiable": {
-        "title": "Instantiable Cloud Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "cloud instantiable"
-              },
-              "instantiate_url": {
-                "type": "string",
-                "format": "uri"
-              }
-            }
-          }
-        ],
-        "x-typeguard": true
-      },
-      "device_edge_instantiable": {
-        "title": "Instantiable Browser Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "edge instantiable"
-              },
-              "code_url": {
-                "type": "string",
-                "format": "uri"
-              }
-            }
-          }
-        ],
-        "x-typeguard": true
       },
       "message": {
         "title": "Message",
@@ -302,6 +544,11 @@
             "type": "string"
           }
         },
+        "required": [
+          "serviceType",
+          "serviceId",
+          "remoteServiceId"
+        ],
         "additionalProperties": true
       },
       "create_peerconnection_message": {
@@ -320,7 +567,8 @@
                 "type": "string",
                 "enum": [
                   "webrtc",
-                  "websocket"
+                  "websocket",
+                  "local"
                 ]
               },
               "connectionUrl": {
@@ -422,19 +670,20 @@
         ],
         "x-typeguard": true
       },
-      "device_reference": {
-        "title": "Device Reference",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri"
-          }
-        }
+      "peerconnection_status": {
+        "title": "Connection Status",
+        "type": "string",
+        "description": "The status of the peerconnection.",
+        "enum": [
+          "new",
+          "connecting",
+          "connected",
+          "disconnected",
+          "failed",
+          "closed"
+        ]
       },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
+      "peerconnection_common": {
         "type": "object",
         "properties": {
           "url": {
@@ -443,15 +692,46 @@
             "format": "uri",
             "readOnly": true
           },
-          "devices": {
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-              "$ref": "#/components/schemas/device_reference"
-            }
+          "type": {
+            "type": "string",
+            "description": "Type of the peerconnection",
+            "enum": [
+              "local",
+              "webrtc"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/peerconnection_status"
           }
-        }
+        },
+        "required": [
+          "url",
+          "type"
+        ]
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_common"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            },
+            "required": [
+              "devices"
+            ]
+          }
+        ]
       },
       "configured_device_reference": {
         "title": "Configured Device Reference",
@@ -473,13 +753,16 @@
               }
             }
           }
-        }
+        },
+        "required": [
+          "url"
+        ]
       },
       "peerconnection": {
         "title": "Peerconnection",
         "allOf": [
           {
-            "$ref": "#/components/schemas/peerconnection_overview"
+            "$ref": "#/components/schemas/peerconnection_common"
           },
           {
             "type": "object",
@@ -491,18 +774,11 @@
                 "items": {
                   "$ref": "#/components/schemas/configured_device_reference"
                 }
-              },
-              "status": {
-                "type": "string",
-                "description": "The status of the peerconnection.",
-                "enum": [
-                  "waiting-for-devices",
-                  "connected",
-                  "failed",
-                  "closed"
-                ]
               }
-            }
+            },
+            "required": [
+              "devices"
+            ]
           }
         ],
         "x-typeguard": true
@@ -587,6 +863,16 @@
         "example": [
           "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
         ]
+      },
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "URL of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
       }
     }
   },
@@ -673,36 +959,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device"
               },
               "examples": {
                 "microcontroller": {
@@ -816,20 +1073,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -1051,20 +1295,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -1216,36 +1447,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "title": "Device Init",
-                "anyOf": [
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/device_concrete"
-                      },
-                      {
-                        "type": "object",
-                        "properties": {
-                          "announcedAvailability": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/availability_rule"
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_group"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_cloud_instantiable"
-                  },
-                  {
-                    "$ref": "#/components/schemas/device_edge_instantiable"
-                  }
-                ]
+                "$ref": "#/components/schemas/device_update"
               },
               "examples": {
                 "microcontroller": {
@@ -1359,20 +1561,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/device_concrete"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_group"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_cloud_instantiable"
-                    },
-                    {
-                      "$ref": "#/components/schemas/device_edge_instantiable"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/device"
                 },
                 "examples": {
                   "microcontroller": {
@@ -1639,7 +1828,11 @@
                     "deviceToken": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "instance",
+                    "deviceToken"
+                  ]
                 }
               }
             }
@@ -2239,6 +2432,70 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/peerconnection_id"
+          }
+        ]
+      }
+    },
+    "/peerconnections/{peerconnection_id}/device_status": {
+      "patch": {
+        "operationId": "patch_peerconnection_device_status",
+        "summary": "Sets the peerconnection status of a single device.",
+        "tags": [
+          "peerconnection"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "peerconnection",
+              "peerconnection:list"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The JSON Representation of the device peer connection.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/peerconnection_status"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/peerconnection_id"
+          },
+          {
+            "$ref": "#/components/parameters/device_url"
           }
         ]
       }

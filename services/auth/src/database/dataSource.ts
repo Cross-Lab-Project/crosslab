@@ -5,37 +5,16 @@ import { roleRepository } from './repositories/roleRepository'
 import { scopeRepository } from './repositories/scopeRepository'
 import { tokenRepository } from './repositories/tokenRepository'
 import { userRepository } from './repositories/userRepository'
-import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
+import { AbstractApplicationDataSource } from '@crosslab/service-common'
 
-export class ApplicationDataSource {
-    private dataSource?: DataSource
-    public connected = false
-
-    public async initialize(options: DataSourceOptions) {
-        this.dataSource = new DataSource(options)
-        await this.dataSource.initialize()
-        this.connected = true
-        activeKeyRepository.initialize()
-        keyRepository.initialize()
-        roleRepository.initialize()
-        scopeRepository.initialize()
-        tokenRepository.initialize()
-        userRepository.initialize()
-    }
-
-    public async teardown() {
-        if (!this.dataSource?.isInitialized)
-            throw new Error('Data Source has not been initialized!')
-
-        await this.dataSource.destroy()
-        this.connected = false
-    }
-
-    public getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
-        if (!this.dataSource?.isInitialized)
-            throw new Error('Data Source has not been initialized!')
-
-        return this.dataSource.getRepository(target)
+export class ApplicationDataSource extends AbstractApplicationDataSource {
+    protected initializeRepositories(): void {
+        activeKeyRepository.initialize(this)
+        keyRepository.initialize(this)
+        roleRepository.initialize(this)
+        scopeRepository.initialize(this)
+        tokenRepository.initialize(this)
+        userRepository.initialize(this)
     }
 }
 

@@ -1,14 +1,28 @@
-import assert from 'assert'
-import { FindOptionsWhere } from 'typeorm'
+import { AppDataSource } from '../../../src/database/dataSource'
 import { TokenModel } from '../../../src/database/model'
-import { TokenRepository } from '../../../src/database/repositories/tokenRepository'
+import {
+    tokenRepository,
+    TokenRepository,
+} from '../../../src/database/repositories/tokenRepository'
 import { Token } from '../../../src/types/types'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
+import { TokenName } from '../../data/tokenData.spec'
+import { initTestDatabase } from './index.spec'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import assert from 'assert'
 import Mocha from 'mocha'
+import { FindOptionsWhere } from 'typeorm'
 
-class TokenRepositoryTestSuite extends AbstractRepositoryTestSuite<TokenModel> {
+class TokenRepositoryTestSuite extends AbstractRepositoryTestSuite<
+    TokenName,
+    TokenRepository
+> {
+    protected name = 'tokens' as const
+    protected repository = tokenRepository
+    protected getEntityData = async () => (await initTestDatabase())['tokens']
+    protected RepositoryClass = TokenRepository
+
     constructor() {
-        super(TokenModel)
+        super(AppDataSource)
     }
 
     public async initialize(): Promise<void> {

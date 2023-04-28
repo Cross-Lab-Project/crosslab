@@ -23,18 +23,39 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
   async connect(connectOptions: {endpoint: string; id: string; token: string}) {
     this.ws = new WebSocket(connectOptions.endpoint);
-    const p = new Promise<void>(resolve => {
-      this.ws.onopen = () => {
-        resolve();
-        this.ws.send(
-          JSON.stringify({
-            messageType: 'authenticate',
-            deviceUrl: connectOptions.id,
-            token: connectOptions.token,
-          }),
-        );
+
+    this.ws.onopen = () => {
+      this.ws.send(
+        JSON.stringify({
+          messageType: 'authenticate',
+          deviceUrl: connectOptions.id,
+          token: connectOptions.token,
+        }),
+      );
+    };
+
+    const p = new Promise<void>((resolve, reject) => {
+      this.ws.onmessage = authenticationEvent => {
+        const authenticationMessage = JSON.parse(authenticationEvent.data as string);
+        if (authenticationMessage.messageType === 'authenticate') {
+          if (authenticationMessage.authenticated) {
+            resolve();
+          } else reject('Authentication failed');
+        } else {
+          reject(`Èxpected message with messageType 'authenticate', received '${authenticationMessage.messageType}'`);
+        }
       };
     });
+
+    this.ws.onclose = event => {
+      console.log('ws closed', event);
+    };
+
+    this.ws.onerror = event => {
+      console.log('ws error', event);
+    };
+
+    await p;
 
     this.ws.onmessage = event => {
       const message = JSON.parse(event.data as string);
@@ -48,16 +69,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
         this.handleSignalingMessage(message);
       }
     };
-
-    this.ws.onclose = event => {
-      console.log('ws closed', event);
-    };
-
-    this.ws.onerror = event => {
-      console.log('ws error', event);
-    };
-
-    await p;
   }
 
   addService(service: Service) {
@@ -69,9 +80,11 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       throw Error('Can not create a connection. Connection Id is already present');
     }
     console.log('creating connection', message);
-    const connection = new WebRTCPeerConnection({}/*{
+    const connection = new WebRTCPeerConnection(
+      {} /*{
       iceServers: [{urls: 'stun:stun.goldi-labs.de:3478'}, {urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi'}],
-    }*/);
+    }*/,
+    );
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {

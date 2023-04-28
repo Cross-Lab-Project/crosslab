@@ -1,17 +1,23 @@
-import { AbstractRepository } from './abstractRepository'
 import { Token } from '../../types/types'
 import { ScopeModel, TokenModel } from '../model'
 import { scopeRepository } from './scopeRepository'
-import { AppDataSource } from '../dataSource'
-import { FindOptionsRelations } from 'typeorm'
 import { userRepository } from './userRepository'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
+import { FindOptionsRelations } from 'typeorm'
 
-export class TokenRepository extends AbstractRepository<TokenModel> {
+export class TokenRepository extends AbstractRepository<
+    TokenModel,
+    Token<'request'>,
+    Token<'response'>
+> {
     constructor() {
-        super(TokenModel)
+        super('Token')
     }
 
-    public initialize(): void {
+    public initialize(AppDataSource: AbstractApplicationDataSource): void {
         this.repository = AppDataSource.getRepository(TokenModel)
     }
 

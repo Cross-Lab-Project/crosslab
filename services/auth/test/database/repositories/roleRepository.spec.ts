@@ -1,16 +1,29 @@
-import assert from 'assert'
-import { FindOptionsWhere } from 'typeorm'
+import { AppDataSource } from '../../../src/database/dataSource'
 import { RoleModel } from '../../../src/database/model'
+import {
+    roleRepository,
+    RoleRepository,
+} from '../../../src/database/repositories/roleRepository'
 import { Role } from '../../../src/generated/types'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
-import Mocha from 'mocha'
+import { RoleName, roleNames } from '../../data/roleData.spec'
+import { initTestDatabase } from './index.spec'
 import { scopeRepositoryTestSuite } from './scopeRepository.spec'
-import { roleNames } from '../../data/roleData.spec'
-import { RoleRepository } from '../../../src/database/repositories/roleRepository'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
+import { FindOptionsWhere } from 'typeorm'
 
-class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<RoleModel> {
+class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<
+    RoleName,
+    RoleRepository
+> {
+    protected name = 'roles' as const
+    protected repository = roleRepository
+    protected getEntityData = async () => (await initTestDatabase())['roles']
+    protected RepositoryClass = RoleRepository
+
     constructor() {
-        super(RoleModel)
+        super(AppDataSource)
     }
 
     public async initialize(): Promise<void> {

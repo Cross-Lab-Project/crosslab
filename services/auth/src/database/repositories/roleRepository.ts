@@ -1,17 +1,23 @@
-import { AbstractRepository } from './abstractRepository'
 import { Role, RoleInit } from '../../generated/types'
+import { roleUrlFromId } from '../../methods/utils'
 import { RoleModel, UserModel } from '../model'
 import { scopeRepository } from './scopeRepository'
-import { AppDataSource } from '../dataSource'
-import { roleUrlFromId } from '../../methods/utils'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
 import { FindOptionsRelations } from 'typeorm'
 
-export class RoleRepository extends AbstractRepository<RoleModel> {
+export class RoleRepository extends AbstractRepository<
+    RoleModel,
+    Role<'request'>,
+    Role<'response'>
+> {
     constructor() {
-        super(RoleModel)
+        super('Role')
     }
 
-    public initialize(): void {
+    public initialize(AppDataSource: AbstractApplicationDataSource): void {
         this.repository = AppDataSource.getRepository(RoleModel)
     }
 
