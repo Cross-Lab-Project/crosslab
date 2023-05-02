@@ -57,8 +57,8 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
     super();
     this.configuration = configuration;
     const dir = configuration.direction ?? 'inout';
-    if (dir != 'in' && configuration.driver) {
-      this.driver = configuration.driver;
+    if (dir != 'in') {
+      this.driver = configuration.driver ?? 'default';
     }
   }
 
