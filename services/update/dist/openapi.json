@@ -71,7 +71,7 @@
           {
             "JWT": [
               "update",
-              "update:list"
+              "update:read"
             ]
           }
         ],
@@ -173,7 +173,7 @@
           {
             "JWT": [
               "update",
-              "update:list"
+              "update:read"
             ]
           }
         ],
@@ -228,7 +228,7 @@
           {
             "JWT": [
               "update",
-              "update:edit"
+              "update:write"
             ]
           }
         ],
@@ -285,7 +285,7 @@
           {
             "JWT": [
               "update",
-              "update:create"
+              "update:delete"
             ]
           }
         ],

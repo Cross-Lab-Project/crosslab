@@ -1513,7 +1513,9 @@
           {
             "JWT": [
               "device_token",
-              "device_token:create"
+              "device_token:create",
+              "device_token:create:owned",
+              "device_token:create:instantiable"
             ]
           }
         ],
@@ -3101,7 +3103,8 @@
           {
             "JWT": [
               "device",
-              "device:list"
+              "device:read",
+              "device:read:owned"
             ]
           }
         ],
@@ -3409,7 +3412,7 @@
                   {
                     "JWT": [
                       "device",
-                      "device:edit",
+                      "device:write",
                       "device:create"
                     ]
                   }
@@ -3490,7 +3493,8 @@
           {
             "JWT": [
               "device",
-              "device:list"
+              "device:read",
+              "device:read:owned"
             ]
           }
         ],
@@ -3636,7 +3640,8 @@
           {
             "JWT": [
               "device",
-              "device:edit"
+              "device:write",
+              "device:write:owned"
             ]
           }
         ],
@@ -3969,7 +3974,8 @@
           {
             "JWT": [
               "device",
-              "device:create"
+              "device:delete",
+              "device:delete:owned"
             ]
           }
         ],
@@ -4010,7 +4016,8 @@
           {
             "JWT": [
               "device",
-              "device:instantiate"
+              "device:instantiate",
+              "device:instantiate:owned"
             ]
           }
         ],
@@ -4128,7 +4135,8 @@
           {
             "JWT": [
               "device",
-              "device:edit"
+              "device:write",
+              "device:write:owned"
             ]
           }
         ],
@@ -4232,7 +4240,8 @@
           {
             "JWT": [
               "device",
-              "device:connect"
+              "device:connect",
+              "device:connect:current"
             ]
           }
         ],
@@ -4350,7 +4359,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],
@@ -4572,7 +4581,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],
@@ -4620,7 +4629,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:create"
+              "peerconnection:delete"
             ]
           }
         ],
@@ -4663,7 +4672,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],
@@ -4728,7 +4737,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:list"
+              "experiment:read",
+              "experiment:read:owned"
             ]
           }
         ],
@@ -4836,7 +4846,7 @@
                     "JWT": [
                       "experiment",
                       "experiment:create",
-                      "experiment:edit"
+                      "experiment:write"
                     ]
                   }
                 ],
@@ -4900,7 +4910,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:list"
+              "experiment:read",
+              "experiment:read:owned"
             ]
           }
         ],
@@ -4944,7 +4955,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:edit"
+              "experiment:write",
+              "experiment:write:owned"
             ]
           }
         ],
@@ -5012,7 +5024,7 @@
                     "JWT": [
                       "experiment",
                       "experiment:create",
-                      "experiment:edit"
+                      "experiment:write"
                     ]
                   }
                 ],
@@ -5068,7 +5080,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:create"
+              "experiment:delete",
+              "experiment:delete:owned"
             ]
           }
         ],
@@ -5111,7 +5124,7 @@
           {
             "JWT": [
               "institution",
-              "institution:list"
+              "institution:read"
             ]
           }
         ],
@@ -5220,7 +5233,7 @@
           {
             "JWT": [
               "institution",
-              "institution:list"
+              "institution:read"
             ]
           }
         ],
@@ -5263,7 +5276,7 @@
           {
             "JWT": [
               "institution",
-              "institution:edit"
+              "institution:write"
             ]
           }
         ],
@@ -5321,7 +5334,7 @@
           {
             "JWT": [
               "institution",
-              "institution:create"
+              "institution:delete"
             ]
           }
         ],
@@ -5363,7 +5376,7 @@
           {
             "JWT": [
               "update",
-              "update:list"
+              "update:read"
             ]
           }
         ],
@@ -5467,7 +5480,7 @@
           {
             "JWT": [
               "update",
-              "update:list"
+              "update:read"
             ]
           }
         ],
@@ -5523,7 +5536,7 @@
           {
             "JWT": [
               "update",
-              "update:edit"
+              "update:write"
             ]
           }
         ],
@@ -5581,7 +5594,7 @@
           {
             "JWT": [
               "update",
-              "update:create"
+              "update:delete"
             ]
           }
         ],

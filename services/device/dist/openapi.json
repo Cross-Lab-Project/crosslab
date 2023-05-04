@@ -898,7 +898,8 @@
           {
             "JWT": [
               "device",
-              "device:list"
+              "device:read",
+              "device:read:owned"
             ]
           }
         ],
@@ -1205,7 +1206,7 @@
                   {
                     "JWT": [
                       "device",
-                      "device:edit",
+                      "device:write",
                       "device:create"
                     ]
                   }
@@ -1285,7 +1286,8 @@
           {
             "JWT": [
               "device",
-              "device:list"
+              "device:read",
+              "device:read:owned"
             ]
           }
         ],
@@ -1430,7 +1432,8 @@
           {
             "JWT": [
               "device",
-              "device:edit"
+              "device:write",
+              "device:write:owned"
             ]
           }
         ],
@@ -1762,7 +1765,8 @@
           {
             "JWT": [
               "device",
-              "device:create"
+              "device:delete",
+              "device:delete:owned"
             ]
           }
         ],
@@ -1802,7 +1806,8 @@
           {
             "JWT": [
               "device",
-              "device:instantiate"
+              "device:instantiate",
+              "device:instantiate:owned"
             ]
           }
         ],
@@ -1919,7 +1924,8 @@
           {
             "JWT": [
               "device",
-              "device:edit"
+              "device:write",
+              "device:write:owned"
             ]
           }
         ],
@@ -2022,7 +2028,8 @@
           {
             "JWT": [
               "device",
-              "device:connect"
+              "device:connect",
+              "device:connect:current"
             ]
           }
         ],
@@ -2138,7 +2145,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],
@@ -2358,7 +2365,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],
@@ -2405,7 +2412,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:create"
+              "peerconnection:delete"
             ]
           }
         ],
@@ -2447,7 +2454,7 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:list"
+              "peerconnection:read"
             ]
           }
         ],

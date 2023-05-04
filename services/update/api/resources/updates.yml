@@ -6,7 +6,7 @@ get:
   security:
     - JWT:
       - update
-      - update:list
+      - update:read
   summary: Get update information for all devices
   responses:
     200:

@@ -348,7 +348,9 @@
           {
             "JWT": [
               "device_token",
-              "device_token:create"
+              "device_token:create",
+              "device_token:create:owned",
+              "device_token:create:instantiable"
             ]
           }
         ],

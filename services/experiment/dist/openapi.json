@@ -210,7 +210,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:list"
+              "experiment:read",
+              "experiment:read:owned"
             ]
           }
         ],
@@ -317,7 +318,7 @@
                     "JWT": [
                       "experiment",
                       "experiment:create",
-                      "experiment:edit"
+                      "experiment:write"
                     ]
                   }
                 ],
@@ -380,7 +381,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:list"
+              "experiment:read",
+              "experiment:read:owned"
             ]
           }
         ],
@@ -423,7 +425,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:edit"
+              "experiment:write",
+              "experiment:write:owned"
             ]
           }
         ],
@@ -491,7 +494,7 @@
                     "JWT": [
                       "experiment",
                       "experiment:create",
-                      "experiment:edit"
+                      "experiment:write"
                     ]
                   }
                 ],
@@ -546,7 +549,8 @@
           {
             "JWT": [
               "experiment",
-              "experiment:create"
+              "experiment:delete",
+              "experiment:delete:owned"
             ]
           }
         ],
