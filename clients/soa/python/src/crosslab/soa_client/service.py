@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import Awaitable, Literal, Union
+
+from crosslab.soa_client.connection import Connection
 
 
 class Service(ABC):
@@ -16,5 +18,13 @@ class Service(ABC):
         }
 
     @abstractmethod
-    def setupConnection(self, connection, serviceConfig):
+    def setupConnection(
+        self, connection: Connection, serviceConfig
+    ) -> Union[None, Awaitable[None]]:
+        pass
+
+    @abstractmethod
+    def teardownConnection(
+        self, connection: Connection
+    ) -> Union[None, Awaitable[None]]:
         pass

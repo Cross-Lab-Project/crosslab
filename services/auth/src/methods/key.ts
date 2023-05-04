@@ -7,7 +7,7 @@ import { keyRepository } from '../database/repositories/keyRepository'
  * @param usage The usage of the key (default: "sig")
  * @returns The newly generated key.
  */
-export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
+export async function generateNewKey(usage = 'sig'): Promise<KeyModel> {
     const keyPair = await generateKeyPair('RS256')
 
     const keyModel = await keyRepository.create({
@@ -28,11 +28,11 @@ export async function generateNewKey(usage: string = 'sig'): Promise<KeyModel> {
  * @returns The parsed JWK.
  */
 export function jwk(keyModel: KeyModel) {
-    const jwk = keyModel.public_key
+    const parsed_jwk = keyModel.public_key
 
-    jwk.use = keyModel.use
-    jwk.alg = keyModel.alg
-    jwk.kid = keyModel.uuid
+    parsed_jwk.use = keyModel.use
+    parsed_jwk.alg = keyModel.alg
+    parsed_jwk.kid = keyModel.uuid
 
-    return jwk
+    return parsed_jwk
 }

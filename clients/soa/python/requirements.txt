@@ -1,4 +1,5 @@
 -e ../../api/python
+-e ../../../helper/python-test-helper
 -e ./
 pytest
 pytest-asyncio

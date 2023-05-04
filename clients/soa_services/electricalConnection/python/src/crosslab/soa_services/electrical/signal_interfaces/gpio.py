@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from crosslab.soa_services.electrical import (
     ConstructableSignalInterface,
@@ -22,35 +22,33 @@ class GPIOInterface(SignalInterface):
     driverStates: Dict[str, State]
     interfaceType = "gpio"
     signalState: State
+    configuration: GPIOInterfaceConfig  # TODO: Deprecate this
+
+    _driverState: State = "unknown"
+    _driver: Optional[str] = None
 
     def __init__(self, configuration: GPIOInterfaceConfig):
         super().__init__()
         self.driverStates = dict()
         self.signalState = "unknown"
         self.configuration = configuration
+        if configuration.get("direction", "inout") != "in":
+            self._driver = configuration.get("driver", "default")
 
     def changeDriver(self, state: State):
-        data = GPIOInterfaceData(
-            driver=self.configuration.get("driver", "pc"), state=state
-        )
-        self.emit("upstreamData", data)
-        self.downstreamData(data)
+        if self._driver:
+            self._driverState = state
+            data = GPIOInterfaceData(driver=self._driver, state=state)
+            self.emit("upstreamData", data)
+            self.downstreamData(data)
 
     def retransmit(self):
-        if "pc" in self.driverStates:
+        if self._driver:
             self.emit(
                 "upstreamData",
                 GPIOInterfaceData(
-                    driver=self.configuration.get("driver", "pc"),
-                    state=self.driverStates["pc"],
-                ),
-            )
-        else:
-            self.emit(
-                "upstreamData",
-                GPIOInterfaceData(
-                    driver=self.configuration.get("driver", "pc"),
-                    state="unknown",
+                    driver=self._driver,
+                    state=self._driverState,
                 ),
             )
 
@@ -61,7 +59,7 @@ class GPIOInterface(SignalInterface):
     def evaluateSignalState(self):
         states = set(self.driverStates.values())
 
-        newState: State = "unknown"
+        newState: State = "highZ"
         if "error" in states:
             newState = "error"
         elif "strongH" in states and "strongL" in states:

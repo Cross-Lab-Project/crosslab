@@ -16,32 +16,32 @@
     ],
     "files.exclude": {
         //begin generated
-        "**/app": true,
-        "**/build": true,
         "**/*.egg-info": true,
-        "**/lib": true,
         "**/.mypy_cache": true,
-        "**/node_modules": true,
         "**/.packages": true,
-        "**/__pycache__": true,
         "**/.pytest_cache": true,
         "**/.tox": true,
+        "**/__pycache__": true,
+        "**/app": true,
+        "**/build": true,
+        "**/lib": true,
+        "**/node_modules": true,
         "**/venv": true,
         //end generated
     },
     "files.watcherExclude": {
         //begin generated
+        "**/*.egg-info": true,
+        "**/.mypy_cache": true,
+        "**/.packages": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/__pycache__": true,
         "**/app": true,
         "**/build": true,
         "**/dist": true,
-        "**/*.egg-info": true,
         "**/lib": true,
-        "**/.mypy_cache": true,
         "**/node_modules": true,
-        "**/.packages": true,
-        "**/__pycache__": true,
-        "**/.pytest_cache": true,
-        "**/.tox": true,
         "**/venv": true,
         //end generated
     }

@@ -1,4 +1,4 @@
-{%- set schemas = (api | resolveSchemas) | selectattr("x-typeguard") | sortByAttribute("x-schema-type") -%}
+{%- set schemas = (api | resolveSchemas) | selectattr("x-typeguard") | select("attrequalto", ["x-standalone", true]) | sortByAttribute("x-schema-type") -%}
 
 import { assert } from "console"
 import * as sinon from "sinon"

@@ -1,28 +1,30 @@
-import { TypedEmitter } from "tiny-typed-emitter";
-import {
-  ConstructableConnectionInterface,
-  ConnectionInterfaceDescription,
-  ConnectionInterface,
-  ConnectionInterfaceEvents,
-  ConnectionInterfaceConfiguration,
-} from "../connectionInterface";
+import {TypedEmitter} from 'tiny-typed-emitter';
 
-type InterfaceType = "gpio";
-const InterfaceType: InterfaceType = "gpio";
+import {
+  ConnectionInterface,
+  ConnectionInterfaceConfiguration,
+  ConnectionInterfaceDescription,
+  ConnectionInterfaceEvents,
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
+
+type InterfaceType = 'gpio';
+const InterfaceType: InterfaceType = 'gpio';
 
 export interface GPIOConfiguration extends ConnectionInterfaceConfiguration {
-  signals: { gpio: string };
+  signals: {gpio: string};
   driver: string;
+  direction?: "in" | "out" | "inout";
 }
 
 export enum GPIOState {
-  "Unknown" = "unknown",
-  "Error" = "error",
-  "StrongLow" = "strongL",
-  "StrongHigh" = "strongH",
-  "HighZ" = "highZ",
-  "WeakLow" = "weakL",
-  "WeakHigh" = "weakH",
+  'Unknown' = 'unknown',
+  'Error' = 'error',
+  'StrongLow' = 'strongL',
+  'StrongHigh' = 'strongH',
+  'HighZ' = 'highZ',
+  'WeakLow' = 'weakL',
+  'WeakHigh' = 'weakH',
 }
 
 interface GPIOInterfaceData {
@@ -40,39 +42,43 @@ export interface GPIOInterfaceEvents extends ConnectionInterfaceEvents {
   signalChange(event: SignalChangeEvent): void;
 }
 
-export class GPIOInterface
-  extends TypedEmitter<GPIOInterfaceEvents>
-  implements ConnectionInterface
-{
+export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements ConnectionInterface {
   interfaceType = InterfaceType;
 
   //readonly signal: string;
 
-  readonly configuration: GPIOConfiguration;
+  readonly configuration: GPIOConfiguration; // TODO: Deprecate this
   signalState: GPIOState = GPIOState.Unknown;
   private driverStates = new Map<string, GPIOState>();
-  private lastDriverState: GPIOState = GPIOState.Unknown;
+  private driverState: GPIOState = GPIOState.Unknown;
+  private driver?: string;
 
   constructor(configuration: GPIOConfiguration) {
     super();
     this.configuration = configuration;
+    const dir = configuration.direction ?? 'inout';
+    if (dir != 'in') {
+      this.driver = configuration.driver ?? 'default';
+    }
   }
 
   // changes the driver of this device
   changeDriver(state: GPIOState) {
-    if (state != this.lastDriverState) {
-      this.lastDriverState = state;
-      const data: GPIOInterfaceData = {
-        driver: this.configuration.driver,
-        state: state,
-      };
-
-      this.emit("upstreamData", data);
+    if (this.driver) {
+      this.driverState = state;
+      const data: GPIOInterfaceData = {driver: this.driver, state: state};
+      this.emit('upstreamData', data);
       this.downstreamData(data); // use the same mechanismn as any other driver data from external devices
     }
   }
 
-  // handles downstream data
+  retransmit() {
+    if (this.driver) {
+      const data: GPIOInterfaceData = {driver: this.driver, state: this.driverState};
+      this.emit('upstreamData', data);
+    }
+  }
+
   downstreamData(data: GPIOInterfaceData) {
     this.driverStates.set(data.driver, data.state);
     this.evaluateSignalState();
@@ -84,7 +90,7 @@ export class GPIOInterface
       states.add(state);
     }
 
-    let newState: GPIOState = GPIOState.Unknown;
+    let newState: GPIOState = GPIOState.HighZ;
     if (states.has(GPIOState.Error)) {
       newState = GPIOState.Error;
     } else if (states.has(GPIOState.StrongHigh) && states.has(GPIOState.StrongLow)) {
@@ -104,9 +110,9 @@ export class GPIOInterface
     }
 
     if (newState !== this.signalState) {
-      const event = { oldState: this.signalState, state: newState };
+      const event = {oldState: this.signalState, state: newState};
       this.signalState = newState;
-      this.emit("signalChange", event);
+      this.emit('signalChange', event);
     }
   }
 }
@@ -122,7 +128,7 @@ export class ConstructableGPIOInterface implements ConstructableConnectionInterf
 
   getDescription(): ConnectionInterfaceDescription {
     return {
-      availableSignals: { gpio: this.gpios },
+      availableSignals: {gpio: this.gpios},
     };
   }
 

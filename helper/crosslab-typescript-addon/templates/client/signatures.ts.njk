@@ -82,7 +82,7 @@ export namespace {{ serviceName | formatName }}Signatures {
         {% for parameter in operation.parameters -%}
             {%- set temp = '"' + parameter.name + '"' -%}
             {%- set temp = temp + ("?" if not parameter.required) + ": " -%}
-            {%- set temp = temp + (parameter.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixTypes": types + ".", "schemaType": "request" }) | indent(4)) -%}
+            {%- set temp = temp + (parameter.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixDirectlyResolved": types + ".", "schemaType": "request" }) | indent(4)) -%}
             {%- set parametersTypeDeclarations = (parametersTypeDeclarations.push(temp), parametersTypeDeclarations) -%}
         {%- endfor -%}
         {{ parametersTypeDeclarations | join(",\n\t") }},
@@ -102,7 +102,7 @@ export namespace {{ serviceName | formatName }}Signatures {
      * @category {{ low_name }}()
      */
     export type {{ cap_name }}Body = 
-        {{- " " + operation.requestBody.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixTypes": types + ".", "schemaType": "request" }) | indent(4) if operation.requestBody.schema}}
+        {{- " " + operation.requestBody.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixDirectlyResolved": types + ".", "schemaType": "request" }) | indent(4) if operation.requestBody.schema}}
         {{- " | undefined" if not operation.requestBody.required }}
     {%- endif %}
 
@@ -146,7 +146,7 @@ export namespace {{ serviceName | formatName }}Signatures {
 
     {%- set responseBody = "undefined" -%}
     {%- if response.schema -%}
-        {%- set responseBody = response.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixTypes": types + ".", "schemaType": "response" }) | indent(8) -%}
+        {%- set responseBody = response.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixDirectlyResolved": types + ".", "schemaType": "response" }) | indent(8) -%}
     {%- endif %}
 
     /**
@@ -157,7 +157,7 @@ export namespace {{ serviceName | formatName }}Signatures {
         status: {{ response.status }}
         headers{{ "?" if not response.headers }}: {
             {% for header in response.headers -%}
-            "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixTypes": types + ".", "schemaType": "response" }) | indent(12) if header.schema else "undefined" }},
+            "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixDirectlyResolved": types + ".", "schemaType": "response" }) | indent(12) if header.schema else "undefined" }},
             {% endfor -%}
             [k: string]: string | undefined
         }
@@ -173,6 +173,9 @@ export namespace {{ serviceName | formatName }}Signatures {
 {%- set content = generateSignatures() -%}
 {%- if content | includes("Require<") -%}
     {%- set content = content | replace('import {', 'import {\n\tRequire,') -%}
+{%- endif -%}
+{%- if content | includes("SizedTuple<") -%}
+    {%- set content = content | replace('import {', 'import {\n\tSizedTuple,') -%}
 {%- endif -%}
 
 {{ content | prettier }}

@@ -1,18 +1,24 @@
-import { hash } from 'bcryptjs'
-import { AbstractRepository } from './abstractRepository'
 import { User, UserInit, UserUpdate } from '../../generated/types'
 import { userUrlFromId } from '../../methods/utils'
-import { AppDataSource } from '../dataSource'
 import { RoleModel, UserModel } from '../model'
 import { tokenRepository } from './tokenRepository'
+import {
+    AbstractApplicationDataSource,
+    AbstractRepository,
+} from '@crosslab/service-common'
+import { hash } from 'bcryptjs'
 import { FindOptionsRelations } from 'typeorm'
 
-export class UserRepository extends AbstractRepository<UserModel> {
+export class UserRepository extends AbstractRepository<
+    UserModel,
+    UserUpdate<'request'>,
+    User<'response'>
+> {
     constructor() {
-        super(UserModel)
+        super('User')
     }
 
-    public initialize(): void {
+    public initialize(AppDataSource: AbstractApplicationDataSource): void {
         this.repository = AppDataSource.getRepository(UserModel)
     }
 

@@ -7,8 +7,8 @@ import { AllowlistEntry } from '../types/types'
 
 export const allowlist: { [key: string]: string } = {}
 
-export function parseAllowlist(allowlist: string): AllowlistEntry[] {
-    const removedWhitespaceAllowlist = allowlist.replace(/\s+/g, '')
+export function parseAllowlist(allowlistToParse: string): AllowlistEntry[] {
+    const removedWhitespaceAllowlist = allowlistToParse.replace(/\s+/g, '')
     const matches = removedWhitespaceAllowlist.match(/^(?:\w+:\w+)?(?:,\w+:\w+)*$/)
     if (!matches || matches.length !== 1) {
         throw new MalformedAllowlistError(`The allowlist is malformed`)

@@ -18,7 +18,7 @@
     "schemas": {
       "update_information": {
         "title": "UpdateInformation",
-        "description": "Information regarding an update. Contains the id of the device, \nthe name of the latest version and a link to it.\n",
+        "description": "Information regarding an update. Contains the id of the device,\nthe name of the latest version and a link to it.\n",
         "type": "object",
         "properties": {
           "device_id": {

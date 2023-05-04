@@ -75,6 +75,77 @@ export type Require<Type, Key extends keyof Type> = Partial<Type> & {
     [Property in Key]-?: Type[Property]
 }
 
+export type SizedTuple<
+    T,
+    MIN extends number | undefined = undefined,
+    MAX extends number | undefined = undefined
+> = MIN extends number
+    ? MAX extends number
+        ? _SizedTuple<T, NumericRangeTuple<MIN, MAX>>
+        : TupleObject<T, NumericRangeTuple<0, MIN>> & T[]
+    : MAX extends number
+    ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
+    : T[];
+
+type _SizedTuple<
+    T,
+    ARR extends number[],
+    Z extends boolean = false
+> = ARR extends [infer HEAD extends number, ...infer TAIL extends number[]]
+    ? Tuple<T, HEAD, Z> | _SizedTuple<T, TAIL, Z>
+    : never;
+
+type Tuple<T, N extends number, Z extends boolean = false> = _Tuple<
+    T,
+    NumericRangeTuple<Z extends true ? 0 : 1, N>
+>;
+
+type _Tuple<T, N extends number[]> = N extends [
+    infer HEAD,
+    ...infer TAIL extends number[]
+]
+    ? HEAD extends 0
+        ? [] | _Tuple<T, TAIL>
+        : [T, ..._Tuple<T, TAIL>]
+    : [];
+
+type TupleObject<T, N extends number[]> = N extends [
+    infer HEAD extends number,
+    ...infer TAIL extends number[]
+]
+    ? TAIL extends []
+        ? {}
+        : { [P in HEAD]: T } & TupleObject<T, TAIL>
+    : {};
+
+export type NumericRange<
+    START extends number,
+    END extends number,
+    ARR extends unknown[] = [],
+    ACC extends number = never
+> = ARR['length'] extends END
+    ? ACC | START | END
+    : NumericRange<
+          START,
+          END,
+          [...ARR, 1],
+          ARR[START] extends undefined ? ACC : ACC | ARR['length']
+      >;
+
+type NumericRangeTuple<
+    START extends number,
+    END extends number,
+    ARR extends unknown[] = [],
+    ACC extends number[] = []
+> = ARR['length'] extends END
+    ? [START, ...ACC, END]
+    : NumericRangeTuple<
+          START,
+          END,
+          [...ARR, 1],
+          ARR[START] extends undefined ? ACC : [...ACC, ARR['length']]
+      >;
+
 {%- for serviceName, schemas in sortedSchemas %}
 
 /**

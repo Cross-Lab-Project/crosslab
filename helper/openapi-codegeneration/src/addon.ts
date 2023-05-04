@@ -181,8 +181,8 @@ export async function activatePreset(preset: Preset, env: nunjucks.Environment) 
         env.addGlobal(g.name, g.value)
     })
     preset.tests.forEach(t => {
-        // @ts-ignore this function is available but its typing is not
-        env.addTest(t.name, t.function)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (env as any).addTest(t.name, t.function)
     })
     env.addGlobal("templateDir", preset.templatesDir)
 }

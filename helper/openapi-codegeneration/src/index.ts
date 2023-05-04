@@ -14,10 +14,12 @@ import {
   formatPath_filter,
   hasPathParameter_filter,
   jsf_filter,
+  jsonSchemaCombineAllOf_meta_filter,
   lowerCamelCase_filter,
   lowerSnakeCase_filter,
   permuteOptionalArgs_filter,
   replaceRegEx_filter,
+  resolveRef_meta_filter,
   upperCamelCase_filter,
 } from "./filter";
 import { readdirSync, writeFileSync, mkdirSync, readFileSync } from "fs";
@@ -35,7 +37,7 @@ import {
 export { Addon, Preset, FilterCollection, Filter, Global } from "./addon";
 
 let inputData: InputData;
-let schema_mapping: string[] = [];
+const schema_mapping: string[] = [];
 
 const schemas_cache: Record<string, string> = {};
 async function schemas(language: string) {
@@ -54,29 +56,29 @@ async function schemas(language: string) {
   return schemas_cache[language];
 }
 
-async function type(language: string, type: string) {
+async function type(language: string, type_name: string) {
   const s = await schemas(language);
   const re = new RegExp(`^def (.*)_from_dict\\(.*\\) -> (.*):$`, "gm");
   const m = Array.from(s.matchAll(re));
-  const i = schema_mapping.indexOf(type);
+  const i = schema_mapping.indexOf(type_name);
   if (i >= 0) return m[i][2];
   return undefined;
 }
 
-async function transformerFromDict(language: string, type: string) {
+async function transformerFromDict(language: string, type_name: string) {
   const s = await schemas(language);
   const re = new RegExp(`^def (.*)_from_dict\\(.*\\) -> (.*):$`, "gm");
   const m = Array.from(s.matchAll(re));
-  const i = schema_mapping.indexOf(type);
+  const i = schema_mapping.indexOf(type_name);
   if (i >= 0) return m[i][1] + "_from_dict";
   return undefined;
 }
 
-async function transformerToDict(language: string, type: string) {
+async function transformerToDict(language: string, type_name: string) {
   const s = await schemas(language);
   const re = new RegExp(`^def (.*)_from_dict\\(.*\\) -> (.*):$`, "gm");
   const m = Array.from(s.matchAll(re));
-  const i = schema_mapping.indexOf(type);
+  const i = schema_mapping.indexOf(type_name);
   if (i >= 0) return m[i][1] + "_to_dict";
   return undefined;
 }
@@ -186,6 +188,9 @@ async function main() {
     schemas,
   };
 
+  env.addFilter("resolveRef", resolveRef_meta_filter(api));
+  env.addFilter("jsonSchemaCombineAllOf", jsonSchemaCombineAllOf_meta_filter(api));
+
   const outputDir = resolve(process.cwd(), options.output);
   // make sure outputDir exists
   mkdirSync(outputDir, { recursive: true });
@@ -207,7 +212,7 @@ async function main() {
 main();
 
 function extractSchemasFromOpenAPI(
-  schemas: InputData,
+  schemasIn: InputData,
   api: OpenAPIV3_1.Document
 ): InputData {
   if (api.paths) {
@@ -232,7 +237,7 @@ function extractSchemasFromOpenAPI(
       }
     }
   }
-  return schemas;
+  return schemasIn;
 
   function extractAndAddSchema(
     contentObject:
@@ -247,7 +252,7 @@ function extractSchemasFromOpenAPI(
         const content = contentObject.content;
         if (content) {
           const schema = content["application/json"].schema;
-          addJsonSchema(name, schema, schemas);
+          addJsonSchema(name, schema, schemasIn);
         }
       }
     }
@@ -257,7 +262,7 @@ function extractSchemasFromOpenAPI(
 function addJsonSchema(
   name: string,
   schema: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject | undefined,
-  schemas: InputData
+  schemasIn: InputData
 ) {
   const _name = lowerSnakeCase_filter(name);
   if (schema) {
@@ -267,9 +272,9 @@ function addJsonSchema(
     const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
     const schemaInputWrite = new JSONSchemaInput(new FetchingJSONSchemaStore());
     const schemaInputRead = new JSONSchemaInput(new FetchingJSONSchemaStore());
-    schemas.addInput(schemaInput);
-    schemas.addInput(schemaInputWrite);
-    schemas.addInput(schemaInputRead);
+    schemasIn.addInput(schemaInput);
+    schemasIn.addInput(schemaInputWrite);
+    schemasIn.addInput(schemaInputRead);
 
     let schema_string = JSON.stringify(schema);
     if (schema_string.includes('"const":')) {
@@ -286,11 +291,11 @@ function addJsonSchema(
       schema_string.includes('"writeOnly":')
     ) {
       schema_string_write = schema_string.replace(
-        /"[^\"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,
+        /"[^"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,
         ``
       );
       schema_string_read = schema_string.replace(
-        /"[^\"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,
+        /"[^"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,
         ``
       );
     }

@@ -11,4 +11,4 @@ schema:
       enum:
         - peerconnection-status-changed
     peerconnection:
-      $ref: '../schemas/peerconnection.yml'
+      $ref: '../schemas/peerconnections/peerconnection.yml'

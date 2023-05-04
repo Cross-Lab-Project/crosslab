@@ -1,5 +1,6 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
+import {createWriteStream, WriteStream} from 'fs';
 
 export interface DebugContext {
   debug?: {
@@ -11,9 +12,35 @@ export interface DebugContext {
     jsDeviceHost?: {[key: number]: {debug_port: number}};
     pythonDevice?: {[key: number]: {debug_port: number}};
   };
+  log: (file:string , data: string, level: "log" | "err") => void;
 }
 
 const debug_conf = resolve(__filename, '../../../debug.ini');
+
+const startUpTime = Date.now();
+const fileStreams = new Map<string, WriteStream>();
+function log(file="test.log", data: string, level: "log" | "err" = "log", testName: string ){
+  const timeSinceStart = Date.now() - startUpTime;
+
+  const prefix = `${timeSinceStart}`.padStart(10, ' ')+(level==='log'?'ms [log] ':'ms [err] ');
+  // remove newline if its the first or last character
+  if(data.startsWith("\n")){
+    data = data.substring(1);
+  }
+  if(data.endsWith("\n")){
+    data = data.substring(0, data.length-1);
+  }
+  data=data.replaceAll("\n", "\n"+prefix);
+  data = prefix + data;
+
+  let stream = fileStreams.get(file);
+  if(!stream){
+    stream = createWriteStream("./dist/"+file)
+    fileStreams.set(file, stream);
+    stream.write("================== "+testName+"\n");
+  }
+  stream.write(data+"\n");
+}
 
 export const mochaHooks = {
   async beforeAll(this: DebugContext & Mocha.Context) {
@@ -42,5 +69,16 @@ export const mochaHooks = {
     if (Object.keys(debug).length > 0) {
       this.debug = debug;
     }
+
+    const testName=this.currentTest?.titlePath().join(": ")??"unknown test";
+    this.log = (file, data, level)=>log(file, data, level, testName);
   },
+  async beforeEach(this: DebugContext & Mocha.Context) {
+    const testName=this.currentTest?.titlePath().join(": ")??"unknown test";
+    for (const file of fileStreams.keys()){
+      const stream=fileStreams.get(file)
+      stream && stream.write("================== "+testName+"\n");
+    }
+    this.log = (file, data, level)=>log(file, data, level, testName);
+  }
 };

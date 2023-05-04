@@ -41,6 +41,8 @@ import express from "express"
 import operations from "../operations"
 
 import {
+    UserType,
+    isUserType,
     {{ typeDependencies | unique | join(",\n\t") }}
 } from "./types"
 
@@ -63,11 +65,16 @@ export default function routes(
             [k in T]: string[]
         }
     ): Promise<UserData<T>> {
-        let userData: UserData<T> = {}
+        const userDataEntries: [T, UserType][] = []
         for (const method in securityRequirement) {
-            userData[method] = await options.security[method](request, securityRequirement[method])
+            const user = await options.security[method](
+                request,
+                securityRequirement[method]
+            )
+            if (!isUserType(user)) throw new Error(`User resolved by method ${method} is not of type 'UserType'`)
+            userDataEntries.push([method, user])
         }
-        return userData
+        return Object.fromEntries(userDataEntries) as UserData<T>;
     }
 
     {%- for operation in operations %}
@@ -77,14 +84,14 @@ export default function routes(
 
     {%- for parameter in operation.parameters -%}
         {%- if parameter.in == "path" -%}
-            {%- set pathParameters = (pathParameters.push('"' + parameter.name + '": ' + parameter.schema | typeDeclaration), pathParameters) -%}
+            {%- set pathParameters = (pathParameters.push('"' + parameter.name + '": string'), pathParameters) -%}
         {%- endif -%}
         {%- if parameter.in == "query" -%}               
-            {%- set queryParameters = (queryParameters.push('"' + parameter.name + '": ' + parameter.schema | typeDeclaration), queryParameters) -%}
+            {%- set queryParameters = (queryParameters.push('"' + parameter.name + '": string'), queryParameters) -%}
         {%- endif -%}
     {%- endfor -%}
 
-    router.{{ operation.method }}("{{ operation.path | expressPath }}", async (req: TypedRequest<
+    router.{{ operation.method }}("{{ operation.path | formatExpressPath }}", async (req: TypedRequest<
         {{- "{ " + (pathParameters | join(", ")) + " }" if pathParameters | length > 0 else "{}" -}},
         {{- operation.name + "RequestBodyType" if operation.requestBody else "{}" -}},
         {{- "{ " + (queryParameters | join(", ")) + " }" if queryParameters | length > 0 else "{}" -}}
@@ -97,7 +104,7 @@ export default function routes(
             {%- for securityMethod, scopes in securityRequirement -%}
                 {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
             {%- endfor -%}
-            {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | strings | join("|")) + ">"), userDataTypes) -%}
+            {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | toStrings | join("|")) + ">"), userDataTypes) -%}
         {%- endfor -%}
 
         const security = {{ operation.security | stringify(4) | indent(8) }}
@@ -128,7 +135,7 @@ export default function routes(
                 parameterDefinitions.push(
                     '"' + parameter.name + '": '
                     + ('req.params["' + parameter.name + '"]' if parameter.in == "path")
-                    + ('req.query["' + parameter.name + '"]' if parameter.in == "query")
+                    + ('req.query["' + parameter.name + '"]' + (' === "true"' if parameter.schema.type == "boolean") if parameter.in == "query")
                     + ('req.get("' + parameter.name + '")' if parameter.in == "header")
                     + ('req.cookies["' + parameter.name + '"' if parameter.in == "cookie")
                 ), parameterDefinitions) -%}

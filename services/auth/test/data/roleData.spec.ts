@@ -1,13 +1,14 @@
 import { RoleModel, UserModel } from '../../src/database/model'
+import { RoleRepository } from '../../src/database/repositories/roleRepository'
 import { Role } from '../../src/generated/types'
 import { roleUrlFromId } from '../../src/methods/utils'
-import { EntityData, ReplaceWith, Subset } from './index.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
+import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
 
 export const roleNames = ['superadmin', 'user', 'deviceservice', 'device'] as const
 export type RoleName = (typeof roleNames)[number]
-export type RoleData = Record<RoleName, EntityData<RoleModel>>
+export type RoleData = Record<RoleName, EntityData<RoleRepository>>
 
 type RoleWithLinks<T extends 'all' | 'request' | 'response' = 'all'> = ReplaceWith<
     Role<T>,
@@ -111,7 +112,7 @@ const roleDataWithLinks: RoleDataWithLinks = {
 export function resolveRole(
     roleName: RoleName,
     userData: Subset<UserData>
-): EntityData<RoleModel> {
+): EntityData<RoleRepository> {
     return {
         request: {
             ...roleDataWithLinks[roleName].request,

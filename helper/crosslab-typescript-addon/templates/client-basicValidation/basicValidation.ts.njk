@@ -5,4 +5,4 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-{{ schemas | validation | safe }}
+{{ schemas | generateBasicValidationFunctions | safe | prettier }}

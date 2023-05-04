@@ -21,7 +21,8 @@ const tests = [
 
 describe('Operations', function () {
     let testData: TestData
-    let suite: Mocha.Suite = this
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const suite: Mocha.Suite = this
 
     this.beforeAll(async function () {
         console.log = (_message: any, ..._optionalParams: any[]) => undefined
@@ -37,13 +38,13 @@ describe('Operations', function () {
         }
         const newTestData = await initTestDatabase()
         for (const key in newTestData) {
-            ;(testData as any)[key] = (newTestData as any)[key]
+            (testData as any)[key] = (newTestData as any)[key]
         }
     })
 
     it('should initialize the test data', async function () {
         for (const test of tests) {
-            suite.addSuite(test(suite.ctx, testData))
+            suite.addSuite(test(this.ctx, testData))
         }
     })
 })

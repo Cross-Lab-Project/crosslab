@@ -1,12 +1,27 @@
+import { AppDataSource } from '../../../src/database/dataSource'
+import { ScopeModel } from '../../../src/database/model'
+import {
+    ScopeRepository,
+    scopeRepository,
+} from '../../../src/database/repositories/scopeRepository'
+import { Scope } from '../../../src/types/types'
+import { ScopeName } from '../../data/scopeData.spec'
+import { initTestDatabase } from './index.spec'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
-import { ScopeModel } from '../../../src/database/model'
-import { Scope } from '../../../src/types/types'
-import { AbstractRepositoryTestSuite } from './abstractRepository.spec'
 
-class ScopeRepositoryTestSuite extends AbstractRepositoryTestSuite<ScopeModel> {
+class ScopeRepositoryTestSuite extends AbstractRepositoryTestSuite<
+    ScopeName,
+    ScopeRepository
+> {
+    protected name = 'scopes' as const
+    protected repository = scopeRepository
+    protected getEntityData = async () => (await initTestDatabase())['scopes']
+    protected RepositoryClass = ScopeRepository
+
     constructor() {
-        super(ScopeModel)
+        super(AppDataSource)
     }
 
     validateCreate(model: ScopeModel, data?: Scope<'request'>): boolean {

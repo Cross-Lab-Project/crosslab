@@ -5,37 +5,16 @@ import { roleRepository } from './repositories/roleRepository'
 import { scopeRepository } from './repositories/scopeRepository'
 import { tokenRepository } from './repositories/tokenRepository'
 import { userRepository } from './repositories/userRepository'
-import { DataSource, DataSourceOptions, EntityTarget, ObjectLiteral } from 'typeorm'
+import { AbstractApplicationDataSource } from '@crosslab/service-common'
 
-export class ApplicationDataSource {
-    private dataSource?: DataSource
-    public connected: boolean = false
-
-    public async initialize(options: DataSourceOptions) {
-        this.dataSource = new DataSource(options)
-        await this.dataSource.initialize()
-        this.connected = true
-        activeKeyRepository.initialize()
-        keyRepository.initialize()
-        roleRepository.initialize()
-        scopeRepository.initialize()
-        tokenRepository.initialize()
-        userRepository.initialize()
-    }
-
-    public async teardown() {
-        if (!this.dataSource?.isInitialized)
-            throw new Error('Data Source has not been initialized!')
-
-        await this.dataSource.destroy()
-        this.connected = false
-    }
-
-    public getRepository<Entity extends ObjectLiteral>(target: EntityTarget<Entity>) {
-        if (!this.dataSource?.isInitialized)
-            throw new Error('Data Source has not been initialized!')
-
-        return this.dataSource.getRepository(target)
+export class ApplicationDataSource extends AbstractApplicationDataSource {
+    protected initializeRepositories(): void {
+        activeKeyRepository.initialize(this)
+        keyRepository.initialize(this)
+        roleRepository.initialize(this)
+        scopeRepository.initialize(this)
+        tokenRepository.initialize(this)
+        userRepository.initialize(this)
     }
 }
 
@@ -56,48 +35,48 @@ type ScopeRecord = Record<CrosslabScope<'JWT'>, readonly (typeof standardRoles)[
 
 const scopesStandardRolesMapping: ScopeRecord = {
     // auth service scopes
-    'device_token': ['user', 'developer', 'device_service', 'experiment_service'],
-    'device_token:create': ['user', 'developer', 'device_service', 'experiment_service'],
-    'identity': ['user', 'developer'],
+    'device_token': standardRoles,
+    'device_token:create': standardRoles,
+    'identity': standardRoles,
     'identity:read': standardRoles,
-    'identity:write': ['user', 'developer'],
+    'identity:write': standardRoles,
     'logout': standardRoles,
-    'roles': ['developer'],
+    'roles': standardRoles,
     'roles:read': standardRoles,
-    'roles:write': ['developer'],
-    'roles:create': ['developer'],
-    'roles:delete': ['developer'],
-    'users': ['developer'],
+    'roles:write': standardRoles,
+    'roles:create': standardRoles,
+    'roles:delete': standardRoles,
+    'users': standardRoles,
     'users:read': standardRoles,
-    'users:write': ['developer'],
-    'users:create': ['developer'],
-    'users:delete': ['developer'],
+    'users:write': standardRoles,
+    'users:create': standardRoles,
+    'users:delete': standardRoles,
     // device service scopes
-    'device': ['developer'],
+    'device': standardRoles,
     'device:list': standardRoles,
-    'device:edit': ['developer'],
-    'device:create': ['developer'],
-    'device:connect': ['developer', 'user', 'device'],
-    'device:signal': ['device', 'user', 'developer'],
-    'peerconnection': ['developer', 'experiment_service'],
+    'device:edit': standardRoles,
+    'device:create': standardRoles,
+    'device:connect': standardRoles,
+    'device:signal': standardRoles,
+    'peerconnection': standardRoles,
     'peerconnection:list': standardRoles,
-    'peerconnection:create': ['developer', 'experiment_service'],
+    'peerconnection:create': standardRoles,
     // experiment service scopes
-    'experiment': ['developer', 'user'],
+    'experiment': standardRoles,
     'experiment:list': standardRoles,
-    'experiment:edit': ['developer', 'user'],
-    'experiment:create': ['developer', 'user'],
+    'experiment:edit': standardRoles,
+    'experiment:create': standardRoles,
     // federation service scopes
     'authorized_proxy': standardRoles,
-    'institution': ['developer'],
+    'institution': standardRoles,
     'institution:list': standardRoles,
-    'institution:edit': ['developer'],
-    'institution:create': ['developer'],
+    'institution:edit': standardRoles,
+    'institution:create': standardRoles,
     // update service scopes
-    'update': ['developer'],
+    'update': standardRoles,
     'update:list': standardRoles,
-    'update:edit': ['developer'],
-    'update:create': ['developer'],
+    'update:edit': standardRoles,
+    'update:create': standardRoles,
 }
 
 interface ScopeCollection {

@@ -35,6 +35,10 @@ export class PWMInterface extends TypedEmitter<PWMInterfaceEvents> implements Co
     super();
     this.configuration = configuration;
   }
+  
+  retransmit(): void {
+    throw new Error("Method not implemented.");
+  }
 
   // TODO: add real implementation
   downstreamData(data: unknown): void {

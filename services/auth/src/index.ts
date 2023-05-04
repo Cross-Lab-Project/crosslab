@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { config, dataSourceConfig } from './config'
 import { AppDataSource, initializeDataSource } from './database/dataSource'
 import { app } from './generated'
@@ -11,13 +9,13 @@ import { AppConfiguration } from './types/types'
 import { DataSourceOptions } from 'typeorm'
 
 async function startAuthenticationService(
-    config: AppConfiguration,
-    dataSourceConfig: DataSourceOptions
+    appConfig: AppConfiguration,
+    options: DataSourceOptions
 ) {
-    await AppDataSource.initialize(dataSourceConfig)
+    await AppDataSource.initialize(options)
     await initializeDataSource()
 
-    const allowlist = parseAllowlist(config.ALLOWLIST)
+    const allowlist = parseAllowlist(appConfig.ALLOWLIST)
 
     // Resolve Allowlist
     await resolveAllowlist(allowlist)
@@ -40,19 +38,24 @@ async function startAuthenticationService(
         await activeKeyRepository.save(activeKeyModel)
     }
 
-    app.get('/.well-known/jwks.json', (_req, res, _next) => {
+    app.get('/.well-known/jwks.json', (_req, res) => {
         res.send(jwks)
     })
-    app.get('/.well-known/openid-configuration', (_req, res, _next) => {
+    app.get('/.well-known/openid-configuration', (_req, res) => {
         res.send({ jwks_uri: '/.well-known/jwks.json' })
     })
+    
+    app.get('/auth/status', (_req, res) => {
+        res.send({ status: 'ok' })
+    });
+
     app.initService({
         security: {
-            JWT: JWTVerify(config) as any,
+            JWT: JWTVerify(appConfig) as any,
         },
     })
 
-    app.listen(config.PORT)
+    app.listen(appConfig.PORT)
     console.log('Authentication Service started successfully')
 }
 

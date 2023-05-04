@@ -1,4 +1,3 @@
-import { DataSourceOptions } from 'typeorm'
 import { AppDataSource } from '../../../src/database/dataSource'
 import {
     ScopeModel,
@@ -28,6 +27,7 @@ import { roleRepositoryTestSuite } from './roleRepository.spec'
 import { scopeRepositoryTestSuite } from './scopeRepository.spec'
 import { tokenRepositoryTestSuite } from './tokenRepository.spec'
 import { userRepositoryTestSuite } from './userRepository.spec'
+import { DataSourceOptions } from 'typeorm'
 
 const repositoryTestSuites = [
     activeKeyRepositoryTestSuite,
@@ -40,7 +40,8 @@ const repositoryTestSuites = [
 
 export default () =>
     describe('Repositories', async function () {
-        let suite: Mocha.Suite = this
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const suite: Mocha.Suite = this
 
         it('Should setup the repository tests', async function () {
             this.timeout(0)
@@ -80,7 +81,7 @@ export async function initTestDatabase(): Promise<TestData> {
     }
 
     for (const activeKeyName of activeKeyNames) {
-        await activeKeyRepository.save(testData.activeKeys[activeKeyName].model)
+        await activeKeyRepository.save(testData['active keys'][activeKeyName].model)
     }
 
     for (const roleName of roleNames) {

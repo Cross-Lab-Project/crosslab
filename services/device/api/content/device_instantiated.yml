@@ -3,6 +3,9 @@ schema:
   type: object
   properties:
     instance:
-      $ref: '../schemas/device_concrete.yml'
+      $ref: '../schemas/devices/device_concrete.yml'
     deviceToken:
       type: string
+  required:
+  - instance
+  - deviceToken

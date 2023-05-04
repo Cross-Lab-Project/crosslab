@@ -54,7 +54,7 @@ RUN apt-get update \
         fd-find \
         gettext-base \
         nginx \
-    && sudo pip3 install tox build yq shyaml kas \
+    && sudo pip3 install tox build yq shyaml kas twine \
     && ln -s $(which fdfind) /usr/bin/fd 
 RUN npm install -g badge-maker
 

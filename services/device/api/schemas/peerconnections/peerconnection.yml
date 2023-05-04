@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Peerconnection
+allOf:
+  - $ref: ./peerconnection_common.yml
+  - type: object
+    properties:
+      devices:
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          $ref: "../devices/references/configured_device_reference.yml"
+    required:
+      - devices
+x-typeguard: true

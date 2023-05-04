@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Connection Status
+type: string
+description: The status of the peerconnection.
+enum:
+  - new
+  - connecting
+  - connected
+  - disconnected
+  - failed
+  - closed
