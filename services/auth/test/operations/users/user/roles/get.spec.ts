@@ -1,10 +1,10 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { getUsersByUserIdRoles } from '../../../../../src/operations/users'
 import { TestData } from '../../../../data/index.spec'
 import { userNames } from '../../../../data/userData.spec'
 import { roleRepositoryTestSuite } from '../../../../database/repositories/roleRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('GET /users/{user_id}/roles', context)
@@ -15,7 +15,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const userModel = testData.users[userName].model
                 const result = await getUsersByUserIdRoles(
                     { user_id: userModel.uuid },
-                    {}
+                    testData.userData
                 )
 
                 assert(result.status === 200)
@@ -36,7 +36,10 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 await assert.rejects(
                     async () => {
-                        await getUsersByUserIdRoles({ user_id: 'unknown' }, {})
+                        await getUsersByUserIdRoles(
+                            { user_id: 'unknown' },
+                            testData.userData
+                        )
                     },
                     (error) => {
                         assert(error instanceof MissingEntityError)

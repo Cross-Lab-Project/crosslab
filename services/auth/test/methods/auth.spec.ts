@@ -1,8 +1,6 @@
-import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
-import assert, { fail } from 'assert'
-import { exportJWK, generateKeyPair, importJWK, jwtVerify } from 'jose'
 import { config } from '../../src/config'
 import { KeyModel, UserModel } from '../../src/database/model'
+import { roleRepository } from '../../src/database/repositories/roleRepository'
 import {
     parseBearerToken,
     sign,
@@ -10,6 +8,10 @@ import {
     signUserToken,
 } from '../../src/methods/auth'
 import { userUrlFromId } from '../../src/methods/utils'
+import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
+import assert, { fail } from 'assert'
+import { exportJWK, generateKeyPair, importJWK, jwtVerify } from 'jose'
+import * as sinon from 'sinon'
 
 export default () =>
     describe('auth methods', async function () {
@@ -19,6 +21,10 @@ export default () =>
         let TEST_SCOPE_2: string
         let alg: string
         let use: string
+        let roleFindOneOrFailStub: sinon.SinonStub<
+            Parameters<typeof roleRepository.findOneOrFail>,
+            ReturnType<typeof roleRepository.findOneOrFail>
+        >
 
         this.beforeAll(async function () {
             alg = 'RS256'
@@ -64,6 +70,16 @@ export default () =>
                 ],
                 tokens: [],
             }
+
+            roleFindOneOrFailStub = sinon.stub(roleRepository, 'findOneOrFail')
+        })
+
+        this.afterEach(function () {
+            roleFindOneOrFailStub.reset()
+        })
+
+        this.afterAll(function () {
+            roleFindOneOrFailStub.restore()
         })
 
         describe('sign', async function () {
@@ -122,6 +138,16 @@ export default () =>
 
         describe('signDeviceToken', async function () {
             it('should correctly sign a device token', async function () {
+                const DEVICE_SCOPE_1 = 'device scope 1'
+                const DEVICE_SCOPE_2 = 'device scope 2'
+
+                roleFindOneOrFailStub.resolves({
+                    name: 'device',
+                    scopes: [{ name: DEVICE_SCOPE_1 }, { name: DEVICE_SCOPE_2 }],
+                    users: [],
+                    uuid: '3627a917-86e0-489b-7354-2a38e9261b38',
+                })
+
                 const TEST_DEVICE_URL =
                     'http://localhost/devices/348b5c7e-86f0-4830-bafb-b9d6b00fa434'
 
@@ -147,8 +173,8 @@ export default () =>
                 assert(verfifiedJWT.payload.device === TEST_DEVICE_URL)
                 assert(Array.isArray(verfifiedJWT.payload.scopes))
                 assert(verfifiedJWT.payload.scopes.length === 2)
-                assert(verfifiedJWT.payload.scopes.includes(TEST_SCOPE_1))
-                assert(verfifiedJWT.payload.scopes.includes(TEST_SCOPE_2))
+                assert(verfifiedJWT.payload.scopes.includes(DEVICE_SCOPE_1))
+                assert(verfifiedJWT.payload.scopes.includes(DEVICE_SCOPE_2))
             })
         })
 

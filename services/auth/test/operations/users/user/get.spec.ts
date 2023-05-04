@@ -1,10 +1,10 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { getUsersByUserId } from '../../../../src/operations/users'
 import { TestData } from '../../../data/index.spec'
 import { userNames } from '../../../data/userData.spec'
 import { userRepositoryTestSuite } from '../../../database/repositories/userRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('GET /users/{user_id}', context)
@@ -15,7 +15,10 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 for (const userName of userNames) {
                     const userModel = testData.users[userName].model
-                    const result = await getUsersByUserId({ user_id: userModel.uuid }, {})
+                    const result = await getUsersByUserId(
+                        { user_id: userModel.uuid },
+                        testData.userData
+                    )
                     assert(result.status === 200)
                     assert(userRepositoryTestSuite.validateFormat(userModel, result.body))
                 }
@@ -29,7 +32,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 await assert.rejects(
                     async () => {
-                        await getUsersByUserId({ user_id: 'unknown' }, {})
+                        await getUsersByUserId({ user_id: 'unknown' }, testData.userData)
                     },
                     (error) => {
                         assert(error instanceof MissingEntityError)

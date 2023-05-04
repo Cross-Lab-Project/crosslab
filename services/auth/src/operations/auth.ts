@@ -1,10 +1,10 @@
+import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
+import { tokenRepository } from '../database/repositories/tokenRepository'
 import { getAuthSignature } from '../generated/signatures'
+import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 import { parseBearerToken, signDeviceToken, signUserToken } from '../methods/auth'
 import { ExpiredError } from '../types/errors'
 import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
-import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -56,15 +56,22 @@ export const getAuth: getAuthSignature = async (parameters) => {
         }
 
         let jwt: string
+        const scopes = [
+            ...token.scopes.map((scope) => scope.name),
+            ...token.roles
+                .map((role) => role.scopes.map((scope) => scope.name))
+                .flat(1)
+                .filter((value, index, self) => self.indexOf(value) === index),
+        ]
         // Check if token has a device
         if (token.device) {
             // Sign device token
             console.log(`signing jwt for device ${token.device}`)
-            jwt = await signDeviceToken(token.device, user, activeKey, token.scopes)
+            jwt = await signDeviceToken(token.device, user, activeKey)
         } else {
             // Sign user token
             console.log(`signing jwt for user ${user.username}`)
-            jwt = await signUserToken(user, activeKey, token.scopes)
+            jwt = await signUserToken(user, activeKey, scopes)
         }
 
         // Update token expiration time
@@ -85,7 +92,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
             const user = await getAllowlistedUser(parameters['X-Real-IP'])
 
             console.log(`signing jwt for user ${user.username}`)
-            const jwt = await signUserToken(user, activeKey)
+            const scopes = user.roles
+                .map((role) => role.scopes.map((scope) => scope.name))
+                .flat(1)
+                .filter((value, index, self) => self.indexOf(value) === index)
+            const jwt = await signUserToken(user, activeKey, scopes)
 
             console.log(`getAuth succeeded`)
 

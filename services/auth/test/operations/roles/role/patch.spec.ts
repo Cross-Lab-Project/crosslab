@@ -1,12 +1,12 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { roleRepository } from '../../../../src/database/repositories/roleRepository'
 import { Role } from '../../../../src/generated/types'
 import { roleUrlFromId } from '../../../../src/methods/utils'
 import { patchRolesByRoleId } from '../../../../src/operations/roles'
 import { TestData } from '../../../data/index.spec'
 import { roleRepositoryTestSuite } from '../../../database/repositories/roleRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('PATCH /roles/{role_id}', context)
@@ -22,7 +22,11 @@ export default function (context: Mocha.Context, testData: TestData) {
                     testData.scopes['scope 5'].request,
                 ],
             }
-            const result = await patchRolesByRoleId({ role_id }, roleUpdate, {})
+            const result = await patchRolesByRoleId(
+                { role_id },
+                roleUpdate,
+                testData.userData
+            )
 
             assert(result.status === 200)
             assert(result.body.id === role_id)
@@ -48,7 +52,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const result = await patchRolesByRoleId(
                     { role_id: roleModel.uuid },
                     undefined,
-                    {}
+                    testData.userData
                 )
 
                 assert(result.status === 200)
@@ -70,7 +74,11 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 await assert.rejects(
                     async () => {
-                        await patchRolesByRoleId({ role_id: 'unknown' }, undefined, {})
+                        await patchRolesByRoleId(
+                            { role_id: 'unknown' },
+                            undefined,
+                            testData.userData
+                        )
                     },
                     (error) => {
                         assert(error instanceof MissingEntityError)

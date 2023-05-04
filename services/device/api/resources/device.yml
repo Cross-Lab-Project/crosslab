@@ -112,7 +112,7 @@ post:
   security:
     - JWT:
         - device
-        - device:create
+        - device:instantiate
   parameters:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/device_changed_url.yml"

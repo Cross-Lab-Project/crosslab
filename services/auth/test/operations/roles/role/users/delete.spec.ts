@@ -1,11 +1,11 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { roleRepository } from '../../../../../src/database/repositories/roleRepository'
 import { deleteRolesByRoleIdUsers } from '../../../../../src/operations/roles'
 import { TestData } from '../../../../data/index.spec'
 import { userNames } from '../../../../data/userData.spec'
 import { roleRepositoryTestSuite } from '../../../../database/repositories/roleRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('DELETE /roles/{role_id}/roles', context)
@@ -20,7 +20,11 @@ export default function (context: Mocha.Context, testData: TestData) {
                     user_ids.push(testData.users[userName].model.uuid)
                 }
 
-                const result = await deleteRolesByRoleIdUsers({ role_id }, user_ids, {})
+                const result = await deleteRolesByRoleIdUsers(
+                    { role_id },
+                    user_ids,
+                    testData.userData
+                )
 
                 assert(result.status === 204)
 
@@ -48,7 +52,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const result = await deleteRolesByRoleIdUsers(
                     { role_id: roleModel.uuid },
                     undefined,
-                    {}
+                    testData.userData
                 )
 
                 assert(result.status === 204)
@@ -73,7 +77,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                         await deleteRolesByRoleIdUsers(
                             { role_id: 'unknown' },
                             undefined,
-                            {}
+                            testData.userData
                         )
                     },
                     (error) => {

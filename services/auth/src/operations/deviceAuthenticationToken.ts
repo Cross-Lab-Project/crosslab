@@ -1,4 +1,3 @@
-import { roleRepository } from '../database/repositories/roleRepository'
 import { tokenRepository } from '../database/repositories/tokenRepository'
 import { userRepository } from '../database/repositories/userRepository'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
@@ -16,29 +15,24 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
 
         const userModel = await userRepository.findOneOrFail({
             where: {
-                username: user.JWT?.username,
+                username: user.JWT.username,
             },
         })
 
         const device = await getDevice(parameters.device_url)
         if (
-            device.owner !== user.JWT?.url &&
+            device.owner !== user.JWT.url &&
             !userModel.roles.find((role) => role.name === 'deviceservice') &&
             !userModel.roles.find((role) => role.name === 'superadmin')
         ) {
             // throw new OwnershipError() //TODO: Extended Testing by pierre (URL)
         }
 
-        const roleModelDevice = await roleRepository.findOneOrFail({
-            where: {
-                name: 'device',
-            },
-        })
-
         const tokenModel = await tokenRepository.create({
             user: userModel.username,
-            scopes: roleModelDevice.scopes.map((scope) => scope.name),
+            scopes: [],
             device: device.url,
+            roles: ['device'],
         })
 
         userModel.tokens.push(tokenModel)

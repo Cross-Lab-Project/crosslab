@@ -1802,7 +1802,7 @@
           {
             "JWT": [
               "device",
-              "device:create"
+              "device:instantiate"
             ]
           }
         ],

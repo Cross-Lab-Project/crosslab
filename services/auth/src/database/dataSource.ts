@@ -35,48 +35,49 @@ type ScopeRecord = Record<CrosslabScope<'JWT'>, readonly (typeof standardRoles)[
 
 const scopesStandardRolesMapping: ScopeRecord = {
     // auth service scopes
-    'device_token': standardRoles,
-    'device_token:create': standardRoles,
-    'identity': standardRoles,
-    'identity:read': standardRoles,
-    'identity:write': standardRoles,
+    'device_token': ['developer', 'device_service', 'user'],
+    'device_token:create': ['developer', 'device_service', 'user'],
+    'identity': ['developer', 'user'],
+    'identity:read': ['developer', 'user'],
+    'identity:write': ['developer', 'user'],
     'logout': standardRoles,
-    'roles': standardRoles,
+    'roles': ['developer'],
     'roles:read': standardRoles,
-    'roles:write': standardRoles,
-    'roles:create': standardRoles,
-    'roles:delete': standardRoles,
-    'users': standardRoles,
+    'roles:write': ['developer'],
+    'roles:create': ['developer'],
+    'roles:delete': ['developer'],
+    'users': ['developer'],
     'users:read': standardRoles,
-    'users:write': standardRoles,
-    'users:create': standardRoles,
-    'users:delete': standardRoles,
+    'users:write': ['developer'],
+    'users:create': ['developer'],
+    'users:delete': ['developer'],
     // device service scopes
-    'device': standardRoles,
+    'device': ['developer'],
     'device:list': standardRoles,
-    'device:edit': standardRoles,
-    'device:create': standardRoles,
-    'device:connect': standardRoles,
-    'device:signal': standardRoles,
-    'peerconnection': standardRoles,
+    'device:edit': ['developer', 'device', 'user'],
+    'device:create': ['developer', 'user'],
+    'device:instantiate': ['developer', 'experiment_service', 'user'],
+    'device:connect': ['developer', 'device'],
+    'device:signal': ['developer', 'device'],
+    'peerconnection': ['developer'],
     'peerconnection:list': standardRoles,
-    'peerconnection:create': standardRoles,
+    'peerconnection:create': ['developer', 'experiment_service'],
     // experiment service scopes
-    'experiment': standardRoles,
+    'experiment': ['developer'],
     'experiment:list': standardRoles,
-    'experiment:edit': standardRoles,
-    'experiment:create': standardRoles,
+    'experiment:edit': ['developer', 'user'],
+    'experiment:create': ['developer', 'user'],
     // federation service scopes
     'authorized_proxy': standardRoles,
-    'institution': standardRoles,
+    'institution': ['developer'],
     'institution:list': standardRoles,
-    'institution:edit': standardRoles,
-    'institution:create': standardRoles,
+    'institution:edit': ['developer'],
+    'institution:create': ['developer'],
     // update service scopes
-    'update': standardRoles,
+    'update': ['developer'],
     'update:list': standardRoles,
-    'update:edit': standardRoles,
-    'update:create': standardRoles,
+    'update:edit': ['developer'],
+    'update:create': ['developer'],
 }
 
 interface ScopeCollection {
@@ -154,16 +155,14 @@ async function createRole(name: string, scopes: CrosslabScope<'JWT'>[]) {
             name: name,
         },
     })
-    if (existingRoleModel === null) {
-        const role = await roleRepository.create({
-            name,
-            scopes: scopes,
-        })
-        await roleRepository.save(role)
-    } else {
-        roleRepository.write(existingRoleModel, { scopes })
-        await roleRepository.save(existingRoleModel)
-    }
+
+    if (existingRoleModel) return
+
+    const roleModel = await roleRepository.create({
+        name,
+        scopes: scopes,
+    })
+    await roleRepository.save(roleModel)
 }
 
 async function createDefaultScopesAndRoles() {

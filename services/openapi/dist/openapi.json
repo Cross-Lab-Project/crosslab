@@ -43,6 +43,49 @@
         ],
         "x-service-name": "Authentication Service"
       },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
       "role": {
         "title": "Role",
         "type": "object",
@@ -66,84 +109,9 @@
             }
           }
         },
-        "x-service-name": "Authentication Service"
-      },
-      "user": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/role"
-            }
-          }
-        },
-        "x-service-name": "Authentication Service"
-      },
-      "user_init": {
-        "title": "User Init",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
         "required": [
-          "username",
-          "password"
-        ],
-        "x-service-name": "Authentication Service"
-      },
-      "user_update": {
-        "title": "User Update",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
-        "x-service-name": "Authentication Service"
-      },
-      "role_init": {
-        "title": "Role Init",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
+          "url",
+          "id",
           "name",
           "scopes"
         ],
@@ -1654,7 +1622,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user_init"
+                "$ref": "#/components/schemas/user"
               }
             }
           }
@@ -2073,7 +2041,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/role_init"
+                "$ref": "#/components/schemas/role"
               }
             }
           }
@@ -2488,7 +2456,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user"
+                "$ref": "#/components/schemas/user_update"
               }
             }
           }
@@ -4042,7 +4010,7 @@
           {
             "JWT": [
               "device",
-              "device:create"
+              "device:instantiate"
             ]
           }
         ],

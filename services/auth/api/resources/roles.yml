@@ -38,7 +38,7 @@ post:
     description: Role to be created.
     content:
       application/json:
-        $ref: "../content/role_init.yml"
+        $ref: "../content/role.yml"
   responses:
     201:
       description: The JSON representation of the created role.
