@@ -1,11 +1,11 @@
-import assert from 'assert'
 import { userRepository } from '../../../src/database/repositories/userRepository'
+import * as loginMethods from '../../../src/methods/login'
 import { postLogin } from '../../../src/operations/login'
 import { AuthenticationError, LdapAuthenticationError } from '../../../src/types/errors'
-import Mocha from 'mocha'
 import { TestData } from '../../data/index.spec'
+import assert from 'assert'
+import Mocha from 'mocha'
 import * as sinon from 'sinon'
-import * as loginMethods from '../../../src/methods/login'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /login', context)
@@ -94,6 +94,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 token: '13a0e1be-3181-415b-962f-dc14be2dc633',
                 scopes: [],
                 user: testData.users.superadmin.model,
+                roles: [],
             })
 
             const result = await postLogin({

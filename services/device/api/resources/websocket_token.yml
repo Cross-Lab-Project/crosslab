@@ -8,6 +8,7 @@ post:
     - JWT:
         - device
         - device:connect
+        - device:connect:current
   parameters:
     - $ref: "../parameters/device_id.yml"
   responses:

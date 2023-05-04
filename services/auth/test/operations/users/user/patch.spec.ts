@@ -1,12 +1,12 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { userRepository } from '../../../../src/database/repositories/userRepository'
-import { UserUpdate } from '../../../../src/generated/types'
+import { User } from '../../../../src/generated/types'
 import { userUrlFromId } from '../../../../src/methods/utils'
 import { patchUsersByUserId } from '../../../../src/operations/users'
 import { TestData } from '../../../data/index.spec'
 import { userRepositoryTestSuite } from '../../../database/repositories/userRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('PATCH /users/{user_id}', context)
@@ -14,11 +14,15 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.addTest(
         new Mocha.Test('should successfully patch the user', async function () {
             const user_id = testData.users.superadmin.model.uuid
-            const userUpdate: UserUpdate<'request'> = {
+            const userUpdate: User<'request'> = {
                 username: 'admin',
                 password: 'admin',
             }
-            const result = await patchUsersByUserId({ user_id }, userUpdate, {})
+            const result = await patchUsersByUserId(
+                { user_id },
+                userUpdate,
+                testData.userData
+            )
 
             assert(result.status === 200)
             assert(result.body.username === userUpdate.username)
@@ -36,7 +40,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const result = await patchUsersByUserId(
                     { user_id: userModel.uuid },
                     undefined,
-                    {}
+                    testData.userData
                 )
 
                 assert(result.status === 200)
@@ -58,7 +62,11 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 await assert.rejects(
                     async () => {
-                        await patchUsersByUserId({ user_id: 'unknown' }, undefined, {})
+                        await patchUsersByUserId(
+                            { user_id: 'unknown' },
+                            undefined,
+                            testData.userData
+                        )
                     },
                     (error) => {
                         assert(error instanceof MissingEntityError)

@@ -1,5 +1,3 @@
-import assert from 'assert'
-import rewire from 'rewire'
 import {
     AppDataSource,
     ApplicationDataSource,
@@ -14,6 +12,9 @@ import {
     UserModel,
 } from '../../src/database/model'
 import { roleRepository } from '../../src/database/repositories/roleRepository'
+import { userRepository } from '../../src/database/repositories/userRepository'
+import assert from 'assert'
+import rewire from 'rewire'
 
 function invertMapping(mapping: { [k: string]: string[] }) {
     const newMapping: { [k: string]: string[] } = {}
@@ -143,8 +144,13 @@ export default () =>
                         name: 'superadmin',
                     },
                 })
-                roleModelSuperadmin.scopes = []
-                await roleRepository.save(roleModelSuperadmin)
+                const userModelSuperadmin = await userRepository.findOneOrFail({
+                    where: {
+                        username: 'superadmin',
+                    },
+                })
+                await roleRepository.remove(roleModelSuperadmin)
+                await userRepository.remove(userModelSuperadmin)
 
                 await initializeDataSource()
 

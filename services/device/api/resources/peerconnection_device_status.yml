@@ -5,10 +5,9 @@ patch:
   tags:
     - peerconnection
   security:
-    # TODO
     - JWT:
       - peerconnection
-      - peerconnection:list
+      - peerconnection:read
   requestBody:
     required: true
     description: The JSON Representation of the device peer connection.

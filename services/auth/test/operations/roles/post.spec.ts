@@ -1,17 +1,17 @@
-import assert from 'assert'
-import Mocha from 'mocha'
 import { roleRepository } from '../../../src/database/repositories/roleRepository'
-import { RoleInit } from '../../../src/generated/types'
+import { Role } from '../../../src/generated/types'
 import { postRoles } from '../../../src/operations/roles'
 import { TestData } from '../../data/index.spec'
 import { roleRepositoryTestSuite } from '../../database/repositories/roleRepository.spec'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /roles', context)
 
     suite.addTest(
         new Mocha.Test('should correctly add a new role', async function () {
-            const role: RoleInit<'request'> = {
+            const role: Role<'request'> = {
                 name: 'admin',
                 scopes: [
                     testData.scopes['scope 1'].request,
@@ -19,7 +19,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 ],
             }
 
-            const result = await postRoles(role, {})
+            const result = await postRoles(role, testData.userData)
 
             const roleModel = await roleRepository.findOne({
                 where: {
