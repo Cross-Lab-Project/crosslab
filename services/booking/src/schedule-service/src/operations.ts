@@ -8,7 +8,7 @@ import {
 } from "./generated/signatures"
 
 import { APIClient } from "@cross-lab-project/api-client"
-import { DeviceServiceTypes } from "@cross-lab-project/api-client/dist/generated/types"
+import { DeviceServiceTypes } from "@cross-lab-project/api-client/lib/types/generated/types"
 import * as mysql from 'mysql2/promise';
 import { cloneDeep, map } from "lodash"
 import dayjs from 'dayjs';
@@ -120,7 +120,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
     const lrpromise = new Map<string, [number[], number[], postScheduleRequestBodyType, Promise<postScheduleSuccessResponseType['body']>]>(); // Device in request, device list, request
     for (let k of laterReq.keys()) {
         let lr = laterReq.get(k);
-        let req = api.getSchedule(lr[2], { url: k + "/booking/schedule" });
+        let req = api.schedule(lr[2]);
 
         lrpromise.set(k, [lr[0], lr[1], lr[2], req]);
     }
