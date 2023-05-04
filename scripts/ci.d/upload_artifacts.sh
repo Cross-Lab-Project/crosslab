@@ -65,7 +65,11 @@ if [ -z "$REPOSITORY" ]; then
 fi
 
 dist_paths=$( echo "${root[@]}" | tr ' ' $"\n" | LC_ALL=C sort | uniq | sed 's/$/\/dist/' | sed "s#$GIT_DIR/##")
+dist_paths=$(for d in $dist_paths; do [ -d "$d" ] && echo "$d"; done)
 hash_files=$(fd -Ig '*.hash' $dist_paths | sed "s#$GIT_DIR/##")
+
+echo "hash_files: $hash_files"
+exit 0
 
 ref=$(git rev-parse HEAD)
 
