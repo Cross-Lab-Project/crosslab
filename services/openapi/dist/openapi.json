@@ -2493,6 +2493,56 @@
         "x-service-name": "Authentication Service"
       }
     },
+    "/register": {
+      "post": {
+        "operationId": "register",
+        "tags": [
+          "authentication"
+        ],
+        "security": [],
+        "summary": "Register user",
+        "description": "This endpoint will register a new user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/credentials"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Authentication Service"
+      }
+    },
     "/schedule": {
       "post": {
         "operationId": "get_schedule",
