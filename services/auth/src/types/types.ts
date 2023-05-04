@@ -4,6 +4,7 @@ export type Token<T extends 'request' | 'response' | 'all' = 'all'> = T extends 
     ? {
           token: string
           scopes: string[]
+          roles: string[]
           user: string
           expiresOn?: string
           device?: string
@@ -11,6 +12,7 @@ export type Token<T extends 'request' | 'response' | 'all' = 'all'> = T extends 
     : T extends 'request'
     ? {
           scopes: string[]
+          roles: string[]
           user: string
           expiresOn?: string
           device?: string

@@ -6,7 +6,7 @@ get:
   security:
     - JWT:
       - update
-      - update:list
+      - update:read
   summary: Get update for device
   parameters:
     - $ref: "../parameters/device_id.yml"
@@ -39,7 +39,7 @@ patch:
   security:
     - JWT:
       - update
-      - update:edit
+      - update:write
   summary: Edit update information
   parameters:
     - $ref: "../parameters/device_id.yml"
@@ -71,7 +71,7 @@ delete:
   security:
     - JWT:
       - update
-      - update:create
+      - update:delete
   summary: Delete update information
   parameters:
     - $ref: "../parameters/device_id.yml"

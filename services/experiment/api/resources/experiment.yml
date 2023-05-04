@@ -9,7 +9,8 @@ get:
   security:
     - JWT:
         - experiment
-        - experiment:list
+        - experiment:read
+        - experiment:read:owned
   responses:
     200:
       description: The JSON Representation of the experiment
@@ -38,7 +39,8 @@ patch:
   security:
     - JWT:
         - experiment
-        - experiment:edit
+        - experiment:write
+        - experiment:write:owned
   parameters:
     - $ref: "../parameters/experiment_id.yml"
     - $ref: "../parameters/experiment_changed_url.yml"
@@ -76,7 +78,7 @@ patch:
             - JWT:
               - experiment
               - experiment:create
-              - experiment:edit
+              - experiment:write
           summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
@@ -96,7 +98,8 @@ delete:
   security:
     - JWT:
         - experiment
-        - experiment:create
+        - experiment:delete
+        - experiment:delete:owned
   parameters:
     - $ref: "../parameters/experiment_id.yml"
   responses:

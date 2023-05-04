@@ -4,7 +4,7 @@ import {
     userRepository,
     UserRepository,
 } from '../../../src/database/repositories/userRepository'
-import { User, UserInit, UserUpdate } from '../../../src/generated/types'
+import { User } from '../../../src/generated/types'
 import { userUrlFromId } from '../../../src/methods/utils'
 import { UserName, userNames } from '../../data/userData.spec'
 import { initTestDatabase } from './index.spec'
@@ -164,7 +164,7 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<
         }
     }
 
-    validateCreate(model: UserModel, data?: UserInit<'request'>): boolean {
+    validateCreate(model: UserModel, data?: User<'request'>): boolean {
         if (data) return this.validateWrite(model, data)
 
         assert(model.password === undefined)
@@ -175,7 +175,7 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<
         return true
     }
 
-    validateWrite(model: UserModel, data: UserUpdate<'request'>): boolean {
+    validateWrite(model: UserModel, data: Partial<User<'request'>>): boolean {
         if (data.password) {
             assert(model.password)
             assert(compareSync(data.password, model.password))

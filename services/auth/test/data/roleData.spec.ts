@@ -116,9 +116,10 @@ export function resolveRole(
     return {
         request: {
             ...roleDataWithLinks[roleName].request,
-            scopes: roleDataWithLinks[roleName].request.scopes?.map(
-                (scopeName) => resolveScope(scopeName).request
-            ),
+            scopes:
+                roleDataWithLinks[roleName].request.scopes?.map(
+                    (scopeName) => resolveScope(scopeName).request
+                ) ?? [],
         },
         model: {
             ...roleDataWithLinks[roleName].model,

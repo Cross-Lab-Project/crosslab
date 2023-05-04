@@ -1,9 +1,10 @@
-import { ActiveKeyModel, KeyModel, ScopeModel, UserModel } from '../database/model'
-import { SignJWT, JWTPayload, importJWK } from 'jose'
 import { config } from '../config'
+import { ActiveKeyModel, KeyModel, UserModel } from '../database/model'
+import { roleRepository } from '../database/repositories/roleRepository'
 import { UserType } from '../generated/types'
-import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
 import { userUrlFromId } from './utils'
+import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
+import { SignJWT, JWTPayload, importJWK } from 'jose'
 
 /**
  * This function signs a JWT.
@@ -35,18 +36,18 @@ export async function sign<P extends JWTPayload>(
 export async function signUserToken(
     user: UserModel,
     activeKey: ActiveKeyModel,
-    scopes?: ScopeModel[]
+    scopes?: string[]
 ): Promise<string> {
     return await sign<UserType>(
         {
             url: userUrlFromId(user.uuid),
             username: user.username,
             scopes:
-                scopes?.map((scope) => scope.name) ??
+                scopes ??
                 user.roles
                     .map((role) => role.scopes.map((scope) => scope.name))
                     .flat(1)
-                    .filter((value, index, self) => self.indexOf(value) === index),
+                    .filter((value, index, array) => array.indexOf(value) === index),
         },
         activeKey.key,
         '2h'
@@ -63,20 +64,19 @@ export async function signUserToken(
 export async function signDeviceToken(
     deviceUrl: string,
     user: UserModel,
-    activeKey: ActiveKeyModel,
-    scopes?: ScopeModel[]
+    activeKey: ActiveKeyModel
 ): Promise<string> {
+    const roleModelDevice = await roleRepository.findOneOrFail({
+        where: {
+            name: 'device',
+        },
+    })
     return await sign<UserType>(
         {
             url: userUrlFromId(user.uuid),
             username: user.username,
             device: deviceUrl,
-            scopes:
-                scopes?.map((scope) => scope.name) ??
-                user.roles
-                    .map((role) => role.scopes.map((s) => s.name))
-                    .flat(1)
-                    .filter((value, index, self) => self.indexOf(value) === index),
+            scopes: roleModelDevice.scopes.map((scope) => scope.name),
         },
         activeKey.key,
         '2h'

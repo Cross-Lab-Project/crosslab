@@ -79,6 +79,10 @@ export class TokenModel {
     @ManyToMany(() => ScopeModel)
     @JoinTable()
     scopes!: ScopeModel[]
+
+    @ManyToMany(() => RoleModel)
+    @JoinTable()
+    roles!: RoleModel[]
 }
 
 @Entity()

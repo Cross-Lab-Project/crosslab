@@ -1,4 +1,4 @@
-import { User, UserInit, UserUpdate } from '../../generated/types'
+import { User } from '../../generated/types'
 import { userUrlFromId } from '../../methods/utils'
 import { RoleModel, UserModel } from '../model'
 import { tokenRepository } from './tokenRepository'
@@ -11,7 +11,7 @@ import { FindOptionsRelations } from 'typeorm'
 
 export class UserRepository extends AbstractRepository<
     UserModel,
-    UserUpdate<'request'>,
+    User<'request'>,
     User<'response'>
 > {
     constructor() {
@@ -22,15 +22,15 @@ export class UserRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(UserModel)
     }
 
-    public async create(data?: UserInit<'request'>): Promise<UserModel> {
+    public async create(data?: User<'request'>): Promise<UserModel> {
         const model = await super.create(data)
-        model.roles = []
         model.tokens = []
+        model.roles = []
 
         return model
     }
 
-    public async write(model: UserModel, data: UserUpdate<'request'>): Promise<void> {
+    public async write(model: UserModel, data: Partial<User<'request'>>): Promise<void> {
         if (data.username) model.username = data.username
         if (data.password) model.password = await hash(data.password, 10)
     }

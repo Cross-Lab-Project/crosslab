@@ -14,7 +14,8 @@ properties:
   password:
     type: string
     writeOnly: true
-  roles:
-    type: array
-    items: 
-      $ref: "../schemas/role.yml"
+required:
+  - url
+  - id
+  - username
+  - password

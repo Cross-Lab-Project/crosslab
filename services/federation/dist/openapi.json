@@ -90,7 +90,7 @@
           {
             "JWT": [
               "institution",
-              "institution:list"
+              "institution:read"
             ]
           }
         ],
@@ -197,7 +197,7 @@
           {
             "JWT": [
               "institution",
-              "institution:list"
+              "institution:read"
             ]
           }
         ],
@@ -239,7 +239,7 @@
           {
             "JWT": [
               "institution",
-              "institution:edit"
+              "institution:write"
             ]
           }
         ],
@@ -296,7 +296,7 @@
           {
             "JWT": [
               "institution",
-              "institution:create"
+              "institution:delete"
             ]
           }
         ],

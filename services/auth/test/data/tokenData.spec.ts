@@ -1,9 +1,26 @@
 import { TokenModel, UserModel } from '../../src/database/model'
 import { TokenRepository } from '../../src/database/repositories/tokenRepository'
 import { Token } from '../../src/types/types'
+import { RoleName, resolveRole } from './roleData.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
-import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
+import { EntityData, RemoveIndex, ReplaceWith, Subset } from '@crosslab/service-common'
+
+type ReplaceWithIteratively<
+    T,
+    P extends (keyof RemoveIndex<T>)[],
+    R extends unknown[]
+> = P extends [infer PH extends keyof RemoveIndex<T>]
+    ? R extends [infer RH]
+        ? ReplaceWith<T, PH, RH>
+        : never
+    : P extends [infer PH extends keyof RemoveIndex<T>, ...infer PT]
+    ? R extends [infer RH, ...infer RT]
+        ? PT extends (keyof RemoveIndex<ReplaceWith<T, PH, RH>>)[]
+            ? ReplaceWithIteratively<ReplaceWith<T, PH, RH>, PT, RT>
+            : never
+        : never
+    : never
 
 export const tokenNames = [
     'superadmin expired token',
@@ -20,12 +37,13 @@ export type TokenData = Record<TokenName, EntityData<TokenRepository>>
 type TokenWithLinks<T extends 'all' | 'request' | 'response' = 'all'> = T extends
     | 'all'
     | 'request'
-    ? ReplaceWith<ReplaceWith<Token<T>, 'scopes', ScopeName[]>, 'user', UserName>
+    ? ReplaceWithIteratively<Token<T>, ['scopes', 'user'], [ScopeName[], UserName]>
     : undefined
-type TokenModelWithLinks = ReplaceWith<
-    ReplaceWith<TokenModel, 'scopes', ScopeName[]>,
-    'user',
-    UserName
+
+type TokenModelWithLinks = ReplaceWithIteratively<
+    TokenModel,
+    ['roles', 'scopes', 'user'],
+    [RoleName[], ScopeName[], UserName]
 >
 type TokenDataWithLinks = Record<
     TokenName,
@@ -41,12 +59,14 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1'],
             user: 'superadmin',
+            roles: [],
             expiresOn: new Date(Date.now() - 360000).toISOString(),
         },
         model: {
             scopes: ['scope 1'],
             token: 'fe56a6bd-d09b-4d68-8874-ee214f400980',
             user: 'superadmin',
+            roles: [],
             expiresOn: new Date(Date.now() - 360000).toISOString(),
         },
         response: undefined,
@@ -55,11 +75,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 2', 'scope 3'],
             user: 'superadmin',
+            roles: [],
         },
         model: {
             scopes: ['scope 2', 'scope 3'],
             token: '9df0cfd1-ea6a-4d1e-8647-636419f36c5a',
             user: 'superadmin',
+            roles: [],
         },
         response: undefined,
     },
@@ -69,6 +91,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             user: 'superadmin',
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
+            roles: [],
         },
         model: {
             scopes: ['scope 1', 'scope 4', 'scope 5'],
@@ -76,6 +99,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             user: 'superadmin',
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
+            roles: [],
         },
         response: undefined,
     },
@@ -86,6 +110,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             expiresOn: new Date(Date.now() + 360000).toISOString(),
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
+            roles: [],
         },
         model: {
             scopes: ['scope 2', 'scope 3'],
@@ -94,6 +119,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             expiresOn: new Date(Date.now() + 360000).toISOString(),
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
+            roles: [],
         },
         response: undefined,
     },
@@ -101,11 +127,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1', 'scope 2'],
             user: 'GET /auth user',
+            roles: [],
         },
         model: {
             scopes: ['scope 1', 'scope 2'],
             user: 'GET /auth user',
             token: '86de8a01-a269-46c8-b2aa-8a5d7ce69057',
+            roles: [],
         },
         response: undefined,
     },
@@ -114,12 +142,14 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             scopes: ['scope 1'],
             user: 'GET /auth user',
             expiresOn: new Date(Date.now() - 360000).toISOString(),
+            roles: [],
         },
         model: {
             scopes: ['scope 1'],
             user: 'GET /auth user',
             token: '582bb590-d090-4d37-866b-c29eb1e8e2f3',
             expiresOn: new Date(Date.now() - 360000).toISOString(),
+            roles: [],
         },
         response: undefined,
     },
@@ -127,11 +157,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1', 'scope 2'],
             user: 'POST /logout user',
+            roles: [],
         },
         model: {
             scopes: ['scope 1', 'scope 2'],
             user: 'POST /logout user',
             token: 'ce63c5d4-c826-4cab-8768-d5d7d11ca304',
+            roles: [],
         },
         response: undefined,
     },
@@ -156,6 +188,9 @@ export function resolveToken(
                 (scopeName) => resolveScope(scopeName).model
             ),
             user: userData[tokenDataWithLinks[tokenName].model.user]!.model! as UserModel,
+            roles: tokenDataWithLinks[tokenName].model.roles.map(
+                (roleName) => resolveRole(roleName, userData).model
+            ),
         },
         response: undefined,
     }

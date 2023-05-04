@@ -37,7 +37,7 @@ patch:
     description: Updated identity.
     content:
       application/json:
-        $ref: "../content/user.yml"
+        $ref: "../content/user_update.yml"
   responses:
     200:
       description: The JSON representation of the updated user.

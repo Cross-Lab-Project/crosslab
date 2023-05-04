@@ -7,7 +7,8 @@ get:
   security:
     - JWT:
       - experiment
-      - experiment:list
+      - experiment:read
+      - experiment:read:owned
   responses:
     200:
       description: The list of all experiments.
@@ -69,7 +70,7 @@ post:
             - JWT:
               - experiment
               - experiment:create
-              - experiment:edit
+              - experiment:write
           summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
