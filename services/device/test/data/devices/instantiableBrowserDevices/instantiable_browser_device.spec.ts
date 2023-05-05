@@ -1,6 +1,6 @@
 import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
 import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 const uuid = '3742d2bd-8259-4dba-8908-f54dba68ba69'
 const type = 'edge instantiable'

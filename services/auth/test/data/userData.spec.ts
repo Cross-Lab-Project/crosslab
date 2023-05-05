@@ -4,7 +4,8 @@ import { User } from '../../src/generated/types'
 import { userUrlFromId } from '../../src/methods/utils'
 import { resolveRole, RoleName } from './roleData.spec'
 import { resolveToken, TokenName } from './tokenData.spec'
-import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
+import { ReplaceWith, Subset } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const userNames = [
     'superadmin',

@@ -20,7 +20,7 @@ import {
     InstantiableCloudDeviceName,
 } from './devices/instantiableCloudDevices/index.spec'
 import { peerconnectionData, PeerconnectionName } from './peerconnections/index.spec'
-import { GenericTestData } from '@crosslab/service-common'
+import { GenericTestData } from '@crosslab/service-common/test-helper'
 
 export type TestData = GenericTestData<
     [

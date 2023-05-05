@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { KeyRepository } from '../../src/database/repositories/keyRepository'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 import { JWK } from 'jose'
 
 export const keyNames = ['key 1', 'GET /auth key'] as const

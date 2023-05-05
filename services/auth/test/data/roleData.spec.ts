@@ -4,7 +4,8 @@ import { Role } from '../../src/generated/types'
 import { roleUrlFromId } from '../../src/methods/utils'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
-import { EntityData, ReplaceWith, Subset } from '@crosslab/service-common'
+import { ReplaceWith, Subset } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const roleNames = ['superadmin', 'user', 'deviceservice', 'device'] as const
 export type RoleName = (typeof roleNames)[number]

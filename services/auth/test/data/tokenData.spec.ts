@@ -4,7 +4,8 @@ import { Token } from '../../src/types/types'
 import { RoleName, resolveRole } from './roleData.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
-import { EntityData, RemoveIndex, ReplaceWith, Subset } from '@crosslab/service-common'
+import { RemoveIndex, ReplaceWith, Subset } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 type ReplaceWithIteratively<
     T,

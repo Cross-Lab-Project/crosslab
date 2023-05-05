@@ -8,7 +8,7 @@ import { Peerconnection } from '../../../src/generated/types'
 import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId'
 import { PeerconnectionName } from '../../data/peerconnections/index.spec'
 import { initTestDatabase } from './index.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
 

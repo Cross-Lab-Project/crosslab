@@ -16,7 +16,7 @@ import {
     InstantiableCloudDeviceName,
     instantiableCloudDeviceNames,
 } from './instantiableCloudDevices/index.spec'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const deviceNames = [
     ...concreteDeviceNames,
