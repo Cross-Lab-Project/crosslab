@@ -208,7 +208,7 @@ async function createDefaultSuperadminUser() {
 
     if (roleModelSuperadmin.users.length === 0) {
         const userModelSuperadmin = await userRepository.create({
-            username: 'superadmin',
+            username: 'local:superadmin',
             password: 'superadmin',
         })
         userRepository.addRoleModelToUserModel(userModelSuperadmin, roleModelSuperadmin)
@@ -236,7 +236,7 @@ async function createDefaultServiceUser(
 
     if (roleService.users.length === 0) {
         const user = await userRepository.create()
-        user.username = service.replace('_', '')
+        user.username = `local:${service.replace('_', '')}`
         user.roles = [roleService]
         user.tokens = []
         await userRepository.save(user)

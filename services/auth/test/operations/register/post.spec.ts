@@ -47,7 +47,7 @@ export default function (context: Mocha.Context, testData: TestData) {
         new Mocha.Test(
             'should throw a RegistrationError if user with the same username already exists',
             async function () {
-                const username = testData.users.superadmin.model.username
+                const username = testData.users.superadmin.request.username
                 const password = 'password'
 
                 userRepositorySaveStub.callsFake(originalUserRepositorySave)

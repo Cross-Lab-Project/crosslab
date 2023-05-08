@@ -1,4 +1,4 @@
-import { DataSourceOptions } from 'typeorm'
+import { Migrations } from './database/migrations'
 import {
     ScopeModel,
     RoleModel,
@@ -8,6 +8,7 @@ import {
     TokenModel,
 } from './database/model'
 import { AppConfiguration } from './types/types'
+import { DataSourceOptions } from 'typeorm'
 
 export function die(reason: string): string {
     console.error(reason)
@@ -34,6 +35,7 @@ export const config: AppConfiguration = initializeAppConfiguration()
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
     database: 'db/auth.db',
-    synchronize: true,
     entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
+    migrationsRun: true,
+    migrations: [...Migrations],
 }

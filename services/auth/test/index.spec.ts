@@ -1,10 +1,5 @@
-import rewire from 'rewire'
+import { config, dataSourceConfig } from '../src/config'
 import { AppDataSource } from '../src/database/dataSource'
-import { app } from '../src/generated'
-import * as sinon from 'sinon'
-import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
-import assert from 'assert'
-import request from 'supertest'
 import {
     ScopeModel,
     RoleModel,
@@ -13,7 +8,12 @@ import {
     ActiveKeyModel,
     TokenModel,
 } from '../src/database/model'
-import { config } from '../src/config'
+import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
+import { app } from '../src/generated'
+import assert from 'assert'
+import rewire from 'rewire'
+import * as sinon from 'sinon'
+import request from 'supertest'
 
 describe('Index', function () {
     let appListenStub: sinon.SinonStub
@@ -31,17 +31,8 @@ describe('Index', function () {
         const indexModule = rewire('../src/index.ts')
         startAuthenticationService = indexModule.__get__('startAuthenticationService')
         await startAuthenticationService(config, {
-            type: 'sqlite',
+            ...dataSourceConfig,
             database: './test/db/index_test.db',
-            synchronize: true,
-            entities: [
-                ScopeModel,
-                RoleModel,
-                UserModel,
-                KeyModel,
-                ActiveKeyModel,
-                TokenModel,
-            ],
             dropSchema: true,
         })
         assert(appListenStub.called)

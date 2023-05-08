@@ -179,8 +179,7 @@ export function resolveToken(
             scopes: tokenDataWithLinks[tokenName].request.scopes.map(
                 (scopeName) => resolveScope(scopeName).request
             ),
-            user: userData[tokenDataWithLinks[tokenName].request.user]!.request!
-                .username!,
+            user: userData[tokenDataWithLinks[tokenName].request.user]!.model!.username!,
         },
         model: {
             ...tokenDataWithLinks[tokenName].model,

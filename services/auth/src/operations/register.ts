@@ -14,7 +14,7 @@ export const postRegister: postRegisterSignature = async (body) => {
 
     const existingUser = await userRepository.findOne({
         where: {
-            username: body.username,
+            username: `local:${body.username}`,
         },
     })
 
@@ -22,7 +22,7 @@ export const postRegister: postRegisterSignature = async (body) => {
         throw new RegistrationError('User with the same username already exists', 400)
 
     const newUser = await userRepository.create({
-        username: body.username,
+        username: `local:${body.username}`,
         password: body.password,
     })
 

@@ -38,7 +38,7 @@ const userDataWithLinks: UserDataWithLinks = {
         },
         model: {
             uuid: '6dcb9c40-b0bd-496a-b5a6-cfd3570d8131',
-            username: 'superadmin',
+            username: 'local:superadmin',
             password: '$2a$10$jA9acOfIQxpzj6X50TcDPugDOb4gXLvdsyEVl.9WUDns1jk565dJS',
             roles: ['superadmin', 'user'],
             tokens: [
@@ -50,7 +50,7 @@ const userDataWithLinks: UserDataWithLinks = {
         response: {
             id: '6dcb9c40-b0bd-496a-b5a6-cfd3570d8131',
             url: userUrlFromId('6dcb9c40-b0bd-496a-b5a6-cfd3570d8131'),
-            username: 'superadmin',
+            username: 'local:superadmin',
         },
     },
     'deviceservice': {
@@ -60,7 +60,7 @@ const userDataWithLinks: UserDataWithLinks = {
         },
         model: {
             uuid: 'd2389a10-e9f4-4153-8f25-a7018b8ca3df',
-            username: 'deviceservice',
+            username: 'local:deviceservice',
             password: '$2a$10$KHBOyR7Sc0DNuKDAf1.Yv.zVnlhwxiarYO7WGoTyLjKxMeHfuhbKm',
             roles: ['deviceservice'],
             tokens: [],
@@ -68,7 +68,7 @@ const userDataWithLinks: UserDataWithLinks = {
         response: {
             id: 'd2389a10-e9f4-4153-8f25-a7018b8ca3df',
             url: userUrlFromId('d2389a10-e9f4-4153-8f25-a7018b8ca3df'),
-            username: 'deviceservice',
+            username: 'local:deviceservice',
         },
     },
     'GET /auth user': {
@@ -78,7 +78,7 @@ const userDataWithLinks: UserDataWithLinks = {
         },
         model: {
             uuid: 'cd6c537f-86e7-45a4-8d8e-eece4d46c78d',
-            username: 'getauthuser',
+            username: 'local:getauthuser',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
             tokens: [
@@ -90,7 +90,7 @@ const userDataWithLinks: UserDataWithLinks = {
         response: {
             id: 'cd6c537f-86e7-45a4-8d8e-eece4d46c78d',
             url: userUrlFromId('cd6c537f-86e7-45a4-8d8e-eece4d46c78d'),
-            username: 'getauthuser',
+            username: 'local:getauthuser',
         },
     },
     'POST /device_authentication_token user': {
@@ -100,7 +100,7 @@ const userDataWithLinks: UserDataWithLinks = {
         },
         model: {
             uuid: '50ccf56b-6032-4d92-9e33-75392912c96e',
-            username: 'postdeviceauthenticationtoken',
+            username: 'local:postdeviceauthenticationtoken',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
             tokens: [],
@@ -108,7 +108,7 @@ const userDataWithLinks: UserDataWithLinks = {
         response: {
             id: '50ccf56b-6032-4d92-9e33-75392912c96e',
             url: userUrlFromId('50ccf56b-6032-4d92-9e33-75392912c96e'),
-            username: 'postdeviceauthenticationtoken',
+            username: 'local:postdeviceauthenticationtoken',
         },
     },
     'POST /logout user': {
@@ -118,7 +118,7 @@ const userDataWithLinks: UserDataWithLinks = {
         },
         model: {
             uuid: '3762b0ee-7032-4c79-82e6-f42f91298799',
-            username: 'postlogoutuser',
+            username: 'local:postlogoutuser',
             password: '$2a$10$SjNNdG4FWEDFQWY0cJz7GePMD1wTU3Mtj3663vB0kcYC3b7q6nr1S',
             roles: ['user'],
             tokens: ['POST /logout valid user token'],
@@ -126,7 +126,7 @@ const userDataWithLinks: UserDataWithLinks = {
         response: {
             id: '3762b0ee-7032-4c79-82e6-f42f91298799',
             url: userUrlFromId('3762b0ee-7032-4c79-82e6-f42f91298799'),
-            username: 'postlogoutuser',
+            username: 'local:postlogoutuser',
         },
     },
 }

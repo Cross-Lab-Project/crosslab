@@ -1,16 +1,10 @@
+import { dataSourceConfig } from '../../src/config'
 import {
     AppDataSource,
     ApplicationDataSource,
     initializeDataSource,
 } from '../../src/database/dataSource'
-import {
-    ActiveKeyModel,
-    KeyModel,
-    RoleModel,
-    ScopeModel,
-    TokenModel,
-    UserModel,
-} from '../../src/database/model'
+import { ActiveKeyModel } from '../../src/database/model'
 import { roleRepository } from '../../src/database/repositories/roleRepository'
 import { userRepository } from '../../src/database/repositories/userRepository'
 import assert from 'assert'
@@ -48,16 +42,10 @@ export default () =>
                 await AppDataSource.initialize({
                     type: 'sqlite',
                     database: ':memory:',
-                    synchronize: true,
                     dropSchema: true,
-                    entities: [
-                        ScopeModel,
-                        RoleModel,
-                        UserModel,
-                        KeyModel,
-                        ActiveKeyModel,
-                        TokenModel,
-                    ],
+                    migrationsRun: true,
+                    migrations: dataSourceConfig.migrations,
+                    entities: dataSourceConfig.entities,
                 })
             })
 
@@ -146,7 +134,7 @@ export default () =>
                 })
                 const userModelSuperadmin = await userRepository.findOneOrFail({
                     where: {
-                        username: 'superadmin',
+                        username: 'local:superadmin',
                     },
                 })
                 await roleRepository.remove(roleModelSuperadmin)

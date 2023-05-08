@@ -9,15 +9,15 @@ export const allowlist: { [key: string]: string } = {}
 
 export function parseAllowlist(allowlistToParse: string): AllowlistEntry[] {
     const removedWhitespaceAllowlist = allowlistToParse.replace(/\s+/g, '')
-    const matches = removedWhitespaceAllowlist.match(/^(?:\w+:\w+)?(?:,\w+:\w+)*$/)
-    if (!matches || matches.length !== 1) {
-        throw new MalformedAllowlistError(`The allowlist is malformed`)
-    }
-    const entries = removedWhitespaceAllowlist.split(',').map((entry) => {
-        const splitEntry = entry.split(':')
+    const rawEntries = removedWhitespaceAllowlist.split(",")
+    const entries = rawEntries.map((rawEntry) => {
+        const splitRawEntry = rawEntry.split(':')
+        if (splitRawEntry.length !== 3) {
+            throw new MalformedAllowlistError(`The allowlist is malformed`)
+        }
         return <AllowlistEntry>{
-            url: splitEntry[0],
-            username: splitEntry[1],
+            url: splitRawEntry[0],
+            username: `${splitRawEntry[1]}:${splitRawEntry[2]}`,
         }
     })
 
