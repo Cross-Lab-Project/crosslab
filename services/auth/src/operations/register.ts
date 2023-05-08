@@ -37,7 +37,7 @@ export const postRegister: postRegisterSignature = async (body) => {
     } catch (error) {
         if (error instanceof MissingEntityError)
             throw new InconsistentDatabaseError("Role 'user' is missing in database", 500)
-        else throw new RegistrationError('User could not be registrated', 500)
+        else throw new RegistrationError('User could not be registered', 500)
     }
 
     console.log(`postRegister succeeded`)

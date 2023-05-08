@@ -99,7 +99,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     (error) => {
                         assert(error instanceof RegistrationError)
                         assert.strictEqual(error.status, 500)
-                        assert.strictEqual(error.message, 'User could not be registrated')
+                        assert.strictEqual(error.message, 'User could not be registered')
                         return true
                     }
                 )
