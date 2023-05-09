@@ -36,8 +36,8 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
     ) {
         await deviceOverviewRepository.write(model, data)
 
-        model.codeUrl = data.codeUrl
-        model.services = data.services
+        if (data.codeUrl) model.codeUrl = data.codeUrl
+        if (data.services) model.services = data.services
     }
 
     async format(

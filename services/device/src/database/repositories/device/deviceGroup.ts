@@ -37,7 +37,7 @@ export class DeviceGroupRepository extends AbstractRepository<
     ): Promise<void> {
         await deviceOverviewRepository.write(model, data)
 
-        model.devices = data.devices ?? []
+        if (data.devices) model.devices = data.devices
     }
 
     async format(
