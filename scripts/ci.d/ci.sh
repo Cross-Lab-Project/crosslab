@@ -93,6 +93,16 @@ while [[ $# -gt 0 ]]; do
       shift # past value
       ;;
 
+    --skip-tag)
+      if [ -z "$SKIP_TAGS" ]; then
+        SKIP_TAGS="$2"
+      else
+        SKIP_TAGS="$SKIP_TAGS $2"
+      fi
+      shift # past argument
+      shift # past value
+      ;;
+
     --clean)
       CLEAN=true
       shift # past argument
@@ -189,6 +199,21 @@ while true; do
         fi
       done
       if [ $is_in_tags = false ]; then
+        status[$job]="skipped"
+        continue
+      fi
+    fi
+
+    # skip if tag is in SKIP_TAGS
+    if [ ! -z "$SKIP_TAGS" ]; then
+      is_in_skip_tags=false
+      for t in $SKIP_TAGS; do
+        if [ ${tags[$job]} = $t ]; then
+          is_in_skip_tags=true
+          break
+        fi
+      done
+      if [ $is_in_skip_tags = true ]; then
         status[$job]="skipped"
         continue
       fi

@@ -1,3 +1,5 @@
+import { getDevice, apiClient } from '../../src/methods/api'
+import { InternalRequestError } from '../../src/types/errors'
 import {
     APIClient,
     FetchError,
@@ -8,8 +10,6 @@ import {
 } from '@cross-lab-project/api-client'
 import assert from 'assert'
 import * as sinon from 'sinon'
-import { getDevice, apiClient } from '../../src/methods/api'
-import { InternalRequestError } from '../../src/types/errors'
 
 type TestErrorName =
     | 'FetchError'
@@ -84,6 +84,9 @@ export default () =>
             it('should return the device if no error occurred', async function () {
                 const TEST_DEVICE: Awaited<ReturnType<APIClient['getDevice']>> = {
                     name: 'test device',
+                    type: 'device',
+                    owner: 'https://localhost/users/testuser',
+                    url: 'https://localhost/devices/testdevice',
                 }
                 apiGetDeviceStub.resolves(TEST_DEVICE)
 

@@ -96,6 +96,47 @@
           "local"
         ]
       },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "username",
+          "password"
+        ]
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      },
       "role": {
         "title": "Role",
         "type": "object",
@@ -118,81 +159,10 @@
               "type": "string"
             }
           }
-        }
-      },
-      "user": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          },
-          "roles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/role"
-            }
-          }
-        }
-      },
-      "user_init": {
-        "title": "User Init",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
         },
         "required": [
-          "username",
-          "password"
-        ]
-      },
-      "user_update": {
-        "title": "User Update",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      },
-      "role_init": {
-        "title": "Role Init",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
+          "url",
+          "id",
           "name",
           "scopes"
         ]
@@ -378,7 +348,9 @@
           {
             "JWT": [
               "device_token",
-              "device_token:create"
+              "device_token:create",
+              "device_token:create:owned",
+              "device_token:create:instantiable"
             ]
           }
         ],
@@ -485,7 +457,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user_init"
+                "$ref": "#/components/schemas/user"
               }
             }
           }
@@ -896,7 +868,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/role_init"
+                "$ref": "#/components/schemas/role"
               }
             }
           }
@@ -1303,7 +1275,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/user"
+                "$ref": "#/components/schemas/user_update"
               }
             }
           }

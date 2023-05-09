@@ -6,7 +6,10 @@ export function handleArray(
     comment: string,
     options: TypingOptions
 ): Typing {
-    const td = generateTyping((schema as OpenAPIV3_1.ArraySchemaObject).items, options)
+    const td = generateTyping((schema as OpenAPIV3_1.ArraySchemaObject).items, {
+        ...options,
+        resolveDirectly: true,
+    })
 
     let min = 'undefined'
     let max = 'undefined'

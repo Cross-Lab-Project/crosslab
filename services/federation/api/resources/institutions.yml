@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - institution
-      - institution:list
+      - institution:read
   responses:
     200:
       description: The list of all institutions.

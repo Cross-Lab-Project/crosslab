@@ -218,6 +218,7 @@ clients/api/js:
       - helper/crosslab-typescript-addon:build
       - helper/tsdoc-theme:build
       - helper/openapi-codegeneration:build
+      - services/openapi:build
   - script: lint
     dependencies:
       - clients/api/js:build

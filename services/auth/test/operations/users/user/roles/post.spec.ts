@@ -1,11 +1,11 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { userRepository } from '../../../../../src/database/repositories/userRepository'
 import { postUsersByUserIdRoles } from '../../../../../src/operations/users'
 import { TestData } from '../../../../data/index.spec'
 import { roleNames } from '../../../../data/roleData.spec'
 import { userRepositoryTestSuite } from '../../../../database/repositories/userRepository.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /users/{user_id}/roles', context)
@@ -20,7 +20,11 @@ export default function (context: Mocha.Context, testData: TestData) {
                     role_ids.push(testData.roles[roleName].model.uuid)
                 }
 
-                const result = await postUsersByUserIdRoles({ user_id }, role_ids, {})
+                const result = await postUsersByUserIdRoles(
+                    { user_id },
+                    role_ids,
+                    testData.userData
+                )
 
                 assert(result.status === 204)
 
@@ -48,7 +52,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const result = await postUsersByUserIdRoles(
                     { user_id: userModel.uuid },
                     undefined,
-                    {}
+                    testData.userData
                 )
 
                 assert(result.status === 204)
@@ -70,7 +74,11 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 await assert.rejects(
                     async () => {
-                        await postUsersByUserIdRoles({ user_id: 'unknown' }, [], {})
+                        await postUsersByUserIdRoles(
+                            { user_id: 'unknown' },
+                            [],
+                            testData.userData
+                        )
                     },
                     (error) => {
                         assert(error instanceof MissingEntityError)

@@ -35,48 +35,64 @@ type ScopeRecord = Record<CrosslabScope<'JWT'>, readonly (typeof standardRoles)[
 
 const scopesStandardRolesMapping: ScopeRecord = {
     // auth service scopes
-    'device_token': standardRoles,
-    'device_token:create': standardRoles,
-    'identity': standardRoles,
+    'device_token': ['developer'],
+    'device_token:create': [],
+    'device_token:create:owned': ['user'],
+    'device_token:create:instantiable': ['device_service'],
+    'identity': ['developer', 'user'],
     'identity:read': standardRoles,
-    'identity:write': standardRoles,
+    'identity:write': [],
     'logout': standardRoles,
-    'roles': standardRoles,
-    'roles:read': standardRoles,
-    'roles:write': standardRoles,
-    'roles:create': standardRoles,
-    'roles:delete': standardRoles,
-    'users': standardRoles,
-    'users:read': standardRoles,
-    'users:write': standardRoles,
-    'users:create': standardRoles,
-    'users:delete': standardRoles,
+    'roles': ['developer'],
+    'roles:read': [],
+    'roles:write': [],
+    'roles:create': [],
+    'roles:delete': [],
+    'users': ['developer'],
+    'users:read': [],
+    'users:write': [],
+    'users:create': [],
+    'users:delete': [],
     // device service scopes
-    'device': standardRoles,
-    'device:list': standardRoles,
-    'device:edit': standardRoles,
-    'device:create': standardRoles,
-    'device:connect': standardRoles,
-    'device:signal': standardRoles,
-    'peerconnection': standardRoles,
-    'peerconnection:list': standardRoles,
-    'peerconnection:create': standardRoles,
+    'device': ['developer'],
+    'device:read': ['developer'], // TODO: readall, listall, editall
+    'device:read:owned': standardRoles,
+    'device:write': ['device'],
+    'device:write:owned': ['user'],
+    'device:create': ['user'],
+    'device:delete': [],
+    'device:delete:owned': ['user'],
+    'device:instantiate': ['experiment_service'],
+    'device:instantiate:owned': ['user'],
+    'device:connect': [],
+    'device:connect:current': ['device'],
+    'device:signal': ['device_service'],
+    'peerconnection': ['developer', 'experiment_service'],
+    'peerconnection:read': [],
+    'peerconnection:create': [],
+    'peerconnection:delete': [],
     // experiment service scopes
-    'experiment': standardRoles,
-    'experiment:list': standardRoles,
-    'experiment:edit': standardRoles,
-    'experiment:create': standardRoles,
+    'experiment': ['developer'],
+    'experiment:read': [],
+    'experiment:read:owned': ['user'],
+    'experiment:write': [],
+    'experiment:write:owned': ['user'],
+    'experiment:create': ['user'],
+    'experiment:delete': [],
+    'experiment:delete:owned': ['user'],
     // federation service scopes
     'authorized_proxy': standardRoles,
-    'institution': standardRoles,
-    'institution:list': standardRoles,
-    'institution:edit': standardRoles,
-    'institution:create': standardRoles,
+    'institution': ['developer'],
+    'institution:read': standardRoles,
+    'institution:write': [],
+    'institution:create': [],
+    'institution:delete': [],
     // update service scopes
-    'update': standardRoles,
-    'update:list': standardRoles,
-    'update:edit': standardRoles,
-    'update:create': standardRoles,
+    'update': ['developer'],
+    'update:read': standardRoles,
+    'update:write': [],
+    'update:create': [],
+    'update:delete': [],
 }
 
 interface ScopeCollection {
@@ -154,16 +170,14 @@ async function createRole(name: string, scopes: CrosslabScope<'JWT'>[]) {
             name: name,
         },
     })
-    if (existingRoleModel === null) {
-        const role = await roleRepository.create({
-            name,
-            scopes: scopes,
-        })
-        await roleRepository.save(role)
-    } else {
-        roleRepository.write(existingRoleModel, { scopes })
-        await roleRepository.save(existingRoleModel)
-    }
+
+    if (existingRoleModel) return
+
+    const roleModel = await roleRepository.create({
+        name,
+        scopes: scopes,
+    })
+    await roleRepository.save(roleModel)
 }
 
 async function createDefaultScopesAndRoles() {

@@ -9,7 +9,7 @@ get:
   security:
     - JWT:
       - institution
-      - institution:list
+      - institution:read
   responses:
     200:
       description: The JSON Representation of the institution
@@ -34,7 +34,7 @@ patch:
   security:
     - JWT:
       - institution
-      - institution:edit
+      - institution:write
   parameters:
     - $ref: '../parameters/institution_id.yml'
   requestBody:
@@ -66,7 +66,7 @@ delete:
   security:
     - JWT:
       - institution
-      - institution:create
+      - institution:delete
   parameters:
     - $ref: '../parameters/institution_id.yml'
   responses:

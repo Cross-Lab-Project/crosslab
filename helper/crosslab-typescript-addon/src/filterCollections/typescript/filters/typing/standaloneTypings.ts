@@ -45,11 +45,13 @@ function standaloneTypings(extendedSchemas: ExtendedSchema[]) {
                 inline: false,
                 resolveDirectly: false,
                 context: standaloneSchemas,
+                schemaType: 'request',
             })
             const tdResponse = generateTyping(schemas.response, {
                 inline: false,
                 resolveDirectly: false,
                 context: standaloneSchemas,
+                schemaType: 'response',
             })
             return `
                 ${tdAll.comment}export type ${name}<T extends "request"|"response"|"all" = "all"> = T extends "all" 

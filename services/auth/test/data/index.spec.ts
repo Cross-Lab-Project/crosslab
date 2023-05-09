@@ -4,6 +4,7 @@ import { RoleRepository } from '../../src/database/repositories/roleRepository'
 import { ScopeRepository } from '../../src/database/repositories/scopeRepository'
 import { TokenRepository } from '../../src/database/repositories/tokenRepository'
 import { UserRepository } from '../../src/database/repositories/userRepository'
+import { UserData } from '../../src/generated/types'
 import { activeKeyData, ActiveKeyName } from './activeKeyData.spec'
 import { keyData, KeyName } from './keyData.spec'
 import { prepareRoleData, RoleName } from './roleData.spec'
@@ -21,7 +22,9 @@ export type TestData = GenericTestData<
         ['tokens', TokenName, TokenRepository],
         ['users', UserName, UserRepository]
     ]
->
+> & {
+    userData: UserData<'JWT'>
+}
 
 export function prepareTestData(): TestData {
     const userData = prepareUserData()
@@ -35,5 +38,12 @@ export function prepareTestData(): TestData {
         'scopes': scopeData,
         'tokens': tokenData,
         'users': userData,
+        'userData': {
+            JWT: {
+                url: 'http://localhost/users/testuser',
+                username: 'testuser',
+                scopes: [],
+            },
+        },
     }
 }

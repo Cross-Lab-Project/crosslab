@@ -1,15 +1,15 @@
-import { Client as LdapClient } from 'ldapts'
+import { TokenModel, UserModel } from '../database/model'
+import { roleRepository } from '../database/repositories/roleRepository'
+import { tokenRepository } from '../database/repositories/tokenRepository'
+import { userRepository } from '../database/repositories/userRepository'
 import {
     AuthenticationError,
     LdapAuthenticationError,
     LdapBindError,
     LdapError,
 } from '../types/errors'
-import { TokenModel, UserModel } from '../database/model'
 import { compare } from 'bcryptjs'
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { userRepository } from '../database/repositories/userRepository'
-import { roleRepository } from '../database/repositories/roleRepository'
+import { Client as LdapClient } from 'ldapts'
 
 /**
  * This function creates a token for a user.
@@ -23,10 +23,8 @@ async function createUserToken(
 ): Promise<TokenModel> {
     const tokenModel = await tokenRepository.create({
         user: userModel.username,
-        scopes: userModel.roles
-            .flatMap((roleModel) => roleModel.scopes)
-            .map((scopeModel) => scopeModel.name)
-            .filter((v, i, s) => s.indexOf(v) === i),
+        scopes: [],
+        roles: userModel.roles.map((role) => role.name),
         expiresOn: new Date(Date.now() + expiresIn).toISOString(),
     })
 

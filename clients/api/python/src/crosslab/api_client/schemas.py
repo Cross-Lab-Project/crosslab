@@ -38,20 +38,6 @@ CreateDeviceAuthenticationTokenResponse201: TypeAlias = str
 CreateDeviceAuthenticationTokenResponse: TypeAlias = CreateDeviceAuthenticationTokenResponse201
 
 
-class ListUsersResponse200ItemsRolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
-
-
 class ListUsersResponse200Items(TypedDict):
     """
     Properties:
@@ -59,13 +45,11 @@ class ListUsersResponse200Items(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[ListUsersResponse200ItemsRolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 ListUsersResponse200: TypeAlias = List[ListUsersResponse200Items]
@@ -77,25 +61,15 @@ ListUsersResponse: TypeAlias = ListUsersResponse200
 class CreateUserRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
     - username
     - password
     """
+    url: str
+    id: str
     username: str
     password: str
-
-
-class CreateUserResponse201RolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
 
 
 class CreateUserResponse201(TypedDict):
@@ -105,30 +79,14 @@ class CreateUserResponse201(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[CreateUserResponse201RolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 CreateUserResponse: TypeAlias = CreateUserResponse201
-
-
-class GetUserResponse200RolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
 
 
 class GetUserResponse200(TypedDict):
@@ -138,13 +96,11 @@ class GetUserResponse200(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[GetUserResponse200RolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 GetUserResponse: TypeAlias = GetUserResponse200
@@ -160,20 +116,6 @@ class UpdateUserRequest(TypedDict):
     password: NotRequired[str]
 
 
-class UpdateUserResponse200RolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
-
-
 class UpdateUserResponse200(TypedDict):
     """
     Properties:
@@ -181,13 +123,11 @@ class UpdateUserResponse200(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[UpdateUserResponse200RolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 UpdateUserResponse: TypeAlias = UpdateUserResponse200
@@ -204,10 +144,10 @@ class GetRolesOfUserResponse200Items(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 GetRolesOfUserResponse200: TypeAlias = List[GetRolesOfUserResponse200Items]
@@ -236,10 +176,10 @@ class ListRolesResponse200Items(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 ListRolesResponse200: TypeAlias = List[ListRolesResponse200Items]
@@ -251,9 +191,13 @@ ListRolesResponse: TypeAlias = ListRolesResponse200
 class CreateRoleRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
     - name
     - scopes
     """
+    url: str
+    id: str
     name: str
     scopes: List[str]
 
@@ -266,10 +210,10 @@ class CreateRoleResponse201(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 CreateRoleResponse: TypeAlias = CreateRoleResponse201
@@ -283,10 +227,10 @@ class GetRoleResponse200(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 GetRoleResponse: TypeAlias = GetRoleResponse200
@@ -300,10 +244,10 @@ class UpdateRoleRequest(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 class UpdateRoleResponse200(TypedDict):
@@ -314,30 +258,16 @@ class UpdateRoleResponse200(TypedDict):
     - name
     - scopes
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
+    url: str
+    id: str
+    name: str
+    scopes: List[str]
 
 
 UpdateRoleResponse: TypeAlias = UpdateRoleResponse200
 
 
 DeleteRoleResponse: TypeAlias = None
-
-
-class GetUsersWithRoleResponse200ItemsRolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
 
 
 class GetUsersWithRoleResponse200Items(TypedDict):
@@ -347,13 +277,11 @@ class GetUsersWithRoleResponse200Items(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[GetUsersWithRoleResponse200ItemsRolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 GetUsersWithRoleResponse200: TypeAlias = List[GetUsersWithRoleResponse200Items]
@@ -374,20 +302,6 @@ RemoveUsersFromRoleRequest: TypeAlias = List[str]
 RemoveUsersFromRoleResponse: TypeAlias = None
 
 
-class GetIdentityResponse200RolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
-
-
 class GetIdentityResponse200(TypedDict):
     """
     Properties:
@@ -395,60 +309,24 @@ class GetIdentityResponse200(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[GetIdentityResponse200RolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 GetIdentityResponse: TypeAlias = GetIdentityResponse200
 
 
-class UpdateIdentityRequestRolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
-
-
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
-    - url
-    - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
     username: NotRequired[str]
     password: NotRequired[str]
-    roles: NotRequired[List[UpdateIdentityRequestRolesItems]]
-
-
-class UpdateIdentityResponse200RolesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    name: NotRequired[str]
-    scopes: NotRequired[List[str]]
 
 
 class UpdateIdentityResponse200(TypedDict):
@@ -458,13 +336,11 @@ class UpdateIdentityResponse200(TypedDict):
     - id
     - username
     - password
-    - roles
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
-    password: NotRequired[str]
-    roles: NotRequired[List[UpdateIdentityResponse200RolesItems]]
+    url: str
+    id: str
+    username: str
+    password: str
 
 
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200

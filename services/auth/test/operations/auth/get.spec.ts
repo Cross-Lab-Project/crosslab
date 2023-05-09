@@ -1,3 +1,13 @@
+import { config } from '../../../src/config'
+import { AppDataSource } from '../../../src/database/dataSource'
+import { ActiveKeyModel, TokenModel, UserModel } from '../../../src/database/model'
+import { roleRepository } from '../../../src/database/repositories/roleRepository'
+import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
+import { jwk } from '../../../src/methods/key'
+import { userUrlFromId } from '../../../src/methods/utils'
+import { getAuth } from '../../../src/operations/auth'
+import { ExpiredError } from '../../../src/types/errors'
+import { TestData } from '../../data/index.spec'
 import {
     MissingEntityError,
     MalformedParameterError,
@@ -5,17 +15,8 @@ import {
 } from '@crosslab/service-common'
 import assert, { fail } from 'assert'
 import { createLocalJWKSet, jwtVerify } from 'jose'
-import { config } from '../../../src/config'
-import { AppDataSource } from '../../../src/database/dataSource'
-import { jwk } from '../../../src/methods/key'
-import { ActiveKeyModel, TokenModel, UserModel } from '../../../src/database/model'
-import { getAuth } from '../../../src/operations/auth'
-import { ExpiredError } from '../../../src/types/errors'
-import { TestData } from '../../data/index.spec'
-import * as sinon from 'sinon'
-import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
 import Mocha from 'mocha'
-import { userUrlFromId } from '../../../src/methods/utils'
+import * as sinon from 'sinon'
 
 async function JWTVerify(authorization: string, scopes: string[]) {
     const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
@@ -294,6 +295,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     token: 'a6afe72e-d609-4323-aeec-b56d09a6fee7',
                     scopes: [],
                     user: undefined as any,
+                    roles: [],
                 })
 
                 try {
@@ -313,15 +315,20 @@ export default function (context: Mocha.Context, testData: TestData) {
         new Mocha.Test(
             'should authenticate a non-allowlisted device with a valid device token',
             async function () {
+                const roleModelDevice = await roleRepository.findOneOrFail({
+                    where: {
+                        name: 'device',
+                    },
+                })
                 const result = await getAuth({
                     Authorization: `Bearer ${validDeviceToken}`,
                 })
                 assert(result.status === 200)
                 assert(result.headers.Authorization)
-                await checkJWTByTokenModel(
-                    result.headers.Authorization,
-                    testData.tokens['GET /auth valid device token'].model
-                )
+                await checkJWTByTokenModel(result.headers.Authorization, {
+                    ...testData.tokens['GET /auth valid device token'].model,
+                    scopes: roleModelDevice.scopes,
+                })
             }
         )
     )

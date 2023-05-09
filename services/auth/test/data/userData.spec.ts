@@ -16,11 +16,6 @@ export const userNames = [
 export type UserName = (typeof userNames)[number]
 export type UserData = Record<UserName, EntityData<UserRepository>>
 
-type UserWithLinks<T extends 'all' | 'request' | 'response' = 'all'> = ReplaceWith<
-    User<T>,
-    'roles',
-    RoleName[]
->
 type UserModelWithLinks = ReplaceWith<
     ReplaceWith<UserModel, 'roles', RoleName[]>,
     'tokens',
@@ -29,9 +24,9 @@ type UserModelWithLinks = ReplaceWith<
 type UserDataWithLinks = Record<
     UserName,
     {
-        request: UserWithLinks<'request'>
+        request: User<'request'>
         model: UserModelWithLinks
-        response: UserWithLinks<'response'>
+        response: User<'response'>
     }
 >
 

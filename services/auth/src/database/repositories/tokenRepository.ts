@@ -1,5 +1,6 @@
 import { Token } from '../../types/types'
-import { ScopeModel, TokenModel } from '../model'
+import { RoleModel, ScopeModel, TokenModel } from '../model'
+import { roleRepository } from './roleRepository'
 import { scopeRepository } from './scopeRepository'
 import { userRepository } from './userRepository'
 import {
@@ -24,15 +25,26 @@ export class TokenRepository extends AbstractRepository<
     public async write(model: TokenModel, data: Token<'request'>): Promise<void> {
         model.device = data.device
         model.expiresOn = data.expiresOn
-        model.scopes = await Promise.all(
-            data.scopes.map(async (scope) => {
-                return await scopeRepository.findOneOrFail({
-                    where: {
-                        name: scope,
-                    },
+        if (data.scopes)
+            model.scopes = await Promise.all(
+                data.scopes.map(async (scope) => {
+                    return await scopeRepository.findOneOrFail({
+                        where: {
+                            name: scope,
+                        },
+                    })
                 })
-            })
-        )
+            )
+        if (data.roles)
+            model.roles = await Promise.all(
+                data.roles.map(async (role) => {
+                    return await roleRepository.findOneOrFail({
+                        where: {
+                            name: role,
+                        },
+                    })
+                })
+            )
         model.user = await userRepository.findOneOrFail({
             where: {
                 username: data.user,
@@ -50,11 +62,18 @@ export class TokenRepository extends AbstractRepository<
         }
     }
 
+    public addRoleModelToTokenModel(tokenModel: TokenModel, roleModel: RoleModel) {
+        if (!tokenModel.roles.find((role) => role.name === roleModel.name)) {
+            tokenModel.roles.push(roleModel)
+        }
+    }
+
     protected getDefaultFindOptionsRelations():
         | FindOptionsRelations<TokenModel>
         | undefined {
         return {
             scopes: true,
+            roles: true,
             user: true,
         }
     }

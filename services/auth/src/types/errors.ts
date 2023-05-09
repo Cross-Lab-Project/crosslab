@@ -1,6 +1,6 @@
 import { Model, getModelName } from '../database/model'
-import { capitalizeFirstLetter } from '../methods/utils'
 import { ErrorWithStatus } from '../generated/types'
+import { capitalizeFirstLetter } from '../methods/utils'
 
 /**
  * This error class should be used if an error occurrs while resolving the ip of a domain.
@@ -90,7 +90,10 @@ export class InternalRequestError extends ErrorWithStatus {
  */
 export class OwnershipError extends ErrorWithStatus {
     constructor() {
-        super(`User is not the owner of the device`, 403)
+        super(
+            `User is not the owner of the device and does not have further permission`,
+            403
+        )
         this.name = 'OwnershipError'
     }
 }

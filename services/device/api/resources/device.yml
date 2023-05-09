@@ -10,7 +10,8 @@ get:
   security:
     - JWT:
         - device
-        - device:list
+        - device:read
+        - device:read:owned
   responses:
     200:
       description: The JSON Representation of the device.
@@ -35,7 +36,8 @@ patch:
   security:
     - JWT:
         - device
-        - device:edit
+        - device:write
+        - device:write:owned
   parameters:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/device_changed_url.yml"
@@ -88,7 +90,8 @@ delete:
   security:
     - JWT:
         - device
-        - device:create
+        - device:delete
+        - device:delete:owned
   parameters:
     - $ref: "../parameters/device_id.yml"
   responses:
@@ -112,7 +115,8 @@ post:
   security:
     - JWT:
         - device
-        - device:create
+        - device:instantiate
+        - device:instantiate:owned
   parameters:
     - $ref: "../parameters/device_id.yml"
     - $ref: "../parameters/device_changed_url.yml"

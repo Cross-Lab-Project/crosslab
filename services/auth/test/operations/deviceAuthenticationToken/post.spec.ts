@@ -111,7 +111,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.addTest(
         new Mocha.Test(
-            "should allow a user with role 'deviceservice' to issue a device authentication token for the device of another user",
+            "should allow a user with scope 'device_token' to issue a device authentication token for the device of another user",
             async function () {
                 const result = await postDeviceAuthenticationToken(
                     {
@@ -122,7 +122,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                         JWT: {
                             username: testData.users.deviceservice.response.username!,
                             url: testData.users.deviceservice.response.url!,
-                            scopes: [],
+                            scopes: ['device_token'],
                         },
                     }
                 )
@@ -135,7 +135,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.addTest(
         new Mocha.Test(
-            "should allow a user with role 'superadmin' to issue a device authentication token for the device of another user",
+            "should allow a user with scope 'device_token:create' to issue a device authentication token for the device of another user",
             async function () {
                 const result = await postDeviceAuthenticationToken(
                     {
@@ -144,9 +144,9 @@ export default function (context: Mocha.Context, testData: TestData) {
                     },
                     {
                         JWT: {
-                            username: testData.users.superadmin.response.username!,
-                            url: testData.users.superadmin.response.url!,
-                            scopes: [],
+                            username: testData.users.deviceservice.response.username!,
+                            url: testData.users.deviceservice.response.url!,
+                            scopes: ['device_token:create'],
                         },
                     }
                 )

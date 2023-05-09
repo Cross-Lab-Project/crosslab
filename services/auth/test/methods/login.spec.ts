@@ -1,8 +1,3 @@
-import assert, { fail } from 'assert'
-import { hash } from 'bcryptjs'
-import { Client as LdapClient } from 'ldapts'
-import rewire from 'rewire'
-import * as sinon from 'sinon'
 import { TokenModel, UserModel } from '../../src/database/model'
 import { roleRepository } from '../../src/database/repositories/roleRepository'
 import { tokenRepository } from '../../src/database/repositories/tokenRepository'
@@ -14,6 +9,11 @@ import {
     LdapBindError,
     LdapError,
 } from '../../src/types/errors'
+import assert, { fail } from 'assert'
+import { hash } from 'bcryptjs'
+import { Client as LdapClient } from 'ldapts'
+import rewire from 'rewire'
+import * as sinon from 'sinon'
 
 export default () =>
     describe('login methods', async function () {
@@ -44,10 +44,11 @@ export default () =>
                     roles: [],
                     tokens: [],
                 }
-                const TOKEN = {
+                const TOKEN: TokenModel = {
                     user: USER,
                     scopes: [],
                     token: 'token',
+                    roles: [],
                 }
 
                 tokenRepositoryCreateStub.resolves(TOKEN)
@@ -205,7 +206,9 @@ export default () =>
                     createUserToken: innerCreateUserTokenStub,
                 })(async function () {
                     await loginModule.__get__('loginTui')(USERNAME, PASSWORD)
-                    assert(innerCreateUserTokenStub.lastCall.args[0].username === USERNAME)
+                    assert(
+                        innerCreateUserTokenStub.lastCall.args[0].username === USERNAME
+                    )
                 })
             })
 

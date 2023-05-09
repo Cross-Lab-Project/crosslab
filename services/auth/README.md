@@ -47,6 +47,9 @@ graph LR
   subgraph services/federation
     services/federation:build-spec[build-spec]
   end
+  subgraph services/openapi
+    services/openapi:build[build]
+  end
   subgraph services/update
     services/update:build-spec[build-spec]
   end
@@ -60,14 +63,21 @@ helper/tsdoc-theme --> clients/api/js
 services/auth:build-spec[build-spec] --> clients/api/js
 services/auth:build-spec[build-spec] --> services/auth:build[build]
 services/auth:build-spec[build-spec] --> services/auth:lint-spec[lint-spec]
+services/auth:build-spec[build-spec] --> services/openapi
 services/auth:build[build] --> services/auth:build-docker[build-docker]
 services/auth:build[build] --> services/auth:lint[lint]
 services/auth:build[build] --> services/auth:test[test]
 services/booking --> clients/api/js
+services/booking --> services/openapi
 services/common --> services/auth:build[build]
 services/device --> clients/api/js
+services/device --> services/openapi
 services/experiment --> clients/api/js
+services/experiment --> services/openapi
 services/federation --> clients/api/js
+services/federation --> services/openapi
+services/openapi --> clients/api/js
 services/update --> clients/api/js
+services/update --> services/openapi
 ```
 [//]: # ({{end}})

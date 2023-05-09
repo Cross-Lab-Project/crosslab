@@ -1,4 +1,4 @@
-import { Role, RoleInit } from '../../generated/types'
+import { Role } from '../../generated/types'
 import { roleUrlFromId } from '../../methods/utils'
 import { RoleModel, UserModel } from '../model'
 import { scopeRepository } from './scopeRepository'
@@ -21,14 +21,14 @@ export class RoleRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(RoleModel)
     }
 
-    public async create(data?: RoleInit<'request'>): Promise<RoleModel> {
+    public async create(data?: Role<'request'>): Promise<RoleModel> {
         const model = await super.create(data)
         model.users = []
 
         return model
     }
 
-    public async write(model: RoleModel, data: Role<'request'>): Promise<void> {
+    public async write(model: RoleModel, data: Partial<Role<'request'>>): Promise<void> {
         if (data.name) {
             model.name = data.name
         }

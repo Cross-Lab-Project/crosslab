@@ -7,7 +7,7 @@ get:
   security:
     - JWT:
       - peerconnection
-      - peerconnection:list
+      - peerconnection:read
   responses:
     200:
       description: The list of all peerconnections.

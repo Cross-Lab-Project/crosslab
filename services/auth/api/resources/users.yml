@@ -39,7 +39,7 @@ post:
     description: User to be created.
     content:
       application/json:
-        $ref: "../content/user_init.yml"
+        $ref: "../content/user.yml"
   responses:
     201:
       description: The JSON representation of the created user.
