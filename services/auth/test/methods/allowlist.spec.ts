@@ -18,9 +18,9 @@ export default () =>
         describe('parseAllowlist', async function () {
             it('should correctly parse a valid allowlist', async function () {
                 const validAllowlists = [
-                    'url:username',
-                    'url:username,url:username,url:username',
-                    'url : username , url : username , url : username',
+                    'url:local:username',
+                    'url:local:username,url:tui:username,url:local:username',
+                    'url :   local: username , url :tui: username , url : local : username',
                 ]
 
                 for (const validAllowlist of validAllowlists) {

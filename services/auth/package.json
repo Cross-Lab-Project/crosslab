@@ -31,7 +31,7 @@
         "test:config": "nyc --temp-dir .nyc_output/config --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/config.spec.ts",
         "test:generated": "nyc --temp-dir .nyc_output/generated --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/generated/index.spec.ts",
         "test:methods": "nyc --temp-dir .nyc_output/methods --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/methods/index.spec.ts",
-        "test": "rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
+        "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
         "cov:database": "nyc merge .nyc_output/database .nyc_output/database.json",
         "cov:operations": "nyc merge .nyc_output/operations .nyc_output/operations.json",
         "cov:index": "nyc merge .nyc_output/index .nyc_output/index.json",

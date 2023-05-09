@@ -3,8 +3,9 @@ import * as operationsDeviceAuthenticationToken from './deviceAuthenticationToke
 import * as operationsIdentity from './identity'
 import * as operationsLogin from './login'
 import * as operationsLogout from './logout'
-import * as operationsUsers from './users'
+import * as operationsRegister from './register'
 import * as operationsRoles from './roles'
+import * as operationsUsers from './users'
 
 export default {
     ...operationsAuth,
@@ -13,6 +14,7 @@ export default {
     ...operationsLogin,
     ...operationsLogin,
     ...operationsLogout,
-    ...operationsUsers,
+    ...operationsRegister,
     ...operationsRoles,
+    ...operationsUsers,
 }

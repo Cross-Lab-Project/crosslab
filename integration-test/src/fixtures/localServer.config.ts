@@ -6,8 +6,7 @@ export const ENV = {
   },
   auth: {
     PORT: '3000',
-    ALLOWLIST:
-      'localhost:superadmin',
+    ALLOWLIST: 'localhost:local:superadmin',
   },
   device: {
     PORT: '3001',

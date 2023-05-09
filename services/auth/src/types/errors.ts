@@ -99,6 +99,17 @@ export class OwnershipError extends ErrorWithStatus {
 }
 
 /**
+ * This error class should be used when an error occurs during the registration of
+ * a new user.
+ */
+export class RegistrationError extends ErrorWithStatus {
+    constructor(message: string, status?: number) {
+        super(message, status)
+        this.name = 'RegistrationError'
+    }
+}
+
+/**
  * This error class should be used when a repository has not been initialized before use.
  */
 export class UninitializedRepositoryError extends ErrorWithStatus {

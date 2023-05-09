@@ -6,8 +6,9 @@ import deviceAuthenticationTokenTests from './deviceAuthenticationToken/index.sp
 import identityTests from './identity/index.spec'
 import loginTests from './login/index.spec'
 import logoutTests from './logout/index.spec'
-import usersTests from './users/index.spec'
+import registerTests from './register/index.spec'
 import roleTests from './roles/index.spec'
+import usersTests from './users/index.spec'
 
 const tests = [
     ...authTests,
@@ -15,8 +16,9 @@ const tests = [
     ...identityTests,
     ...loginTests,
     ...logoutTests,
-    ...usersTests,
+    ...registerTests,
     ...roleTests,
+    ...usersTests,
 ]
 
 describe('Operations', function () {

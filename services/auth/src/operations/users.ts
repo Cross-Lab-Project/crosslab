@@ -1,3 +1,5 @@
+import { roleRepository } from '../database/repositories/roleRepository'
+import { userRepository } from '../database/repositories/userRepository'
 import {
     getUsersSignature,
     postUsersSignature,
@@ -8,8 +10,7 @@ import {
     deleteUsersByUserIdRolesSignature,
     getUsersByUserIdRolesSignature,
 } from '../generated/signatures'
-import { userRepository } from '../database/repositories/userRepository'
-import { roleRepository } from '../database/repositories/roleRepository'
+import { RegistrationError } from '../types/errors'
 
 /**
  * This function implements the functionality for handling GET requests on /users endpoint.
@@ -29,7 +30,6 @@ export const getUsers: getUsersSignature = async (_user) => {
 }
 
 /**
- * TODO: check if user is allowed to assign the requested roles
  * This function implements the functionality for handling POST requests on /users endpoint.
  * @param body The body of the request.
  * @param _user The user submitting the request.
@@ -37,7 +37,20 @@ export const getUsers: getUsersSignature = async (_user) => {
 export const postUsers: postUsersSignature = async (body, _user) => {
     console.log(`postUsers called`)
 
-    const userModel = await userRepository.create(body)
+    const existingUser = await userRepository.findOne({
+        where: {
+            username: `local:${body.username}`,
+        },
+    })
+
+    if (existingUser) {
+        throw new RegistrationError('User with the same username already exists', 400)
+    }
+
+    const userModel = await userRepository.create({
+        username: `local:${body.username}`,
+        password: body.password,
+    })
     await userRepository.save(userModel)
 
     console.log(`postUsers succeeded`)

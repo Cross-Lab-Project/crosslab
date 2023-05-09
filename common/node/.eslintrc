@@ -6,6 +6,7 @@
   "plugins": ["@typescript-eslint"],
   "ignorePatterns": [
     "src/generated/**/*",
+    "src/database/migrations/**/*",
     "test/generated/**/*",
     "dist/**/*",
     "lib/**/*",

@@ -131,7 +131,7 @@ export async function loginLocal(
 ): Promise<TokenModel> {
     const userModel = await userRepository.findOne({
         where: {
-            username,
+            username: `local:${username}`,
         },
     })
 
