@@ -3,6 +3,7 @@ import { AppDataSource, initializeDataSource } from './database/dataSource'
 import { activeKeyRepository } from './database/repositories/activeKeyRepository'
 import { app } from './generated'
 import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
+import { apiClient } from './methods/api'
 import { generateNewKey, jwk } from './methods/key'
 import { AppConfiguration } from './types/types'
 import { JWTVerify } from '@crosslab/service-common'
@@ -15,6 +16,7 @@ async function startAuthenticationService(
     await AppDataSource.initialize(options)
     await initializeDataSource()
 
+    apiClient.accessToken = appConfig.API_TOKEN
     const allowlist = appConfig.ALLOWLIST ? parseAllowlist(appConfig.ALLOWLIST) : []
 
     // Resolve Allowlist

@@ -1,3 +1,6 @@
+import { config } from '../config'
+import { InternalRequestError, MissingPropertyError } from '../types/errors'
+import { RequestHandler } from './requestHandler'
 import {
     ValidationError,
     InvalidUrlError,
@@ -7,11 +10,8 @@ import {
     DeviceServiceTypes,
 } from '@cross-lab-project/api-client'
 import fetch from 'node-fetch'
-import { config } from '../config'
-import { InternalRequestError, MissingPropertyError } from '../types/errors'
-import { RequestHandler } from './requestHandler'
 
-const apiClient: APIClient = new APIClient(config.BASE_URL)
+export const apiClient: APIClient = new APIClient(config.BASE_URL)
 
 /**
  * TODO: add more information on request/response
@@ -279,7 +279,7 @@ export async function unlockDevices(
  * @param args The arguments of the getPeerconnection() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
- export async function getPeerconnection(
+export async function getPeerconnection(
     requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.getPeerconnection>
 ) {

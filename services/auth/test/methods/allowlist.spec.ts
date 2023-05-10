@@ -28,8 +28,8 @@ export default () =>
                     const expectedLength = (validAllowlist.match(/,/g) ?? []).length + 1
                     assert(parsedAllowlist.length === expectedLength)
                     for (const entry of parsedAllowlist) {
-                        assert(entry.url === 'url')
-                        assert(entry.url === 'username')
+                        assert(entry.token === 'url')
+                        assert(entry.token === 'username')
                     }
                 }
             })
@@ -73,7 +73,7 @@ export default () =>
                 USERNAME = 'username'
                 ALLOWLIST = [
                     {
-                        url: URL,
+                        token: URL,
                         username: USERNAME,
                     },
                 ]
@@ -99,16 +99,6 @@ export default () =>
                 assert(allowlist[IP] === USERNAME)
             })
 
-            it('should log an error if the ip could not be resolved', async function () {
-                const NEW_ALLOWLIST = JSON.parse(JSON.stringify(ALLOWLIST))
-                NEW_ALLOWLIST[0].url = '...'
-
-                await resolveAllowlist(NEW_ALLOWLIST)
-
-                const lastCall = consoleErrorStub.getCalls().reverse()[0]
-                assert(lastCall.args[0] instanceof DNSResolveError)
-            })
-
             it('should log an error if the user could not be found', async function () {
                 findUserStub.returns(Promise.resolve(null))
 
@@ -132,7 +122,7 @@ export default () =>
                 IP = '127.0.0.1'
                 USERNAME = 'username'
                 ALLOWLIST_ENTRY = {
-                    url: URL,
+                    token: URL,
                     username: USERNAME,
                 }
             })
@@ -158,7 +148,7 @@ export default () =>
 
             it('should log an error if the DNS lookup fails', async function () {
                 const INVALID_ALLOWLIST_ENTRY: AllowlistEntry = {
-                    url: '...',
+                    token: '...',
                     username: USERNAME,
                 }
 

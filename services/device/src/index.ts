@@ -2,6 +2,7 @@
 import { config, dataSourceConfig } from './config'
 import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
+import { apiClient } from './globals'
 import { callbackHandling } from './operations/callbacks'
 import { websocketHandling } from './operations/devices'
 import { JWTVerify } from '@crosslab/service-common'
@@ -21,6 +22,8 @@ declare global {
 
 async function startDeviceService() {
     await AppDataSource.initialize(dataSourceConfig)
+
+    apiClient.accessToken = config.API_TOKEN
 
     app.use((req, _res, next) => {
         for (const param in req.query) {

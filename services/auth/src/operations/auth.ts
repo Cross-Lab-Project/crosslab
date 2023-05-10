@@ -17,10 +17,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     const HOUR = 60 * 60 * 1000
 
     // Catch missing authorization header (OPTIONS requests)
-    if (
-        !parameters.Authorization &&
-        !(parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']])
-    ) {
+    if (!parameters.Authorization) {
         return {
             status: 200,
             headers: {},
@@ -34,10 +31,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
         },
     })
 
+    const tokenString = parseBearerToken(parameters.Authorization)
+
     // Non Allowlisted Auth
     try {
         // Resolve user from Authorization parameter
-        const tokenString = parseBearerToken(parameters.Authorization)
         const token = await tokenRepository.findOneOrFail({
             where: {
                 token: tokenString,
@@ -88,8 +86,8 @@ export const getAuth: getAuthSignature = async (parameters) => {
         }
     } catch (error) {
         // Allowlisted Auth
-        if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
-            const user = await getAllowlistedUser(parameters['X-Real-IP'])
+        if (allowlist[tokenString]) {
+            const user = await getAllowlistedUser(tokenString)
 
             console.log(`signing jwt for user ${user.username}`)
             const scopes = user.roles

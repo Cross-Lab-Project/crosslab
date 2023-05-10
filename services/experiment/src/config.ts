@@ -15,4 +15,5 @@ export const config = {
     SECURITY_AUDIENCE:
         process.env.SECURITY_AUDIENCE ??
         die('the environment variable SECURITY_AUDIENCE is not define!'),
+    API_TOKEN: process.env.API_TOKEN ?? '',
 }

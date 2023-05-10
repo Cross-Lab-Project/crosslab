@@ -27,6 +27,7 @@ function initializeAppConfiguration(): AppConfiguration {
             process.env.SECURITY_AUDIENCE ??
             die('the environment variable SECURITY_AUDIENCE is not defined!'),
         ALLOWLIST: process.env.ALLOWLIST ?? '',
+        API_TOKEN: process.env.API_TOKEN ?? '',
     }
 }
 

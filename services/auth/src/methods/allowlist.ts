@@ -1,7 +1,6 @@
 import { MissingEntityError } from '@crosslab/service-common'
 import { userRepository } from '../database/repositories/userRepository'
-import { DNSResolveError, MalformedAllowlistError } from '../types/errors'
-import dns from 'dns'
+import { MalformedAllowlistError } from '../types/errors'
 import { UserModel } from '../database/model'
 import { AllowlistEntry } from '../types/types'
 
@@ -16,7 +15,7 @@ export function parseAllowlist(allowlistToParse: string): AllowlistEntry[] {
             throw new MalformedAllowlistError(`The allowlist is malformed`)
         }
         return <AllowlistEntry>{
-            url: splitRawEntry[0],
+            token: splitRawEntry[0],
             username: `${splitRawEntry[1]}:${splitRawEntry[2]}`,
         }
     })
@@ -43,16 +42,7 @@ export async function resolveAllowlist(allowlistEntries: AllowlistEntry[]) {
 export async function resolveAllowlistEntry(
     allowlistEntry: AllowlistEntry
 ): Promise<[string, string]> {
-    console.log(`resolveAllowlistEntry called for "${allowlistEntry.url}"`)
-
-    // Resolve the ip of the provided url
-    const ip = await new Promise<string>((res) => {
-        dns.lookup(allowlistEntry.url, (err, address) => {
-            if (err || address.length === 0 || !address) return res('')
-            return res(address)
-        })
-    })
-    if (!ip) throw new DNSResolveError(`Could not resolve ip for "${allowlistEntry.url}"`)
+    console.log(`resolveAllowlistEntry called`)
 
     // Search the user with the provided username
     const userModel = await userRepository.findOne({
@@ -65,31 +55,31 @@ export async function resolveAllowlistEntry(
 
     console.log(`resolveAllowlistEntry succeeded`)
 
-    return [ip, userModel.username]
+    return [allowlistEntry.token, userModel.username]
 }
 
 /**
  * Try to find user associated to allowlisted IP.
- * @param ip IP from the client that is potentially allowlisted.
+ * @param token IP from the client that is potentially allowlisted.
  * @throws {MissingEntityError} User associated with allowlisted IP needs to exist in the database.
  * @returns The user associated with the allowlisted IP.
  */
-export async function getAllowlistedUser(ip: string): Promise<UserModel> {
+export async function getAllowlistedUser(token: string): Promise<UserModel> {
     console.warn(
-        `IP ${ip} is allowlisted, trying to find associated user ${allowlist[ip]}`
+        `trying to find allowlisted user ${allowlist[token]}`
     )
 
-    const user = allowlist[ip]
+    const user = allowlist[token]
         ? await userRepository.findOne({
               where: {
-                  username: allowlist[ip],
+                  username: allowlist[token],
               },
           })
         : undefined
 
     if (!user)
         throw new MissingEntityError(
-            `User ${allowlist[ip]} for allowlisted IP ${ip} is not in the database`,
+            `User ${allowlist[token]} is not in the database`,
             500
         )
 

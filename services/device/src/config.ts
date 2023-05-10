@@ -16,6 +16,7 @@ export type AppConfiguration = {
     BASE_URL: string
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
+    API_TOKEN: string
 }
 
 function die(reason: string): string {
@@ -37,6 +38,7 @@ function initializeAppConfiguration(): AppConfiguration {
         SECURITY_AUDIENCE:
             process.env.SECURITY_AUDIENCE ??
             die('the environment variable SECURITY_AUDIENCE is not defined!'),
+        API_TOKEN: process.env.API_TOKEN ?? '',
     }
 }
 
