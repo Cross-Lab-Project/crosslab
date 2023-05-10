@@ -7,7 +7,7 @@ import {
 import { ActiveKey } from '../../../src/types/types'
 import { ActiveKeyName } from '../../data/activeKeyData.spec'
 import { initTestDatabase } from './index.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
 

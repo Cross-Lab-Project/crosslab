@@ -1,6 +1,6 @@
 import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice'
 import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 const uuid = '32348c89-f302-408f-8582-cb9783c74fbb'
 const type = 'device'

@@ -1,6 +1,6 @@
 import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice'
 import instantiable_cloud_device from './instantiable_cloud_device.spec'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const instantiableCloudDeviceNames = ['instantiable cloud device'] as const
 export type InstantiableCloudDeviceName = (typeof instantiableCloudDeviceNames)[number]

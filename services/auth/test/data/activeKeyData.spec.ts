@@ -1,6 +1,6 @@
 import { ActiveKeyRepository } from '../../src/database/repositories/activeKeyRepository'
 import { keyData } from './keyData.spec'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const activeKeyNames = ['active key 1', 'GET /auth active key'] as const
 export type ActiveKeyName = (typeof activeKeyNames)[number]

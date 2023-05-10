@@ -1,7 +1,7 @@
 import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup'
 import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
 import { concreteDeviceData } from '../concreteDevices/index.spec'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 const uuid = 'd65b289a-44c5-452f-8c7b-e003714d3645'
 const type = 'group'

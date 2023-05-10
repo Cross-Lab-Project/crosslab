@@ -11,7 +11,7 @@ import { prepareRoleData, RoleName } from './roleData.spec'
 import { prepareScopeData, ScopeName } from './scopeData.spec'
 import { prepareTokenData, TokenName } from './tokenData.spec'
 import { prepareUserData, UserName } from './userData.spec'
-import { GenericTestData } from '@crosslab/service-common'
+import { GenericTestData } from '@crosslab/service-common/test-helper'
 
 export type TestData = GenericTestData<
     [
