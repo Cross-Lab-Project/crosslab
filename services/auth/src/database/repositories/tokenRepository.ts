@@ -22,9 +22,12 @@ export class TokenRepository extends AbstractRepository<
         this.repository = AppDataSource.getRepository(TokenModel)
     }
 
-    public async write(model: TokenModel, data: Token<'request'>): Promise<void> {
-        model.device = data.device
-        model.expiresOn = data.expiresOn
+    public async write(
+        model: TokenModel,
+        data: Partial<Token<'request'>>
+    ): Promise<void> {
+        if (data.device) model.device = data.device
+        if (data.expiresOn) model.expiresOn = data.expiresOn
         if (data.scopes)
             model.scopes = await Promise.all(
                 data.scopes.map(async (scope) => {
@@ -45,11 +48,12 @@ export class TokenRepository extends AbstractRepository<
                     })
                 })
             )
-        model.user = await userRepository.findOneOrFail({
-            where: {
-                username: data.user,
-            },
-        })
+        if (data.user)
+            model.user = await userRepository.findOneOrFail({
+                where: {
+                    username: data.user,
+                },
+            })
     }
 
     public async format(_model: TokenModel): Promise<Token<'response'>> {
@@ -73,7 +77,9 @@ export class TokenRepository extends AbstractRepository<
         | undefined {
         return {
             scopes: true,
-            roles: true,
+            roles: {
+                scopes: true,
+            },
             user: true,
         }
     }
