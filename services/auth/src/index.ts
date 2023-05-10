@@ -1,11 +1,11 @@
 import { config, dataSourceConfig } from './config'
 import { AppDataSource, initializeDataSource } from './database/dataSource'
-import { app } from './generated'
-import { generateNewKey, jwk } from './methods/key'
-import { JWTVerify } from '@crosslab/service-common'
 import { activeKeyRepository } from './database/repositories/activeKeyRepository'
+import { app } from './generated'
 import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
+import { generateNewKey, jwk } from './methods/key'
 import { AppConfiguration } from './types/types'
+import { JWTVerify } from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
 
 async function startAuthenticationService(
@@ -15,7 +15,7 @@ async function startAuthenticationService(
     await AppDataSource.initialize(options)
     await initializeDataSource()
 
-    const allowlist = parseAllowlist(appConfig.ALLOWLIST)
+    const allowlist = appConfig.ALLOWLIST ? parseAllowlist(appConfig.ALLOWLIST) : []
 
     // Resolve Allowlist
     await resolveAllowlist(allowlist)
@@ -44,10 +44,10 @@ async function startAuthenticationService(
     app.get('/.well-known/openid-configuration', (_req, res) => {
         res.send({ jwks_uri: '/.well-known/jwks.json' })
     })
-    
+
     app.get('/auth/status', (_req, res) => {
         res.send({ status: 'ok' })
-    });
+    })
 
     app.initService({
         security: {

@@ -62,7 +62,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
                 .map((role) => role.scopes.map((scope) => scope.name))
                 .flat(1)
                 .filter((value, index, self) => self.indexOf(value) === index),
-        ]
+        ].filter((value, index, self) => self.indexOf(value) === index)
         // Check if token has a device
         if (token.device) {
             // Sign device token

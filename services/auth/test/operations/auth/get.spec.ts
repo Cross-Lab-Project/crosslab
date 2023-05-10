@@ -66,11 +66,19 @@ async function checkJWTByTokenModel(authorization: string, token: TokenModel) {
         assert((payload as any).url === userUrlFromId(token.user.uuid))
         assert((payload as any).username === token.user.username)
 
-        for (const _scope of token.scopes) {
+        const tokenScopes = [
+            ...token.scopes,
+            ...token.roles.map((role) => role.scopes).flat(1),
+        ]
+
+        for (const _scope of tokenScopes) {
             assert((payload as any).scopes.includes(_scope.name))
         }
         for (const _scope of (payload as any).scopes) {
-            assert(token.scopes.find((s) => s.name === _scope))
+            assert(
+                tokenScopes.find((s) => s.name === _scope),
+                `Scope '${_scope}' not found`
+            )
         }
     }
 }

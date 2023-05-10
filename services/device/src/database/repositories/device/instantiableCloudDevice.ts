@@ -36,8 +36,8 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
     ) {
         await deviceOverviewRepository.write(model, data)
 
-        model.instantiateUrl = data.instantiateUrl
-        model.services = data.services
+        if (data.instantiateUrl) model.instantiateUrl = data.instantiateUrl
+        if (data.services) model.services = data.services
     }
 
     async format(
