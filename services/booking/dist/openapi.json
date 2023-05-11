@@ -42,6 +42,7 @@
           "schedule-service"
         ],
         "summary": "Returns the free / booked times for given experiment.",
+        "x-optional-url": true,
         "requestBody": {
           "content": {
             "application/json": {
