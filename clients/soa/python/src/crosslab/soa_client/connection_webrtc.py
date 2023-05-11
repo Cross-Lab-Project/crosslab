@@ -51,9 +51,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 self.pc.iceConnectionState,
                 self.pc.signalingState,
             )
-            if self.pc.connectionState == "connected":
-                self.state = "connected"
-                self.emit("connectionChanged")
+            self.state = self.pc.connectionState
+            self.emit("connectionChanged")
 
         async def datachannel(datachannel):
             channel = self._receivingChannelMap[datachannel.label]
@@ -96,6 +95,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         await self.pc.close()
         for channel in self._dataChannels:
             channel.close()
+        self.state = "closed"
+        self.emit("connectionChanged")
 
         del self.pc
 

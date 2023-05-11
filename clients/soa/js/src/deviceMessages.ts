@@ -50,3 +50,17 @@ export interface ServiceDescription {
 export interface DeviceDescription {
   services: ServiceDescription[];
 }
+
+export interface ClosePeerConnectionMessage extends CommandMessage {
+  command: 'closePeerconnection';
+  connectionUrl: string;
+}
+export function isClosePeerConnectionMessage(message: CommandMessage): message is ClosePeerConnectionMessage {
+  return message.command === 'closePeerconnection';
+}
+
+export interface ConnectionStateChangedMessage extends Message {
+  messageType: 'connection-state-changed';
+  connectionUrl: string;
+  status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+}

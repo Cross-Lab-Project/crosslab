@@ -82,8 +82,8 @@ for (const client1Type of clientTypes) {
         this.experiment.addDevice(this, client1Type);
         this.experiment.addDevice(this, client2Type);
       });
-      afterEach(function () {
-        this.experiment.stop();
+      afterEach(async function () {
+        await this.experiment.stop(this.client);
       });
 
       it('should transmit initial gpio value', async function () {

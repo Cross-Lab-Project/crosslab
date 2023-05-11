@@ -61,7 +61,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   private mediaChannelMap = new Map<string, MediaChannel>();
   tiebreaker!: boolean;
   pc: RTCPeerConnection;
-  state: 'connecting' | 'connected' | 'disconnected';
+  state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
 
   private iceCandidateResolver?: () => void;
 
@@ -83,7 +83,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   constructor(configuration: RTCConfiguration) {
     super();
-    
+
     this.state = 'connecting';
     this.pc = new RTCPeerConnection(configuration);
     this.pc.onicecandidate = event => this.onicecandidate(event);
@@ -112,10 +112,8 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
       log.debug('WebRTCPeerConnection connectionStateChanged', {
         state: this.pc.connectionState,
       });
-      if (this.pc.connectionState === 'connected') {
-        this.state = 'connected';
-        this.emit('connectionChanged');
-      }
+      this.state = this.pc.connectionState;
+      this.emit('connectionChanged');
     };
   }
 
@@ -239,7 +237,9 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   }
 
   teardown(): void {
-    throw new Error('Method not implemented.');
+    this.pc.close();
+    this.state = 'closed';
+    this.emit('connectionChanged');
   }
 
   // WebRTC and Signaling Actions ************************************************************************************

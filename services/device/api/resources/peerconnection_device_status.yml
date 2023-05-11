@@ -7,7 +7,8 @@ patch:
   security:
     - JWT:
       - peerconnection
-      - peerconnection:read
+      - peerconnection:write
+      - peerconnection:write:device_status
   requestBody:
     required: true
     description: The JSON Representation of the device peer connection.

@@ -13,7 +13,7 @@ export interface PeerConnectionEvents {
   connectionChanged(): void;
 }
 export interface PeerConnection extends TypedEmitter<PeerConnectionEvents> {
-  state: 'connecting' | 'connected' | 'disconnected';
+  state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
   tiebreaker: boolean;
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void;

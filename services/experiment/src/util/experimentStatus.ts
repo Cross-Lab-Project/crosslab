@@ -127,7 +127,6 @@ export async function runExperiment(experimentModel: ExperimentModel) {
             deviceChangedCallbacks.push(instance.url)
 
             // instantiate cloud instantiable devices
-            const experimentUrl = experimentUrlFromId(experimentModel.uuid)
             if (resolvedDevice.type === 'cloud instantiable') {
                 await startCloudDeviceInstance(
                     resolvedDevice,
