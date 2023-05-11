@@ -1,4 +1,3 @@
-import { RequestHandler } from '../../util/requestHandler'
 import {
     DeviceModel,
     ExperimentModel,
@@ -20,10 +19,7 @@ import {
  * This function attempts to save a device model in its correct repository.
  * @param deviceModel The device model to be saved.
  */
-export async function saveDeviceModel(
-    _requestHandler: RequestHandler,
-    deviceModel: DeviceModel
-) {
+export async function saveDeviceModel(deviceModel: DeviceModel) {
     await deviceRepository.save(deviceModel)
 }
 
@@ -31,10 +27,7 @@ export async function saveDeviceModel(
  * This function attempts to save a role model in its correct repository.
  * @param roleModel The role model to be saved.
  */
-export async function saveRoleModel(
-    _requestHandler: RequestHandler,
-    roleModel: RoleModel
-) {
+export async function saveRoleModel(roleModel: RoleModel) {
     await roleRepository.save(roleModel)
 }
 
@@ -42,10 +35,7 @@ export async function saveRoleModel(
  * This function attempts to save a peerconnection model in its correct repository.
  * @param peerconnectionModel The peerconnection model to be saved.
  */
-export async function savePeerconnectionModel(
-    _requestHandler: RequestHandler,
-    peerconnectionModel: PeerconnectionModel
-) {
+export async function savePeerconnectionModel(peerconnectionModel: PeerconnectionModel) {
     await peerconnectionRepository.save(peerconnectionModel)
 }
 
@@ -53,10 +43,7 @@ export async function savePeerconnectionModel(
  * This function attempts to save a participant model in its correct repository.
  * @param participantModel The participant model to be saved.
  */
-export async function saveParticipantModel(
-    _requestHandler: RequestHandler,
-    participantModel: ParticipantModel
-) {
+export async function saveParticipantModel(participantModel: ParticipantModel) {
     await participantRepository.save(participantModel)
 }
 
@@ -65,7 +52,6 @@ export async function saveParticipantModel(
  * @param serviceConfigurationModel The service configuration model to be saved.
  */
 export async function saveServiceConfigurationModel(
-    _requestHandler: RequestHandler,
     serviceConfigurationModel: ServiceConfigurationModel
 ) {
     await serviceConfigurationRepository.save(serviceConfigurationModel)
@@ -75,9 +61,6 @@ export async function saveServiceConfigurationModel(
  * This function attempts to save an experiment model in its correct repository.
  * @param experimentModel The experiment model to be saved.
  */
-export async function saveExperimentModel(
-    _requestHandler: RequestHandler,
-    experimentModel: ExperimentModel
-) {
+export async function saveExperimentModel(experimentModel: ExperimentModel) {
     await experimentRepository.save(experimentModel)
 }

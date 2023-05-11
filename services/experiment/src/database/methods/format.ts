@@ -5,6 +5,7 @@ import {
     Device,
     Participant,
 } from '../../generated/types'
+import { experimentUrlFromId } from '../../util/url'
 import {
     DeviceModel,
     RoleModel,
@@ -12,22 +13,17 @@ import {
     ServiceConfigurationModel,
     ExperimentModel,
 } from '../model'
-import { experimentUrlFromId } from '../../util/url'
-import { RequestHandler } from '../../util/requestHandler'
 
 /**
  * This function formats a DeviceModel to a Device.
  * @param deviceModel The DeviceModel to be formatted.
  * @returns The resulting Device.
  */
-function formatDeviceModel(
-    _requestHandler: RequestHandler,
-    deviceModel: DeviceModel
-): Device {
+function formatDeviceModel(deviceModel: DeviceModel): Device {
     return {
         device: deviceModel.url,
         role: deviceModel.role,
-        additionalProperties: deviceModel.additionalProperties
+        additionalProperties: deviceModel.additionalProperties,
     }
 }
 
@@ -36,7 +32,7 @@ function formatDeviceModel(
  * @param roleModel The RoleModel to be formatted.
  * @returns The resulting Role.
  */
-function formatRoleModel(_requestHandler: RequestHandler, roleModel: RoleModel): Role {
+function formatRoleModel(roleModel: RoleModel): Role {
     return {
         name: roleModel.name,
         description: roleModel.description ?? undefined,
@@ -48,10 +44,7 @@ function formatRoleModel(_requestHandler: RequestHandler, roleModel: RoleModel):
  * @param participantModel The ParticipantModel to be formatted.
  * @returns The resulting Participant.
  */
-function formatParticipantModel(
-    _requestHandler: RequestHandler,
-    participantModel: ParticipantModel
-): Participant {
+function formatParticipantModel(participantModel: ParticipantModel): Participant {
     return {
         role: participantModel.role,
         serviceId: participantModel.serviceId,
@@ -66,7 +59,6 @@ function formatParticipantModel(
  * @notExported
  */
 function formatServiceConfigurationModel(
-    requestHandler: RequestHandler,
     serviceConfigurationModel: ServiceConfigurationModel
 ): ServiceConfiguration {
     return {
@@ -75,8 +67,8 @@ function formatServiceConfigurationModel(
             ? serviceConfigurationModel.configuration
             : undefined,
         participants: serviceConfigurationModel.participants
-            ? serviceConfigurationModel.participants.map((p) =>
-                  requestHandler.executeSync(formatParticipantModel, p)
+            ? serviceConfigurationModel.participants.map((participant) =>
+                  formatParticipantModel(participant)
               )
             : undefined,
     }
@@ -87,14 +79,8 @@ function formatServiceConfigurationModel(
  * @param experimentModel The ExperimentModel to be formatted.
  * @returns The resulting Experiment.
  */
-export function formatExperimentModel(
-    requestHandler: RequestHandler,
-    experimentModel: ExperimentModel
-): Experiment {
-    const experimentUrl = requestHandler.executeSync(
-        experimentUrlFromId,
-        experimentModel.uuid
-    )
+export function formatExperimentModel(experimentModel: ExperimentModel): Experiment {
+    const experimentUrl = experimentUrlFromId(experimentModel.uuid)
     return {
         url: experimentUrl,
         bookingTime: {
@@ -103,21 +89,17 @@ export function formatExperimentModel(
         },
         status: experimentModel.status,
         devices: experimentModel.devices
-            ? experimentModel.devices.map((d) =>
-                  requestHandler.executeSync(formatDeviceModel, d)
-              )
+            ? experimentModel.devices.map((device) => formatDeviceModel(device))
             : undefined,
         roles: experimentModel.roles
-            ? experimentModel.roles.map((r) =>
-                  requestHandler.executeSync(formatRoleModel, r)
-              )
+            ? experimentModel.roles.map((role) => formatRoleModel(role))
             : undefined,
         connections: experimentModel.connections
-            ? experimentModel.connections.map((c) => c.url)
+            ? experimentModel.connections.map((connection) => connection.url)
             : undefined,
         serviceConfigurations: experimentModel.serviceConfigurations
-            ? experimentModel.serviceConfigurations.map((sc) =>
-                  requestHandler.executeSync(formatServiceConfigurationModel, sc)
+            ? experimentModel.serviceConfigurations.map((serviceConfiguration) =>
+                  formatServiceConfigurationModel(serviceConfiguration)
               )
             : undefined,
     }

@@ -1,11 +1,10 @@
-import { RequestHandler } from '../../util/requestHandler'
 import { experimentRepository, peerconnectionRepository } from '../repositories'
 
 /**
  * This function returns all experiment models found in the database.
  * @returns All experiment models found in the database.
  */
-export async function findAllExperimentModels(_requestHandler: RequestHandler) {
+export async function findAllExperimentModels() {
     return await experimentRepository.find()
 }
 
@@ -14,10 +13,7 @@ export async function findAllExperimentModels(_requestHandler: RequestHandler) {
  * @param experimentModelId The id of the experiment model.
  * @returns The found experiment model.
  */
-export async function findExperimentModelById(
-    _requestHandler: RequestHandler,
-    experimentModelId: string
-) {
+export async function findExperimentModelById(experimentModelId: string) {
     return await experimentRepository.findOne({
         where: {
             uuid: experimentModelId,
@@ -36,18 +32,15 @@ export async function findExperimentModelById(
  * @param peerconnectionUrl The url of the peerconnection model.
  * @returns The found peerconnection model.
  */
-export async function findPeerconnectionModelByUrl(
-    _requestHandler: RequestHandler,
-    peerconnectionUrl: string
-) {
+export async function findPeerconnectionModelByUrl(peerconnectionUrl: string) {
     return await peerconnectionRepository.findOne({
         where: {
             url: peerconnectionUrl,
         },
         relations: {
             experiment: {
-                connections: true
-            }
+                connections: true,
+            },
         },
     })
 }

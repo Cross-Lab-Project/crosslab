@@ -5,7 +5,6 @@ import {
     Role,
     ServiceConfiguration,
 } from '../../generated/types'
-import { RequestHandler } from '../../util/requestHandler'
 import {
     DeviceModel,
     ExperimentModel,
@@ -36,12 +35,9 @@ import {
  * @param device The device providing the data for the model.
  * @returns The created device model.
  */
-export function createDeviceModel(
-    requestHandler: RequestHandler,
-    device: Device
-): DeviceModel {
+export function createDeviceModel(device: Device): DeviceModel {
     const deviceModel = deviceRepository.create()
-    requestHandler.executeSync(writeDeviceModel, deviceModel, device)
+    writeDeviceModel(deviceModel, device)
     return deviceModel
 }
 
@@ -50,9 +46,9 @@ export function createDeviceModel(
  * @param role The role providing the data for the model.
  * @returns The created role model.
  */
-export function createRoleModel(requestHandler: RequestHandler, role: Role): RoleModel {
+export function createRoleModel(role: Role): RoleModel {
     const roleModel = roleRepository.create()
-    requestHandler.executeSync(writeRoleModel, roleModel, role)
+    writeRoleModel(roleModel, role)
     return roleModel
 }
 
@@ -62,15 +58,10 @@ export function createRoleModel(requestHandler: RequestHandler, role: Role): Rol
  * @returns The created peerconnection model.
  */
 export function createPeerconnectionModel(
-    requestHandler: RequestHandler,
     peerconnectionUrl: string
 ): PeerconnectionModel {
     const peerconnectionModel = peerconnectionRepository.create()
-    requestHandler.executeSync(
-        writePeerconnectionModel,
-        peerconnectionModel,
-        peerconnectionUrl
-    )
+    writePeerconnectionModel(peerconnectionModel, peerconnectionUrl)
     return peerconnectionModel
 }
 
@@ -79,12 +70,9 @@ export function createPeerconnectionModel(
  * @param participant The participant providing the data for the model.
  * @returns The created participant model.
  */
-export function createParticipantModel(
-    requestHandler: RequestHandler,
-    participant: Participant
-): ParticipantModel {
+export function createParticipantModel(participant: Participant): ParticipantModel {
     const participantModel = participantRepository.create()
-    requestHandler.executeSync(writeParticipantModel, participantModel, participant)
+    writeParticipantModel(participantModel, participant)
     return participantModel
 }
 
@@ -94,15 +82,10 @@ export function createParticipantModel(
  * @returns The created service configuration model.
  */
 export function createServiceConfigurationModel(
-    requestHandler: RequestHandler,
     serviceConfiguration: ServiceConfiguration
 ): ServiceConfigurationModel {
     const serviceConfigurationModel = serviceConfigurationRepository.create()
-    requestHandler.executeSync(
-        writeServiceConfigurationModel,
-        serviceConfigurationModel,
-        serviceConfiguration
-    )
+    writeServiceConfigurationModel(serviceConfigurationModel, serviceConfiguration)
     return serviceConfigurationModel
 }
 
@@ -112,12 +95,9 @@ export function createServiceConfigurationModel(
  * @param experiment The experiment providing the data for the model.
  * @returns The created experiment model.
  */
-export function createExperimentModel(
-    requestHandler: RequestHandler,
-    experiment: Experiment
-): ExperimentModel {
+export function createExperimentModel(experiment: Experiment): ExperimentModel {
     const experimentModel = experimentRepository.create()
-    requestHandler.executeSync(writeExperimentModel, experimentModel, experiment)
+    writeExperimentModel(experimentModel, experiment)
     experimentModel.status = 'created'
     return experimentModel
 }

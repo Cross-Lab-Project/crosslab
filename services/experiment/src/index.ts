@@ -4,7 +4,7 @@ import { AppDataSource } from './database/data_source'
 import { app } from './generated/index'
 import { apiClient } from './util/api'
 import { callbackHandling } from './util/callbacks'
-import { logger } from './util/requestHandler'
+import { logger } from './util/logger'
 import { JWTVerify } from '@crosslab/service-common'
 import expressWinston from 'express-winston'
 
