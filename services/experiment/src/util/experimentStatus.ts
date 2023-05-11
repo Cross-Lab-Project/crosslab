@@ -1,3 +1,4 @@
+import { saveExperimentModel } from '../database/methods/save'
 import { ExperimentModel } from '../database/model'
 import {
     DeviceNotConnectedError,
@@ -10,32 +11,22 @@ import {
     instantiateDevice,
     startCloudDeviceInstance,
 } from './api'
-import { experimentUrlFromId } from './url'
 import { bookExperiment as _bookExperiment } from './api'
-import { saveExperimentModel } from '../database/methods/save'
-import { establishPeerconnections } from './peerconnection'
 import { callbackUrl, deviceChangedCallbacks } from './callbacks'
-import { RequestHandler } from './requestHandler'
+import { logger } from './logger'
+import { establishPeerconnections } from './peerconnection'
+import { experimentUrlFromId } from './url'
 
 /**
  * This function attempts to book an experiment.
  * @param experimentModel The experiment to be booked.
  */
-export async function bookExperiment(
-    requestHandler: RequestHandler,
-    experimentModel: ExperimentModel
-) {
-    const experimentUrl = requestHandler.executeSync(
-        experimentUrlFromId,
-        experimentModel.uuid
-    )
-    requestHandler.log('info', `Attempting to book experiment "${experimentUrl}"`)
+export async function bookExperiment(experimentModel: ExperimentModel) {
+    const experimentUrl = experimentUrlFromId(experimentModel.uuid)
+    logger.log('info', `Attempting to book experiment "${experimentUrl}"`)
 
     if (!experimentModel.devices || experimentModel.devices.length === 0)
-        requestHandler.throw(
-            MissingPropertyError,
-            `Experiment ${experimentUrl} has no devices`
-        )
+        throw new MissingPropertyError(`Experiment ${experimentUrl} has no devices`)
 
     // TODO: book experiment
     // const currentTime = new Date()
@@ -61,8 +52,8 @@ export async function bookExperiment(
     // experimentModel.bookingID = bookingId
 
     experimentModel.status = 'booked'
-    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
-    requestHandler.log('info', `Successfully booked experiment "${experimentUrl}"`)
+    await saveExperimentModel(experimentModel)
+    logger.log('info', `Successfully booked experiment "${experimentUrl}"`)
 }
 
 /**
@@ -70,42 +61,27 @@ export async function bookExperiment(
  * @param experimentModel The experiment to be run.
  * @throws {InvalidStateError} Thrown when the status of the experiment is already "finished".
  */
-export async function runExperiment(
-    requestHandler: RequestHandler,
-    experimentModel: ExperimentModel
-) {
-    const experimentUrl = requestHandler.executeSync(
-        experimentUrlFromId,
-        experimentModel.uuid
-    )
-    requestHandler.log('info', `Attempting to run experiment "${experimentUrl}"`)
+export async function runExperiment(experimentModel: ExperimentModel) {
+    const experimentUrl = experimentUrlFromId(experimentModel.uuid)
+    logger.log('info', `Attempting to run experiment "${experimentUrl}"`)
     // make sure experiment is not already finished
     if (experimentModel.status === 'finished') {
-        requestHandler.throw(
-            InvalidStateError,
-            `Experiment status is already "finished"`,
-            400
-        )
+        throw new InvalidStateError(`Experiment status is already "finished"`, 400)
     }
 
     // make sure the experiment contains devices
     if (!experimentModel.devices || experimentModel.devices.length === 0) {
-        requestHandler.throw(
-            MissingPropertyError,
-            `Experiment does not contain any devices`,
-            400
-        )
+        throw new MissingPropertyError(`Experiment does not contain any devices`, 400)
     }
 
     // book experiment if status is "created"
     if (experimentModel.status === 'created') {
-        await bookExperiment(requestHandler, experimentModel)
+        await bookExperiment(experimentModel)
     }
 
     // make sure the experiment has a booking
     /*if (!experimentModel.bookingID) {
-        requestHandler.throw(
-            MissingPropertyError,
+        throw new MissingPropertyError(
             `Experiment does not have a booking`,
             400
         )
@@ -119,10 +95,9 @@ export async function runExperiment(
 
     // make sure the concrete devices of the experiment are connected
     for (const device of experimentModel.devices) {
-        const resolvedDevice = await requestHandler.executeAsync(getDevice, device.url) // TODO: error handling
+        const resolvedDevice = await getDevice(device.url) // TODO: error handling
         if (resolvedDevice.type === 'device' && !resolvedDevice.connected) {
-            requestHandler.throw(
-                DeviceNotConnectedError,
+            throw new DeviceNotConnectedError(
                 `Cannot start experiment since device ${device.url} is not connected`,
                 500
             ) // NOTE: maybe there is a more fitting error code
@@ -135,51 +110,30 @@ export async function runExperiment(
         ) {
             needsSetup = true
             if (!resolvedDevice.url)
-                requestHandler.throw(
-                    MissingPropertyError,
-                    'Device is missing its url',
-                    500
-                ) // NOTE: error code?
-            const { instance, deviceToken } = await requestHandler.executeAsync(
-                instantiateDevice,
+                throw new MissingPropertyError('Device is missing its url', 500) // NOTE: error code?
+            const { instance, deviceToken } = await instantiateDevice(
                 resolvedDevice.url,
                 { changedUrl: callbackUrl }
             )
-            if (!instance) 
-                requestHandler.throw(
-                    MissingPropertyError,
-                    'Instance of device is missing',
-                    500
-                )
+            if (!instance)
+                throw new MissingPropertyError('Instance of device is missing', 500)
             if (!instance?.url)
-                requestHandler.throw(
-                    MissingPropertyError,
-                    'Device instance is missing its url',
-                    500
-                ) // NOTE: error code?
-            if (!deviceToken) 
-                requestHandler.throw(
-                    MissingPropertyError,
-                    'Token of device instance is missing',
-                    500
-                )
+                throw new MissingPropertyError('Device instance is missing its url', 500) // NOTE: error code?
+            if (!deviceToken)
+                throw new MissingPropertyError('Token of device instance is missing', 500)
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
             deviceChangedCallbacks.push(instance.url)
 
             // instantiate cloud instantiable devices
-            const requestHandlerExperimentUrl = requestHandler.executeSync(
-                experimentUrlFromId,
-                experimentModel.uuid
-            )
+            const experimentUrl = experimentUrlFromId(experimentModel.uuid)
             if (resolvedDevice.type === 'cloud instantiable') {
-                await requestHandler.executeAsync(
-                    startCloudDeviceInstance,
+                await startCloudDeviceInstance(
                     resolvedDevice,
                     instance.url,
                     deviceToken,
-                    requestHandlerExperimentUrl
+                    experimentUrl
                 )
             }
         }
@@ -200,31 +154,25 @@ export async function runExperiment(
     // TODO: add callback to all devices/instances for changes
 
     if (needsSetup) {
-        await establishPeerconnections(requestHandler, experimentModel)
+        await establishPeerconnections(experimentModel)
         experimentModel.status = 'setup'
     } else {
-        await establishPeerconnections(requestHandler, experimentModel)
+        await establishPeerconnections(experimentModel)
         experimentModel.status = 'running'
     }
 
     // save experiment
-    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
-    requestHandler.log('info', `Successfully running experiment "${experimentUrl}"`)
+    await saveExperimentModel(experimentModel)
+    logger.log('info', `Successfully running experiment "${experimentUrl}"`)
 }
 
 /**
  * This function attempts to finish an experiment.
  * @param experimentModel The experiment to be finished.
  */
-export async function finishExperiment(
-    requestHandler: RequestHandler,
-    experimentModel: ExperimentModel
-) {
-    const experimentUrl = requestHandler.executeSync(
-        experimentUrlFromId,
-        experimentModel.uuid
-    )
-    requestHandler.log('info', `Attempting to finish experiment "${experimentUrl}"`)
+export async function finishExperiment(experimentModel: ExperimentModel) {
+    const experimentUrl = experimentUrlFromId(experimentModel.uuid)
+    logger.log('info', `Attempting to finish experiment "${experimentUrl}"`)
 
     switch (experimentModel.status) {
         case 'created': {
@@ -241,10 +189,7 @@ export async function finishExperiment(
             // delete all peerconnections
             if (experimentModel.connections) {
                 for (const peerconnection of experimentModel.connections) {
-                    await requestHandler.executeAsync(
-                        deletePeerconnection,
-                        peerconnection.url
-                    )
+                    await deletePeerconnection(peerconnection.url)
                 }
             }
             // TODO: unlock all devices (booking client missing)
@@ -263,6 +208,6 @@ export async function finishExperiment(
     }
 
     experimentModel.status = 'finished'
-    await requestHandler.executeAsync(saveExperimentModel, experimentModel)
-    requestHandler.log('info', `Successfully finished experiment "${experimentUrl}"`)
+    await saveExperimentModel(experimentModel)
+    logger.log('info', `Successfully finished experiment "${experimentUrl}"`)
 }

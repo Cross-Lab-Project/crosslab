@@ -1,6 +1,5 @@
 import { config } from '../config'
 import { InternalRequestError, MissingPropertyError } from '../types/errors'
-import { RequestHandler } from './requestHandler'
 import {
     ValidationError,
     InvalidUrlError,
@@ -19,31 +18,23 @@ export const apiClient: APIClient = new APIClient(config.BASE_URL)
  * @param error The error thrown by the internal api request.
  * @throws {InternalRequestError} Thrown if the error matches an error that can be thrown by an internal api request.
  */
-function handleInternalRequestError(requestHandler: RequestHandler, error: unknown) {
+function handleInternalRequestError(error: unknown) {
     if (error instanceof FetchError)
-        requestHandler.throw(
-            InternalRequestError,
+        throw new InternalRequestError(
             `An error occurred while trying to fetch the request`,
             error,
             500
         )
     else if (error instanceof ValidationError)
-        requestHandler.throw(
-            InternalRequestError,
+        throw new InternalRequestError(
             `An error occurred while trying to validate the request/response`,
             error,
             500
         )
     else if (error instanceof InvalidUrlError)
-        requestHandler.throw(
-            InternalRequestError,
-            `The provided url is malformed`,
-            error,
-            400
-        )
+        throw new InternalRequestError(`The provided url is malformed`, error, 400)
     else if (error instanceof UnsuccessfulRequestError)
-        requestHandler.throw(
-            InternalRequestError,
+        throw new InternalRequestError(
             `The request was unsuccessful`,
             error,
             error.response.status
@@ -56,14 +47,11 @@ function handleInternalRequestError(requestHandler: RequestHandler, error: unkno
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The requested device.
  */
-export async function getDevice(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.getDevice>
-) {
+export async function getDevice(...args: Parameters<typeof apiClient.getDevice>) {
     try {
         return await apiClient.getDevice(args[0], args[1])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -75,13 +63,12 @@ export async function getDevice(
  * @returns The created instance of the device and its device token.
  */
 export async function instantiateDevice(
-    requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.instantiateDevice>
 ) {
     try {
         return await apiClient.instantiateDevice(args[0], args[1])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -93,13 +80,12 @@ export async function instantiateDevice(
  * @returns The created peerconnection.
  */
 export async function createPeerconnection(
-    requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.createPeerconnection>
 ) {
     try {
         return await apiClient.createPeerconnection(args[0], args[1])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -111,13 +97,12 @@ export async function createPeerconnection(
  * @returns The id of the created booking.
  */
 export async function bookExperiment(
-    requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.bookExperiment>
 ) {
     try {
         return await apiClient.bookExperiment(args[0], args[1])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -128,14 +113,11 @@ export async function bookExperiment(
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The locked booking.
  */
-export async function lockBooking(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.lockBooking>
-) {
+export async function lockBooking(...args: Parameters<typeof apiClient.lockBooking>) {
     try {
         return await apiClient.lockBooking(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -146,14 +128,11 @@ export async function lockBooking(
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The requested booking.
  */
-export async function getBooking(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.getBooking>
-) {
+export async function getBooking(...args: Parameters<typeof apiClient.getBooking>) {
     try {
         return await apiClient.getBooking(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -164,13 +143,12 @@ export async function getBooking(
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
 export async function deletePeerconnection(
-    requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.deletePeerconnection>
 ) {
     try {
         return await apiClient.deletePeerconnection(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -183,7 +161,6 @@ export async function deletePeerconnection(
  * @param experimentUrl The url of the experiment the instance should take part in.
  */
 export async function startCloudDeviceInstance(
-    requestHandler: RequestHandler,
     device: DeviceServiceTypes.InstantiableCloudDevice,
     deviceUrl: string,
     token: string,
@@ -191,8 +168,7 @@ export async function startCloudDeviceInstance(
 ) {
     try {
         if (!device.instantiateUrl)
-            requestHandler.throw(
-                MissingPropertyError,
+            throw new MissingPropertyError(
                 'Resolved instantiable cloud device does not have an instantiate url',
                 500
             ) // NOTE: error code?
@@ -228,14 +204,11 @@ export async function startCloudDeviceInstance(
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  * @returns The patched device.
  */
-export async function updateDevice(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.updateDevice>
-) {
+export async function updateDevice(...args: Parameters<typeof apiClient.updateDevice>) {
     try {
         return await apiClient.updateDevice(args[0], args[1], args[2])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -245,14 +218,11 @@ export async function updateDevice(
  * @param args The arguments of the deleteBooking() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
-export async function deleteBooking(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.deleteBooking>
-) {
+export async function deleteBooking(...args: Parameters<typeof apiClient.deleteBooking>) {
     try {
         return await apiClient.deleteBooking(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -262,14 +232,11 @@ export async function deleteBooking(
  * @param args The arguments of the unlockDevices() function.
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
-export async function unlockDevices(
-    requestHandler: RequestHandler,
-    ...args: Parameters<typeof apiClient.unlockBooking>
-) {
+export async function unlockDevices(...args: Parameters<typeof apiClient.unlockBooking>) {
     try {
         return await apiClient.unlockBooking(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }
@@ -280,13 +247,12 @@ export async function unlockDevices(
  * @throws {InternalRequestError} Thrown if an error occurs during the request.
  */
 export async function getPeerconnection(
-    requestHandler: RequestHandler,
     ...args: Parameters<typeof apiClient.getPeerconnection>
 ) {
     try {
         return await apiClient.getPeerconnection(args[0])
     } catch (error) {
-        handleInternalRequestError(requestHandler, error)
+        handleInternalRequestError(error)
         throw error
     }
 }

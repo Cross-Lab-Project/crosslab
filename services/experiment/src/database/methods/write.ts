@@ -5,6 +5,7 @@ import {
     Device,
     Participant,
 } from '../../generated/types'
+import { MissingPropertyError } from '../../types/errors'
 import {
     DeviceModel,
     RoleModel,
@@ -13,7 +14,6 @@ import {
     ServiceConfigurationModel,
     ExperimentModel,
 } from '../model'
-import { MissingPropertyError } from '../../types/errors'
 import {
     createDeviceModel,
     createParticipantModel,
@@ -21,7 +21,6 @@ import {
     createRoleModel,
     createServiceConfigurationModel,
 } from './create'
-import { RequestHandler } from '../../util/requestHandler'
 
 const HOUR = 60 * 60 * 1000
 
@@ -30,17 +29,9 @@ const HOUR = 60 * 60 * 1000
  * @param deviceModel The DeviceModel the data should be written to.
  * @param device The Device providing the data to be written.
  */
-export function writeDeviceModel(
-    requestHandler: RequestHandler,
-    deviceModel: DeviceModel,
-    device: Device
-) {
+export function writeDeviceModel(deviceModel: DeviceModel, device: Device) {
     if (!device.device)
-        requestHandler.throw(
-            MissingPropertyError,
-            'Device is missing property "url"',
-            400
-        )
+        throw new MissingPropertyError('Device is missing property "url"', 400)
     if (device.device) deviceModel.url = device.device
     if (device.role) deviceModel.role = device.role
 }
@@ -50,11 +41,7 @@ export function writeDeviceModel(
  * @param roleModel The RoleModel the data should be written to.
  * @param role The Role providing the data to be written.
  */
-export function writeRoleModel(
-    _requestHandler: RequestHandler,
-    roleModel: RoleModel,
-    role: Role
-) {
+export function writeRoleModel(roleModel: RoleModel, role: Role) {
     if (role.name) roleModel.name = role.name
     if (role.description) roleModel.description = role.description
 }
@@ -65,7 +52,6 @@ export function writeRoleModel(
  * @param peerconnectionUrl The url of a peerconnection.
  */
 export function writePeerconnectionModel(
-    _requestHandler: RequestHandler,
     peerconnectionModel: PeerconnectionModel,
     peerconnectionUrl: string
 ) {
@@ -78,7 +64,6 @@ export function writePeerconnectionModel(
  * @param participant The Participant providing the data to be written.
  */
 export function writeParticipantModel(
-    _requestHandler: RequestHandler,
     participantModel: ParticipantModel,
     participant: Participant
 ) {
@@ -93,7 +78,6 @@ export function writeParticipantModel(
  * @param serviceConfiguration The ServiceConfiguration providing the data to be written.
  */
 export function writeServiceConfigurationModel(
-    requestHandler: RequestHandler,
     serviceConfigurationModel: ServiceConfigurationModel,
     serviceConfiguration: ServiceConfiguration
 ) {
@@ -104,10 +88,7 @@ export function writeServiceConfigurationModel(
     if (serviceConfiguration.participants) {
         serviceConfigurationModel.participants = []
         for (const participant of serviceConfiguration.participants) {
-            const participantModel = requestHandler.executeSync(
-                createParticipantModel,
-                participant
-            )
+            const participantModel = createParticipantModel(participant)
             serviceConfigurationModel.participants.push(participantModel)
         }
     }
@@ -119,7 +100,6 @@ export function writeServiceConfigurationModel(
  * @param experiment The Experiment providing the data to be written.
  */
 export function writeExperimentModel(
-    requestHandler: RequestHandler,
     experimentModel: ExperimentModel,
     experiment: Experiment
 ) {
@@ -140,34 +120,29 @@ export function writeExperimentModel(
     if (experiment.devices) {
         experimentModel.devices = []
         for (const device of experiment.devices) {
-            const deviceModel = requestHandler.executeSync(createDeviceModel, device)
+            const deviceModel = createDeviceModel(device)
             experimentModel.devices.push(deviceModel)
         }
     }
     if (experiment.roles) {
         experimentModel.roles = []
         for (const role of experiment.roles) {
-            const roleModel = requestHandler.executeSync(createRoleModel, role)
+            const roleModel = createRoleModel(role)
             experimentModel.roles.push(roleModel)
         }
     }
     if (experiment.connections) {
         experimentModel.connections = []
         for (const peerconnection of experiment.connections) {
-            const peerconnectionModel = requestHandler.executeSync(
-                createPeerconnectionModel,
-                peerconnection
-            )
+            const peerconnectionModel = createPeerconnectionModel(peerconnection)
             experimentModel.connections.push(peerconnectionModel)
         }
     }
     if (experiment.serviceConfigurations) {
         experimentModel.serviceConfigurations = []
         for (const serviceConfiguration of experiment.serviceConfigurations) {
-            const serviceConfigurationModel = requestHandler.executeSync(
-                createServiceConfigurationModel,
-                serviceConfiguration
-            )
+            const serviceConfigurationModel =
+                createServiceConfigurationModel(serviceConfiguration)
             experimentModel.serviceConfigurations.push(serviceConfigurationModel)
         }
     }
