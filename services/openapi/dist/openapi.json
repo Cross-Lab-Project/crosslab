@@ -3342,7 +3342,8 @@
           {
             "JWT": [
               "peerconnection",
-              "peerconnection:read"
+              "peerconnection:write",
+              "peerconnection:write:device_status"
             ]
           }
         ],

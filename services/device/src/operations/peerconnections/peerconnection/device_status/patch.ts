@@ -5,7 +5,8 @@ import { sendStatusChangedCallback } from '../../../callbacks'
 import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
 
 /**
- * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /peerconnections/{peerconnection_id}/device_status endpoint.
  * @param parameters The parameters of the request.
  * @param _user The user submitting the request.
  */

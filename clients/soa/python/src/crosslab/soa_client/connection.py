@@ -47,12 +47,12 @@ class DataChannel(Channel, AsyncIOEventEmitter):
 
 class Connection(ABC):
     tiebreaker: bool
-    state: Literal["created", "connecting", "connected", "disconnected"]
+    state: Literal["new", "connecting", "connected", "disconnected", "closed", "failed"]
 
     def __init__(self) -> None:
         super().__init__()
         self.tiebreaker = False
-        self.state = "created"
+        self.state = "new"
 
     @abstractmethod
     async def close(self):

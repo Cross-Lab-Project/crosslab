@@ -116,6 +116,17 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
             `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`
         )
 
+        const experimentModel = await findExperimentModelById(parameters.experiment_id)
+
+        if (!experimentModel)
+            throw new MissingEntityError(
+                `Could not find experiment model ${parameters.experiment_id}`,
+                404
+            )
+
+        if (experimentModel?.status !== 'finished')
+            await finishExperiment(experimentModel)
+
         const result = await deleteExperimentModelById(parameters.experiment_id)
 
         if (!result.affected) {

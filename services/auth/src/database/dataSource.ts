@@ -69,6 +69,8 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'device:signal': ['device_service'],
     'peerconnection': ['developer', 'experiment_service'],
     'peerconnection:read': ['device_service'],
+    'peerconnection:write': [],
+    'peerconnection:write:device_status': ['device_service'],
     'peerconnection:create': [],
     'peerconnection:delete': [],
     // experiment service scopes
