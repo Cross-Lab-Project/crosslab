@@ -4,17 +4,16 @@ import {
     DeviceModel,
     ParticipantModel,
 } from '../database/model'
-import { MissingPropertyError } from '../types/errors'
 import { logger } from './logger'
 import { experimentUrlFromId, getUrlOrInstanceUrl } from './url'
 import { DeviceServiceTypes } from '@cross-lab-project/api-client'
+import { MissingPropertyError } from '@crosslab/service-common'
 
 export function buildConnectionPlan(
     experiment: ExperimentModel
 ): DeviceServiceTypes.Peerconnection<'request'>[] {
     const experimentUrl = experimentUrlFromId(experiment.uuid)
     logger.log('info', `Building connection plan for experiment ${experimentUrl}`)
-    console.log('building connection plan for experiment', experiment.uuid)
     if (
         !experiment.serviceConfigurations ||
         experiment.serviceConfigurations.length === 0
@@ -81,9 +80,7 @@ export function buildConnectionPlan(
 
     const peerconnectionsArray = Object.values(peerconnections)
 
-    console.log(JSON.stringify(peerconnectionsArray))
-
-    console.log('connection plan', JSON.stringify(peerconnectionsArray, null, 4))
+    logger.log('info', `connection plan: ${JSON.stringify(peerconnectionsArray)}`)
     return peerconnectionsArray
 }
 
@@ -184,6 +181,9 @@ function toPairwiseServiceConfig(experiment: ExperimentModel) {
             }
         }
     }
-    console.log('connection plan', JSON.stringify(pairwiseServiceConfigurations, null, 4))
+    logger.log(
+        'info',
+        `pairwise service config: ${JSON.stringify(pairwiseServiceConfigurations)}`
+    )
     return pairwiseServiceConfigurations
 }

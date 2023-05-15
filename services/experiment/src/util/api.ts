@@ -1,5 +1,5 @@
 import { config } from '../config'
-import { InternalRequestError, MissingPropertyError } from '../types/errors'
+import { InternalRequestError } from '../types/errors'
 import {
     ValidationError,
     InvalidUrlError,
@@ -8,6 +8,7 @@ import {
     APIClient,
     DeviceServiceTypes,
 } from '@cross-lab-project/api-client'
+import { MissingPropertyError } from '@crosslab/service-common'
 import fetch from 'node-fetch'
 
 export const apiClient: APIClient = new APIClient(config.BASE_URL)

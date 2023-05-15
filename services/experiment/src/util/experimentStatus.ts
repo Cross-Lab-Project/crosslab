@@ -1,10 +1,6 @@
-import { saveExperimentModel } from '../database/methods/save'
 import { ExperimentModel } from '../database/model'
-import {
-    DeviceNotConnectedError,
-    InvalidStateError,
-    MissingPropertyError,
-} from '../types/errors'
+import { experimentRepository } from '../database/repositories/experiment'
+import { InvalidStateError } from '../types/errors'
 import {
     deletePeerconnection,
     getDevice,
@@ -16,6 +12,7 @@ import { callbackUrl, deviceChangedCallbacks } from './callbacks'
 import { logger } from './logger'
 import { establishPeerconnections } from './peerconnection'
 import { experimentUrlFromId } from './url'
+import { MissingPropertyError, DeviceNotConnectedError } from '@crosslab/service-common'
 
 /**
  * This function attempts to book an experiment.
@@ -52,7 +49,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     // experimentModel.bookingID = bookingId
 
     experimentModel.status = 'booked'
-    await saveExperimentModel(experimentModel)
+    await experimentRepository.save(experimentModel)
     logger.log('info', `Successfully booked experiment "${experimentUrl}"`)
 }
 
@@ -161,7 +158,7 @@ export async function runExperiment(experimentModel: ExperimentModel) {
     }
 
     // save experiment
-    await saveExperimentModel(experimentModel)
+    await experimentRepository.save(experimentModel)
     logger.log('info', `Successfully running experiment "${experimentUrl}"`)
 }
 
@@ -207,6 +204,6 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
     }
 
     experimentModel.status = 'finished'
-    await saveExperimentModel(experimentModel)
+    await experimentRepository.save(experimentModel)
     logger.log('info', `Successfully finished experiment "${experimentUrl}"`)
 }

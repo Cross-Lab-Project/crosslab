@@ -1,14 +1,14 @@
 import { config } from '../config'
-import { findPeerconnectionModelByUrl } from '../database/methods/find'
-import { saveExperimentModel } from '../database/methods/save'
-import {
-    InvalidValueError,
-    MalformedBodyError,
-    MissingEntityError,
-    MissingPropertyError,
-} from '../types/errors'
+import { experimentRepository } from '../database/repositories/experiment'
+import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import { getPeerconnection } from './api'
+import { logger } from './logger'
 import { DeviceServiceTypes } from '@cross-lab-project/api-client'
+import {
+    MalformedBodyError,
+    InvalidValueError,
+    MissingPropertyError,
+} from '@crosslab/service-common'
 import express from 'express'
 
 export const callbackUrl: string =
@@ -26,7 +26,7 @@ export function callbackHandling(app: express.Application) {
     app.post('/callbacks/experiment', async (req, res, next) => {
         try {
             const callback = req.body
-            console.log(callback)
+            logger.log('info', callback)
             if (typeof callback !== 'object')
                 throw new MalformedBodyError('Body of callback is not an object', 400)
             const callbackType = getCallbackType(callback)
@@ -162,12 +162,14 @@ async function handlePeerconnectionStatusChangedEventCallback(
     }
 
     // TODO: add peerconnection status changed handling
-    const peerconnectionModel = await findPeerconnectionModelByUrl(peerconnection.url)
-    if (!peerconnectionModel)
-        throw new MissingEntityError(
-            `No peerconnection model with url ${peerconnection.url} found`,
-            500
-        ) // NOTE: error code
+    const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+        where: { url: peerconnection.url },
+        relations: {
+            experiment: {
+                connections: true,
+            },
+        },
+    })
 
     const experimentModel = peerconnectionModel.experiment
     if (!experimentModel)
@@ -197,7 +199,7 @@ async function handlePeerconnectionStatusChangedEventCallback(
 
             if (experimentModel.status === 'setup' && connected) {
                 experimentModel.status = 'running'
-                await saveExperimentModel(experimentModel)
+                await experimentRepository.save(experimentModel)
             }
             break
         case 'failed':
@@ -245,7 +247,7 @@ function handleDeviceChangedEventCallback(callback: any): 200 | 410 {
     if (!deviceChangedCallbacks.includes(device.url)) {
         return 410
     }
-    console.log(`Device ${device.url} changed!`)
+    logger.log('info', `Device ${device.url} changed!`)
     // TODO: add device changed handling
     return 200
 }

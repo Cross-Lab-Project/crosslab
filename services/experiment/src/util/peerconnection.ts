@@ -1,7 +1,6 @@
-import { createPeerconnectionModel } from '../database/methods/create'
-import { saveExperimentModel } from '../database/methods/save'
 import { ExperimentModel } from '../database/model'
-import { MissingPropertyError } from '../types/errors'
+import { experimentRepository } from '../database/repositories/experiment'
+import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import { createPeerconnection } from './api'
 import {
     callbackUrl,
@@ -9,6 +8,7 @@ import {
     peerconnectionStatusChangedCallbacks,
 } from './callbacks'
 import { buildConnectionPlan } from './connectionPlan'
+import { MissingPropertyError } from '@crosslab/service-common'
 
 /**
  * This function attempts to establish the peerconnections for an experiment model according to its connection plan.
@@ -42,8 +42,10 @@ export async function establishPeerconnections(experimentModel: ExperimentModel)
         peerconnectionStatusChangedCallbacks.push(peerconnection.url)
 
         // create, push and save new peerconnection
-        const peerconnectionModel = createPeerconnectionModel(peerconnection.url)
+        const peerconnectionModel = await peerconnectionRepository.create(
+            peerconnection.url
+        )
         experimentModel.connections.push(peerconnectionModel)
-        await saveExperimentModel(experimentModel)
+        await experimentRepository.save(experimentModel)
     }
 }
