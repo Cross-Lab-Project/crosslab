@@ -112,7 +112,7 @@ export default function (context: Mocha.Context, testData: TestData) {
         invalidToken = 'invalid'
         validDeviceToken = testData.tokens['GET /auth valid device token'].model.token
         validUserToken = testData.tokens['GET /auth valid user token'].model.token
-        allowlistedToken = 'localhost'
+        allowlistedToken = 'superadmin-test-token'
     })
 
     suite.addTest(

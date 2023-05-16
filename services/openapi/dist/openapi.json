@@ -5,1386 +5,6 @@
     "description": "This is the OpenAPI description for the CrossLab REST API.",
     "version": "0.0.1"
   },
-  "components": {
-    "securitySchemes": {
-      "JWT": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
-    "schemas": {
-      "credentials": {
-        "title": "Credentials",
-        "type": "object",
-        "properties": {
-          "username": {
-            "description": "Username of the user.",
-            "type": "string"
-          },
-          "password": {
-            "description": "Password of the user.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ],
-        "x-service-name": "Authentication Service"
-      },
-      "auth_method": {
-        "title": "AuthMethod",
-        "type": "string",
-        "description": "Authentication method.",
-        "enum": [
-          "tui",
-          "local"
-        ],
-        "x-service-name": "Authentication Service"
-      },
-      "user": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
-        "required": [
-          "url",
-          "id",
-          "username",
-          "password"
-        ],
-        "x-service-name": "Authentication Service"
-      },
-      "user_update": {
-        "title": "User Update",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
-        "x-service-name": "Authentication Service"
-      },
-      "role": {
-        "title": "Role",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "url",
-          "id",
-          "name",
-          "scopes"
-        ],
-        "x-service-name": "Authentication Service"
-      },
-      "Device": {
-        "title": "Device",
-        "description": "A device might either be a physical/virtual device or a group of device.",
-        "type": "object",
-        "required": [
-          "ID"
-        ],
-        "properties": {
-          "ID": {
-            "type": "string",
-            "description": "Unique ID of the device. Contains the institution (by having an end point at that institution)",
-            "format": "uri"
-          }
-        },
-        "x-service-name": "Booking Service"
-      },
-      "Experiment": {
-        "title": "Experiment",
-        "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
-        "type": "object",
-        "required": [
-          "Devices"
-        ],
-        "properties": {
-          "Devices": {
-            "type": "array",
-            "description": "List of devices used in experiment.",
-            "items": {
-              "$ref": "#/components/schemas/Device"
-            }
-          },
-          "Description": {
-            "type": "string",
-            "description": "User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing."
-          }
-        },
-        "x-service-name": "Booking Service"
-      },
-      "Timeslot": {
-        "title": "Timeslot",
-        "description": "A time slot represents a slice of time used for bookings.",
-        "type": "object",
-        "required": [
-          "Start",
-          "End"
-        ],
-        "properties": {
-          "Start": {
-            "type": "string",
-            "description": "Start time of the booking.",
-            "format": "date-time"
-          },
-          "End": {
-            "type": "string",
-            "description": "End time of the booking.",
-            "format": "date-time"
-          }
-        },
-        "x-service-name": "Booking Service"
-      },
-      "Booking": {
-        "title": "Booking",
-        "description": "A booking in the booking system.",
-        "type": "object",
-        "required": [
-          "ID",
-          "Time",
-          "Devices",
-          "Status",
-          "You",
-          "External"
-        ],
-        "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uri",
-            "description": "Unique ID of the booking."
-          },
-          "Time": {
-            "$ref": "#/components/schemas/Timeslot"
-          },
-          "Devices": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "format": "uri"
-            }
-          },
-          "Type": {
-            "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
-            "type": "string",
-            "enum": [
-              "normal"
-            ]
-          },
-          "Status": {
-            "description": "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
-            "type": "string",
-            "enum": [
-              "pending",
-              "booked",
-              "rejected",
-              "cancelled",
-              "active",
-              "active-pending",
-              "active-rejected"
-            ]
-          },
-          "You": {
-            "type": "boolean",
-            "description": "If true, this booking was done by you."
-          },
-          "External": {
-            "type": "boolean",
-            "description": "Shows whether the booking was done by an external institution."
-          },
-          "Message": {
-            "type": "string",
-            "description": "User readable notes about the status of the booking (e.g. if devices are unknown)."
-          }
-        },
-        "x-service-name": "Booking Service"
-      },
-      "device_overview": {
-        "title": "Device Overview",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri",
-            "readOnly": true
-          },
-          "name": {
-            "type": "string",
-            "description": "Name of the device"
-          },
-          "description": {
-            "type": "string",
-            "description": "Extended description of the device, features, etc."
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of the device",
-            "enum": [
-              "device",
-              "group",
-              "edge instantiable",
-              "cloud instantiable"
-            ]
-          },
-          "owner": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          }
-        },
-        "required": [
-          "url",
-          "type",
-          "name",
-          "owner"
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "service_description": {
-        "title": "Service Description",
-        "type": "object",
-        "properties": {
-          "serviceType": {
-            "type": "string",
-            "format": "uri"
-          },
-          "serviceId": {
-            "type": "string"
-          },
-          "serviceDirection": {
-            "type": "string",
-            "enum": [
-              "consumer",
-              "producer",
-              "prosumer"
-            ]
-          }
-        },
-        "additionalProperties": true,
-        "x-service-name": "Device Service"
-      },
-      "device_cloud_instantiable": {
-        "title": "Instantiable Cloud Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "cloud instantiable"
-              },
-              "instantiateUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "time_slot": {
-        "title": "Time Slot",
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "x-service-name": "Device Service"
-      },
-      "availability": {
-        "title": "Availability",
-        "description": "A list of time slots that the maintainer of the device announced it is available\n",
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/time_slot"
-        },
-        "x-service-name": "Device Service"
-      },
-      "device_concrete": {
-        "title": "Concrete Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "device"
-              },
-              "connected": {
-                "description": "If true, the device is connected to the service and can be used.\n",
-                "type": "boolean",
-                "readOnly": true
-              },
-              "announcedAvailability": {
-                "$ref": "#/components/schemas/availability",
-                "readOnly": true
-              },
-              "experiment": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device_edge_instantiable": {
-        "title": "Instantiable Browser Device",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "edge instantiable"
-              },
-              "codeUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device_reference": {
-        "title": "Device Reference",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_group": {
-        "title": "Device Group",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "group"
-              },
-              "devices": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/device_reference"
-                }
-              }
-            },
-            "required": [
-              "devices"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device": {
-        "title": "Device",
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/device_cloud_instantiable"
-          },
-          {
-            "$ref": "#/components/schemas/device_concrete"
-          },
-          {
-            "$ref": "#/components/schemas/device_edge_instantiable"
-          },
-          {
-            "$ref": "#/components/schemas/device_group"
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "device_overview_update": {
-        "title": "Device Overview Update",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the device"
-          },
-          "description": {
-            "type": "string",
-            "description": "Extended description of the device, features, etc."
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of the device",
-            "enum": [
-              "device",
-              "group",
-              "edge instantiable",
-              "cloud instantiable"
-            ]
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_cloud_instantiable_update": {
-        "title": "Instantiable Cloud Device Update",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview_update"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "cloud instantiable"
-              },
-              "instantiateUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_concrete_update": {
-        "title": "Concrete Device Update",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview_update"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "device"
-              },
-              "experiment": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_edge_instantiable_update": {
-        "title": "Instantiable Browser Device Update",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview_update"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "edge instantiable"
-              },
-              "codeUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_description"
-                }
-              }
-            }
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_group_update": {
-        "title": "Device Group Update",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/device_overview_update"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "const": "group"
-              },
-              "devices": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/device_reference"
-                }
-              }
-            }
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "device_update": {
-        "title": "Device Update",
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/device_cloud_instantiable_update"
-          },
-          {
-            "$ref": "#/components/schemas/device_concrete_update"
-          },
-          {
-            "$ref": "#/components/schemas/device_edge_instantiable_update"
-          },
-          {
-            "$ref": "#/components/schemas/device_group_update"
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "availability_rule": {
-        "title": "Availability Rule",
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/time_slot"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "available": {
-                "type": "boolean"
-              },
-              "repeat": {
-                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
-                "type": "object",
-                "properties": {
-                  "frequency": {
-                    "type": "string",
-                    "enum": [
-                      "HOURLY",
-                      "DAILY",
-                      "WEEKLY"
-                    ]
-                  },
-                  "until": {
-                    "description": "Up to this date-time the time slot will be repeated.",
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "count": {
-                    "description": "How often the time slot will be repeated",
-                    "type": "integer"
-                  }
-                },
-                "required": [
-                  "frequency"
-                ]
-              }
-            }
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "message": {
-        "title": "Message",
-        "type": "object",
-        "properties": {
-          "messageType": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "messageType"
-        ],
-        "additionalProperties": true,
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "command_message": {
-        "title": "Command Message",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/message"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "messageType": {
-                "const": "command"
-              },
-              "command": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "messageType",
-              "command"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "service_config": {
-        "title": "Service Config",
-        "type": "object",
-        "properties": {
-          "serviceType": {
-            "type": "string",
-            "format": "uri"
-          },
-          "serviceId": {
-            "type": "string"
-          },
-          "remoteServiceId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "serviceType",
-          "serviceId",
-          "remoteServiceId"
-        ],
-        "additionalProperties": true,
-        "x-service-name": "Device Service"
-      },
-      "create_peerconnection_message": {
-        "title": "Create Peerconnection Message",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/command_message"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "command": {
-                "const": "createPeerconnection"
-              },
-              "connectionType": {
-                "type": "string",
-                "enum": [
-                  "webrtc",
-                  "websocket",
-                  "local"
-                ]
-              },
-              "connectionUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "services": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/service_config",
-                  "required": [
-                    "serviceType",
-                    "serviceId",
-                    "remoteServiceId"
-                  ]
-                }
-              },
-              "tiebreaker": {
-                "type": "boolean"
-              },
-              "config": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            },
-            "required": [
-              "command",
-              "connectionType",
-              "connectionUrl",
-              "services",
-              "tiebreaker"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "close_peerconnection_message": {
-        "title": "Close Peerconnection Message",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/command_message"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "command": {
-                "const": "closePeerconnection"
-              },
-              "connectionUrl": {
-                "type": "string",
-                "format": "uri"
-              }
-            },
-            "required": [
-              "command",
-              "connectionUrl"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "signaling_message": {
-        "title": "Signaling Message",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/message"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "messageType": {
-                "const": "signaling"
-              },
-              "signalingType": {
-                "type": "string",
-                "enum": [
-                  "offer",
-                  "answer",
-                  "candidate"
-                ]
-              },
-              "connectionUrl": {
-                "type": "string",
-                "format": "uri"
-              },
-              "content": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            },
-            "required": [
-              "messageType",
-              "signalingType",
-              "connectionUrl",
-              "content"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "peerconnection_status": {
-        "title": "Connection Status",
-        "type": "string",
-        "description": "The status of the peerconnection.",
-        "enum": [
-          "new",
-          "connecting",
-          "connected",
-          "disconnected",
-          "failed",
-          "closed"
-        ],
-        "x-service-name": "Device Service"
-      },
-      "peerconnection_common": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the peerconnection",
-            "format": "uri",
-            "readOnly": true
-          },
-          "type": {
-            "type": "string",
-            "description": "Type of the peerconnection",
-            "enum": [
-              "local",
-              "webrtc"
-            ]
-          },
-          "status": {
-            "$ref": "#/components/schemas/peerconnection_status"
-          }
-        },
-        "required": [
-          "url",
-          "type"
-        ],
-        "x-service-name": "Device Service"
-      },
-      "peerconnection_overview": {
-        "title": "Peerconnection Overview",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/peerconnection_common"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "devices": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2,
-                "items": {
-                  "$ref": "#/components/schemas/device_reference"
-                }
-              }
-            },
-            "required": [
-              "devices"
-            ]
-          }
-        ],
-        "x-service-name": "Device Service"
-      },
-      "configured_device_reference": {
-        "title": "Configured Device Reference",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the device",
-            "format": "uri"
-          },
-          "config": {
-            "type": "object",
-            "properties": {
-              "services": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/service_config"
-                }
-              }
-            }
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "x-service-name": "Device Service"
-      },
-      "peerconnection": {
-        "title": "Peerconnection",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/peerconnection_common"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "devices": {
-                "type": "array",
-                "minItems": 2,
-                "maxItems": 2,
-                "items": {
-                  "$ref": "#/components/schemas/configured_device_reference"
-                }
-              }
-            },
-            "required": [
-              "devices"
-            ]
-          }
-        ],
-        "x-typeguard": true,
-        "x-service-name": "Device Service"
-      },
-      "experiment_overview": {
-        "title": "Experiment Overview",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the experiment",
-            "format": "uri",
-            "readOnly": true
-          },
-          "status": {
-            "type": "string",
-            "description": "Status of the experiment",
-            "enum": [
-              "created",
-              "booked",
-              "setup",
-              "running",
-              "finished"
-            ]
-          }
-        },
-        "x-service-name": "Experiment Service"
-      },
-      "schemas-device": {
-        "title": "Device",
-        "type": "object",
-        "properties": {
-          "device": {
-            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
-            "type": "string",
-            "format": "uri"
-          },
-          "role": {
-            "type": "string",
-            "description": "The name of the device's role."
-          }
-        },
-        "x-service-name": "Experiment Service"
-      },
-      "schemas-role": {
-        "title": "role",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name for an experiment role."
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "x-service-name": "Experiment Service"
-      },
-      "participant": {
-        "title": "Participant",
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string",
-            "description": "The name of the participant's role."
-          },
-          "serviceId": {
-            "type": "string"
-          },
-          "config": {
-            "type": "object",
-            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-            "additionalProperties": true
-          }
-        },
-        "x-service-name": "Experiment Service"
-      },
-      "service_configuration": {
-        "title": "Service Configuration",
-        "type": "object",
-        "properties": {
-          "serviceType": {
-            "type": "string",
-            "format": "uri",
-            "description": "Type of the service"
-          },
-          "configuration": {
-            "type": "object",
-            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-            "additionalProperties": true
-          },
-          "participants": {
-            "type": "array",
-            "description": "List of participants for the service",
-            "items": {
-              "$ref": "#/components/schemas/participant"
-            }
-          }
-        },
-        "x-service-name": "Experiment Service"
-      },
-      "experiment": {
-        "title": "Experiment",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/experiment_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "bookingTime": {
-                "type": "object",
-                "properties": {
-                  "startTime": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "endTime": {
-                    "type": "string",
-                    "format": "date-time"
-                  }
-                }
-              },
-              "devices": {
-                "type": "array",
-                "description": "Devices associated with the experiment",
-                "items": {
-                  "$ref": "#/components/schemas/schemas-device"
-                }
-              },
-              "roles": {
-                "type": "array",
-                "description": "Roles that are used in this experiment",
-                "items": {
-                  "$ref": "#/components/schemas/schemas-role"
-                }
-              },
-              "connections": {
-                "type": "array",
-                "description": "Connections associated with the experiment",
-                "items": {
-                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
-                  "type": "string",
-                  "format": "uri"
-                },
-                "readOnly": true
-              },
-              "serviceConfigurations": {
-                "type": "array",
-                "description": "Services associated with the experiment",
-                "items": {
-                  "$ref": "#/components/schemas/service_configuration"
-                }
-              }
-            }
-          }
-        ],
-        "x-service-name": "Experiment Service"
-      },
-      "institution": {
-        "title": "Institution",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "homepage": {
-            "type": "string",
-            "format": "uri"
-          },
-          "api": {
-            "type": "string",
-            "format": "uri"
-          },
-          "federatedApi": {
-            "type": "string",
-            "format": "uri"
-          },
-          "apiToken": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
-        "x-service-name": "Federation Service"
-      },
-      "update_information": {
-        "title": "UpdateInformation",
-        "description": "Information regarding an update. Contains the id of the device,\nthe name of the latest version and a link to it.\n",
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string"
-          },
-          "latest_version": {
-            "type": "string"
-          },
-          "latest_version_link": {
-            "type": "string",
-            "format": "uri"
-          }
-        },
-        "required": [
-          "device_id",
-          "latest_version",
-          "latest_version_link"
-        ],
-        "x-service-name": "Update Service"
-      }
-    },
-    "parameters": {
-      "device_url": {
-        "in": "query",
-        "name": "device_url",
-        "description": "Url of the device.",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "x-service-name": "Authentication Service"
-        }
-      },
-      "user_id": {
-        "in": "path",
-        "name": "user_id",
-        "description": "ID of a user.",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "x-service-name": "Authentication Service"
-        }
-      },
-      "role_id": {
-        "in": "path",
-        "name": "role_id",
-        "description": "ID of a role.",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "x-service-name": "Authentication Service"
-        }
-      },
-      "ID": {
-        "in": "path",
-        "name": "ID",
-        "schema": {
-          "type": "string",
-          "x-service-name": "Booking Service"
-        },
-        "required": true,
-        "description": "ID of Booking"
-      },
-      "device_changed_url": {
-        "name": "changedUrl",
-        "in": "query",
-        "required": false,
-        "description": "**An URL that will be called once the device changes.**\n\nOnce the device was given a changedUrl parameter the contained URL will be called every time a device is changed\nas long as every callback resolves with a successful status code.\n\nIf the callback fails the url MIGHT not be called in the future.\n\nThere can be multiple callbacks registered with the same device.\n",
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Device Service"
-        }
-      },
-      "device_id": {
-        "in": "path",
-        "name": "device_id",
-        "description": "UUID of the device",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid",
-          "x-service-name": "Device Service"
-        },
-        "example": [
-          "908fec03-ee1e-4996-b11a-0ef8fc7d0909"
-        ]
-      },
-      "flat_group": {
-        "in": "query",
-        "name": "flat_group",
-        "description": "If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.",
-        "required": false,
-        "schema": {
-          "type": "boolean",
-          "default": false,
-          "x-service-name": "Device Service"
-        }
-      },
-      "peerconnection_url": {
-        "in": "query",
-        "name": "peerconnection_url",
-        "description": "URL of the peerconnection",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Device Service"
-        },
-        "example": [
-          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
-        ]
-      },
-      "closed_url": {
-        "name": "closedUrl",
-        "in": "query",
-        "required": false,
-        "description": "An URL that will be called once the peer connection is closed.\n",
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Device Service"
-        }
-      },
-      "status_changed_url": {
-        "name": "statusChangedUrl",
-        "in": "query",
-        "required": false,
-        "description": "An URL that will be called if the status of the peerconnection changes.\n",
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Device Service"
-        }
-      },
-      "peerconnection_id": {
-        "in": "path",
-        "name": "peerconnection_id",
-        "description": "UUID of the peerconnection",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid",
-          "x-service-name": "Device Service"
-        },
-        "example": [
-          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
-        ]
-      },
-      "parameters-device_url": {
-        "in": "query",
-        "name": "device_url",
-        "description": "URL of the device",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Device Service"
-        }
-      },
-      "experiment_id": {
-        "in": "path",
-        "name": "experiment_id",
-        "description": "UUID of the experiment",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid",
-          "x-service-name": "Experiment Service"
-        },
-        "example": [
-          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
-        ]
-      },
-      "experiment_changed_url": {
-        "name": "changedURL",
-        "in": "query",
-        "required": false,
-        "description": "An URL that will be called when the experiment status changes.\n",
-        "schema": {
-          "type": "string",
-          "format": "uri",
-          "x-service-name": "Experiment Service"
-        }
-      },
-      "institution_id": {
-        "in": "path",
-        "name": "institution_id",
-        "description": "UUID of the institution",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid",
-          "x-service-name": "Federation Service"
-        },
-        "example": [
-          "5202de35-7f61-4eed-a361-e627619f9d19"
-        ]
-      },
-      "parameters-device_id": {
-        "in": "path",
-        "name": "device_id",
-        "description": "ID of the device",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "x-service-name": "Update Service"
-        }
-      },
-      "current_version": {
-        "in": "query",
-        "name": "current_version",
-        "description": "Current firmware version of the device",
-        "required": false,
-        "schema": {
-          "type": "string",
-          "x-service-name": "Update Service"
-        }
-      }
-    }
-  },
   "paths": {
     "/login": {
       "post": {
@@ -5675,6 +4295,1386 @@
           }
         },
         "x-service-name": "Update Service"
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "credentials": {
+        "title": "Credentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "Username of the user.",
+            "type": "string"
+          },
+          "password": {
+            "description": "Password of the user.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "auth_method": {
+        "title": "AuthMethod",
+        "type": "string",
+        "description": "Authentication method.",
+        "enum": [
+          "tui",
+          "local"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "username",
+          "password"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Authentication Service"
+      },
+      "role": {
+        "title": "Role",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "name",
+          "scopes"
+        ],
+        "x-service-name": "Authentication Service"
+      },
+      "Device": {
+        "title": "Device",
+        "description": "A device might either be a physical/virtual device or a group of device.",
+        "type": "object",
+        "required": [
+          "ID"
+        ],
+        "properties": {
+          "ID": {
+            "type": "string",
+            "description": "Unique ID of the device. Contains the institution (by having an end point at that institution)",
+            "format": "uri"
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Experiment": {
+        "title": "Experiment",
+        "description": "An experiment describes a set of devices and how they should be connected (potentially among other metadata).",
+        "type": "object",
+        "required": [
+          "Devices"
+        ],
+        "properties": {
+          "Devices": {
+            "type": "array",
+            "description": "List of devices used in experiment.",
+            "items": {
+              "$ref": "#/components/schemas/Device"
+            }
+          },
+          "Description": {
+            "type": "string",
+            "description": "User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Timeslot": {
+        "title": "Timeslot",
+        "description": "A time slot represents a slice of time used for bookings.",
+        "type": "object",
+        "required": [
+          "Start",
+          "End"
+        ],
+        "properties": {
+          "Start": {
+            "type": "string",
+            "description": "Start time of the booking.",
+            "format": "date-time"
+          },
+          "End": {
+            "type": "string",
+            "description": "End time of the booking.",
+            "format": "date-time"
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "Booking": {
+        "title": "Booking",
+        "description": "A booking in the booking system.",
+        "type": "object",
+        "required": [
+          "ID",
+          "Time",
+          "Devices",
+          "Status",
+          "You",
+          "External"
+        ],
+        "properties": {
+          "ID": {
+            "type": "string",
+            "format": "uri",
+            "description": "Unique ID of the booking."
+          },
+          "Time": {
+            "$ref": "#/components/schemas/Timeslot"
+          },
+          "Devices": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "Type": {
+            "description": "Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.",
+            "type": "string",
+            "enum": [
+              "normal"
+            ]
+          },
+          "Status": {
+            "description": "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
+            "type": "string",
+            "enum": [
+              "pending",
+              "booked",
+              "rejected",
+              "cancelled",
+              "active",
+              "active-pending",
+              "active-rejected"
+            ]
+          },
+          "You": {
+            "type": "boolean",
+            "description": "If true, this booking was done by you."
+          },
+          "External": {
+            "type": "boolean",
+            "description": "Shows whether the booking was done by an external institution."
+          },
+          "Message": {
+            "type": "string",
+            "description": "User readable notes about the status of the booking (e.g. if devices are unknown)."
+          }
+        },
+        "x-service-name": "Booking Service"
+      },
+      "device_overview": {
+        "title": "Device Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the device"
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "url",
+          "type",
+          "name",
+          "owner"
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "service_description": {
+        "title": "Service Description",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "serviceDirection": {
+            "type": "string",
+            "enum": [
+              "consumer",
+              "producer",
+              "prosumer"
+            ]
+          }
+        },
+        "additionalProperties": true,
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable": {
+        "title": "Instantiable Cloud Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "time_slot": {
+        "title": "Time Slot",
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "availability": {
+        "title": "Availability",
+        "description": "A list of time slots that the maintainer of the device announced it is available\n",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/time_slot"
+        },
+        "x-service-name": "Device Service"
+      },
+      "device_concrete": {
+        "title": "Concrete Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "connected": {
+                "description": "If true, the device is connected to the service and can be used.\n",
+                "type": "boolean",
+                "readOnly": true
+              },
+              "announcedAvailability": {
+                "$ref": "#/components/schemas/availability",
+                "readOnly": true
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable": {
+        "title": "Instantiable Browser Device",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_reference": {
+        "title": "Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_group": {
+        "title": "Device Group",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            },
+            "required": [
+              "devices"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device": {
+        "title": "Device",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable"
+          },
+          {
+            "$ref": "#/components/schemas/device_group"
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_overview_update": {
+        "title": "Device Overview Update",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the device"
+          },
+          "description": {
+            "type": "string",
+            "description": "Extended description of the device, features, etc."
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the device",
+            "enum": [
+              "device",
+              "group",
+              "edge instantiable",
+              "cloud instantiable"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_cloud_instantiable_update": {
+        "title": "Instantiable Cloud Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "cloud instantiable"
+              },
+              "instantiateUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_concrete_update": {
+        "title": "Concrete Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "device"
+              },
+              "experiment": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_edge_instantiable_update": {
+        "title": "Instantiable Browser Device Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "edge instantiable"
+              },
+              "codeUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_description"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_group_update": {
+        "title": "Device Group Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/device_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "const": "group"
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "device_update": {
+        "title": "Device Update",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/device_cloud_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_concrete_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_edge_instantiable_update"
+          },
+          {
+            "$ref": "#/components/schemas/device_group_update"
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "availability_rule": {
+        "title": "Availability Rule",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/time_slot"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "boolean"
+              },
+              "repeat": {
+                "description": "If specified the time slot is repeated in a fixed offset specified by the frequency",
+                "type": "object",
+                "properties": {
+                  "frequency": {
+                    "type": "string",
+                    "enum": [
+                      "HOURLY",
+                      "DAILY",
+                      "WEEKLY"
+                    ]
+                  },
+                  "until": {
+                    "description": "Up to this date-time the time slot will be repeated.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "count": {
+                    "description": "How often the time slot will be repeated",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "frequency"
+                ]
+              }
+            }
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "message": {
+        "title": "Message",
+        "type": "object",
+        "properties": {
+          "messageType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "messageType"
+        ],
+        "additionalProperties": true,
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "command_message": {
+        "title": "Command Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "command"
+              },
+              "command": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "messageType",
+              "command"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "service_config": {
+        "title": "Service Config",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "remoteServiceId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "serviceType",
+          "serviceId",
+          "remoteServiceId"
+        ],
+        "additionalProperties": true,
+        "x-service-name": "Device Service"
+      },
+      "create_peerconnection_message": {
+        "title": "Create Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "createPeerconnection"
+              },
+              "connectionType": {
+                "type": "string",
+                "enum": [
+                  "webrtc",
+                  "websocket",
+                  "local"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "services": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/service_config",
+                  "required": [
+                    "serviceType",
+                    "serviceId",
+                    "remoteServiceId"
+                  ]
+                }
+              },
+              "tiebreaker": {
+                "type": "boolean"
+              },
+              "config": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "command",
+              "connectionType",
+              "connectionUrl",
+              "services",
+              "tiebreaker"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "close_peerconnection_message": {
+        "title": "Close Peerconnection Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/command_message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "command": {
+                "const": "closePeerconnection"
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              }
+            },
+            "required": [
+              "command",
+              "connectionUrl"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "signaling_message": {
+        "title": "Signaling Message",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/message"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "messageType": {
+                "const": "signaling"
+              },
+              "signalingType": {
+                "type": "string",
+                "enum": [
+                  "offer",
+                  "answer",
+                  "candidate"
+                ]
+              },
+              "connectionUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "content": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "messageType",
+              "signalingType",
+              "connectionUrl",
+              "content"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_status": {
+        "title": "Connection Status",
+        "type": "string",
+        "description": "The status of the peerconnection.",
+        "enum": [
+          "new",
+          "connecting",
+          "connected",
+          "disconnected",
+          "failed",
+          "closed"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_common": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the peerconnection",
+            "format": "uri",
+            "readOnly": true
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of the peerconnection",
+            "enum": [
+              "local",
+              "webrtc"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/peerconnection_status"
+          }
+        },
+        "required": [
+          "url",
+          "type"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_overview": {
+        "title": "Peerconnection Overview",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_common"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/device_reference"
+                }
+              }
+            },
+            "required": [
+              "devices"
+            ]
+          }
+        ],
+        "x-service-name": "Device Service"
+      },
+      "configured_device_reference": {
+        "title": "Configured Device Reference",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the device",
+            "format": "uri"
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "services": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/service_config"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "x-service-name": "Device Service"
+      },
+      "peerconnection": {
+        "title": "Peerconnection",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/peerconnection_common"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "$ref": "#/components/schemas/configured_device_reference"
+                }
+              }
+            },
+            "required": [
+              "devices"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "experiment_overview": {
+        "title": "Experiment Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the experiment",
+            "format": "uri",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Status of the experiment",
+            "enum": [
+              "created",
+              "booked",
+              "setup",
+              "running",
+              "finished"
+            ]
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "schemas-device": {
+        "title": "Device",
+        "type": "object",
+        "properties": {
+          "device": {
+            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string",
+            "description": "The name of the device's role."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "schemas-role": {
+        "title": "role",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name for an experiment role."
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "participant": {
+        "title": "Participant",
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The name of the participant's role."
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "service_configuration": {
+        "title": "Service Configuration",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri",
+            "description": "Type of the service"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          },
+          "participants": {
+            "type": "array",
+            "description": "List of participants for the service",
+            "items": {
+              "$ref": "#/components/schemas/participant"
+            }
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "experiment": {
+        "title": "Experiment",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/schemas-device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/schemas-role"
+                }
+              },
+              "connections": {
+                "type": "array",
+                "description": "Connections associated with the experiment",
+                "items": {
+                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "readOnly": true
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "institution": {
+        "title": "Institution",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri"
+          },
+          "api": {
+            "type": "string",
+            "format": "uri"
+          },
+          "federatedApi": {
+            "type": "string",
+            "format": "uri"
+          },
+          "apiToken": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "x-service-name": "Federation Service"
+      },
+      "update_information": {
+        "title": "UpdateInformation",
+        "description": "Information regarding an update. Contains the id of the device,\nthe name of the latest version and a link to it.\n",
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "latest_version": {
+            "type": "string"
+          },
+          "latest_version_link": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "device_id",
+          "latest_version",
+          "latest_version_link"
+        ],
+        "x-service-name": "Update Service"
+      }
+    },
+    "parameters": {
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "Url of the device.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "user_id": {
+        "in": "path",
+        "name": "user_id",
+        "description": "ID of a user.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "role_id": {
+        "in": "path",
+        "name": "role_id",
+        "description": "ID of a role.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Authentication Service"
+        }
+      },
+      "ID": {
+        "in": "path",
+        "name": "ID",
+        "schema": {
+          "type": "string",
+          "x-service-name": "Booking Service"
+        },
+        "required": true,
+        "description": "ID of Booking"
+      },
+      "device_changed_url": {
+        "name": "changedUrl",
+        "in": "query",
+        "required": false,
+        "description": "**An URL that will be called once the device changes.**\n\nOnce the device was given a changedUrl parameter the contained URL will be called every time a device is changed\nas long as every callback resolves with a successful status code.\n\nIf the callback fails the url MIGHT not be called in the future.\n\nThere can be multiple callbacks registered with the same device.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "UUID of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "908fec03-ee1e-4996-b11a-0ef8fc7d0909"
+        ]
+      },
+      "flat_group": {
+        "in": "query",
+        "name": "flat_group",
+        "description": "If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": false,
+          "x-service-name": "Device Service"
+        }
+      },
+      "peerconnection_url": {
+        "in": "query",
+        "name": "peerconnection_url",
+        "description": "URL of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
+      "closed_url": {
+        "name": "closedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called once the peer connection is closed.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "status_changed_url": {
+        "name": "statusChangedUrl",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called if the status of the peerconnection changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "peerconnection_id": {
+        "in": "path",
+        "name": "peerconnection_id",
+        "description": "UUID of the peerconnection",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Device Service"
+        },
+        "example": [
+          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
+        ]
+      },
+      "parameters-device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "URL of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Device Service"
+        }
+      },
+      "experiment_id": {
+        "in": "path",
+        "name": "experiment_id",
+        "description": "UUID of the experiment",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Experiment Service"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
+      },
+      "experiment_changed_url": {
+        "name": "changedURL",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called when the experiment status changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "x-service-name": "Experiment Service"
+        }
+      },
+      "institution_id": {
+        "in": "path",
+        "name": "institution_id",
+        "description": "UUID of the institution",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Federation Service"
+        },
+        "example": [
+          "5202de35-7f61-4eed-a361-e627619f9d19"
+        ]
+      },
+      "parameters-device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "ID of the device",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Update Service"
+        }
+      },
+      "current_version": {
+        "in": "query",
+        "name": "current_version",
+        "description": "Current firmware version of the device",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "x-service-name": "Update Service"
+        }
       }
     }
   }

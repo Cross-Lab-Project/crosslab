@@ -11,9 +11,10 @@ export const config = {
     BASE_URL: process.env.BASE_URL ?? 'http://localhost:3000',
     SECURITY_ISSUER:
         process.env.SECURITY_ISSUER ??
-        die('the environment variable SECURITY_ISSUER is not define!'),
+        die('the environment variable SECURITY_ISSUER is not defined!'),
     SECURITY_AUDIENCE:
         process.env.SECURITY_AUDIENCE ??
-        die('the environment variable SECURITY_AUDIENCE is not define!'),
-    API_TOKEN: process.env.API_TOKEN ?? '',
+        die('the environment variable SECURITY_AUDIENCE is not defined!'),
+    API_TOKEN:
+        process.env.API_TOKEN ?? die('the environment variable API_TOKEN is not defined'),
 }
