@@ -53,6 +53,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
                 return { status: 500, body: "Device request " + body.Experiment.Devices[device].ID + " returned status code" + err.response.status };
             };
 
+            console.log("ANY ERROR device")
             // any other error
             throw err;
         }
@@ -140,6 +141,7 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
                 }
                 return { status: 500, body: "Institution " + k + " returned status code " + err.response.status };
             };
+            console.log("ANY ERROR lr")
             throw err;
         }
         if (req.length != lr[2].Experiment.Devices.length) {
@@ -169,19 +171,20 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
             try {
                 a = await availability[device][i];
             } catch (err) {
-                if (err.status !== undefined) {
+                if (err.response !== undefined && err.response.status !== undefined) {
                     // TODO: Remove later if errors are well specified
-                    if (err.status === 503) {
+                    if (err.response.status === 503) {
                         return {
                             status: 503
                         };
                     };
-                    if (err.status === 404) {
+                    if (err.response.status === 404) {
                         return { status: 404, body: realDevices[device][i] };
                     }
                     //@ts-ignore: fallback which only works when API can handle errors - still keep it (defensive programming)
                     return { status: 500, body: "Device request " + realDevices[device][i] + " returned status code" + err.status };
                 };
+                console.log("ANY ERROR availability")
                 throw err;
             }
             if (a.type == "group") {

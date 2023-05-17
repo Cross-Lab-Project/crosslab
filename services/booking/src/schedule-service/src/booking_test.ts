@@ -115,14 +115,12 @@ mocha.describe("operations.ts", function () {
         });
 
         app.post('/proxy', (req, res) => {
-            console.log("Proxy called!" + req.query.URL);
             if (typeof (req.query.URL) !== "string") {
                 console.log("query URL is not string:", req.query.URL);
                 res.status(999).send("query URL is not string: " + req.query.URL);
                 return
             }
             if (req.query.URL.includes("/schedule")) {
-                console.log(proxy_server_status, proxy_device_service_status)
                 switch (proxy_server_status) {
                     case 200:
                         if (proxy_schedule_short_body) {
@@ -411,251 +409,165 @@ mocha.describe("operations.ts", function () {
         }
     });
 
+    mocha.it("postBookingSchedule (completely free)", async function () {
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" }] }, Combined: false, Time: { Start: "1999-06-25T00:00:00Z", End: "1999-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 200) {
+            throw Error("Response error: " + r.status);
+        }
+        if (r.body.length != 1) {
+            throw Error("Body has wrong length, should 1, is " + r.body.length);
+        }
+
+        if (r.body[0].Device !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+            throw Error("Device is " + r.body[0].Device);
+        }
+
+        if (r.body[0].Booked.length !== 0) {
+            console.log(r.body[0].Booked);
+            throw Error("Device " + 0 + " Booked has length " + r.body[0].Booked.length);
+        }
+
+        if (r.body[0].Free.length !== 1) {
+            console.log(r.body[0].Free);
+            throw Error("Device " + 0 + " Free has length " + r.body[0].Free.length);
+        }
+
+        if (!dayjs(r.body[0].Free[0].Start).isSame(dayjs("1999-06-25T00:00:00Z"))) {
+            throw Error("Device " + 0 + " Free.Start is wrong, should 1999-06-25T00:00:00Z is " + r.body[0].Free[0].Start);
+        }
+
+        if (!dayjs(r.body[0].Free[0].End).isSame(dayjs("1999-06-28T23:59:59Z"))) {
+            throw Error("Device " + 0 + " Free.End is wrong, should 1999-06-28T23:59:59Z is " + r.body[0].Free[0].End);
+        }
+    });
+
     mocha.it("postBookingSchedule (remote error case)", async function () {
-        try {
-            this.timeout(10000);
-            let error_thrown: boolean = false;
-            let r: postScheduleResponseType | Promise<postScheduleResponseType>;
+        this.timeout(10000);
 
-            // Case device overloaded
-            device_service_status = 503;
-            proxy_server_status = 200;
-            error_thrown = false;
+        // Case device overloaded
+        /* Error case not implemented in device API
+        device_service_status = 503;
+        proxy_server_status = 200;
 
-            /* Error case not implemented in device server
-            let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, {"JWT":{ username: "test", url: "localhost/user/test", scopes: [""] }});
-            if (r.status !== 503) {
-                throw Error("Response error (device overloaded): " + r.status);
-            }
-            */
-            console.log(1)
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, {"JWT":{ username: "test", url: "localhost/user/test", scopes: [""] }});
+        if (r.status !== 503) {
+            throw Error("Response error (device overloaded): " + r.status);
+        }
+        */
 
-            // Case proxy device overloaded
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_device_service_status = 503;
-            error_thrown = false;
+        // Case proxy device overloaded
+        /* Error case not implemented in device API
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_device_service_status = 503;
 
-            /* Error case not implemented in device server
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 503) {
-                        throw Error("Response error (device overloaded): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (device overloaded)")
-            }
-            */
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, {"JWT":{ username: "test", url: "localhost/user/test", scopes: [""] }});
+        if (r.status !== 503) {
+            throw Error("Response error (device overloaded): " + r.status);
+        }
+        */
 
-            console.log(2)
+        // Case device wrong device
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_device_service_status = 200;
+        device_wrong_device = true;
 
-            // Case device wrong device
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_device_service_status = 200;
-            device_wrong_device = true;
-            error_thrown = false;
+        let r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (device wrong device): " + r.status);
+        }
 
-            r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            if (r.status !== 500) {
-                throw Error("Response error (device wrong device): " + r.status);
-            }
-            console.log(3)
+        // Case device is group
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_device_service_status = 200;
+        device_wrong_device = false;
+        device_single_is_group = true;
 
-            // Case device is group
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_device_service_status = 200;
-            device_wrong_device = false;
-            device_single_is_group = true;
-            error_thrown = false;
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (device is group): " + r.status);
+        }
 
-            r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            if (r.status !== 500) {
-                throw Error("Response error (device is group): " + r.status);
-            }
+        // Case schedule overloaded
+        device_service_status = 200;
+        proxy_server_status = 503;
+        proxy_device_service_status = 200;
+        device_single_is_group = false;
 
-            console.log(4)
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 503) {
+            throw Error("Response error (proxy overloaded): " + r.status);
+        }
 
-            // Case schedule overloaded
-            device_service_status = 200;
-            proxy_server_status = 503;
-            proxy_device_service_status = 200;
-            device_single_is_group = false;
-            error_thrown = false;
+        // Device not found
+        device_service_status = 404;
+        proxy_server_status = 200;
 
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 503) {
-                        throw Error("Response error (proxy overloaded): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                console.log(r)
-                throw new Error("No error at (proxy overloaded)")
-            }
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 404) {
+            throw Error("Response error (proxy 404): " + r.status);
+        }
 
-            console.log(5)
+        // Schedule not found
+        device_service_status = 200;
+        proxy_server_status = 404;
 
-            // Device not found
-            device_service_status = 404;
-            proxy_server_status = 200;
-            error_thrown = false;
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 404) {
+            throw Error("Response error (proxy 404): " + r.status);
+        }
 
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 404) {
-                        throw Error("Response error (proxy 404): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (proxy 404)")
-            }
+        // Case proxy device generic error
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_device_service_status = 500;
 
-            console.log(6)
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (device generic error): " + r.status);
+        }
 
-            // Schedule not found
-            device_service_status = 200;
-            proxy_server_status = 404;
-            error_thrown = false;
+        // Case device generic error
+        device_service_status = 500;
+        proxy_server_status = 200;
+        proxy_device_service_status = 200;
 
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 404) {
-                        throw Error("Response error (proxy 404): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (proxy 404)")
-            }
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (device generic error): " + r.status);
+        }
 
-            console.log(7)
-            // Case proxy device generic error
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_device_service_status = 500;
-            error_thrown = false;
+        // Schedule generic error
+        device_service_status = 200;
+        proxy_server_status = 500;
+        proxy_device_service_status = 200;
 
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 500) {
-                        throw Error("Response error (device generic error): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (device generic error)")
-            }
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (proxy 500): " + r.status);
+        }
 
+        // Schedule wrong number of devices
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_schedule_short_body = true;
 
-            console.log(8)
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (wrong number of devices): " + r.status);
+        }
 
-            // Case device generic error
-            device_service_status = 500;
-            proxy_server_status = 200;
-            proxy_device_service_status = 200;
-            error_thrown = false;
+        // Schedule wrong devices
+        device_service_status = 200;
+        proxy_server_status = 200;
+        proxy_schedule_short_body = false;
+        proxy_schedule_wrong_device = true
 
-
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 500) {
-                        throw Error("Response error (device generic error): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (device generic error)")
-            }
-
-            console.log(9)
-
-            // Schedule generic error
-            device_service_status = 200;
-            proxy_server_status = 500;
-            proxy_device_service_status = 200;
-            error_thrown = false;
-
-            try {
-                r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            } catch (e) {
-                error_thrown = true;
-                if (e.status) {
-                    if (e.status !== 500) {
-                        throw Error("Response error (proxy 500): " + e.status);
-                    }
-                } else {
-                    throw e;
-                }
-            }
-            if (!error_thrown) {
-                throw new Error("No error at (proxy 500)")
-            }
-
-
-            console.log(10)
-
-            // Schedule wrong number of devices
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_schedule_short_body = true;
-            error_thrown = false;
-
-            r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            if (r.status !== 500) {
-                throw Error("Response error (wrong number of devices): " + r.status);
-            }
-            console.log(11)
-
-            // Schedule wrong devices
-            device_service_status = 200;
-            proxy_server_status = 200;
-            proxy_schedule_short_body = false;
-            proxy_schedule_wrong_device = true
-            error_thrown = false;
-
-            r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
-            if (r.status !== 500) {
-                throw Error("Response error (wrong devices): " + r.status);
-            }
-        } catch (e) {
-            console.log(e);
-            throw e;
+        r = await postSchedule({ Experiment: { Devices: [{ ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002" }] }, Combined: false, Time: { Start: "2022-06-25T00:00:00Z", End: "2022-06-28T23:59:59Z" }, onlyOwn: undefined }, { "JWT": { username: "test", url: "localhost/user/test", scopes: [""] } });
+        if (r.status !== 500) {
+            throw Error("Response error (wrong devices): " + r.status);
         }
     });
 
