@@ -1,9 +1,9 @@
+import { KeyModel } from '../../src/database/model'
+import { keyRepository } from '../../src/database/repositories/keyRepository'
+import { generateNewKey, jwk } from '../../src/methods/key'
 import assert from 'assert'
 import { exportJWK, generateKeyPair, importJWK, jwtVerify, SignJWT } from 'jose'
-import { generateNewKey, jwk } from '../../src/methods/key'
 import * as sinon from 'sinon'
-import { keyRepository } from '../../src/database/repositories/keyRepository'
-import { KeyModel } from '../../src/database/model'
 
 export default () =>
     describe('key methods', async function () {

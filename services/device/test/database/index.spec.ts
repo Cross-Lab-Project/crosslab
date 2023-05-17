@@ -1,13 +1,11 @@
 import repositorySuite from './repositories/index.spec'
+import { logger } from '@crosslab/service-common'
 
 const tests = [repositorySuite]
 
 describe('Database', function () {
     this.beforeAll(function () {
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
     })
 
     for (const test of tests) {

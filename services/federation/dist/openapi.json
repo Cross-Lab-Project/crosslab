@@ -6,6 +6,68 @@
     "version": "0.0.1",
     "x-service-name": "Federation Service"
   },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Federation API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "institution": {
+        "title": "Institution",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "homepage": {
+            "type": "string",
+            "format": "uri"
+          },
+          "api": {
+            "type": "string",
+            "format": "uri"
+          },
+          "federatedApi": {
+            "type": "string",
+            "format": "uri"
+          },
+          "apiToken": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      }
+    },
+    "parameters": {
+      "institution_id": {
+        "in": "path",
+        "name": "institution_id",
+        "description": "UUID of the institution",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": [
+          "5202de35-7f61-4eed-a361-e627619f9d19"
+        ]
+      },
+      "url": {
+        "name": "URL",
+        "in": "query",
+        "required": false,
+        "description": "The URL of the external resource. \n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  },
   "tags": [
     {
       "name": "device",
@@ -576,68 +638,6 @@
           "5XX": {
             "description": "The response of the external resource."
           }
-        }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "JWT": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "As this is the API description of the internal Federation API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
-      }
-    },
-    "schemas": {
-      "institution": {
-        "title": "Institution",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "homepage": {
-            "type": "string",
-            "format": "uri"
-          },
-          "api": {
-            "type": "string",
-            "format": "uri"
-          },
-          "federatedApi": {
-            "type": "string",
-            "format": "uri"
-          },
-          "apiToken": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      }
-    },
-    "parameters": {
-      "institution_id": {
-        "in": "path",
-        "name": "institution_id",
-        "description": "UUID of the institution",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "example": [
-          "5202de35-7f61-4eed-a361-e627619f9d19"
-        ]
-      },
-      "url": {
-        "name": "URL",
-        "in": "query",
-        "required": false,
-        "description": "The URL of the external resource. \n",
-        "schema": {
-          "type": "string",
-          "format": "uri"
         }
       }
     }

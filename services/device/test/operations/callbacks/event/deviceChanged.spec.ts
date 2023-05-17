@@ -91,7 +91,7 @@ export function deviceChangedEventCallbackTest(
                 '../../../../src/operations/callbacks/event/deviceChanged.ts'
             )
 
-            const handleDeviceChangedEventCallback =
+            const rewiredHandleDeviceChangedEventCallback =
                 deviceChangedEventCallbackModule.__get__(
                     'handleDeviceChangedEventCallback'
                 )
@@ -99,7 +99,7 @@ export function deviceChangedEventCallbackTest(
             await deviceChangedEventCallbackModule.__with__({
                 handleConcreteDevice: handleConcreteDeviceStub,
             })(async () => {
-                const result = await handleDeviceChangedEventCallback({
+                const result = await rewiredHandleDeviceChangedEventCallback({
                     device: testData['concrete devices']['concrete device'].response,
                 })
 

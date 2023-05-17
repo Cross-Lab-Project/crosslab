@@ -7,6 +7,7 @@ import {
     ImpossibleOperationError,
     UnrelatedPeerconnectionError,
     MissingEntityError,
+    logger,
 } from '@crosslab/service-common'
 
 /**
@@ -19,7 +20,7 @@ import {
  */
 export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature =
     async (parameters, body, _user) => {
-        console.log(`postDevicesByDeviceIdSignaling called`)
+        logger.log('info', 'postDevicesByDeviceIdSignaling called')
 
         // Get device
         const deviceModel = await deviceRepository.findOneOrFail({
@@ -60,7 +61,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
 
         webSocket.send(JSON.stringify(body))
 
-        console.log(`postDevicesByDeviceIdSignaling succeeded`)
+        logger.log('info', 'postDevicesByDeviceIdSignaling succeeded')
 
         return {
             status: 200,

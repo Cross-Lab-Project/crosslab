@@ -7,6 +7,7 @@ import {
     ParticipantModel,
     RoleModel,
 } from './database/model'
+import { logger } from '@crosslab/service-common'
 import { exit } from 'process'
 import { DataSourceOptions } from 'typeorm'
 
@@ -20,7 +21,7 @@ export type AppConfiguration = {
 }
 
 function die(reason: string): string {
-    console.error(reason)
+    logger.log('error', reason)
     exit(1)
 }
 

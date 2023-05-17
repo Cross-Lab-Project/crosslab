@@ -1,6 +1,6 @@
 import { experimentRepository } from '../../../database/repositories/experiment'
 import { getExperimentsByExperimentIdSignature } from '../../../generated/signatures'
-import { logger } from '../../../util/logger'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on

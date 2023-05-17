@@ -55,7 +55,8 @@ export default () => describe('Route Tests', function () {
                 '{{ securityScheme }}': {{ securityScheme }}SecurityStub
                 {%- endfor %}
             },
-            additionalHandlers: [(app) => {
+            preHandlers: [],
+            postHandlers: [(app) => {
                 app.get('/error_route', (_req, _res, next) => {
                     const error = new Error("This is an error!")
                     error.name = ""
@@ -103,17 +104,6 @@ export default () => describe('Route Tests', function () {
                 assert.strictEqual(res.status, 500)
                 assert.strictEqual(res.body.error, 'Error')
                 assert.strictEqual(res.body.message, 'This is an error!')
-                done()
-            })
-    })
-
-    it('should catch missing routes', function (done) {
-        request(app)
-            .get('/undefined_route')
-            .end((_error, res) => {
-                assert.strictEqual(res.status, 404)
-                assert.strictEqual(res.body.status, 404)
-                assert.strictEqual(res.body.error, 'Not found')
                 done()
             })
     })
@@ -379,7 +369,7 @@ export default () => describe('Route Tests', function () {
 
             validateInputStub.returns(true)
 
-            const testError = new Error("Test Input Validation Error")
+            const testError = new Error("Test Output Validation Error")
             validateOutputStub.callsFake(() => {
                 (requestValidation.validate{{ operation.name | cap }}Output as any).errors = testError
                 return false
@@ -424,14 +414,14 @@ export default () => describe('Route Tests', function () {
             request(app)
                 .{{ operation.method }}(path)
                 .end((_error, res) => {
-                    assert(validateOutputStub);
-                    assert.strictEqual(validateOutputStub.callCount, 1);
+                    assert(validateOutputStub)
+                    assert.strictEqual(validateOutputStub.callCount, 1)
                     assert.strictEqual(res.status, 500)
                     assert.strictEqual(errorHandlerStub.callCount, 1)
                     const error = errorHandlerStub.args[0][0]
                     assert(error instanceof ValidationError)
                     assert(error.errors === testError)
-                    done();
+                    done()
                 });
         });
     })

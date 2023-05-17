@@ -3,6 +3,7 @@ import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/s
 import {
     ImpossibleOperationError,
     MissingEntityError as _MissingEntityError,
+    logger,
 } from '@crosslab/service-common'
 import { randomUUID } from 'crypto'
 
@@ -14,7 +15,7 @@ import { randomUUID } from 'crypto'
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
     async (parameters, _user) => {
-        console.log(`postDevicesByDeviceIdWebsocket called`)
+        logger.log('info', 'postDevicesByDeviceIdWebsocket called')
 
         const deviceModel = await deviceRepository.findOneOrFail({
             where: {
@@ -36,7 +37,7 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
             await deviceRepository.save(deviceModel)
         }, 300000)
 
-        console.log(`postDevicesByDeviceIdWebsocket succeeded`)
+        logger.log('info', 'postDevicesByDeviceIdWebsocket succeeded')
 
         return {
             status: 200,

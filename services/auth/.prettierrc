@@ -5,5 +5,6 @@
     "semi": false,
     "singleQuote": true,
     "printWidth": 90,
+    "importOrderParserPlugins": ["typescript", "decorators-legacy"],
     "quoteProps": "consistent"
 }

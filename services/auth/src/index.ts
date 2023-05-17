@@ -6,7 +6,14 @@ import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
 import { apiClient } from './methods/api'
 import { generateNewKey, jwk } from './methods/key'
 import { AppConfiguration } from './types/types'
-import { JWTVerify } from '@crosslab/service-common'
+import {
+    JWTVerify,
+    errorHandler,
+    logHandling,
+    logger,
+    missingRouteHandling,
+    requestIdHandling,
+} from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
 
 async function startAuthenticationService(
@@ -55,10 +62,13 @@ async function startAuthenticationService(
         security: {
             JWT: JWTVerify(appConfig) as any,
         },
+        preHandlers: [requestIdHandling, logHandling],
+        postHandlers: [missingRouteHandling],
+        errorHandler: errorHandler,
     })
 
     app.listen(appConfig.PORT)
-    console.log('Authentication Service started successfully')
+    logger.log('info', 'Authentication Service started successfully')
 }
 
 /* istanbul ignore if */

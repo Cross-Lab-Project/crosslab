@@ -6,6 +6,60 @@
     "version": "0.0.1",
     "x-service-name": "Update Service"
   },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Update API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "update_information": {
+        "title": "UpdateInformation",
+        "description": "Information regarding an update. Contains the id of the device,\nthe name of the latest version and a link to it.\n",
+        "type": "object",
+        "properties": {
+          "device_id": {
+            "type": "string"
+          },
+          "latest_version": {
+            "type": "string"
+          },
+          "latest_version_link": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "device_id",
+          "latest_version",
+          "latest_version_link"
+        ]
+      }
+    },
+    "parameters": {
+      "device_id": {
+        "in": "path",
+        "name": "device_id",
+        "description": "ID of the device",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "current_version": {
+        "in": "query",
+        "name": "current_version",
+        "description": "Current firmware version of the device",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    }
+  },
   "paths": {
     "/updates": {
       "get": {
@@ -260,60 +314,6 @@
           "500": {
             "description": "Server Error."
           }
-        }
-      }
-    }
-  },
-  "components": {
-    "securitySchemes": {
-      "JWT": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "As this is the API description of the internal Update API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
-      }
-    },
-    "schemas": {
-      "update_information": {
-        "title": "UpdateInformation",
-        "description": "Information regarding an update. Contains the id of the device,\nthe name of the latest version and a link to it.\n",
-        "type": "object",
-        "properties": {
-          "device_id": {
-            "type": "string"
-          },
-          "latest_version": {
-            "type": "string"
-          },
-          "latest_version_link": {
-            "type": "string",
-            "format": "uri"
-          }
-        },
-        "required": [
-          "device_id",
-          "latest_version",
-          "latest_version_link"
-        ]
-      }
-    },
-    "parameters": {
-      "device_id": {
-        "in": "path",
-        "name": "device_id",
-        "description": "ID of the device",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "current_version": {
-        "in": "query",
-        "name": "current_version",
-        "description": "Current firmware version of the device",
-        "required": false,
-        "schema": {
-          "type": "string"
         }
       }
     }

@@ -35,21 +35,20 @@ app.initService = (optionsInit) => {
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
 
-    // add routes
-    app.use("/", router(options))
-
-    // add additional handlers
-    for (const handler of options.additionalHandlers) {
+    // add pre handlers
+    for (const handler of options.preHandlers ?? []) {
         handler(app)
     }
 
-    // catch 404
-    app.use((req, res, _next) => {
-        console.error(`Error 404 on ${req.url}.`)
-        res.status(404).send({ status: 404, error: "Not found" })
-    })
+    // add routes
+    app.use("/", router(options))
 
-    app.use(options.errorHandler)
+    // add post handlers
+    for (const handler of options.postHandlers ?? []) {
+        handler(app)
+    }
+
+    app.use(options.errorHandler ?? defaultErrorHandler)
 }
 {%- endmacro -%}
 {{ generateIndex() | prettier }}

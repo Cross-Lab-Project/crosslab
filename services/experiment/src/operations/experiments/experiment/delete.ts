@@ -1,7 +1,7 @@
 import { experimentRepository } from '../../../database/repositories/experiment'
 import { deleteExperimentsByExperimentIdSignature } from '../../../generated/signatures'
-import { finishExperiment } from '../../../util/experimentStatus'
-import { logger } from '../../../util/logger'
+import { finishExperiment } from '../../../methods/experimentStatus'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling DELETE requests on

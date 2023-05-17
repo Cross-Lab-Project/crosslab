@@ -11,17 +11,18 @@ import {
     getUsersByUserIdRolesSignature,
 } from '../generated/signatures'
 import { RegistrationError } from '../types/errors'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /users endpoint.
  * @param _user The user submitting the request.
  */
 export const getUsers: getUsersSignature = async (_user) => {
-    console.log(`getUsers called`)
+    logger.log('info', 'getUsers called')
 
     const userModels = await userRepository.find()
 
-    console.log(`getUsers succeeded`)
+    logger.log('info', 'getUsers succeeded')
 
     return {
         status: 200,
@@ -35,7 +36,7 @@ export const getUsers: getUsersSignature = async (_user) => {
  * @param _user The user submitting the request.
  */
 export const postUsers: postUsersSignature = async (body, _user) => {
-    console.log(`postUsers called`)
+    logger.log('info', 'postUsers called')
 
     const existingUser = await userRepository.findOne({
         where: {
@@ -53,7 +54,7 @@ export const postUsers: postUsersSignature = async (body, _user) => {
     })
     await userRepository.save(userModel)
 
-    console.log(`postUsers succeeded`)
+    logger.log('info', 'postUsers succeeded')
 
     return {
         status: 201,
@@ -68,7 +69,7 @@ export const postUsers: postUsersSignature = async (body, _user) => {
  * @throws {MissingEntityError} Thrown if user is not found in database.
  */
 export const getUsersByUserId: getUsersByUserIdSignature = async (parameters, _user) => {
-    console.log(`getUsersByUsername called`)
+    logger.log('info', 'getUsersByUsername called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -76,7 +77,7 @@ export const getUsersByUserId: getUsersByUserIdSignature = async (parameters, _u
         },
     })
 
-    console.log(`getUsersByUsername succeeded`)
+    logger.log('info', 'getUsersByUsername succeeded')
 
     return {
         status: 200,
@@ -94,7 +95,7 @@ export const deleteUsersByUserId: deleteUsersByUserIdSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`deleteUsersByUsername called`)
+    logger.log('info', 'deleteUsersByUsername called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -104,7 +105,7 @@ export const deleteUsersByUserId: deleteUsersByUserIdSignature = async (
 
     await userRepository.remove(userModel)
 
-    console.log(`deleteUsersByUsername succeeded`)
+    logger.log('info', 'deleteUsersByUsername succeeded')
 
     return {
         status: 204,
@@ -123,7 +124,7 @@ export const patchUsersByUserId: patchUsersByUserIdSignature = async (
     body,
     _user
 ) => {
-    console.log(`patchUsersByUsername called`)
+    logger.log('info', 'patchUsersByUsername called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -134,7 +135,7 @@ export const patchUsersByUserId: patchUsersByUserIdSignature = async (
     await userRepository.write(userModel, body ?? {})
     await userRepository.save(userModel)
 
-    console.log(`patchUsersByUsername succeeded`)
+    logger.log('info', 'patchUsersByUsername succeeded')
 
     return {
         status: 200,
@@ -152,7 +153,7 @@ export const getUsersByUserIdRoles: getUsersByUserIdRolesSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`getUsersByUserIdRoles called`)
+    logger.log('info', 'getUsersByUserIdRoles called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -162,7 +163,7 @@ export const getUsersByUserIdRoles: getUsersByUserIdRolesSignature = async (
 
     await userRepository.save(userModel)
 
-    console.log(`getUsersByUserIdRoles succeeded`)
+    logger.log('info', 'getUsersByUserIdRoles succeeded')
 
     return {
         status: 200,
@@ -182,7 +183,7 @@ export const postUsersByUserIdRoles: postUsersByUserIdRolesSignature = async (
     body,
     _user
 ) => {
-    console.log(`postUsersByUserIdRoles called`)
+    logger.log('info', 'postUsersByUserIdRoles called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -201,7 +202,7 @@ export const postUsersByUserIdRoles: postUsersByUserIdRolesSignature = async (
 
     await userRepository.save(userModel)
 
-    console.log(`postUsersByUserIdRoles succeeded`)
+    logger.log('info', 'postUsersByUserIdRoles succeeded')
 
     return {
         status: 204,
@@ -220,7 +221,7 @@ export const deleteUsersByUserIdRoles: deleteUsersByUserIdRolesSignature = async
     body,
     _user
 ) => {
-    console.log(`deleteUsersByUserIdRoles called`)
+    logger.log('info', 'deleteUsersByUserIdRoles called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -239,7 +240,7 @@ export const deleteUsersByUserIdRoles: deleteUsersByUserIdRolesSignature = async
 
     await userRepository.save(userModel)
 
-    console.log(`deleteUsersByUserIdRoles succeeded`)
+    logger.log('info', 'deleteUsersByUserIdRoles succeeded')
 
     return {
         status: 204,

@@ -4,7 +4,11 @@ import { getAuthSignature } from '../generated/signatures'
 import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 import { parseBearerToken, signDeviceToken, signUserToken } from '../methods/auth'
 import { ExpiredError } from '../types/errors'
-import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
+import {
+    MissingEntityError,
+    InconsistentDatabaseError,
+    logger,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -13,7 +17,7 @@ import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service
  * @throws {InconsistentDatabaseError} Thrown if multiple active keys are found.
  */
 export const getAuth: getAuthSignature = async (parameters) => {
-    console.log(`getAuth called`)
+    logger.log('info', 'getAuth called')
     const HOUR = 60 * 60 * 1000
 
     // Catch missing authorization header (OPTIONS requests)
@@ -64,11 +68,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
         // Check if token has a device
         if (token.device) {
             // Sign device token
-            console.log(`signing jwt for device ${token.device}`)
+            logger.log('info', `signing jwt for device ${token.device}`)
             jwt = await signDeviceToken(token.device, user, activeKey)
         } else {
             // Sign user token
-            console.log(`signing jwt for user ${user.username}`)
+            logger.log('info', `signing jwt for user ${user.username}`)
             jwt = await signUserToken(user, activeKey, scopes)
         }
 
@@ -76,7 +80,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         if (token.expiresOn) token.expiresOn = new Date(Date.now() + HOUR).toISOString()
         tokenRepository.save(token)
 
-        console.log(`getAuth succeeded`)
+        logger.log('info', 'getAuth succeeded')
 
         return {
             status: 200,
@@ -89,14 +93,14 @@ export const getAuth: getAuthSignature = async (parameters) => {
         if (allowlist[tokenString]) {
             const user = await getAllowlistedUser(tokenString)
 
-            console.log(`signing jwt for user ${user.username}`)
+            logger.log('info', `signing jwt for user ${user.username}`)
             const scopes = user.roles
                 .map((role) => role.scopes.map((scope) => scope.name))
                 .flat(1)
                 .filter((value, index, self) => self.indexOf(value) === index)
             const jwt = await signUserToken(user, activeKey, scopes)
 
-            console.log(`getAuth succeeded`)
+            logger.log('info', 'getAuth succeeded')
 
             return {
                 status: 200,

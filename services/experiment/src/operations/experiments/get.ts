@@ -1,6 +1,6 @@
 import { experimentRepository } from '../../database/repositories/experiment'
 import { getExperimentsSignature } from '../../generated/signatures'
-import { logger } from '../../util/logger'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on
@@ -8,11 +8,11 @@ import { logger } from '../../util/logger'
  * @param _user The user submitting the request.
  */
 export const getExperiments: getExperimentsSignature = async (_user) => {
-    logger.log('info', `Handling GET request on endpoint /experiments`)
+    logger.log('info', 'Handling GET request on endpoint /experiments')
 
     const experimentModels = await experimentRepository.find()
 
-    logger.log('info', `Successfully handled GET request on endpoint /experiments`)
+    logger.log('info', 'Successfully handled GET request on endpoint /experiments')
 
     return {
         status: 200,

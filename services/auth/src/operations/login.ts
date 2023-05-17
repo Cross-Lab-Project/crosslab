@@ -1,7 +1,8 @@
-import { AuthenticationError, LdapAuthenticationError } from '../types/errors'
+import { TokenModel } from '../database/model'
 import { postLoginSignature } from '../generated/signatures'
 import { loginLocal, loginTui } from '../methods/login'
-import { TokenModel } from '../database/model'
+import { AuthenticationError, LdapAuthenticationError } from '../types/errors'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /login endpoint.
@@ -11,7 +12,10 @@ import { TokenModel } from '../database/model'
  * @throws {AuthenticationError} Thrown if the authentication was unsuccessful.
  */
 export const postLogin: postLoginSignature = async (body) => {
-    console.log(`postLogin called for ${body.username} using method ${body.method}`)
+    logger.log(
+        'info',
+        `postLogin called for ${body.username} using method ${body.method}`
+    )
 
     let tokenModel: TokenModel | undefined
     try {
@@ -34,7 +38,7 @@ export const postLogin: postLoginSignature = async (body) => {
 
     if (!tokenModel) throw new AuthenticationError(`Authentication failed`, 401)
 
-    console.log(`postLogin succeeded`)
+    logger.log('info', 'postLogin succeeded')
 
     return {
         status: 201,

@@ -1,11 +1,11 @@
-import assert from 'assert'
+import { config } from '../../src/config'
 import {
     capitalizeFirstLetter,
     roleUrlFromId,
     userUrlFromId,
 } from '../../src/methods/utils'
+import assert from 'assert'
 import * as sinon from 'sinon'
-import { config } from '../../src/config'
 
 export default () =>
     describe('utils methods', async function () {

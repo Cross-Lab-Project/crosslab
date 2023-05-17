@@ -4,8 +4,8 @@ import {
     runExperiment,
     finishExperiment,
     bookExperiment,
-} from '../../util/experimentStatus'
-import { logger } from '../../util/logger'
+} from '../../methods/experimentStatus'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on
@@ -14,7 +14,7 @@ import { logger } from '../../util/logger'
  * @param _user The user submitting the request.
  */
 export const postExperiments: postExperimentsSignature = async (body, _user) => {
-    logger.log('info', `Handling POST request on endpoint /experiments`)
+    logger.log('info', 'Handling POST request on endpoint /experiments')
 
     const experimentModel = await experimentRepository.create(body)
     const requestedStatus = body.status
@@ -25,7 +25,7 @@ export const postExperiments: postExperimentsSignature = async (body, _user) => 
     if (requestedStatus === 'finished') await finishExperiment(experimentModel)
     await experimentRepository.save(experimentModel) // NOTE: truly needed?
 
-    logger.log('info', `Successfully handled POST request on endpoint /experiments`)
+    logger.log('info', 'Successfully handled POST request on endpoint /experiments')
 
     return {
         status: 201,

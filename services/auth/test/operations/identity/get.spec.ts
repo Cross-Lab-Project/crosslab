@@ -1,7 +1,7 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert, { fail } from 'assert'
 import { getIdentity } from '../../../src/operations/identity'
 import { TestData } from '../../data/index.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert, { fail } from 'assert'
 import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {

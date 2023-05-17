@@ -1,12 +1,12 @@
 import { ExperimentModel } from '../database/model'
 import { experimentRepository } from '../database/repositories/experiment'
 import { peerconnectionRepository } from '../database/repositories/peerconnection'
-import { createPeerconnection } from './api'
 import {
     callbackUrl,
     peerconnectionClosedCallbacks,
     peerconnectionStatusChangedCallbacks,
-} from './callbacks'
+} from '../operations/callbacks'
+import { apiClient } from './api'
 import { buildConnectionPlan } from './connectionPlan'
 import { MissingPropertyError } from '@crosslab/service-common'
 
@@ -18,7 +18,7 @@ export async function establishPeerconnections(experimentModel: ExperimentModel)
     const peerconnectionPlans = buildConnectionPlan(experimentModel)
     for (const peerconnectionPlan of peerconnectionPlans) {
         // TODO: error handling
-        const peerconnection = await createPeerconnection(peerconnectionPlan, {
+        const peerconnection = await apiClient.createPeerconnection(peerconnectionPlan, {
             closedUrl: callbackUrl,
             statusChangedUrl: callbackUrl,
         })

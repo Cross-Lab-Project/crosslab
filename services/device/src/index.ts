@@ -5,12 +5,19 @@ import { app } from './generated/index'
 import { apiClient } from './globals'
 import { callbackHandling } from './operations/callbacks'
 import { websocketHandling } from './operations/devices'
-import { JWTVerify } from '@crosslab/service-common'
+import {
+    JWTVerify,
+    errorHandler,
+    logHandling,
+    logger, // missingRouteHandling,
+    requestIdHandling,
+} from '@crosslab/service-common'
 import { IncomingMessage } from 'http'
 import { Socket } from 'net'
 import WebSocket from 'ws'
 
 declare global {
+    // eslint-disable-next-line
     namespace Express {
         interface Application {
             run(): void
@@ -29,10 +36,13 @@ async function startDeviceService() {
         for (const param in req.query) {
             if (typeof req.query[param] === 'string') {
                 if (req.query[param] === 'true') {
+                    // eslint-disable-next-line
                     ;(req.query[param] as any) = true
                 } else if (req.query[param] === 'false') {
+                    // eslint-disable-next-line
                     ;(req.query[param] as any) = false
                 } else if (req.query[param] === 'undefined') {
+                    // eslint-disable-next-line
                     ;(req.query[param] as any) = undefined
                 }
             }
@@ -48,7 +58,9 @@ async function startDeviceService() {
         security: {
             JWT: JWTVerify(config) as any,
         },
-        additionalHandlers: [callbackHandling],
+        preHandlers: [requestIdHandling, logHandling],
+        postHandlers: [callbackHandling],
+        errorHandler: errorHandler,
     })
 
     const wsServer = new WebSocket.Server({ noServer: true })
@@ -62,14 +74,14 @@ async function startDeviceService() {
         async (request: IncomingMessage, socket: Socket, head: Buffer) => {
             const listener = app.wsListeners.get(request.url ?? '')
             if (listener) {
-                wsServer.handleUpgrade(request, socket, head, (socket) =>
-                    listener(socket)
+                wsServer.handleUpgrade(request, socket, head, (webSocket) =>
+                    listener(webSocket)
                 )
             }
         }
     )
 
-    console.log('Device Service started successfully')
+    logger.log('info', 'Device Service started successfully')
 }
 
 /* istanbul ignore if */

@@ -8,10 +8,11 @@ import {
     TokenModel,
 } from './database/model'
 import { AppConfiguration } from './types/types'
+import { logger } from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
 
 export function die(reason: string): string {
-    console.error(reason)
+    logger.log('error', reason)
     process.exit(1)
 }
 

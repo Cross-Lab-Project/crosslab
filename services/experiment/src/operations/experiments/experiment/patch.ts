@@ -4,8 +4,8 @@ import {
     runExperiment,
     finishExperiment,
     bookExperiment,
-} from '../../../util/experimentStatus'
-import { logger } from '../../../util/logger'
+} from '../../../methods/experimentStatus'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling PATCH requests on

@@ -1,10 +1,10 @@
-import { MissingEntityError } from '@crosslab/service-common'
-import assert from 'assert'
-import Mocha from 'mocha'
 import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
 import { userRepository } from '../../../src/database/repositories/userRepository'
 import { postLogout } from '../../../src/operations/logout'
 import { TestData } from '../../data/index.spec'
+import { MissingEntityError } from '@crosslab/service-common'
+import assert from 'assert'
+import Mocha from 'mocha'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /logout', context)
@@ -115,9 +115,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     },
                 })
                 assert(
-                    (await userModel.tokens).find(
-                        (tm) => tm.token === token.model.token
-                    )
+                    (await userModel.tokens).find((tm) => tm.token === token.model.token)
                 )
             }
         )

@@ -2,17 +2,22 @@
 import { config, dataSourceConfig } from './config'
 import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
-import { apiClient } from './util/api'
-import { callbackHandling } from './util/callbacks'
-import { installLogger, logger } from './util/logger'
-import { JWTVerify } from '@crosslab/service-common'
+import { apiClient } from './methods/api'
+import { callbackHandling } from './operations/callbacks'
+import {
+    JWTVerify,
+    errorHandler,
+    logHandling,
+    logger,
+    missingRouteHandling,
+    requestIdHandling,
+} from '@crosslab/service-common'
+import '@crosslab/service-common'
 
 async function startExperimentService() {
     await AppDataSource.initialize(dataSourceConfig)
 
     apiClient.accessToken = config.API_TOKEN
-
-    installLogger(app)
 
     app.get('/experiment/status', (_req, res) => {
         res.send({ status: 'ok' })
@@ -22,7 +27,9 @@ async function startExperimentService() {
         security: {
             JWT: JWTVerify(config) as any,
         },
-        additionalHandlers: [callbackHandling],
+        preHandlers: [requestIdHandling, logHandling],
+        postHandlers: [callbackHandling, missingRouteHandling],
+        errorHandler: errorHandler,
     })
 
     app.listen(config.PORT)
@@ -30,7 +37,7 @@ async function startExperimentService() {
     logger.log('info', 'Experiment Service started successfully')
 }
 
-/* istanbul ignore if */
+/** istanbul ignore if */
 if (require.main === module) {
     startExperimentService()
 }

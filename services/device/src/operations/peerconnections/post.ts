@@ -8,7 +8,8 @@ import {
     statusChangedCallbacks,
 } from '../../methods/callbacks'
 import { signalingQueue } from '../../methods/signaling'
-import { InvalidValueError } from '@crosslab/service-common'
+import { peerconnectionUrlFromId } from '../../methods/urlFromId'
+import { InvalidValueError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /peerconnections endpoint.
@@ -21,7 +22,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     body,
     _user
 ) => {
-    console.log(`postPeerconnections called`)
+    logger.log('info', 'postPeerconnections called')
 
     const peerconnectionModel = await peerconnectionRepository.create(body)
 
@@ -67,19 +68,26 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
             peerconnectionModel.uuid,
             setTimeout(async () => {
                 try {
-                    console.log('devices did not connect')
+                    logger.log('info', 'devices did not connect')
                     peerconnectionModel.status = 'failed'
                     await peerconnectionRepository.save(peerconnectionModel)
                     await sendStatusChangedCallback(peerconnectionModel)
                 } catch (error) {
-                    console.error(error)
+                    logger.log(
+                        'error',
+                        `Something went wrong while trying to set status of peerconnection '${peerconnectionUrlFromId(
+                            peerconnectionModel.uuid
+                        )}' to 'failed'`,
+                        { data: { error } }
+                    )
                 }
             }, 30000)
         )
     }
 
     if (parameters.closedUrl) {
-        console.log(
+        logger.log(
+            'info',
             `postPeerconnections: registering closed-callback for '${parameters.closedUrl}'`
         )
         const closedCallbackURLs = closedCallbacks.get(peerconnectionModel.uuid) ?? []
@@ -88,7 +96,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     }
 
     if (parameters.statusChangedUrl) {
-        console.log(
+        logger.log(
+            'info',
             `postPeerconnections: registering status-changed-callback for '${parameters.statusChangedUrl}'`
         )
         const statusChangedCallbackURLs =
@@ -97,7 +106,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         statusChangedCallbacks.set(peerconnectionModel.uuid, statusChangedCallbackURLs)
     }
 
-    console.log(`postPeerconnections succeeded`)
+    logger.log('info', 'postPeerconnections succeeded')
 
     return {
         status: peerconnectionModel.status === 'connected' ? 201 : 202,

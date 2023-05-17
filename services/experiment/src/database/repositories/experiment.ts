@@ -1,5 +1,5 @@
 import { Experiment, ExperimentOverview } from '../../generated/types'
-import { experimentUrlFromId } from '../../util/url'
+import { experimentUrlFromId } from '../../methods/url'
 import { ExperimentModel } from '../model'
 import { deviceRepository } from './device'
 import { peerconnectionRepository } from './peerconnection'

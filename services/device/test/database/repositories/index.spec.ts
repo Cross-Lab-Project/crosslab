@@ -32,7 +32,8 @@ const repositoryTestSuites = [
 
 export default () =>
     describe('Repositories', function () {
-        let suite: Mocha.Suite = this
+        // eslint-disable-next-line
+        const suite: Mocha.Suite = this
 
         it('should setup the repository tests', async function () {
             this.timeout(0)

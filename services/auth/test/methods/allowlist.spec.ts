@@ -1,26 +1,26 @@
-import { assert } from 'console'
+import { UserModel } from '../../src/database/model'
+import { userRepository } from '../../src/database/repositories/userRepository'
 import {
     getAllowlistedUser,
     parseAllowlist,
     resolveAllowlist,
     resolveAllowlistEntry,
 } from '../../src/methods/allowlist'
+import { allowlist } from '../../src/methods/allowlist'
 import { DNSResolveError, MalformedAllowlistError } from '../../src/types/errors'
 import { AllowlistEntry } from '../../src/types/types'
-import { allowlist } from '../../src/methods/allowlist'
+import { MissingEntityError, logger } from '@crosslab/service-common'
+import assert from 'assert'
 import * as sinon from 'sinon'
-import { userRepository } from '../../src/database/repositories/userRepository'
-import { MissingEntityError } from '@crosslab/service-common'
-import { UserModel } from '../../src/database/model'
 
 export default () =>
     describe('allowlist methods', async function () {
         describe('parseAllowlist', async function () {
             it('should correctly parse a valid allowlist', async function () {
                 const validAllowlists = [
-                    'url:local:username',
-                    'url:local:username,url:tui:username,url:local:username',
-                    'url :   local: username , url :tui: username , url : local : username',
+                    'token:local:username',
+                    'token:local:username,token:local:username,token:local:username',
+                    'token :   local: username , token :local: username , token : local : username',
                 ]
 
                 for (const validAllowlist of validAllowlists) {
@@ -28,23 +28,23 @@ export default () =>
                     const expectedLength = (validAllowlist.match(/,/g) ?? []).length + 1
                     assert(parsedAllowlist.length === expectedLength)
                     for (const entry of parsedAllowlist) {
-                        assert(entry.token === 'url')
-                        assert(entry.token === 'username')
+                        assert(entry.token === 'token')
+                        assert(entry.username === 'local:username')
                     }
                 }
             })
 
             it('should throw an error if the allowlist is malformed', async function () {
                 const invalidAllowlists = [
-                    'url',
-                    'url:',
+                    'token',
+                    'token:',
                     ':username',
                     ':username,',
-                    'url:username,',
-                    'url:username,url',
-                    'url:username,url:',
-                    'url:username,:username',
-                    'url:username,:username,',
+                    'token:username,',
+                    'token:username,token',
+                    'token:username,token:',
+                    'token:username,:username',
+                    'token:username,:username,',
                 ]
 
                 for (const invalidAllowlist of invalidAllowlists) {
@@ -59,21 +59,19 @@ export default () =>
 
         describe('resolveAllowlist', async function () {
             let findUserStub: sinon.SinonStub
-            let consoleErrorStub: sinon.SinonStub
-            let URL: string
-            let IP: string
+            let loggerLogStub: sinon.SinonStub
+            let TOKEN: string
             let USERNAME: string
             let ALLOWLIST: AllowlistEntry[]
 
             this.beforeAll(function () {
                 findUserStub = sinon.stub(userRepository, 'findOne')
-                consoleErrorStub = sinon.stub(console, 'error')
-                URL = 'localhost'
-                IP = '127.0.0.1'
+                loggerLogStub = sinon.stub(logger, 'log')
+                TOKEN = 'test-token'
                 USERNAME = 'username'
                 ALLOWLIST = [
                     {
-                        token: URL,
+                        token: TOKEN,
                         username: USERNAME,
                     },
                 ]
@@ -81,7 +79,7 @@ export default () =>
 
             this.afterAll(function () {
                 findUserStub.restore()
-                consoleErrorStub.restore()
+                loggerLogStub.restore()
             })
 
             it('should correctly resolve the allowlist entries', async function () {
@@ -96,7 +94,7 @@ export default () =>
 
                 await resolveAllowlist(ALLOWLIST)
 
-                assert(allowlist[IP] === USERNAME)
+                assert(allowlist[TOKEN] === USERNAME)
             })
 
             it('should log an error if the user could not be found', async function () {
@@ -104,25 +102,24 @@ export default () =>
 
                 await resolveAllowlist(ALLOWLIST)
 
-                const lastCall = consoleErrorStub.getCalls().reverse()[0]
-                assert(lastCall.args[0] instanceof MissingEntityError)
+                const lastCall = loggerLogStub.getCalls().reverse()[0]
+                assert(lastCall.args[0] === 'error')
+                assert(lastCall.args[2].data.error instanceof MissingEntityError)
             })
         })
 
         describe('resolveAllowlistEntry', async function () {
             let findUserStub: sinon.SinonStub
-            let URL: string
-            let IP: string
+            let TOKEN: string
             let USERNAME: string
             let ALLOWLIST_ENTRY: AllowlistEntry
 
             this.beforeAll(function () {
                 findUserStub = sinon.stub(userRepository, 'findOne')
-                URL = 'localhost'
-                IP = '127.0.0.1'
+                TOKEN = 'test-token'
                 USERNAME = 'username'
                 ALLOWLIST_ENTRY = {
-                    token: URL,
+                    token: TOKEN,
                     username: USERNAME,
                 }
             })
@@ -131,7 +128,7 @@ export default () =>
                 findUserStub.restore()
             })
 
-            it('should correctly resolve the allowlist entries', async function () {
+            it('should correctly resolve the allowlist entry', async function () {
                 findUserStub.returns(
                     Promise.resolve({
                         username: USERNAME,
@@ -142,11 +139,11 @@ export default () =>
 
                 const result = await resolveAllowlistEntry(ALLOWLIST_ENTRY)
 
-                assert(result[0] === IP)
+                assert(result[0] === TOKEN)
                 assert(result[1] === USERNAME)
             })
 
-            it('should log an error if the DNS lookup fails', async function () {
+            it('should throw an error if the DNS lookup fails', async function () {
                 const INVALID_ALLOWLIST_ENTRY: AllowlistEntry = {
                     token: '...',
                     username: USERNAME,
@@ -159,7 +156,7 @@ export default () =>
                 }
             })
 
-            it('should log an error if the user could not be found', async function () {
+            it('should throw an error if the user could not be found', async function () {
                 findUserStub.returns(Promise.resolve(null))
 
                 try {
@@ -172,12 +169,12 @@ export default () =>
 
         describe('getAllowlistedUser', async function () {
             let findUserStub: sinon.SinonStub
-            let IP: string
+            let TOKEN: string
             let USERNAME: string
 
             this.beforeAll(function () {
                 findUserStub = sinon.stub(userRepository, 'findOne')
-                IP = '127.0.0.1'
+                TOKEN = 'test-token'
                 USERNAME = 'username'
             })
 
@@ -186,7 +183,7 @@ export default () =>
             })
 
             it('should correctly return the allowlisted user for the given ip address', async function () {
-                allowlist[IP] = USERNAME
+                allowlist[TOKEN] = USERNAME
 
                 findUserStub.returns(
                     Promise.resolve(<UserModel>{
@@ -197,28 +194,28 @@ export default () =>
                     })
                 )
 
-                const result = await getAllowlistedUser(IP)
+                const result = await getAllowlistedUser(TOKEN)
 
                 assert(result.username === USERNAME)
             })
 
             it('should throw an error if the ip has no corresponding user', async function () {
-                delete allowlist[IP]
+                delete allowlist[TOKEN]
 
                 try {
-                    await getAllowlistedUser(IP)
+                    await getAllowlistedUser(TOKEN)
                 } catch (error) {
                     assert(error instanceof MissingEntityError)
                 }
             })
 
             it('should throw an error if the corresponding user is not found', async function () {
-                allowlist[IP] = USERNAME
+                allowlist[TOKEN] = USERNAME
 
                 findUserStub.returns(Promise.resolve(null))
 
                 try {
-                    await getAllowlistedUser(IP)
+                    await getAllowlistedUser(TOKEN)
                 } catch (error) {
                     assert(error instanceof MissingEntityError)
                 }

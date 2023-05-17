@@ -10,17 +10,18 @@ import {
     postRolesByRoleIdUsersSignature,
     postRolesSignature,
 } from '../generated/signatures'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /roles endpoint.
  * @param _user The user submitting the request.
  */
 export const getRoles: getRolesSignature = async (_user) => {
-    console.log(`getRoles called`)
+    logger.log('info', 'getRoles called')
 
     const roleModels = await roleRepository.find()
 
-    console.log(`getRoles succeeded`)
+    logger.log('info', 'getRoles succeeded')
 
     return {
         status: 200,
@@ -34,12 +35,12 @@ export const getRoles: getRolesSignature = async (_user) => {
  * @param _user The user submitting the request.
  */
 export const postRoles: postRolesSignature = async (body, _user) => {
-    console.log(`postRoles called`)
+    logger.log('info', 'postRoles called')
 
     const roleModel = await roleRepository.create(body)
     await roleRepository.save(roleModel)
 
-    console.log(`postRoles succeeded`)
+    logger.log('info', 'postRoles succeeded')
 
     return {
         status: 201,
@@ -54,7 +55,7 @@ export const postRoles: postRolesSignature = async (body, _user) => {
  * @throws {MissingEntityError} Thrown if role is not found in database.
  */
 export const getRolesByRoleId: getRolesByRoleIdSignature = async (parameters, _user) => {
-    console.log(`getRolesByRoleId called`)
+    logger.log('info', 'getRolesByRoleId called')
 
     const roleModel = await roleRepository.findOneOrFail({
         where: {
@@ -62,7 +63,7 @@ export const getRolesByRoleId: getRolesByRoleIdSignature = async (parameters, _u
         },
     })
 
-    console.log(`getRolesByRoleId succeeded`)
+    logger.log('info', 'getRolesByRoleId succeeded')
 
     return {
         status: 200,
@@ -82,7 +83,7 @@ export const patchRolesByRoleId: patchRolesByRoleIdSignature = async (
     body,
     _user
 ) => {
-    console.log(`patchRolesByRoleId called`)
+    logger.log('info', 'patchRolesByRoleId called')
 
     // TODO: check what the user is allowed to do
     const roleModel = await roleRepository.findOneOrFail({
@@ -93,7 +94,7 @@ export const patchRolesByRoleId: patchRolesByRoleIdSignature = async (
     await roleRepository.write(roleModel, body ?? {})
     await roleRepository.save(roleModel)
 
-    console.log(`patchRolesByRoleId succeeded`)
+    logger.log('info', 'patchRolesByRoleId succeeded')
 
     return {
         status: 200,
@@ -111,7 +112,7 @@ export const deleteRolesByRoleId: deleteRolesByRoleIdSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`deleteRolesByRoleId called`)
+    logger.log('info', 'deleteRolesByRoleId called')
 
     // TODO: check that the user is allowed to delete the role
     const roleModel = await roleRepository.findOneOrFail({
@@ -121,7 +122,7 @@ export const deleteRolesByRoleId: deleteRolesByRoleIdSignature = async (
     })
     await roleRepository.remove(roleModel)
 
-    console.log(`deleteRolesByRoleId succeeded`)
+    logger.log('info', 'deleteRolesByRoleId succeeded')
 
     return {
         status: 204,
@@ -138,7 +139,7 @@ export const getRolesByRoleIdUsers: getRolesByRoleIdUsersSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`getRolesByRoleIdUsers called`)
+    logger.log('info', 'getRolesByRoleIdUsers called')
 
     const roleModel = await roleRepository.findOneOrFail({
         where: {
@@ -146,7 +147,7 @@ export const getRolesByRoleIdUsers: getRolesByRoleIdUsersSignature = async (
         },
     })
 
-    console.log(`getRolesByRoleIdUsers succeeded`)
+    logger.log('info', 'getRolesByRoleIdUsers succeeded')
 
     return {
         status: 200,
@@ -166,7 +167,7 @@ export const postRolesByRoleIdUsers: postRolesByRoleIdUsersSignature = async (
     body,
     _user
 ) => {
-    console.log(`postRolesByRoleIdUsers called`)
+    logger.log('info', 'postRolesByRoleIdUsers called')
 
     const roleModel = await roleRepository.findOneOrFail({
         where: {
@@ -188,7 +189,7 @@ export const postRolesByRoleIdUsers: postRolesByRoleIdUsersSignature = async (
 
     await roleRepository.save(roleModel)
 
-    console.log(`postRolesByRoleIdUsers succeeded`)
+    logger.log('info', 'postRolesByRoleIdUsers succeeded')
 
     return {
         status: 204,
@@ -207,7 +208,7 @@ export const deleteRolesByRoleIdUsers: deleteRolesByRoleIdUsersSignature = async
     body,
     _user
 ) => {
-    console.log(`deleteRolesByRoleIdUsers called`)
+    logger.log('info', 'deleteRolesByRoleIdUsers called')
 
     const roleModel = await roleRepository.findOneOrFail({
         where: {
@@ -229,7 +230,7 @@ export const deleteRolesByRoleIdUsers: deleteRolesByRoleIdUsersSignature = async
 
     await roleRepository.save(roleModel)
 
-    console.log(`deleteRolesByRoleIdUsers succeeded`)
+    logger.log('info', 'deleteRolesByRoleIdUsers succeeded')
 
     return {
         status: 204,
