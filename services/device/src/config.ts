@@ -1,3 +1,4 @@
+import { Migrations } from './database/migrations'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -50,7 +51,6 @@ export const config = initializeAppConfiguration()
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
     database: 'db/device.db',
-    synchronize: true,
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,
@@ -60,4 +60,6 @@ export const dataSourceConfig: DataSourceOptions = {
         DeviceGroupModel,
         PeerconnectionModel,
     ],
+    migrations: Migrations,
+    migrationsRun: true,
 }

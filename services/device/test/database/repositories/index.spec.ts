@@ -1,4 +1,5 @@
 import { AppDataSource } from '../../../src/database/dataSource'
+import { Migrations } from '../../../src/database/migrations'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -49,7 +50,6 @@ export async function initTestDatabase(): Promise<TestData> {
     const dataSourceConfig: DataSourceOptions = {
         type: 'sqlite',
         database: ':memory:',
-        synchronize: true,
         dropSchema: true,
         entities: [
             DeviceOverviewModel,
@@ -60,6 +60,8 @@ export async function initTestDatabase(): Promise<TestData> {
             DeviceGroupModel,
             PeerconnectionModel,
         ],
+        migrations: Migrations,
+        migrationsRun: true,
     }
 
     const testData = prepareTestData()
