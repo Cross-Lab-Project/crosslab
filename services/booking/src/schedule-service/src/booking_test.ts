@@ -4,6 +4,8 @@ import * as http from 'http';
 import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 
+import {setupDummySql, tearDownDummySql, getSQLDNS} from "../../test_common/setup"
+
 import { postSchedule, getTimetables } from "./operations"
 import { config } from "../../common/config";
 import { postScheduleResponseType } from "./generated/signatures";
@@ -25,7 +27,7 @@ mocha.describe("operations.ts", function () {
         // Config
         config.OwnURL = "http://localhost:10801";
         config.InstitutePrefix = ["http://localhost:10801"];
-        config.ReservationDSN = "mysql://test:test@localhost/unittest?supportBigNumbers=true&bigNumberStrings=true";
+        config.ReservationDSN = getSQLDNS();
 
         // Proxy warning
         let app: express.Application = express();
@@ -207,25 +209,11 @@ mocha.describe("operations.ts", function () {
         proxy_device_service_status = 200;
 
         // Setup database
-        try {
-            let db = await mysql.createConnection(config.ReservationDSN);
-            await db.connect();
-            await db.execute("CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`))");
-            await db.execute("INSERT INTO reservation (`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?)", ["http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", dayjs("2022-06-27T00:10:00Z").toDate(), dayjs("2022-06-27T00:20:00Z").toDate(), "unit test"]);
-            await db.execute("INSERT INTO reservation (`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?)", ["http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", dayjs("2022-06-27T00:20:00Z").toDate(), dayjs("2022-06-27T00:30:00Z").toDate(), "unit test"]);
-            await db.execute("INSERT INTO reservation (`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?)", ["http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", dayjs("2022-06-27T01:00:00Z").toDate(), dayjs("2022-06-27T02:00:00Z").toDate(), "unit test"]);
-            db.end();
-        } catch (err) {
-            console.log("error in test setup:", err);
-            throw err;
-        }
+        await setupDummySql();
     });
 
     mocha.afterEach(async function () {
-        let db = await mysql.createConnection(config.ReservationDSN);
-        await db.connect();
-        await db.execute("DROP TABLE reservation");
-        db.end();
+        await tearDownDummySql();
     });
 
     mocha.it("postBookingSchedule (no error case)", async function () {
