@@ -7,6 +7,7 @@ import {
 import { sendChangedCallback } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { handleDeviceMessage } from './messageHandling'
+import { logger } from '@crosslab/service-common'
 import WebSocket from 'ws'
 
 export const connectedDevices = new Map<string, WebSocket>()
@@ -56,7 +57,10 @@ export function websocketHandling(app: Express.Application) {
                 connectedDevices.set(deviceModel.uuid, ws)
                 await concreteDeviceRepository.save(deviceModel)
                 await sendChangedCallback(deviceModel)
-                console.log(`device '${deviceUrlFromId(deviceModel.uuid)}' connected`)
+                logger.log(
+                    'info',
+                    `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
+                )
 
                 // TODO: find out if this is really how it was intended
                 ws.send(
@@ -84,7 +88,13 @@ export function websocketHandling(app: Express.Application) {
                         isAlive = false
                         ws.ping()
                     } catch (error) {
-                        console.error(error)
+                        logger.log(
+                            'error',
+                            `An error occurred during the heartbeat check of device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`,
+                            { data: { error } }
+                        )
                     }
                 }, 30000)
 
@@ -94,28 +104,42 @@ export function websocketHandling(app: Express.Application) {
                     connectedDevices.delete(deviceModel.uuid)
 
                     if (code === 1002) {
-                        console.error(
+                        logger.log(
+                            'error',
                             new WebSocketConnectionError(reason.toString('utf-8'))
                         )
                     }
                 })
 
                 // message handler: handle incoming messages from devices
-                ws.on('message', async (data) => {
+                ws.on('message', async (rawData) => {
                     try {
-                        const message = JSON.parse(data.toString('utf-8'))
-                        if (!isMessage(message)) {
+                        const msg = JSON.parse(rawData.toString('utf-8'))
+                        if (!isMessage(msg)) {
                             ws.close(1002, 'Malformed Message')
                             return
                         }
-                        await handleDeviceMessage(deviceModel, message)
+                        await handleDeviceMessage(deviceModel, msg)
                     } catch (error) {
-                        console.error(error)
+                        logger.log(
+                            'error',
+                            `An error occurred while handling an incoming message for device ${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}`,
+                            { data: { error } }
+                        )
                     }
                 })
             } catch (error) {
-                console.error(error)
-                return ws.close(1002, 'Something went wrong during authentication')
+                logger.log(
+                    'error',
+                    `Something went wrong during authentication or setup of a websocket connection`,
+                    { data: { error } }
+                )
+                return ws.close(
+                    1002,
+                    'Something went wrong during authentication or setup'
+                )
             }
         })
     })

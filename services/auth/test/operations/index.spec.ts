@@ -9,6 +9,7 @@ import logoutTests from './logout/index.spec'
 import registerTests from './register/index.spec'
 import roleTests from './roles/index.spec'
 import usersTests from './users/index.spec'
+import { logger } from '@crosslab/service-common'
 
 const tests = [
     ...authTests,
@@ -27,10 +28,7 @@ describe('Operations', function () {
     const suite: Mocha.Suite = this
 
     this.beforeAll(async function () {
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         testData = await initTestDatabase()
     })
 
@@ -40,7 +38,8 @@ describe('Operations', function () {
         }
         const newTestData = await initTestDatabase()
         for (const key in newTestData) {
-            (testData as any)[key] = (newTestData as any)[key]
+            // eslint-disable-next-line
+            ;(testData as any)[key] = (newTestData as any)[key]
         }
     })
 

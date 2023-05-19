@@ -10,6 +10,7 @@ import {
 } from '../src/database/model'
 import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
 import { app } from '../src/generated'
+import { logger } from '@crosslab/service-common'
 import assert from 'assert'
 import rewire from 'rewire'
 import * as sinon from 'sinon'
@@ -22,10 +23,7 @@ describe('Index', function () {
 
     this.beforeAll(async function () {
         this.timeout(60000)
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         appListenStub = sinon.stub(app, 'listen')
         clock = sinon.useFakeTimers()
         const indexModule = rewire('../src/index.ts')

@@ -1,9 +1,9 @@
-import { APIClient } from '@cross-lab-project/api-client';
-import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
+import {APIClient} from '@cross-lab-project/api-client';
+import {ChildProcessWithoutNullStreams, execSync, spawn} from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-import { ENV } from './localServer.config';
+import {ENV} from './localServer.config';
 
 const repository_dir = path.resolve(__filename, '../../../../');
 
@@ -28,24 +28,24 @@ function prepare_service(name: string, process: ChildProcessWithoutNullStreams, 
     stdout: '',
     stderr: '',
   };
-  process.stdout.on('data', data => { 
+  process.stdout.on('data', data => {
     ret.stdout += data;
-    context.log(`test-${name}.log`,data.toString(), "log");
+    context.log(`test-${name}.log`, data.toString(), 'log');
   });
   process.stderr.on('data', data => {
     ret.stderr += data;
-    context.log(`test-${name}.log`,data.toString(), "err");
+    context.log(`test-${name}.log`, data.toString(), 'err');
   });
   return ret;
 }
 
 function start_service(
-    service_path: string,
-    env: {[key: string]: string},
-    clear = false,
-    debug: boolean | number = false,
-    context: ServerContext & Mocha.Context
-  ) {
+  service_path: string,
+  env: {[key: string]: string},
+  clear = false,
+  debug: boolean | number = false,
+  context: ServerContext & Mocha.Context,
+) {
   const additional_params = [];
   if (clear) {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -77,14 +77,14 @@ function start_gateway(gateway_path: string, env: {[key: string]: string}, conte
     env: {...process.env, ...env},
     cwd: gateway_path,
   });
-  return prepare_service("gateway", service, context);
+  return prepare_service('gateway', service, context);
 }
 
 async function wait_for_health_check(endpoint: string, timeout = 60000) {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
-      const res = await fetch(endpoint)
+      const res = await fetch(endpoint);
       if (res.status === 200) {
         return;
       } else {
@@ -104,6 +104,7 @@ async function wait_for_health_check(endpoint: string, timeout = 60000) {
 export const mochaHooks = {
   async beforeEach(this: ServerContext & Mocha.Context) {
     this.client = new APIClient(ENV.common.BASE_URL);
+    this.client.accessToken = 'superadmin';
     this.authService.stderr = '';
     this.authService.stdout = '';
     this.deviceService.stderr = '';
@@ -121,17 +122,29 @@ export const mochaHooks = {
 
     this.authService = start_service('auth', {...ENV.common, ...ENV.auth}, true, this.debug?.auth?.debug_port, this);
     this.deviceService = start_service('device', {...ENV.common, ...ENV.device}, true, this.debug?.device?.debug_port, this);
-    this.experimentService = start_service('experiment', {...ENV.common, ...ENV.experiment}, true, this.debug?.experiment?.debug_port, this);
-    this.federationService = start_service('federation', {...ENV.common, ...ENV.federation}, true, this.debug?.federation?.debug_port, this);
+    this.experimentService = start_service(
+      'experiment',
+      {...ENV.common, ...ENV.experiment},
+      true,
+      this.debug?.experiment?.debug_port,
+      this,
+    );
+    this.federationService = start_service(
+      'federation',
+      {...ENV.common, ...ENV.federation},
+      true,
+      this.debug?.federation?.debug_port,
+      this,
+    );
     this.gatewayService = start_gateway(path.resolve(repository_dir, 'services', 'gateway'), {...ENV.common, ...ENV.gateway}, this);
 
     await Promise.all([
-        wait_for_health_check(ENV.common.BASE_URL + '/gateway/status'),
-        wait_for_health_check(ENV.common.BASE_URL + '/auth/status'),
-        wait_for_health_check(ENV.common.BASE_URL + '/device/status'),
-        wait_for_health_check(ENV.common.BASE_URL + '/experiment/status'),
-        wait_for_health_check(ENV.common.BASE_URL + '/federation/status')
-      ]);
+      wait_for_health_check(ENV.common.BASE_URL + '/gateway/status'),
+      wait_for_health_check(ENV.common.BASE_URL + '/auth/status'),
+      wait_for_health_check(ENV.common.BASE_URL + '/device/status'),
+      wait_for_health_check(ENV.common.BASE_URL + '/experiment/status'),
+      wait_for_health_check(ENV.common.BASE_URL + '/federation/status'),
+    ]);
   },
 
   async afterAll(this: ServerContext & Mocha.Context) {

@@ -42,6 +42,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   deviceMetas: DeviceMeta[] = [];
   apiDevices: (DeviceServiceTypes.ConcreteDevice<'response'> & {url: string})[] = [];
   events: {gpio: Parameters<DummyDeviceEvents['gpio']>[0][]}[] = [];
+  experimentUrl?: string;
 
   _state: State = State.None;
 
@@ -53,9 +54,9 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           this.off('eventsChanged', callback);
         }
       };
-      if(this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount){
+      if (this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount) {
         resolve();
-      }else{
+      } else {
         this.on('eventsChanged', callback);
       }
     });
@@ -116,6 +117,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       ...experiment,
     };
     const apiExperiment = await client.createExperiment(experiment);
+    this.experimentUrl = apiExperiment.url;
     assert(apiExperiment.status === 'running', 'Experiment is not running');
     await Promise.all(promiseList);
 
@@ -131,7 +133,15 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     });
   }
 
-  stop() {
+  async stop(client: APIClient) {
+    const closedPromises = this.devices.map(
+      device =>
+        new Promise<void>(resolve =>
+          device.on('connectionsChanged', connections => connections.every(c => c.state === 'closed') && resolve()),
+        ),
+    );
+    if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
+    await Promise.all(closedPromises);
     for (const device of this.devices) {
       device.stop();
     }

@@ -8,6 +8,7 @@ import {
     LdapBindError,
     LdapError,
 } from '../types/errors'
+import { logger } from '@crosslab/service-common'
 import { compare } from 'bcryptjs'
 import { Client as LdapClient } from 'ldapts'
 
@@ -110,7 +111,7 @@ export async function loginTui(username: string, password: string): Promise<Toke
 
     // Create new User if no User was found
     if (!userModel) {
-        console.log(`User tui:${username} not found, creating new user`)
+        logger.log('info', `User tui:${username} not found, creating new user`)
         userModel = await createUserTUI(username)
     }
 

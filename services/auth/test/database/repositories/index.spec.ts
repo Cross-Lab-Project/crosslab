@@ -1,4 +1,5 @@
 import { AppDataSource } from '../../../src/database/dataSource'
+import { Migrations } from '../../../src/database/migrations'
 import {
     ScopeModel,
     RoleModel,
@@ -57,7 +58,6 @@ export async function initTestDatabase(): Promise<TestData> {
     const dataSourceConfig: DataSourceOptions = {
         type: 'sqlite',
         database: ':memory:',
-        synchronize: true,
         dropSchema: true,
         entities: [
             ScopeModel,
@@ -67,6 +67,8 @@ export async function initTestDatabase(): Promise<TestData> {
             ActiveKeyModel,
             TokenModel,
         ],
+        migrations: Migrations,
+        migrationsRun: true,
     }
 
     const testData = prepareTestData()

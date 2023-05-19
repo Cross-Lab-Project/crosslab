@@ -2,6 +2,7 @@ import { deviceRepository } from '../../../database/repositories/device'
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.
@@ -16,7 +17,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     body,
     _user
 ) => {
-    console.log(`patchDevicesByDeviceId called`)
+    logger.log('info', 'patchDevicesByDeviceId called')
 
     const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
@@ -28,7 +29,8 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     await sendChangedCallback(deviceModel)
 
     if (parameters.changedUrl) {
-        console.log(
+        logger.log(
+            'info',
             `registering changed-callback for device '${deviceUrlFromId(
                 deviceModel.uuid
             )}' to '${parameters.changedUrl}'`
@@ -38,7 +40,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
         changedCallbacks.set(deviceModel.uuid, changedCallbackURLs)
     }
 
-    console.log(`patchDevicesByDeviceId succeeded`)
+    logger.log('info', 'patchDevicesByDeviceId succeeded')
 
     return {
         status: 200,

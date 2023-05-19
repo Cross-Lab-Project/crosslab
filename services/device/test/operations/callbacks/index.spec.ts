@@ -4,7 +4,11 @@ import * as eventCallbackHandling from '../../../src/operations/callbacks/event'
 import { TestData } from '../../data/index.spec'
 import { addTest } from '../index.spec'
 import { eventCallbackTest } from './event/index.spec'
-import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common'
+import {
+    InvalidValueError,
+    MalformedBodyError,
+    errorHandler,
+} from '@crosslab/service-common'
 import assert from 'assert'
 import express from 'express'
 import Mocha from 'mocha'
@@ -25,17 +29,18 @@ export default function (context: Mocha.Context, testData: TestData) {
                     }
                 },
             },
-            additionalHandlers: [
-                (app: express.Application) => {
-                    app.use((req, _res, next) => {
+            preHandlers: [
+                (application: express.Application) => {
+                    application.use((req, _res, next) => {
                         if ('content' in req.body) {
                             req.body = req.body.content
                         }
                         next()
                     })
                 },
-                callbackHandling,
             ],
+            postHandlers: [callbackHandling],
+            errorHandler: errorHandler,
         })
     })
 

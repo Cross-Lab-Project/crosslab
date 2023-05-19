@@ -48,7 +48,7 @@ export type ActiveKey<T extends 'request' | 'response' | 'all' = 'all'> = T exte
     : never
 
 export type AllowlistEntry = {
-    url: string
+    token: string
     username: string
 }
 
@@ -59,4 +59,5 @@ export type AppConfiguration = {
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
     ALLOWLIST: string
+    API_TOKEN: string
 }

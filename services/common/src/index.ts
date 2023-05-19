@@ -4,6 +4,8 @@ import {URL} from 'url';
 import {JWTVerificationError} from './errors';
 
 export * from './errors';
+export * from './logger';
+export * from './handlers';
 export * from './types';
 export * from './database/abstractRepository';
 export * from './database/abstractDataSource';

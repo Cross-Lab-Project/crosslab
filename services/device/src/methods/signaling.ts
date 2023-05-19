@@ -3,6 +3,7 @@ import { peerconnectionRepository } from '../database/repositories/peerconnectio
 import { CreatePeerconnectionMessage } from '../generated/types'
 import { apiClient } from '../globals'
 import { peerconnectionUrlFromId } from './urlFromId'
+import { logger } from '@crosslab/service-common'
 import Queue from 'queue'
 
 class SignalingQueue {
@@ -20,7 +21,12 @@ class SignalingQueue {
             try {
                 await startSignaling(peerconnection.uuid)
             } catch (error) {
-                console.error(error)
+                logger.log('error', 'An error occurred while trying to start signaling', {
+                    data: {
+                        error,
+                        peerconnection: peerconnectionUrlFromId(peerconnection.uuid),
+                    },
+                })
             }
         })
     }
@@ -38,7 +44,9 @@ export const signalingQueue = new SignalingQueue()
  * @throws Throws errors of the {@link apiClient.sendSignalingMessage | sendSignalingMessage()} function of the api-client.
  */
 async function startSignaling(peerconnectionId: string) {
-    console.log(`Starting signaling for ${peerconnectionId}`)
+    logger.log('info', 'Starting signaling for a peerconnection', {
+        data: { peerconnection: peerconnectionUrlFromId(peerconnectionId) },
+    })
 
     const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
         where: {
@@ -55,7 +63,8 @@ async function startSignaling(peerconnectionId: string) {
     })
 
     if (peerconnectionModel.status !== 'new') {
-        console.log(
+        logger.log(
+            'info',
             `status of peerconnection '${peerconnectionUrlFromId(
                 peerconnectionModel.uuid
             )}' is not 'new', '${peerconnectionModel.status}'`

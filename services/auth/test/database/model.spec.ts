@@ -1,4 +1,3 @@
-import assert from 'assert'
 import {
     ActiveKeyModel,
     getModelName,
@@ -8,6 +7,7 @@ import {
     TokenModel,
     UserModel,
 } from '../../src/database/model'
+import assert from 'assert'
 
 export default () =>
     describe('Model Tests', async function () {
