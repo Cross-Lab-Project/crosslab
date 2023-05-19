@@ -2,7 +2,7 @@ import { deviceRepository } from '../../database/repositories/device'
 import { postDevicesSignature } from '../../generated/signatures'
 import { changedCallbacks } from '../../methods/callbacks'
 import { deviceUrlFromId } from '../../methods/urlFromId'
-import { logger } from '@crosslab/service-common'
+import { MalformedBodyError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices endpoint.
@@ -12,6 +12,12 @@ import { logger } from '@crosslab/service-common'
  */
 export const postDevices: postDevicesSignature = async (parameters, body, user) => {
     logger.log('info', 'postDevices called')
+
+    if (!body.name)
+        throw new MalformedBodyError(
+            "Property 'name' is required and must not be empty",
+            400
+        )
 
     const deviceModel = await deviceRepository.create(body)
     deviceModel.owner = user.JWT.url
