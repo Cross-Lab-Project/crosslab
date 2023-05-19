@@ -37,7 +37,7 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
         model: DeviceOverviewModel,
         data: DeviceOverview<'response'>
     ): boolean {
-        assert(data.description === model.description)
+        assert(data.description === (model.description ?? undefined))
         assert(data.name === model.name)
         assert(data.owner === model.owner)
         assert(data.type === model.type)

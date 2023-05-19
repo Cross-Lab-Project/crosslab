@@ -32,7 +32,7 @@ class DeviceOverviewRepository extends AbstractRepository<
             url: deviceUrlFromId(model.uuid),
             type: model.type,
             name: model.name,
-            description: model.description,
+            description: model.description ?? undefined,
             owner: model.owner,
         }
     }
