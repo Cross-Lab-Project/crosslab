@@ -256,6 +256,7 @@ services/experiment --> services/openapi
 services/federation --> clients/api/js
 services/federation --> integration-test
 services/federation --> services/openapi
+services/gateway --> integration-test
 services/openapi --> clients/api/js
 services/openapi --> clients/api/python
 services/openapi --> clients/soa/python
