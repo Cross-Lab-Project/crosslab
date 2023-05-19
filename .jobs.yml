@@ -357,6 +357,7 @@ integration-test:
     - services/device:build
     - services/experiment:build
     - services/federation:build
+    - services/gateway:build
     - clients/api/js:build
     - clients/soa/js:build
     - clients/soa_services/electricalConnection/js:build
