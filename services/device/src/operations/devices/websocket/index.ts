@@ -33,6 +33,10 @@ export function websocketHandling(app: Express.Application) {
                 const message = JSON.parse(data.toString('utf8'))
 
                 if (!(isMessage(message) && isAuthenticationMessage(message))) {
+                    logger.log(
+                        'error',
+                        'First received websocket message is not an authentication message'
+                    )
                     return ws.close(
                         1002,
                         'Received message is not an authentication message'
@@ -40,9 +44,13 @@ export function websocketHandling(app: Express.Application) {
                 }
 
                 if (!message.token) {
+                    logger.log(
+                        'error',
+                        'Authentication message does not contain a websocket token'
+                    )
                     return ws.close(
                         1002,
-                        'Authentication message does not contain a valid websocket token'
+                        'Authentication message does not contain a websocket token'
                     )
                 }
 
@@ -50,6 +58,7 @@ export function websocketHandling(app: Express.Application) {
                     where: { token: message.token },
                 })
                 if (!deviceModel) {
+                    logger.log('error', 'No device found with matching websocket token')
                     return ws.close(1002, 'No device found with matching websocket token')
                 }
 
@@ -78,6 +87,12 @@ export function websocketHandling(app: Express.Application) {
                 const interval = setInterval(async function ping() {
                     try {
                         if (isAlive === false) {
+                            logger.log(
+                                'info',
+                                `Device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}' did not answer hearbeat check, closing connection`
+                            )
                             deviceModel.connected = false
                             await concreteDeviceRepository.save(deviceModel)
                             await sendChangedCallback(deviceModel)
@@ -116,6 +131,12 @@ export function websocketHandling(app: Express.Application) {
                     try {
                         const msg = JSON.parse(rawData.toString('utf-8'))
                         if (!isMessage(msg)) {
+                            logger.log(
+                                'error',
+                                `Received something that is not a message from device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}', disconnecting`
+                            )
                             ws.close(1002, 'Malformed Message')
                             return
                         }
@@ -123,9 +144,9 @@ export function websocketHandling(app: Express.Application) {
                     } catch (error) {
                         logger.log(
                             'error',
-                            `An error occurred while handling an incoming message for device ${deviceUrlFromId(
+                            `An error occurred while handling an incoming message for device '${deviceUrlFromId(
                                 deviceModel.uuid
-                            )}`,
+                            )}'`,
                             { data: { error } }
                         )
                     }

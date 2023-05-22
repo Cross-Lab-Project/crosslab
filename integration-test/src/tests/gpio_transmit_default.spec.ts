@@ -84,6 +84,7 @@ for (const device1Type of deviceTypes) {
             this.experiment.addDevice(this, client2Type, device2Type);
           });
           afterEach(async function () {
+            this.timeout(10000);
             await this.experiment.stop(this.client);
           });
 
