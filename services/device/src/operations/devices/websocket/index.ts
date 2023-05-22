@@ -118,6 +118,13 @@ export function websocketHandling(app: Express.Application) {
                     clearInterval(interval)
                     connectedDevices.delete(deviceModel.uuid)
 
+                    logger.log(
+                        'info',
+                        `websocket connection for device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}' closed`
+                    )
+
                     if (code === 1002) {
                         logger.log(
                             'error',
