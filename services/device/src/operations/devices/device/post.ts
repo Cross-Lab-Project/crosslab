@@ -40,6 +40,8 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     })
     concreteDeviceModel.owner = user.JWT?.url
 
+    await deviceRepository.save(concreteDeviceModel)
+
     if (parameters.changedUrl) {
         logger.log(
             'info',
@@ -51,14 +53,12 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(concreteDeviceModel.uuid, changedCallbackURLs)
     }
-
     const instance = await concreteDeviceRepository.format(concreteDeviceModel)
 
     const deviceToken = await apiClient.createDeviceAuthenticationToken(instance.url) // TODO: error handling
     instantiableDeviceModel.instances ??= []
     instantiableDeviceModel.instances.push(concreteDeviceModel)
 
-    await deviceRepository.save(concreteDeviceModel)
     await deviceRepository.save(instantiableDeviceModel)
 
     logger.log('info', 'postDevicesByDeviceId succeeded')

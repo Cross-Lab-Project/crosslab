@@ -1,5 +1,4 @@
 import { concreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice'
-import { ConcreteDevice } from '../../../../src/generated/types'
 import { apiClient } from '../../../../src/globals'
 import { changedCallbacks } from '../../../../src/methods/callbacks'
 import { postDevicesByDeviceId } from '../../../../src/operations/devices'
@@ -15,33 +14,13 @@ import * as sinon from 'sinon'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /devices/{device_id}', context)
-    const INSTANCE_UUID = '639845cc-d103-4ec2-91cd-a6a84cdea5d4'
     const DEVICE_TOKEN = '15addcf9-74be-4057-80af-cf85cff08b03'
-    let concreteDeviceRepositoryCreateStub: sinon.SinonStub<
-        Parameters<typeof concreteDeviceRepository.create>,
-        ReturnType<typeof concreteDeviceRepository.create>
-    >
     let createDeviceAuthenticationTokenStub: sinon.SinonStub<
         Parameters<typeof apiClient.createDeviceAuthenticationToken>,
         ReturnType<typeof apiClient.createDeviceAuthenticationToken>
     >
 
     suite.beforeAll(function () {
-        const originalCreate = concreteDeviceRepository.create.bind(
-            concreteDeviceRepository
-        )
-        concreteDeviceRepositoryCreateStub = sinon.stub(
-            concreteDeviceRepository,
-            'create'
-        )
-        concreteDeviceRepositoryCreateStub.callsFake(async function (
-            data?: ConcreteDevice<'request'>
-        ) {
-            const concreteDeviceModel = await originalCreate(data)
-            concreteDeviceModel.uuid = INSTANCE_UUID
-            return concreteDeviceModel
-        })
-
         createDeviceAuthenticationTokenStub = sinon.stub(
             apiClient,
             'createDeviceAuthenticationToken'
@@ -130,8 +109,12 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 201)
                 assert(result.body.deviceToken === DEVICE_TOKEN)
+                assert(
+                    !createDeviceAuthenticationTokenStub.args[0][0].endsWith('undefined'),
+                    createDeviceAuthenticationTokenStub.args[0][0]
+                )
                 const instanceModel = await concreteDeviceRepository.findOneOrFail({
-                    where: { uuid: INSTANCE_UUID },
+                    where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })
 
                 assert(
@@ -164,7 +147,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 assert(result.status === 201)
                 assert(result.body.deviceToken === DEVICE_TOKEN)
                 const instanceModel = await concreteDeviceRepository.findOneOrFail({
-                    where: { uuid: INSTANCE_UUID },
+                    where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })
 
                 assert(
@@ -179,13 +162,8 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 const registeredCallbackUrls = changedCallbacks.get(instanceUUID)
                 assert(registeredCallbackUrls)
-                assert(registeredCallbackUrls.length === index + 1)
-
-                for (let i = 0; i <= index; i++) {
-                    assert(
-                        registeredCallbackUrls[i] === `https://localhost/callbacks/${i}`
-                    )
-                }
+                assert(registeredCallbackUrls.length === 1)
+                assert(registeredCallbackUrls[0] === changedUrl)
             }
         )
     }
