@@ -22,10 +22,12 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
         })
 
         const device = await getDevice(parameters.device_url)
+        // TODO: check that device is instance of an instantiable device
         if (
             device.owner !== user.JWT.url &&
             !user.JWT.scopes.includes('device_token') &&
-            !user.JWT.scopes.includes('device_token:create')
+            !user.JWT.scopes.includes('device_token:create') &&
+            !user.JWT.scopes.includes('device_token:create:instantiable')
         ) {
             throw new OwnershipError()
         }

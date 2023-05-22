@@ -23,6 +23,11 @@ function createPythonEnvironment() {
   }
 }
 
+export const clientTypes = ['js', 'python'] as const;
+export type ClientType = (typeof clientTypes)[number];
+export const deviceTypes = ['device', 'edge instantiable', 'cloud instantiable'] as const;
+export type DeviceType = (typeof deviceTypes)[number];
+
 export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   private binary: string[];
   private debugPrint?: string;
@@ -34,7 +39,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   context: Mocha.Context & ServerContext;
 
   constructor(
-    type: 'js' | 'python',
+    type: ClientType,
     debug: boolean | number = false,
     host_debug: boolean | number = false,
     log_file: string,
@@ -111,7 +116,9 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
           }
           if (event == `[ready]`) {
             this.ready = true;
-            this._sendList.forEach(d => { this.send(d.event, d.data); });
+            this._sendList.forEach(d => {
+              this.send(d.event, d.data);
+            });
             this._sendList = [];
           }
         }

@@ -106,7 +106,7 @@ export async function runExperiment(experimentModel: ExperimentModel) {
     // TODO: add callback to all devices/instances for changes
 
     if (needsSetup) {
-        await establishPeerconnections(experimentModel)
+        // await establishPeerconnections(experimentModel)
         experimentModel.status = 'setup'
     } else {
         await establishPeerconnections(experimentModel)
