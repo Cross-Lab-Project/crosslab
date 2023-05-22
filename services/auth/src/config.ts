@@ -8,10 +8,11 @@ import {
     TokenModel,
 } from './database/model'
 import { AppConfiguration } from './types/types'
+import { logger } from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
 
 export function die(reason: string): string {
-    console.error(reason)
+    logger.log('error', reason)
     process.exit(1)
 }
 
@@ -27,6 +28,9 @@ function initializeAppConfiguration(): AppConfiguration {
             process.env.SECURITY_AUDIENCE ??
             die('the environment variable SECURITY_AUDIENCE is not defined!'),
         ALLOWLIST: process.env.ALLOWLIST ?? '',
+        API_TOKEN:
+            process.env.API_TOKEN ??
+            die('the environment variable API_TOKEN is not defined!'),
     }
 }
 

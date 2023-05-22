@@ -142,7 +142,11 @@ fi
 
 if [ $CLEAN = true ]; then
   echo "Cleaning dist directories"
-  rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
+  if [ ! -z $INCLUDE ]; then
+    rm -rf $(fd -IL -E 'node_modules' -E "/$INCLUDE" -td -g 'dist')
+  else
+    rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
+  fi
 fi
 
 source $HELPER_DIR/printing_functions.sh

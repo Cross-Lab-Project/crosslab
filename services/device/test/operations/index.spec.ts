@@ -4,6 +4,7 @@ import { initTestDatabase } from '../database/repositories/index.spec'
 import callbackTest from './callbacks/index.spec'
 import deviceTests from './devices/index.spec'
 import peerconnectionTests from './peerconnections/index.spec'
+import { logger } from '@crosslab/service-common'
 import Mocha from 'mocha'
 
 const tests = [...deviceTests, ...peerconnectionTests, callbackTest]
@@ -18,13 +19,11 @@ export function addTest(
 
 describe('Operations', function () {
     let testData: TestData
-    let suite: Mocha.Suite = this
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const suite: Mocha.Suite = this
 
     this.beforeAll(async function () {
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         testData = await initTestDatabase()
     })
 
@@ -34,6 +33,7 @@ describe('Operations', function () {
         }
         const newTestData = await initTestDatabase()
         for (const key in newTestData) {
+            // eslint-disable-next-line
             ;(testData as any)[key] = (newTestData as any)[key]
         }
     })

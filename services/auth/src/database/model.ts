@@ -1,3 +1,5 @@
+import { Role, User } from '../generated/types'
+import { ActiveKey, Key, Scope, Token } from '../types/types'
 import { JWK as _JWK } from 'jose'
 import {
     Column,
@@ -10,8 +12,6 @@ import {
     PrimaryColumn,
     PrimaryGeneratedColumn,
 } from 'typeorm'
-import { Role, User } from '../generated/types'
-import { ActiveKey, Key, Scope, Token } from '../types/types'
 
 // this solves an nyc error where branches are wrongly detected
 type JWK = _JWK | never

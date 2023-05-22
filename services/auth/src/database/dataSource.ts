@@ -57,7 +57,7 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'device': ['developer'],
     'device:read': ['developer'], // TODO: readall, listall, editall
     'device:read:owned': standardRoles,
-    'device:write': ['device'],
+    'device:write': ['device', 'device_service'],
     'device:write:owned': ['user'],
     'device:create': ['user'],
     'device:delete': [],
@@ -68,7 +68,9 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'device:connect:current': ['device'],
     'device:signal': ['device_service'],
     'peerconnection': ['developer', 'experiment_service'],
-    'peerconnection:read': [],
+    'peerconnection:read': ['device_service'],
+    'peerconnection:write': [],
+    'peerconnection:write:device_status': ['device_service'],
     'peerconnection:create': [],
     'peerconnection:delete': [],
     // experiment service scopes

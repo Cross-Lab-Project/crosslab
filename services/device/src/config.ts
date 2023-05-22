@@ -1,3 +1,4 @@
+import { Migrations } from './database/migrations'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -7,6 +8,7 @@ import {
     DeviceGroupModel,
     PeerconnectionModel,
 } from './database/model'
+import { logger } from '@crosslab/service-common'
 import { exit } from 'process'
 import { DataSourceOptions } from 'typeorm'
 
@@ -16,10 +18,11 @@ export type AppConfiguration = {
     BASE_URL: string
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
+    API_TOKEN: string
 }
 
 function die(reason: string): string {
-    console.error(reason)
+    logger.log('error', reason)
     exit(1)
 }
 
@@ -37,6 +40,9 @@ function initializeAppConfiguration(): AppConfiguration {
         SECURITY_AUDIENCE:
             process.env.SECURITY_AUDIENCE ??
             die('the environment variable SECURITY_AUDIENCE is not defined!'),
+        API_TOKEN:
+            process.env.API_TOKEN ??
+            die('the environment variable API_TOKEN is not defined!'),
     }
 }
 
@@ -45,7 +51,6 @@ export const config = initializeAppConfiguration()
 export const dataSourceConfig: DataSourceOptions = {
     type: 'sqlite',
     database: 'db/device.db',
-    synchronize: true,
     entities: [
         DeviceOverviewModel,
         ConcreteDeviceModel,
@@ -55,4 +60,6 @@ export const dataSourceConfig: DataSourceOptions = {
         DeviceGroupModel,
         PeerconnectionModel,
     ],
+    migrations: Migrations,
+    migrationsRun: true,
 }

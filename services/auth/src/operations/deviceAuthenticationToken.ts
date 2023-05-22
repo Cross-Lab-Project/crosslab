@@ -1,9 +1,9 @@
 import { tokenRepository } from '../database/repositories/tokenRepository'
 import { userRepository } from '../database/repositories/userRepository'
-import { Scope } from '../generated/scopes'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
 import { OwnershipError } from '../types/errors'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /device_authentication_token endpoint.
@@ -13,7 +13,7 @@ import { OwnershipError } from '../types/errors'
  */
 export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignature =
     async (parameters, user) => {
-        console.log(`postDeviceAuthenticationToken called`)
+        logger.log('info', 'postDeviceAuthenticationToken called')
 
         const userModel = await userRepository.findOneOrFail({
             where: {
@@ -22,10 +22,12 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
         })
 
         const device = await getDevice(parameters.device_url)
+        // TODO: check that device is instance of an instantiable device
         if (
             device.owner !== user.JWT.url &&
-            !user.JWT.scopes.includes(<Scope<"JWT">>"device_token") && 
-            !user.JWT.scopes.includes(<Scope<"JWT">>"device_token:create")
+            !user.JWT.scopes.includes('device_token') &&
+            !user.JWT.scopes.includes('device_token:create') &&
+            !user.JWT.scopes.includes('device_token:create:instantiable')
         ) {
             throw new OwnershipError()
         }
@@ -41,7 +43,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
 
         await userRepository.save(userModel)
 
-        console.log(`postDeviceAuthenticationToken succeeded`)
+        logger.log('info', 'postDeviceAuthenticationToken succeeded')
 
         return {
             status: 201,

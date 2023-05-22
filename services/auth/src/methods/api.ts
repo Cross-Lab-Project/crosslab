@@ -1,12 +1,12 @@
+import { config } from '../config'
+import { InternalRequestError } from '../types/errors'
 import {
     ValidationError,
     InvalidUrlError,
     UnsuccessfulRequestError,
     FetchError,
 } from '@cross-lab-project/api-client'
-import { InternalRequestError } from '../types/errors'
 import { APIClient } from '@cross-lab-project/api-client'
-import { config } from '../config'
 
 export const apiClient = new APIClient(config.BASE_URL)
 

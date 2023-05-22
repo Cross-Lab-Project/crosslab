@@ -1,4 +1,5 @@
 import { AppDataSource } from '../../../src/database/dataSource'
+import { Migrations } from '../../../src/database/migrations'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -32,7 +33,8 @@ const repositoryTestSuites = [
 
 export default () =>
     describe('Repositories', function () {
-        let suite: Mocha.Suite = this
+        // eslint-disable-next-line
+        const suite: Mocha.Suite = this
 
         it('should setup the repository tests', async function () {
             this.timeout(0)
@@ -48,7 +50,6 @@ export async function initTestDatabase(): Promise<TestData> {
     const dataSourceConfig: DataSourceOptions = {
         type: 'sqlite',
         database: ':memory:',
-        synchronize: true,
         dropSchema: true,
         entities: [
             DeviceOverviewModel,
@@ -59,6 +60,8 @@ export async function initTestDatabase(): Promise<TestData> {
             DeviceGroupModel,
             PeerconnectionModel,
         ],
+        migrations: Migrations,
+        migrationsRun: true,
     }
 
     const testData = prepareTestData()

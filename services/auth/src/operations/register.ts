@@ -2,7 +2,11 @@ import { roleRepository } from '../database/repositories/roleRepository'
 import { userRepository } from '../database/repositories/userRepository'
 import { postRegisterSignature } from '../generated/signatures'
 import { RegistrationError } from '../types/errors'
-import { InconsistentDatabaseError, MissingEntityError } from '@crosslab/service-common'
+import {
+    InconsistentDatabaseError,
+    MissingEntityError,
+    logger,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /register endpoint.
@@ -10,7 +14,7 @@ import { InconsistentDatabaseError, MissingEntityError } from '@crosslab/service
  * @throws {AuthenticationError} Thrown if the authentication was unsuccessful.
  */
 export const postRegister: postRegisterSignature = async (body) => {
-    console.log(`postRegister called`)
+    logger.log('info', 'postRegister called')
 
     const existingUser = await userRepository.findOne({
         where: {
@@ -40,7 +44,7 @@ export const postRegister: postRegisterSignature = async (body) => {
         else throw new RegistrationError('User could not be registered', 500)
     }
 
-    console.log(`postRegister succeeded`)
+    logger.log('info', 'postRegister succeeded')
 
     return {
         status: 201,

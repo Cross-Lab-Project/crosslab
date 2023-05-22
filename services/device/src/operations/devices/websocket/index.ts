@@ -7,6 +7,7 @@ import {
 import { sendChangedCallback } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { handleDeviceMessage } from './messageHandling'
+import { logger } from '@crosslab/service-common'
 import WebSocket from 'ws'
 
 export const connectedDevices = new Map<string, WebSocket>()
@@ -32,6 +33,10 @@ export function websocketHandling(app: Express.Application) {
                 const message = JSON.parse(data.toString('utf8'))
 
                 if (!(isMessage(message) && isAuthenticationMessage(message))) {
+                    logger.log(
+                        'error',
+                        'First received websocket message is not an authentication message'
+                    )
                     return ws.close(
                         1002,
                         'Received message is not an authentication message'
@@ -39,9 +44,13 @@ export function websocketHandling(app: Express.Application) {
                 }
 
                 if (!message.token) {
+                    logger.log(
+                        'error',
+                        'Authentication message does not contain a websocket token'
+                    )
                     return ws.close(
                         1002,
-                        'Authentication message does not contain a valid websocket token'
+                        'Authentication message does not contain a websocket token'
                     )
                 }
 
@@ -49,6 +58,7 @@ export function websocketHandling(app: Express.Application) {
                     where: { token: message.token },
                 })
                 if (!deviceModel) {
+                    logger.log('error', 'No device found with matching websocket token')
                     return ws.close(1002, 'No device found with matching websocket token')
                 }
 
@@ -56,7 +66,10 @@ export function websocketHandling(app: Express.Application) {
                 connectedDevices.set(deviceModel.uuid, ws)
                 await concreteDeviceRepository.save(deviceModel)
                 await sendChangedCallback(deviceModel)
-                console.log(`device '${deviceUrlFromId(deviceModel.uuid)}' connected`)
+                logger.log(
+                    'info',
+                    `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
+                )
 
                 // TODO: find out if this is really how it was intended
                 ws.send(
@@ -74,6 +87,12 @@ export function websocketHandling(app: Express.Application) {
                 const interval = setInterval(async function ping() {
                     try {
                         if (isAlive === false) {
+                            logger.log(
+                                'info',
+                                `Device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}' did not answer hearbeat check, closing connection`
+                            )
                             deviceModel.connected = false
                             await concreteDeviceRepository.save(deviceModel)
                             await sendChangedCallback(deviceModel)
@@ -84,7 +103,13 @@ export function websocketHandling(app: Express.Application) {
                         isAlive = false
                         ws.ping()
                     } catch (error) {
-                        console.error(error)
+                        logger.log(
+                            'error',
+                            `An error occurred during the heartbeat check of device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`,
+                            { data: { error } }
+                        )
                     }
                 }, 30000)
 
@@ -93,29 +118,56 @@ export function websocketHandling(app: Express.Application) {
                     clearInterval(interval)
                     connectedDevices.delete(deviceModel.uuid)
 
+                    logger.log(
+                        'info',
+                        `websocket connection for device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}' closed`
+                    )
+
                     if (code === 1002) {
-                        console.error(
+                        logger.log(
+                            'error',
                             new WebSocketConnectionError(reason.toString('utf-8'))
                         )
                     }
                 })
 
                 // message handler: handle incoming messages from devices
-                ws.on('message', async (data) => {
+                ws.on('message', async (rawData) => {
                     try {
-                        const message = JSON.parse(data.toString('utf-8'))
-                        if (!isMessage(message)) {
+                        const msg = JSON.parse(rawData.toString('utf-8'))
+                        if (!isMessage(msg)) {
+                            logger.log(
+                                'error',
+                                `Received something that is not a message from device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}', disconnecting`
+                            )
                             ws.close(1002, 'Malformed Message')
                             return
                         }
-                        await handleDeviceMessage(deviceModel, message)
+                        await handleDeviceMessage(deviceModel, msg)
                     } catch (error) {
-                        console.error(error)
+                        logger.log(
+                            'error',
+                            `An error occurred while handling an incoming message for device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`,
+                            { data: { error } }
+                        )
                     }
                 })
             } catch (error) {
-                console.error(error)
-                return ws.close(1002, 'Something went wrong during authentication')
+                logger.log(
+                    'error',
+                    `Something went wrong during authentication or setup of a websocket connection`,
+                    { data: { error } }
+                )
+                return ws.close(
+                    1002,
+                    'Something went wrong during authentication or setup'
+                )
             }
         })
     })

@@ -1,5 +1,6 @@
-import { getIdentitySignature, patchIdentitySignature } from '../generated/signatures'
 import { userRepository } from '../database/repositories/userRepository'
+import { getIdentitySignature, patchIdentitySignature } from '../generated/signatures'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /identity endpoint.
@@ -7,7 +8,7 @@ import { userRepository } from '../database/repositories/userRepository'
  * @throws {MissingEntityError} Thrown if user is not found in database.
  */
 export const getIdentity: getIdentitySignature = async (user) => {
-    console.log(`getIdentity called`)
+    logger.log('info', 'getIdentity called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -15,7 +16,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
         },
     })
 
-    console.log(`getIdentity succeeded`)
+    logger.log('info', 'getIdentity succeeded')
 
     return {
         status: 200,
@@ -31,7 +32,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
  * @throws {InvalidValueError} Can throw errors from {@link writeUserModel}.
  */
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
-    console.log(`patchIdentity called`)
+    logger.log('info', 'patchIdentity called')
 
     const userModel = await userRepository.findOneOrFail({
         where: {
@@ -42,7 +43,7 @@ export const patchIdentity: patchIdentitySignature = async (body, user) => {
     await userRepository.write(userModel, body ?? {})
     await userRepository.save(userModel)
 
-    console.log(`patchIdentity succeeded`)
+    logger.log('info', 'patchIdentity succeeded')
 
     return {
         status: 200,

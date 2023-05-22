@@ -2,7 +2,7 @@ import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures'
 import { calculateAvailability } from '../../../../methods/availability'
 import { sendChangedCallback } from '../../../../methods/callbacks'
-import { ImpossibleOperationError } from '@crosslab/service-common'
+import { ImpossibleOperationError, logger } from '@crosslab/service-common'
 
 const YEAR = 365 * 24 * 60 * 60 * 1000
 
@@ -15,7 +15,7 @@ const YEAR = 365 * 24 * 60 * 60 * 1000
  */
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature =
     async (parameters, body, _user) => {
-        console.log(`postDevicesByDeviceIdAvailability called`)
+        logger.log('info', 'postDevicesByDeviceIdAvailability called')
 
         const deviceModel = await deviceRepository.findOneOrFail({
             where: { uuid: parameters.device_id },
@@ -42,7 +42,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
         await deviceRepository.save(deviceModel)
         await sendChangedCallback(deviceModel)
 
-        console.log(`postDevicesByDeviceIdAvailability succeeded`)
+        logger.log('info', 'postDevicesByDeviceIdAvailability succeeded')
 
         return {
             status: 200,

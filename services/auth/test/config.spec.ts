@@ -1,8 +1,9 @@
+import { die } from '../src/config'
+import { AppConfiguration } from '../src/types/types'
+import { logger } from '@crosslab/service-common'
 import assert from 'assert'
 import rewire from 'rewire'
-import { AppConfiguration } from '../src/types/types'
 import * as sinon from 'sinon'
-import { die } from '../src/config'
 
 describe('Config', function () {
     let initializeAppConfiguration: () => AppConfiguration
@@ -10,10 +11,7 @@ describe('Config', function () {
     let processEnvBackup: any
 
     this.beforeAll(function () {
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         const configModule = rewire('../src/config')
         initializeAppConfiguration = configModule.__get__('initializeAppConfiguration')
         processExitStub = sinon.stub(process, 'exit')
@@ -36,14 +34,14 @@ describe('Config', function () {
     describe('die', function () {
         it('should exit the program and log the reason', async function () {
             const TEST_REASON = 'test reason'
-            const consoleErrorStub = sinon.stub(console, 'error')
+            const loggerLogStub = sinon.stub(logger, 'log')
 
             die(TEST_REASON)
 
-            assert(consoleErrorStub.calledWith(TEST_REASON))
+            assert(loggerLogStub.calledWith('error', TEST_REASON))
             assert(processExitStub.calledWith(1))
 
-            consoleErrorStub.restore()
+            loggerLogStub.restore()
         })
     })
 

@@ -35,8 +35,9 @@ export type initServiceOptions<T extends SecurityScheme> = {
         [k in T]: <P,B,Q>(req: TypedRequest<P,B,Q>, scopes: string[]) => Promise<UserType> | UserType
     }
     {%- endif %}
+    preHandlers?: ((app: Application) => void)[]
+    postHandlers?: ((app: Application) => void)[]
     errorHandler?: ErrorRequestHandler
-    additionalHandlers?: ((app: Application) => void)[]
 }
 
 export type UserData<T extends SecurityScheme> = {

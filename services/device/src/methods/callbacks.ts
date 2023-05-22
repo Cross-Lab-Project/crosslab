@@ -3,6 +3,7 @@ import { DeviceModel, PeerconnectionModel } from '../database/model'
 import { deviceRepository } from '../database/repositories/device'
 import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId'
+import { logger } from '@crosslab/service-common'
 import fetch from 'node-fetch'
 
 export const callbackUrl: string = (config.BASE_URL + '/callbacks/device').replace(
@@ -20,7 +21,8 @@ export const statusChangedCallbacks = new Map<string, string[] | undefined>()
 export async function sendChangedCallback(device: DeviceModel) {
     const urls = changedCallbacks.get(device.uuid) ?? []
     for (const url of urls) {
-        console.log(
+        logger.log(
+            'info',
             `Sending changed-callback for device '${deviceUrlFromId(
                 device.uuid
             )}' to '${url}'`
@@ -46,7 +48,9 @@ export async function sendChangedCallback(device: DeviceModel) {
                 )
             }
         } catch (error) {
-            console.error(error)
+            logger.log('error', 'An error occurred while sending a changed-callback', {
+                data: { error, device: deviceUrlFromId(device.uuid), url },
+            })
         }
     }
 }
@@ -58,7 +62,8 @@ export async function sendChangedCallback(device: DeviceModel) {
 export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
     const urls = closedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
-        console.log(
+        logger.log(
+            'info',
             `Sending closed-callback for peerconnection '${peerconnectionUrlFromId(
                 peerconnection.uuid
             )}' to '${url}'`
@@ -84,7 +89,13 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
                 )
             }
         } catch (error) {
-            console.error(error)
+            logger.log('error', 'An error occurred while sending a closed-callback', {
+                data: {
+                    error,
+                    peerconnection: peerconnectionUrlFromId(peerconnection.uuid),
+                    url,
+                },
+            })
         }
     }
 }
@@ -96,7 +107,8 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
 export async function sendStatusChangedCallback(peerconnection: PeerconnectionModel) {
     const urls = statusChangedCallbacks.get(peerconnection.uuid) ?? []
     for (const url of urls) {
-        console.log(
+        logger.log(
+            'info',
             `Sending status-changed-callback for peerconnection '${peerconnectionUrlFromId(
                 peerconnection.uuid
             )}' to '${url}'`
@@ -122,7 +134,17 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
                 )
             }
         } catch (error) {
-            console.error(error)
+            logger.log(
+                'error',
+                'An error occurred while sending a status-changed-callback',
+                {
+                    data: {
+                        error,
+                        peerconnection: peerconnectionUrlFromId(peerconnection.uuid),
+                        url,
+                    },
+                }
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 import { deviceRepository } from '../../../database/repositories/device'
 import { getDevicesByDeviceIdSignature } from '../../../generated/signatures'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /devices/{device_id} endpoint.
@@ -11,13 +12,13 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`getDevicesByDeviceId called`)
+    logger.log('info', 'getDevicesByDeviceId called')
 
     const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    console.log(`getDevicesByDeviceId succeeded`)
+    logger.log('info', 'getDevicesByDeviceId succeeded')
 
     return {
         status: 200,

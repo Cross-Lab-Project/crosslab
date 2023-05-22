@@ -1,11 +1,33 @@
-import { MissingParameterError, InvalidValueError } from "@crosslab/service-common"
-import fetch, { HeadersInit } from "node-fetch"
-import { AppDataSource } from "../data_source"
-import { getProxySignature, postProxySignature, patchProxySignature, deleteProxySignature, optionsProxySignature, headProxySignature, traceProxySignature, putProxySignature } from "../generated/signatures"
-import { InstitutionModel } from "../model"
+import { AppDataSource } from '../data_source'
+import {
+    getProxySignature,
+    postProxySignature,
+    patchProxySignature,
+    deleteProxySignature,
+    optionsProxySignature,
+    headProxySignature,
+    traceProxySignature,
+    putProxySignature,
+} from '../generated/signatures'
+import { InstitutionModel } from '../model'
+import {
+    MissingParameterError,
+    InvalidValueError,
+    logger,
+} from '@crosslab/service-common'
+import fetch, { HeadersInit } from 'node-fetch'
 
-type HttpMethod = "get" | "post" | "patch" | "delete" | "options" | "head" | "trace" | "put"
-type proxySignature = getProxySignature
+type HttpMethod =
+    | 'get'
+    | 'post'
+    | 'patch'
+    | 'delete'
+    | 'options'
+    | 'head'
+    | 'trace'
+    | 'put'
+type proxySignature =
+    | getProxySignature
     | postProxySignature
     | patchProxySignature
     | deleteProxySignature
@@ -56,7 +78,9 @@ const proxy: (method: HttpMethod) => proxySignature =
                 body: text,
             }
         } catch (error) {
-            console.log(error)
+            logger.log('error', 'An error occurred while trying to parse the response', {
+                data: { error },
+            })
 
             return {
                 status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution

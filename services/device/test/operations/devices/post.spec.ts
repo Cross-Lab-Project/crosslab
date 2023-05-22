@@ -6,6 +6,7 @@ import { deviceNames } from '../../data/devices/index.spec'
 import { TestData } from '../../data/index.spec'
 import { deviceRepositoryTestSuite } from '../../database/repositories/device.spec'
 import { addTest } from '../index.spec'
+import { MalformedBodyError } from '@crosslab/service-common'
 import { EntityData } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 import Mocha from 'mocha'
@@ -80,6 +81,40 @@ export default function (context: Mocha.Context, testData: TestData) {
                     `http://localhost/callbacks/${deviceName}`
                 )
             }
+        }
+    )
+
+    addTest(
+        suite,
+        'should throw a MalformedBodyError if the name of the device is an empty string',
+        async function () {
+            await assert.rejects(
+                async () => {
+                    await postDevices(
+                        {},
+                        {
+                            type: 'device',
+                            name: '',
+                        },
+                        {
+                            JWT: {
+                                username: 'testuser',
+                                url: 'http://localhost/users/testuser',
+                                scopes: [],
+                            },
+                        }
+                    )
+                },
+                (error) => {
+                    assert(error instanceof MalformedBodyError)
+                    assert.strictEqual(error.status, 400)
+                    assert.strictEqual(
+                        error.message,
+                        "Property 'name' is required and must not be empty"
+                    )
+                    return true
+                }
+            )
         }
     )
 

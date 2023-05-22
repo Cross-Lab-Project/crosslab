@@ -2,9 +2,9 @@ import {APIClient, DeviceServiceTypes, ExperimentServiceTypes} from '@cross-lab-
 import assert from 'assert';
 import {TypedEmitter} from 'tiny-typed-emitter';
 
-import {DummyDevice, DummyDeviceEvents} from '../fixtures/dummyDevice';
+import {ClientType, DeviceType, DummyDevice, DummyDeviceEvents} from '../fixtures/dummyDevice';
 
-function createDummyDevice(type: 'js' | 'python', index: number, context: Mocha.Context) {
+function createDummyDevice(type: ClientType, index: number, context: Mocha.Context) {
   switch (type) {
     case 'js':
       // eslint-disable-next-line max-len
@@ -21,8 +21,12 @@ function createDummyDevice(type: 'js' | 'python', index: number, context: Mocha.
 }
 
 type DeviceMeta = {
+  type: DeviceType;
   name: string;
   description: string;
+  instantiateUrl?: string;
+  codeUrl?: string;
+  announcedAvailability?: DeviceServiceTypes.AvailabilityRule[];
 };
 
 enum State {
@@ -42,6 +46,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   deviceMetas: DeviceMeta[] = [];
   apiDevices: (DeviceServiceTypes.ConcreteDevice<'response'> & {url: string})[] = [];
   events: {gpio: Parameters<DummyDeviceEvents['gpio']>[0][]}[] = [];
+  experimentUrl?: string;
 
   _state: State = State.None;
 
@@ -53,9 +58,9 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           this.off('eventsChanged', callback);
         }
       };
-      if(this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount){
+      if (this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount) {
         resolve();
-      }else{
+      } else {
         this.on('eventsChanged', callback);
       }
     });
@@ -64,18 +69,12 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   async createAPIDevices(client: APIClient) {
     for (const deviceMeta of this.deviceMetas) {
       const apiDevice = (await client.createDevice({
-        type: 'device',
         ...deviceMeta,
-        announcedAvailability: [
-          {
-            available: true,
-          },
-        ],
       })) as DeviceServiceTypes.ConcreteDevice<'response'>;
 
       assert(apiDevice.url, 'Device URL is not defined'); // TODO: Issue 32
 
-      this.apiDevices.push({...apiDevice, url: apiDevice.url});
+      this.apiDevices.push({...apiDevice});
     }
 
     this._state = State.Created;
@@ -84,16 +83,20 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   async connect(client: APIClient) {
     if (this._state < State.Created) await this.createAPIDevices(client);
 
-    const promiseList = this.devices.map(device => new Promise<void>(resolve => device.once('websocketConnected', resolve)));
+    const promiseList = [];
     for (const [idx, device] of this.devices.entries()) {
+      if (this.apiDevices[idx].type === 'device')
+        promiseList.push(new Promise<void>(resolve => device.once('websocketConnected', resolve)));
       this.events.push({gpio: []});
-      device.on('gpio', event => this.events[idx].gpio.push(event) && this.emit('eventsChanged'));
-      device.start(client, this.apiDevices[idx].url);
+      device.on('gpio', event => {
+        this.events[idx].gpio.push(event) && this.emit('eventsChanged');
+      });
+      if (this.apiDevices[idx].type === 'device') device.start(client, this.apiDevices[idx].url);
     }
     await Promise.all(promiseList);
 
     for (const device of this.apiDevices) {
-      assert((await client.getDevice(device.url)).connected, 'Device is not connected');
+      if (device.type === 'device') assert((await client.getDevice(device.url)).connected, 'Device is not connected');
     }
 
     this._state = State.Connected;
@@ -102,7 +105,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   async run(client: APIClient, experiment: ExperimentServiceTypes.Experiment<'request'>) {
     if (this._state < State.Connected) await this.connect(client);
 
-    const promiseList = this.devices.map(
+    const promiseListConnections = this.devices.map(
       device =>
         new Promise<void>(resolve =>
           device.on('connectionsChanged', connections => connections.every(c => c.state === 'connected') && resolve()),
@@ -115,23 +118,74 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       devices: this.apiDevices.map((d, idx) => ({role: 'device' + (idx + 1), device: d.url})),
       ...experiment,
     };
+
     const apiExperiment = await client.createExperiment(experiment);
-    assert(apiExperiment.status === 'running', 'Experiment is not running');
+    this.experimentUrl = apiExperiment.url;
+    if (this.apiDevices.every(device => device.type === 'device')) assert(apiExperiment.status === 'running', 'Experiment is not running');
+    else assert(apiExperiment.status === 'setup', 'Experiment is not in setup');
+
+    const promiseList = [];
+    for (const [idx, apiDevice] of this.apiDevices.entries()) {
+      if (apiDevice.type === 'device') continue;
+
+      const deviceData = apiExperiment.devices?.find(device => device.device === apiDevice.url);
+      const instanceData = deviceData?.additionalProperties as any;
+
+      const instanceUrl = instanceData.instanceUrl;
+      const deviceToken = instanceData.deviceToken;
+      apiDevice.instanceUrl = instanceData.instanceUrl;
+
+      const originalAccessToken = client.accessToken;
+      client.accessToken = deviceToken;
+
+      promiseList.push(new Promise<void>(resolve => this.devices[idx].once('websocketConnected', resolve)));
+      this.events.push({gpio: []});
+      this.devices[idx].start(client, instanceUrl);
+
+      client.accessToken = originalAccessToken;
+    }
+
     await Promise.all(promiseList);
+
+    for (const device of this.devices) {
+      assert((await client.getDevice(device.url)).connected, 'Device is not connected');
+    }
+
+    await client.updateExperiment(apiExperiment.url!, {
+      status: 'running',
+      devices: this.apiDevices.map((d, idx) => ({
+        role: 'device' + (idx + 1),
+        device: d.type === 'device' ? d.url : (d.instanceUrl as any),
+      })),
+    });
+
+    await Promise.all(promiseListConnections);
 
     this._state = State.Running;
   }
 
-  addDevice(context: Mocha.Context, type: 'js' | 'python', name?: string, description?: string) {
-    this.devices.push(createDummyDevice(type, this.devices.length + 1, context));
-    const deviceTypeName = {js: 'JS', python: 'Python'}[type];
+  addDevice(context: Mocha.Context, clientType: ClientType, deviceType: DeviceType = 'device', name?: string, description?: string) {
+    this.devices.push(createDummyDevice(clientType, this.devices.length + 1, context));
+    const deviceTypeName = {js: 'JS', python: 'Python'}[clientType];
     this.deviceMetas.push({
+      type: deviceType,
       name: name ?? `${deviceTypeName} Device ${this.devices.length}`,
       description: description ?? `A ${deviceTypeName} test device`,
+      instantiateUrl: deviceType === 'cloud instantiable' ? 'http://localhost/edge_instantiable_device' : undefined,
+      codeUrl: deviceType === 'edge instantiable' ? 'http://localhost/cloud_instantiable_device' : undefined,
+      announcedAvailability: deviceType === 'device' ? [{available: true}] : undefined,
     });
   }
 
-  stop() {
+  async stop(client: APIClient) {
+    const closedPromises = this.devices.map(
+      device =>
+        new Promise<void>(resolve =>
+          device.on('connectionsChanged', connections => connections.every(c => c.state === 'closed') && resolve()),
+        ),
+    );
+    if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
+    await Promise.all(closedPromises);
     for (const device of this.devices) {
       device.stop();
     }
