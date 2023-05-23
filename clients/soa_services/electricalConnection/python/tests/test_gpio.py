@@ -14,7 +14,7 @@ from crosslab.soa_services.electrical.signal_interfaces.gpio import (
 
 def test_gpio_meta():
     gci = ConstractableGPIOInterface(["S1", "S2"])
-    assert gci.getDescription() == {"availableSignals": {"gpio": ["S1", "S2"]}}
+    assert gci.getDescription() == {"availableSignals": {"gpio": ["S1", "S2"]}, "direction": "inout"}
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
