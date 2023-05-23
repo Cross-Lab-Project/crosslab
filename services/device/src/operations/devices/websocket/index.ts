@@ -71,7 +71,6 @@ export function websocketHandling(app: Express.Application) {
                     `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
                 )
 
-                // TODO: find out if this is really how it was intended
                 ws.send(
                     JSON.stringify(<AuthenticationMessage>{
                         messageType: 'authenticate',
@@ -115,8 +114,11 @@ export function websocketHandling(app: Express.Application) {
 
                 // close handler: stop heartbeat and disconnect device
                 ws.on('close', async (code, reason) => {
-                    clearInterval(interval)
+                    deviceModel.connected = false
+                    await concreteDeviceRepository.save(deviceModel)
+                    await sendChangedCallback(deviceModel)
                     connectedDevices.delete(deviceModel.uuid)
+                    clearInterval(interval)
 
                     logger.log(
                         'info',
