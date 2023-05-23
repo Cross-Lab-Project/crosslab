@@ -22,7 +22,9 @@ export default function (context: Mocha.Context, testData: TestData) {
     let clock: sinon.SinonFakeTimers
 
     suite.beforeAll(function () {
-        clock = sinon.useFakeTimers()
+        clock = sinon.useFakeTimers({
+            shouldAdvanceTime: true,
+        })
         deviceRepositorySaveStub = sinon.spy(deviceRepository, 'save')
     })
 
@@ -95,8 +97,9 @@ export default function (context: Mocha.Context, testData: TestData) {
             assert.strictEqual(argumentFirstCall.token, result.body)
 
             await clock.tickAsync(5 * 60 * 1000)
+            await new Promise((resolve) => setTimeout(resolve, 500))
             assert(deviceRepositorySaveStub.calledTwice)
-            const argumentSecondCall = deviceRepositorySaveStub.args[0][0]
+            const argumentSecondCall = deviceRepositorySaveStub.args[1][0]
             assert.strictEqual(argumentSecondCall.type, 'device')
             assert.strictEqual(argumentSecondCall.token, undefined)
         }
