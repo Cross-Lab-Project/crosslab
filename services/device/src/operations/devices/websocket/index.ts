@@ -24,7 +24,6 @@ class WebSocketConnectionError extends Error {
  * @param app The express application to add the /devices/ws endpoint to.
  */
 export function websocketHandling(app: Express.Application) {
-    // TODO: close Peerconnections that have device as participant when websocket connection is closed?
     app.ws('/devices/websocket', (ws) => {
         // authenticate and start heartbeat
         ws.once('message', async (data) => {
@@ -71,7 +70,6 @@ export function websocketHandling(app: Express.Application) {
                     `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
                 )
 
-                // TODO: find out if this is really how it was intended
                 ws.send(
                     JSON.stringify(<AuthenticationMessage>{
                         messageType: 'authenticate',
@@ -83,6 +81,12 @@ export function websocketHandling(app: Express.Application) {
                 let isAlive = true
                 ws.on('pong', () => {
                     isAlive = true
+                    logger.log(
+                        'info',
+                        `hearbeat received from device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}'`
+                    )
                 })
                 const interval = setInterval(async function ping() {
                     try {
@@ -101,6 +105,12 @@ export function websocketHandling(app: Express.Application) {
                             return ws.terminate()
                         }
                         isAlive = false
+                        logger.log(
+                            'info',
+                            `sending hearbeat to device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`
+                        )
                         ws.ping()
                     } catch (error) {
                         logger.log(
@@ -116,6 +126,9 @@ export function websocketHandling(app: Express.Application) {
                 // close handler: stop heartbeat and disconnect device
                 ws.on('close', async (code, reason) => {
                     clearInterval(interval)
+                    deviceModel.connected = false
+                    await concreteDeviceRepository.save(deviceModel)
+                    await sendChangedCallback(deviceModel)
                     connectedDevices.delete(deviceModel.uuid)
 
                     logger.log(

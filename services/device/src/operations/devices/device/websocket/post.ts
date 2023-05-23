@@ -1,5 +1,6 @@
 import { deviceRepository } from '../../../../database/repositories/device'
 import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
+import { deviceUrlFromId } from '../../../../methods/urlFromId'
 import {
     ImpossibleOperationError,
     MissingEntityError as _MissingEntityError,
@@ -33,6 +34,37 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
         await deviceRepository.save(deviceModel)
 
         setTimeout(async () => {
+            logger.log(
+                'info',
+                `trying to delete websocket token of device '${deviceUrlFromId(
+                    parameters.device_id
+                )}'`
+            )
+
+            const deviceModel = await deviceRepository.findOne({
+                where: {
+                    uuid: parameters.device_id,
+                },
+            })
+
+            if (!deviceModel) {
+                logger.error(
+                    'error',
+                    `device '${deviceUrlFromId(parameters.device_id)}' does not exist`
+                )
+                return
+            }
+
+            if (deviceModel.type !== 'device') {
+                logger.error(
+                    'error',
+                    `device '${deviceUrlFromId(parameters.device_id)}' has type '${
+                        deviceModel.type
+                    }' instead of 'device'`
+                )
+                return
+            }
+
             deviceModel.token = undefined
             await deviceRepository.save(deviceModel)
         }, 300000)
