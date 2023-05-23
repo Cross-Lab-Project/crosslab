@@ -1,7 +1,4 @@
 import * as mocha from "mocha";
-import express from 'express';
-import * as http from 'http';
-import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 
 import {setupDummySql, tearDownDummySql, getSQLDNS} from "../../test_common/setup"
@@ -9,7 +6,6 @@ import {getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, 
 
 import { postSchedule, getTimetables } from "./operations"
 import { config } from "../../common/config";
-import { postScheduleResponseType } from "./generated/signatures";
 
 mocha.describe("operations.ts", function () {
     this.timeout(10000);
