@@ -24,7 +24,6 @@ class WebSocketConnectionError extends Error {
  * @param app The express application to add the /devices/ws endpoint to.
  */
 export function websocketHandling(app: Express.Application) {
-    // TODO: close Peerconnections that have device as participant when websocket connection is closed?
     app.ws('/devices/websocket', (ws) => {
         // authenticate and start heartbeat
         ws.once('message', async (data) => {
@@ -82,6 +81,12 @@ export function websocketHandling(app: Express.Application) {
                 let isAlive = true
                 ws.on('pong', () => {
                     isAlive = true
+                    logger.log(
+                        'info',
+                        `hearbeat received from device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}'`
+                    )
                 })
                 const interval = setInterval(async function ping() {
                     try {
@@ -100,6 +105,12 @@ export function websocketHandling(app: Express.Application) {
                             return ws.terminate()
                         }
                         isAlive = false
+                        logger.log(
+                            'info',
+                            `sending hearbeat to device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`
+                        )
                         ws.ping()
                     } catch (error) {
                         logger.log(
