@@ -6,6 +6,7 @@ from aiortc import (  # type: ignore
     RTCConfiguration,
     RTCPeerConnection,
     RTCSessionDescription,
+    RTCIceServer,
 )
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
@@ -35,13 +36,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     def __init__(self):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
-        # config = RTCConfiguration(
-        #     [
-        #         RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-        #         RTCIceServer(urls="turn:turn.goldi-labs.de:3478"),
-        #     ]
-        # ) # // see issue #5
-        config = RTCConfiguration([])
+        config = RTCConfiguration(
+            [
+                RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
+                RTCIceServer(urls="turn:turn.goldi-labs.de:3478", username="goldi", credential="goldi"),
+            ]
+        )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
