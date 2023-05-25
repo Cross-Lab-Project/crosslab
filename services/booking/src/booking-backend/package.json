@@ -4,7 +4,7 @@
   "description": "Part of booking service. Does most of the actual work and is horizontal scaleable.",
   "main": "index.ts",
   "scripts": {
-    "test": "npm run build && npx nyc --include=\"build/booking-backend/src/messageDefinition.js\" --include=\"build/booking-backend/src/operations/internal.js\" mocha build/booking-backend/src/*_test.js",
+    "test": "npm run build && npx nyc --include=\"build/booking-backend/src/messageDefinition.js\" --include=\"build/booking-backend/src/amqpHandle.js\" --include=\"build/booking-backend/src/internal.js\" --include=\"build/booking-backend/src/operations.js\" mocha build/booking-backend/src/*_test.js",
     "build": "npx tsc",
     "start": "npm run build && node build/booking-backend/index.js"
   },

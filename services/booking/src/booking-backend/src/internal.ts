@@ -297,6 +297,10 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     }
 
     {
+        // Sort devices
+        // This has two goals
+        // * Randomise the order of devices, so not everyone wants to book the same device first
+        // * Prefer own devices over remote devices
         let own: string[] = [];
         let other: string[] = [];
 
