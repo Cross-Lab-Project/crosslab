@@ -192,6 +192,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         print("makeAnswer")
         await self.pc.setRemoteDescription(offer)
         self._matchMediaChannels()
+        await self.pc.setRemoteDescription(offer)
         answer = await self.pc.createAnswer()
         assert answer is not None  # TODO: handle this
         await self.pc.setLocalDescription(answer)
@@ -249,6 +250,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             if channel.track:
                 direction = "sendonly"
                 transeiver.sender.replaceTrack(channel.track)
+                videoPreference = filter(
+                    lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
+                )
+                transeiver.setCodecPreferences(list(videoPreference))
 
             if channel.emit("track", transeiver.receiver.track):
                 direction = "sendrecv" if direction == "sendonly" else "recvonly"
