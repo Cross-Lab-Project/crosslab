@@ -7,7 +7,7 @@ import {
     isInstantiableCloudDevice,
 } from '../../../generated/types'
 import { apiClient, timeoutMap } from '../../../globals'
-import { signalingQueue } from '../../../methods/signaling'
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
 import { MalformedBodyError } from '@crosslab/service-common'
 
 /**
@@ -47,7 +47,7 @@ export async function handleDeviceChangedEventCallback(callback: {
 async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) {
     const pendingConnectionsA = await peerconnectionRepository.find({
         where: {
-            status: 'connecting',
+            status: 'new',
             deviceA: {
                 url: concreteDevice.url,
             },
@@ -56,7 +56,7 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
 
     const pendingConnectionsB = await peerconnectionRepository.find({
         where: {
-            status: 'connecting',
+            status: 'new',
             deviceB: {
                 url: concreteDevice.url,
             },
@@ -74,7 +74,8 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
 
         if (deviceA.connected && deviceB.connected) {
             clearTimeout(timeoutMap.get(pendingConnection.uuid))
-            signalingQueue.addPeerconnection(pendingConnection)
+            console.log('SIGNALING STARTED CALLBACK')
+            signalingQueueManager.startSignalingQueues(pendingConnection.uuid)
             timeoutMap.delete(pendingConnection.uuid)
         }
     }

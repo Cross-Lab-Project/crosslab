@@ -7,7 +7,7 @@ import {
     closedCallbacks,
     statusChangedCallbacks,
 } from '../../methods/callbacks'
-import { signalingQueue } from '../../methods/signaling'
+import { signalingQueueManager } from '../../methods/signaling/signalingQueueManager'
 import { peerconnectionUrlFromId } from '../../methods/urlFromId'
 import { InvalidValueError, logger } from '@crosslab/service-common'
 
@@ -24,12 +24,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 ) => {
     logger.log('info', 'postPeerconnections called')
 
-    const peerconnectionModel = await peerconnectionRepository.create(body)
-
-    await peerconnectionRepository.save(peerconnectionModel)
-
-    const deviceA = await apiClient.getDevice(peerconnectionModel.deviceA.url)
-    const deviceB = await apiClient.getDevice(peerconnectionModel.deviceB.url)
+    const deviceA = await apiClient.getDevice(body.devices[0].url)
+    const deviceB = await apiClient.getDevice(body.devices[1].url)
 
     if (deviceA.type !== 'device' || deviceB.type !== 'device') {
         throw new InvalidValueError(
@@ -38,9 +34,16 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         )
     }
 
+    const peerconnectionModel = await peerconnectionRepository.create(body)
+
+    await peerconnectionRepository.save(peerconnectionModel)
+
+    await signalingQueueManager.createSignalingQueues(peerconnectionModel.uuid)
+
     if (deviceA.connected && deviceB.connected) {
         // peerconnection can be started directly
-        signalingQueue.addPeerconnection(peerconnectionModel)
+        console.log('SIGNALING STARTED DIRECTLY')
+        signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid)
     } else {
         // need to wait for devices to connect
         // register changed callbacks for devices to get notified when they connect

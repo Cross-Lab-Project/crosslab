@@ -238,8 +238,10 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   teardown(): void {
     this.pc.close();
-    this.state = 'closed';
-    this.emit('connectionChanged');
+    if (this.state != 'closed') {
+      this.state = 'closed';
+      this.emit('connectionChanged');
+    }
   }
 
   // WebRTC and Signaling Actions ************************************************************************************

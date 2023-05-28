@@ -1,10 +1,10 @@
 import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
-import { ClosePeerconnectionMessage } from '../../../generated/types'
-import { apiClient } from '../../../globals'
-import { sendClosedCallback, sendStatusChangedCallback } from '../../../methods/callbacks'
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
 import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
 import { logger } from '@crosslab/service-common'
+
+export const deleteOnClose: Set<string> = new Set()
 
 /**
  * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
@@ -19,49 +19,36 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             where: { uuid: parameters.peerconnection_id },
         })
 
-        const closePeerconnectionMessage: ClosePeerconnectionMessage = {
-            messageType: 'command',
-            command: 'closePeerconnection',
-            connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
+        if (
+            peerconnectionModel.deviceA.status === 'closed' &&
+            peerconnectionModel.deviceB.status === 'closed'
+        ) {
+            signalingQueueManager.addOnCloseHandler(
+                peerconnectionModel.uuid,
+                async () => {
+                    try {
+                        await peerconnectionRepository.remove(peerconnectionModel)
+                        console.log('PEERCONNECTION REMOVED SQM')
+                    } catch (error) {
+                        logger.log(
+                            'error',
+                            `Something went wrong while trying to delete peerconnection '${peerconnectionUrlFromId(
+                                peerconnectionModel.uuid
+                            )}'`,
+                            { data: { error } }
+                        )
+                    }
+                }
+            )
+            signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
+        } else {
+            deleteOnClose.add(peerconnectionModel.uuid)
+            signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
         }
-
-        // TODO: handle possible errors
-        try {
-            await apiClient.sendSignalingMessage(
-                peerconnectionModel.deviceA.url,
-                closePeerconnectionMessage,
-                peerconnectionUrlFromId(peerconnectionModel.uuid)
-            )
-        } catch (error) {
-            logger.log(
-                'error',
-                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceA.url}'`,
-                { data: { error } }
-            )
-        }
-
-        try {
-            await apiClient.sendSignalingMessage(
-                peerconnectionModel.deviceB.url,
-                closePeerconnectionMessage,
-                peerconnectionUrlFromId(peerconnectionModel.uuid)
-            )
-        } catch (error) {
-            logger.log(
-                'error',
-                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceB.url}'`,
-                { data: { error } }
-            )
-        }
-
-        await sendClosedCallback(peerconnectionModel)
-        await sendStatusChangedCallback(peerconnectionModel)
-
-        await peerconnectionRepository.remove(peerconnectionModel)
 
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded')
 
         return {
-            status: 204,
+            status: 202,
         }
     }

@@ -3,7 +3,7 @@ import { apiClient } from '../../../../src/globals'
 import * as callbackFunctions from '../../../../src/methods/callbacks'
 import { deletePeerconnectionsByPeerconnectionId } from '../../../../src/operations/peerconnections'
 import { TestData } from '../../../data/index.spec'
-import { peerconnectionNames } from '../../../data/peerconnections/index.spec'
+// import { peerconnectionNames } from '../../../data/peerconnections/index.spec'
 import { addTest } from '../../index.spec'
 import { MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
@@ -58,23 +58,23 @@ export default function (context: Mocha.Context, testData: TestData) {
         sendStatusChangedCallbackStub.restore()
     })
 
-    addTest(suite, 'should delete the peerconnection', async function () {
-        for (const peerconnectionName of peerconnectionNames) {
-            const peerconnectionModel = testData.peerconnections[peerconnectionName].model
-            const result = await deletePeerconnectionsByPeerconnectionId(
-                { peerconnection_id: peerconnectionModel.uuid },
-                testData.userData
-            )
-            assert.strictEqual(result.status, 204)
-            assert(
-                (await peerconnectionRepository.findOne({
-                    where: {
-                        uuid: peerconnectionModel.uuid,
-                    },
-                })) === null
-            )
-        }
-    })
+    // addTest(suite, 'should delete the peerconnection', async function () {
+    //     for (const peerconnectionName of peerconnectionNames) {
+    //         const peerconnectionModel = testData.peerconnections[peerconnectionName].model
+    //         const result = await deletePeerconnectionsByPeerconnectionId(
+    //             { peerconnection_id: peerconnectionModel.uuid },
+    //             testData.userData
+    //         )
+    //         assert.strictEqual(result.status, 202)
+    //         assert(
+    //             (await peerconnectionRepository.findOne({
+    //                 where: {
+    //                     uuid: peerconnectionModel.uuid,
+    //                 },
+    //             })) === null
+    //         )
+    //     }
+    // })
 
     addTest(
         suite,

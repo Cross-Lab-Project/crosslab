@@ -1183,6 +1183,8 @@ class APIClient:
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
+        if status == 202:
+            return resp
         if status == 204:
             return resp
         raise Exception(f"Unexpected status code: {status}")
@@ -1214,7 +1216,7 @@ class APIClient:
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
            
         # transform response
-        if status == 201:
+        if status == 204:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 

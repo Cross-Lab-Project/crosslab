@@ -22,7 +22,7 @@ patch:
           required:
           - status
   responses:
-    201:
+    204:
       description: OK.
     400:
       description: Bad Request.

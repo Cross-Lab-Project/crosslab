@@ -95,8 +95,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         await self.pc.close()
         for channel in self._dataChannels:
             channel.close()
-        self.state = "closed"
-        self.emit("connectionChanged")
+        if self.state != "closed":
+            self.state = "closed"
+            self.emit("connectionChanged")
 
         del self.pc
 

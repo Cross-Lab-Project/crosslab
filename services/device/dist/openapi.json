@@ -1547,8 +1547,11 @@
           }
         ],
         "responses": {
+          "202": {
+            "description": "The peerconnection will be deleted as soon as it's closed."
+          },
           "204": {
-            "description": "The peer connection was deleted successfully."
+            "description": "The peerconnection was deleted successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -1609,7 +1612,7 @@
           }
         },
         "responses": {
-          "201": {
+          "204": {
             "description": "OK."
           },
           "400": {

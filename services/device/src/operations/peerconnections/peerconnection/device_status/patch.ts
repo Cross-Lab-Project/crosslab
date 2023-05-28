@@ -1,7 +1,8 @@
 import { peerconnectionRepository } from '../../../../database/repositories/peerconnection'
 import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../../../../generated/signatures'
 import { peerconnectionUrlFromId } from '../../../../methods/urlFromId'
-import { sendStatusChangedCallback } from '../../../callbacks'
+import { sendClosedCallback, sendStatusChangedCallback } from '../../../callbacks'
+import { deleteOnClose } from '../delete'
 import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common'
 
 /**
@@ -70,14 +71,25 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
             peerconnectionModel.status = 'new'
         }
 
-        if (peerconnectionModel.status !== oldStatus)
+        if (peerconnectionModel.status !== oldStatus) {
             await sendStatusChangedCallback(peerconnectionModel)
+            if (peerconnectionModel.status === 'closed')
+                await sendClosedCallback(peerconnectionModel)
+        }
 
-        await peerconnectionRepository.save(peerconnectionModel)
-
+        if (
+            peerconnectionModel.deviceA.status === 'closed' &&
+            peerconnectionModel.deviceB.status === 'closed' &&
+            deleteOnClose.has(peerconnectionModel.uuid)
+        ) {
+            await peerconnectionRepository.remove(peerconnectionModel)
+            console.log('PEERCONNECTION REMOVED PATCH')
+        } else {
+            await peerconnectionRepository.save(peerconnectionModel)
+        }
         logger.log('info', 'patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded')
 
         return {
-            status: 201,
+            status: 204,
         }
     }

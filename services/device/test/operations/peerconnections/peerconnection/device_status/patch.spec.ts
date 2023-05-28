@@ -214,7 +214,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                             testData.userData
                         )
 
-                    assert.strictEqual(result.status, 201)
+                    assert.strictEqual(result.status, 204)
                     assert.strictEqual(
                         PEERCONNECTION_MODEL.status,
                         testCase.expectedStatusPeerconnection

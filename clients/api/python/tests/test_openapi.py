@@ -5595,6 +5595,21 @@ async def test_delete_peerconnection(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_peerconnection(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_peerconnection(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_peerconnection(url=full_url, **parameters)
+
+    for parameters in parameter_list:
         aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.delete_peerconnection(url=url, **parameters)
@@ -5711,17 +5726,17 @@ async def test_patch_peerconnection_device_status(aioresponses: aioresponses):
     parameter_list = [{"device_url": "test_string", }, ]
 
     for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.patch_peerconnection_device_status(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.patch_peerconnection_device_status(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
         async with APIClient(BASE_URL) as client:
             resp = await client.patch_peerconnection_device_status(url=full_url, body=request, **parameters)
 
