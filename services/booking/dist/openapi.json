@@ -168,6 +168,7 @@
           "booking-frontend"
         ],
         "summary": "Books an experiment.",
+        "x-optional-url": true,
         "requestBody": {
           "content": {
             "application/json": {
@@ -548,33 +549,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "Booking",
-                    "Time",
-                    "Tokens"
-                  ],
-                  "properties": {
-                    "Booking": {
-                      "$ref": "#/components/schemas/Booking"
-                    },
-                    "Time": {
-                      "$ref": "#/components/schemas/Timeslot"
-                    },
-                    "Tokens": {
-                      "type": "array",
-                      "description": "A list of access tokens",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "Device": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "Token": {
-                            "type": "string"
-                          }
-                        }
+                  "type": "array",
+                  "description": "The list of booked devices and selected real devices. Order is guaranteed to be the same as in the booking.",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "Requested",
+                      "Selected"
+                    ],
+                    "properties": {
+                      "Requested": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Selected": {
+                        "type": "string",
+                        "format": "uri"
                       }
                     }
                   }

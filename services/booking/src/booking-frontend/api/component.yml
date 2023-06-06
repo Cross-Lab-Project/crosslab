@@ -6,6 +6,7 @@
       tags:
         - booking-frontend
       summary: Books an experiment.
+      x-optional-url: true
       requestBody:
         content:
           application/json:

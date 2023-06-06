@@ -12,7 +12,7 @@ import {
 import * as mysql from 'mysql2/promise';
 
 import { config } from '../../common/config';
-import { calculateToken, dispatchCallback, handleCallback } from "./internal";
+import { dispatchCallback, handleCallback } from "./internal";
 import dayjs from "dayjs";
 
 export const putBookingByIDLock: putBookingByIDLockSignature = async (parameters, user) => {
@@ -48,15 +48,11 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (parameters
 
             case "booked":
                 await db.execute("UPDATE booking SET `status`='active' WHERE `id`=?", [bookingID]);
-                dispatchCallback(bookingID);
                 break;
 
             default:
                 throw Error("BUG: Unknown booking status " + rows[0].status);
         }
-
-        // Everything is ok, return tokens
-        let tokens: { Device: string, Token: string }[] = await calculateToken(bookingID, db);
 
         // Everything is done - commit changes
 
@@ -67,33 +63,23 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (parameters
         bookingURI = bookingURI + bookingID.toString();
 
         try {
-            let bookingBody: putBookingByIDLock200ResponseType["body"]["Booking"] = { ID: bookingURI, Time: { Start: "", End: "" }, Devices: [], Type: "normal", You: false, External: false, Status: "active", Message: "" }
-            bookingBody.Time.Start = rows[0].start;
-            bookingBody.Time.End = rows[0].end;
-            bookingBody.Type = rows[0].type;
-            bookingBody.Status = rows[0].status;
-            bookingBody.You = rows[0].user == user;
-            bookingBody.Message = rows[0].message;
+            // Add all devices to response
+            let deviceList: putBookingByIDLock200ResponseType["body"] = []
 
-            let [deviceRows, deviceFields]: [any, any] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE booking=? ORDER BY `originalposition` ASC", [bookingID]);
+
+            let [deviceRows, deviceFields]: [any, any] = await db.execute("SELECT `originaldevice`, `bookeddevice` FROM bookeddevices WHERE booking=? ORDER BY `originalposition` ASC", [bookingID]);
             for (let i = 0; i < deviceRows.length; i++) {
-                bookingBody.Devices.push(deviceRows[i].originaldevice)
+                deviceList.push({Requested: deviceRows[i].originaldevice, Selected: deviceRows[i].bookeddevice})
             }
 
             return {
                 status: 200,
-                body: {
-                    Booking: bookingBody,
-                    Time: {
-                        Start: dayjs(rows[0].start).toISOString(),
-                        End: dayjs(rows[0].end).toISOString(),
-                    },
-                    Tokens: tokens,
-                }
+                body: deviceList
             }
         } catch (err) {
             throw err;
         } finally {
+            dispatchCallback(bookingID);
             db.commit();
         }
     } catch (err) {

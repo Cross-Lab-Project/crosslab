@@ -154,8 +154,9 @@ export async function mainLoop(): Promise<void> {
                         if (data.Device !== undefined) {
                             answer.Device = data.Device;
                         };
-                    };
-                    db.end();
+                    } finally {
+                        db.end();
+                    }
 
                     // Send answer
                     try {

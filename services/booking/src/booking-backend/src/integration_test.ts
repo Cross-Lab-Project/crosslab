@@ -1,3 +1,4 @@
+//const why = require('why-is-node-running')
 
 import * as mocha from "mocha";
 import express from 'express';
@@ -7,7 +8,8 @@ import dayjs from "dayjs";
 import * as amqplib from 'amqplib';
 
 import {setupDummySql, tearDownDummySql, getSQLDNS} from "../../test_common/setup"
-import {getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars} from "../../test_common/fakeservers"
+import {getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars} from "../../test_common/fakeserver"
+import {startDeviceReservation, stopDeviceReservation} from "../../test_common/devicereservationhelper"
 
 import { config } from "../../common/config";
 import { randomID } from "./internal";
@@ -18,17 +20,18 @@ let channel: amqplib.Channel;
 mocha.describe("internal.ts", function () {
     this.timeout(10000);
 
-    mocha.before(function () {
+    mocha.before(async function () {
         // Config
         config.OwnURL = getFakeOwnURL();
         config.InstitutePrefix = getFakeInstitutePrefix();
         config.ReservationDSN = getSQLDNS();
 
-        startFakeServer();
+        await startFakeServer();
     });
 
-    mocha.after(function () {
-        stopFakeServer();
+    mocha.after(async function () {
+        await stopFakeServer();
+        //setTimeout(function(){console.log("why?");why();console.log("WHY??");}, 10000);
     });
 
     mocha.beforeEach(async function () {
@@ -63,13 +66,13 @@ mocha.describe("internal.ts", function () {
 
                 while (await channel.get("device-freeing", { noAck: true })) {
                 }
+                await startDeviceReservation()
     });
 
     mocha.afterEach(async function () {
         await tearDownDummySql();
 
         await channel.deleteQueue("device-booking");
-        await channel.deleteQueue("device-reservation");
         await channel.deleteQueue("device-freeing");
 
         await channel.close();
@@ -77,21 +80,23 @@ mocha.describe("internal.ts", function () {
 
         channel = undefined;
         connection = undefined;
+
+        await stopDeviceReservation()
     });
 
-    mocha.it("handleCallback() DeviceUpdate (local)",async () => { 
+    mocha.it("handleCallback() DeviceUpdate (local, available)",async () => { 
         throw Error("TODO implement");
     });
 
-    mocha.it("handleCallback() BookingUpdate (remote)",async () => { 
+    mocha.it("handleCallback() DeviceUpdate (local, not available)",async () => { 
         throw Error("TODO implement");
     });
 
-    mocha.it("addDeviceCallback()",async () => { 
+    mocha.it("handleCallback() BookingUpdate (remote, available)",async () => { 
         throw Error("TODO implement");
     });
 
-    mocha.it("addBookingCallback()",async () => { 
+    mocha.it("handleCallback() BookingUpdate (remote, not available)",async () => { 
         throw Error("TODO implement");
     });
 
@@ -99,9 +104,6 @@ mocha.describe("internal.ts", function () {
         throw Error("TODO implement");
     });
 
-    mocha.it("reservationCheckStatus()",async () => { 
-        throw Error("TODO implement");
-    });
 
     mocha.it("reservateDevice() - remote",async () => { 
         throw Error("TODO implement");
@@ -116,6 +118,22 @@ mocha.describe("internal.ts", function () {
     });
 
     mocha.it("reservateDevice() - local group",async () => { 
+        throw Error("TODO implement");
+    });
+
+    mocha.it("reservateDevice() - remote not available",async () => { 
+        throw Error("TODO implement");
+    });
+
+    mocha.it("reservateDevice() - local single device not available",async () => { 
+        throw Error("TODO implement");
+    });
+
+    mocha.it("reservateDevice() - local two devices not available",async () => { 
+        throw Error("TODO implement");
+    });
+
+    mocha.it("reservateDevice() - local group not available",async () => { 
         throw Error("TODO implement");
     });
 
@@ -152,11 +170,15 @@ mocha.describe("internal.ts", function () {
         throw Error("TODO implement");
     });
 
-    mocha.it("calculateToken() remote", async () => {
-        // TODO
+    mocha.it("putBookingByIDLock",async () => { 
+        throw Error("TODO implement");
     });
 
-    mocha.it("calculateToken() local", async () => {
-        // TODO
+    mocha.it("deleteBookingByIDLock",async () => { 
+        throw Error("TODO implement");
+    });
+
+    mocha.it("postBookingCallbackByID",async () => { 
+        throw Error("TODO implement");
     });
 });

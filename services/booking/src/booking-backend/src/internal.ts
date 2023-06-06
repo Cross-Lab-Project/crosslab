@@ -155,7 +155,7 @@ async function addDeviceCallback(device: URL, targetbooking: bigint, parameters:
         await db.execute("INSERT INTO callback (`id`, `type`, `targetbooking`, `parameters`) VALUES (?,?,?,?)", [id, callbackType.DeviceUpdate, targetbooking, data]);
 
         let api: APIClient = new APIClient(config.OwnURL);
-        await api.updateDevice(device.toString(), {}, { changedUrl: config.OwnURL + "/booking_callback/" + id });
+        await api.updateDevice(device.toString(), undefined, { changedUrl: config.OwnURL + "/booking_callback/" + id });
     } catch (e) {
         // For now, just throw the error
         throw e;
@@ -319,9 +319,9 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     }
 
     nextDevice: for (let i = 0; i < possibleDevices.length; i++) {
-        let schedule: BookingServiceSignatures.GetScheduleSuccessResponse["body"];
+        let schedule: BookingServiceSignatures.ScheduleSuccessResponse["body"];
         try {
-            schedule = await api.getSchedule({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, Combined: false, onlyOwn: true });
+            schedule = await api.schedule({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, Combined: false, onlyOwn: true });
         } catch (e) {
             continue
         }
@@ -402,7 +402,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
             }
         } else {
             let institution = new URL(possibleDevices[i]).origin;
-            let putReturn = await api.bookExperiment({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, { url: institution + "/booking/manage" })
+            let putReturn = await api.newBooking({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, { url: institution + "/booking/manage" });
 
             let ID = putReturn.ReservationID;
 
@@ -637,8 +637,4 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
     } finally {
         await db.end();
     }
-}
-
-export async function calculateToken(id: bigint, db: mysql.Connection ): Promise<{Device: string, Token: string}[]> {
-    return [{Device: "TODO", Token: "TODO"},{Device: "TODO", Token: "TODO"},{Device: "TODO", Token: "TODO"}]
 }
