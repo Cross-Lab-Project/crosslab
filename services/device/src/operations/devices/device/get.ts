@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../database/repositories/device'
+import { repositories } from '../../../database/dataSource'
 import { getDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -14,7 +14,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 ) => {
     logger.log('info', 'getDevicesByDeviceId called')
 
-    const deviceModel = await deviceRepository.findOneOrFail({
+    const deviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
@@ -22,7 +22,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 
     return {
         status: 200,
-        body: await deviceRepository.format(deviceModel, {
+        body: await repositories.device.format(deviceModel, {
             flatGroup: parameters.flat_group,
         }),
     }

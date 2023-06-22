@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../../src/database/repositories/device'
+import { repositories } from '../../../../src/database/dataSource'
 import { deleteDevicesByDeviceId } from '../../../../src/operations/devices'
 import { deviceNames } from '../../../data/devices/index.spec'
 import { TestData } from '../../../data/index.spec'
@@ -19,7 +19,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             )
             assert(result.status === 204)
             assert(
-                (await deviceRepository.findOne({
+                (await repositories.device.findOne({
                     where: {
                         uuid: deviceModel.uuid,
                     },

@@ -1,6 +1,5 @@
 import { config, dataSourceConfig } from './config'
-import { AppDataSource, initializeDataSource } from './database/dataSource'
-import { activeKeyRepository } from './database/repositories/activeKeyRepository'
+import { AppDataSource, initializeDataSource, repositories } from './database/dataSource'
 import { app } from './generated'
 import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
 import { apiClient } from './methods/api'
@@ -31,7 +30,7 @@ async function startAuthenticationService(
     setInterval(resolveAllowlist, 600000, allowlist)
 
     // Create new active key
-    const activeSigKey = await activeKeyRepository.findOne({
+    const activeSigKey = await repositories.activeKey.findOne({
         where: {
             use: 'sig',
         },
@@ -40,11 +39,11 @@ async function startAuthenticationService(
     const jwks = JSON.stringify({ keys: [jwk(key)] })
 
     if (!activeSigKey) {
-        const activeKeyModel = await activeKeyRepository.create({
+        const activeKeyModel = await repositories.activeKey.create({
             use: key.use,
             key: key.uuid,
         })
-        await activeKeyRepository.save(activeKeyModel)
+        await repositories.activeKey.save(activeKeyModel)
     }
 
     app.get('/.well-known/jwks.json', (_req, res) => {

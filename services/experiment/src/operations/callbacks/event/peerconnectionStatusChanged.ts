@@ -1,5 +1,4 @@
-import { experimentRepository } from '../../../database/repositories/experiment'
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import { apiClient } from '../../../methods/api'
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks'
 import { DeviceServiceTypes } from '@cross-lab-project/api-client'
@@ -35,7 +34,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
     }
 
     // TODO: add peerconnection status changed handling
-    const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
         where: { url: peerconnection.url },
         relations: {
             experiment: {
@@ -72,7 +71,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
 
             if (experimentModel.status === 'setup' && connected) {
                 experimentModel.status = 'running'
-                await experimentRepository.save(experimentModel)
+                await repositories.experiment.save(experimentModel)
             }
             break
         case 'failed':

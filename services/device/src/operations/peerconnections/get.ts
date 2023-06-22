@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../database/repositories/peerconnection'
+import { repositories } from '../../database/dataSource'
 import { getPeerconnectionsSignature } from '../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -9,12 +9,12 @@ import { logger } from '@crosslab/service-common'
 export const getPeerconnections: getPeerconnectionsSignature = async (_user) => {
     logger.log('info', 'getPeerconnections called')
 
-    const peerconnectionModels = await peerconnectionRepository.find()
+    const peerconnectionModels = await repositories.peerconnection.find()
 
     logger.log('info', 'getPeerconnections succeeded')
 
     return {
         status: 200,
-        body: peerconnectionModels.map(peerconnectionRepository.formatOverview),
+        body: peerconnectionModels.map(repositories.peerconnection.formatOverview),
     }
 }

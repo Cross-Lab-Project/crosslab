@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../database/repositories/device'
+import { repositories } from '../../../database/dataSource'
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
@@ -19,12 +19,12 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 ) => {
     logger.log('info', 'patchDevicesByDeviceId called')
 
-    const deviceModel = await deviceRepository.findOneOrFail({
+    const deviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    await deviceRepository.write(deviceModel, body ?? { type: deviceModel.type })
-    await deviceRepository.save(deviceModel)
+    await repositories.device.write(deviceModel, body ?? { type: deviceModel.type })
+    await repositories.device.save(deviceModel)
 
     await sendChangedCallback(deviceModel)
 
@@ -44,6 +44,6 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 
     return {
         status: 200,
-        body: await deviceRepository.format(deviceModel),
+        body: await repositories.device.format(deviceModel),
     }
 }

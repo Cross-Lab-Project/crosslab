@@ -1,6 +1,6 @@
 import { config } from '../config'
+import { repositories } from '../database/dataSource'
 import { ActiveKeyModel, KeyModel, UserModel } from '../database/model'
-import { roleRepository } from '../database/repositories/roleRepository'
 import { UserType } from '../generated/types'
 import { userUrlFromId } from './utils'
 import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
@@ -66,7 +66,7 @@ export async function signDeviceToken(
     user: UserModel,
     activeKey: ActiveKeyModel
 ): Promise<string> {
-    const roleModelDevice = await roleRepository.findOneOrFail({
+    const roleModelDevice = await repositories.role.findOneOrFail({
         where: {
             name: 'device',
         },

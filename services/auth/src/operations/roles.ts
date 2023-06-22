@@ -1,5 +1,4 @@
-import { roleRepository } from '../database/repositories/roleRepository'
-import { userRepository } from '../database/repositories/userRepository'
+import { repositories } from '../database/dataSource'
 import {
     deleteRolesByRoleIdSignature,
     deleteRolesByRoleIdUsersSignature,
@@ -19,13 +18,15 @@ import { logger } from '@crosslab/service-common'
 export const getRoles: getRolesSignature = async (_user) => {
     logger.log('info', 'getRoles called')
 
-    const roleModels = await roleRepository.find()
+    const roleModels = await repositories.role.find()
 
     logger.log('info', 'getRoles succeeded')
 
     return {
         status: 200,
-        body: await Promise.all(roleModels.map(roleRepository.format)),
+        body: await Promise.all(
+            roleModels.map(async (role) => await repositories.role.format(role))
+        ),
     }
 }
 
@@ -37,14 +38,14 @@ export const getRoles: getRolesSignature = async (_user) => {
 export const postRoles: postRolesSignature = async (body, _user) => {
     logger.log('info', 'postRoles called')
 
-    const roleModel = await roleRepository.create(body)
-    await roleRepository.save(roleModel)
+    const roleModel = await repositories.role.create(body)
+    await repositories.role.save(roleModel)
 
     logger.log('info', 'postRoles succeeded')
 
     return {
         status: 201,
-        body: await roleRepository.format(roleModel),
+        body: await repositories.role.format(roleModel),
     }
 }
 
@@ -57,7 +58,7 @@ export const postRoles: postRolesSignature = async (body, _user) => {
 export const getRolesByRoleId: getRolesByRoleIdSignature = async (parameters, _user) => {
     logger.log('info', 'getRolesByRoleId called')
 
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
@@ -67,7 +68,7 @@ export const getRolesByRoleId: getRolesByRoleIdSignature = async (parameters, _u
 
     return {
         status: 200,
-        body: await roleRepository.format(roleModel),
+        body: await repositories.role.format(roleModel),
     }
 }
 
@@ -86,19 +87,19 @@ export const patchRolesByRoleId: patchRolesByRoleIdSignature = async (
     logger.log('info', 'patchRolesByRoleId called')
 
     // TODO: check what the user is allowed to do
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
     })
-    await roleRepository.write(roleModel, body ?? {})
-    await roleRepository.save(roleModel)
+    await repositories.role.write(roleModel, body ?? {})
+    await repositories.role.save(roleModel)
 
     logger.log('info', 'patchRolesByRoleId succeeded')
 
     return {
         status: 200,
-        body: await roleRepository.format(roleModel),
+        body: await repositories.role.format(roleModel),
     }
 }
 
@@ -115,12 +116,12 @@ export const deleteRolesByRoleId: deleteRolesByRoleIdSignature = async (
     logger.log('info', 'deleteRolesByRoleId called')
 
     // TODO: check that the user is allowed to delete the role
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
     })
-    await roleRepository.remove(roleModel)
+    await repositories.role.remove(roleModel)
 
     logger.log('info', 'deleteRolesByRoleId succeeded')
 
@@ -141,7 +142,7 @@ export const getRolesByRoleIdUsers: getRolesByRoleIdUsersSignature = async (
 ) => {
     logger.log('info', 'getRolesByRoleIdUsers called')
 
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
@@ -151,7 +152,7 @@ export const getRolesByRoleIdUsers: getRolesByRoleIdUsersSignature = async (
 
     return {
         status: 200,
-        body: await Promise.all(roleModel.users.map(userRepository.format)),
+        body: await Promise.all(roleModel.users.map(repositories.user.format)),
     }
 }
 
@@ -169,7 +170,7 @@ export const postRolesByRoleIdUsers: postRolesByRoleIdUsersSignature = async (
 ) => {
     logger.log('info', 'postRolesByRoleIdUsers called')
 
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
@@ -179,15 +180,15 @@ export const postRolesByRoleIdUsers: postRolesByRoleIdUsersSignature = async (
     })
 
     for (const userId of body ?? []) {
-        const userModel = await userRepository.findOneOrFail({
+        const userModel = await repositories.user.findOneOrFail({
             where: {
                 uuid: userId,
             },
         })
-        roleRepository.addUserModelToRoleModel(roleModel, userModel)
+        repositories.role.addUserModelToRoleModel(roleModel, userModel)
     }
 
-    await roleRepository.save(roleModel)
+    await repositories.role.save(roleModel)
 
     logger.log('info', 'postRolesByRoleIdUsers succeeded')
 
@@ -210,7 +211,7 @@ export const deleteRolesByRoleIdUsers: deleteRolesByRoleIdUsersSignature = async
 ) => {
     logger.log('info', 'deleteRolesByRoleIdUsers called')
 
-    const roleModel = await roleRepository.findOneOrFail({
+    const roleModel = await repositories.role.findOneOrFail({
         where: {
             uuid: parameters.role_id,
         },
@@ -220,15 +221,15 @@ export const deleteRolesByRoleIdUsers: deleteRolesByRoleIdUsersSignature = async
     })
 
     for (const userId of body ?? []) {
-        const userModel = await userRepository.findOneOrFail({
+        const userModel = await repositories.user.findOneOrFail({
             where: {
                 uuid: userId,
             },
         })
-        roleRepository.removeUserModelFromRoleModel(roleModel, userModel)
+        repositories.role.removeUserModelFromRoleModel(roleModel, userModel)
     }
 
-    await roleRepository.save(roleModel)
+    await repositories.role.save(roleModel)
 
     logger.log('info', 'deleteRolesByRoleIdUsers succeeded')
 

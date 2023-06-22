@@ -1,4 +1,4 @@
-import { concreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice'
+import { repositories } from '../../../../src/database/dataSource'
 import { apiClient } from '../../../../src/globals'
 import { changedCallbacks } from '../../../../src/methods/callbacks'
 import { postDevicesByDeviceId } from '../../../../src/operations/devices'
@@ -113,7 +113,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                     !createDeviceAuthenticationTokenStub.args[0][0].endsWith('undefined'),
                     createDeviceAuthenticationTokenStub.args[0][0]
                 )
-                const instanceModel = await concreteDeviceRepository.findOneOrFail({
+                const instanceModel = await repositories.concreteDevice.findOneOrFail({
                     where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })
 
@@ -146,7 +146,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 201)
                 assert(result.body.deviceToken === DEVICE_TOKEN)
-                const instanceModel = await concreteDeviceRepository.findOneOrFail({
+                const instanceModel = await repositories.concreteDevice.findOneOrFail({
                     where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })
 

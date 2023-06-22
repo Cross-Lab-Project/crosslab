@@ -1,4 +1,4 @@
-import { concreteDeviceRepository } from '../../../database/repositories/device/concreteDevice'
+import { repositories } from '../../../database/dataSource'
 import {
     isMessage,
     isAuthenticationMessage,
@@ -53,7 +53,7 @@ export function websocketHandling(app: Express.Application) {
                     )
                 }
 
-                const deviceModel = await concreteDeviceRepository.findOne({
+                const deviceModel = await repositories.concreteDevice.findOne({
                     where: { token: message.token },
                 })
                 if (!deviceModel) {
@@ -63,7 +63,7 @@ export function websocketHandling(app: Express.Application) {
 
                 deviceModel.connected = true
                 connectedDevices.set(deviceModel.uuid, ws)
-                await concreteDeviceRepository.save(deviceModel)
+                await repositories.concreteDevice.save(deviceModel)
                 await sendChangedCallback(deviceModel)
                 logger.log(
                     'info',
@@ -98,7 +98,7 @@ export function websocketHandling(app: Express.Application) {
                                 )}' did not answer hearbeat check, closing connection`
                             )
                             deviceModel.connected = false
-                            await concreteDeviceRepository.save(deviceModel)
+                            await repositories.concreteDevice.save(deviceModel)
                             await sendChangedCallback(deviceModel)
                             connectedDevices.delete(deviceModel.uuid)
                             clearInterval(interval)
@@ -127,7 +127,7 @@ export function websocketHandling(app: Express.Application) {
                 ws.on('close', async (code, reason) => {
                     clearInterval(interval)
                     deviceModel.connected = false
-                    await concreteDeviceRepository.save(deviceModel)
+                    await repositories.concreteDevice.save(deviceModel)
                     await sendChangedCallback(deviceModel)
                     connectedDevices.delete(deviceModel.uuid)
 

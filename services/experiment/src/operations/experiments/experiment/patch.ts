@@ -1,4 +1,4 @@
-import { experimentRepository } from '../../../database/repositories/experiment'
+import { repositories } from '../../../database/dataSource'
 import { patchExperimentsByExperimentIdSignature } from '../../../generated/signatures'
 import {
     runExperiment,
@@ -20,7 +20,7 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
             'info',
             `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`
         )
-        const experimentModel = await experimentRepository.findOneOrFail({
+        const experimentModel = await repositories.experiment.findOneOrFail({
             where: { uuid: parameters.experiment_id },
             relations: {
                 connections: true,
@@ -32,12 +32,12 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
             },
         })
 
-        if (body) await experimentRepository.write(experimentModel, body)
+        if (body) await repositories.experiment.write(experimentModel, body)
 
         if (experimentModel.status === 'booked') await bookExperiment(experimentModel)
         if (experimentModel.status === 'running') await runExperiment(experimentModel)
         if (experimentModel.status === 'finished') await finishExperiment(experimentModel)
-        await experimentRepository.save(experimentModel)
+        await repositories.experiment.save(experimentModel)
 
         logger.log(
             'info',
@@ -46,6 +46,6 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
 
         return {
             status: 200,
-            body: await experimentRepository.format(experimentModel),
+            body: await repositories.experiment.format(experimentModel),
         }
     }

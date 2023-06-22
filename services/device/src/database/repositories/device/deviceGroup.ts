@@ -6,24 +6,30 @@ import {
 } from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { DeviceGroupModel } from '../../model'
-import { deviceOverviewRepository } from './deviceOverview'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-    logger,
-} from '@crosslab/service-common'
+import { AbstractRepository, logger } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
+import { DeviceOverviewRepository } from './deviceOverview'
 
 export class DeviceGroupRepository extends AbstractRepository<
     DeviceGroupModel,
     DeviceGroup<'request'>,
-    DeviceGroup<'response'>
+    DeviceGroup<'response'>,
+    { deviceOverview: DeviceOverviewRepository }
 > {
+    protected dependencies: { deviceOverview?: DeviceOverviewRepository } = {}
+
     constructor() {
         super('Device Group')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(DeviceGroupModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.deviceOverview) return false
+
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(DeviceGroupModel)
     }
 
     async create(data?: DeviceGroup<'request'>): Promise<DeviceGroupModel> {
@@ -36,7 +42,9 @@ export class DeviceGroupRepository extends AbstractRepository<
         model: DeviceGroupModel,
         data: DeviceGroupUpdate<'request'>
     ): Promise<void> {
-        await deviceOverviewRepository.write(model, data)
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        await this.dependencies.deviceOverview.write(model, data)
 
         if (data.devices) model.devices = data.devices
     }
@@ -45,13 +53,15 @@ export class DeviceGroupRepository extends AbstractRepository<
         model: DeviceGroupModel,
         flatGroup?: boolean
     ): Promise<DeviceGroup<'response'>> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
         const devices: Device[] = await this.resolveDeviceReferences(
             model.devices,
             flatGroup
         )
 
         return {
-            ...(await deviceOverviewRepository.format(model)),
+            ...(await this.dependencies.deviceOverview.format(model)),
             type: 'group',
             devices: devices.filter(
                 (value, index, array) =>
@@ -99,5 +109,3 @@ export class DeviceGroupRepository extends AbstractRepository<
         return undefined
     }
 }
-
-export const deviceGroupRepository = new DeviceGroupRepository()

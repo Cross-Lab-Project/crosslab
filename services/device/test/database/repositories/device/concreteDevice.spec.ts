@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../../src/database/dataSource'
 import { ConcreteDeviceModel } from '../../../../src/database/model'
-import {
-    concreteDeviceRepository,
-    ConcreteDeviceRepository,
-} from '../../../../src/database/repositories/device/concreteDevice'
+import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice'
 import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../../src/generated/types'
 import { ConcreteDeviceName } from '../../../data/devices/concreteDevices/index.spec'
 import { initTestDatabase } from '../index.spec'
@@ -17,7 +14,7 @@ class ConcreteDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
     ConcreteDeviceRepository
 > {
     protected name = 'concrete devices' as const
-    protected repository = concreteDeviceRepository
+    protected repository = repositories.concreteDevice
     protected getEntityData = async () => (await initTestDatabase())['concrete devices']
     protected RepositoryClass = ConcreteDeviceRepository
 

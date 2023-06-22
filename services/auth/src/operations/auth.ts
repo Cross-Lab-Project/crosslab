@@ -1,5 +1,4 @@
-import { activeKeyRepository } from '../database/repositories/activeKeyRepository'
-import { tokenRepository } from '../database/repositories/tokenRepository'
+import { repositories } from '../database/dataSource'
 import { getAuthSignature } from '../generated/signatures'
 import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 import { parseBearerToken, signDeviceToken, signUserToken } from '../methods/auth'
@@ -29,7 +28,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     }
 
     // Get active key
-    const activeKey = await activeKeyRepository.findOneOrFail({
+    const activeKey = await repositories.activeKey.findOneOrFail({
         where: {
             use: 'sig',
         },
@@ -40,7 +39,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
     // Non Allowlisted Auth
     try {
         // Resolve user from Authorization parameter
-        const token = await tokenRepository.findOneOrFail({
+        const token = await repositories.token.findOneOrFail({
             where: {
                 token: tokenString,
             },
@@ -78,7 +77,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
 
         // Update token expiration time
         if (token.expiresOn) token.expiresOn = new Date(Date.now() + HOUR).toISOString()
-        tokenRepository.save(token)
+        repositories.token.save(token)
 
         logger.log('info', 'getAuth succeeded')
 

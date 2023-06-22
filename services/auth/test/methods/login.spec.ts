@@ -1,7 +1,5 @@
+import { repositories } from '../../src/database/dataSource'
 import { TokenModel, UserModel } from '../../src/database/model'
-import { roleRepository } from '../../src/database/repositories/roleRepository'
-import { tokenRepository } from '../../src/database/repositories/tokenRepository'
-import { userRepository } from '../../src/database/repositories/userRepository'
 import { loginLocal, loginTui } from '../../src/methods/login'
 import {
     AuthenticationError,
@@ -19,17 +17,17 @@ export default () =>
     describe('login methods', async function () {
         describe('createUserToken', async function () {
             let tokenRepositoryCreateStub: sinon.SinonStub<
-                Parameters<typeof tokenRepository.create>,
-                ReturnType<typeof tokenRepository.create>
+                Parameters<typeof repositories.token.create>,
+                ReturnType<typeof repositories.token.create>
             >
             let userRepositorySaveStub: sinon.SinonStub<
-                Parameters<typeof userRepository.save>,
-                ReturnType<typeof userRepository.save>
+                Parameters<typeof repositories.user.save>,
+                ReturnType<typeof repositories.user.save>
             >
 
             this.beforeAll(function () {
-                tokenRepositoryCreateStub = sinon.stub(tokenRepository, 'create')
-                userRepositorySaveStub = sinon.stub(userRepository, 'save')
+                tokenRepositoryCreateStub = sinon.stub(repositories.token, 'create')
+                userRepositorySaveStub = sinon.stub(repositories.user, 'save')
             })
 
             this.afterAll(function () {
@@ -91,23 +89,23 @@ export default () =>
 
         describe('createUserTUI', async function () {
             let userRepositoryCreateStub: sinon.SinonStub<
-                Parameters<typeof userRepository.create>,
-                ReturnType<typeof userRepository.create>
+                Parameters<typeof repositories.user.create>,
+                ReturnType<typeof repositories.user.create>
             >
             let userRepositorySaveStub: sinon.SinonStub<
-                Parameters<typeof userRepository.save>,
-                ReturnType<typeof userRepository.save>
+                Parameters<typeof repositories.user.save>,
+                ReturnType<typeof repositories.user.save>
             >
             let roleRepositoryFindOneOrFailStub: sinon.SinonStub<
-                Parameters<typeof roleRepository.findOneOrFail>,
-                ReturnType<typeof roleRepository.findOneOrFail>
+                Parameters<typeof repositories.role.findOneOrFail>,
+                ReturnType<typeof repositories.role.findOneOrFail>
             >
 
             this.beforeAll(function () {
-                userRepositoryCreateStub = sinon.stub(userRepository, 'create')
-                userRepositorySaveStub = sinon.stub(userRepository, 'save')
+                userRepositoryCreateStub = sinon.stub(repositories.user, 'create')
+                userRepositorySaveStub = sinon.stub(repositories.user, 'save')
                 roleRepositoryFindOneOrFailStub = sinon.stub(
-                    roleRepository,
+                    repositories.role,
                     'findOneOrFail'
                 )
             })
@@ -150,8 +148,8 @@ export default () =>
                 ReturnType<typeof LdapClient.prototype.search>
             >
             let userRepositoryFindOneStub: sinon.SinonStub<
-                Parameters<typeof userRepository.findOne>,
-                ReturnType<typeof userRepository.findOne>
+                Parameters<typeof repositories.user.findOne>,
+                ReturnType<typeof repositories.user.findOne>
             >
             let createUserTUIStub: sinon.SinonStub<[username: string], Promise<UserModel>>
             let createUserTokenStub: sinon.SinonStub<
@@ -164,7 +162,7 @@ export default () =>
                 PASSWORD = 'password'
                 ldapClientBindStub = sinon.stub(LdapClient.prototype, 'bind')
                 ldapClientSearchStub = sinon.stub(LdapClient.prototype, 'search')
-                userRepositoryFindOneStub = sinon.stub(userRepository, 'findOne')
+                userRepositoryFindOneStub = sinon.stub(repositories.user, 'findOne')
                 createUserTUIStub = sinon.stub()
                 createUserTokenStub = sinon.stub()
             })
@@ -289,8 +287,8 @@ export default () =>
             let HASHED_PASSWORD: string
             let INVALID_PASSWORD: string
             let userRepositoryFindOneStub: sinon.SinonStub<
-                Parameters<typeof userRepository.findOne>,
-                ReturnType<typeof userRepository.findOne>
+                Parameters<typeof repositories.user.findOne>,
+                ReturnType<typeof repositories.user.findOne>
             >
             let createUserTokenStub: sinon.SinonStub<
                 [userModel: UserModel, expiresIn: number],
@@ -302,7 +300,7 @@ export default () =>
                 PASSWORD = 'password'
                 HASHED_PASSWORD = await hash(PASSWORD, 10)
                 INVALID_PASSWORD = 'invalid'
-                userRepositoryFindOneStub = sinon.stub(userRepository, 'findOne')
+                userRepositoryFindOneStub = sinon.stub(repositories.user, 'findOne')
                 createUserTokenStub = sinon.stub()
             })
 

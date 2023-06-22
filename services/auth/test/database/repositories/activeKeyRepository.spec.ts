@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { ActiveKeyModel } from '../../../src/database/model'
-import {
-    ActiveKeyRepository,
-    activeKeyRepository,
-} from '../../../src/database/repositories/activeKeyRepository'
+import { ActiveKeyRepository } from '../../../src/database/repositories/activeKeyRepository'
 import { ActiveKey } from '../../../src/types/types'
 import { ActiveKeyName } from '../../data/activeKeyData.spec'
 import { initTestDatabase } from './index.spec'
@@ -16,7 +13,7 @@ class ActiveKeyRepositoryTestSuite extends AbstractRepositoryTestSuite<
     ActiveKeyRepository
 > {
     protected name = 'active keys' as const
-    protected repository = activeKeyRepository
+    protected repository = repositories.activeKey
     protected getEntityData = async () => (await initTestDatabase())['active keys']
     protected RepositoryClass = ActiveKeyRepository
 

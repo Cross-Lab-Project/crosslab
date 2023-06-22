@@ -21,9 +21,9 @@ export abstract class AbstractRepositoryTestSuite<K extends string, R extends Ab
   protected entityData?: PartialTestData<K, R>;
   protected testSuites?: CustomRecord<SuiteName, Mocha.Suite>;
   protected repositoryTestData?: RepositoryTestData<K, R>;
-  protected AppDataSource: AbstractApplicationDataSource;
+  protected AppDataSource: AbstractApplicationDataSource<Record<string, never>>;
 
-  constructor(AppDataSource: AbstractApplicationDataSource) {
+  constructor(AppDataSource: AbstractApplicationDataSource<Record<string, never>>) {
     this.AppDataSource = AppDataSource;
   }
 

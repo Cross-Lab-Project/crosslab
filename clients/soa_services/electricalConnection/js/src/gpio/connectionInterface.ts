@@ -14,7 +14,7 @@ const InterfaceType: InterfaceType = 'gpio';
 export interface GPIOConfiguration extends ConnectionInterfaceConfiguration {
   signals: {gpio: string};
   driver: string;
-  direction?: "in" | "out" | "inout";
+  direction?: 'in' | 'out' | 'inout';
 }
 
 export enum GPIOState {

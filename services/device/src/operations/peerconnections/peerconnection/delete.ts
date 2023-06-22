@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
 import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
 import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
@@ -15,7 +15,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     async (parameters, _user) => {
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId called')
 
-        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
         })
 
@@ -23,12 +23,12 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             peerconnectionModel.deviceA.status === 'closed' &&
             peerconnectionModel.deviceB.status === 'closed'
         ) {
-            signalingQueueManager.addOnCloseHandler(
+            console.log('REMOVING PEERCONNECTION VIA SQM')
+            signalingQueueManager.setOnCloseHandler(
                 peerconnectionModel.uuid,
                 async () => {
                     try {
-                        await peerconnectionRepository.remove(peerconnectionModel)
-                        console.log('PEERCONNECTION REMOVED SQM')
+                        await repositories.peerconnection.remove(peerconnectionModel)
                     } catch (error) {
                         logger.log(
                             'error',
@@ -42,6 +42,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             )
             signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
         } else {
+            console.log('REMOVING PEERCONNECTION VIA DEVICE STATUS')
             deleteOnClose.add(peerconnectionModel.uuid)
             signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
         }

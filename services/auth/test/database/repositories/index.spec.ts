@@ -1,4 +1,4 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { Migrations } from '../../../src/database/migrations'
 import {
     ScopeModel,
@@ -8,12 +8,6 @@ import {
     ActiveKeyModel,
     TokenModel,
 } from '../../../src/database/model'
-import { activeKeyRepository } from '../../../src/database/repositories/activeKeyRepository'
-import { keyRepository } from '../../../src/database/repositories/keyRepository'
-import { roleRepository } from '../../../src/database/repositories/roleRepository'
-import { scopeRepository } from '../../../src/database/repositories/scopeRepository'
-import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
-import { userRepository } from '../../../src/database/repositories/userRepository'
 import { parseAllowlist, resolveAllowlist } from '../../../src/methods/allowlist'
 import { activeKeyNames } from '../../data/activeKeyData.spec'
 import { prepareTestData, TestData } from '../../data/index.spec'
@@ -75,30 +69,30 @@ export async function initTestDatabase(): Promise<TestData> {
     await AppDataSource.initialize(dataSourceConfig)
 
     for (const scopeName of scopeNames) {
-        await scopeRepository.save(testData.scopes[scopeName].model)
+        await repositories.scope.save(testData.scopes[scopeName].model)
     }
 
     for (const keyName of keyNames) {
-        await keyRepository.save(testData.keys[keyName].model)
+        await repositories.key.save(testData.keys[keyName].model)
     }
 
     for (const activeKeyName of activeKeyNames) {
-        await activeKeyRepository.save(testData['active keys'][activeKeyName].model)
+        await repositories.activeKey.save(testData['active keys'][activeKeyName].model)
     }
 
     for (const roleName of roleNames) {
-        await roleRepository.save({
+        await repositories.role.save({
             ...testData.roles[roleName].model,
             users: [],
         })
     }
 
     for (const userName of userNames) {
-        await userRepository.save(testData.users[userName].model)
+        await repositories.user.save(testData.users[userName].model)
     }
 
     for (const tokenName of tokenNames) {
-        await tokenRepository.save(testData.tokens[tokenName].model)
+        await repositories.token.save(testData.tokens[tokenName].model)
     }
 
     // assert that data was created successfully

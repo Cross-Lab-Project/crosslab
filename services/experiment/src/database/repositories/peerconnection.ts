@@ -1,20 +1,24 @@
 import { PeerconnectionModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class PeerconnectionRepository extends AbstractRepository<
     PeerconnectionModel,
     string,
     string
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Peerconnection')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(PeerconnectionModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(PeerconnectionModel)
     }
 
     async write(model: PeerconnectionModel, data: string): Promise<void> {
@@ -25,5 +29,3 @@ export class PeerconnectionRepository extends AbstractRepository<
         return model.url
     }
 }
-
-export const peerconnectionRepository = new PeerconnectionRepository()

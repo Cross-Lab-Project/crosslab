@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../../src/database/dataSource'
 import { DeviceGroupModel } from '../../../../src/database/model'
-import {
-    deviceGroupRepository,
-    DeviceGroupRepository,
-} from '../../../../src/database/repositories/device/deviceGroup'
+import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup'
 import { Device, DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
 import { DeviceGroupName } from '../../../data/devices/deviceGroups/index.spec'
 import { prepareTestData } from '../../../data/index.spec'
@@ -19,7 +16,7 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
     DeviceGroupRepository
 > {
     protected name = 'device groups' as const
-    protected repository = deviceGroupRepository
+    protected repository = repositories.deviceGroup
     protected testData = prepareTestData()
     protected getEntityData = async () => (await initTestDatabase())['device groups']
     protected RepositoryClass = DeviceGroupRepository

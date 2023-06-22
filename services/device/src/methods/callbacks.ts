@@ -1,7 +1,6 @@
 import { config } from '../config'
+import { repositories } from '../database/dataSource'
 import { DeviceModel, PeerconnectionModel } from '../database/model'
-import { deviceRepository } from '../database/repositories/device'
-import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId'
 import { logger } from '@crosslab/service-common'
 import fetch from 'node-fetch'
@@ -35,7 +34,7 @@ export async function sendChangedCallback(device: DeviceModel) {
                 body: JSON.stringify({
                     callbackType: 'event',
                     eventType: 'device-changed',
-                    device: await deviceRepository.format(device),
+                    device: await repositories.device.format(device),
                 }),
                 headers: [['Content-Type', 'application/json']],
             })
@@ -76,7 +75,9 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
                 body: JSON.stringify({
                     callbackType: 'event',
                     eventType: 'peerconnection-closed',
-                    peerconnection: await peerconnectionRepository.format(peerconnection),
+                    peerconnection: await repositories.peerconnection.format(
+                        peerconnection
+                    ),
                 }),
                 headers: [['Content-Type', 'application/json']],
             })
@@ -121,7 +122,9 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
                 body: JSON.stringify({
                     callbackType: 'event',
                     eventType: 'peerconnection-status-changed',
-                    peerconnection: await peerconnectionRepository.format(peerconnection),
+                    peerconnection: await repositories.peerconnection.format(
+                        peerconnection
+                    ),
                 }),
                 headers: [['Content-Type', 'application/json']],
             })

@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../database/repositories/peerconnection'
+import { repositories } from '../../database/dataSource'
 import { postPeerconnectionsSignature } from '../../generated/signatures'
 import { apiClient, timeoutMap } from '../../globals'
 import {
@@ -34,9 +34,9 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
         )
     }
 
-    const peerconnectionModel = await peerconnectionRepository.create(body)
+    const peerconnectionModel = await repositories.peerconnection.create(body)
 
-    await peerconnectionRepository.save(peerconnectionModel)
+    await repositories.peerconnection.save(peerconnectionModel)
 
     await signalingQueueManager.createSignalingQueues(peerconnectionModel.uuid)
 
@@ -73,7 +73,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
                 try {
                     logger.log('info', 'devices did not connect')
                     peerconnectionModel.status = 'failed'
-                    await peerconnectionRepository.save(peerconnectionModel)
+                    await repositories.peerconnection.save(peerconnectionModel)
                     await sendStatusChangedCallback(peerconnectionModel)
                 } catch (error) {
                     logger.log(
@@ -113,6 +113,6 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 
     return {
         status: peerconnectionModel.status === 'connected' ? 201 : 202,
-        body: await peerconnectionRepository.format(peerconnectionModel),
+        body: await repositories.peerconnection.format(peerconnectionModel),
     }
 }

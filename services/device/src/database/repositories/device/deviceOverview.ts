@@ -1,22 +1,26 @@
 import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { DeviceOverviewModel } from '../../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
-class DeviceOverviewRepository extends AbstractRepository<
+export class DeviceOverviewRepository extends AbstractRepository<
     DeviceOverviewModel,
     DeviceOverview<'request'>,
     DeviceOverview<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Device Overview')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(DeviceOverviewModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(DeviceOverviewModel)
     }
 
     async write(
@@ -37,5 +41,3 @@ class DeviceOverviewRepository extends AbstractRepository<
         }
     }
 }
-
-export const deviceOverviewRepository = new DeviceOverviewRepository()

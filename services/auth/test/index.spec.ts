@@ -1,5 +1,5 @@
 import { config, dataSourceConfig } from '../src/config'
-import { AppDataSource } from '../src/database/dataSource'
+import { AppDataSource, repositories } from '../src/database/dataSource'
 import {
     ScopeModel,
     RoleModel,
@@ -8,7 +8,6 @@ import {
     ActiveKeyModel,
     TokenModel,
 } from '../src/database/model'
-import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
 import { app } from '../src/generated'
 import { logger } from '@crosslab/service-common'
 import assert from 'assert'
@@ -43,7 +42,7 @@ describe('Index', function () {
     })
 
     it('should have at least one active key', async function () {
-        const activeKeyModels = await activeKeyRepository.find()
+        const activeKeyModels = await repositories.activeKey.find()
         assert(activeKeyModels.length > 0)
 
         await AppDataSource.teardown()

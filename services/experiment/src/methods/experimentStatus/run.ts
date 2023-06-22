@@ -1,5 +1,5 @@
+import { repositories } from '../../database/dataSource'
 import { ExperimentModel } from '../../database/model'
-import { experimentRepository } from '../../database/repositories/experiment'
 import { callbackUrl, deviceChangedCallbacks } from '../../operations/callbacks'
 import { InvalidStateError } from '../../types/errors'
 import { apiClient, startCloudDeviceInstance } from '../api'
@@ -32,13 +32,7 @@ export async function runExperiment(experimentModel: ExperimentModel) {
         await bookExperiment(experimentModel)
     }
 
-    // make sure the experiment has a booking
-    /*if (!experimentModel.bookingID) {
-        throw new MissingPropertyError(
-            `Experiment does not have a booking`,
-            400
-        )
-    }*/
+    // TODO: make sure the experiment has a booking
 
     /**
      * This variable determines if the experiment needs to go into the state "setup".
@@ -68,12 +62,6 @@ export async function runExperiment(experimentModel: ExperimentModel) {
                 resolvedDevice.url,
                 { changedUrl: callbackUrl }
             )
-            if (!instance)
-                throw new MissingPropertyError('Instance of device is missing', 500)
-            if (!instance?.url)
-                throw new MissingPropertyError('Device instance is missing its url', 500) // NOTE: error code?
-            if (!deviceToken)
-                throw new MissingPropertyError('Token of device instance is missing', 500)
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
@@ -92,28 +80,14 @@ export async function runExperiment(experimentModel: ExperimentModel) {
     }
 
     // TODO: lock devices
-    // try {
-    //     const { Booking: booking, Time: _timeslot, Tokens: _deviceTokenMapping } = await lockBooking(experimentModel.bookingID)
-    //     if (booking.Status !== "active") {
-    // eslint-disable-next-line max-len
-    //         throw new InvalidBookingError(`The booking ${experimentModel.bookingID} is invalid for the experiment ${experimentUrlFromId(experimentModel.uuid)}`)
-    //     }
-    // } catch (error) {
-    //     // TODO: error handling
-    //     throw error
-    // }
 
     // TODO: add callback to all devices/instances for changes
 
-    if (needsSetup) {
-        // await establishPeerconnections(experimentModel)
-        experimentModel.status = 'setup'
-    } else {
+    experimentModel.status = needsSetup ? 'setup' : 'running'
+    if (experimentModel.status === 'running')
         await establishPeerconnections(experimentModel)
-        experimentModel.status = 'running'
-    }
 
     // save experiment
-    await experimentRepository.save(experimentModel)
+    await repositories.experiment.save(experimentModel)
     logger.log('info', 'Successfully running experiment', { data: { experimentUrl } })
 }

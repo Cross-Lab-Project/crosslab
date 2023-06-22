@@ -1,8 +1,6 @@
 import { config } from '../../../src/config'
-import { AppDataSource } from '../../../src/database/dataSource'
-import { ActiveKeyModel, TokenModel, UserModel } from '../../../src/database/model'
-import { roleRepository } from '../../../src/database/repositories/roleRepository'
-import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
+import { repositories } from '../../../src/database/dataSource'
+import { TokenModel, UserModel } from '../../../src/database/model'
 import { jwk } from '../../../src/methods/key'
 import { userUrlFromId } from '../../../src/methods/utils'
 import { getAuth } from '../../../src/operations/auth'
@@ -19,9 +17,8 @@ import Mocha from 'mocha'
 import * as sinon from 'sinon'
 
 async function JWTVerify(authorization: string, scopes: string[]) {
-    const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
     const activeKey = (
-        await activeKeyRepository.find({
+        await repositories.activeKey.find({
             relations: {
                 key: true,
             },
@@ -242,7 +239,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'should throw an InconsistentDatabaseError if no user is associated with the found token',
             async function () {
                 const tokenRepositoryFindOneOrFailStub = sinon.stub(
-                    tokenRepository,
+                    repositories.token,
                     'findOneOrFail'
                 )
                 tokenRepositoryFindOneOrFailStub.resolves({
@@ -269,7 +266,7 @@ export default function (context: Mocha.Context, testData: TestData) {
         new Mocha.Test(
             'should authenticate a non-allowlisted device with a valid device token',
             async function () {
-                const roleModelDevice = await roleRepository.findOneOrFail({
+                const roleModelDevice = await repositories.role.findOneOrFail({
                     where: {
                         name: 'device',
                     },

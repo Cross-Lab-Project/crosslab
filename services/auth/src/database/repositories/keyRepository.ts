@@ -1,22 +1,29 @@
 import { Key } from '../../types/types'
 import { KeyModel } from '../model'
-import { activeKeyRepository } from './activeKeyRepository'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { ActiveKeyRepository } from './activeKeyRepository'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class KeyRepository extends AbstractRepository<
     KeyModel,
     Required<Key>,
-    Key<'response'>
+    Key<'response'>,
+    { activeKey: ActiveKeyRepository }
 > {
+    protected dependencies: { activeKey?: ActiveKeyRepository } = {}
+
     constructor() {
         super('Key')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(KeyModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.activeKey) return false
+
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(KeyModel)
     }
 
     public async write(model: KeyModel, data: Required<Key>): Promise<void> {
@@ -31,9 +38,9 @@ export class KeyRepository extends AbstractRepository<
     }
 
     public async remove(model: KeyModel): Promise<void> {
-        if (!this.repository) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
 
-        const activeKeyModels = await activeKeyRepository.find({
+        const activeKeyModels = await this.dependencies.activeKey.find({
             where: {
                 key: {
                     uuid: model.uuid,
@@ -42,11 +49,9 @@ export class KeyRepository extends AbstractRepository<
         })
 
         for (const activeKeyModel of activeKeyModels) {
-            await activeKeyRepository.remove(activeKeyModel)
+            await this.dependencies.activeKey.remove(activeKeyModel)
         }
 
         await this.repository.remove(model)
     }
 }
-
-export const keyRepository: KeyRepository = new KeyRepository()

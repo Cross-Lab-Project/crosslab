@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { TokenModel } from '../../../src/database/model'
-import {
-    tokenRepository,
-    TokenRepository,
-} from '../../../src/database/repositories/tokenRepository'
+import { TokenRepository } from '../../../src/database/repositories/tokenRepository'
 import { Token } from '../../../src/types/types'
 import { TokenName } from '../../data/tokenData.spec'
 import { initTestDatabase } from './index.spec'
@@ -17,7 +14,7 @@ class TokenRepositoryTestSuite extends AbstractRepositoryTestSuite<
     TokenRepository
 > {
     protected name = 'tokens' as const
-    protected repository = tokenRepository
+    protected repository = repositories.token
     protected getEntityData = async () => (await initTestDatabase())['tokens']
     protected RepositoryClass = TokenRepository
 

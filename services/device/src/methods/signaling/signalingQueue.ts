@@ -16,7 +16,7 @@ export class SignalingQueue {
         | 'started'
         | 'peerconnection-created'
         | 'peerconnection-closed' = 'new'
-    private _isRunning: boolean = false
+    private _isStopped = false
     public _onClose: () => void
 
     constructor(peerconnectionUrl: string, deviceUrl: string) {
@@ -34,8 +34,8 @@ export class SignalingQueue {
         return this._state
     }
 
-    public get isRunning() {
-        return this._isRunning
+    public get isStopped() {
+        return this._isStopped
     }
 
     public get onClose(): (() => void) | undefined {
@@ -71,7 +71,10 @@ export class SignalingQueue {
             }
         })
 
-        if (this.state === 'peerconnection-created' || this.state === 'started')
+        if (
+            (this.state === 'peerconnection-created' || this.state === 'started') &&
+            !this._isStopped
+        )
             this.start()
     }
 
@@ -118,15 +121,14 @@ export class SignalingQueue {
                         },
                     }
                 )
-            else this._isRunning = false
         })
-        this._isRunning = true
+        this._isStopped = false
         if (this._state === 'new') this._state = 'started'
     }
 
     public stop() {
         this.queue.stop()
-        this._isRunning = false
+        this._isStopped = true
     }
 
     public isEmpty(): boolean {

@@ -1,5 +1,4 @@
-import { roleRepository } from '../../../src/database/repositories/roleRepository'
-import { userRepository } from '../../../src/database/repositories/userRepository'
+import { repositories } from '../../../src/database/dataSource'
 import { postLogin } from '../../../src/operations/login'
 import { postRegister } from '../../../src/operations/register'
 import { AuthenticationError, RegistrationError } from '../../../src/types/errors'
@@ -13,13 +12,13 @@ export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /register', context)
 
     let userRepositorySaveStub: sinon.SinonStub<
-        Parameters<typeof userRepository.save>,
-        ReturnType<typeof userRepository.save>
+        Parameters<typeof repositories.user.save>,
+        ReturnType<typeof repositories.user.save>
     >
-    const originalUserRepositorySave = userRepository.save
+    const originalUserRepositorySave = repositories.user.save
 
     suite.beforeEach(function () {
-        userRepositorySaveStub = sinon.stub(userRepository, 'save')
+        userRepositorySaveStub = sinon.stub(repositories.user, 'save')
     })
 
     suite.afterEach(function () {
@@ -128,12 +127,12 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 userRepositorySaveStub.callsFake(originalUserRepositorySave)
 
-                const roleModelUser = await roleRepository.findOneOrFail({
+                const roleModelUser = await repositories.role.findOneOrFail({
                     where: {
                         name: 'user',
                     },
                 })
-                await roleRepository.remove(roleModelUser)
+                await repositories.role.remove(roleModelUser)
 
                 await assert.rejects(
                     async () => {

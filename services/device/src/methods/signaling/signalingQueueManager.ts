@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../database/repositories/peerconnection'
+import { repositories } from '../../database/dataSource'
 import {
     ClosePeerconnectionMessage,
     CreatePeerconnectionMessage,
@@ -22,7 +22,7 @@ export class SignalingQueueManager {
         this.queueMap = new Map()
     }
 
-    public addOnCloseHandler(peerconnectionId: string, onClose: () => void) {
+    public setOnCloseHandler(peerconnectionId: string, onClose: () => void) {
         const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId)
         const queues = this.queueMap.get(peerconnectionUrl)
 
@@ -32,7 +32,10 @@ export class SignalingQueueManager {
                 404
             )
 
-        queues.onClose = onClose
+        queues.onClose = () => {
+            onClose()
+            this.queueMap.delete(peerconnectionId)
+        }
     }
 
     public async createSignalingQueues(peerconnectionId: string) {
@@ -49,7 +52,7 @@ export class SignalingQueueManager {
                 `Peerconnection '${peerconnectionUrl}' already has signaling queues`
             )
 
-        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
             where: {
                 uuid: peerconnectionId,
             },
@@ -146,19 +149,19 @@ export class SignalingQueueManager {
         queues.deviceB.queue.start()
     }
 
-    // public stopSignalingQueues(peerconnectionId: string) {
-    //     const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId)
-    //     const queues = this.queueMap.get(peerconnectionUrl)
+    public stopSignalingQueues(peerconnectionId: string) {
+        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId)
+        const queues = this.queueMap.get(peerconnectionUrl)
 
-    //     if (!queues)
-    //         throw new MissingEntityError(
-    //             `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
-    //             404
-    //         )
+        if (!queues)
+            throw new MissingEntityError(
+                `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
+                404
+            )
 
-    //     queues.deviceA.queue.stop()
-    //     queues.deviceB.queue.stop()
-    // }
+        queues.deviceA.queue.stop()
+        queues.deviceB.queue.stop()
+    }
 
     public addSignalingMessage(
         peerconnectionUrl: string,
@@ -199,13 +202,13 @@ export class SignalingQueueManager {
             connectionUrl: peerconnectionUrl,
         }
 
-        if (queues.deviceA.queue.state !== 'new')
-            queues.deviceA.queue.add(closePeerconnectionMessage)
-        else if (queues.deviceA.queue.onClose) queues.deviceA.queue.onClose()
+        if (queues.deviceA.queue.state === 'new' && queues.deviceA.queue.onClose)
+            queues.deviceA.queue.onClose()
+        else queues.deviceA.queue.add(closePeerconnectionMessage)
 
-        if (queues.deviceB.queue.state !== 'new')
-            queues.deviceB.queue.add(closePeerconnectionMessage)
-        else if (queues.deviceB.queue.onClose) queues.deviceB.queue.onClose()
+        if (queues.deviceB.queue.state === 'new' && queues.deviceB.queue.onClose)
+            queues.deviceB.queue.onClose()
+        else queues.deviceB.queue.add(closePeerconnectionMessage)
     }
 }
 

@@ -1,4 +1,4 @@
-import { experimentRepository } from '../../database/repositories/experiment'
+import { repositories } from '../../database/dataSource'
 import { getExperimentsSignature } from '../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -10,7 +10,7 @@ import { logger } from '@crosslab/service-common'
 export const getExperiments: getExperimentsSignature = async (_user) => {
     logger.log('info', 'Handling GET request on endpoint /experiments')
 
-    const experimentModels = await experimentRepository.find()
+    const experimentModels = await repositories.experiment.find()
 
     logger.log('info', 'Successfully handled GET request on endpoint /experiments')
 
@@ -18,7 +18,7 @@ export const getExperiments: getExperimentsSignature = async (_user) => {
         status: 200,
         body: await Promise.all(
             experimentModels.map((experimentModel) =>
-                experimentRepository.formatOverview(experimentModel)
+                repositories.experiment.formatOverview(experimentModel)
             )
         ),
     }

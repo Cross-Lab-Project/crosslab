@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../../../src/database/repositories/peerconnection'
+import { repositories } from '../../../../src/database/dataSource'
 import { apiClient } from '../../../../src/globals'
 import * as callbackFunctions from '../../../../src/methods/callbacks'
 import { deletePeerconnectionsByPeerconnectionId } from '../../../../src/operations/peerconnections'
@@ -14,10 +14,10 @@ export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('DELETE /peerconnections/{peerconnection_id}', context)
 
     const peerconnectionRepositoryFindOneOrFailOriginal =
-        peerconnectionRepository.findOneOrFail
+        repositories.peerconnection.findOneOrFail
     let peerconnectionRepositoryFindOneOrFailStub: sinon.SinonStub<
-        Parameters<typeof peerconnectionRepository.findOneOrFail>,
-        ReturnType<typeof peerconnectionRepository.findOneOrFail>
+        Parameters<typeof repositories.peerconnection.findOneOrFail>,
+        ReturnType<typeof repositories.peerconnection.findOneOrFail>
     >
     let sendSignalingMessageStub: sinon.SinonStub<
         Parameters<typeof apiClient.sendSignalingMessage>,
@@ -34,7 +34,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     suite.beforeAll(function () {
         peerconnectionRepositoryFindOneOrFailStub = sinon.stub(
-            peerconnectionRepository,
+            repositories.peerconnection,
             'findOneOrFail'
         )
         sendSignalingMessageStub = sinon.stub(apiClient, 'sendSignalingMessage')

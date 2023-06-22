@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import {
     ConcreteDevice,
     isConcreteDevice,
@@ -45,7 +45,7 @@ export async function handleDeviceChangedEventCallback(callback: {
 }
 
 async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) {
-    const pendingConnectionsA = await peerconnectionRepository.find({
+    const pendingConnectionsA = await repositories.peerconnection.find({
         where: {
             status: 'new',
             deviceA: {
@@ -54,7 +54,7 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
         },
     })
 
-    const pendingConnectionsB = await peerconnectionRepository.find({
+    const pendingConnectionsB = await repositories.peerconnection.find({
         where: {
             status: 'new',
             deviceB: {

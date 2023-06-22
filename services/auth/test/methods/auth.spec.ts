@@ -1,6 +1,6 @@
 import { config } from '../../src/config'
+import { repositories } from '../../src/database/dataSource'
 import { KeyModel, UserModel } from '../../src/database/model'
-import { roleRepository } from '../../src/database/repositories/roleRepository'
 import {
     parseBearerToken,
     sign,
@@ -22,8 +22,8 @@ export default () =>
         let alg: string
         let use: string
         let roleFindOneOrFailStub: sinon.SinonStub<
-            Parameters<typeof roleRepository.findOneOrFail>,
-            ReturnType<typeof roleRepository.findOneOrFail>
+            Parameters<typeof repositories.role.findOneOrFail>,
+            ReturnType<typeof repositories.role.findOneOrFail>
         >
 
         this.beforeAll(async function () {
@@ -71,7 +71,7 @@ export default () =>
                 tokens: [],
             }
 
-            roleFindOneOrFailStub = sinon.stub(roleRepository, 'findOneOrFail')
+            roleFindOneOrFailStub = sinon.stub(repositories.role, 'findOneOrFail')
         })
 
         this.afterEach(function () {

@@ -1,5 +1,4 @@
-import { deviceRepository } from '../../database/repositories/device'
-import { deviceOverviewRepository } from '../../database/repositories/device/deviceOverview'
+import { repositories } from '../../database/dataSource'
 import { getDevicesSignature } from '../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -10,14 +9,14 @@ import { logger } from '@crosslab/service-common'
 export const getDevices: getDevicesSignature = async (_user) => {
     logger.log('info', 'getDevices called')
 
-    const deviceModels = await deviceRepository.find()
+    const deviceModels = await repositories.device.find()
 
     logger.log('info', 'getDevices succeeded')
 
     return {
         status: 200,
         body: await Promise.all(
-            deviceModels.map((device) => deviceOverviewRepository.format(device))
+            deviceModels.map((device) => repositories.deviceOverview.format(device))
         ),
     }
 }

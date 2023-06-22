@@ -1,21 +1,25 @@
 import { Role } from '../../generated/types'
 import { RoleModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class RoleRepository extends AbstractRepository<
     RoleModel,
     Role<'request'>,
     Role<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Role')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(RoleModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(RoleModel)
     }
 
     async write(model: RoleModel, data: Partial<Role<'request'>>): Promise<void> {
@@ -30,5 +34,3 @@ export class RoleRepository extends AbstractRepository<
         }
     }
 }
-
-export const roleRepository = new RoleRepository()

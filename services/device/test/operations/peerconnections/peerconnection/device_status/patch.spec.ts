@@ -1,5 +1,5 @@
+import { repositories } from '../../../../../src/database/dataSource'
 import { PeerconnectionModel } from '../../../../../src/database/model'
-import { peerconnectionRepository } from '../../../../../src/database/repositories/peerconnection'
 import { ConnectionStatus } from '../../../../../src/generated/types'
 import * as callbackFunctions from '../../../../../src/methods/callbacks'
 import { patchPeerconnectionsByPeerconnectionIdDeviceStatus } from '../../../../../src/operations/peerconnections'
@@ -29,11 +29,11 @@ export default function (context: Mocha.Context, testData: TestData) {
         ReturnType<typeof callbackFunctions.sendStatusChangedCallback>
     >
     let peerconnectionRepositoryFindOneOrFailStub: sinon.SinonStub<
-        Parameters<typeof peerconnectionRepository.findOneOrFail>,
-        ReturnType<typeof peerconnectionRepository.findOneOrFail>
+        Parameters<typeof repositories.peerconnection.findOneOrFail>,
+        ReturnType<typeof repositories.peerconnection.findOneOrFail>
     >
     const peerconnectionRepositoryFindOneOrFailOriginal =
-        peerconnectionRepository.findOneOrFail
+        repositories.peerconnection.findOneOrFail
 
     suite.beforeAll(function () {
         sendStatusChangedCallbackStub = sinon.stub(
@@ -41,7 +41,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'sendStatusChangedCallback'
         )
         peerconnectionRepositoryFindOneOrFailStub = sinon.stub(
-            peerconnectionRepository,
+            repositories.peerconnection,
             'findOneOrFail'
         )
     })

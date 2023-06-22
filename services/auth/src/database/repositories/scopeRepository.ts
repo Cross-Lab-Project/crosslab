@@ -1,21 +1,25 @@
 import { Scope } from '../../types/types'
 import { ScopeModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class ScopeRepository extends AbstractRepository<
     ScopeModel,
     Scope<'request'>,
     Scope<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Scope')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ScopeModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ScopeModel)
     }
 
     public async write(model: ScopeModel, data: Scope<'request'>): Promise<void> {
@@ -26,5 +30,3 @@ export class ScopeRepository extends AbstractRepository<
         return model.name
     }
 }
-
-export const scopeRepository: ScopeRepository = new ScopeRepository()

@@ -1,5 +1,5 @@
+import { repositories } from '../../database/dataSource'
 import { ExperimentModel } from '../../database/model'
-import { experimentRepository } from '../../database/repositories/experiment'
 import { experimentUrlFromId } from '../url'
 import { MissingPropertyError } from '@crosslab/service-common'
 import { logger } from '@crosslab/service-common'
@@ -39,6 +39,6 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     // experimentModel.bookingID = bookingId
 
     experimentModel.status = 'booked'
-    await experimentRepository.save(experimentModel)
+    await repositories.experiment.save(experimentModel)
     logger.log('info', 'Successfully booked experiment', { data: { experimentUrl } })
 }

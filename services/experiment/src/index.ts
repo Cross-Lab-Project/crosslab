@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { config, dataSourceConfig } from './config'
+import { config } from './config'
 import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
 import { apiClient } from './methods/api'
@@ -15,7 +15,7 @@ import {
 import '@crosslab/service-common'
 
 async function startExperimentService() {
-    await AppDataSource.initialize(dataSourceConfig)
+    await AppDataSource.initialize()
 
     apiClient.accessToken = config.API_TOKEN
 

@@ -1,4 +1,4 @@
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -11,7 +11,7 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
     async (parameters, _user) => {
         logger.log('info', 'getPeerconnectionsByPeerconnectionId called')
 
-        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
         })
 
@@ -19,6 +19,6 @@ export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconne
 
         return {
             status: 200,
-            body: await peerconnectionRepository.format(peerconnectionModel),
+            body: await repositories.peerconnection.format(peerconnectionModel),
         }
     }

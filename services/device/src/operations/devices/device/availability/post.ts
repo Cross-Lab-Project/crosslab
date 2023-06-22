@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../../database/repositories/device'
+import { repositories } from '../../../../database/dataSource'
 import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures'
 import { calculateAvailability } from '../../../../methods/availability'
 import { sendChangedCallback } from '../../../../methods/callbacks'
@@ -17,7 +17,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
     async (parameters, body, _user) => {
         logger.log('info', 'postDevicesByDeviceIdAvailability called')
 
-        const deviceModel = await deviceRepository.findOneOrFail({
+        const deviceModel = await repositories.device.findOneOrFail({
             where: { uuid: parameters.device_id },
         })
 
@@ -39,7 +39,7 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
             end
         )
 
-        await deviceRepository.save(deviceModel)
+        await repositories.device.save(deviceModel)
         await sendChangedCallback(deviceModel)
 
         logger.log('info', 'postDevicesByDeviceIdAvailability succeeded')

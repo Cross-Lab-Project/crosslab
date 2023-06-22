@@ -1,22 +1,29 @@
 import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types'
 import { ConcreteDeviceModel } from '../../model'
-import { deviceOverviewRepository } from './deviceOverview'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { DeviceOverviewRepository } from './deviceOverview'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class ConcreteDeviceRepository extends AbstractRepository<
     ConcreteDeviceModel,
     ConcreteDevice<'request'>,
-    ConcreteDevice<'response'>
+    ConcreteDevice<'response'>,
+    { deviceOverview: DeviceOverviewRepository }
 > {
+    protected dependencies: { deviceOverview?: DeviceOverviewRepository } = {}
+
     constructor() {
         super('Concrete Device')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ConcreteDeviceModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.deviceOverview) return false
+
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ConcreteDeviceModel)
     }
 
     async create(data?: ConcreteDevice<'request'>): Promise<ConcreteDeviceModel> {
@@ -33,14 +40,18 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         model: ConcreteDeviceModel,
         data: ConcreteDeviceUpdate<'request'>
     ): Promise<void> {
-        await deviceOverviewRepository.write(model, data)
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        await this.dependencies.deviceOverview.write(model, data)
         if (data.experiment) model.experiment = data.experiment
         if (data.services) model.services = data.services
     }
 
     async format(model: ConcreteDeviceModel): Promise<ConcreteDevice<'response'>> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
         return {
-            ...(await deviceOverviewRepository.format(model)),
+            ...(await this.dependencies.deviceOverview.format(model)),
             type: 'device',
             announcedAvailability: model.announcedAvailability,
             connected: model.connected,
@@ -49,5 +60,3 @@ export class ConcreteDeviceRepository extends AbstractRepository<
         }
     }
 }
-
-export const concreteDeviceRepository = new ConcreteDeviceRepository()

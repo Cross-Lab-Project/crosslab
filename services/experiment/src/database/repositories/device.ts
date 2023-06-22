@@ -1,21 +1,25 @@
 import { Device } from '../../generated/types'
 import { DeviceModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
     Device<'request'>,
     Device<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Device')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(DeviceModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(DeviceModel)
     }
 
     async write(model: DeviceModel, data: Partial<Device<'request'>>): Promise<void> {
@@ -31,5 +35,3 @@ export class DeviceRepository extends AbstractRepository<
         }
     }
 }
-
-export const deviceRepository = new DeviceRepository()

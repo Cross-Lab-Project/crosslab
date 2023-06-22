@@ -1,6 +1,5 @@
+import { repositories } from '../database/dataSource'
 import { ExperimentModel } from '../database/model'
-import { experimentRepository } from '../database/repositories/experiment'
-import { peerconnectionRepository } from '../database/repositories/peerconnection'
 import {
     callbackUrl,
     peerconnectionClosedCallbacks,
@@ -42,10 +41,10 @@ export async function establishPeerconnections(experimentModel: ExperimentModel)
         peerconnectionStatusChangedCallbacks.push(peerconnection.url)
 
         // create, push and save new peerconnection
-        const peerconnectionModel = await peerconnectionRepository.create(
+        const peerconnectionModel = await repositories.peerconnection.create(
             peerconnection.url
         )
         experimentModel.connections.push(peerconnectionModel)
-        await experimentRepository.save(experimentModel)
+        await repositories.experiment.save(experimentModel)
     }
 }

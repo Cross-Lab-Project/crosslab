@@ -1,5 +1,5 @@
+import { repositories } from '../../database/dataSource'
 import { ExperimentModel } from '../../database/model'
-import { experimentRepository } from '../../database/repositories/experiment'
 import { apiClient } from '../api'
 import { experimentUrlFromId } from '../url'
 import { logger } from '@crosslab/service-common'
@@ -19,8 +19,6 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
         }
         case 'booked': {
             // TODO: delete booking (what to do if "booked" but no booking?)
-            // if (experimentModel.bookingID)
-            //     await deleteBooking(experimentModel.bookingID)
             break
         }
         case 'running': {
@@ -30,13 +28,19 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
                     await apiClient.deletePeerconnection(peerconnection.url)
                 }
             }
+            if (experimentModel.devices) {
+                for (const device of experimentModel.devices) {
+                    console.log(device.additionalProperties)
+                    if (device.additionalProperties?.instanceUrl) {
+                        await apiClient.deleteDevice(
+                            device.additionalProperties.instanceUrl
+                        )
+                    }
+                }
+            }
             // TODO: unlock all devices (booking client missing)
-            // if (experimentModel.bookingID)
-            //     await unlockDevices(experimentModel.bookingID)
 
             // TODO: delete booking (booking client missing)
-            // if (experimentModel.bookingID)
-            //     await deleteBooking(experimentModel.bookingID)
             break
         }
         case 'finished': {
@@ -46,6 +50,6 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
     }
 
     experimentModel.status = 'finished'
-    await experimentRepository.save(experimentModel)
+    await repositories.experiment.save(experimentModel)
     logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } })
 }

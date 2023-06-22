@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../database/repositories/device'
+import { repositories } from '../../../database/dataSource'
 import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -14,11 +14,11 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
 ) => {
     logger.log('info', 'deleteDevicesByDeviceId called')
 
-    const deviceModel = await deviceRepository.findOneOrFail({
+    const deviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    await deviceRepository.remove(deviceModel)
+    await repositories.device.remove(deviceModel)
 
     logger.log('info', 'deleteDevicesByDeviceId succeeded')
 

@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { UserModel } from '../../../src/database/model'
-import {
-    userRepository,
-    UserRepository,
-} from '../../../src/database/repositories/userRepository'
+import { UserRepository } from '../../../src/database/repositories/userRepository'
 import { User } from '../../../src/generated/types'
 import { userUrlFromId } from '../../../src/methods/utils'
 import { UserName, userNames } from '../../data/userData.spec'
@@ -19,7 +16,7 @@ class UserRepositoryTestSuite extends AbstractRepositoryTestSuite<
     UserRepository
 > {
     protected name = 'users' as const
-    protected repository = userRepository
+    protected repository = repositories.user
     protected getEntityData = async () => (await initTestDatabase())['users']
     protected RepositoryClass = UserRepository
 
