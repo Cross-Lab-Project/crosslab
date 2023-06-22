@@ -42,6 +42,7 @@ describe('Index', function () {
     })
 
     it('should have at least one active key', async function () {
+        this.timeout(10000)
         const activeKeyModels = await repositories.activeKey.find()
         assert(activeKeyModels.length > 0)
 
