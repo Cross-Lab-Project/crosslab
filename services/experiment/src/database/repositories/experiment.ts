@@ -66,10 +66,14 @@ export class ExperimentRepository extends AbstractRepository<
         }
         if (data.devices) {
             for (const device of model.devices ?? []) {
-                await this.dependencies.device.remove(device)
+                const foundDevice = data.devices.find((d) => d.device === device.url)
+                if (!foundDevice) await this.dependencies.device.remove(device)
+                else device.role = foundDevice.role
             }
-            model.devices = []
+            model.devices ??= []
             for (const device of data.devices) {
+                const foundDevice = model.devices?.find((d) => d.url === device.url)
+                if (foundDevice) continue
                 const deviceModel = await this.dependencies.device.create(device)
                 model.devices.push(deviceModel)
             }

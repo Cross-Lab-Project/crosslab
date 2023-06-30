@@ -74,7 +74,6 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
 
         if (deviceA.connected && deviceB.connected) {
             clearTimeout(timeoutMap.get(pendingConnection.uuid))
-            console.log('SIGNALING STARTED CALLBACK')
             signalingQueueManager.startSignalingQueues(pendingConnection.uuid)
             timeoutMap.delete(pendingConnection.uuid)
         }

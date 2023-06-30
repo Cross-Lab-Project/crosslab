@@ -25,9 +25,13 @@ properties:
     type: string
     format: uri
     readOnly: true
+  isPublic:
+    type: boolean
+    description: If true, the device may be seen and used by every user.
 required:
   - url
   - type
   - name
   - owner
+  - isPublic
 x-typeguard: true

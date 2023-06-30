@@ -171,7 +171,6 @@ export class SignalingQueueManager {
             | ClosePeerconnectionMessage
             | SignalingMessage
     ) {
-        console.log('ADDING SIGNALING MESSAGE TO QUEUE')
         const queues = this.queueMap.get(peerconnectionUrl)
 
         if (queues?.deviceA.url === deviceUrl)

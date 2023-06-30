@@ -85,7 +85,6 @@ export class SignalingQueue {
             | SignalingMessage
     ) {
         try {
-            console.log('SENDING SIGNALING MESSAGE')
             await apiClient.sendSignalingMessage(
                 this.deviceUrl,
                 signalingMessage,

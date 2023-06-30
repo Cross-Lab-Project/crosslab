@@ -410,6 +410,9 @@
           },
           {
             "$ref": "#/components/parameters/flat_group"
+          },
+          {
+            "$ref": "#/components/parameters/execute_for"
           }
         ],
         "security": [
@@ -1044,9 +1047,104 @@
       }
     },
     "/devices/{device_id}/availability": {
+      "get": {
+        "operationId": "get_device_availability",
+        "summary": "Get the availability of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:read",
+              "device:read:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/start_time"
+          },
+          {
+            "$ref": "#/components/parameters/end_time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the availability of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/availability"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_device_availability_rules",
+        "summary": "Delete the availability rules of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:write",
+              "device:write:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The availability rules of the device were deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
       "post": {
-        "operationId": "add_availability_rules",
-        "summary": "Update the device availability",
+        "operationId": "add_device_availability_rules",
+        "summary": "Add availability rules for a device",
         "tags": [
           "device"
         ],
@@ -1738,13 +1836,18 @@
             "type": "string",
             "format": "uri",
             "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
           "url",
           "type",
           "name",
-          "owner"
+          "owner",
+          "isPublic"
         ],
         "x-typeguard": true
       },
@@ -1961,6 +2064,10 @@
               "edge instantiable",
               "cloud instantiable"
             ]
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
@@ -2321,6 +2428,7 @@
       },
       "peerconnection_common": {
         "type": "object",
+        "title": "Peerconnection Common",
         "properties": {
           "url": {
             "type": "string",
@@ -2452,6 +2560,35 @@
         "schema": {
           "type": "boolean",
           "default": false
+        }
+      },
+      "execute_for": {
+        "name": "execute_for",
+        "in": "header",
+        "required": false,
+        "description": "The JWT of a user for which to check the permissions.\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "start_time": {
+        "in": "query",
+        "name": "startTime",
+        "description": "Start time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "end_time": {
+        "in": "query",
+        "name": "endTime",
+        "description": "End time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "peerconnection_url": {

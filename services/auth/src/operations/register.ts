@@ -47,5 +47,6 @@ export const postRegister: postRegisterSignature = async (body) => {
 
     return {
         status: 201,
+        body: await repositories.user.format(newUser),
     }
 }

@@ -1,8 +1,9 @@
 import { repositories } from '../../../database/dataSource'
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks'
+import { checkPermission } from '../../../methods/permission'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
-import { logger } from '@crosslab/service-common'
+import { DeviceOwnershipError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.
@@ -15,13 +16,15 @@ import { logger } from '@crosslab/service-common'
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     parameters,
     body,
-    _user
+    user
 ) => {
     logger.log('info', 'patchDevicesByDeviceId called')
 
     const deviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
+
+    if (!checkPermission('write', deviceModel, user.JWT)) throw new DeviceOwnershipError()
 
     await repositories.device.write(deviceModel, body ?? { type: deviceModel.type })
     await repositories.device.save(deviceModel)

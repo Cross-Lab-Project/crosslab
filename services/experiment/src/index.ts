@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-import { config } from './config'
+import { config, dataSourceConfig } from './config'
 import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
+import { isUserTypeJWT } from './generated/types'
 import { apiClient } from './methods/api'
 import { callbackHandling } from './operations/callbacks'
 import {
@@ -10,12 +11,12 @@ import {
     logHandling,
     logger,
     missingRouteHandling,
+    parseJwtFromAuthorizationHeader,
     requestIdHandling,
 } from '@crosslab/service-common'
-import '@crosslab/service-common'
 
 async function startExperimentService() {
-    await AppDataSource.initialize()
+    await AppDataSource.initialize(dataSourceConfig)
 
     apiClient.accessToken = config.API_TOKEN
 
@@ -25,7 +26,7 @@ async function startExperimentService() {
 
     app.initService({
         security: {
-            JWT: JWTVerify(config) as any,
+            JWT: JWTVerify(config, isUserTypeJWT, parseJwtFromAuthorizationHeader),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [callbackHandling, missingRouteHandling],

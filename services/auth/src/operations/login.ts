@@ -26,6 +26,15 @@ export const postLogin: postLoginSignature = async (body) => {
             case 'tui':
                 tokenModel = await loginTui(body.username, body.password)
                 break
+            default:
+                for (const loginMethod of [loginLocal, loginTui]) {
+                    try {
+                        tokenModel = await loginMethod(body.username, body.password)
+                        break
+                    } catch (error) {
+                        logger.log('error', error)
+                    }
+                }
         }
     } catch (error) {
         // LdapAuthenticationError -> AuthenticationError

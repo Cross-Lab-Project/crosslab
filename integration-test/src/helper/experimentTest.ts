@@ -24,6 +24,7 @@ type DeviceMeta = {
   type: DeviceType;
   name: string;
   description: string;
+  isPublic: boolean;
   instantiateUrl?: string;
   codeUrl?: string;
   announcedAvailability?: DeviceServiceTypes.AvailabilityRule[];
@@ -72,7 +73,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ...deviceMeta,
       })) as DeviceServiceTypes.ConcreteDevice<'response'>;
 
-      assert(apiDevice.url, 'Device URL is not defined'); // TODO: Issue 32
+      assert(apiDevice.url, 'Device URL is not defined');
 
       this.apiDevices.push({...apiDevice});
     }
@@ -151,13 +152,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       assert((await client.getDevice(device.url)).connected, 'Device is not connected');
     }
 
-    await client.updateExperiment(apiExperiment.url!, {
-      status: 'running',
-      devices: this.apiDevices.map((d, idx) => ({
-        role: 'device' + (idx + 1),
-        device: d.type === 'device' ? d.url : (d.instanceUrl as any),
-      })),
-    });
+    // await client.updateExperiment(apiExperiment.url!, {
+    //   status: 'running',
+    //   devices: this.apiDevices.map((d, idx) => ({
+    //     role: 'device' + (idx + 1),
+    //     device: d.type === 'device' ? d.url : (d.instanceUrl as any),
+    //   })),
+    // });
 
     await Promise.all(promiseListConnections);
 
@@ -171,6 +172,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       type: deviceType,
       name: name ?? `${deviceTypeName} Device ${this.devices.length}`,
       description: description ?? `A ${deviceTypeName} test device`,
+      isPublic: true,
       instantiateUrl: deviceType === 'cloud instantiable' ? 'http://localhost/edge_instantiable_device' : undefined,
       codeUrl: deviceType === 'edge instantiable' ? 'http://localhost/cloud_instantiable_device' : undefined,
       announcedAvailability: deviceType === 'device' ? [{available: true}] : undefined,

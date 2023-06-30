@@ -110,7 +110,7 @@ export class DeviceRepository extends AbstractRepository<
 
     async format(
         model: DeviceModel,
-        options?: { flatGroup?: boolean }
+        options?: { flat_group?: boolean; execute_for?: string }
     ): Promise<Device<'response'>> {
         if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
@@ -122,10 +122,7 @@ export class DeviceRepository extends AbstractRepository<
             case 'edge instantiable':
                 return await this.dependencies.instantiableBrowserDevice.format(model)
             case 'group':
-                return await this.dependencies.deviceGroup.format(
-                    model,
-                    options?.flatGroup
-                )
+                return await this.dependencies.deviceGroup.format(model, options)
         }
     }
 

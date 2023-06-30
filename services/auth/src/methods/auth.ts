@@ -1,7 +1,7 @@
 import { config } from '../config'
 import { repositories } from '../database/dataSource'
 import { ActiveKeyModel, KeyModel, UserModel } from '../database/model'
-import { UserType } from '../generated/types'
+import { BasicUserType } from '../generated/types'
 import { userUrlFromId } from './utils'
 import { MalformedParameterError, MissingParameterError } from '@crosslab/service-common'
 import { SignJWT, JWTPayload, importJWK } from 'jose'
@@ -38,7 +38,7 @@ export async function signUserToken(
     activeKey: ActiveKeyModel,
     scopes?: string[]
 ): Promise<string> {
-    return await sign<UserType>(
+    return await sign<BasicUserType>(
         {
             url: userUrlFromId(user.uuid),
             username: user.username,
@@ -71,7 +71,7 @@ export async function signDeviceToken(
             name: 'device',
         },
     })
-    return await sign<UserType>(
+    return await sign<BasicUserType>(
         {
             url: userUrlFromId(user.uuid),
             username: user.username,

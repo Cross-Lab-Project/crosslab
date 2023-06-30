@@ -88,13 +88,13 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'users:delete': [],
     // device service scopes
     'device': ['developer'],
-    'device:read': ['developer'], // TODO: readall, listall, editall
+    'device:read': ['auth_service', 'developer', 'device_service', 'experiment_service'], // TODO: readall, listall, editall
     'device:read:owned': standardRoles,
     'device:write': ['device', 'device_service'],
     'device:write:owned': ['user'],
     'device:create': ['user'],
     'device:delete': [],
-    'device:delete:owned': ['user'],
+    'device:delete:owned': ['experiment_service', 'user'],
     'device:instantiate': ['experiment_service'],
     'device:instantiate:owned': ['user'],
     'device:connect': [],

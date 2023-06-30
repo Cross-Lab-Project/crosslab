@@ -13,6 +13,7 @@ const devices = [
     { url: concreteDeviceData['concrete device'].response.url },
     { url: device_group.response.url },
 ]
+const isPublic = true
 
 const device_group_nested: EntityData<DeviceGroupRepository> = {
     request: {
@@ -20,6 +21,7 @@ const device_group_nested: EntityData<DeviceGroupRepository> = {
         name,
         description,
         devices,
+        isPublic,
     },
     model: {
         uuid,
@@ -28,6 +30,7 @@ const device_group_nested: EntityData<DeviceGroupRepository> = {
         description,
         devices,
         owner,
+        isPublic,
     },
     response: {
         url: deviceUrlFromId(uuid),
@@ -36,6 +39,7 @@ const device_group_nested: EntityData<DeviceGroupRepository> = {
         description,
         devices: [concreteDeviceData['concrete device'].response, device_group.response],
         owner,
+        isPublic,
     },
 }
 

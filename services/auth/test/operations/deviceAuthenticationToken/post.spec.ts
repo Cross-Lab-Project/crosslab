@@ -1,7 +1,7 @@
 import * as API from '../../../src/methods/api'
 import { postDeviceAuthenticationToken } from '../../../src/operations/deviceAuthenticationToken'
-// import { OwnershipError } from '../../../src/types/errors'
 import { TestData } from '../../data/index.spec'
+// import { DeviceOwnershipError, MissingEntityError } from '@crosslab/service-common'
 import { MissingEntityError } from '@crosslab/service-common'
 import assert, { fail } from 'assert'
 import Mocha from 'mocha'
@@ -19,6 +19,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             url: 'https://localhost/devices/39db5f84-2ed1-491d-b0e1-f48463a6b748',
             name: 'Test Device',
             owner: testData.users['POST /device_authentication_token user'].response.url!,
+            isPublic: true,
         })
     })
 
@@ -51,7 +52,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
     // suite.addTest(
     //     new Mocha.Test(
-    //         'should throw an OwnershipError if the requesting user is not the owner of the device',
+    //         'should throw a DeviceOwnershipError if the requesting user is not the owner of the device',
     //         async function () {
     //             try {
     //                 await postDeviceAuthenticationToken(
@@ -75,7 +76,7 @@ export default function (context: Mocha.Context, testData: TestData) {
     //                 )
     //                 fail()
     //             } catch (error) {
-    //                 assert(error instanceof OwnershipError)
+    //                 assert(error instanceof DeviceOwnershipError)
     //                 assert(error.status === 403)
     //             }
     //         }

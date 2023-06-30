@@ -100,7 +100,6 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
                 deleteOnClose.has(peerconnectionModel.uuid)
             ) {
                 await repositories.peerconnection.remove(peerconnectionModel)
-                console.log('PEERCONNECTION REMOVED PATCH')
             } else {
                 await repositories.peerconnection.save(peerconnectionModel)
             }

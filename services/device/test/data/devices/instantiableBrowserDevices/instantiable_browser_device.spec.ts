@@ -8,6 +8,7 @@ const name = 'Instantiable Browser Device Example'
 const description = 'An example for an instantiable browser device'
 const owner = 'http://localhost/users/superadmin'
 const codeUrl = 'http://localhost/code'
+const isPublic = true
 
 const instantiable_browser_device: EntityData<InstantiableBrowserDeviceRepository> = {
     request: {
@@ -15,6 +16,7 @@ const instantiable_browser_device: EntityData<InstantiableBrowserDeviceRepositor
         name,
         description,
         codeUrl,
+        isPublic,
     },
     model: {
         uuid,
@@ -23,6 +25,7 @@ const instantiable_browser_device: EntityData<InstantiableBrowserDeviceRepositor
         description,
         owner,
         codeUrl,
+        isPublic,
     },
     response: {
         url: deviceUrlFromId(uuid),
@@ -31,6 +34,7 @@ const instantiable_browser_device: EntityData<InstantiableBrowserDeviceRepositor
         description,
         owner,
         codeUrl,
+        isPublic,
     },
 }
 

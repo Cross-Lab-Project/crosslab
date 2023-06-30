@@ -57,8 +57,10 @@ from crosslab.api_client.schemas import (
     UpdateDeviceResponse,
     DeleteDeviceResponse,
     InstantiateDeviceResponse,
-    AddAvailabilityRulesRequest,
-    AddAvailabilityRulesResponse,
+    GetDeviceAvailabilityResponse,
+    DeleteDeviceAvailabilityRulesResponse,
+    AddDeviceAvailabilityRulesRequest,
+    AddDeviceAvailabilityRulesResponse,
     CreateWebsocketTokenResponse,
     SendSignalingMessageRequest,
     SendSignalingMessageResponse,
@@ -893,7 +895,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_device(self, url: str, flat_group: Optional[bool] = None) -> GetDeviceResponse:  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None, execute_for: Optional[str] = None) -> GetDeviceResponse:  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -915,6 +917,11 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
+        if execute_for:
+            if isinstance(execute_for, list):
+                query_params['execute_for'] = execute_for
+            else:
+                query_params['execute_for'] = str(execute_for)
         
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
@@ -1008,9 +1015,67 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_availability_rules(self, url: str, body: Optional[AddAvailabilityRulesRequest] = None) -> AddAvailabilityRulesResponse:  # noqa: E501
+    async def get_device_availability(self, url: str, startTime: Optional[str] = None, endTime: Optional[str] = None) -> GetDeviceAvailabilityResponse:  # noqa: E501
         """
-        Update the device availability
+        Get the availability of a device
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/availability'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if startTime:
+            if isinstance(startTime, list):
+                query_params['startTime'] = startTime
+            else:
+                query_params['startTime'] = str(startTime)
+        if endTime:
+            if isinstance(endTime, list):
+                query_params['endTime'] = endTime
+            else:
+                query_params['endTime'] = str(endTime)
+        
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get", params=query_params)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_device_availability_rules(self, url: str) -> DeleteDeviceAvailabilityRulesResponse:  # noqa: E501
+        """
+        Delete the availability rules of a device
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/availability'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def add_device_availability_rules(self, url: str, body: Optional[AddDeviceAvailabilityRulesRequest] = None) -> AddDeviceAvailabilityRulesResponse:  # noqa: E501
+        """
+        Add availability rules for a device
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")

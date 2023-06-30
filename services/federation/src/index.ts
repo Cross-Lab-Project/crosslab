@@ -2,6 +2,7 @@
 import { config } from './config'
 import { AppDataSource } from './data_source'
 import { app } from './generated/index'
+import { isUserTypeJWT } from './generated/types'
 import {
     JWTVerify,
     errorHandler,
@@ -9,6 +10,7 @@ import {
     logger,
     missingRouteHandling,
     requestIdHandling,
+    parseJwtFromAuthorizationHeader,
 } from '@crosslab/service-common'
 
 async function startFederationService() {
@@ -20,7 +22,7 @@ async function startFederationService() {
 
     app.initService({
         security: {
-            JWT: JWTVerify(config) as any,
+            JWT: JWTVerify(config, isUserTypeJWT, parseJwtFromAuthorizationHeader),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [missingRouteHandling],

@@ -23,7 +23,6 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             peerconnectionModel.deviceA.status === 'closed' &&
             peerconnectionModel.deviceB.status === 'closed'
         ) {
-            console.log('REMOVING PEERCONNECTION VIA SQM')
             signalingQueueManager.setOnCloseHandler(
                 peerconnectionModel.uuid,
                 async () => {
@@ -42,7 +41,6 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             )
             signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
         } else {
-            console.log('REMOVING PEERCONNECTION VIA DEVICE STATUS')
             deleteOnClose.add(peerconnectionModel.uuid)
             signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
         }

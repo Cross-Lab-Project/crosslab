@@ -41,16 +41,19 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
                         async function () {
                             const name = deviceData[key].request.name
                             const type = deviceData[key].request.type
+                            const isPublic = deviceData[key].request.isPublic
                             const model =
                                 type === 'group'
                                     ? await data.repository.create({
                                           name,
                                           type,
                                           devices: [],
+                                          isPublic,
                                       })
                                     : await data.repository.create({
                                           name,
                                           type,
+                                          isPublic,
                                       })
                             assert(data.validateCreate(model))
                             await data.repository.write(

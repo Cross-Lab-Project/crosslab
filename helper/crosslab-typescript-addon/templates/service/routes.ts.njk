@@ -54,24 +54,26 @@ import {
     {{ validationDependencies | unique | join(",\n\t") }}
 } from "./requestValidation"
 
+import * as core from 'express-serve-static-core'
+
 export default function routes(
     options: initServiceOptions<SecurityScheme>
 ): express.Router {
     const router = express.Router()
 
-    async function handleSecurityRequirement<T extends SecurityScheme,P,B,Q>(
+    async function handleSecurityRequirement<T extends SecurityScheme,P extends core.ParamsDictionary,B,Q extends core.Query>(
         request: TypedRequest<P,B,Q>,
         securityRequirement: {
             [k in T]: string[]
         }
     ): Promise<UserData<T>> {
-        const userDataEntries: [T, UserType][] = []
+        const userDataEntries: [T, UserType<T>][] = []
         for (const method in securityRequirement) {
             const user = await options.security[method](
                 request,
                 securityRequirement[method]
             )
-            if (!isUserType(user)) throw new Error(`User resolved by method ${method} is not of type 'UserType'`)
+            if (!isUserType(user, method)) throw new Error(`User resolved by method ${method} is not of type 'UserType'`)
             userDataEntries.push([method, user])
         }
         return Object.fromEntries(userDataEntries) as UserData<T>;

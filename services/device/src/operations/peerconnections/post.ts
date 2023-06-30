@@ -42,7 +42,6 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 
     if (deviceA.connected && deviceB.connected) {
         // peerconnection can be started directly
-        console.log('SIGNALING STARTED DIRECTLY')
         signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid)
     } else {
         // need to wait for devices to connect

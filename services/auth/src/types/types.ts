@@ -56,6 +56,7 @@ export type AppConfiguration = {
     PORT: number
     NODE_ENV: string
     BASE_URL: string
+    JWKS_URL: string
     SECURITY_ISSUER: string
     SECURITY_AUDIENCE: string
     ALLOWLIST: string

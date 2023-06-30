@@ -17,13 +17,20 @@ import {testSuiteWrite} from './write.spec';
  * @typeParam K - Keys of the EntityData
  * @typeParam R - Type of the Repository
  */
-export abstract class AbstractRepositoryTestSuite<K extends string, R extends AbstractRepository<object, unknown, unknown>> {
+export abstract class AbstractRepositoryTestSuite<
+  K extends string,
+  R extends AbstractRepository<object, unknown, unknown, Record<string, object>>,
+> {
   protected entityData?: PartialTestData<K, R>;
   protected testSuites?: CustomRecord<SuiteName, Mocha.Suite>;
   protected repositoryTestData?: RepositoryTestData<K, R>;
-  protected AppDataSource: AbstractApplicationDataSource<Record<string, never>>;
+  protected AppDataSource: AbstractApplicationDataSource<
+    Record<string, AbstractRepository<object, unknown, unknown, Record<string, object>>>
+  >;
 
-  constructor(AppDataSource: AbstractApplicationDataSource<Record<string, never>>) {
+  constructor(
+    AppDataSource: AbstractApplicationDataSource<Record<string, AbstractRepository<object, unknown, unknown, Record<string, object>>>>,
+  ) {
     this.AppDataSource = AppDataSource;
   }
 

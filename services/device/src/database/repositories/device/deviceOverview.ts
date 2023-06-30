@@ -27,8 +27,9 @@ export class DeviceOverviewRepository extends AbstractRepository<
         model: DeviceOverviewModel,
         data: DeviceOverviewUpdate<'request'>
     ): Promise<void> {
-        if (data.name) model.name = data.name
-        if (data.description) model.description = data.description
+        if (data.name !== undefined) model.name = data.name
+        if (data.description !== undefined) model.description = data.description
+        if (data.isPublic !== undefined) model.isPublic = data.isPublic
     }
 
     async format(model: DeviceOverviewModel): Promise<DeviceOverview<'response'>> {
@@ -38,6 +39,7 @@ export class DeviceOverviewRepository extends AbstractRepository<
             name: model.name,
             description: model.description ?? undefined,
             owner: model.owner,
+            isPublic: model.isPublic,
         }
     }
 }

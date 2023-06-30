@@ -30,7 +30,6 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
             }
             if (experimentModel.devices) {
                 for (const device of experimentModel.devices) {
-                    console.log(device.additionalProperties)
                     if (device.additionalProperties?.instanceUrl) {
                         await apiClient.deleteDevice(
                             device.additionalProperties.instanceUrl

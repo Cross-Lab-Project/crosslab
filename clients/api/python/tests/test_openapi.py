@@ -2872,24 +2872,32 @@ async def test_register(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.register(body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.register(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.register(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.register(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
@@ -3981,28 +3989,28 @@ async def test_list_devices(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"https://CBBZavgAmnNDP.cozaaKD+VaFn-J2Ta4Dp9BeG8","type":"edge instantiable","name":"non velit minim dolore","owner":"https://RUz.umOAmQVVxIGHaSFxPN7ZkMCyH20hZFJ2xhFFyvqhjswohpHuSKDsWRPbLDobXP"}]')
+        response_200_dict = json.loads(r'[{"url":"https://Mja.mhslcWq1PsxTwwF3afIyJWDuiDm1VoZBmKoX3ysiLCBewxleeJCAtpRwXU3gwdEyPt7WkFNLt-,u9","type":"device","name":"proident occaecat Duis Ut","owner":"https://PkJrVeTsXGawCvBEJtZoJqaRkbyKD.bizje.DF4MnJVMELxQ7YW4FnYVV8TrcB6EfrCrLkR2b9o.S.QD9rIHZQusXtIRHVXUgGPcFmVbOczqwdpD7QyMiS+g","isPublic":false,"description":"fugiat dolore"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_devices(**parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"https://CBBZavgAmnNDP.cozaaKD+VaFn-J2Ta4Dp9BeG8","type":"edge instantiable","name":"non velit minim dolore","owner":"https://RUz.umOAmQVVxIGHaSFxPN7ZkMCyH20hZFJ2xhFFyvqhjswohpHuSKDsWRPbLDobXP"}]')
+        response_200_dict = json.loads(r'[{"url":"https://Mja.mhslcWq1PsxTwwF3afIyJWDuiDm1VoZBmKoX3ysiLCBewxleeJCAtpRwXU3gwdEyPt7WkFNLt-,u9","type":"device","name":"proident occaecat Duis Ut","owner":"https://PkJrVeTsXGawCvBEJtZoJqaRkbyKD.bizje.DF4MnJVMELxQ7YW4FnYVV8TrcB6EfrCrLkR2b9o.S.QD9rIHZQusXtIRHVXUgGPcFmVbOczqwdpD7QyMiS+g","isPublic":false,"description":"fugiat dolore"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_devices(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"https://CBBZavgAmnNDP.cozaaKD+VaFn-J2Ta4Dp9BeG8","type":"edge instantiable","name":"non velit minim dolore","owner":"https://RUz.umOAmQVVxIGHaSFxPN7ZkMCyH20hZFJ2xhFFyvqhjswohpHuSKDsWRPbLDobXP"}]')
+        response_200_dict = json.loads(r'[{"url":"https://Mja.mhslcWq1PsxTwwF3afIyJWDuiDm1VoZBmKoX3ysiLCBewxleeJCAtpRwXU3gwdEyPt7WkFNLt-,u9","type":"device","name":"proident occaecat Duis Ut","owner":"https://PkJrVeTsXGawCvBEJtZoJqaRkbyKD.bizje.DF4MnJVMELxQ7YW4FnYVV8TrcB6EfrCrLkR2b9o.S.QD9rIHZQusXtIRHVXUgGPcFmVbOczqwdpD7QyMiS+g","isPublic":false,"description":"fugiat dolore"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_devices(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"https://CBBZavgAmnNDP.cozaaKD+VaFn-J2Ta4Dp9BeG8","type":"edge instantiable","name":"non velit minim dolore","owner":"https://RUz.umOAmQVVxIGHaSFxPN7ZkMCyH20hZFJ2xhFFyvqhjswohpHuSKDsWRPbLDobXP"}]')
+        response_200_dict = json.loads(r'[{"url":"https://Mja.mhslcWq1PsxTwwF3afIyJWDuiDm1VoZBmKoX3ysiLCBewxleeJCAtpRwXU3gwdEyPt7WkFNLt-,u9","type":"device","name":"proident occaecat Duis Ut","owner":"https://PkJrVeTsXGawCvBEJtZoJqaRkbyKD.bizje.DF4MnJVMELxQ7YW4FnYVV8TrcB6EfrCrLkR2b9o.S.QD9rIHZQusXtIRHVXUgGPcFmVbOczqwdpD7QyMiS+g","isPublic":false,"description":"fugiat dolore"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_devices(url=full_url, **parameters)
@@ -4135,33 +4143,33 @@ async def test_create_device(aioresponses: aioresponses):
     url_variant = r'devices'
     full_url = BASE_URL+r'/devices'
 
-    request = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+    request = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
 
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_201_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_device(url=full_url, body=request, **parameters)
@@ -4294,24 +4302,24 @@ async def test_get_device(aioresponses: aioresponses):
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    parameter_list = [{"flat_group": True, }, {}, ]
+    parameter_list = [{"flat_group": True, "execute_for": "test_string", }, {"execute_for": "test_string", }, {"flat_group": True, }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device(url=full_url, **parameters)
@@ -4414,26 +4422,26 @@ async def test_update_device(aioresponses: aioresponses):
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request = json.loads(r'{"type":"edge instantiable","name":"sunt occaecat eu aliquip dolor","description":"dolor elit","codeUrl":"https://cG.onvj8"}')
+    request = json.loads(r'{"type":"edge instantiable","description":"pariatur in eiusmod labore","isPublic":false,"name":"laboris cillum","codeUrl":"http://QblO.ffcGKH1ED3fPOBTyerGwtJ4UD9E1NiF.bxoD8s-fuY+yLMmP,oAFUW3gS4B-wVcgatjsvw","services":[{"serviceType":"http://C.tdmMm4hNgkVgLuSf-j6aZsAvSV4G43m6xYh-C0Zhw8ZZHuJsVdTg-4IG7lSsCpQNl3qWrLCZbQzsf8qdakz"},{"serviceType":"http://PFR.vemnVwEHi7XcdhWuusxwnb5dv-NIUYp"}]}')
 
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","devices":[{"url":"http://EERXg.nkpheF89-oujBOjoCcKDypbFgx0i"},{"url":"http://fdUnFNwDkNezzoCuEPhlYWOEvUdg.rhvBAUIwDQHkbofP-+BcBFqXBdlYPoNVsh,fx4"},{"url":"https://rY.hhvlVeTbT7OW,x1xiuZKPifCtJtDRbd4VNKiO3vRRWzabEtMoO"},{"url":"https://JXERGYXtciXGYWUmSxLRqwnekbIe.pdrQmp3KnpoCaCEYnMowadp7L9pb6m3slUHiiyUGjJY-aE5oeJyEY1m3V3"}],"description":"sint sit"}')
+        response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_device(url=full_url, body=request, **parameters)
@@ -4653,21 +4661,21 @@ async def test_instantiate_device(aioresponses: aioresponses):
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","connected":false,"description":"sint","announcedAvailability":[{"end":"1963-07-05T07:30:35.0Z"},{"end":"1944-01-03T21:37:04.0Z","start":"2008-03-20T19:50:34.0Z"},{"end":"1949-11-16T11:53:26.0Z","start":"1959-09-24T01:59:32.0Z"}],"experiment":"https://hSjlrWjjdOTifzKcyxsUt.wnzgp6pqUPFhd9zE6zHT1PW-LHrPsEIuTVAlx-pza8oCKVda","services":[{"serviceType":"http://UlpUhSJkIblJFycFQKfNQ.uytgIvHKxi7VK3RVSvVkGu.8MgKITDwWuLEVTBJkV,4qA7tV6OGerfaUrZw4wcN,o","serviceId":"mollit veniam proident occaecat","serviceDirection":"prosumer"},{"serviceId":"quis ad commodo nostrud dolor","serviceDirection":"prosumer","serviceType":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"serviceDirection":"prosumer","serviceId":"irure dolor exercitation pariatur consectetur"},{"serviceType":"http://AgJRgzRBfjnukmtIBBFrlUlDU.galiTbGmNW-xMV4pZWb8DrVytQtTCB1cSVCL4n2l-a3OPVNlMJjDnRSf2tBLukDnnhMUGt7M9G","serviceId":"sunt tempor sed ut nulla"},{"serviceDirection":"prosumer","serviceType":"https://KyJelqOfDmRxnJPzuJBtlBq.hobIWQQ1fv9+"}]},"deviceToken":"cillum ullamco"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","isPublic":false,"connected":false,"description":"nisi elit","announcedAvailability":[{"end":"2002-09-21T07:31:21.0Z","start":"2009-05-26T22:33:21.0Z"}],"experiment":"https://nKGzfcWu.jxkN.jIoM0meEihX80ZNt-6","services":[{"serviceDirection":"prosumer","serviceId":"in cillum","serviceType":"https://YLJrLizqZVEgQDBKxrMqDElLJBgB.rsK3"},{"serviceId":"velit do ut incididunt","serviceType":"https://pfLtXZUuhQUIHgMplzPWpIWTsmJkTh.hiikIN6CQC.H.DSGkgIfiHihDPylLJROu.hqgrSoXIyx"}]},"deviceToken":"esse"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","connected":false,"description":"sint","announcedAvailability":[{"end":"1963-07-05T07:30:35.0Z"},{"end":"1944-01-03T21:37:04.0Z","start":"2008-03-20T19:50:34.0Z"},{"end":"1949-11-16T11:53:26.0Z","start":"1959-09-24T01:59:32.0Z"}],"experiment":"https://hSjlrWjjdOTifzKcyxsUt.wnzgp6pqUPFhd9zE6zHT1PW-LHrPsEIuTVAlx-pza8oCKVda","services":[{"serviceType":"http://UlpUhSJkIblJFycFQKfNQ.uytgIvHKxi7VK3RVSvVkGu.8MgKITDwWuLEVTBJkV,4qA7tV6OGerfaUrZw4wcN,o","serviceId":"mollit veniam proident occaecat","serviceDirection":"prosumer"},{"serviceId":"quis ad commodo nostrud dolor","serviceDirection":"prosumer","serviceType":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"serviceDirection":"prosumer","serviceId":"irure dolor exercitation pariatur consectetur"},{"serviceType":"http://AgJRgzRBfjnukmtIBBFrlUlDU.galiTbGmNW-xMV4pZWb8DrVytQtTCB1cSVCL4n2l-a3OPVNlMJjDnRSf2tBLukDnnhMUGt7M9G","serviceId":"sunt tempor sed ut nulla"},{"serviceDirection":"prosumer","serviceType":"https://KyJelqOfDmRxnJPzuJBtlBq.hobIWQQ1fv9+"}]},"deviceToken":"cillum ullamco"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","isPublic":false,"connected":false,"description":"nisi elit","announcedAvailability":[{"end":"2002-09-21T07:31:21.0Z","start":"2009-05-26T22:33:21.0Z"}],"experiment":"https://nKGzfcWu.jxkN.jIoM0meEihX80ZNt-6","services":[{"serviceDirection":"prosumer","serviceId":"in cillum","serviceType":"https://YLJrLizqZVEgQDBKxrMqDElLJBgB.rsK3"},{"serviceId":"velit do ut incididunt","serviceType":"https://pfLtXZUuhQUIHgMplzPWpIWTsmJkTh.hiikIN6CQC.H.DSGkgIfiHihDPylLJROu.hqgrSoXIyx"}]},"deviceToken":"esse"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","connected":false,"description":"sint","announcedAvailability":[{"end":"1963-07-05T07:30:35.0Z"},{"end":"1944-01-03T21:37:04.0Z","start":"2008-03-20T19:50:34.0Z"},{"end":"1949-11-16T11:53:26.0Z","start":"1959-09-24T01:59:32.0Z"}],"experiment":"https://hSjlrWjjdOTifzKcyxsUt.wnzgp6pqUPFhd9zE6zHT1PW-LHrPsEIuTVAlx-pza8oCKVda","services":[{"serviceType":"http://UlpUhSJkIblJFycFQKfNQ.uytgIvHKxi7VK3RVSvVkGu.8MgKITDwWuLEVTBJkV,4qA7tV6OGerfaUrZw4wcN,o","serviceId":"mollit veniam proident occaecat","serviceDirection":"prosumer"},{"serviceId":"quis ad commodo nostrud dolor","serviceDirection":"prosumer","serviceType":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"serviceDirection":"prosumer","serviceId":"irure dolor exercitation pariatur consectetur"},{"serviceType":"http://AgJRgzRBfjnukmtIBBFrlUlDU.galiTbGmNW-xMV4pZWb8DrVytQtTCB1cSVCL4n2l-a3OPVNlMJjDnRSf2tBLukDnnhMUGt7M9G","serviceId":"sunt tempor sed ut nulla"},{"serviceDirection":"prosumer","serviceType":"https://KyJelqOfDmRxnJPzuJBtlBq.hobIWQQ1fv9+"}]},"deviceToken":"cillum ullamco"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"https://CqYON.xmnuGYeEv6A,Y1Xd","type":"device","name":"fugiat labore Lorem nostrud","owner":"http://qXJqGDlmidYcvasqfsCCA.eljeTAmkIX2L2AzMelvRPbXU2YfsxCWZ,n7TfiEJDoV5cMeYV97+9gjfC","isPublic":false,"connected":false,"description":"nisi elit","announcedAvailability":[{"end":"2002-09-21T07:31:21.0Z","start":"2009-05-26T22:33:21.0Z"}],"experiment":"https://nKGzfcWu.jxkN.jIoM0meEihX80ZNt-6","services":[{"serviceDirection":"prosumer","serviceId":"in cillum","serviceType":"https://YLJrLizqZVEgQDBKxrMqDElLJBgB.rsK3"},{"serviceId":"velit do ut incididunt","serviceType":"https://pfLtXZUuhQUIHgMplzPWpIWTsmJkTh.hiikIN6CQC.H.DSGkgIfiHihDPylLJROu.hqgrSoXIyx"}]},"deviceToken":"esse"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=full_url, **parameters)
@@ -4765,7 +4773,241 @@ async def test_instantiate_device(aioresponses: aioresponses):
 
 
 @pytest.mark.asyncio
-async def test_add_availability_rules(aioresponses: aioresponses):
+async def test_get_device_availability(aioresponses: aioresponses):
+    url = r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+    url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+    full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+
+    parameter_list = [{"startTime": "test_string", "endTime": "test_string", }, {"endTime": "test_string", }, {"startTime": "test_string", }, {}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_device_availability(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_device_availability(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_device_availability(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_device_availability(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_delete_device_availability_rules(aioresponses: aioresponses):
+    url = r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+    url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+    full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_device_availability_rules(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_add_device_availability_rules(aioresponses: aioresponses):
     url = r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/availability'
@@ -4778,112 +5020,112 @@ async def test_add_availability_rules(aioresponses: aioresponses):
         response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_availability_rules(url=url, body=request, **parameters)
+            resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+            resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+            resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=url_variant, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.add_availability_rules(url=full_url, body=request, **parameters)
+                resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
 
 
 @pytest.mark.asyncio
@@ -5285,61 +5527,61 @@ async def test_create_peerconnection(aioresponses: aioresponses):
     url_variant = r'peerconnections'
     full_url = BASE_URL+r'/peerconnections'
 
-    request = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+    request = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
 
     parameter_list = [{"closedUrl": "test_string", "statusChangedUrl": "test_string", }, {"statusChangedUrl": "test_string", }, {"closedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_201_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_201_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_201_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_201_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=full_url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_202_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_202_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_202_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_202_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_peerconnection(url=full_url, body=request, **parameters)
@@ -5475,21 +5717,21 @@ async def test_get_peerconnection(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_200_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_peerconnection(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_200_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_peerconnection(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://DELkhyRFPtjZoXBJnD.mpcH-J-JNY1XZPh","type":"webrtc","devices":[{"url":"http://ZjhlonrKlRrZfkk.cliFiylu2KXtjdx9AydImIgMsoHaqpuiwNWj3uTBNYtyoe","config":{"services":[{"serviceType":"https://SWNzRYsADEeZRcyrFQOtuscS.hiMmf5TYqhwWOKUVSmIihYgJxiBZNtkHAhW","serviceId":"deserunt nisi est","remoteServiceId":"in veniam fugiat minim commodo"},{"serviceType":"http://sLogGylMTrxCdLCTjU.oyeyhc-FDU+4wS6XsRVXXtooW8F-DWTPS","serviceId":"Duis","remoteServiceId":"irure consequat ex"},{"serviceType":"http://wbLPLVffzYINTKXmbvyjMAVYH.ujvGmBNAwITuJI89n.iLhmgn.8146VOut-xP75Idys5rN00pHkXEDlz","serviceId":"sunt quis minim aliqua veniam","remoteServiceId":"ipsum fugiat laborum"},{"serviceType":"https://BkfmvWkW.wadmo2WfhYb.IKKeUSq9lrY","serviceId":"Duis magna","remoteServiceId":"consequat ea"},{"serviceType":"https://tBrMngaVgCtVgsi.anMa0BCd.Qisg16arV","serviceId":"eu est culpa ullamco veniam","remoteServiceId":"in ut laborum anim esse"}]}},{"url":"http://iDPxrWlVcZpRStKCKyhCkpdQXu.xxvqtfx.DmAlHgtPMRok-pXizJJ3izr6w7Dk8E.dwuqUKIav2WVdmfv8,L,Cta4C1M2HAs","config":{"services":[{"serviceType":"https://XyGLXYXytmmyqWC.azti68D6mjzmwdOhFZg6XVC9BmswoCJtC-bsVCRfK4SdL8h+.wsBgobiqGZSyWyDitY3CeWP","serviceId":"dolore qui aliqua","remoteServiceId":"dolore incididunt sit Excepteur elit"},{"serviceType":"http://OF.hhvXtULjAIq2crOh-g.FntOP8iXLGUhfWCxnkRxPaWkB","serviceId":"ut","remoteServiceId":"occaecat nisi consequat"},{"serviceType":"https://PknLXTVMCtlNoGJBAfcadpdhuGu.qsaU7Y8bqud-Ly2XyFKd9xbJFkNOdkYTCgSwjta8aiQl7OGseQAwxqcLU.1iGmJW","serviceId":"eu","remoteServiceId":"ut velit consequat Ut"}]}}],"status":"closed"}')
+        response_200_dict = json.loads(r'{"url":"https://NUsZam.pmvmjWau+Ph,D9Kizb5M2zxh7k0Uj.Czl8LbRshyWiYUqZxG3f.xQmFwI,Bh8mvJ2Xmj52lbaQchRlD5Yv30m3U.uXlp","type":"webrtc","devices":[{"url":"https://gzrZFBqKVZFfqOYrUiJLAUBXuBxC.wscnVnMEUSgVN","config":{"services":[{"serviceType":"http://QOArMoIr.gfjAQxbNfWUSKF,naCXkA3Ynq+FdP","serviceId":"laboris et qui Ut reprehenderit","remoteServiceId":"esse"},{"serviceType":"https://vfzc.pvqkkcKLwRrM1g6yZUFd53s1yPxKPvQxiwmU","serviceId":"sunt ullamco","remoteServiceId":"ipsum dolore in"},{"serviceType":"http://hoWDBcimBnYJ.rgjerWB7tNJ6g","serviceId":"anim","remoteServiceId":"cillum laboris"},{"serviceType":"https://ZJHacPU.aylfO","serviceId":"culpa esse","remoteServiceId":"ullamco ea"},{"serviceType":"http://EGzWGAYZSBCEnMDhXUCzj.pyeyEkXtKgm6NMAEUD.vwSzJ2JygglMlRFzXxdS25PLHrovUq9","serviceId":"sint laboris deserunt dolore","remoteServiceId":"reprehenderit cillum"}]}},{"url":"http://eVthH.qixh12Phhx2aGy.nHs8ESmlFu-xW3IHuF","config":{"services":[{"serviceType":"http://GtrJIeAclcvSYd.uogtDQHmD0PM8zGvurI4F1f3zpHbeyxlEcmGndrFZvtGY8xcFAwsoxFSximryYuws","serviceId":"Lorem sed cupidatat amet eu","remoteServiceId":"magna irure occaecat proident consectetur"}]}}],"status":"connecting"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_peerconnection(url=full_url, **parameters)

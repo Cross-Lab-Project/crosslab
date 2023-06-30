@@ -1,10 +1,9 @@
 import { AppDataSource, repositories } from '../../../../src/database/dataSource'
 import { DeviceGroupModel } from '../../../../src/database/model'
 import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup'
-import { Device, DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
+import { DeviceGroup, DeviceGroupUpdate } from '../../../../src/generated/types'
 import { DeviceGroupName } from '../../../data/devices/deviceGroups/index.spec'
 import { prepareTestData } from '../../../data/index.spec'
-import { deviceRepositoryTestSuite } from '../device.spec'
 import { initTestDatabase } from '../index.spec'
 import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
@@ -53,17 +52,11 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
         assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
 
         for (const device of data.devices ?? []) {
-            if (flatten) assert(device.type !== 'group')
             const searchedDeviceModel = Object.entries(this.testData.devices).find(
                 (entry) => entry[1].response.url === device.url
             )?.[1].model
             assert(searchedDeviceModel)
-            assert(
-                deviceRepositoryTestSuite.validateFormat(
-                    searchedDeviceModel,
-                    device as Device
-                )
-            )
+            if (flatten) assert(searchedDeviceModel.type !== 'group')
         }
 
         return true
@@ -91,7 +84,13 @@ class DeviceGroupRepositoryTestSuite extends AbstractRepositoryTestSuite<
         let isEqual = true
 
         isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
-        isEqual &&= JSON.stringify(first.devices) === JSON.stringify(second.devices)
+        isEqual &&=
+            JSON.stringify(first.devices) ===
+            JSON.stringify(
+                second.devices.map((device) => {
+                    return { url: device.url }
+                })
+            )
 
         return isEqual
     }

@@ -39,6 +39,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
         relations: {
             experiment: {
                 connections: true,
+                devices: true,
             },
         },
     })

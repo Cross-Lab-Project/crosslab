@@ -48,7 +48,7 @@ export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
 
   public async transaction<T>(runInTransaction: (repositories: RD) => Promise<T>): Promise<T> {
     return this._dataSource?.transaction(async entityManager => {
-      const repositories = await this.createRepositories();
+      const repositories = this.createRepositories();
       await this.initializeRepositories(repositories, entityManager);
       return runInTransaction(repositories);
     });

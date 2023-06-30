@@ -6,7 +6,11 @@ import { apiClient, startCloudDeviceInstance } from '../api'
 import { establishPeerconnections } from '../peerconnection'
 import { experimentUrlFromId } from '../url'
 import { bookExperiment } from './book'
-import { MissingPropertyError, DeviceNotConnectedError } from '@crosslab/service-common'
+import {
+    MissingPropertyError,
+    DeviceNotConnectedError,
+    InvalidValueError,
+} from '@crosslab/service-common'
 import { logger } from '@crosslab/service-common'
 
 /**
@@ -50,11 +54,35 @@ export async function runExperiment(experimentModel: ExperimentModel) {
             ) // NOTE: maybe there is a more fitting error code
         }
 
-        // handle instantiable devices
         if (
-            resolvedDevice.type === 'cloud instantiable' ||
-            resolvedDevice.type === 'edge instantiable'
+            (resolvedDevice.type === 'cloud instantiable' ||
+                resolvedDevice.type === 'edge instantiable') &&
+            device.additionalProperties?.deviceToken &&
+            device.additionalProperties.instanceUrl
         ) {
+            const resolvedInstance = await apiClient.getDevice(
+                device.additionalProperties.instanceUrl
+            ) // TODO: error handling
+            if (resolvedInstance.type !== 'device')
+                throw new InvalidValueError(
+                    `Ìnstance has type '${resolvedInstance.type}' instead of expected type 'device'`,
+                    500
+                ) // NOTE: maybe there is a more fitting error code
+            if (!resolvedInstance.connected) {
+                throw new DeviceNotConnectedError(
+                    `Cannot start experiment since device ${device.url} is not connected`,
+                    500
+                ) // NOTE: maybe there is a more fitting error code
+            }
+        }
+
+        if (
+            (resolvedDevice.type === 'cloud instantiable' ||
+                resolvedDevice.type === 'edge instantiable') &&
+            (!device.additionalProperties?.deviceToken ||
+                !device.additionalProperties.instanceUrl)
+        ) {
+            // handle instantiable devices
             needsSetup = true
             if (!resolvedDevice.url)
                 throw new MissingPropertyError('Device is missing its url', 500) // NOTE: error code?
@@ -65,7 +93,9 @@ export async function runExperiment(experimentModel: ExperimentModel) {
             if (!device.additionalProperties) device.additionalProperties = {}
             device.additionalProperties.instanceUrl = instance.url
             device.additionalProperties.deviceToken = deviceToken
-            deviceChangedCallbacks.push(instance.url)
+            const callbacks = deviceChangedCallbacks.get(instance.url) ?? new Set()
+            callbacks.add(experimentModel.uuid)
+            deviceChangedCallbacks.set(instance.url, callbacks)
 
             // instantiate cloud instantiable devices
             if (resolvedDevice.type === 'cloud instantiable') {

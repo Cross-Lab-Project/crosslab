@@ -1,8 +1,7 @@
 import { repositories } from '../database/dataSource'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
-import { OwnershipError } from '../types/errors'
-import { logger } from '@crosslab/service-common'
+import { DeviceOwnershipError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /device_authentication_token endpoint.
@@ -28,7 +27,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             !user.JWT.scopes.includes('device_token:create') &&
             !user.JWT.scopes.includes('device_token:create:instantiable')
         ) {
-            throw new OwnershipError()
+            throw new DeviceOwnershipError()
         }
 
         const tokenModel = await repositories.token.create({

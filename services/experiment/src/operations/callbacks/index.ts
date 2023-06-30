@@ -12,7 +12,7 @@ export const callbackUrl: string =
     config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + `callbacks/experiment`
 export const peerconnectionClosedCallbacks: string[] = []
 export const peerconnectionStatusChangedCallbacks: string[] = []
-export const deviceChangedCallbacks: string[] = []
+export const deviceChangedCallbacks: Map<string, Set<string>> = new Map()
 
 /**
  * This function adds the endpoint for incoming callbacks registered by the experiment service.

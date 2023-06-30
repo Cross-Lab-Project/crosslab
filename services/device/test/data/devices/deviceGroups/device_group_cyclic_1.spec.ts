@@ -3,15 +3,15 @@ import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
 import { concreteDeviceData } from '../concreteDevices/index.spec'
 import { EntityData } from '@crosslab/service-common/test-helper'
 
-const uuid = 'd65b289a-44c5-452f-8c7b-e003714d3645'
+const uuid = '1cd58ddf-ec6b-435f-93ce-2c3d266088a7'
 const type = 'group'
-const name = 'Device Group Example'
-const description = 'An example for a device group'
+const name = 'Cyclic Device Group Example 1'
+const description = 'An example for a cyclic device group'
 const owner = 'http://localhost/users/superadmin'
 const devices = [{ url: concreteDeviceData['concrete device'].response.url }]
 const isPublic = true
 
-const device_group: EntityData<DeviceGroupRepository> = {
+const device_group_cyclic_1: EntityData<DeviceGroupRepository> = {
     request: {
         type,
         name,
@@ -39,4 +39,4 @@ const device_group: EntityData<DeviceGroupRepository> = {
     },
 }
 
-export default device_group
+export default device_group_cyclic_1

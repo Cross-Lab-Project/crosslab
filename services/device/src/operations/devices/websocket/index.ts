@@ -61,6 +61,13 @@ export function websocketHandling(app: Express.Application) {
                     return ws.close(1002, 'No device found with matching websocket token')
                 }
 
+                ws.send(
+                    JSON.stringify(<AuthenticationMessage>{
+                        messageType: 'authenticate',
+                        authenticated: true,
+                    })
+                )
+
                 deviceModel.connected = true
                 connectedDevices.set(deviceModel.uuid, ws)
                 await repositories.concreteDevice.save(deviceModel)
@@ -68,13 +75,6 @@ export function websocketHandling(app: Express.Application) {
                 logger.log(
                     'info',
                     `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
-                )
-
-                ws.send(
-                    JSON.stringify(<AuthenticationMessage>{
-                        messageType: 'authenticate',
-                        authenticated: true,
-                    })
                 )
 
                 // heartbeat implementation

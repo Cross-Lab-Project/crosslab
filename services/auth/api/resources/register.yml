@@ -19,6 +19,9 @@ post:
   responses:
     201:
       description: User successfully registered.
+      content:
+        application/json:
+          $ref: "../content/user.yml"
     400:
       description: Bad Request.
     401:
