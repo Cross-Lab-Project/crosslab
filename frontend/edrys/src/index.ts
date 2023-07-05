@@ -1,7 +1,7 @@
 import './style.css';
 
 import { APIClient, ExperimentServiceTypes } from "@cross-lab-project/api-client";
-import { adoptStyles, html, LitElement, render, unsafeCSS } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, state, query } from "lit/decorators.js";
 
 declare const Edrys: any;
@@ -24,14 +24,17 @@ export class App extends LitElement {
 
     constructor() {
         super();
-        let endpoint = "https://api.goldi-labs.de";
-        if (Edrys.module && Edrys.module.config.endpoint) {
-            endpoint = Edrys.module.config.endpoint;
-        }
-        this.client = new APIClient(endpoint);
-        this.experiment = (Edrys.module && Edrys.module.config.experiment)??{};
-        if (Edrys.module)
-            this.login(Edrys.module.config.username, Edrys.module.config.password).then((success)=> success && this.startExperiment())
+        Edrys.onReady(()=>{
+            let endpoint = "https://api.goldi-labs.de";
+            if (Edrys.module && Edrys.module.config.endpoint) {
+                endpoint = Edrys.module.config.endpoint;
+            }
+            this.client = new APIClient(endpoint);
+            this.experiment = (Edrys.module && Edrys.module.config.experiment)??{};
+            if (Edrys.module){
+                this.login(Edrys.module.config.username, Edrys.module.config.password).then((success)=> success && this.startExperiment())
+            }
+        });
     }
 
     async login(username: string, password: string) {
