@@ -35,5 +35,5 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.9.3"
   },
-  "version": "0.0.0-dev.8db38e3"
+  "version": "0.0.0-dev.d91c485"
 }

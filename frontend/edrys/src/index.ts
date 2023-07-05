@@ -3,7 +3,8 @@ import './style.css';
 import { APIClient, ExperimentServiceTypes } from "@cross-lab-project/api-client";
 import { adoptStyles, html, LitElement, render, unsafeCSS } from "lit";
 import { customElement, state, query } from "lit/decorators.js";
-import { Edrys } from './edrys';
+
+declare const Edrys: any;
 
 @customElement("edrys-app")
 export class App extends LitElement {
@@ -24,12 +25,13 @@ export class App extends LitElement {
     constructor() {
         super();
         let endpoint = "https://api.goldi-labs.de";
-        if (Edrys.module.config.endpoint) {
+        if (Edrys.module && Edrys.module.config.endpoint) {
             endpoint = Edrys.module.config.endpoint;
         }
         this.client = new APIClient(endpoint);
-        this.experiment = Edrys.module.config.experiment;
-        this.login(Edrys.module.config.username, Edrys.module.config.password).then((success)=> success && this.startExperiment())
+        this.experiment = (Edrys.module && Edrys.module.config.experiment)??{};
+        if (Edrys.module)
+            this.login(Edrys.module.config.username, Edrys.module.config.password).then((success)=> success && this.startExperiment())
     }
 
     async login(username: string, password: string) {
@@ -85,12 +87,12 @@ export class App extends LitElement {
             <p>Login failed</p>
             <p>Check the module config. Use the following module config template:</p>
             <code>
-{
-    "endpoint": "https://api.goldi-labs.de"
-    "username": "YOUR USERNAME",
-    "password": "YOUR PASSWORD",
-    "experiment": {YOUR EXPERIMENT CONFIG HERE}
-}
+            {<br/>
+                "endpoint": "https://api.goldi-labs.de"<br/>
+                "username": "YOUR USERNAME",<br/>
+                "password": "YOUR PASSWORD",<br/>
+                "experiment": {YOUR EXPERIMENT CONFIG HERE}<br/>
+            }<br/>
             </code>
         </div>
         `
