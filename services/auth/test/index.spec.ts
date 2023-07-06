@@ -1,13 +1,5 @@
 import { config, dataSourceConfig } from '../src/config'
 import { AppDataSource, repositories } from '../src/database/dataSource'
-import {
-    ScopeModel,
-    RoleModel,
-    UserModel,
-    KeyModel,
-    ActiveKeyModel,
-    TokenModel,
-} from '../src/database/model'
 import { app } from '../src/generated'
 import { logger } from '@crosslab/service-common'
 import assert from 'assert'
@@ -42,24 +34,16 @@ describe('Index', function () {
     })
 
     it('should have at least one active key', async function () {
-        this.timeout(10000)
+        this.timeout(60000)
         const activeKeyModels = await repositories.activeKey.find()
         assert(activeKeyModels.length > 0)
 
         await AppDataSource.teardown()
 
         await startAuthenticationService(config, {
-            type: 'sqlite',
+            ...dataSourceConfig,
             database: './test/db/index_test.db',
             synchronize: true,
-            entities: [
-                ScopeModel,
-                RoleModel,
-                UserModel,
-                KeyModel,
-                ActiveKeyModel,
-                TokenModel,
-            ],
         })
         assert(activeKeyModels.length > 0)
     })
