@@ -13,11 +13,14 @@
             schema:
               type: object
               required:
-               - Experiment
+               - Devices
                - Time
               properties:
-                Experiment:
-                 $ref: '#/components/schemas/Experiment'
+                Devices:
+                  type: array
+                  description: List of devices which should be added.
+                  items:
+                    $ref: '#/components/schemas/Device'
                 Time:
                   $ref: '#/components/schemas/Timeslot'
                 Type:
@@ -184,9 +187,7 @@
               schema:
                 type: object
                 required:
-                 - Experiment
                  - Booking
-                 - Time
                  - Locked
                 properties:
                   Booking:

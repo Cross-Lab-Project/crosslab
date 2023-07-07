@@ -19,7 +19,6 @@ import * as amqplib from 'amqplib';
 import dayjs from "dayjs";
 
 import { config } from "./../../common/config"
-import { BelongsToUs } from "./../../common/auth"
 import { DeviceBookingRequest } from "./../../booking-backend/src/messageDefinition";
 
 export const postBooking: postBookingSignature = async (body, user) => {
@@ -212,7 +211,7 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, 
             connection.close();
         }
 
-        await db.execute("UPDATE booking SET `status`=? WHERE id=?", ["cancelled", requestID]);
+        await db.execute("UPDATE booking SET `status`=?, `message`=? WHERE id=?", ["cancelled", "Cancelled by user", requestID]);
 
         success = true;
     } catch (err) {

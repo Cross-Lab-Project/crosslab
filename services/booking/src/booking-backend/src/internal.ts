@@ -50,8 +50,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                     if (rows.length == 0) {
                         throw Error("Booking, Position (" + targetBooking + "," + parameters.Position + ") not known");
                     }
-
-                    let bookedDeviceId: bigint = rows[0].id;
+                    let bookedDeviceId: bigint = BigInt(rows[0].id);
                     let originalDevice: string = rows[0].originaldevice;
 
                     // Check availability
@@ -61,7 +60,6 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                     switch (type) {
                         // Both cases share a vast amount of code. So combine them here and differentiate later
                         case callbackType.DeviceUpdate:
-
                             if (!rows[0].local) {
                                 throw Error("Booking must be local for device update");
                             }
@@ -70,7 +68,6 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                             if (device.type == "group") {
                                 throw Error("Booked device " + rows[0].bookeddevice + " is group");
                             }
-
                             // If not available: request new device
                             if (device.type == "device") { // Other devices are always available
                                 available = device.connected;
@@ -132,6 +129,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                     db.commit();
                 } catch (err) {
                     db.rollback();
+                    throw err;
                 }
 
                 break;
@@ -402,7 +400,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
             }
         } else {
             let institution = new URL(possibleDevices[i]).origin;
-            let putReturn = await api.newBooking({ Experiment: { Devices: [{ ID: possibleDevices[i] }] }, Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, { url: institution + "/booking/manage" });
+            let putReturn = await api.newBooking({ Devices: [{ ID: possibleDevices[i] }], Time: { Start: r.Start.toISOString(), End: r.End.toISOString() }, BookingReference: r.BookingID.toString() }, { url: institution + "/booking/manage" });
 
             let ID = putReturn.ReservationID;
 
@@ -451,7 +449,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     }
 
     // Ok, we were not able to book a device...
-    DeleteBooking(r.BookingID, "rejected");
+    DeleteBooking(r.BookingID, "rejected", "Can not book " + r.Device.toString());
 }
 
 export async function freeDevice(internalreference: bigint) {
@@ -459,7 +457,7 @@ export async function freeDevice(internalreference: bigint) {
     await db.connect();
     await db.beginTransaction();
     try {
-        let [rows, fields]: [any, any] = await db.execute("SELECT `id`, `booking`, `originaldevice`, `originalposition`, `bookeddevice`, `remotereference`, `local` FROM bookeddevices WHERE `id`=? FOR UPDATE", [internalreference]);
+        let [rows, fields]: [any, any] = await db.execute("SELECT `id`, `booking`, `originaldevice`, `originalposition`, `bookeddevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `id`=? FOR UPDATE", [internalreference]);
         if (rows.length == 0) {
             throw Error("Bookeddevice " + internalreference + " not found");
         }
@@ -491,7 +489,7 @@ export async function freeDevice(internalreference: bigint) {
                 queueCreated = true;
 
                 let m = new ReservationMessage(ReservationRequest.Delete, returnChannel);
-                m.ReservationID = BigInt(rows[0].remotereference);
+                m.ReservationID = BigInt(rows[0].reservation);
 
                 channel.sendToQueue("device-reservation", Buffer.from(JSON.stringify(m)));
 
@@ -571,7 +569,7 @@ export function randomID(): string {
     return Buffer.from(b).toString("base64url");
 }
 
-export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled") {
+export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled", message = "") {
     if (bookingID < 0n) {
         throw new Error("BookingID must not be negative");
     }
@@ -629,6 +627,16 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
                 break;
         }
 
+        if(message !== undefined && message !== "") {
+            let [rows, fields] = await db.execute("SELECT `message` FROM booking WHERE id=?", [bookingID]);
+            let targetMessage: string = "";
+            if(rows[0].message === undefined || rows[0].message === null) {
+                targetMessage = message;
+            } else {
+                targetMessage = rows[0].message + "\n" + message;
+            }
+            await db.execute("UPDATE booking SET `message`=? WHERE id=?", [targetMessage, bookingID]);
+        }
         dispatchCallback(bookingID);
         await db.commit();
     } catch (err) {

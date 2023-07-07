@@ -23,6 +23,7 @@ export var fakeServerConfig = {
     callback_test_local_two_second_was_called: false,
     callback_test_local_group_was_called: false,
     callback_test_remote_single_was_called: false,
+    booking_status: "booked",
 };
 
 export async function startFakeServer() {
@@ -261,6 +262,8 @@ export async function startFakeServer() {
                     res.status(fakeServerConfig.proxy_server_status).send("Undefined error" + fakeServerConfig.proxy_server_status);
                     return;
             };
+        } else if(req.query.URL.includes("/booking")) {
+            res.status(200).send('{BookingID: "http://127.0.0.1:10802/booking/testremote"}');
         } else {
             console.log("unknown request to proxy (post):", req.query);
             res.status(999).send("");
@@ -292,7 +295,7 @@ export async function startFakeServer() {
                     return;
             };
         } else if (req.query.URL.includes("/booking/testremote")) {
-            res.send('{"Booking": { "ID": "http://127.0.0.1:10802/booking/testremote", "Time": { "Start": "1999-04-10T06:00:00Z", "End": "1999-04-10T07:00:00Z"}, "Devices": ["http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"], "Type": "normal", "Status": "booked", "You": true, "External": true, "Message": "Fake test booking remote"}, "Locked": false}');
+            res.send('{"Booking": { "ID": "http://127.0.0.1:10802/booking/testremote", "Time": { "Start": "1999-04-10T06:00:00Z", "End": "1999-04-10T07:00:00Z"}, "Devices": ["http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"], "Type": "normal", "Status": "'+fakeServerConfig.booking_status+'", "You": true, "External": true, "Message": "Fake test booking remote"}, "Locked": false}');
             return;
         } else {
             console.log("unknown request to proxy (get):", req.query);
@@ -336,6 +339,7 @@ export function resetFakeServerVars() {
     fakeServerConfig.callback_test_local_two_second_was_called = false;
     fakeServerConfig.callback_test_local_group_was_called = false;
     fakeServerConfig.callback_test_remote_single_was_called = false;
+    fakeServerConfig.booking_status = "booked";
 };
 
 export function getFakeOwnURL(): string {

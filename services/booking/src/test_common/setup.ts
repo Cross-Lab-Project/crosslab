@@ -57,7 +57,7 @@ export async function setupDummySql() {
 
         // // Fake booking remote
         await db.execute("INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)", [BigInt(4), dayjs("1999-04-10T06:00:00Z").toDate(), dayjs("1999-04-10T07:00:00Z").toDate(), "normal", "booked", "test", ""]);
-        await db.execute("INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)", [BigInt(5), BigInt(3), "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000", 0, "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000", "http://127.0.0.1:10802/booking/testremote", false, null]);
+        await db.execute("INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)", [BigInt(5), BigInt(4), "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000", 0, "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000", "http://127.0.0.1:10802/booking/testremote", false, null]);
         await db.execute("INSERT INTO bookingcallbacks (`id`, `booking`,`url`) VALUES (?,?,?)", [BigInt(5), BigInt(4), "http://localhost:10801/test_callbacks/test-rmote-single"]);
         await db.execute("INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)", [BigInt(5), callbackType.BookingUpdate, BigInt(4), JSON.stringify({ "Position": 0 })]);
 

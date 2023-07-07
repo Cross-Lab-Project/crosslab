@@ -2,7 +2,7 @@ import * as mocha from "mocha";
 import dayjs from "dayjs";
 
 import {setupDummySql, tearDownDummySql, getSQLDNS} from "../../test_common/setup"
-import {getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars} from "../../test_common/fakeservers"
+import {getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars} from "../../test_common/fakeserver"
 
 import { postSchedule, getTimetables } from "./operations"
 import { config } from "../../common/config";
