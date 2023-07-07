@@ -417,14 +417,30 @@
             "readOnly": true
           },
           "status": {
-            "type": "string",
-            "description": "Status of the experiment",
-            "enum": [
-              "created",
-              "booked",
-              "setup",
-              "running",
-              "finished"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
             ]
           }
         }
@@ -549,6 +565,30 @@
                 "description": "Services associated with the experiment",
                 "items": {
                   "$ref": "#/components/schemas/service_configuration"
+                }
+              },
+              "instantiatedDevices": {
+                "type": "array",
+                "description": "Instantiated devices that need to be started by the user.",
+                "readOnly": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "instanceOf": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "token",
+                    "instanceOf"
+                  ]
                 }
               }
             }

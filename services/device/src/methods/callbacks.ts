@@ -4,6 +4,11 @@ import { DeviceModel, PeerconnectionModel } from '../database/model'
 import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId'
 import { logger } from '@crosslab/service-common'
 import fetch from 'node-fetch'
+import {
+    DeviceChangedEventCallback,
+    PeerconnectionClosedEventCallback,
+    PeerconnectionStatusChangedEventCallback,
+} from '../generated/types'
 
 export const callbackUrl: string = (config.BASE_URL + '/callbacks/device').replace(
     '//callbacks',
@@ -27,15 +32,17 @@ export async function sendChangedCallback(device: DeviceModel) {
             )}' to '${url}'`
         )
 
+        const callback: DeviceChangedEventCallback = {
+            callbackType: 'event',
+            eventType: 'device-changed',
+            device: await repositories.device.format(device),
+        }
+
         // TODO: proper error handling
         try {
             const res = await fetch(url, {
                 method: 'POST',
-                body: JSON.stringify({
-                    callbackType: 'event',
-                    eventType: 'device-changed',
-                    device: await repositories.device.format(device),
-                }),
+                body: JSON.stringify(callback),
                 headers: [['Content-Type', 'application/json']],
             })
 
@@ -68,17 +75,17 @@ export async function sendClosedCallback(peerconnection: PeerconnectionModel) {
             )}' to '${url}'`
         )
 
+        const callback: PeerconnectionClosedEventCallback = {
+            callbackType: 'event',
+            eventType: 'peerconnection-closed',
+            peerconnection: await repositories.peerconnection.format(peerconnection),
+        }
+
         // TODO: proper error handling
         try {
             const res = await fetch(url, {
                 method: 'POST',
-                body: JSON.stringify({
-                    callbackType: 'event',
-                    eventType: 'peerconnection-closed',
-                    peerconnection: await repositories.peerconnection.format(
-                        peerconnection
-                    ),
-                }),
+                body: JSON.stringify(callback),
                 headers: [['Content-Type', 'application/json']],
             })
 
@@ -115,17 +122,17 @@ export async function sendStatusChangedCallback(peerconnection: PeerconnectionMo
             )}' to '${url}'`
         )
 
+        const callback: PeerconnectionStatusChangedEventCallback = {
+            callbackType: 'event',
+            eventType: 'peerconnection-status-changed',
+            peerconnection: await repositories.peerconnection.format(peerconnection),
+        }
+
         // TODO: proper error handling
         try {
             const res = await fetch(url, {
                 method: 'POST',
-                body: JSON.stringify({
-                    callbackType: 'event',
-                    eventType: 'peerconnection-status-changed',
-                    peerconnection: await repositories.peerconnection.format(
-                        peerconnection
-                    ),
-                }),
+                body: JSON.stringify(callback),
                 headers: [['Content-Type', 'application/json']],
             })
 

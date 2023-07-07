@@ -2,19 +2,23 @@ import { Device } from '../../generated/types'
 import { DeviceModel } from '../model'
 import { AbstractRepository } from '@crosslab/service-common'
 import { EntityManager } from 'typeorm'
+import { InstanceRepository } from './instance'
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
     Device<'request'>,
-    Device<'response'>
+    Device<'response'>,
+    { instance: InstanceRepository }
 > {
-    protected dependencies: Record<string, never> = {}
+    protected dependencies: Partial<{ instance: InstanceRepository }> = {}
 
     constructor() {
         super('Device')
     }
 
     protected dependenciesMet(): boolean {
+        if (!this.dependencies.instance) return false
+
         return true
     }
 
@@ -31,7 +35,6 @@ export class DeviceRepository extends AbstractRepository<
         return {
             device: model.url,
             role: model.role,
-            additionalProperties: model.additionalProperties,
         }
     }
 }

@@ -6,6 +6,7 @@ import {
     PeerconnectionModel,
     ParticipantModel,
     RoleModel,
+    InstanceModel,
 } from './database/model'
 import { logger } from '@crosslab/service-common'
 import { exit } from 'process'
@@ -52,6 +53,7 @@ export const dataSourceConfig: DataSourceOptions = {
     entities: [
         ExperimentModel,
         DeviceModel,
+        InstanceModel,
         ServiceConfigurationModel,
         PeerconnectionModel,
         ParticipantModel,

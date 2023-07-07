@@ -2100,37 +2100,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -2595,37 +2565,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -3260,24 +3200,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-closed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_closed"
                       }
                     }
                   }
@@ -3309,24 +3232,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-status-changed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_status_changed"
                       }
                     }
                   }
@@ -4893,6 +4799,76 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
+      "callback": {
+        "title": "Callback",
+        "type": "object",
+        "properties": {
+          "callbackType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "callbackType"
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "event_callback": {
+        "title": "Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "callbackType": {
+                "type": "string",
+                "enum": [
+                  "event"
+                ]
+              },
+              "eventType": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "callbackType",
+              "eventType"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_changed": {
+        "title": "Device Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "device-changed"
+                ]
+              },
+              "device": {
+                "$ref": "#/components/schemas/device"
+              }
+            },
+            "required": [
+              "eventType",
+              "device"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
       "device_overview_update": {
         "title": "Device Overview Update",
         "type": "object",
@@ -5395,6 +5371,62 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
+      "peerconnection_closed": {
+        "title": "Peerconnection Closed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-closed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_status_changed": {
+        "title": "Peerconnection Status Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-status-changed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
       "experiment_overview": {
         "title": "Experiment Overview",
         "type": "object",
@@ -5406,14 +5438,30 @@
             "readOnly": true
           },
           "status": {
-            "type": "string",
-            "description": "Status of the experiment",
-            "enum": [
-              "created",
-              "booked",
-              "setup",
-              "running",
-              "finished"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
             ]
           }
         },
@@ -5543,6 +5591,30 @@
                 "description": "Services associated with the experiment",
                 "items": {
                   "$ref": "#/components/schemas/service_configuration"
+                }
+              },
+              "instantiatedDevices": {
+                "type": "array",
+                "description": "Instantiated devices that need to be started by the user.",
+                "readOnly": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "instanceOf": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "token",
+                    "instanceOf"
+                  ]
                 }
               }
             }

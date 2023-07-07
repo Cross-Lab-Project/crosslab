@@ -347,37 +347,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -840,37 +810,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -1496,24 +1436,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-closed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_closed"
                       }
                     }
                   }
@@ -1545,24 +1468,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-status-changed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_status_changed"
                       }
                     }
                   }
@@ -2039,6 +1945,73 @@
           },
           {
             "$ref": "#/components/schemas/device_group"
+          }
+        ],
+        "x-typeguard": true
+      },
+      "callback": {
+        "title": "Callback",
+        "type": "object",
+        "properties": {
+          "callbackType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "callbackType"
+        ],
+        "x-typeguard": true
+      },
+      "event_callback": {
+        "title": "Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "callbackType": {
+                "type": "string",
+                "enum": [
+                  "event"
+                ]
+              },
+              "eventType": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "callbackType",
+              "eventType"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_changed": {
+        "title": "Device Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "device-changed"
+                ]
+              },
+              "device": {
+                "$ref": "#/components/schemas/device"
+              }
+            },
+            "required": [
+              "eventType",
+              "device"
+            ]
           }
         ],
         "x-typeguard": true
@@ -2522,6 +2495,60 @@
             },
             "required": [
               "devices"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "peerconnection_closed": {
+        "title": "Peerconnection Closed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-closed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "peerconnection_status_changed": {
+        "title": "Peerconnection Status Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-status-changed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
             ]
           }
         ],

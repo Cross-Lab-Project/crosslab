@@ -1857,20 +1857,38 @@ class PatchPeerconnectionDeviceStatusRequest(TypedDict):
 PatchPeerconnectionDeviceStatusResponse: TypeAlias = None
 
 
+ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+ListExperimentsResponse200ItemsStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+ListExperimentsResponse200ItemsStatus = Union[ListExperimentsResponse200ItemsStatusAlt1, ListExperimentsResponse200ItemsStatusAlt2]
+
+
 class ListExperimentsResponse200Items(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[ListExperimentsResponse200ItemsStatus]
 
 
 ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
 
 
 ListExperimentsResponse: TypeAlias = ListExperimentsResponse200
+
+
+CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentRequestStatus = Union[CreateExperimentRequestStatusAlt1, CreateExperimentRequestStatusAlt2]
 
 
 class CreateExperimentRequestBookingtime(TypedDict):
@@ -1951,24 +1969,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentRequestInstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentRequest(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentRequestStatus]
     bookingTime: NotRequired[CreateExperimentRequestBookingtime]
     devices: NotRequired[List[CreateExperimentRequestDevicesItems]]
     roles: NotRequired[List[CreateExperimentRequestRolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentRequestServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentRequestInstantiateddevicesItems]]
+
+
+CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentResponse201StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentResponse201Status = Union[CreateExperimentResponse201StatusAlt1, CreateExperimentResponse201StatusAlt2]
 
 
 class CreateExperimentResponse201Bookingtime(TypedDict):
@@ -2049,24 +2090,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentResponse201InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentResponse201(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentResponse201Status]
     bookingTime: NotRequired[CreateExperimentResponse201Bookingtime]
     devices: NotRequired[List[CreateExperimentResponse201DevicesItems]]
     roles: NotRequired[List[CreateExperimentResponse201RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentResponse201InstantiateddevicesItems]]
+
+
+CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentResponse202Status = Union[CreateExperimentResponse202StatusAlt1, CreateExperimentResponse202StatusAlt2]
 
 
 class CreateExperimentResponse202Bookingtime(TypedDict):
@@ -2147,27 +2211,50 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentResponse202InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentResponse202(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentResponse202Status]
     bookingTime: NotRequired[CreateExperimentResponse202Bookingtime]
     devices: NotRequired[List[CreateExperimentResponse202DevicesItems]]
     roles: NotRequired[List[CreateExperimentResponse202RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentResponse202InstantiateddevicesItems]]
 
 
 CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
+
+
+GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+GetExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+GetExperimentResponse200Status = Union[GetExperimentResponse200StatusAlt1, GetExperimentResponse200StatusAlt2]
 
 
 class GetExperimentResponse200Bookingtime(TypedDict):
@@ -2248,27 +2335,50 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItemsParticipantsItems]]
 
 
+class GetExperimentResponse200InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class GetExperimentResponse200(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[GetExperimentResponse200Status]
     bookingTime: NotRequired[GetExperimentResponse200Bookingtime]
     devices: NotRequired[List[GetExperimentResponse200DevicesItems]]
     roles: NotRequired[List[GetExperimentResponse200RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[GetExperimentResponse200InstantiateddevicesItems]]
 
 
 GetExperimentResponse: TypeAlias = GetExperimentResponse200
+
+
+UpdateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentRequestStatus = Union[UpdateExperimentRequestStatusAlt1, UpdateExperimentRequestStatusAlt2]
 
 
 class UpdateExperimentRequestBookingtime(TypedDict):
@@ -2349,24 +2459,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentRequestInstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentRequest(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentRequestStatus]
     bookingTime: NotRequired[UpdateExperimentRequestBookingtime]
     devices: NotRequired[List[UpdateExperimentRequestDevicesItems]]
     roles: NotRequired[List[UpdateExperimentRequestRolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentRequestInstantiateddevicesItems]]
+
+
+UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentResponse200Status = Union[UpdateExperimentResponse200StatusAlt1, UpdateExperimentResponse200StatusAlt2]
 
 
 class UpdateExperimentResponse200Bookingtime(TypedDict):
@@ -2447,24 +2580,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentResponse200InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentResponse200(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentResponse200Status]
     bookingTime: NotRequired[UpdateExperimentResponse200Bookingtime]
     devices: NotRequired[List[UpdateExperimentResponse200DevicesItems]]
     roles: NotRequired[List[UpdateExperimentResponse200RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentResponse200InstantiateddevicesItems]]
+
+
+UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentResponse202Status = Union[UpdateExperimentResponse202StatusAlt1, UpdateExperimentResponse202StatusAlt2]
 
 
 class UpdateExperimentResponse202Bookingtime(TypedDict):
@@ -2545,24 +2701,38 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentResponse202InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentResponse202(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentResponse202Status]
     bookingTime: NotRequired[UpdateExperimentResponse202Bookingtime]
     devices: NotRequired[List[UpdateExperimentResponse202DevicesItems]]
     roles: NotRequired[List[UpdateExperimentResponse202RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentResponse202InstantiateddevicesItems]]
 
 
 UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateExperimentResponse202]

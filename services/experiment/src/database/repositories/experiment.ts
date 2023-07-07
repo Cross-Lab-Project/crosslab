@@ -1,5 +1,6 @@
 import { Experiment, ExperimentOverview } from '../../generated/types'
 import { experimentUrlFromId } from '../../methods/url'
+import { Instance } from '../../types/types'
 import { ExperimentModel } from '../model'
 import { DeviceRepository } from './device'
 import { PeerconnectionRepository } from './peerconnection'
@@ -53,6 +54,7 @@ export class ExperimentRepository extends AbstractRepository<
         if (!this.isInitialized()) this.throwUninitializedRepositoryError()
 
         if (data.status) model.status = data.status
+
         if (data.bookingTime) {
             if (data.bookingTime.startTime)
                 model.bookingStart = data.bookingTime.startTime
@@ -64,6 +66,7 @@ export class ExperimentRepository extends AbstractRepository<
             model.bookingStart ??= new Date(startTime).toISOString()
             model.bookingEnd ??= new Date(endTime).toISOString()
         }
+
         if (data.devices) {
             for (const device of model.devices ?? []) {
                 const foundDevice = data.devices.find((d) => d.device === device.url)
@@ -78,6 +81,7 @@ export class ExperimentRepository extends AbstractRepository<
                 model.devices.push(deviceModel)
             }
         }
+
         if (data.roles) {
             for (const role of model.roles ?? []) {
                 await this.dependencies.role.remove(role)
@@ -88,6 +92,7 @@ export class ExperimentRepository extends AbstractRepository<
                 model.roles.push(roleModel)
             }
         }
+
         if (data.serviceConfigurations) {
             for (const serviceConfiguration of model.serviceConfigurations ?? []) {
                 await this.dependencies.serviceConfiguration.remove(serviceConfiguration)
@@ -110,13 +115,22 @@ export class ExperimentRepository extends AbstractRepository<
         const peerconnectionRepository = this.dependencies.peerconnection
         const roleRepository = this.dependencies.role
 
+        const instantiatedDevices: (Instance & { instanceOf: string })[] = []
+        for (const device of model.devices ?? []) {
+            if (device.instance)
+                instantiatedDevices.push({
+                    url: device.instance.url,
+                    token: device.instance.token,
+                    instanceOf: device.url,
+                })
+        }
+
         return {
-            url: experimentUrlFromId(model.uuid),
+            ...(await this.formatOverview(model)),
             bookingTime: {
                 startTime: model.bookingStart,
                 endTime: model.bookingEnd,
             },
-            status: model.status,
             devices: await Promise.all(
                 model.devices?.map((device) => deviceRepository.format(device)) ?? []
             ),
@@ -128,6 +142,7 @@ export class ExperimentRepository extends AbstractRepository<
                     peerconnectionRepository.format(connection)
                 ) ?? []
             ),
+            instantiatedDevices,
         }
     }
 
@@ -173,7 +188,16 @@ export class ExperimentRepository extends AbstractRepository<
     ): Promise<ExperimentOverview<'response'>> {
         return {
             url: experimentUrlFromId(model.uuid),
-            status: model.status,
+            status:
+                model.status === 'booking-locked'
+                    ? 'setup'
+                    : model.status === 'devices-instantiated'
+                    ? 'setup'
+                    : model.status === 'booking-updated'
+                    ? 'setup'
+                    : model.status === 'peerconnections-created'
+                    ? 'setup'
+                    : model.status,
         }
     }
 

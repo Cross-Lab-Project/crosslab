@@ -122,19 +122,19 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
     const apiExperiment = await client.createExperiment(experiment);
     this.experimentUrl = apiExperiment.url;
-    if (this.apiDevices.every(device => device.type === 'device')) assert(apiExperiment.status === 'running', 'Experiment is not running');
-    else assert(apiExperiment.status === 'setup', 'Experiment is not in setup');
+    assert(apiExperiment.status === 'setup', 'Experiment is not in setup');
 
     const promiseList = [];
     for (const [idx, apiDevice] of this.apiDevices.entries()) {
       if (apiDevice.type === 'device') continue;
 
-      const deviceData = apiExperiment.devices?.find(device => device.device === apiDevice.url);
-      const instanceData = deviceData?.additionalProperties as any;
+      const instanceData = apiExperiment.instantiatedDevices?.find(device => device.instanceOf === apiDevice.url);
 
-      const instanceUrl = instanceData.instanceUrl;
-      const deviceToken = instanceData.deviceToken;
-      apiDevice.instanceUrl = instanceData.instanceUrl;
+      assert(instanceData);
+
+      const instanceUrl = instanceData.url;
+      const deviceToken = instanceData.token;
+      apiDevice.instanceUrl = instanceData.url;
 
       const originalAccessToken = client.accessToken;
       client.accessToken = deviceToken;

@@ -22,11 +22,8 @@ export function experimentUrlFromId(experimentId: string): string {
  * @returns The instance url or the url of the device.
  */
 export function getUrlOrInstanceUrl(deviceModel: DeviceModel): string {
-    if (
-        deviceModel.additionalProperties &&
-        deviceModel.additionalProperties.instanceUrl
-    ) {
-        return deviceModel.additionalProperties.instanceUrl
+    if (deviceModel.instance && deviceModel.instance.url) {
+        return deviceModel.instance.url
     } else {
         return deviceModel.url
     }

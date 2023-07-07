@@ -1,6 +1,7 @@
 import { dataSourceConfig } from '../config'
 import { DeviceRepository } from './repositories/device'
 import { ExperimentRepository } from './repositories/experiment'
+import { InstanceRepository } from './repositories/instance'
 import { ParticipantRepository } from './repositories/participant'
 import { PeerconnectionRepository } from './repositories/peerconnection'
 import { RoleRepository } from './repositories/role'
@@ -11,6 +12,7 @@ import { DataSourceOptions } from 'typeorm'
 type RepositoryMapping = {
     device: DeviceRepository
     experiment: ExperimentRepository
+    instance: InstanceRepository
     participant: ParticipantRepository
     peerconnection: PeerconnectionRepository
     role: RoleRepository
@@ -28,11 +30,15 @@ class ApplicationDataSource extends AbstractApplicationDataSource<RepositoryMapp
     protected createRepositories(): RepositoryMapping {
         const deviceRepository = new DeviceRepository()
         const experimentRepository = new ExperimentRepository()
+        const instanceRepository = new InstanceRepository()
         const participantRepository = new ParticipantRepository()
         const peerconnectionRepository = new PeerconnectionRepository()
         const roleRepository = new RoleRepository()
         const serviceConfigurationRepository = new ServiceConfigurationRepository()
 
+        deviceRepository.setDependencies({
+            instance: instanceRepository,
+        })
         experimentRepository.setDependencies({
             device: deviceRepository,
             peerconnection: peerconnectionRepository,
@@ -46,6 +52,7 @@ class ApplicationDataSource extends AbstractApplicationDataSource<RepositoryMapp
         return {
             device: deviceRepository,
             experiment: experimentRepository,
+            instance: instanceRepository,
             participant: participantRepository,
             peerconnection: peerconnectionRepository,
             role: roleRepository,
