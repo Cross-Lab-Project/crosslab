@@ -20,7 +20,9 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
             where: { uuid: parameters.experiment_id },
             relations: {
                 connections: true,
-                devices: true,
+                devices: {
+                    instance: true,
+                },
                 roles: true,
                 serviceConfigurations: {
                     participants: true,

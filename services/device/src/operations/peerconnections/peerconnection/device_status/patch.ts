@@ -1,6 +1,6 @@
 import { repositories } from '../../../../database/dataSource'
 import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../../../../generated/signatures'
-import { simpleQueueManager } from '../../../../methods/queueManager'
+import { mutexManager } from '../../../../methods/mutexManager'
 import { peerconnectionUrlFromId } from '../../../../methods/urlFromId'
 import { sendClosedCallback, sendStatusChangedCallback } from '../../../callbacks'
 import { deleteOnClose } from '../delete'
@@ -22,7 +22,9 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
             },
         })
 
-        simpleQueueManager.addToQueue(parameters.peerconnection_id, async () => {
+        const release = await mutexManager.acquire(parameters.peerconnection_id)
+
+        try {
             const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
                 where: { uuid: parameters.peerconnection_id },
             })
@@ -107,7 +109,9 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
                 'info',
                 'patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded'
             )
-        })
+        } finally {
+            release()
+        }
 
         return {
             status: 204,

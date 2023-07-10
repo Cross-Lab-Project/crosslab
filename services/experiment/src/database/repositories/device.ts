@@ -3,6 +3,7 @@ import { DeviceModel } from '../model'
 import { AbstractRepository } from '@crosslab/service-common'
 import { EntityManager } from 'typeorm'
 import { InstanceRepository } from './instance'
+import { AppDataSource } from '../dataSource'
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
@@ -36,5 +37,16 @@ export class DeviceRepository extends AbstractRepository<
             device: model.url,
             role: model.role,
         }
+    }
+
+    async remove(model: DeviceModel): Promise<void> {
+        if (model.instance)
+            await AppDataSource.transaction(async (repositories) => {
+                const instance = model.instance
+                delete model.instance
+                await repositories.device.remove(model)
+                if (instance) await repositories.instance.remove(instance)
+            })
+        else await super.remove(model)
     }
 }
