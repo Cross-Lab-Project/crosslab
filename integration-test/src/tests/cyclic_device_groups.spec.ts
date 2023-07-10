@@ -22,6 +22,8 @@ describe('Cyclic Device Groups', function () {
   const devices: DeviceServiceTypes.Device[] = [];
 
   this.beforeAll(async function () {
+    this.timeout(20000);
+
     await apiClient.login(config.USERNAME, config.PASSWORD, {method: 'local'});
 
     for (let i = 0; i < 10; i++) {

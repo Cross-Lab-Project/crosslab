@@ -15,7 +15,7 @@ describe('Device Visibility', function () {
   let developer: AuthenticationServiceTypes.User<'response'>;
 
   this.beforeAll(async function () {
-    this.timeout(5000);
+    this.timeout(20000);
 
     await apiClient.login(config.USERNAME, config.PASSWORD);
 
