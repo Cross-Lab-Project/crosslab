@@ -1,0 +1,28 @@
+{
+  "name": "device-reservation",
+  "version": "0.1.0",
+  "description": "Part of booking service. Responsible for low level device reservation.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "npm run build && npx nyc --include=\"build/device-reservation/mainLoop.js\" --include=\"build/device-reservation/messageDefinition.js\" mocha --require mocha-suppress-logs --exit build/device-reservation/*_test.js",
+    "build": "npx tsc",
+    "start": "npm run build && node build/device-reservation/index.js"
+  },
+  "author": "Marcus Soll",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@cross-lab-project/codegen-typescript-addon": "^0.0.8",
+    "@types/amqplib": "^0.10.1",
+    "amqplib": "^0.10.0",
+    "async-mutex": "^0.4.0",
+    "dayjs": "^1.11.5",
+    "mysql2": "^2.3.3",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.0",
+    "mocha": "^10.0.0",
+    "mocha-suppress-logs": "^0.3.1",
+    "nyc": "^15.1.0"
+  }
+}

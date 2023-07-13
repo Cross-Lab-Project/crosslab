@@ -1,0 +1,109 @@
+components:
+  parameters:
+      ID:
+        in: path
+        name: ID
+        description: String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).
+        schema:
+          type: string
+        required: true
+  schemas:
+    Booking:
+      title: Booking
+      description: A booking in the booking system.
+      type: object
+      required:
+       - ID
+       - Time
+       - Devices
+       - Status
+       - You
+       - External
+      properties:
+        ID:
+          type: string
+          format: uri
+          description: Unique ID of the booking.
+        Time:
+          $ref: "#/components/schemas/Timeslot"
+        Devices:
+          type: array
+          items:
+            type: string
+            format: uri
+        Type:
+          description: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+          type: string
+          enum:
+           - normal
+        Status:
+          description: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+          type: string
+          enum:
+           - pending
+           - booked
+           - rejected
+           - cancelled
+           - active
+           - active-pending
+           - active-rejected
+        You:
+          type: boolean
+          description: If true, this booking was done by you.
+        External:
+          type: boolean
+          description: Shows whether the booking was done by an external institution.
+        Message:
+          type: string
+          description: User readable notes about the status of the booking (e.g. if devices are unknown).
+    Device:
+      title: Device
+      description: A device might either be a physical/virtual device or a group of device.
+      type: object
+      required:
+       - ID
+      properties:
+        ID:
+          type: string
+          description: Unique ID of the device. Contains the institution (by having an end point at that institution)
+          format: uri
+    Experiment:
+      title: Experiment
+      description: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
+      type: object
+      required:
+       - Devices
+      properties:
+        Devices:
+          type: array
+          description: List of devices used in experiment.
+          items:
+            $ref: "#/components/schemas/Device"
+        Description:
+          type: string
+          description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+    Timeslot:
+      title: Timeslot
+      description: A time slot represents a slice of time used for bookings.
+      type: object
+      required:
+        - Start
+        - End
+      properties:
+        Start:
+          type: string
+          description: Start time of the booking.
+          format: date-time
+        End:
+          type: string
+          description: End time of the booking.
+          format: date-time
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
