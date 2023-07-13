@@ -1637,6 +1637,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "403": {
+            "description": "User is not allowed to destroy bookings."
+          },
           "404": {
             "description": "Request contains unknown booking ID."
           },
@@ -5592,12 +5595,12 @@
       "ID": {
         "in": "path",
         "name": "ID",
+        "description": "String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).",
         "schema": {
           "type": "string",
           "x-service-name": "Booking Service"
         },
-        "required": true,
-        "description": "ID of Booking"
+        "required": true
       },
       "device_changed_url": {
         "name": "changedUrl",

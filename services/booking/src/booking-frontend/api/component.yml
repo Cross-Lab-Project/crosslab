@@ -232,6 +232,8 @@
             The booking was cancelled. All associated devices were released.
         '401':
           description: No authorisation header found.
+        '403':
+          description: User is not allowed to destroy bookings.
         '404':
           description: Request contains unknown booking ID.
         '423':

@@ -4,15 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "openapi-lint": "npx @redocly/openapi-cli lint ./api/openapi.yml",
+    "openapi-lint": "npx @redocly/cli lint ./dist/openapi.yml",
     "openapi-bundle": "npm run generate",
-    "generate": "fish documentation-and-generation.fish",
+    "generate": "bash documentation-and-generation.bash",
     "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
   },
   "author": "Johannes Nau & Marcus Soll",
   "license": "UNLICENSED",
-  "dependencies": {
-    "@cross-lab-project/openapi-codegen": "^0.0.34"
+  "devDependencies": {
+    "@cross-lab-project/openapi-codegen": "^0.0.34",
+    "@redocly/cli": "^1.0.0-beta.131"
   }
 }

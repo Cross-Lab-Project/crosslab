@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 
 import { config } from "./../../common/config"
 import { DeviceBookingRequest } from "./../../booking-backend/src/messageDefinition";
+import { BelongsToUs } from "./../../common/auth"
 
 export const postBooking: postBookingSignature = async (body, user) => {
     if (user.JWT === undefined) {
@@ -357,6 +358,14 @@ export const patchBookingByID: patchBookingByIDSignature = async (parameters, bo
 
 export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (parameters, user) => {
     // add your implementation here
+    if(user.JWT !== undefined && user.JWT.scopes.includes("booking:destroy") && BelongsToUs(new URL(user.JWT.url))) {
+
+    } else {
+        return {
+            status: 401, // TODO: Use 403
+        }
+    }
+
     return {
         status: 500,
         body: "TODO: Method not implemented",
