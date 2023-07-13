@@ -1,6 +1,6 @@
-import { generateKeyPair, exportJWK } from 'jose'
 import { KeyModel } from '../database/model'
 import { keyRepository } from '../database/repositories/keyRepository'
+import { generateKeyPair, exportJWK } from 'jose'
 
 /**
  * This function generates a new key.

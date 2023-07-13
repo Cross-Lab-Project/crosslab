@@ -10,6 +10,7 @@ import { deviceOverviewRepository } from './deviceOverview'
 import {
     AbstractApplicationDataSource,
     AbstractRepository,
+    logger,
 } from '@crosslab/service-common'
 
 export class DeviceGroupRepository extends AbstractRepository<
@@ -37,7 +38,7 @@ export class DeviceGroupRepository extends AbstractRepository<
     ): Promise<void> {
         await deviceOverviewRepository.write(model, data)
 
-        model.devices = data.devices ?? []
+        if (data.devices) model.devices = data.devices
     }
 
     async format(
@@ -89,7 +90,11 @@ export class DeviceGroupRepository extends AbstractRepository<
                 flat_group: flatGroup,
             })
         } catch (error) {
-            console.error(error)
+            logger.log(
+                'error',
+                'An error occured while trying to resolve a device reference',
+                { data: { error } }
+            )
         }
         return undefined
     }

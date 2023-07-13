@@ -1,4 +1,5 @@
 import { AppConfiguration } from '../src/config'
+import { logger } from '@crosslab/service-common'
 import assert from 'assert'
 import rewire from 'rewire'
 import * as sinon from 'sinon'
@@ -11,10 +12,7 @@ describe('Config', function () {
 
     this.beforeAll(function () {
         this.timeout(0)
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         const configModule = rewire('../src/config')
         initializeAppConfiguration = configModule.__get__('initializeAppConfiguration')
         die = configModule.__get__('die')
@@ -38,14 +36,14 @@ describe('Config', function () {
     describe('die', function () {
         it('should exit the program and log the reason', async function () {
             const TEST_REASON = 'test reason'
-            const consoleErrorStub = sinon.stub(console, 'error')
+            const loggerLogStub = sinon.stub(logger, 'log')
 
             die(TEST_REASON)
 
-            assert(consoleErrorStub.calledWith(TEST_REASON))
+            assert(loggerLogStub.calledWith('error', TEST_REASON))
             assert(processExitStub.calledWith(1))
 
-            consoleErrorStub.restore()
+            loggerLogStub.restore()
         })
     })
 

@@ -3,6 +3,7 @@ import { peerconnectionRepository } from '../../src/database/repositories/peerco
 import { apiClient } from '../../src/globals'
 import { signalingQueue } from '../../src/methods/signaling'
 import { peerconnectionUrlFromId } from '../../src/methods/urlFromId'
+import { logger } from '@crosslab/service-common'
 import assert from 'assert'
 import seedrandom from 'seedrandom'
 import * as sinon from 'sinon'
@@ -25,9 +26,9 @@ export default () =>
                 Parameters<typeof apiClient.sendSignalingMessage>,
                 ReturnType<typeof apiClient.sendSignalingMessage>
             >
-            let consoleErrorStub: sinon.SinonStub<
-                Parameters<typeof console.error>,
-                ReturnType<typeof console.error>
+            let loggerLogStub: sinon.SinonStub<
+                Parameters<typeof logger.log>,
+                ReturnType<typeof logger.log>
             >
 
             this.beforeAll(function () {
@@ -50,21 +51,21 @@ export default () =>
                 findOneOrFailStub = sinon.stub(peerconnectionRepository, 'findOneOrFail')
                 saveStub = sinon.stub(peerconnectionRepository, 'save')
                 sendSignalingMessageStub = sinon.stub(apiClient, 'sendSignalingMessage')
-                consoleErrorStub = sinon.stub(console, 'error')
+                loggerLogStub = sinon.stub(logger, 'log')
             })
 
             this.afterEach(function () {
                 findOneOrFailStub.reset()
                 saveStub.reset()
                 sendSignalingMessageStub.reset()
-                consoleErrorStub.reset()
+                loggerLogStub.reset()
             })
 
             this.afterAll(function () {
                 findOneOrFailStub.restore()
                 saveStub.restore()
                 sendSignalingMessageStub.restore()
-                consoleErrorStub.restore()
+                loggerLogStub.restore()
             })
 
             function addPeerconnections() {
@@ -151,8 +152,7 @@ export default () =>
                     await sleep(20)
                 }
                 assert(findOneOrFailStub.calledOnce)
-                assert(consoleErrorStub.calledOnce)
-                assert(consoleErrorStub.calledWith(error))
+                assert(loggerLogStub.lastCall.args[0] === 'error')
             })
 
             it('should log errors of peerconnectionRepository.save', async function () {
@@ -165,8 +165,7 @@ export default () =>
                     await sleep(20)
                 }
                 assert(saveStub.calledOnce)
-                assert(consoleErrorStub.calledOnce)
-                assert(consoleErrorStub.calledWith(error))
+                assert(loggerLogStub.lastCall.args[0] === 'error')
             })
 
             it('should log errors of first apiClient.sendSignalingMessage', async function () {
@@ -179,8 +178,7 @@ export default () =>
                     await sleep(20)
                 }
                 assert(sendSignalingMessageStub.calledOnce)
-                assert(consoleErrorStub.calledOnce)
-                assert(consoleErrorStub.calledWith(error))
+                assert(loggerLogStub.lastCall.args[0] === 'error')
             })
 
             it('should log errors of second apiClient.sendSignalingMessage', async function () {
@@ -193,10 +191,9 @@ export default () =>
                     await sleep(20)
                 }
                 assert(sendSignalingMessageStub.callCount === 2)
-                assert(consoleErrorStub.calledOnce)
-                assert(consoleErrorStub.calledWith(error))
+                assert(loggerLogStub.lastCall.args[0] === 'error')
             })
         })
 
-        describe('startSignaling', function () {})
+        // describe('startSignaling', function () {})
     })

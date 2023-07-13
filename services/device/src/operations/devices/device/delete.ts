@@ -1,5 +1,6 @@
 import { deviceRepository } from '../../../database/repositories/device'
 import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling DELETE requests on /devices/{device_id} endpoint.
@@ -11,7 +12,7 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     parameters,
     _user
 ) => {
-    console.log(`deleteDevicesByDeviceId called`)
+    logger.log('info', 'deleteDevicesByDeviceId called')
 
     const deviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
@@ -19,7 +20,7 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
 
     await deviceRepository.remove(deviceModel)
 
-    console.log(`deleteDevicesByDeviceId succeeded`)
+    logger.log('info', 'deleteDevicesByDeviceId succeeded')
 
     return {
         status: 204,

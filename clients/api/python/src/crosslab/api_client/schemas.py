@@ -346,6 +346,19 @@ class UpdateIdentityResponse200(TypedDict):
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
 
 
+class RegisterRequest(TypedDict):
+    """
+    Properties:
+    - username: Username of the user.
+    - password: Password of the user.
+    """
+    username: str
+    password: str
+
+
+RegisterResponse: TypeAlias = None
+
+
 class GetScheduleRequestExperimentDevicesItems(TypedDict):
     """
     A device might either be a physical/virtual device or a group of device.Properties:

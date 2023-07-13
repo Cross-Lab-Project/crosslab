@@ -4,7 +4,11 @@ import { getAuthSignature } from '../generated/signatures'
 import { allowlist, getAllowlistedUser } from '../methods/allowlist'
 import { parseBearerToken, signDeviceToken, signUserToken } from '../methods/auth'
 import { ExpiredError } from '../types/errors'
-import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
+import {
+    MissingEntityError,
+    InconsistentDatabaseError,
+    logger,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling GET requests on /auth endpoint.
@@ -13,14 +17,11 @@ import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service
  * @throws {InconsistentDatabaseError} Thrown if multiple active keys are found.
  */
 export const getAuth: getAuthSignature = async (parameters) => {
-    console.log(`getAuth called`)
+    logger.log('info', 'getAuth called')
     const HOUR = 60 * 60 * 1000
 
     // Catch missing authorization header (OPTIONS requests)
-    if (
-        !parameters.Authorization &&
-        !(parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']])
-    ) {
+    if (!parameters.Authorization) {
         return {
             status: 200,
             headers: {},
@@ -34,10 +35,11 @@ export const getAuth: getAuthSignature = async (parameters) => {
         },
     })
 
+    const tokenString = parseBearerToken(parameters.Authorization)
+
     // Non Allowlisted Auth
     try {
         // Resolve user from Authorization parameter
-        const tokenString = parseBearerToken(parameters.Authorization)
         const token = await tokenRepository.findOneOrFail({
             where: {
                 token: tokenString,
@@ -62,15 +64,15 @@ export const getAuth: getAuthSignature = async (parameters) => {
                 .map((role) => role.scopes.map((scope) => scope.name))
                 .flat(1)
                 .filter((value, index, self) => self.indexOf(value) === index),
-        ]
+        ].filter((value, index, self) => self.indexOf(value) === index)
         // Check if token has a device
         if (token.device) {
             // Sign device token
-            console.log(`signing jwt for device ${token.device}`)
+            logger.log('info', `signing jwt for device ${token.device}`)
             jwt = await signDeviceToken(token.device, user, activeKey)
         } else {
             // Sign user token
-            console.log(`signing jwt for user ${user.username}`)
+            logger.log('info', `signing jwt for user ${user.username}`)
             jwt = await signUserToken(user, activeKey, scopes)
         }
 
@@ -78,7 +80,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         if (token.expiresOn) token.expiresOn = new Date(Date.now() + HOUR).toISOString()
         tokenRepository.save(token)
 
-        console.log(`getAuth succeeded`)
+        logger.log('info', 'getAuth succeeded')
 
         return {
             status: 200,
@@ -88,17 +90,17 @@ export const getAuth: getAuthSignature = async (parameters) => {
         }
     } catch (error) {
         // Allowlisted Auth
-        if (parameters['X-Real-IP'] && allowlist[parameters['X-Real-IP']]) {
-            const user = await getAllowlistedUser(parameters['X-Real-IP'])
+        if (allowlist[tokenString]) {
+            const user = await getAllowlistedUser(tokenString)
 
-            console.log(`signing jwt for user ${user.username}`)
+            logger.log('info', `signing jwt for user ${user.username}`)
             const scopes = user.roles
                 .map((role) => role.scopes.map((scope) => scope.name))
                 .flat(1)
                 .filter((value, index, self) => self.indexOf(value) === index)
             const jwt = await signUserToken(user, activeKey, scopes)
 
-            console.log(`getAuth succeeded`)
+            logger.log('info', 'getAuth succeeded')
 
             return {
                 status: 200,

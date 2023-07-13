@@ -4,6 +4,7 @@ import { ClosePeerconnectionMessage } from '../../../generated/types'
 import { apiClient } from '../../../globals'
 import { sendClosedCallback, sendStatusChangedCallback } from '../../../methods/callbacks'
 import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
+import { logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
@@ -12,7 +13,7 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
     async (parameters, _user) => {
-        console.log(`deletePeerconnectionsByPeerconnectionId called`)
+        logger.log('info', 'deletePeerconnectionsByPeerconnectionId called')
 
         const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
@@ -32,7 +33,11 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
                 peerconnectionUrlFromId(peerconnectionModel.uuid)
             )
         } catch (error) {
-            console.error(error)
+            logger.log(
+                'error',
+                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceA.url}'`,
+                { data: { error } }
+            )
         }
 
         try {
@@ -42,7 +47,11 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
                 peerconnectionUrlFromId(peerconnectionModel.uuid)
             )
         } catch (error) {
-            console.error(error)
+            logger.log(
+                'error',
+                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceB.url}'`,
+                { data: { error } }
+            )
         }
 
         await sendClosedCallback(peerconnectionModel)
@@ -50,7 +59,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
 
         await peerconnectionRepository.remove(peerconnectionModel)
 
-        console.log(`deletePeerconnectionsByPeerconnectionId succeeded`)
+        logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded')
 
         return {
             status: 204,

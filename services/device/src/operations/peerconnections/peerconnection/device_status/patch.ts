@@ -2,16 +2,17 @@ import { peerconnectionRepository } from '../../../../database/repositories/peer
 import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../../../../generated/signatures'
 import { peerconnectionUrlFromId } from '../../../../methods/urlFromId'
 import { sendStatusChangedCallback } from '../../../callbacks'
-import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
+import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common'
 
 /**
- * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /peerconnections/{peerconnection_id}/device_status endpoint.
  * @param parameters The parameters of the request.
  * @param _user The user submitting the request.
  */
 export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature =
     async (parameters, body, _user) => {
-        console.log(`patchPeerconnectionsByPeerconnectionIdDeviceStatus called`)
+        logger.log('info', 'patchPeerconnectionsByPeerconnectionIdDeviceStatus called')
 
         const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
@@ -74,7 +75,7 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
 
         await peerconnectionRepository.save(peerconnectionModel)
 
-        console.log(`patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded`)
+        logger.log('info', 'patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded')
 
         return {
             status: 201,

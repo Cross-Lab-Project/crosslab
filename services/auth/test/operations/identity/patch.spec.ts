@@ -47,10 +47,10 @@ export default function (context: Mocha.Context, testData: TestData) {
                 })
 
                 assert(result.status === 200)
-                assert(result.body.username === 'superadmin')
+                assert(result.body.username === 'local:superadmin')
                 await userRepository.findOneOrFail({
                     where: {
-                        username: 'superadmin',
+                        username: 'local:superadmin',
                     },
                 })
             }

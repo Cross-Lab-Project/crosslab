@@ -1,5 +1,5 @@
 import { ScopeRepository } from '../../src/database/repositories/scopeRepository'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const scopeNames = ['scope 1', 'scope 2', 'scope 3', 'scope 4', 'scope 5'] as const
 export type ScopeName = (typeof scopeNames)[number]

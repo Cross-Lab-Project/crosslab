@@ -1,10 +1,5 @@
-import rewire from 'rewire'
+import { config, dataSourceConfig } from '../src/config'
 import { AppDataSource } from '../src/database/dataSource'
-import { app } from '../src/generated'
-import * as sinon from 'sinon'
-import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
-import assert from 'assert'
-import request from 'supertest'
 import {
     ScopeModel,
     RoleModel,
@@ -13,7 +8,13 @@ import {
     ActiveKeyModel,
     TokenModel,
 } from '../src/database/model'
-import { config } from '../src/config'
+import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
+import { app } from '../src/generated'
+import { logger } from '@crosslab/service-common'
+import assert from 'assert'
+import rewire from 'rewire'
+import * as sinon from 'sinon'
+import request from 'supertest'
 
 describe('Index', function () {
     let appListenStub: sinon.SinonStub
@@ -22,26 +23,14 @@ describe('Index', function () {
 
     this.beforeAll(async function () {
         this.timeout(60000)
-        console.log = (_message: any, ..._optionalParams: any[]) => undefined
-        console.error = (_message: any, ..._optionalParams: any[]) => undefined
-        console.warn = (_message: any, ..._optionalParams: any[]) => undefined
-        console.info = (_message: any, ..._optionalParams: any[]) => undefined
+        logger.transports.forEach((transport) => (transport.silent = true))
         appListenStub = sinon.stub(app, 'listen')
         clock = sinon.useFakeTimers()
         const indexModule = rewire('../src/index.ts')
         startAuthenticationService = indexModule.__get__('startAuthenticationService')
         await startAuthenticationService(config, {
-            type: 'sqlite',
+            ...dataSourceConfig,
             database: './test/db/index_test.db',
-            synchronize: true,
-            entities: [
-                ScopeModel,
-                RoleModel,
-                UserModel,
-                KeyModel,
-                ActiveKeyModel,
-                TokenModel,
-            ],
             dropSchema: true,
         })
         assert(appListenStub.called)

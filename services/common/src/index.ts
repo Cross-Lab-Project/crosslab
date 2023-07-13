@@ -4,10 +4,10 @@ import {URL} from 'url';
 import {JWTVerificationError} from './errors';
 
 export * from './errors';
+export * from './logger';
+export * from './handlers';
 export * from './types';
 export * from './database/abstractRepository';
-export * from './database/testSuites/abstractRepository.spec';
-export * from './database/testSuites/types.spec';
 export * from './database/abstractDataSource';
 
 export function JWTVerify(options: {

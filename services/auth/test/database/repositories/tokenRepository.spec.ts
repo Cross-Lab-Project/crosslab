@@ -7,7 +7,7 @@ import {
 import { Token } from '../../../src/types/types'
 import { TokenName } from '../../data/tokenData.spec'
 import { initTestDatabase } from './index.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 import Mocha from 'mocha'
 import { FindOptionsWhere } from 'typeorm'

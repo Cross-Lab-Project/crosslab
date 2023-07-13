@@ -22,7 +22,7 @@
         "dev": "env-cmd -e development npx nodemon src/index.ts",
         "format": "npx prettier src --write",
         "lint": "eslint .",
-        "test": "rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
+        "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
         "test:index": "nyc --temp-dir .nyc_output/index --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/index.spec.ts",
         "test:config": "nyc --temp-dir .nyc_output/config --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/config.spec.ts",
         "test:methods": "nyc --temp-dir .nyc_output/methods --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/methods/index.spec.ts",

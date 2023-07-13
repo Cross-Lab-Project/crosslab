@@ -66,11 +66,19 @@ async function checkJWTByTokenModel(authorization: string, token: TokenModel) {
         assert((payload as any).url === userUrlFromId(token.user.uuid))
         assert((payload as any).username === token.user.username)
 
-        for (const _scope of token.scopes) {
+        const tokenScopes = [
+            ...token.scopes,
+            ...token.roles.map((role) => role.scopes).flat(1),
+        ]
+
+        for (const _scope of tokenScopes) {
             assert((payload as any).scopes.includes(_scope.name))
         }
         for (const _scope of (payload as any).scopes) {
-            assert(token.scopes.find((s) => s.name === _scope))
+            assert(
+                tokenScopes.find((s) => s.name === _scope),
+                `Scope '${_scope}' not found`
+            )
         }
     }
 }
@@ -97,14 +105,14 @@ export default function (context: Mocha.Context, testData: TestData) {
     let invalidToken: string
     let validDeviceToken: string
     let validUserToken: string
-    let allowlistedIP: string
+    let allowlistedToken: string
 
     suite.beforeAll(function () {
         expiredToken = testData.tokens['GET /auth expired token'].model.token
         invalidToken = 'invalid'
         validDeviceToken = testData.tokens['GET /auth valid device token'].model.token
         validUserToken = testData.tokens['GET /auth valid user token'].model.token
-        allowlistedIP = '127.0.0.1'
+        allowlistedToken = 'superadmin-test-token'
     })
 
     suite.addTest(
@@ -119,6 +127,23 @@ export default function (context: Mocha.Context, testData: TestData) {
                 await checkJWTByTokenModel(
                     result.headers.Authorization,
                     testData.tokens['GET /auth valid user token'].model
+                )
+            }
+        )
+    )
+
+    suite.addTest(
+        new Mocha.Test(
+            'should authenticate an allowlisted user with a valid token',
+            async function () {
+                const result = await getAuth({
+                    Authorization: `Bearer ${allowlistedToken}`,
+                })
+                assert(result.status === 200)
+                assert(result.headers.Authorization)
+                await checkJWTByUserModel(
+                    result.headers.Authorization,
+                    testData.users.superadmin.model
                 )
             }
         )
@@ -208,77 +233,6 @@ export default function (context: Mocha.Context, testData: TestData) {
                     assert(error instanceof MissingEntityError)
                     assert(error.status === 401)
                 }
-            }
-        )
-    )
-
-    suite.addTest(
-        new Mocha.Test(
-            "should authenticate an allowlisted user without an 'Authorization'-header",
-            async function () {
-                const result = await getAuth({
-                    'X-Real-IP': allowlistedIP,
-                })
-                assert(result.status === 200)
-                assert(result.headers.Authorization)
-                await checkJWTByUserModel(
-                    result.headers.Authorization,
-                    testData.users.superadmin.model
-                )
-            }
-        )
-    )
-
-    suite.addTest(
-        new Mocha.Test(
-            'should authenticate the user associated with the provided valid token instead of the allowlisted user',
-            async function () {
-                const result = await getAuth({
-                    'Authorization': `Bearer ${validUserToken}`,
-                    'X-Real-IP': allowlistedIP,
-                })
-                assert(result.status === 200)
-                assert(result.headers.Authorization)
-                await checkJWTByTokenModel(
-                    result.headers.Authorization,
-                    testData.tokens['GET /auth valid user token'].model
-                )
-            }
-        )
-    )
-
-    suite.addTest(
-        new Mocha.Test(
-            'should authenticate the allowlisted user even if the provided token is invalid',
-            async function () {
-                const result = await getAuth({
-                    'Authorization': `Bearer ${invalidToken}`,
-                    'X-Real-IP': allowlistedIP,
-                })
-                assert(result.status === 200)
-                assert(result.headers.Authorization)
-                await checkJWTByUserModel(
-                    result.headers.Authorization,
-                    testData.users.superadmin.model
-                )
-            }
-        )
-    )
-
-    suite.addTest(
-        new Mocha.Test(
-            'should authenticate the allowlisted user even if the provided token is expired',
-            async function () {
-                const result = await getAuth({
-                    'Authorization': `Bearer ${expiredToken}`,
-                    'X-Real-IP': allowlistedIP,
-                })
-                assert(result.status === 200)
-                assert(result.headers.Authorization)
-                await checkJWTByUserModel(
-                    result.headers.Authorization,
-                    testData.users.superadmin.model
-                )
             }
         )
     )

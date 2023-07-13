@@ -4,7 +4,8 @@ import { Token } from '../../src/types/types'
 import { RoleName, resolveRole } from './roleData.spec'
 import { resolveScope, ScopeName } from './scopeData.spec'
 import { UserData, UserName } from './userData.spec'
-import { EntityData, RemoveIndex, ReplaceWith, Subset } from '@crosslab/service-common'
+import { RemoveIndex, ReplaceWith, Subset } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 type ReplaceWithIteratively<
     T,
@@ -59,14 +60,14 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1'],
             user: 'superadmin',
-            roles: [],
+            roles: ['superadmin'],
             expiresOn: new Date(Date.now() - 360000).toISOString(),
         },
         model: {
             scopes: ['scope 1'],
             token: 'fe56a6bd-d09b-4d68-8874-ee214f400980',
             user: 'superadmin',
-            roles: [],
+            roles: ['superadmin'],
             expiresOn: new Date(Date.now() - 360000).toISOString(),
         },
         response: undefined,
@@ -75,13 +76,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 2', 'scope 3'],
             user: 'superadmin',
-            roles: [],
+            roles: ['superadmin'],
         },
         model: {
             scopes: ['scope 2', 'scope 3'],
             token: '9df0cfd1-ea6a-4d1e-8647-636419f36c5a',
             user: 'superadmin',
-            roles: [],
+            roles: ['superadmin'],
         },
         response: undefined,
     },
@@ -91,7 +92,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             user: 'superadmin',
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
-            roles: [],
+            roles: ['superadmin'],
         },
         model: {
             scopes: ['scope 1', 'scope 4', 'scope 5'],
@@ -99,7 +100,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             user: 'superadmin',
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
-            roles: [],
+            roles: ['superadmin'],
         },
         response: undefined,
     },
@@ -110,7 +111,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             expiresOn: new Date(Date.now() + 360000).toISOString(),
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
-            roles: [],
+            roles: ['device'],
         },
         model: {
             scopes: ['scope 2', 'scope 3'],
@@ -119,7 +120,7 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             expiresOn: new Date(Date.now() + 360000).toISOString(),
             // This url is just a mock and does not point to a valid device
             device: 'http://localhost:3000/devices/381e8aef-6a1e-4ac0-9bcf-bb4c220d0519',
-            roles: [],
+            roles: ['device'],
         },
         response: undefined,
     },
@@ -127,13 +128,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1', 'scope 2'],
             user: 'GET /auth user',
-            roles: [],
+            roles: ['user'],
         },
         model: {
             scopes: ['scope 1', 'scope 2'],
             user: 'GET /auth user',
             token: '86de8a01-a269-46c8-b2aa-8a5d7ce69057',
-            roles: [],
+            roles: ['user'],
         },
         response: undefined,
     },
@@ -142,14 +143,14 @@ const tokenDataWithLinks: TokenDataWithLinks = {
             scopes: ['scope 1'],
             user: 'GET /auth user',
             expiresOn: new Date(Date.now() - 360000).toISOString(),
-            roles: [],
+            roles: ['user'],
         },
         model: {
             scopes: ['scope 1'],
             user: 'GET /auth user',
             token: '582bb590-d090-4d37-866b-c29eb1e8e2f3',
             expiresOn: new Date(Date.now() - 360000).toISOString(),
-            roles: [],
+            roles: ['user'],
         },
         response: undefined,
     },
@@ -157,13 +158,13 @@ const tokenDataWithLinks: TokenDataWithLinks = {
         request: {
             scopes: ['scope 1', 'scope 2'],
             user: 'POST /logout user',
-            roles: [],
+            roles: ['user'],
         },
         model: {
             scopes: ['scope 1', 'scope 2'],
             user: 'POST /logout user',
             token: 'ce63c5d4-c826-4cab-8768-d5d7d11ca304',
-            roles: [],
+            roles: ['user'],
         },
         response: undefined,
     },
@@ -179,8 +180,7 @@ export function resolveToken(
             scopes: tokenDataWithLinks[tokenName].request.scopes.map(
                 (scopeName) => resolveScope(scopeName).request
             ),
-            user: userData[tokenDataWithLinks[tokenName].request.user]!.request!
-                .username!,
+            user: userData[tokenDataWithLinks[tokenName].request.user]!.model!.username!,
         },
         model: {
             ...tokenDataWithLinks[tokenName].model,

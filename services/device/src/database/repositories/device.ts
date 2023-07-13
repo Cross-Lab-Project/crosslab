@@ -17,7 +17,7 @@ export class DeviceRepository extends AbstractRepository<
     Device<'request'>,
     Device<'response'>
 > {
-    private isInitialized: boolean = false
+    private isInitialized = false
 
     constructor() {
         super('Device')

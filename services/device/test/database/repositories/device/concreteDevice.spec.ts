@@ -8,7 +8,7 @@ import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../../src/generated/
 import { ConcreteDeviceName } from '../../../data/devices/concreteDevices/index.spec'
 import { initTestDatabase } from '../index.spec'
 import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 import { FindOptionsWhere } from 'typeorm'
 

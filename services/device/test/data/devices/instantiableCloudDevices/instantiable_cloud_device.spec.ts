@@ -1,6 +1,6 @@
 import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice'
 import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 const uuid = '15d9de70-3646-4d05-a83b-3c70862c0b98'
 const type = 'cloud instantiable'

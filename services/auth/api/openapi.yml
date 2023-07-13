@@ -48,3 +48,5 @@ paths:
     $ref: "./resources/role_users.yml"
   /identity:
     $ref: "./resources/identity.yml"
+  /register:
+    $ref: "./resources/register.yml"

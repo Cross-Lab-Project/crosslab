@@ -4,7 +4,7 @@ import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { apiClient } from '../../../globals'
 import { changedCallbacks } from '../../../methods/callbacks'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
-import { ImpossibleOperationError } from '@crosslab/service-common'
+import { ImpossibleOperationError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
@@ -17,7 +17,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     parameters,
     user
 ) => {
-    console.log(`postDevicesByDeviceId called`)
+    logger.log('info', 'postDevicesByDeviceId called')
 
     const instantiableDeviceModel = await deviceRepository.findOneOrFail({
         where: { uuid: parameters.device_id },
@@ -41,7 +41,8 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     concreteDeviceModel.owner = user.JWT?.url
 
     if (parameters.changedUrl) {
-        console.log(
+        logger.log(
+            'info',
             `registering changed-callback for device '${deviceUrlFromId(
                 concreteDeviceModel.uuid
             )}' to '${parameters.changedUrl}'`
@@ -60,7 +61,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     await deviceRepository.save(concreteDeviceModel)
     await deviceRepository.save(instantiableDeviceModel)
 
-    console.log(`postDevicesByDeviceId succeeded`)
+    logger.log('info', 'postDevicesByDeviceId succeeded')
 
     return {
         status: 201,

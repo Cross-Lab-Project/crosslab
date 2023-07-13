@@ -37,8 +37,8 @@ for (const client1Type of clientTypes) {
         this.experiment.addDevice(this, client1Type);
         this.experiment.addDevice(this, client2Type);
       });
-      after(function () {
-        this.experiment.stop();
+      after(async function () {
+        await this.experiment.stop(this.client);
       });
 
       step('should connect without errors', async function () {

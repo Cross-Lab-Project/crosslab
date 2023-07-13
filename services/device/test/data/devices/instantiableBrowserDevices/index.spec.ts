@@ -1,6 +1,6 @@
 import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
 import instantiable_browser_device from './instantiable_browser_device.spec'
-import { EntityData } from '@crosslab/service-common'
+import { EntityData } from '@crosslab/service-common/test-helper'
 
 export const instantiableBrowserDeviceNames = ['instantiable browser device'] as const
 export type InstantiableBrowserDeviceName =

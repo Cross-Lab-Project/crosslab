@@ -62,7 +62,7 @@ function applyAvailabilityRule(
     end: number
 ) {
     if (availabilityRule.available === true || availabilityRule.available === undefined) {
-        // console.log('applying availability rule for available = true')
+        // logger.log("info",'applying availability rule for available = true')
 
         // add all new timeslots
         availability = addTimeSlotsFromRule(availability, availabilityRule, start, end)
@@ -73,7 +73,7 @@ function applyAvailabilityRule(
         // merge timeslots
         availability = mergeOverlappingTimeSlots(availability)
     } else {
-        // console.log('applying availability rule for available = false')
+        // logger.log("info",'applying availability rule for available = false')
 
         // invert availability
         availability = invertTimeSlots(availability, start, end)
@@ -107,7 +107,7 @@ function addTimeSlotsFromRule(
     start: number,
     end: number
 ) {
-    // console.log(
+    // logger.log("info",
     //     'availability before adding timeslots from rule:',
     //     JSON.stringify(availability, null, 4)
     // )
@@ -154,7 +154,7 @@ function addTimeSlotsFromRule(
 
     availability.push(timeSlot)
 
-    // console.log(
+    // logger.log("info",
     //     'availability after adding timeslots from rule:',
     //     JSON.stringify(availability, null, 4)
     // )
@@ -177,13 +177,13 @@ function addTimeSlotsFromRule(
  * @returns The sorted list of timeslots.
  */
 function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
-    // console.log('availability before sort:', JSON.stringify(availability, null, 4))
+    // logger.log("info",'availability before sort:', JSON.stringify(availability, null, 4))
     availability.sort((a, b) => {
         if (a.start < b.start) return -1
         if (a.start > b.start) return 1
         return 0
     })
-    // console.log('availability after sort:', JSON.stringify(availability, null, 4))
+    // logger.log("info",'availability after sort:', JSON.stringify(availability, null, 4))
     return availability
 }
 
@@ -193,7 +193,7 @@ function sortTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
  * @returns The list of timeslots with no overlap.
  */
 function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel[] {
-    // console.log('availability before merge:', JSON.stringify(availability, null, 4))
+    // logger.log("info",'availability before merge:', JSON.stringify(availability, null, 4))
 
     const mergedAvailability: TimeSlotModel[] = []
     let currentIndex = 0
@@ -214,7 +214,7 @@ function mergeOverlappingTimeSlots(availability: TimeSlotModel[]): TimeSlotModel
             }
         }
     }
-    // console.log('availability after merge:', JSON.stringify(mergedAvailability, null, 4))
+    // logger.log("info",'availability after merge:', JSON.stringify(mergedAvailability, null, 4))
     return mergedAvailability
 }
 
@@ -231,7 +231,7 @@ function invertTimeSlots(
     end: number
 ): TimeSlotModel[] {
     if (availability.length === 0) return []
-    // console.log('availability before invert:', JSON.stringify(availability, null, 4))
+    // logger.log("info",'availability before invert:', JSON.stringify(availability, null, 4))
 
     // sort by starttime
     availability = sortTimeSlots(availability)
@@ -269,6 +269,6 @@ function invertTimeSlots(
     if (lastTimeSlot.start !== lastTimeSlot.end) newAvailability.push(lastTimeSlot)
 
     availability = newAvailability
-    // console.log('availability after invert:', JSON.stringify(availability, null, 4))
+    // logger.log("info",'availability after invert:', JSON.stringify(availability, null, 4))
     return availability
 }

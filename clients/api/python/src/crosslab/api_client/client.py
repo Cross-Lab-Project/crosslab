@@ -36,6 +36,8 @@ from crosslab.api_client.schemas import (
     GetIdentityResponse,
     UpdateIdentityRequest,
     UpdateIdentityResponse,
+    RegisterRequest,
+    RegisterResponse,
     GetScheduleRequest,
     GetScheduleResponse,
     BookExperimentRequest,
@@ -636,6 +638,29 @@ class APIClient:
            
         # transform response
         if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def register(self, body: RegisterRequest, url: str = "/register") -> RegisterResponse:  # noqa: E501
+        """
+        Register user
+        
+        This endpoint will register a new user."""  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(register)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/register'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 201:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 

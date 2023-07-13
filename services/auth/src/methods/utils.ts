@@ -1,4 +1,4 @@
-import { config } from "../config"
+import { config } from '../config'
 
 /**
  * This function capitalizes the first letter of a string.

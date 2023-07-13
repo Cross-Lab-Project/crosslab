@@ -7,7 +7,7 @@ import {
 } from '../../../../src/generated/types'
 import { deviceUrlFromId } from '../../../../src/methods/urlFromId'
 import { DeviceName } from '../../../data/devices/index.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
 import assert from 'assert'
 
 export abstract class DeviceOverviewRepositoryTestSuite extends AbstractRepositoryTestSuite<
@@ -37,7 +37,7 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
         model: DeviceOverviewModel,
         data: DeviceOverview<'response'>
     ): boolean {
-        assert(data.description === model.description)
+        assert(data.description === (model.description ?? undefined))
         assert(data.name === model.name)
         assert(data.owner === model.owner)
         assert(data.type === model.type)
