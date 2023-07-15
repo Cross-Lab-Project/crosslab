@@ -24,7 +24,6 @@ class WebSocketConnectionError extends Error {
  * @param app The express application to add the /devices/ws endpoint to.
  */
 export function websocketHandling(app: Express.Application) {
-    // TODO: close Peerconnections that have device as participant when websocket connection is closed?
     app.ws('/devices/websocket', (ws) => {
         // authenticate and start heartbeat
         ws.once('message', async (data) => {
@@ -33,6 +32,10 @@ export function websocketHandling(app: Express.Application) {
                 const message = JSON.parse(data.toString('utf8'))
 
                 if (!(isMessage(message) && isAuthenticationMessage(message))) {
+                    logger.log(
+                        'error',
+                        'First received websocket message is not an authentication message'
+                    )
                     return ws.close(
                         1002,
                         'Received message is not an authentication message'
@@ -40,9 +43,13 @@ export function websocketHandling(app: Express.Application) {
                 }
 
                 if (!message.token) {
+                    logger.log(
+                        'error',
+                        'Authentication message does not contain a websocket token'
+                    )
                     return ws.close(
                         1002,
-                        'Authentication message does not contain a valid websocket token'
+                        'Authentication message does not contain a websocket token'
                     )
                 }
 
@@ -50,6 +57,7 @@ export function websocketHandling(app: Express.Application) {
                     where: { token: message.token },
                 })
                 if (!deviceModel) {
+                    logger.log('error', 'No device found with matching websocket token')
                     return ws.close(1002, 'No device found with matching websocket token')
                 }
 
@@ -62,7 +70,6 @@ export function websocketHandling(app: Express.Application) {
                     `device '${deviceUrlFromId(deviceModel.uuid)}' connected`
                 )
 
-                // TODO: find out if this is really how it was intended
                 ws.send(
                     JSON.stringify(<AuthenticationMessage>{
                         messageType: 'authenticate',
@@ -74,10 +81,22 @@ export function websocketHandling(app: Express.Application) {
                 let isAlive = true
                 ws.on('pong', () => {
                     isAlive = true
+                    logger.log(
+                        'info',
+                        `hearbeat received from device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}'`
+                    )
                 })
                 const interval = setInterval(async function ping() {
                     try {
                         if (isAlive === false) {
+                            logger.log(
+                                'info',
+                                `Device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}' did not answer hearbeat check, closing connection`
+                            )
                             deviceModel.connected = false
                             await concreteDeviceRepository.save(deviceModel)
                             await sendChangedCallback(deviceModel)
@@ -86,6 +105,12 @@ export function websocketHandling(app: Express.Application) {
                             return ws.terminate()
                         }
                         isAlive = false
+                        logger.log(
+                            'info',
+                            `sending hearbeat to device '${deviceUrlFromId(
+                                deviceModel.uuid
+                            )}'`
+                        )
                         ws.ping()
                     } catch (error) {
                         logger.log(
@@ -100,8 +125,18 @@ export function websocketHandling(app: Express.Application) {
 
                 // close handler: stop heartbeat and disconnect device
                 ws.on('close', async (code, reason) => {
-                    clearInterval(interval)
+                    deviceModel.connected = false
+                    await concreteDeviceRepository.save(deviceModel)
+                    await sendChangedCallback(deviceModel)
                     connectedDevices.delete(deviceModel.uuid)
+                    clearInterval(interval)
+
+                    logger.log(
+                        'info',
+                        `websocket connection for device '${deviceUrlFromId(
+                            deviceModel.uuid
+                        )}' closed`
+                    )
 
                     if (code === 1002) {
                         logger.log(
@@ -116,6 +151,12 @@ export function websocketHandling(app: Express.Application) {
                     try {
                         const msg = JSON.parse(rawData.toString('utf-8'))
                         if (!isMessage(msg)) {
+                            logger.log(
+                                'error',
+                                `Received something that is not a message from device '${deviceUrlFromId(
+                                    deviceModel.uuid
+                                )}', disconnecting`
+                            )
                             ws.close(1002, 'Malformed Message')
                             return
                         }
@@ -123,9 +164,9 @@ export function websocketHandling(app: Express.Application) {
                     } catch (error) {
                         logger.log(
                             'error',
-                            `An error occurred while handling an incoming message for device ${deviceUrlFromId(
+                            `An error occurred while handling an incoming message for device '${deviceUrlFromId(
                                 deviceModel.uuid
-                            )}`,
+                            )}'`,
                             { data: { error } }
                         )
                     }

@@ -57,7 +57,7 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'device': ['developer'],
     'device:read': ['developer'], // TODO: readall, listall, editall
     'device:read:owned': standardRoles,
-    'device:write': ['device'],
+    'device:write': ['device', 'device_service'],
     'device:write:owned': ['user'],
     'device:create': ['user'],
     'device:delete': [],

@@ -10,7 +10,7 @@ from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEv
 
 class FileService__Producer(Service):
     service_type = "https://api.goldi-labs.de/serviceTypes/file"
-    service_direction = "out"
+    service_direction = "producer"
     service_id: str
 
     def __init__(self, service_id: str):
@@ -40,7 +40,7 @@ class FileService__Producer(Service):
 
 class FileService__Consumer(Service, AsyncIOEventEmitter):
     service_type = "https://api.goldi-labs.de/serviceTypes/file"
-    service_direction = "out"
+    service_direction = "consumer"
     service_id: str
 
     def __init__(self, service_id: str):

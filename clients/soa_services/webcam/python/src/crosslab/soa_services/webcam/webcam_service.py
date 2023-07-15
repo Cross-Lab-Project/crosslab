@@ -7,7 +7,7 @@ from crosslab.soa_services.webcam.messages import WebcamServiceConfig
 
 class WebcamService__Producer(Service):
     service_type = "http://api.goldi-labs.de/serviceTypes/webcam"
-    service_direction = "out"
+    service_direction = "producer"
     service_id: str
 
     _track: MediaStreamTrack

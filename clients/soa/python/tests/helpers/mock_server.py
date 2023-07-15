@@ -74,6 +74,9 @@ class MockServer:
     def post(self, path, check_body=None, status=200, payload=None):
         self.add("POST", path, check_body, status, payload)
 
+    def patch(self, path, check_body=None, status=200, payload=None):
+        self.add("PATCH", path, check_body, status, payload)
+
     def ws(self, path):
         self.add("WS", path)
         self.protocol[-1]["ws"] = WSMock()

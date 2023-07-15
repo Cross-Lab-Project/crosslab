@@ -277,4 +277,6 @@ Create `$HOME/.pypirc` with the following content:
     password: xxxxxxxxxxxxxxxx
 ```
 
+npm adduser
+
 run `./scripts/publish.sh --latest`

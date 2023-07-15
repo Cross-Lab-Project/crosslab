@@ -6,7 +6,7 @@ from crosslab.soa_client.connection import Connection
 
 class Service(ABC):
     service_type: str
-    service_direction: Literal["in", "out", "inout"]
+    service_direction: Literal["producer", "consumer", "prosumer"]
     service_id: str
 
     @abstractmethod

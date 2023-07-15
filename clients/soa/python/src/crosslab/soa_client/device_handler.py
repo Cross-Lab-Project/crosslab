@@ -85,6 +85,9 @@ class DeviceHandler(AsyncIOEventEmitter):
 
         async with client:
             async with aiohttp.ClientSession() as session:
+                await client.update_device(
+                    device_url, {"type": "device", "services": self.get_service_meta()}
+                )
                 token = await client.create_websocket_token(token_endpoint)
                 self.emit("websocketToken", token)
                 self.ws = await session.ws_connect(ws_endpoint)
@@ -93,6 +96,9 @@ class DeviceHandler(AsyncIOEventEmitter):
 
                 await self._message_loop()
                 await session.close()
+
+    def get_service_meta(self):
+        return [service.getMeta() for service in self._services.values()]
 
     async def _message_loop(self):
         while True:

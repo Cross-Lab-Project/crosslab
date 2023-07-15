@@ -20,9 +20,16 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
             'info',
             `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`
         )
-
         const experimentModel = await experimentRepository.findOneOrFail({
             where: { uuid: parameters.experiment_id },
+            relations: {
+                connections: true,
+                devices: true,
+                roles: true,
+                serviceConfigurations: {
+                    participants: true,
+                },
+            },
         })
 
         if (body) await experimentRepository.write(experimentModel, body)

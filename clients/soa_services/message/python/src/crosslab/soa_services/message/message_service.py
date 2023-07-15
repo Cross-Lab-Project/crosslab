@@ -13,7 +13,7 @@ from crosslab.soa_services.message.messages import (
 
 class MessageService__Producer(Service):
     service_type = "https://api.goldi-labs.de/serviceTypes/message"
-    service_direction = "out"
+    service_direction = "producer"
     service_id: str
 
     def __init__(self, service_id: str):
@@ -44,7 +44,7 @@ class MessageService__Producer(Service):
 
 class MessageService__Consumer(Service, AsyncIOEventEmitter):
     service_type = "https://api.goldi-labs.de/serviceTypes/message"
-    service_direction = "in"
+    service_direction = "consumer"
     service_id: str
 
     def __init__(self, service_id: str):
