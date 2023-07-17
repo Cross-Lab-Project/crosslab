@@ -1,9 +1,7 @@
 import * as amqplib from 'amqplib';
 
-import { mainLoop } from "../device-reservation/mainLoop"
-import { ReservationMessage, ReservationRequest } from "../device-reservation/messageDefinition"
-import { sleep } from "../common/sleep"
-import { config } from "../common/config"
+import { mainLoop, ReservationMessage, ReservationRequest } from "@crosslab/service-device-reservation"
+import { sleep, baseConfig } from "@crosslab/booking-service-common"
 
 var running: boolean = false;
 
@@ -11,7 +9,7 @@ export async function startDeviceReservation() {
     if(running) {
         throw Error("reservation already started");
     }
-    let connection: amqplib.Connection = await amqplib.connect(config.AmqpUrl);
+    let connection: amqplib.Connection = await amqplib.connect(baseConfig.AmqpUrl);
     let channel: amqplib.Channel = await connection.createChannel();
 
     // Drain queue for tests
@@ -30,7 +28,7 @@ export async function stopDeviceReservation() {
     if (!running) {
         throw Error("can not stop Reservation that is not running.");
     }
-    let connection: amqplib.Connection = await amqplib.connect(config.AmqpUrl);
+    let connection: amqplib.Connection = await amqplib.connect(baseConfig.AmqpUrl);
     let channel: amqplib.Channel = await connection.createChannel();
 
     await channel.assertQueue("device-reservation", {

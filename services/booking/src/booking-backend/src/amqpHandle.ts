@@ -1,9 +1,10 @@
 import * as amqplib from 'amqplib';
 
-import { sleep } from '../../common/sleep';
-import { config } from '../../common/config';
 import { DeviceBookingRequest } from './messageDefinition';
 import { freeDevice, reservateDevice } from './internal';
+
+import { sleep } from "@crosslab/booking-service-common"
+import { config } from "./config"
 
 export async function handleFreeDeviceRequest(): Promise<void> { // freeDevice
     while (true) {

@@ -1,8 +1,4 @@
 import {
-    Booking,
-    Timeslot
-} from "./generated/types"
-import {
     putBookingByIDLockSignature,
     deleteBookingByIDLockSignature,
     postBookingCallbackByIDSignature,
@@ -11,9 +7,8 @@ import {
 
 import * as mysql from 'mysql2/promise';
 
-import { config } from '../../common/config';
+import { config } from './config';
 import { dispatchCallback, handleCallback } from "./internal";
-import dayjs from "dayjs";
 
 export const putBookingByIDLock: putBookingByIDLockSignature = async (parameters, user) => {
     let bookingID: bigint = BigInt(parameters.ID);
@@ -160,3 +155,5 @@ export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
         db.end();
     }
 }
+
+export default {putBookingByIDLock, deleteBookingByIDLock, postBookingCallbackByID}

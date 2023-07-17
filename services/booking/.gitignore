@@ -133,6 +133,8 @@ dist
 build/
 .npmrc
 generated/
+app/
+lib/
 
 # Dist folder of API
 dist/

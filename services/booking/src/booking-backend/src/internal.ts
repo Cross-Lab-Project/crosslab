@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { APIClient, UnsuccessfulRequestError, BookingServiceSignatures } from "@cross-lab-project/api-client";
+import { APIClient, BookingServiceSignatures } from "@cross-lab-project/api-client";
 import lodash from "lodash"
 import * as amqplib from "amqplib"
 import * as mysql from 'mysql2/promise';
@@ -11,10 +11,9 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 import { DeviceBookingRequest } from './messageDefinition';
-import { config } from '../../common/config';
-import { BelongsToUs } from '../../common/auth';
-import { ReservationAnswer, ReservationMessage, ReservationRequest } from '../../device-reservation/messageDefinition';
-import { sleep } from "../../common/sleep";
+import { BelongsToUs, sleep } from '@crosslab/booking-service-common';
+import { ReservationAnswer, ReservationMessage, ReservationRequest } from '@crosslab/service-device-reservation';
+import { config } from './config';
 
 
 
@@ -25,7 +24,7 @@ export enum callbackType {
 
 // Handle received callback
 export async function handleCallback(type: callbackType, targetBooking: bigint, parameters: any) {
-    let api: APIClient = new APIClient(config.OwnURL);
+    let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
 
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
@@ -152,7 +151,7 @@ async function addDeviceCallback(device: URL, targetbooking: bigint, parameters:
         let data: string = JSON.stringify(parameters);
         await db.execute("INSERT INTO callback (`id`, `type`, `targetbooking`, `parameters`) VALUES (?,?,?,?)", [id, callbackType.DeviceUpdate, targetbooking, data]);
 
-        let api: APIClient = new APIClient(config.OwnURL);
+        let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
         await api.updateDevice(device.toString(), undefined, { changedUrl: config.OwnURL + "/booking_callback/" + id });
     } catch (e) {
         // For now, just throw the error
@@ -173,7 +172,7 @@ async function addBookingCallback(booking: URL, targetbooking: bigint, parameter
         let data: string = JSON.stringify(parameters);
         await db.execute("INSERT INTO callback (`id`, `type`, `targetbooking`, `parameters`) VALUES (?,?,?,?)", [id, callbackType.BookingUpdate, targetbooking, data]);
 
-        let api: APIClient = new APIClient(config.OwnURL);
+        let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
         await api.updateBooking(booking.toString(), { Callback: config.OwnURL + "/booking_callback/" + id });
     } catch (e) {
         // For now, just throw the error
@@ -278,7 +277,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     }
     await db.end();
 
-    let api: APIClient = new APIClient(config.OwnURL);
+    let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
 
     let deviceListResponse = await api.getDevice(r.Device.toString(), { flat_group: true });
     let possibleDevices: string[] = [];
@@ -525,7 +524,7 @@ export async function freeDevice(internalreference: bigint) {
             }
         } else {
             // This is a remote devices
-            let api: APIClient = new APIClient(config.OwnURL);
+            let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
             await api.deleteBooking(rows[0].remotereference);
         }
 

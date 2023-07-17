@@ -14,13 +14,13 @@ import { cloneDeep, map } from "lodash"
 import dayjs from 'dayjs';
 
 
-import { config } from "../../common/config"
-import { BelongsToUs } from "../../common/auth"
+import { BelongsToUs } from "@crosslab/booking-service-common"
 import { timetableAnd, timetableNot } from "./timetable"
+import { config } from "./config";
 
 // TODO: Missing availability since it is not yet well defined
 export const postSchedule: postScheduleSignature = async (body, user) => {
-    let api: APIClient = new APIClient(config.OwnURL);
+    let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
 
     const laterReq = new Map<string, [number[], number[], postScheduleRequestBodyType]>(); // Device in request, device list, request
 
@@ -246,3 +246,5 @@ export async function getTimetables(device: URL, start: string, end: string): Pr
     r = timetableNot(r, dayjs(start), dayjs(end));
     return r;
 }
+
+export default { postSchedule }

@@ -3,10 +3,8 @@ import * as mysql from 'mysql2/promise';
 import { Mutex, withTimeout } from 'async-mutex';
 import * as crypto from "crypto";
 
-import { config } from '../common/config';
-import { sleep } from '../common/sleep';
+import { baseConfig, sleep, BelongsToUs } from '@crosslab/booking-service-common';
 import { ReservationRequest, ReservationMessage, ReservationAnswer, ErrorTimeoutText } from './messageDefinition';
-import { BelongsToUs } from '../common/auth';
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
@@ -19,7 +17,7 @@ var mutex = withTimeout(new Mutex(), 5000, new Error(ErrorTimeoutText));
 export async function mainLoop(): Promise<void> {
     while (true) {
         try {
-            let connection = await amqplib.connect(config.AmqpUrl);
+            let connection = await amqplib.connect(baseConfig.AmqpUrl);
             let channel = await connection.createChannel();
 
             await channel.assertQueue("device-reservation", {
@@ -56,7 +54,7 @@ export async function mainLoop(): Promise<void> {
                 try {
                     // Process message
                     let answer: ReservationAnswer;
-                    let db = await mysql.createConnection(config.ReservationDSN);
+                    let db = await mysql.createConnection(baseConfig.ReservationDSN);
                     await db.connect();
                     try {
                         let rows: any, fields: any;
