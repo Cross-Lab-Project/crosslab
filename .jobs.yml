@@ -62,6 +62,7 @@ helper/dummy-device/python:
     dependencies:
       - helper/dummy-device/python:build
 
+
 ################################################################################
 # Backend ######################################################################
 ################################################################################
@@ -101,16 +102,6 @@ services/booking:
   - script: lint-spec
     dependencies:
       - services/booking:build-spec
-  - script: build
-    dependencies:
-      - services/booking:build-spec
-      - services/common:build
-      - helper/crosslab-typescript-addon:build
-      - helper/openapi-codegeneration:build
-      - clients/api/js:build
-  - script: test
-    dependencies:
-      - services/booking:build
 
 services/device:
   - script: build-spec
@@ -190,9 +181,10 @@ services/update:
     dependencies:
       - services/update:build
 
+
 services/openapi:
   - script: build
-    dependencies:
+    dependencies: 
       - services/auth:build-spec
       - services/booking:build-spec
       - services/device:build-spec
@@ -208,6 +200,7 @@ services/gateway:
   - script: build-docker
     dependencies:
       - services/gateway:build
+
 
 ################################################################################
 # Clients ######################################################################
@@ -261,6 +254,7 @@ clients/soa/js:
   - script: lint
     dependencies:
       - clients/soa/js:build
+
 
 # SOA Service ##################################################################
 
@@ -320,6 +314,7 @@ clients/soa_services/file/python:
       - clients/soa_services/file/python:build
       - helper/python-test-helper:test
 
+
 clients/soa_services/file/js:
   - script: build
     dependencies:
@@ -341,6 +336,7 @@ clients/soa_services/message/python:
       - clients/soa_services/message/python:build
       - helper/python-test-helper:test
 
+
 clients/soa_services/message/js:
   - script: build
     dependencies:
@@ -356,18 +352,17 @@ clients/soa_services/message/js:
 integration-test:
   - script: test
     dependencies:
-      - services/common:build
-      - services/auth:build
-      - services/booking:build
-      - services/device:build
-      - services/experiment:build
-      - services/federation:build
-      - services/gateway:build
-      - clients/api/js:build
-      - clients/soa/js:build
-      - clients/soa_services/electricalConnection/js:build
-      - helper/dummy-device/js:build
-      - helper/dummy-device/python:build
+    - services/common:build
+    - services/auth:build
+    - services/device:build
+    - services/experiment:build
+    - services/federation:build
+    - services/gateway:build
+    - clients/api/js:build
+    - clients/soa/js:build
+    - clients/soa_services/electricalConnection/js:build
+    - helper/dummy-device/js:build
+    - helper/dummy-device/python:build
   - script: lint
     dependencies:
-      - integration-test:test
+    - integration-test:test

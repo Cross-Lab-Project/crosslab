@@ -47,13 +47,6 @@ RUN apt-get update \
         libvpx-dev \
         pkg-config
 
-# install additional dependencies for booking service
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        rabbitmq-server \
-        mariadb-server \
-        mariadb-client
-
 # install additional software
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y \
