@@ -16,7 +16,7 @@ The following table shows the status for all jobs in this repository.
 | helper/dummy-device/python |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/helper/dummy-device/python/dist/lint.log) |  |  |
 | services/common |   |  | [![build](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/common/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/common/dist/lint.log) |  |  |
 | services/auth |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/lint.log) | [![test](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/test.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/auth/dist/build-docker.log) |
-| services/booking |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build.log) |  | [![test](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/test.log) |  |
+| services/booking |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/booking/dist/lint-spec.log) |  |  |  |  |
 | services/device |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build.log) |  | [![test](https://ci.goldi-labs.de/crosslab/main/services/device/dist/test.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/test.log) | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/device/dist/build-docker.log) |
 | services/experiment |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build.log) | [![lint](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/lint.log) |  | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/experiment/dist/build-docker.log) |
 | services/federation |  [![build-spec](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-spec.log) | [![lint-spec](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/lint-spec.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/lint-spec.log) | [![build](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build.log) |  |  | [![build-docker](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-docker.badge)](https://ci.goldi-labs.de/crosslab/main/services/federation/dist/build-docker.log) |
@@ -141,10 +141,8 @@ graph LR
     services/auth:test[test]
   end
   subgraph services/booking
-    services/booking:build[build]
     services/booking:build-spec[build-spec]
     services/booking:lint-spec[lint-spec]
-    services/booking:test[test]
   end
   subgraph services/common
     services/common:build[build]
@@ -187,7 +185,6 @@ graph LR
 clients/api/js --> helper/dummy-device/js
 clients/api/js --> integration-test
 clients/api/js --> services/auth
-clients/api/js --> services/booking
 clients/api/js --> services/device
 clients/api/js --> services/experiment
 clients/api/js --> services/federation
@@ -216,7 +213,6 @@ clients/soa_services/file/js --> helper/dummy-device/js
 clients/soa_services/webcam/js --> helper/dummy-device/js
 helper/crosslab-typescript-addon --> clients/api/js
 helper/crosslab-typescript-addon --> services/auth
-helper/crosslab-typescript-addon --> services/booking
 helper/crosslab-typescript-addon --> services/device
 helper/crosslab-typescript-addon --> services/experiment
 helper/crosslab-typescript-addon --> services/federation
@@ -229,7 +225,6 @@ helper/openapi-codegeneration --> clients/soa/python
 helper/openapi-codegeneration --> clients/soa_services/electricalConnection/python
 helper/openapi-codegeneration --> helper/crosslab-typescript-addon
 helper/openapi-codegeneration --> services/auth
-helper/openapi-codegeneration --> services/booking
 helper/openapi-codegeneration --> services/device
 helper/openapi-codegeneration --> services/experiment
 helper/openapi-codegeneration --> services/federation
@@ -245,11 +240,9 @@ services/auth --> integration-test
 services/auth --> services/device
 services/auth --> services/openapi
 services/booking --> clients/api/js
-services/booking --> integration-test
 services/booking --> services/openapi
 services/common --> integration-test
 services/common --> services/auth
-services/common --> services/booking
 services/common --> services/device
 services/common --> services/experiment
 services/common --> services/federation
