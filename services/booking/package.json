@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "bash build.bash",
-    "test": "bash test.bash",
+    "test": "bash scripts/test.sh",
     "openapi-lint": "npx @redocly/cli lint ./dist/openapi.yml",
     "openapi-bundle": "npm run generate",
     "generate": "bash documentation-and-generation.bash",
