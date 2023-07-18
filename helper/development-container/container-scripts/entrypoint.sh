@@ -7,10 +7,8 @@ grep -q localhost /etc/hosts || sudo bash -c 'echo "127.0.0.1 localhost" >> /etc
 grep -q $(hostname) /etc/hosts || sudo bash -c 'echo "127.0.0.1 $(hostname)" >> /etc/hosts'
 
 # Start needed services
-touch /tmp/this_is_a_test
 sudo service rabbitmq-server restart
 sudo service mysql start
-sleep 5
 sudo mysql -e "CREATE DATABASE unittest DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER 'test'@localhost IDENTIFIED BY 'test';"
 sudo mysql -e "GRANT ALL PRIVILEGES ON unittest.* to 'test'@localhost;"
