@@ -133,6 +133,11 @@ dist
 build/
 .npmrc
 generated/
+app/
+lib/
 
 # Dist folder of API
 dist/
+
+# resolved package.json from build script
+package.resolved.json

@@ -9,6 +9,7 @@ export const ENV = {
     ALLOWLIST: [
       'superadmin:local:superadmin',
       'authservice:local:authservice',
+      'bookingservice:local:bookingservice',
       'deviceservice:local:deviceservice',
       'experimentservice:local:experimentservice',
       'federationservice:local:federationservice',
@@ -35,5 +36,21 @@ export const ENV = {
     UPDATE_SERVICE_URL: '127.0.0.1:1',
     SERVER_NAME: 'localhost',
     NGINX_PID_PATH: 'nginx.pid',
+  },
+  'booking-backend': {
+    PORT: '3004',
+    API_TOKEN: 'bookingservice',
+  },
+  'booking-frontend': {
+    PORT: '3005',
+    API_TOKEN: 'bookingservice',
+  },
+  'device-reservation': {
+    PORT: '3006',
+    API_TOKEN: 'bookingservice',
+  },
+  'schedule-service': {
+    PORT: '3007',
+    API_TOKEN: 'bookingservice',
   },
 };

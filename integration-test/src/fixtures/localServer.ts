@@ -19,6 +19,10 @@ export interface ServerContext {
   experimentService: Service;
   federationService: Service;
   gatewayService: Service;
+  bookingBackend: Service;
+  bookingFrontend: Service;
+  deviceReservation: Service;
+  scheduleService: Service;
   client: APIClient;
 }
 
@@ -115,6 +119,14 @@ export const mochaHooks = {
     this.federationService.stdout = '';
     this.gatewayService.stderr = '';
     this.gatewayService.stdout = '';
+    this.bookingBackend.stderr = '';
+    this.bookingBackend.stdout = '';
+    this.bookingFrontend.stderr = '';
+    this.bookingFrontend.stdout = '';
+    this.deviceReservation.stderr = '';
+    this.deviceReservation.stdout = '';
+    this.scheduleService.stderr = '';
+    this.scheduleService.stdout = '';
   },
 
   async beforeAll(this: ServerContext & Mocha.Context) {
@@ -136,6 +148,10 @@ export const mochaHooks = {
       this.debug?.federation?.debug_port,
       this,
     );
+    this.bookingBackend = start_service('booking-backend', {...ENV.common, ...ENV['booking-backend']}, true, undefined, this);
+    this.bookingFrontend = start_service('booking-frontend', {...ENV.common, ...ENV['booking-frontend']}, true, undefined, this);
+    this.deviceReservation = start_service('device-reservation', {...ENV.common, ...ENV['device-reservation']}, true, undefined, this);
+    this.scheduleService = start_service('schedule-service', {...ENV.common, ...ENV['schedule-service']}, true, undefined, this);
     this.gatewayService = start_gateway(path.resolve(repository_dir, 'services', 'gateway'), {...ENV.common, ...ENV.gateway}, this);
 
     await Promise.all([
@@ -153,5 +169,9 @@ export const mochaHooks = {
     this.experimentService.process.kill();
     this.federationService.process.kill();
     this.gatewayService.process.kill();
+    this.bookingBackend.process.kill();
+    this.bookingFrontend.process.kill();
+    this.deviceReservation.process.kill();
+    this.scheduleService.process.kill();
   },
 };

@@ -18,9 +18,9 @@ import * as mysql from 'mysql2/promise';
 import * as amqplib from 'amqplib';
 import dayjs from "dayjs";
 
-import { config } from "./../../common/config"
-import { DeviceBookingRequest } from "./../../booking-backend/src/messageDefinition";
-import { BelongsToUs } from "./../../common/auth"
+import { BelongsToUs } from "@crosslab/booking-service-common"
+import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
+import { config } from "./config"
 
 export const postBooking: postBookingSignature = async (body, user) => {
     if (user.JWT === undefined) {
@@ -50,14 +50,14 @@ export const postBooking: postBookingSignature = async (body, user) => {
         let [rows, fields]: [any, any] = await db.execute("INSERT INTO booking (`start`, `end`, `type`, `status`, `user`) VALUES (?,?,?,?,?)", [new Date(body.Time.Start), new Date(body.Time.End), body.Time, "pending", user]);
         let bookingID: bigint = BigInt(rows.insertId);
 
-        for (let i = 0; i < body.Experiment.Devices.length; i++) {
-            await db.execute("INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [bookingID, body.Experiment.Devices[i].ID, i]);
+        for (let i = 0; i < body.Devices.length; i++) {
+            await db.execute("INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [bookingID, body.Devices[i].ID, i]);
         };
         await db.commit();
 
         // Send devices to backend
-        for (let i = 0; i < body.Experiment.Devices.length; i++) {
-            let s = JSON.stringify(new DeviceBookingRequest(bookingID, new URL(body.Experiment.Devices[i].ID), i, dayjs(body.Time.Start), dayjs(body.Time.End)));
+        for (let i = 0; i < body.Devices.length; i++) {
+            let s = JSON.stringify(new DeviceBookingRequest(bookingID, new URL(body.Devices[i].ID), i, dayjs(body.Time.Start), dayjs(body.Time.End)));
             if (!channel.sendToQueue("device-booking", Buffer.from(s), { persistent: true })) {
                 throw new Error("amqp queue full");
             }
@@ -371,3 +371,5 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
         body: "TODO: Method not implemented",
     }
 }
+
+export default {postBooking, getBookingByID, deleteBookingByID, patchBookingByID, deleteBookingByIDDestroy}

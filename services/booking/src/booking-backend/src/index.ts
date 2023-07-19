@@ -1,19 +1,31 @@
 import { app } from "./generated";
-import { config } from "../../common/config";
 
-import * as mysql from 'mysql2/promise';
+import {
+  handleDeviceReservationRequest,
+  handleFreeDeviceRequest,
+} from "./amqpHandle";
+import {
+  JWTVerify,
+  parseJwtFromAuthorizationHeader,
+} from "@cross-lab-project/service-common";
+import { isUserTypeJWT } from "./generated/types";
+import { config } from "./config";
 
-import { handleDeviceReservationRequest, handleFreeDeviceRequest } from "./amqpHandle";
+export * from "./messageDefinition";
 
-app.initService({
+if (require.main === module) {
+  app.initService({
     security: {
-        JWT: async (_jwt, _scopes) => {
-            return { username: "testuser", url: "localhost/user/testuser", scopes: [] }
-        }
-    }
-})
+      JWT: JWTVerify(
+        { JWKS_URL: "", SECURITY_AUDIENCE: "", SECURITY_ISSUER: "" },
+        isUserTypeJWT,
+        parseJwtFromAuthorizationHeader
+      ),
+    },
+  });
 
-console.log("Starting booking-backend");
-app.listen(config.Port);
-handleDeviceReservationRequest();
-handleFreeDeviceRequest();
+  console.log("Starting booking-backend");
+  app.listen(config.PORT);
+  handleDeviceReservationRequest();
+  handleFreeDeviceRequest();
+}

@@ -1,14 +1,26 @@
 import { app } from "./generated";
-import {config} from "../../common/config";
+import {
+  JWTVerify,
+  parseJwtFromAuthorizationHeader,
+} from "@cross-lab-project/service-common";
+import { isUserTypeJWT } from "./generated/types";
+import { config } from "./config";
 
-
-app.initService({
+if (require.main === module) {
+  app.initService({
     security: {
-        JWT: async (_jwt, _scopes) => {
-            return { username: "testuser", url: "localhost/user/testuser", scopes: [] }
-        }
-    }
-})
+      JWT: JWTVerify(
+        {
+          JWKS_URL: config.JWKS_URL,
+          SECURITY_AUDIENCE: config.SECURITY_AUDIENCE,
+          SECURITY_ISSUER: config.SECURITY_ISSUER,
+        },
+        isUserTypeJWT,
+        parseJwtFromAuthorizationHeader
+      ),
+    },
+  });
 
-console.log("Starting schedule-service");
-app.listen(config.Port);
+  console.log("Starting schedule-service");
+  app.listen(config.PORT);
+}

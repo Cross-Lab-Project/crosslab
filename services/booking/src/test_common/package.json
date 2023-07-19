@@ -1,20 +1,22 @@
 {
-  "name": "schedule-service",
+  "name": "@crosslab/booking-service-test-common",
   "version": "0.0.1",
-  "description": "Part of booking service. Shows schedule of devices - horizontal scaleable.",
-  "main": "index.ts",
+  "description": "Part of booking service.",
+  "main": "lib/index.js",
   "scripts": {
     "build": "npx tsc"
   },
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
+    "@crosslab/service-device-reservation": "file:../device-reservation",
+    "@crosslab/booking-service-common": "file:../common",
+    "@types/amqplib": "^0.10.1",
     "@types/express": "^4.17.13",
+    "amqplib": "^0.10.3",
     "dayjs": "^1.11.5",
     "express": "^4.18.1",
     "mysql2": "^2.3.3",
     "typescript": "^4.7.4"
-  },
-  "devDependencies": {
   }
 }

@@ -7,13 +7,11 @@ import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 import * as amqplib from 'amqplib';
 
-import { setupDummySql, tearDownDummySql, getSQLDNS } from "../../test_common/setup"
-import { getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars } from "../../test_common/fakeserver"
-import { startDeviceReservation, stopDeviceReservation } from "../../test_common/devicereservationhelper"
+import { setupDummySql, tearDownDummySql, getSQLDNS, getFakeInstitutePrefix, getFakeOwnURL, startFakeServer, stopFakeServer, fakeServerConfig, resetFakeServerVars, startDeviceReservation, stopDeviceReservation } from "@crosslab/booking-service-test-common"
 
-import { config } from "../../common/config";
+import { sleep } from "@crosslab/booking-service-common";
 import { randomID, handleCallback, callbackType } from "./internal";
-import { sleep } from "../../common/sleep";
+import { config } from "./config";
 
 let connection: amqplib.Connection;
 let channel: amqplib.Channel;

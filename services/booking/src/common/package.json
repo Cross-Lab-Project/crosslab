@@ -1,0 +1,16 @@
+{
+  "name": "@crosslab/booking-service-common",
+  "version": "0.0.1",
+  "description": "Common resources for booking-service sub-services.",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^20.4.2",
+    "typescript": "^5.1.6"
+  }
+}

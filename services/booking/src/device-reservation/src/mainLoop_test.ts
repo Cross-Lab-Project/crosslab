@@ -3,8 +3,7 @@ import * as mysql from 'mysql2/promise';
 import dayjs from "dayjs";
 import * as amqplib from 'amqplib';
 
-import { config } from "../common/config";
-import { sleep } from "../common/sleep";
+import { baseConfig, sleep } from "@crosslab/booking-service-common";
 import { ReservationRequest, ReservationMessage, ReservationAnswer, ErrorTimeoutText } from './messageDefinition';
 import { mainLoop } from "./mainLoop";
 
@@ -18,16 +17,16 @@ mocha.describe("mainLoop.ts", function () {
     this.timeout(10000);
 
     mocha.before(function () {
-        // Config
-        config.OwnURL = "http://localhost:10801";
-        config.InstitutePrefix = ["http://localhost:10801"];
-        config.ReservationDSN = "mysql://test:test@localhost/unittest?supportBigNumbers=true&bigNumberStrings=true";
+        // baseConfig
+        baseConfig.OwnURL = "http://localhost:10801";
+        baseConfig.InstitutePrefix = ["http://localhost:10801"];
+        baseConfig.ReservationDSN = "mysql://test:test@localhost/unittest?supportBigNumbers=true&bigNumberStrings=true";
     });
 
     mocha.beforeEach(async function () {
         // Setup database
         try {
-            let db = await mysql.createConnection(config.ReservationDSN);
+            let db = await mysql.createConnection(baseConfig.ReservationDSN);
             await db.connect();
             await db.execute("CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`))");
             await db.execute("INSERT INTO reservation (`id`, `device`, `start`, `end`, `bookingreference`) VALUES (1,?,?,?,?)", ["http://localhost/device/superDevice", dayjs("2022-06-27T00:10:00Z").toDate(), dayjs("2022-06-27T00:20:00Z").toDate(), "http://localhost/unitTestPrefill/1"]);
@@ -40,7 +39,7 @@ mocha.describe("mainLoop.ts", function () {
         }
 
         // Connect to amqp
-        connection = await amqplib.connect(config.AmqpUrl);
+        connection = await amqplib.connect(baseConfig.AmqpUrl);
         channel = await connection.createChannel();
 
         await channel.assertQueue(receiveQueue, {
@@ -63,7 +62,7 @@ mocha.describe("mainLoop.ts", function () {
     });
 
     mocha.afterEach(async function () {
-        let db = await mysql.createConnection(config.ReservationDSN);
+        let db = await mysql.createConnection(baseConfig.ReservationDSN);
         await db.connect();
         await db.execute("DROP TABLE reservation");
         db.end();
