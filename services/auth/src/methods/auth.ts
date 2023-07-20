@@ -7,23 +7,33 @@ import { MalformedParameterError, MissingParameterError } from '@crosslab/servic
 import { SignJWT, JWTPayload, importJWK } from 'jose'
 
 /**
- * This function signs a JWT.
- * @param payload Payload of the JWT.
- * @param key Key used for signing.
- * @param expirationTime Expiration time of the JWT.
- * @returns The signed JWT.
+ * @deprecated The expiration time is now disregarded.
  */
 export async function sign<P extends JWTPayload>(
     payload: P,
     key: KeyModel,
     expirationTime: string
+): Promise<string>
+/**
+ * This function signs a JWT.
+ * @param payload Payload of the JWT.
+ * @param key Key used for signing.
+ * @returns The signed JWT.
+ */
+export async function sign<P extends JWTPayload>(
+    payload: P,
+    key: KeyModel
+): Promise<string>
+export async function sign<P extends JWTPayload>(
+    payload: P,
+    key: KeyModel,
+    _expirationTime?: string
 ) {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: key.alg, kid: key.uuid })
         .setIssuer(config.SECURITY_ISSUER)
         .setIssuedAt()
         .setAudience(config.SECURITY_AUDIENCE)
-        .setExpirationTime(expirationTime)
         .sign(await importJWK(key.private_key, key.alg))
 }
 
@@ -79,7 +89,6 @@ export async function signDeviceToken(
             scopes: roleModelDevice.scopes.map((scope) => scope.name),
         },
         activeKey.key,
-        '2h'
     )
 }
 

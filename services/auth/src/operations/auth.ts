@@ -84,7 +84,7 @@ export const getAuth: getAuthSignature = async (parameters) => {
         return {
             status: 200,
             headers: {
-                Authorization: 'Bearer ' + jwt,
+                "X-Request-Authentication": jwt,
             },
         }
     } catch (error) {

@@ -12,15 +12,10 @@ export * from './database/abstractDataSource';
 import express from 'express';
 
 export function parseJwtFromAuthorizationHeader(req: express.Request): string {
-  const authorization_header = req.header('Authorization');
-  if (authorization_header === undefined) {
+  const jwt = req.header('X-Request-Authentication');
+  if (jwt === undefined) {
     throw new JWTVerificationError('Authorization header is not set', 401);
   }
-  const bearerTokenResult = /^Bearer (.*)$/.exec(authorization_header);
-  if (bearerTokenResult === null || bearerTokenResult.length != 2) {
-    throw new JWTVerificationError('Authorization header is malformed', 401);
-  }
-  const jwt = bearerTokenResult[1];
   if (!jwt) throw new JWTVerificationError('No JWT provided', 401);
   return jwt;
 }
