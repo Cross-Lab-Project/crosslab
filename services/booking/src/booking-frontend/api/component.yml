@@ -2,7 +2,9 @@
     post:
       operationId: 'newBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:use
       tags:
         - booking-frontend
       summary: Books an experiment.
@@ -28,6 +30,10 @@
                   type: string
                   enum:
                    - normal
+                Execute_for:
+                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
+                  type: string
+                  format: url
       responses:
         '200':
           description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
@@ -44,6 +50,9 @@
                     description: ID at which the booking can be managed.
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '500':
           description: >-
             Request could not be answered. An error string containing the reason
@@ -70,7 +79,7 @@
           description: ID of Booking
       tags:
         - booking-frontend
-      summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
+      summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
       requestBody:
         content:
           application/json:
@@ -87,6 +96,10 @@
                      description: List of devices which should be added.
                      items:
                       $ref: '#/components/schemas/Device'
+                    Execute_for:
+                      description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
+                      type: string
+                      format: url
               - type: object
                 description: Use this request for adding callbacks.
                 properties:
@@ -110,6 +123,9 @@
                     format: uri
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown booking ID.
         '423':
@@ -130,7 +146,9 @@
     delete:
       operationId: 'deleteBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:use
       parameters:
         - $ref: '#/components/parameters/ID'
           name: ID
@@ -141,12 +159,26 @@
       tags:
         - booking-frontend
       summary: Cancels a booking, as long as the booking was originally done by you.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Execute_for:
+                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
+                  type: string
+                  format: url
       responses:
         '200':
           description: >-
             The booking was cancelled. All associated devices were released.
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown booking ID.
         '423':
@@ -167,7 +199,9 @@
     get:
       operationId: 'getBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:use
       parameters:
         - $ref: '#/components/parameters/ID'
           name: ID
@@ -178,7 +212,18 @@
       tags:
       - booking-frontend
       summary: >-
-        Returns whether a list of devices is currently booked for a user
+        Returns whether a list of devices is currently booked for a user.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Execute_for:
+                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
+                  type: string
+                  format: url
       responses:
         '200':
           description: Returns the current booking.
@@ -197,6 +242,9 @@
                     description: Shows if the booking is in a locked status.
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown ID
         '500':
@@ -215,7 +263,9 @@
     delete:
       operationId: 'destroyBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:destroy
       parameters:
         - $ref: '#/components/parameters/ID'
           name: ID
@@ -233,7 +283,8 @@
         '401':
           description: No authorisation header found.
         '403':
-          description: User is not allowed to destroy bookings.
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown booking ID.
         '423':

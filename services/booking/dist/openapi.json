@@ -35,7 +35,10 @@
         "operationId": "schedule",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "tags": [
@@ -62,6 +65,11 @@
                   "Combined": {
                     "type": "boolean",
                     "description": "If true, show only one timetable per device instead of one for all available physical devices."
+                  },
+                  "Execute_for": {
+                    "description": "Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.",
+                    "type": "string",
+                    "format": "url"
                   },
                   "onlyOwn": {
                     "type": "boolean",
@@ -117,6 +125,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
+          },
           "404": {
             "description": "Request contains unknown type IDs. The first unknown ID will be returned.",
             "content": {
@@ -161,7 +172,10 @@
         "operationId": "newBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "tags": [
@@ -195,6 +209,11 @@
                     "enum": [
                       "normal"
                     ]
+                  },
+                  "Execute_for": {
+                    "description": "Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.",
+                    "type": "string",
+                    "format": "url"
                   }
                 }
               }
@@ -224,6 +243,9 @@
           },
           "401": {
             "description": "No authorisation header found."
+          },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -264,7 +286,7 @@
         "tags": [
           "booking-frontend"
         ],
-        "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
+        "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -284,6 +306,11 @@
                         "items": {
                           "$ref": "#/components/schemas/Device"
                         }
+                      },
+                      "Execute_for": {
+                        "description": "Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.",
+                        "type": "string",
+                        "format": "url"
                       }
                     }
                   },
@@ -327,6 +354,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
+          },
           "404": {
             "description": "Request contains unknown booking ID."
           },
@@ -353,7 +383,10 @@
         "operationId": "deleteBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "parameters": [
@@ -371,12 +404,32 @@
           "booking-frontend"
         ],
         "summary": "Cancels a booking, as long as the booking was originally done by you.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Execute_for": {
+                    "description": "Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.",
+                    "type": "string",
+                    "format": "url"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "The booking was cancelled. All associated devices were released."
           },
           "401": {
             "description": "No authorisation header found."
+          },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
           },
           "404": {
             "description": "Request contains unknown booking ID."
@@ -404,7 +457,10 @@
         "operationId": "getBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "parameters": [
@@ -421,7 +477,24 @@
         "tags": [
           "booking-frontend"
         ],
-        "summary": "Returns whether a list of devices is currently booked for a user",
+        "summary": "Returns whether a list of devices is currently booked for a user.",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Execute_for": {
+                    "description": "Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.",
+                    "type": "string",
+                    "format": "url"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Returns the current booking.",
@@ -449,6 +522,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
+          },
           "404": {
             "description": "Request contains unknown ID"
           },
@@ -474,7 +550,10 @@
         "operationId": "destroyBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:destroy"
+            ]
           }
         ],
         "parameters": [
@@ -500,7 +579,7 @@
             "description": "No authorisation header found."
           },
           "403": {
-            "description": "User is not allowed to destroy bookings."
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
           },
           "404": {
             "description": "Request contains unknown booking ID."
@@ -530,7 +609,10 @@
         "operationId": "lockBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "parameters": [
@@ -580,6 +662,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
+          },
           "404": {
             "description": "Request contains unknown ID"
           },
@@ -606,7 +691,10 @@
         "operationId": "unlockBooking",
         "security": [
           {
-            "JWT": []
+            "JWT": [
+              "booking",
+              "booking:use"
+            ]
           }
         ],
         "parameters": [
@@ -630,6 +718,9 @@
           },
           "401": {
             "description": "No authorisation header found."
+          },
+          "403": {
+            "description": "Caller is not allowed to call this method. Usually, caller is missing required scopes."
           },
           "404": {
             "description": "Request contains unknown ID"

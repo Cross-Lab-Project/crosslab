@@ -68,7 +68,7 @@ export const postBooking: postBookingSignature = async (body, user) => {
         return {
             status: 200,
             body: {
-                BookingID: r.origin + "/booking/manage/" + bookingID.toString(),
+                BookingID: r.origin + "/booking/" + bookingID.toString(),
             }
         }
     } catch (err) {
@@ -255,6 +255,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (parameters, bo
             // this is adding a callback
             await db.execute("INSERT INTO bookingcallbacks (`booking`, `url`) VALUES (?,?)", [requestID, body.Callback]);
         } else if (typeof(body.Devices) !== undefined) {
+            // TODO: Check for scopes 'booking' and 'booking:use'
             let Devices: Device[] = body.Devices as Device[];
             if (user.JWT === undefined || rows[0].user != user.JWT.username) {
                 return {
@@ -346,7 +347,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (parameters, bo
     if (!url.endsWith("/")) {
         url = url + "/";
     }
-    url = url + "booking/manage/" + requestID;
+    url = url + "booking/" + requestID;
 
     return {
         status: 200,

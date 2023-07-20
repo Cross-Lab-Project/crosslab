@@ -2,7 +2,9 @@
     put:
       operationId: 'lockBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:use
       parameters:
         - $ref: '#/components/parameters/ID'
           name: ID
@@ -36,6 +38,9 @@
                       format: uri
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown ID
         '412':
@@ -55,7 +60,9 @@
     delete:
       operationId: 'unlockBooking'
       security:
-        - JWT: []
+        - JWT:
+          - booking
+          - booking:use
       parameters:
         - $ref: '#/components/parameters/ID'
           name: ID
@@ -72,6 +79,9 @@
           description: Unlocking was successful.
         '401':
           description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
         '404':
           description: Request contains unknown ID
         '412':

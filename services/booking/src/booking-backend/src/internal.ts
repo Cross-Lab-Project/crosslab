@@ -37,7 +37,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                 try {
                     await db.beginTransaction();
                     // Lock booking
-                    let [bookingRow, bookingFields]: [any, any] = await db.execute("SELECT `start`,`end`,`type`,`status` FROM booking WHERE `id`=? FOR UPDATE", [targetBooking]);
+                    let [bookingRow, bookingFields]: [any, any] = await db.execute("SELECT `start`,`end`,`type`,`status`,`user` FROM booking WHERE `id`=? FOR UPDATE", [targetBooking]);
                     if (bookingRow.length == 0) {
                         throw Error("Booking (" + targetBooking + ") not known");
                     }
@@ -63,7 +63,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                                 throw Error("Booking must be local for device update");
                             }
 
-                            let device = await api.getDevice(rows[0].bookeddevice);
+                            let device = await api.getDevice(rows[0].bookeddevice, {execute_for: bookingRow[0].user});
                             if (device.type == "group") {
                                 throw Error("Booked device " + rows[0].bookeddevice + " is group");
                             }
@@ -89,7 +89,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                                 throw Error("Booking must be remote for device update");
                             }
 
-                            let getReturn = await api.getBooking(rows[0].remotereference);
+                            let getReturn = await api.getBooking(rows[0].remotereference, {execute_for: bookingRow[0].user});
                             if (getReturn.Booking.Status == "cancelled" || getReturn.Booking.Status == "rejected") {
                                 available = false;
                             }
@@ -356,7 +356,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 if (!url.endsWith("/")) {
                     url = url + "/";
                 }
-                url = url + "booking/manage/" + r.BookingID
+                url = url + "booking/" + r.BookingID
                 m.BookingReference = new URL(url);
                 m.Start = r.Start;
                 m.End = r.End;
@@ -411,7 +411,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 }
                 await sleep(1000);
 
-                let getReturn = await api.getBooking(institution + "/booking/manage/" + ID);
+                let getReturn = await api.getBooking(institution + "/booking/" + ID);
 
                 switch (getReturn.Booking.Status) {
                     case "pending":
