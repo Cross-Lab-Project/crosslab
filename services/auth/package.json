@@ -17,7 +17,7 @@
         "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
         "build:generate": "npm-run-all build:generate:*",
         "build:compile": "tsc --project tsconfig.build.json",
-        "build:add-shebang": "node addShebang.js",
+        "build:add-shebang": "bash scripts/add-shebang.sh",
         "build": "npm-run-all build:*",
         "start": "node app/index.js",
         "dev": "env-cmd -e development npx nodemon src/index.ts",

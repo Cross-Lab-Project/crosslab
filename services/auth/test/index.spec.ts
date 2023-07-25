@@ -20,9 +20,11 @@ describe('Index', function () {
         const indexModule = rewire('../src/index.ts')
         startAuthenticationService = indexModule.__get__('startAuthenticationService')
         await startAuthenticationService(config, {
-            ...dataSourceConfig,
-            database: './test/db/index_test.db',
+            type: 'sqlite',
+            database: ':memory:',
             dropSchema: true,
+            synchronize: true,
+            entities: dataSourceConfig.entities,
         })
         assert(appListenStub.called)
     })
@@ -41,9 +43,11 @@ describe('Index', function () {
         await AppDataSource.teardown()
 
         await startAuthenticationService(config, {
-            ...dataSourceConfig,
-            database: './test/db/index_test.db',
+            type: 'sqlite',
+            database: ':memory:',
+            dropSchema: true,
             synchronize: true,
+            entities: dataSourceConfig.entities,
         })
         assert(activeKeyModels.length > 0)
     })

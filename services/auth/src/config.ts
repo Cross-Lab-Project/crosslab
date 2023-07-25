@@ -38,9 +38,13 @@ function initializeAppConfiguration(): AppConfiguration {
 export const config: AppConfiguration = initializeAppConfiguration()
 
 export const dataSourceConfig: DataSourceOptions = {
-    type: 'sqlite',
-    database: 'db/auth.db',
-    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
-    migrationsRun: true,
+    type: 'mariadb',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT ?? '3306'),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     migrations: [...Migrations],
+    migrationsRun: true,
+    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
 }

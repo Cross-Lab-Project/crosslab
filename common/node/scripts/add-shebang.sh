@@ -1,0 +1,1 @@
+echo -e '#!/usr/bin/env node\n'"$(cat app/index.js)" > app/index.js
