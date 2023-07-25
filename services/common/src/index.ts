@@ -11,7 +11,7 @@ export * from './database/abstractRepository';
 export * from './database/abstractDataSource';
 import express from 'express';
 
-export function parseJwtFromAuthorizationHeader(req: express.Request): string {
+export function parseJwtFromRequestAuthenticationHeader(req: express.Request): string {
   const jwt = req.header('X-Request-Authentication');
   if (jwt === undefined) {
     throw new JWTVerificationError('Authorization header is not set', 401);

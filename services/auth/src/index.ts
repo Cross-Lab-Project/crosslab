@@ -12,7 +12,7 @@ import {
     logHandling,
     logger,
     missingRouteHandling,
-    parseJwtFromAuthorizationHeader,
+    parseJwtFromRequestAuthenticationHeader,
     requestIdHandling,
 } from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
@@ -61,7 +61,11 @@ async function startAuthenticationService(
 
     app.initService({
         security: {
-            JWT: JWTVerify(appConfig, isUserTypeJWT, parseJwtFromAuthorizationHeader),
+            JWT: JWTVerify(
+                appConfig,
+                isUserTypeJWT,
+                parseJwtFromRequestAuthenticationHeader
+            ),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [missingRouteHandling],

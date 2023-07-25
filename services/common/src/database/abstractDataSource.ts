@@ -24,10 +24,12 @@ export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
   }
 
   public async initialize(options?: DataSourceOptions) {
-    if (options) this._dataSource.setOptions(options);
+    options ??= this._dataSource.options;
     if (this._dataSource.isInitialized) {
       await this._dataSource.destroy();
-      this._dataSource = new DataSource(this._dataSource.options);
+      this._dataSource = new DataSource(options);
+    } else if (options !== this._dataSource.options) {
+      this._dataSource = new DataSource(options);
     }
     await this._dataSource.initialize();
     this.connected = true;

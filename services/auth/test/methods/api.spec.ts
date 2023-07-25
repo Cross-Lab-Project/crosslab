@@ -87,6 +87,7 @@ export default () =>
                     type: 'device',
                     owner: 'https://localhost/users/testuser',
                     url: 'https://localhost/devices/testdevice',
+                    isPublic: true
                 }
                 apiGetDeviceStub.resolves(TEST_DEVICE)
 

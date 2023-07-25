@@ -40,8 +40,7 @@ export default () =>
                     type: 'sqlite',
                     database: ':memory:',
                     dropSchema: true,
-                    migrationsRun: true,
-                    migrations: dataSourceConfig.migrations,
+                    synchronize: true,
                     entities: dataSourceConfig.entities,
                 })
             })

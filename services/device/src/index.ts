@@ -11,7 +11,7 @@ import {
     errorHandler,
     logHandling,
     logger,
-    parseJwtFromAuthorizationHeader,
+    parseJwtFromRequestAuthenticationHeader,
     missingRouteHandling,
     requestIdHandling,
 } from '@crosslab/service-common'
@@ -41,7 +41,11 @@ async function startDeviceService() {
 
     app.initService({
         security: {
-            JWT: JWTVerify(config, isUserTypeJWT, parseJwtFromAuthorizationHeader),
+            JWT: JWTVerify(
+                config,
+                isUserTypeJWT,
+                parseJwtFromRequestAuthenticationHeader
+            ),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [callbackHandling, missingRouteHandling],

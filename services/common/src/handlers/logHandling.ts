@@ -14,11 +14,10 @@ export function logHandling(app: express.Application) {
         return false;
       },
       requestFilter: (req, propName) => {
-        if (propName === 'headers' && req.headers.authorization)
-          return {
-            ...req.headers,
-            authorization: 'HIDDEN',
-          };
+        if (propName === 'headers' && req.headers.authorization) {
+          if ('authorization' in req.headers) req.headers.authorization = 'HIDDEN';
+          if ('x-request-authentication' in req.headers) req.headers['x-request-authentication'] = 'HIDDEN';
+        }
         return req[propName];
       },
     }),

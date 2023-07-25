@@ -6,7 +6,7 @@ import {
 } from "./amqpHandle";
 import {
   JWTVerify,
-  parseJwtFromAuthorizationHeader,
+  parseJwtFromRequestAuthenticationHeader,
 } from "@cross-lab-project/service-common";
 import { isUserTypeJWT } from "./generated/types";
 import { config } from "./config";
@@ -19,7 +19,7 @@ if (require.main === module) {
       JWT: JWTVerify(
         { JWKS_URL: "", SECURITY_AUDIENCE: "", SECURITY_ISSUER: "" },
         isUserTypeJWT,
-        parseJwtFromAuthorizationHeader
+        parseJwtFromRequestAuthenticationHeader
       ),
     },
   });
