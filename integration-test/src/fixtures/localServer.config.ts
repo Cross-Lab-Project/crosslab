@@ -15,6 +15,11 @@ export const ENV = {
       'federationservice:local:federationservice',
     ].join(','),
     API_TOKEN: 'authservice',
+    DB_HOST: 'localhost',
+    DB_PORT: '3306',
+    DB_USERNAME: 'service',
+    DB_PASSWORD: 'service',
+    DB_NAME: 'auth_service',
   },
   device: {
     PORT: '3001',
