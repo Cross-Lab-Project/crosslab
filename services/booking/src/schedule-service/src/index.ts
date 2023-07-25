@@ -1,7 +1,7 @@
 import { app } from "./generated";
 import {
   JWTVerify,
-  parseJwtFromAuthorizationHeader,
+  parseJwtFromRequestAuthenticationHeader,
 } from "@cross-lab-project/service-common";
 import { isUserTypeJWT } from "./generated/types";
 import { config } from "./config";
@@ -16,7 +16,7 @@ if (require.main === module) {
           SECURITY_ISSUER: config.SECURITY_ISSUER,
         },
         isUserTypeJWT,
-        parseJwtFromAuthorizationHeader
+        parseJwtFromRequestAuthenticationHeader
       ),
     },
   });

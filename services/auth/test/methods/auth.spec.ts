@@ -88,9 +88,8 @@ export default () =>
                     test: 'test',
                     important: 17438,
                 }
-                const TEST_EXPIRATION_TIME = '2h'
 
-                const jwt = await sign(TEST_PAYLOAD, TEST_KEY, TEST_EXPIRATION_TIME)
+                const jwt = await sign(TEST_PAYLOAD, TEST_KEY)
 
                 const verfifiedJWT = await jwtVerify(
                     jwt,
@@ -101,8 +100,6 @@ export default () =>
                     }
                 )
 
-                assert(verfifiedJWT.payload.iat && verfifiedJWT.payload.exp)
-                assert(verfifiedJWT.payload.exp - verfifiedJWT.payload.iat === 7200)
                 assert(verfifiedJWT.payload.test === TEST_PAYLOAD.test)
                 assert(verfifiedJWT.payload.important === TEST_PAYLOAD.important)
             })
@@ -125,8 +122,6 @@ export default () =>
                     }
                 )
 
-                assert(verfifiedJWT.payload.iat && verfifiedJWT.payload.exp)
-                assert(verfifiedJWT.payload.exp - verfifiedJWT.payload.iat === 7200)
                 assert(verfifiedJWT.payload.url === userUrlFromId(TEST_USER.uuid))
                 assert(verfifiedJWT.payload.username === TEST_USER.username)
                 assert(Array.isArray(verfifiedJWT.payload.scopes))
@@ -166,8 +161,6 @@ export default () =>
                     }
                 )
 
-                assert(verfifiedJWT.payload.iat && verfifiedJWT.payload.exp)
-                assert(verfifiedJWT.payload.exp - verfifiedJWT.payload.iat === 7200)
                 assert(verfifiedJWT.payload.url === userUrlFromId(TEST_USER.uuid))
                 assert(verfifiedJWT.payload.username === TEST_USER.username)
                 assert(verfifiedJWT.payload.device === TEST_DEVICE_URL)
