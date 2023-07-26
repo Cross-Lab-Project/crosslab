@@ -47,7 +47,7 @@ async function app(options: {baseUrl: string; authToken: string; deviceUrl: stri
       });
     });
     gpios.set(gpioInterface.configuration.signals.gpio, gpioInterface);
-    if (default_signal_state.has(gpioInterface.configuration.signals.gpio)){
+    if (default_signal_state.has(gpioInterface.configuration.signals.gpio)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       gpioInterface.changeDriver(default_signal_state.get(gpioInterface.configuration.signals.gpio)!);
     }
@@ -91,10 +91,10 @@ function event(eventName: string, data?: any) {
         state = GPIO.GPIOState.WeakLow;
         break;
     }
-    if (gpios.has(data.signal)){
+    if (gpios.has(data.signal)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       gpios.get(data.signal)!.changeDriver(state);
-    }else{
+    } else {
       default_signal_state.set(data.signal, state);
     }
   }

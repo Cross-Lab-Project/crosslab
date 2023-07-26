@@ -1,14 +1,3 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
-  type: object
-  properties:
-    callbackType:
-      type: string
-      enum:
-        - event
-    eventType:
-      type: string
-      enum:
-        - peerconnection-status-changed
-    peerconnection:
-      $ref: '../schemas/peerconnections/peerconnection.yml'
+  $ref: ../schemas/callbacks/peerconnection_status_changed.yml

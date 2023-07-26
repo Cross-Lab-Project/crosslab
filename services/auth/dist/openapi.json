@@ -6,169 +6,6 @@
     "version": "0.0.1",
     "x-service-name": "Authentication Service"
   },
-  "components": {
-    "securitySchemes": {
-      "JWT": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
-      }
-    },
-    "parameters": {
-      "authorization": {
-        "in": "header",
-        "name": "Authorization",
-        "schema": {
-          "type": "string"
-        }
-      },
-      "x_real_ip": {
-        "in": "header",
-        "name": "X-Real-IP",
-        "schema": {
-          "type": "string",
-          "format": "ipv4",
-          "description": "The IP address of the client."
-        }
-      },
-      "x_forwarded_proto": {
-        "in": "header",
-        "name": "X-Forwarded-Proto",
-        "schema": {
-          "type": "string",
-          "description": "The protocol of the client."
-        }
-      },
-      "device_url": {
-        "in": "query",
-        "name": "device_url",
-        "description": "Url of the device.",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "user_id": {
-        "in": "path",
-        "name": "user_id",
-        "description": "ID of a user.",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "role_id": {
-        "in": "path",
-        "name": "role_id",
-        "description": "ID of a role.",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
-    },
-    "schemas": {
-      "credentials": {
-        "title": "Credentials",
-        "type": "object",
-        "properties": {
-          "username": {
-            "description": "Username of the user.",
-            "type": "string"
-          },
-          "password": {
-            "description": "Password of the user.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "username",
-          "password"
-        ]
-      },
-      "auth_method": {
-        "title": "AuthMethod",
-        "type": "string",
-        "description": "Authentication method.",
-        "enum": [
-          "tui",
-          "local"
-        ]
-      },
-      "user": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        },
-        "required": [
-          "url",
-          "id",
-          "username",
-          "password"
-        ]
-      },
-      "user_update": {
-        "title": "User Update",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string",
-            "writeOnly": true
-          }
-        }
-      },
-      "role": {
-        "title": "Role",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "readOnly": true
-          },
-          "id": {
-            "type": "string",
-            "readOnly": true
-          },
-          "name": {
-            "type": "string"
-          },
-          "scopes": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "url",
-          "id",
-          "name",
-          "scopes"
-        ]
-      }
-    }
-  },
   "paths": {
     "/auth": {
       "get": {
@@ -1338,7 +1175,14 @@
         },
         "responses": {
           "201": {
-            "description": "User successfully registered."
+            "description": "User successfully registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request."
@@ -1356,6 +1200,169 @@
             "description": "Server Error."
           }
         }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "parameters": {
+      "authorization": {
+        "in": "header",
+        "name": "Authorization",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "x_real_ip": {
+        "in": "header",
+        "name": "X-Real-IP",
+        "schema": {
+          "type": "string",
+          "format": "ipv4",
+          "description": "The IP address of the client."
+        }
+      },
+      "x_forwarded_proto": {
+        "in": "header",
+        "name": "X-Forwarded-Proto",
+        "schema": {
+          "type": "string",
+          "description": "The protocol of the client."
+        }
+      },
+      "device_url": {
+        "in": "query",
+        "name": "device_url",
+        "description": "Url of the device.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "user_id": {
+        "in": "path",
+        "name": "user_id",
+        "description": "ID of a user.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "role_id": {
+        "in": "path",
+        "name": "role_id",
+        "description": "ID of a role.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "credentials": {
+        "title": "Credentials",
+        "type": "object",
+        "properties": {
+          "username": {
+            "description": "Username of the user.",
+            "type": "string"
+          },
+          "password": {
+            "description": "Password of the user.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "auth_method": {
+        "title": "AuthMethod",
+        "type": "string",
+        "description": "Authentication method.",
+        "enum": [
+          "tui",
+          "local"
+        ]
+      },
+      "user": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "username",
+          "password"
+        ]
+      },
+      "user_update": {
+        "title": "User Update",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "writeOnly": true
+          }
+        }
+      },
+      "role": {
+        "title": "Role",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "url",
+          "id",
+          "name",
+          "scopes"
+        ]
       }
     }
   }

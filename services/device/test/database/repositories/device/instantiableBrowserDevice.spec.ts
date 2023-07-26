@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../../src/database/dataSource'
 import { InstantiableBrowserDeviceModel } from '../../../../src/database/model'
-import {
-    instantiableBrowserDeviceRepository,
-    InstantiableBrowserDeviceRepository,
-} from '../../../../src/database/repositories/device/instantiableBrowserDevice'
+import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
 import {
     InstantiableBrowserDevice,
     InstantiableBrowserDeviceUpdate,
@@ -20,7 +17,7 @@ class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTes
     InstantiableBrowserDeviceRepository
 > {
     protected name = 'instantiable browser devices' as const
-    protected repository = instantiableBrowserDeviceRepository
+    protected repository = repositories.instantiableBrowserDevice
     protected getEntityData = async () =>
         (await initTestDatabase())['instantiable browser devices']
     protected RepositoryClass = InstantiableBrowserDeviceRepository

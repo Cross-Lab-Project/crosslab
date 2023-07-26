@@ -1,5 +1,6 @@
+import { repositories } from '../../database/dataSource'
 import { ExperimentModel } from '../../database/model'
-import { experimentRepository } from '../../database/repositories/experiment'
+// import { apiClient } from '../api'
 import { experimentUrlFromId } from '../url'
 import { MissingPropertyError } from '@crosslab/service-common'
 import { logger } from '@crosslab/service-common'
@@ -15,30 +16,31 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     if (!experimentModel.devices || experimentModel.devices.length === 0)
         throw new MissingPropertyError(`Experiment ${experimentUrl} has no devices`)
 
-    // TODO: book experiment
     // const currentTime = new Date()
     // const startTime = new Date(experimentModel.bookingStart ?? currentTime)
-    // const endTime = new Date(experimentModel.bookingEnd ?? startTime.getTime() + 60*60*1000)
+    // const endTime = new Date(
+    //     experimentModel.bookingEnd ?? startTime.getTime() + 60 * 60 * 1000
+    // )
 
-    // const bookingTemplate: putBookingBodyType = {
+    // // TODO: error handling
+    // const { BookingID } = await apiClient.bookExperiment({
     //     Experiment: {
-    //         Devices: experimentModel.devices.map(d => {
-    //             return { ID: d.url }
-    //         })
+    //         Devices: experimentModel.devices.map((device) => {
+    //             return { ID: device.url }
+    //         }),
     //     },
     //     Time: {
     //         Start: startTime.toISOString(),
-    //         End: endTime.toISOString()
+    //         End: endTime.toISOString(),
     //     },
-    //     Type: 'normal'
-    // }
+    //     Type: 'normal',
+    // })
 
-    // const { BookingID: bookingId } = await _bookExperiment(bookingTemplate)
     // experimentModel.bookingStart = startTime.toISOString()
-    // experimentModel.bookingEnd = startTime.toISOString()
-    // experimentModel.bookingID = bookingId
+    // experimentModel.bookingEnd = endTime.toISOString()
+    // experimentModel.bookingID = BookingID
 
     experimentModel.status = 'booked'
-    await experimentRepository.save(experimentModel)
+    await repositories.experiment.save(experimentModel)
     logger.log('info', 'Successfully booked experiment', { data: { experimentUrl } })
 }

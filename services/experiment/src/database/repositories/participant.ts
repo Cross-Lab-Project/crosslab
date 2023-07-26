@@ -1,21 +1,25 @@
 import { Participant } from '../../generated/types'
 import { ParticipantModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class ParticipantRepository extends AbstractRepository<
     ParticipantModel,
     Participant<'request'>,
     Participant<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Participant')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ParticipantModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ParticipantModel)
     }
 
     async write(
@@ -35,5 +39,3 @@ export class ParticipantRepository extends AbstractRepository<
         }
     }
 }
-
-export const participantRepository = new ParticipantRepository()

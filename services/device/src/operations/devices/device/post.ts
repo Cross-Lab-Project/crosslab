@@ -1,10 +1,14 @@
-import { deviceRepository } from '../../../database/repositories/device'
-import { concreteDeviceRepository } from '../../../database/repositories/device/concreteDevice'
+import { repositories } from '../../../database/dataSource'
 import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
 import { apiClient } from '../../../globals'
 import { changedCallbacks } from '../../../methods/callbacks'
+import { checkPermission } from '../../../methods/permission'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
-import { ImpossibleOperationError, logger } from '@crosslab/service-common'
+import {
+    DeviceOwnershipError,
+    ImpossibleOperationError,
+    logger,
+} from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
@@ -19,9 +23,12 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
 ) => {
     logger.log('info', 'postDevicesByDeviceId called')
 
-    const instantiableDeviceModel = await deviceRepository.findOneOrFail({
+    const instantiableDeviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
+
+    if (!checkPermission('instantiate', instantiableDeviceModel, user.JWT))
+        throw new DeviceOwnershipError()
 
     if (
         instantiableDeviceModel.type !== 'cloud instantiable' &&
@@ -34,13 +41,13 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
             400
         )
 
-    const concreteDeviceModel = await concreteDeviceRepository.create({
-        ...(await deviceRepository.format(instantiableDeviceModel)),
+    const concreteDeviceModel = await repositories.concreteDevice.create({
+        ...(await repositories.device.format(instantiableDeviceModel)),
         type: 'device',
     })
     concreteDeviceModel.owner = user.JWT?.url
 
-    await deviceRepository.save(concreteDeviceModel)
+    await repositories.device.save(concreteDeviceModel)
 
     if (parameters.changedUrl) {
         logger.log(
@@ -53,13 +60,13 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         changedCallbackURLs.push(parameters.changedUrl)
         changedCallbacks.set(concreteDeviceModel.uuid, changedCallbackURLs)
     }
-    const instance = await concreteDeviceRepository.format(concreteDeviceModel)
+    const instance = await repositories.concreteDevice.format(concreteDeviceModel)
 
     const deviceToken = await apiClient.createDeviceAuthenticationToken(instance.url) // TODO: error handling
     instantiableDeviceModel.instances ??= []
     instantiableDeviceModel.instances.push(concreteDeviceModel)
 
-    await deviceRepository.save(instantiableDeviceModel)
+    await repositories.device.save(instantiableDeviceModel)
 
     logger.log('info', 'postDevicesByDeviceId succeeded')
 

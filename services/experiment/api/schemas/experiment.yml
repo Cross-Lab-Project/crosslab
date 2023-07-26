@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Experiment
 allOf:
   - $ref: ./experiment_overview.yml
@@ -35,3 +36,20 @@ allOf:
         description: Services associated with the experiment
         items:
           $ref: "./service_configuration.yml"
+      instantiatedDevices: 
+        type: array
+        description: Instantiated devices that need to be started by the user.
+        readOnly: true
+        items:
+          type: object
+          properties:
+            url:
+              type: string
+            token:
+              type: string
+            instanceOf:
+              type: string
+          required:
+          - url
+          - token
+          - instanceOf

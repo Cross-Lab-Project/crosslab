@@ -1,31 +1,53 @@
 import { Token } from '../../types/types'
 import { RoleModel, ScopeModel, TokenModel } from '../model'
-import { roleRepository } from './roleRepository'
-import { scopeRepository } from './scopeRepository'
-import { userRepository } from './userRepository'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
-import { FindOptionsRelations } from 'typeorm'
+import { RoleRepository } from './roleRepository'
+import { ScopeRepository } from './scopeRepository'
+import { UserRepository } from './userRepository'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager, FindOptionsRelations } from 'typeorm'
 
 export class TokenRepository extends AbstractRepository<
     TokenModel,
     Token<'request'>,
-    Token<'response'>
+    Token<'response'>,
+    {
+        role: RoleRepository
+        scope: ScopeRepository
+        user: UserRepository
+    }
 > {
+    protected dependencies: {
+        role?: RoleRepository
+        scope?: ScopeRepository
+        user?: UserRepository
+    } = {}
+
     constructor() {
         super('Token')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(TokenModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.role) return false
+        if (!this.dependencies.scope) return false
+        if (!this.dependencies.user) return false
+
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(TokenModel)
     }
 
     public async write(
         model: TokenModel,
         data: Partial<Token<'request'>>
     ): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const roleRepository = this.dependencies.role
+        const scopeRepository = this.dependencies.scope
+        const userRepository = this.dependencies.user
+
         if (data.device) model.device = data.device
         if (data.expiresOn) model.expiresOn = data.expiresOn
         if (data.scopes)
@@ -84,5 +106,3 @@ export class TokenRepository extends AbstractRepository<
         }
     }
 }
-
-export const tokenRepository: TokenRepository = new TokenRepository()

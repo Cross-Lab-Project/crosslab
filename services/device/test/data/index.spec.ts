@@ -40,14 +40,15 @@ export type TestData = GenericTestData<
         ['peerconnections', PeerconnectionName, PeerconnectionRepository]
     ]
 > & {
-    user: UserType
+    user: UserType<'JWT'>
     userData: UserData<'JWT'>
 }
 
-const testUser: UserType = {
+const testUser: UserType<'JWT'> = {
     url: 'http://localhost/users/testuser',
     username: 'testuser',
-    scopes: [],
+    scopes: ['device'],
+    jwt: 'JWT',
 }
 
 export function prepareTestData(): TestData {

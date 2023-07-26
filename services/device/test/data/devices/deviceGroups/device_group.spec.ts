@@ -9,6 +9,7 @@ const name = 'Device Group Example'
 const description = 'An example for a device group'
 const owner = 'http://localhost/users/superadmin'
 const devices = [{ url: concreteDeviceData['concrete device'].response.url }]
+const isPublic = true
 
 const device_group: EntityData<DeviceGroupRepository> = {
     request: {
@@ -16,6 +17,7 @@ const device_group: EntityData<DeviceGroupRepository> = {
         name,
         description,
         devices,
+        isPublic,
     },
     model: {
         uuid,
@@ -24,6 +26,7 @@ const device_group: EntityData<DeviceGroupRepository> = {
         description,
         devices,
         owner,
+        isPublic,
     },
     response: {
         url: deviceUrlFromId(uuid),
@@ -32,6 +35,7 @@ const device_group: EntityData<DeviceGroupRepository> = {
         description,
         devices: [concreteDeviceData['concrete device'].response],
         owner,
+        isPublic,
     },
 }
 

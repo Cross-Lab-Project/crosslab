@@ -1142,7 +1142,14 @@
         },
         "responses": {
           "201": {
-            "description": "User successfully registered."
+            "description": "User successfully registered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request."
@@ -1165,7 +1172,7 @@
     },
     "/schedule": {
       "post": {
-        "operationId": "get_schedule",
+        "operationId": "schedule",
         "security": [
           {
             "JWT": []
@@ -1175,12 +1182,11 @@
           "schedule-service"
         ],
         "summary": "Returns the free / booked times for given experiment.",
+        "x-optional-url": true,
         "requestBody": {
-          "description": "Requested experiment and timeframe.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Schedule Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -1288,13 +1294,12 @@
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         },
-        "x-optional-url": true,
         "x-service-name": "Booking Service"
       }
     },
     "/booking": {
       "post": {
-        "operationId": "book_experiment",
+        "operationId": "newBooking",
         "security": [
           {
             "JWT": []
@@ -1304,20 +1309,23 @@
           "booking-frontend"
         ],
         "summary": "Books an experiment.",
+        "x-optional-url": true,
         "requestBody": {
-          "description": "Experiment, timeframe and type of booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Booking Request",
                 "type": "object",
                 "required": [
-                  "Experiment",
+                  "Devices",
                   "Time"
                 ],
                 "properties": {
-                  "Experiment": {
-                    "$ref": "#/components/schemas/Experiment"
+                  "Devices": {
+                    "type": "array",
+                    "description": "List of devices which should be added.",
+                    "items": {
+                      "$ref": "#/components/schemas/Device"
+                    }
                   },
                   "Time": {
                     "$ref": "#/components/schemas/Timeslot"
@@ -1373,13 +1381,12 @@
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
         },
-        "x-optional-url": true,
         "x-service-name": "Booking Service"
       }
     },
     "/booking/{ID}": {
       "patch": {
-        "operationId": "update_booking",
+        "operationId": "updateBooking",
         "security": [
           {
             "JWT": []
@@ -1387,7 +1394,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1395,11 +1408,9 @@
         ],
         "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
         "requestBody": {
-          "description": "Devices or callback to be added to the booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Devices or Callback",
                 "anyOf": [
                   {
                     "type": "object",
@@ -1458,6 +1469,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
           "423": {
             "description": "The booking 'locked' status and the requested locked status do not match."
           },
@@ -1479,7 +1493,7 @@
         "x-service-name": "Booking Service"
       },
       "delete": {
-        "operationId": "cancel_booking",
+        "operationId": "deleteBooking",
         "security": [
           {
             "JWT": []
@@ -1487,7 +1501,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1525,7 +1545,7 @@
         "x-service-name": "Booking Service"
       },
       "get": {
-        "operationId": "get_booking",
+        "operationId": "getBooking",
         "security": [
           {
             "JWT": []
@@ -1533,7 +1553,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1548,9 +1574,7 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "Experiment",
                     "Booking",
-                    "Time",
                     "Locked"
                   ],
                   "properties": {
@@ -1592,7 +1616,7 @@
     },
     "/booking/{ID}/destroy": {
       "delete": {
-        "operationId": "delete_booking",
+        "operationId": "destroyBooking",
         "security": [
           {
             "JWT": []
@@ -1600,7 +1624,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1613,6 +1643,9 @@
           },
           "401": {
             "description": "No authorisation header found."
+          },
+          "403": {
+            "description": "User is not allowed to destroy bookings."
           },
           "404": {
             "description": "Request contains unknown booking ID."
@@ -1640,7 +1673,7 @@
     },
     "/booking/{ID}/lock": {
       "put": {
-        "operationId": "lock_booking",
+        "operationId": "lockBooking",
         "security": [
           {
             "JWT": []
@@ -1648,7 +1681,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1661,33 +1700,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "Booking",
-                    "Time",
-                    "Tokens"
-                  ],
-                  "properties": {
-                    "Booking": {
-                      "$ref": "#/components/schemas/Booking"
-                    },
-                    "Time": {
-                      "$ref": "#/components/schemas/Timeslot"
-                    },
-                    "Tokens": {
-                      "type": "array",
-                      "description": "A list of access tokens",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "Device": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "Token": {
-                            "type": "string"
-                          }
-                        }
+                  "type": "array",
+                  "description": "The list of booked devices and selected real devices. Order is guaranteed to be the same as in the booking.",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "Requested",
+                      "Selected"
+                    ],
+                    "properties": {
+                      "Requested": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Selected": {
+                        "type": "string",
+                        "format": "uri"
                       }
                     }
                   }
@@ -1700,6 +1728,9 @@
           },
           "404": {
             "description": "Request contains unknown ID"
+          },
+          "412": {
+            "description": "The current booking status is not correct."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -1719,7 +1750,7 @@
         "x-service-name": "Booking Service"
       },
       "delete": {
-        "operationId": "unlock_booking",
+        "operationId": "unlockBooking",
         "security": [
           {
             "JWT": []
@@ -1727,7 +1758,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -1743,6 +1780,57 @@
           },
           "404": {
             "description": "Request contains unknown ID"
+          },
+          "412": {
+            "description": "The current booking status is not correct."
+          },
+          "500": {
+            "description": "Request could not be answered. An error string containing the reason will be returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "description": "Error description."
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
+          }
+        },
+        "x-service-name": "Booking Service"
+      }
+    },
+    "/booking_callback/{ID}": {
+      "post": {
+        "operationId": "bookingCallback",
+        "security": [
+          {
+            "JWT": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
+          }
+        ],
+        "tags": [
+          "booking-backend"
+        ],
+        "summary": "Callback used for updating device info / booking info.",
+        "responses": {
+          "200": {
+            "description": "Update was processed."
+          },
+          "404": {
+            "description": "Callback is no longer needed."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -2093,37 +2181,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -2157,6 +2215,9 @@
           },
           {
             "$ref": "#/components/parameters/flat_group"
+          },
+          {
+            "$ref": "#/components/parameters/execute_for"
           }
         ],
         "security": [
@@ -2585,37 +2646,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -2795,9 +2826,106 @@
       }
     },
     "/devices/{device_id}/availability": {
+      "get": {
+        "operationId": "get_device_availability",
+        "summary": "Get the availability of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:read",
+              "device:read:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/start_time"
+          },
+          {
+            "$ref": "#/components/parameters/end_time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the availability of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/availability"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      },
+      "delete": {
+        "operationId": "delete_device_availability_rules",
+        "summary": "Delete the availability rules of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:write",
+              "device:write:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The availability rules of the device were deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Device Service"
+      },
       "post": {
-        "operationId": "add_availability_rules",
-        "summary": "Update the device availability",
+        "operationId": "add_device_availability_rules",
+        "summary": "Add availability rules for a device",
         "tags": [
           "device"
         ],
@@ -3153,24 +3281,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-closed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_closed"
                       }
                     }
                   }
@@ -3202,24 +3313,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-status-changed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_status_changed"
                       }
                     }
                   }
@@ -3304,8 +3398,11 @@
           }
         ],
         "responses": {
+          "202": {
+            "description": "The peerconnection will be deleted as soon as it's closed."
+          },
           "204": {
-            "description": "The peer connection was deleted successfully."
+            "description": "The peerconnection was deleted successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -3367,7 +3464,7 @@
           }
         },
         "responses": {
-          "201": {
+          "204": {
             "description": "OK."
           },
           "400": {
@@ -4566,13 +4663,18 @@
             "type": "string",
             "format": "uri",
             "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
           "url",
           "type",
           "name",
-          "owner"
+          "owner",
+          "isPublic"
         ],
         "x-typeguard": true,
         "x-service-name": "Device Service"
@@ -4778,6 +4880,76 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
+      "callback": {
+        "title": "Callback",
+        "type": "object",
+        "properties": {
+          "callbackType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "callbackType"
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "event_callback": {
+        "title": "Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "callbackType": {
+                "type": "string",
+                "enum": [
+                  "event"
+                ]
+              },
+              "eventType": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "callbackType",
+              "eventType"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "device_changed": {
+        "title": "Device Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "device-changed"
+                ]
+              },
+              "device": {
+                "$ref": "#/components/schemas/device"
+              }
+            },
+            "required": [
+              "eventType",
+              "device"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
       "device_overview_update": {
         "title": "Device Overview Update",
         "type": "object",
@@ -4799,6 +4971,10 @@
               "edge instantiable",
               "cloud instantiable"
             ]
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
@@ -5173,6 +5349,7 @@
       },
       "peerconnection_common": {
         "type": "object",
+        "title": "Peerconnection Common",
         "properties": {
           "url": {
             "type": "string",
@@ -5275,6 +5452,62 @@
         "x-typeguard": true,
         "x-service-name": "Device Service"
       },
+      "peerconnection_closed": {
+        "title": "Peerconnection Closed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-closed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
+      "peerconnection_status_changed": {
+        "title": "Peerconnection Status Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-status-changed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true,
+        "x-service-name": "Device Service"
+      },
       "experiment_overview": {
         "title": "Experiment Overview",
         "type": "object",
@@ -5286,14 +5519,30 @@
             "readOnly": true
           },
           "status": {
-            "type": "string",
-            "description": "Status of the experiment",
-            "enum": [
-              "created",
-              "booked",
-              "setup",
-              "running",
-              "finished"
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
             ]
           }
         },
@@ -5424,6 +5673,30 @@
                 "items": {
                   "$ref": "#/components/schemas/service_configuration"
                 }
+              },
+              "instantiatedDevices": {
+                "type": "array",
+                "description": "Instantiated devices that need to be started by the user.",
+                "readOnly": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "instanceOf": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "token",
+                    "instanceOf"
+                  ]
+                }
               }
             }
           }
@@ -5514,12 +5787,12 @@
       "ID": {
         "in": "path",
         "name": "ID",
+        "description": "String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).",
         "schema": {
           "type": "string",
           "x-service-name": "Booking Service"
         },
-        "required": true,
-        "description": "ID of Booking"
+        "required": true
       },
       "device_changed_url": {
         "name": "changedUrl",
@@ -5554,6 +5827,38 @@
         "schema": {
           "type": "boolean",
           "default": false,
+          "x-service-name": "Device Service"
+        }
+      },
+      "execute_for": {
+        "name": "execute_for",
+        "in": "header",
+        "required": false,
+        "description": "The JWT of a user for which to check the permissions.\n",
+        "schema": {
+          "type": "string",
+          "x-service-name": "Device Service"
+        }
+      },
+      "start_time": {
+        "in": "query",
+        "name": "startTime",
+        "description": "Start time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time",
+          "x-service-name": "Device Service"
+        }
+      },
+      "end_time": {
+        "in": "query",
+        "name": "endTime",
+        "description": "End time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time",
           "x-service-name": "Device Service"
         }
       },

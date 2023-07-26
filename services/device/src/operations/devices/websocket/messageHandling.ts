@@ -7,6 +7,7 @@ import {
     ConnectionStateChangedMessage,
 } from '../../../generated/types'
 import { apiClient } from '../../../globals'
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
 
@@ -50,7 +51,11 @@ async function handleSignalingMessage(
         )
     }
 
-    await apiClient.sendSignalingMessage(peerDeviceUrl, message, message.connectionUrl)
+    signalingQueueManager.addSignalingMessage(
+        message.connectionUrl,
+        peerDeviceUrl,
+        message
+    )
 }
 
 /**

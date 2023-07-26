@@ -13,6 +13,7 @@ from crosslab.soa_client.messages import (
     ClosePeerConnectionMessage,
     CreatePeerConnectionMessage,
     SignalingMessage,
+    ConnectionStateChangedMessage
 )
 from crosslab.soa_client.service import Service
 
@@ -152,8 +153,17 @@ class DeviceHandler(AsyncIOEventEmitter):
             }
             await self.ws.send_json(signalingMessage)
 
+        async def onConnectionChanged():
+            connectionChangedMessage: ConnectionStateChangedMessage = {
+                "connectionUrl": msg["connectionUrl"],
+                "messageType": "connection-state-changed",
+                "status": connection.state
+            }
+            await self.ws.send_json(connectionChangedMessage)
+            self.emit("connectionsChanged")
+
         connection.on("signaling", onSignalingMessage)
-        connection.on("connectionChanged", lambda: self.emit("connectionsChanged"))
+        connection.on("connectionChanged", onConnectionChanged)
         self._connections[msg["connectionUrl"]] = connection
         self.emit("connectionsChanged")
         await connection.connect()

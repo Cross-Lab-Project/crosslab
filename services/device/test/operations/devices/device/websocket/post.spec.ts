@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../../../src/database/repositories/device'
+import { repositories } from '../../../../../src/database/dataSource'
 import { postDevicesByDeviceIdWebsocket } from '../../../../../src/operations/devices'
 import { TestData } from '../../../../data/index.spec'
 import { addTest } from '../../../index.spec'
@@ -15,8 +15,8 @@ export default function (context: Mocha.Context, testData: TestData) {
     const CONCRETE_DEVICE_ID = testData['concrete devices']['concrete device'].model.uuid
 
     let deviceRepositorySaveStub: sinon.SinonSpy<
-        Parameters<typeof deviceRepository.save>,
-        ReturnType<typeof deviceRepository.save>
+        Parameters<typeof repositories.device.save>,
+        ReturnType<typeof repositories.device.save>
     >
 
     let clock: sinon.SinonFakeTimers
@@ -25,7 +25,7 @@ export default function (context: Mocha.Context, testData: TestData) {
         clock = sinon.useFakeTimers({
             shouldAdvanceTime: true,
         })
-        deviceRepositorySaveStub = sinon.spy(deviceRepository, 'save')
+        deviceRepositorySaveStub = sinon.spy(repositories.device, 'save')
     })
 
     suite.beforeEach(function () {

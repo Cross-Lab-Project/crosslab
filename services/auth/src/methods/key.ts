@@ -1,5 +1,5 @@
+import { repositories } from '../database/dataSource'
 import { KeyModel } from '../database/model'
-import { keyRepository } from '../database/repositories/keyRepository'
 import { generateKeyPair, exportJWK } from 'jose'
 
 /**
@@ -10,14 +10,14 @@ import { generateKeyPair, exportJWK } from 'jose'
 export async function generateNewKey(usage = 'sig'): Promise<KeyModel> {
     const keyPair = await generateKeyPair('RS256')
 
-    const keyModel = await keyRepository.create({
+    const keyModel = await repositories.key.create({
         private_key: await exportJWK(keyPair.privateKey),
         public_key: await exportJWK(keyPair.publicKey),
         use: usage,
         alg: 'RS256',
     })
 
-    await keyRepository.save(keyModel)
+    await repositories.key.save(keyModel)
 
     return keyModel
 }

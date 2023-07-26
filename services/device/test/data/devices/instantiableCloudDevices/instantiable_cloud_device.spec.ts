@@ -8,6 +8,7 @@ const name = 'Instantiable Cloud Device Example'
 const description = 'An example for an instantiable cloud device'
 const owner = 'http://localhost/users/superadmin'
 const instantiateUrl = 'http://localhost/code'
+const isPublic = true
 
 const instantiable_cloud_device: EntityData<InstantiableCloudDeviceRepository> = {
     request: {
@@ -15,6 +16,7 @@ const instantiable_cloud_device: EntityData<InstantiableCloudDeviceRepository> =
         name,
         description,
         instantiateUrl,
+        isPublic,
     },
     model: {
         uuid,
@@ -23,6 +25,7 @@ const instantiable_cloud_device: EntityData<InstantiableCloudDeviceRepository> =
         description,
         owner,
         instantiateUrl,
+        isPublic,
     },
     response: {
         url: deviceUrlFromId(uuid),
@@ -31,6 +34,7 @@ const instantiable_cloud_device: EntityData<InstantiableCloudDeviceRepository> =
         description,
         owner,
         instantiateUrl,
+        isPublic,
     },
 }
 

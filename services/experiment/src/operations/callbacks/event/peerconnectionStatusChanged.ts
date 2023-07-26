@@ -1,45 +1,29 @@
-import { experimentRepository } from '../../../database/repositories/experiment'
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import { apiClient } from '../../../methods/api'
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks'
 import { DeviceServiceTypes } from '@cross-lab-project/api-client'
-import { MissingPropertyError, MalformedBodyError } from '@crosslab/service-common'
+import { MissingPropertyError } from '@crosslab/service-common'
 
 /**
  * This function handles an incoming "peerconnection-status-changed" event callback.
  * @param callback The incoming "peerconnection-status-changed" callback to be handled.
- * @throws {MalformedBodyError} Thrown if the callback is malformed.
  * @throws {MissingPropertyError} Thrown if the callback is missing a property.
  * @returns The status code for the response to the incoming callback.
  */
 export async function handlePeerconnectionStatusChangedEventCallback(
-    callback: any
+    callback: DeviceServiceTypes.PeerconnectionStatusChangedEventCallback
 ): Promise<200 | 410> {
-    if (!callback.peerconnection) {
-        throw new MissingPropertyError(
-            'Event-callbacks of type "peerconnection-status-changed" require property "peerconnection"',
-            400
-        )
-    }
-    const peerconnection = callback.peerconnection
-    if (!DeviceServiceTypes.isPeerconnection(peerconnection)) {
-        throw new MalformedBodyError('Property "peerconnection" is malformed', 400)
-    }
-    if (!peerconnectionStatusChangedCallbacks.includes(peerconnection.url)) {
+    if (!peerconnectionStatusChangedCallbacks.includes(callback.peerconnection.url)) {
         return 410 // TODO: find a solution for this problem (race condition)
-    }
-    if (!peerconnection.status) {
-        throw new MissingPropertyError(
-            'Property "peerconnection" is missing property "status"'
-        )
     }
 
     // TODO: add peerconnection status changed handling
-    const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
-        where: { url: peerconnection.url },
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+        where: { url: callback.peerconnection.url },
         relations: {
             experiment: {
                 connections: true,
+                devices: true,
             },
         },
     })
@@ -50,11 +34,11 @@ export async function handlePeerconnectionStatusChangedEventCallback(
             `Peerconnection model is missing property "experiment"`
         ) // NOTE: error code
 
-    switch (peerconnection.status) {
+    switch (callback.peerconnection.status) {
         case 'closed':
             // TODO: handle status closed
             break
-        case 'connected':
+        case 'connected': {
             // TODO: handle status connected
             if (!experimentModel.connections)
                 throw new MissingPropertyError(
@@ -62,7 +46,6 @@ export async function handlePeerconnectionStatusChangedEventCallback(
                     400
                 ) // NOTE: error code
 
-            // eslint-disable-next-line no-case-declarations
             let connected = true
             for (const pc of experimentModel.connections) {
                 if ((await apiClient.getPeerconnection(pc.url)).status !== 'connected') {
@@ -70,11 +53,12 @@ export async function handlePeerconnectionStatusChangedEventCallback(
                 }
             }
 
-            if (experimentModel.status === 'setup' && connected) {
+            if (experimentModel.status === 'peerconnections-created' && connected) {
                 experimentModel.status = 'running'
-                await experimentRepository.save(experimentModel)
+                await repositories.experiment.save(experimentModel)
             }
             break
+        }
         case 'failed':
             // TODO: handle status failed
             break

@@ -1,4 +1,4 @@
-import { userRepository } from '../database/repositories/userRepository'
+import { repositories } from '../database/dataSource'
 import { getIdentitySignature, patchIdentitySignature } from '../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -10,7 +10,7 @@ import { logger } from '@crosslab/service-common'
 export const getIdentity: getIdentitySignature = async (user) => {
     logger.log('info', 'getIdentity called')
 
-    const userModel = await userRepository.findOneOrFail({
+    const userModel = await repositories.user.findOneOrFail({
         where: {
             username: user.JWT?.username,
         },
@@ -20,7 +20,7 @@ export const getIdentity: getIdentitySignature = async (user) => {
 
     return {
         status: 200,
-        body: await userRepository.format(userModel),
+        body: await repositories.user.format(userModel),
     }
 }
 
@@ -34,19 +34,19 @@ export const getIdentity: getIdentitySignature = async (user) => {
 export const patchIdentity: patchIdentitySignature = async (body, user) => {
     logger.log('info', 'patchIdentity called')
 
-    const userModel = await userRepository.findOneOrFail({
+    const userModel = await repositories.user.findOneOrFail({
         where: {
             username: user.JWT?.username,
         },
     })
 
-    await userRepository.write(userModel, body ?? {})
-    await userRepository.save(userModel)
+    await repositories.user.write(userModel, body ?? {})
+    await repositories.user.save(userModel)
 
     logger.log('info', 'patchIdentity succeeded')
 
     return {
         status: 200,
-        body: await userRepository.format(userModel),
+        body: await repositories.user.format(userModel),
     }
 }

@@ -17,3 +17,5 @@ export type Subset<K> = {
     ? Subset<K[attr]> | null | undefined
     : K[attr];
 };
+
+export type NonNullableProperties<T extends {[k: string]: unknown}> = Required<{[k in keyof T]: NonNullable<T[k]>}>;

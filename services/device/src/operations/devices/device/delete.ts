@@ -1,6 +1,7 @@
-import { deviceRepository } from '../../../database/repositories/device'
+import { repositories } from '../../../database/dataSource'
 import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures'
-import { logger } from '@crosslab/service-common'
+import { DeviceOwnershipError, logger } from '@crosslab/service-common'
+import { checkPermission } from '../../../methods/permission'
 
 /**
  * This function implements the functionality for handling DELETE requests on /devices/{device_id} endpoint.
@@ -10,15 +11,18 @@ import { logger } from '@crosslab/service-common'
  */
 export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
     parameters,
-    _user
+    user
 ) => {
     logger.log('info', 'deleteDevicesByDeviceId called')
 
-    const deviceModel = await deviceRepository.findOneOrFail({
+    const deviceModel = await repositories.device.findOneOrFail({
         where: { uuid: parameters.device_id },
     })
 
-    await deviceRepository.remove(deviceModel)
+    if (!checkPermission('delete', deviceModel, user.JWT))
+        throw new DeviceOwnershipError()
+
+    await repositories.device.remove(deviceModel)
 
     logger.log('info', 'deleteDevicesByDeviceId succeeded')
 

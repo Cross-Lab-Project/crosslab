@@ -1,4 +1,4 @@
-import { roleRepository } from '../../../../src/database/repositories/roleRepository'
+import { repositories } from '../../../../src/database/dataSource'
 import { Role } from '../../../../src/generated/types'
 import { roleUrlFromId } from '../../../../src/methods/utils'
 import { patchRolesByRoleId } from '../../../../src/operations/roles'
@@ -57,7 +57,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 200)
 
-                const newRoleModel = await roleRepository.findOne({
+                const newRoleModel = await repositories.role.findOne({
                     where: {
                         uuid: roleModel.uuid,
                     },

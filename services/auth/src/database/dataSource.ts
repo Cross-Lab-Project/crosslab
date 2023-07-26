@@ -1,24 +1,57 @@
+import { dataSourceConfig } from '../config'
 import { Scope as CrosslabScope } from '../generated/scopes'
-import { activeKeyRepository } from './repositories/activeKeyRepository'
-import { keyRepository } from './repositories/keyRepository'
-import { roleRepository } from './repositories/roleRepository'
-import { scopeRepository } from './repositories/scopeRepository'
-import { tokenRepository } from './repositories/tokenRepository'
-import { userRepository } from './repositories/userRepository'
+import { ActiveKeyRepository } from './repositories/activeKeyRepository'
+import { KeyRepository } from './repositories/keyRepository'
+import { RoleRepository } from './repositories/roleRepository'
+import { ScopeRepository } from './repositories/scopeRepository'
+import { TokenRepository } from './repositories/tokenRepository'
+import { UserRepository } from './repositories/userRepository'
 import { AbstractApplicationDataSource } from '@crosslab/service-common'
 
-export class ApplicationDataSource extends AbstractApplicationDataSource {
-    protected initializeRepositories(): void {
-        activeKeyRepository.initialize(this)
-        keyRepository.initialize(this)
-        roleRepository.initialize(this)
-        scopeRepository.initialize(this)
-        tokenRepository.initialize(this)
-        userRepository.initialize(this)
+type RepositoryMapping = {
+    activeKey: ActiveKeyRepository
+    key: KeyRepository
+    role: RoleRepository
+    scope: ScopeRepository
+    token: TokenRepository
+    user: UserRepository
+}
+
+export class ApplicationDataSource extends AbstractApplicationDataSource<RepositoryMapping> {
+    protected createRepositories(): RepositoryMapping {
+        const activeKeyRepository = new ActiveKeyRepository()
+        const keyRepository = new KeyRepository()
+        const roleRepository = new RoleRepository()
+        const scopeRepository = new ScopeRepository()
+        const tokenRepository = new TokenRepository()
+        const userRepository = new UserRepository()
+
+        activeKeyRepository.setDependencies({ key: keyRepository })
+        keyRepository.setDependencies({ activeKey: activeKeyRepository })
+        roleRepository.setDependencies({ scope: scopeRepository })
+        tokenRepository.setDependencies({
+            role: roleRepository,
+            scope: scopeRepository,
+            user: userRepository,
+        })
+        userRepository.setDependencies({
+            token: tokenRepository,
+        })
+
+        return {
+            activeKey: activeKeyRepository,
+            key: keyRepository,
+            role: roleRepository,
+            scope: scopeRepository,
+            token: tokenRepository,
+            user: userRepository,
+        }
     }
 }
 
-export const AppDataSource = new ApplicationDataSource()
+export const AppDataSource = new ApplicationDataSource(dataSourceConfig)
+export const dataSource = AppDataSource.dataSource
+export const repositories = AppDataSource.repositories
 
 const standardRoles = [
     'user',
@@ -55,13 +88,13 @@ const scopesStandardRolesMapping: ScopeRecord = {
     'users:delete': [],
     // device service scopes
     'device': ['developer'],
-    'device:read': ['developer'], // TODO: readall, listall, editall
+    'device:read': ['auth_service', 'developer', 'device_service', 'experiment_service'], // TODO: readall, listall, editall
     'device:read:owned': standardRoles,
     'device:write': ['device', 'device_service'],
     'device:write:owned': ['user'],
     'device:create': ['user'],
     'device:delete': [],
-    'device:delete:owned': ['user'],
+    'device:delete:owned': ['experiment_service', 'user'],
     'device:instantiate': ['experiment_service'],
     'device:instantiate:owned': ['user'],
     'device:connect': [],
@@ -123,14 +156,14 @@ async function createScopeCollection(): Promise<ScopeCollection> {
     }
     for (const scope in scopesStandardRolesMapping) {
         if (
-            !(await scopeRepository.findOne({
+            !(await repositories.scope.findOne({
                 where: {
                     name: scope,
                 },
             }))
         ) {
-            const scopeModel = await scopeRepository.create(scope)
-            await scopeRepository.save(scopeModel)
+            const scopeModel = await repositories.scope.create(scope)
+            await repositories.scope.save(scopeModel)
         }
         scopeCollection.superadmin.push(scope)
         const roles = scopesStandardRolesMapping[scope]
@@ -167,7 +200,7 @@ async function createScopeCollection(): Promise<ScopeCollection> {
 }
 
 async function createRole(name: string, scopes: CrosslabScope<'JWT'>[]) {
-    const existingRoleModel = await roleRepository.findOne({
+    const existingRoleModel = await repositories.role.findOne({
         where: {
             name: name,
         },
@@ -175,11 +208,11 @@ async function createRole(name: string, scopes: CrosslabScope<'JWT'>[]) {
 
     if (existingRoleModel) return
 
-    const roleModel = await roleRepository.create({
+    const roleModel = await repositories.role.create({
         name,
         scopes: scopes,
     })
-    await roleRepository.save(roleModel)
+    await repositories.role.save(roleModel)
 }
 
 async function createDefaultScopesAndRoles() {
@@ -199,7 +232,7 @@ async function createDefaultScopesAndRoles() {
 }
 
 async function createDefaultSuperadminUser() {
-    const roleModelSuperadmin = await roleRepository.findOneOrFail({
+    const roleModelSuperadmin = await repositories.role.findOneOrFail({
         where: {
             name: 'superadmin',
         },
@@ -209,12 +242,15 @@ async function createDefaultSuperadminUser() {
     })
 
     if (roleModelSuperadmin.users.length === 0) {
-        const userModelSuperadmin = await userRepository.create({
+        const userModelSuperadmin = await repositories.user.create({
             username: 'local:superadmin',
             password: 'superadmin',
         })
-        userRepository.addRoleModelToUserModel(userModelSuperadmin, roleModelSuperadmin)
-        await userRepository.save(userModelSuperadmin)
+        repositories.user.addRoleModelToUserModel(
+            userModelSuperadmin,
+            roleModelSuperadmin
+        )
+        await repositories.user.save(userModelSuperadmin)
     }
 }
 
@@ -226,7 +262,7 @@ async function createDefaultServiceUser(
         | 'federation_service'
         | 'update_service'
 ) {
-    const roleService = await roleRepository.findOneOrFail({
+    const roleService = await repositories.role.findOneOrFail({
         where: {
             name: service,
         },
@@ -237,11 +273,11 @@ async function createDefaultServiceUser(
     })
 
     if (roleService.users.length === 0) {
-        const user = await userRepository.create()
+        const user = await repositories.user.create()
         user.username = `local:${service.replace('_', '')}`
         user.roles = [roleService]
         user.tokens = []
-        await userRepository.save(user)
+        await repositories.user.save(user)
     }
 }
 

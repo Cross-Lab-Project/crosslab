@@ -1,4 +1,4 @@
-import { userRepository } from '../../../src/database/repositories/userRepository'
+import { repositories } from '../../../src/database/dataSource'
 import { User } from '../../../src/generated/types'
 import { postLogin } from '../../../src/operations/login'
 import { postUsers } from '../../../src/operations/users'
@@ -21,7 +21,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
             const result = await postUsers(user, testData.userData)
 
-            const userModel = await userRepository.findOne({
+            const userModel = await repositories.user.findOne({
                 where: {
                     username: `local:${user.username}`,
                 },

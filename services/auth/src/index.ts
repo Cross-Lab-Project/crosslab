@@ -1,7 +1,7 @@
 import { config, dataSourceConfig } from './config'
-import { AppDataSource, initializeDataSource } from './database/dataSource'
-import { activeKeyRepository } from './database/repositories/activeKeyRepository'
+import { AppDataSource, initializeDataSource, repositories } from './database/dataSource'
 import { app } from './generated'
+import { isUserTypeJWT } from './generated/types'
 import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
 import { apiClient } from './methods/api'
 import { generateNewKey, jwk } from './methods/key'
@@ -12,6 +12,7 @@ import {
     logHandling,
     logger,
     missingRouteHandling,
+    parseJwtFromRequestAuthenticationHeader,
     requestIdHandling,
 } from '@crosslab/service-common'
 import { DataSourceOptions } from 'typeorm'
@@ -31,7 +32,7 @@ async function startAuthenticationService(
     setInterval(resolveAllowlist, 600000, allowlist)
 
     // Create new active key
-    const activeSigKey = await activeKeyRepository.findOne({
+    const activeSigKey = await repositories.activeKey.findOne({
         where: {
             use: 'sig',
         },
@@ -40,11 +41,11 @@ async function startAuthenticationService(
     const jwks = JSON.stringify({ keys: [jwk(key)] })
 
     if (!activeSigKey) {
-        const activeKeyModel = await activeKeyRepository.create({
+        const activeKeyModel = await repositories.activeKey.create({
             use: key.use,
             key: key.uuid,
         })
-        await activeKeyRepository.save(activeKeyModel)
+        await repositories.activeKey.save(activeKeyModel)
     }
 
     app.get('/.well-known/jwks.json', (_req, res) => {
@@ -60,7 +61,11 @@ async function startAuthenticationService(
 
     app.initService({
         security: {
-            JWT: JWTVerify(appConfig) as any,
+            JWT: JWTVerify(
+                appConfig,
+                isUserTypeJWT,
+                parseJwtFromRequestAuthenticationHeader
+            ),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [missingRouteHandling],

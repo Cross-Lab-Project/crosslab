@@ -45,6 +45,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 type: 'device',
                 name: 'undefined',
                 owner: 'http://localhost/devices/undefined',
+                isPublic: true,
             }
         })
         const result = await postDevices({ changedUrl }, device.request, {
@@ -52,6 +53,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 username: 'testuser',
                 url: device.model.owner,
                 scopes: [],
+                jwt: 'jwt',
             },
         })
         assert(result.status === 201)
@@ -95,12 +97,14 @@ export default function (context: Mocha.Context, testData: TestData) {
                         {
                             type: 'device',
                             name: '',
+                            isPublic: true,
                         },
                         {
                             JWT: {
                                 username: 'testuser',
                                 url: 'http://localhost/users/testuser',
                                 scopes: [],
+                                jwt: 'jwt',
                             },
                         }
                     )

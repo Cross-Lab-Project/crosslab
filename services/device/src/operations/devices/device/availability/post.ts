@@ -1,23 +1,27 @@
-import { deviceRepository } from '../../../../database/repositories/device'
+import { repositories } from '../../../../database/dataSource'
 import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures'
 import { calculateAvailability } from '../../../../methods/availability'
 import { sendChangedCallback } from '../../../../methods/callbacks'
-import { ImpossibleOperationError, logger } from '@crosslab/service-common'
-
-const YEAR = 365 * 24 * 60 * 60 * 1000
+import {
+    DeviceOwnershipError,
+    ImpossibleOperationError,
+    logger,
+} from '@crosslab/service-common'
+import { checkPermission } from '../../../../methods/permission'
+import { WEEK } from '../../../../globals'
 
 /**
  * This function implements the functionality for handling POST requests on /devices/{device_id}/availability endpoint.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
+ * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature =
-    async (parameters, body, _user) => {
+    async (parameters, body, user) => {
         logger.log('info', 'postDevicesByDeviceIdAvailability called')
 
-        const deviceModel = await deviceRepository.findOneOrFail({
+        const deviceModel = await repositories.device.findOneOrFail({
             where: { uuid: parameters.device_id },
         })
 
@@ -28,18 +32,21 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
             )
         }
 
+        if (!checkPermission('write', deviceModel, user.JWT))
+            throw new DeviceOwnershipError()
+
         deviceModel.availabilityRules ??= []
         deviceModel.availabilityRules.push(...(body ?? []))
 
         const start = Date.now()
-        const end = start + YEAR
+        const end = start + WEEK
         deviceModel.announcedAvailability = calculateAvailability(
             deviceModel.availabilityRules,
             start,
             end
         )
 
-        await deviceRepository.save(deviceModel)
+        await repositories.device.save(deviceModel)
         await sendChangedCallback(deviceModel)
 
         logger.log('info', 'postDevicesByDeviceIdAvailability succeeded')

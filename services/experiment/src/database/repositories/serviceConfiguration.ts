@@ -1,37 +1,46 @@
 import { ServiceConfiguration } from '../../generated/types'
 import { ServiceConfigurationModel } from '../model'
-import { participantRepository } from './participant'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { ParticipantRepository } from './participant'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class ServiceConfigurationRepository extends AbstractRepository<
     ServiceConfigurationModel,
     ServiceConfiguration<'request'>,
-    ServiceConfiguration<'response'>
+    ServiceConfiguration<'response'>,
+    { participant: ParticipantRepository }
 > {
+    protected dependencies: { participant?: ParticipantRepository } = {}
+
     constructor() {
         super('ServiceConfiguration')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ServiceConfigurationModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ServiceConfigurationModel)
     }
 
     async write(
         model: ServiceConfigurationModel,
         data: Partial<ServiceConfiguration<'request'>>
     ): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
         if (data.serviceType) model.serviceType = data.serviceType
         if (data.configuration) model.configuration = data.configuration
         if (data.participants) {
             for (const participant of model.participants ?? []) {
-                await participantRepository.remove(participant)
+                await this.dependencies.participant.remove(participant)
             }
             model.participants = []
             for (const participant of data.participants) {
-                const participantModel = await participantRepository.create(participant)
+                const participantModel = await this.dependencies.participant.create(
+                    participant
+                )
                 model.participants.push(participantModel)
             }
         }
@@ -40,6 +49,10 @@ export class ServiceConfigurationRepository extends AbstractRepository<
     async format(
         model: ServiceConfigurationModel
     ): Promise<ServiceConfiguration<'response'>> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const participantRepository = this.dependencies.participant
+
         return {
             serviceType: model.serviceType,
             configuration: model.configuration,
@@ -52,6 +65,9 @@ export class ServiceConfigurationRepository extends AbstractRepository<
     }
 
     async remove(model: ServiceConfigurationModel): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const participantRepository = this.dependencies.participant
         const removePromises: Promise<void>[] = []
 
         if (model.participants)
@@ -66,5 +82,3 @@ export class ServiceConfigurationRepository extends AbstractRepository<
         await super.remove(model)
     }
 }
-
-export const serviceConfigurationRepository = new ServiceConfigurationRepository()

@@ -1,4 +1,4 @@
-import { userRepository } from '../../../../../src/database/repositories/userRepository'
+import { repositories } from '../../../../../src/database/dataSource'
 import { postUsersByUserIdRoles } from '../../../../../src/operations/users'
 import { TestData } from '../../../../data/index.spec'
 import { roleNames } from '../../../../data/roleData.spec'
@@ -28,7 +28,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 204)
 
-                const userModel = await userRepository.findOne({
+                const userModel = await repositories.user.findOne({
                     where: {
                         uuid: user_id,
                     },
@@ -57,7 +57,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 204)
 
-                const newUserModel = await userRepository.findOne({
+                const newUserModel = await repositories.user.findOne({
                     where: {
                         uuid: userModel.uuid,
                     },

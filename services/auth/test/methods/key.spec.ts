@@ -1,5 +1,5 @@
+import { repositories } from '../../src/database/dataSource'
 import { KeyModel } from '../../src/database/model'
-import { keyRepository } from '../../src/database/repositories/keyRepository'
 import { generateNewKey, jwk } from '../../src/methods/key'
 import assert from 'assert'
 import { exportJWK, generateKeyPair, importJWK, jwtVerify, SignJWT } from 'jose'
@@ -26,9 +26,9 @@ export default () =>
 
         describe('generateNewKey()', async function () {
             it('should correctly generate a key', async function () {
-                const keyRepositoryCreateStub = sinon.stub(keyRepository, 'create')
+                const keyRepositoryCreateStub = sinon.stub(repositories.key, 'create')
                 keyRepositoryCreateStub.callsFake(async () => TEST_KEY)
-                const keyRepositorySaveStub = sinon.stub(keyRepository, 'save')
+                const keyRepositorySaveStub = sinon.stub(repositories.key, 'save')
 
                 const key = await generateNewKey()
 

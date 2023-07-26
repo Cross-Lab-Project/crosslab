@@ -36,8 +36,10 @@ delete:
       - peerconnection
       - peerconnection:delete
   responses:
+    202:
+      description: The peerconnection will be deleted as soon as it's closed.
     204:
-      description: The peer connection was deleted successfully.
+      description: The peerconnection was deleted successfully.
     400:
       description: Bad Request.
     401:

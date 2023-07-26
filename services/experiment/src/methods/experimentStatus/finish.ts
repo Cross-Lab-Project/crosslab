@@ -1,8 +1,10 @@
+import assert from 'assert'
+import { repositories } from '../../database/dataSource'
 import { ExperimentModel } from '../../database/model'
-import { experimentRepository } from '../../database/repositories/experiment'
 import { apiClient } from '../api'
 import { experimentUrlFromId } from '../url'
 import { logger } from '@crosslab/service-common'
+import { validateExperimentStatus } from '../../types/typeguards'
 
 /**
  * This function attempts to finish an experiment.
@@ -14,38 +16,85 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
 
     switch (experimentModel.status) {
         case 'created': {
-            // nothing to do here as status is set to finished below
             break
         }
         case 'booked': {
-            // TODO: delete booking (what to do if "booked" but no booking?)
-            // if (experimentModel.bookingID)
-            //     await deleteBooking(experimentModel.bookingID)
+            assert(validateExperimentStatus(experimentModel, 'booked'))
+
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+
+            break
+        }
+        case 'booking-locked': {
+            assert(validateExperimentStatus(experimentModel, 'booking-locked'))
+
+            // await apiClient.unlockBooking(experimentModel.bookingID)
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+
+            break
+        }
+        case 'devices-instantiated': {
+            assert(validateExperimentStatus(experimentModel, 'devices-instantiated'))
+
+            // await apiClient.unlockBooking(experimentModel.bookingID)
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+            await deleteInstances(experimentModel)
+
+            break
+        }
+        case 'booking-updated': {
+            assert(validateExperimentStatus(experimentModel, 'booking-updated'))
+
+            // await apiClient.unlockBooking(experimentModel.bookingID)
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+            await deleteInstances(experimentModel)
+
+            break
+        }
+        case 'peerconnections-created': {
+            assert(validateExperimentStatus(experimentModel, 'peerconnections-created'))
+
+            // await apiClient.unlockBooking(experimentModel.bookingID)
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+            await deletePeerconnections(experimentModel)
+            await deleteInstances(experimentModel)
+
             break
         }
         case 'running': {
-            // delete all peerconnections
-            if (experimentModel.connections) {
-                for (const peerconnection of experimentModel.connections) {
-                    await apiClient.deletePeerconnection(peerconnection.url)
-                }
-            }
-            // TODO: unlock all devices (booking client missing)
-            // if (experimentModel.bookingID)
-            //     await unlockDevices(experimentModel.bookingID)
+            assert(validateExperimentStatus(experimentModel, 'running'))
 
-            // TODO: delete booking (booking client missing)
-            // if (experimentModel.bookingID)
-            //     await deleteBooking(experimentModel.bookingID)
+            // await apiClient.unlockBooking(experimentModel.bookingID)
+            // await apiClient.deleteBooking(experimentModel.bookingID)
+            await deletePeerconnections(experimentModel)
+            await deleteInstances(experimentModel)
+
             break
         }
         case 'finished': {
-            // nothing to do since experiment is already finished
             break
         }
     }
 
     experimentModel.status = 'finished'
-    await experimentRepository.save(experimentModel)
+    await repositories.experiment.save(experimentModel)
     logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } })
+}
+
+async function deleteInstances(experiment: ExperimentModel) {
+    if (experiment.devices) {
+        for (const device of experiment.devices) {
+            if (device.instance?.url) {
+                await apiClient.deleteDevice(device.instance.url)
+            }
+        }
+    }
+}
+
+async function deletePeerconnections(experiment: ExperimentModel) {
+    if (experiment.connections) {
+        for (const peerconnection of experiment.connections) {
+            await apiClient.deletePeerconnection(peerconnection.url)
+        }
+    }
 }

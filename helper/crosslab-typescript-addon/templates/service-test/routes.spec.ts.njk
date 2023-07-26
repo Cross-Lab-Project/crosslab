@@ -77,7 +77,10 @@ export default () => describe('Route Tests', function () {
         {{ securityScheme }}SecurityStub.resolves({
             url: "http://localhost/users/{{ securityScheme }}user",
             username: "{{ securityScheme }}user",
-            scopes: []
+            scopes: [],
+            {%- if securityScheme == "JWT" %}
+            jwt: "jwt"
+            {%- endif %}
         })
         {%- endfor %}
         errorHandlerStub.callsFake(defaultErrorHandler)

@@ -101,9 +101,9 @@ for SWAGGER_PATH in `shyaml keys paths < $1`; do
     fi
 
     echo "    auth_request @auth;"
-    echo "    auth_request_set \$authorization \$upstream_http_authorization;"
+    echo '    auth_request_set $authentication $upstream_http_x_request_authentication;'
     echo ""
-    echo "    proxy_set_header Authorization \$authorization;"
+    echo '    proxy_set_header X-Request-Authentication $authentication;'
     echo "    proxy_pass http://$UPSTREAM;"
     echo "}"
 done

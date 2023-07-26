@@ -1,23 +1,26 @@
 import { Peerconnection } from '../../generated/types'
 import { peerconnectionUrlFromId } from '../../methods/urlFromId'
 import { PeerconnectionModel } from '../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-    InvalidValueError,
-} from '@crosslab/service-common'
+import { AbstractRepository, InvalidValueError } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
 export class PeerconnectionRepository extends AbstractRepository<
     PeerconnectionModel,
     Peerconnection<'request'>,
     Peerconnection<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Peerconnection')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(PeerconnectionModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(PeerconnectionModel)
     }
 
     async create(data?: Peerconnection<'request'>): Promise<PeerconnectionModel> {
@@ -74,5 +77,3 @@ export class PeerconnectionRepository extends AbstractRepository<
         }
     }
 }
-
-export const peerconnectionRepository = new PeerconnectionRepository()

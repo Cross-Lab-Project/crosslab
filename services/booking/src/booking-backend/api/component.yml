@@ -1,0 +1,123 @@
+  /booking/{ID}/lock:
+    put:
+      operationId: 'lockBooking'
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/ID'
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - booking-backend
+      summary: >-
+        Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
+      responses:
+        '200':
+          description: All devices were booked by user.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: The list of booked devices and selected real devices. Order is guaranteed to be the same as in the booking.
+                items:
+                  type: object
+                  required:
+                    - Requested
+                    - Selected
+                  properties:
+                    Requested:
+                      type: string
+                      format: uri
+                    Selected:
+                      type: string
+                      format: uri
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown ID
+        '412':
+          description: The current booking status is not correct.
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error string
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+    delete:
+      operationId: 'unlockBooking'
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/ID'
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - booking-backend
+      summary: >-
+        Unlocks all devices belonging to a booking, status will be set to 'booked'.
+      responses:
+        '200':
+          description: Unlocking was successful.
+        '401':
+          description: No authorisation header found.
+        '404':
+          description: Request contains unknown ID
+        '412':
+          description: The current booking status is not correct.      
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+  /booking_callback/{ID}:
+    post:
+      operationId: 'bookingCallback'
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/ID'
+          name: ID
+          schema:
+            type: string
+          required: true
+          description: ID of Booking
+      tags:
+      - booking-backend
+      summary: >-
+        Callback used for updating device info / booking info.
+      responses:
+        '200':
+          description: Update was processed.
+        '404':
+          description: Callback is no longer needed.
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.

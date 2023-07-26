@@ -73,7 +73,7 @@ post:
             required: true
             content:
               application/json:
-                $ref: "../content/device_event.yml"
+                $ref: "../content/device_changed_event.yml"
           responses:
             2XX:
               description: The event was successfully processed.

@@ -1,4 +1,4 @@
-import { experimentRepository } from '../../../database/repositories/experiment'
+import { repositories } from '../../../database/dataSource'
 import { deleteExperimentsByExperimentIdSignature } from '../../../generated/signatures'
 import { finishExperiment } from '../../../methods/experimentStatus'
 import { logger } from '@crosslab/service-common'
@@ -16,11 +16,13 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
             `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`
         )
 
-        const experimentModel = await experimentRepository.findOneOrFail({
+        const experimentModel = await repositories.experiment.findOneOrFail({
             where: { uuid: parameters.experiment_id },
             relations: {
                 connections: true,
-                devices: true,
+                devices: {
+                    instance: true,
+                },
                 roles: true,
                 serviceConfigurations: {
                     participants: true,
@@ -28,10 +30,9 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
             },
         })
 
-        if (experimentModel?.status !== 'finished')
-            await finishExperiment(experimentModel)
+        if (experimentModel.status !== 'finished') await finishExperiment(experimentModel)
 
-        await experimentRepository.remove(experimentModel)
+        await repositories.experiment.remove(experimentModel)
 
         logger.log(
             'info',

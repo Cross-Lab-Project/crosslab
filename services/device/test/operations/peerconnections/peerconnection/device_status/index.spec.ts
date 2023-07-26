@@ -1,3 +1,3 @@
-import patchSpec from './patch.spec'
+// import patchSpec from './patch.spec'
 
-export default [patchSpec]
+export default []

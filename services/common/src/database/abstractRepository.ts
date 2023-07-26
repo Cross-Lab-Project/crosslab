@@ -1,7 +1,7 @@
-import {FindManyOptions, FindOneOptions, FindOptionsRelations, ObjectLiteral, Repository} from 'typeorm';
+import {EntityManager, FindManyOptions, FindOneOptions, FindOptionsRelations, ObjectLiteral, Repository} from 'typeorm';
 
 import {MissingEntityError, UninitializedRepositoryError} from '../errors';
-import {AbstractApplicationDataSource} from './abstractDataSource';
+import {NonNullableProperties} from '../types';
 
 /**
  * An abstract class for a repository.
@@ -9,22 +9,35 @@ import {AbstractApplicationDataSource} from './abstractDataSource';
  * @typeParam RQ - Type of possible request.
  * @typeParam RSP - Type of possible response.
  */
-export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
+export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP, D extends Record<string, object> = Record<string, never>> {
   public name: string;
   protected repository?: Repository<M>;
+  protected abstract dependencies: Partial<D>;
 
   constructor(name: string) {
     this.name = name;
+  }
+
+  protected abstract dependenciesMet(): boolean;
+
+  protected isInitialized(): this is {
+    repository: Repository<M>;
+    dependencies: NonNullableProperties<D>;
+  } {
+    if (!this.repository) return false;
+    if (!this.dependenciesMet()) return false;
+
+    return true;
   }
 
   protected throwUninitializedRepositoryError(): never {
     throw new UninitializedRepositoryError(`${this.name} Repository has not been initialized!`);
   }
 
-  abstract initialize(AppDataSource: AbstractApplicationDataSource): void;
+  abstract initialize(entityManager: EntityManager): void;
 
   public async create(data?: RQ): Promise<M> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     const model = this.repository.create();
     if (data === undefined) return model;
     await this.write(model, data);
@@ -34,12 +47,12 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
   abstract write(model: M, data: Partial<RQ>): Promise<void>;
 
   public async save(model: M): Promise<M> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     return await this.repository.save(model);
   }
 
   public async find(options?: FindManyOptions<M>): Promise<M[]> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     const findOptions: FindManyOptions<M> = {
       ...(options ?? {}),
       relations: options?.relations ?? this.getDefaultFindOptionsRelations(),
@@ -48,7 +61,7 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
   }
 
   public async findOne(options: FindOneOptions<M>): Promise<M | null> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     const findOptions: FindManyOptions<M> = {
       ...options,
       relations: options?.relations ?? this.getDefaultFindOptionsRelations(),
@@ -57,7 +70,7 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
   }
 
   public async findOneOrFail(options: FindOneOptions<M>): Promise<M> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     const findOptions: FindOneOptions<M> = {
       ...options,
       relations: options.relations ?? this.getDefaultFindOptionsRelations(),
@@ -74,11 +87,15 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP> {
   abstract format(model: M): Promise<RSP>;
 
   public async remove(model: M): Promise<void> {
-    if (!this.repository) this.throwUninitializedRepositoryError();
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
     await this.repository.remove(model);
   }
 
   protected getDefaultFindOptionsRelations(): FindOptionsRelations<M> | undefined {
     return undefined;
+  }
+
+  public setDependencies(dependencies: D) {
+    this.dependencies = dependencies;
   }
 }

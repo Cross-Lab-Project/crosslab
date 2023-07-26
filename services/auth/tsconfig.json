@@ -1,12 +1,10 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "moduleResolution": "Node",
+        "moduleResolution": "node16",
         "allowSyntheticDefaultImports": true,
         "target": "ES2021",
-        "lib": [
-            "ES2021"
-        ],
+        "lib": ["ES2021"],
         "esModuleInterop": true,
         "outDir": "app",
         "strict": true,
@@ -18,10 +16,7 @@
         "sourceMap": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "skipLibCheck": true,
+        "skipLibCheck": true
     },
-    "include": [
-        "src/**/*.ts",
-        "test/**/*.spec.ts"
-    ]
+    "include": ["src/**/*.ts", "test/**/*.spec.ts"]
 }

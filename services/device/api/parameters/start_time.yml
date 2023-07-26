@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: query
+name: startTime
+description: Start time of the requested availability
+required: false
+schema:
+  type: string
+  format: date-time
+  

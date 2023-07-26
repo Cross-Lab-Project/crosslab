@@ -5,7 +5,7 @@ import {UninitializedRepositoryError} from '../../errors';
 import {AbstractRepository} from '../abstractRepository';
 import {ModelType, RepositoryTestData} from './types.spec';
 
-export function testSuiteFindOne<K extends string, R extends AbstractRepository<object, unknown, unknown>>(
+export function testSuiteFindOne<K extends string, R extends AbstractRepository<object, unknown, unknown, Record<string, object>>>(
   repositoryTestData: RepositoryTestData<K, R>,
 ) {
   const testSuite = new Mocha.Suite('findOne');

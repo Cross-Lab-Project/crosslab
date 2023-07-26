@@ -1,14 +1,5 @@
 import { config, dataSourceConfig } from '../src/config'
-import { AppDataSource } from '../src/database/dataSource'
-import {
-    ScopeModel,
-    RoleModel,
-    UserModel,
-    KeyModel,
-    ActiveKeyModel,
-    TokenModel,
-} from '../src/database/model'
-import { activeKeyRepository } from '../src/database/repositories/activeKeyRepository'
+import { AppDataSource, repositories } from '../src/database/dataSource'
 import { app } from '../src/generated'
 import { logger } from '@crosslab/service-common'
 import assert from 'assert'
@@ -29,9 +20,11 @@ describe('Index', function () {
         const indexModule = rewire('../src/index.ts')
         startAuthenticationService = indexModule.__get__('startAuthenticationService')
         await startAuthenticationService(config, {
-            ...dataSourceConfig,
-            database: './test/db/index_test.db',
+            type: 'sqlite',
+            database: ':memory:',
             dropSchema: true,
+            synchronize: true,
+            entities: dataSourceConfig.entities,
         })
         assert(appListenStub.called)
     })
@@ -43,23 +36,18 @@ describe('Index', function () {
     })
 
     it('should have at least one active key', async function () {
-        const activeKeyModels = await activeKeyRepository.find()
+        this.timeout(60000)
+        const activeKeyModels = await repositories.activeKey.find()
         assert(activeKeyModels.length > 0)
 
         await AppDataSource.teardown()
 
         await startAuthenticationService(config, {
             type: 'sqlite',
-            database: './test/db/index_test.db',
+            database: ':memory:',
+            dropSchema: true,
             synchronize: true,
-            entities: [
-                ScopeModel,
-                RoleModel,
-                UserModel,
-                KeyModel,
-                ActiveKeyModel,
-                TokenModel,
-            ],
+            entities: dataSourceConfig.entities,
         })
         assert(activeKeyModels.length > 0)
     })

@@ -1,0 +1,15 @@
+title: Event Callback
+allOf:
+  - $ref: ./callback.yml
+  - type: object
+    properties: 
+      callbackType:
+        type: string
+        enum:
+          - event
+      eventType:
+        type: string
+    required:
+      - callbackType
+      - eventType
+x-typeguard: true

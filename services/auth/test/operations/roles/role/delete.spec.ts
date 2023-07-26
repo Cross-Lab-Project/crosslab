@@ -1,4 +1,4 @@
-import { userRepository } from '../../../../src/database/repositories/userRepository'
+import { repositories } from '../../../../src/database/dataSource'
 import { deleteRolesByRoleId } from '../../../../src/operations/roles'
 import { TestData } from '../../../data/index.spec'
 import { roleNames } from '../../../data/roleData.spec'
@@ -19,7 +19,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 )
                 assert(result.status === 204)
                 assert(
-                    !(await userRepository.findOne({
+                    !(await repositories.user.findOne({
                         where: {
                             uuid: roleModel.uuid,
                         },

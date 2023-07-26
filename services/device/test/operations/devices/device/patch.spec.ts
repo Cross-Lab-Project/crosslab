@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../../src/database/repositories/device'
+import { repositories } from '../../../../src/database/dataSource'
 import {
     ConcreteDeviceUpdate,
     DeviceGroupUpdate,
@@ -189,7 +189,7 @@ function buildDeviceSuite(
             )
 
             assert(result.status === 200)
-            const updatedDeviceModel = await deviceRepository.findOneOrFail({
+            const updatedDeviceModel = await repositories.device.findOneOrFail({
                 where: {
                     uuid: device.model.uuid,
                 },

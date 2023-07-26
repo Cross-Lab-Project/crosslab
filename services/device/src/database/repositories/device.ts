@@ -1,54 +1,78 @@
 import { Device, DeviceUpdate } from '../../generated/types'
 import { DeviceModel } from '../model'
-import { concreteDeviceRepository } from './device/concreteDevice'
-import { deviceGroupRepository } from './device/deviceGroup'
-import { deviceOverviewRepository } from './device/deviceOverview'
-import { instantiableBrowserDeviceRepository } from './device/instantiableBrowserDevice'
-import { instantiableCloudDeviceRepository } from './device/instantiableCloudDevice'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-    InvalidValueError,
-} from '@crosslab/service-common'
-import { FindManyOptions, FindOneOptions, In } from 'typeorm'
+import { ConcreteDeviceRepository } from './device/concreteDevice'
+import { DeviceGroupRepository } from './device/deviceGroup'
+import { DeviceOverviewRepository } from './device/deviceOverview'
+import { InstantiableBrowserDeviceRepository } from './device/instantiableBrowserDevice'
+import { InstantiableCloudDeviceRepository } from './device/instantiableCloudDevice'
+import { AbstractRepository, InvalidValueError } from '@crosslab/service-common'
+import { EntityManager, FindManyOptions, FindOneOptions, In } from 'typeorm'
+
+type DeviceRepositoryDependencies = {
+    deviceOverview: DeviceOverviewRepository
+    concreteDevice: ConcreteDeviceRepository
+    deviceGroup: DeviceGroupRepository
+    instantiableBrowserDevice: InstantiableBrowserDeviceRepository
+    instantiableCloudDevice: InstantiableCloudDeviceRepository
+}
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
     Device<'request'>,
-    Device<'response'>
+    Device<'response'>,
+    DeviceRepositoryDependencies
 > {
-    private isInitialized = false
+    protected dependencies: Partial<DeviceRepositoryDependencies> = {}
 
     constructor() {
         super('Device')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        deviceOverviewRepository.initialize(AppDataSource)
-        concreteDeviceRepository.initialize(AppDataSource)
-        deviceGroupRepository.initialize(AppDataSource)
-        instantiableBrowserDeviceRepository.initialize(AppDataSource)
-        instantiableCloudDeviceRepository.initialize(AppDataSource)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.deviceOverview) return false
+        if (!this.dependencies.concreteDevice) return false
+        if (!this.dependencies.deviceGroup) return false
+        if (!this.dependencies.instantiableBrowserDevice) return false
+        if (!this.dependencies.instantiableCloudDevice) return false
 
-        this.isInitialized = true
+        return true
+    }
+
+    initialize(_entityManager: EntityManager): void {
+        return
+    }
+
+    /**
+     * This function is used to replace the standard isInitialized()-method. Since we
+     * don't have a repository for the type DeviceModel we don't want to falsely
+     * claim that we have it and that it is initialized.
+     */
+    private _isInitialized(): this is {
+        dependencies: Required<DeviceRepositoryDependencies>
+    } {
+        if (!this.dependenciesMet()) return false
+
+        return true
     }
 
     async create(data: Device<'request'>): Promise<DeviceModel> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
         switch (data.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.create(data)
+                return await this.dependencies.instantiableCloudDevice.create(data)
             case 'device':
-                return await concreteDeviceRepository.create(data)
+                return await this.dependencies.concreteDevice.create(data)
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.create(data)
+                return await this.dependencies.instantiableBrowserDevice.create(data)
             case 'group':
-                return await deviceGroupRepository.create(data)
+                return await this.dependencies.deviceGroup.create(data)
         }
     }
 
     async write(model: DeviceModel, data: DeviceUpdate<'request'>): Promise<void> {
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
+
         switch (model.type) {
             case 'cloud instantiable':
                 if (data.type !== model.type)
@@ -56,69 +80,74 @@ export class DeviceRepository extends AbstractRepository<
                         `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
                         400
                     )
-                return await instantiableCloudDeviceRepository.write(model, data)
+                return await this.dependencies.instantiableCloudDevice.write(model, data)
             case 'device':
                 if (data.type !== model.type)
                     throw new InvalidValueError(
                         `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
                         400
                     )
-                return await concreteDeviceRepository.write(model, data)
+                return await this.dependencies.concreteDevice.write(model, data)
             case 'edge instantiable':
                 if (data.type !== model.type)
                     throw new InvalidValueError(
                         `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
                         400
                     )
-                return await instantiableBrowserDeviceRepository.write(model, data)
+                return await this.dependencies.instantiableBrowserDevice.write(
+                    model,
+                    data
+                )
             case 'group':
                 if (data.type !== model.type)
                     throw new InvalidValueError(
                         `Model of type ${model.type} cannot be updated with data of type ${data.type}`,
                         400
                     )
-                return await deviceGroupRepository.write(model, data)
+                return await this.dependencies.deviceGroup.write(model, data)
         }
     }
 
     async format(
         model: DeviceModel,
-        options?: { flatGroup?: boolean }
+        options?: { flat_group?: boolean; execute_for?: string }
     ): Promise<Device<'response'>> {
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
+
         switch (model.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.format(model)
+                return await this.dependencies.instantiableCloudDevice.format(model)
             case 'device':
-                return await concreteDeviceRepository.format(model)
+                return await this.dependencies.concreteDevice.format(model)
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.format(model)
+                return await this.dependencies.instantiableBrowserDevice.format(model)
             case 'group':
-                return await deviceGroupRepository.format(model, options?.flatGroup)
+                return await this.dependencies.deviceGroup.format(model, options)
         }
     }
 
     async save(model: DeviceModel): Promise<DeviceModel> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
         switch (model.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.save(model)
+                return await this.dependencies.instantiableCloudDevice.save(model)
             case 'device':
-                return await concreteDeviceRepository.save(model)
+                return await this.dependencies.concreteDevice.save(model)
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.save(model)
+                return await this.dependencies.instantiableBrowserDevice.save(model)
             case 'group':
-                return await deviceGroupRepository.save(model)
+                return await this.dependencies.deviceGroup.save(model)
         }
     }
 
     async find(
         options?: FindManyOptions<DeviceModel> | undefined
     ): Promise<DeviceModel[]> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
         const foundDevices = []
-        const deviceOverviews = await deviceOverviewRepository.find(options)
+        const deviceOverviews = await this.dependencies.deviceOverview.find(options)
 
         const deviceTypes = [
             'device',
@@ -128,10 +157,10 @@ export class DeviceRepository extends AbstractRepository<
         ] as const
 
         const repositoryMapping = {
-            'device': concreteDeviceRepository,
-            'group': deviceGroupRepository,
-            'edge instantiable': instantiableBrowserDeviceRepository,
-            'cloud instantiable': instantiableCloudDeviceRepository,
+            'device': this.dependencies.concreteDevice,
+            'group': this.dependencies.deviceGroup,
+            'edge instantiable': this.dependencies.instantiableBrowserDevice,
+            'cloud instantiable': this.dependencies.instantiableCloudDevice,
         } as const
 
         for (const type of deviceTypes) {
@@ -154,71 +183,71 @@ export class DeviceRepository extends AbstractRepository<
     }
 
     async findOne(options: FindOneOptions<DeviceModel>): Promise<DeviceModel | null> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
-        const deviceOverview = await deviceOverviewRepository.findOne(options)
+        const deviceOverview = await this.dependencies.deviceOverview.findOne(options)
 
         if (!deviceOverview) return null
 
         switch (deviceOverview.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.findOne({
+                return await this.dependencies.instantiableCloudDevice.findOne({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'device':
-                return await concreteDeviceRepository.findOne({
+                return await this.dependencies.concreteDevice.findOne({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.findOne({
+                return await this.dependencies.instantiableBrowserDevice.findOne({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'group':
-                return await deviceGroupRepository.findOne({
+                return await this.dependencies.deviceGroup.findOne({
                     where: { uuid: deviceOverview.uuid },
                 })
         }
     }
 
     async findOneOrFail(options: FindOneOptions<DeviceModel>): Promise<DeviceModel> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
-        const deviceOverview = await deviceOverviewRepository.findOneOrFail(options)
+        const deviceOverview = await this.dependencies.deviceOverview.findOneOrFail(
+            options
+        )
 
         switch (deviceOverview.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.findOneOrFail({
+                return await this.dependencies.instantiableCloudDevice.findOneOrFail({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'device':
-                return await concreteDeviceRepository.findOneOrFail({
+                return await this.dependencies.concreteDevice.findOneOrFail({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.findOneOrFail({
+                return await this.dependencies.instantiableBrowserDevice.findOneOrFail({
                     where: { uuid: deviceOverview.uuid },
                 })
             case 'group':
-                return await deviceGroupRepository.findOneOrFail({
+                return await this.dependencies.deviceGroup.findOneOrFail({
                     where: { uuid: deviceOverview.uuid },
                 })
         }
     }
 
     async remove(model: DeviceModel): Promise<void> {
-        if (!this.isInitialized) this.throwUninitializedRepositoryError()
+        if (!this._isInitialized()) this.throwUninitializedRepositoryError()
 
         switch (model.type) {
             case 'cloud instantiable':
-                return await instantiableCloudDeviceRepository.remove(model)
+                return await this.dependencies.instantiableCloudDevice.remove(model)
             case 'device':
-                return await concreteDeviceRepository.remove(model)
+                return await this.dependencies.concreteDevice.remove(model)
             case 'edge instantiable':
-                return await instantiableBrowserDeviceRepository.remove(model)
+                return await this.dependencies.instantiableBrowserDevice.remove(model)
             case 'group':
-                return await deviceGroupRepository.remove(model)
+                return await this.dependencies.deviceGroup.remove(model)
         }
     }
 }
-
-export const deviceRepository = new DeviceRepository()

@@ -1,6 +1,5 @@
+import { repositories } from '../../src/database/dataSource'
 import { DeviceModel, PeerconnectionModel } from '../../src/database/model'
-import { deviceRepository } from '../../src/database/repositories/device'
-import { peerconnectionRepository } from '../../src/database/repositories/peerconnection'
 import {
     changedCallbacks,
     closedCallbacks,
@@ -38,6 +37,7 @@ export default () =>
                 availabilityRules: [],
                 connected: false,
                 services: [],
+                isPublic: true,
             }
             TEST_PEERCONNECTION_MODEL = {
                 uuid: 'ea2a852d-b16c-45e0-819f-0af793bb596e',
@@ -66,7 +66,7 @@ export default () =>
                         JSON.stringify({
                             callbackType: 'event',
                             eventType: 'device-changed',
-                            device: await deviceRepository.format(TEST_DEVICE_MODEL),
+                            device: await repositories.device.format(TEST_DEVICE_MODEL),
                         })
                 )
                 const headers = fetchStub.args[i][1]?.headers
@@ -85,7 +85,7 @@ export default () =>
                         JSON.stringify({
                             callbackType: 'event',
                             eventType,
-                            peerconnection: await peerconnectionRepository.format(
+                            peerconnection: await repositories.peerconnection.format(
                                 TEST_PEERCONNECTION_MODEL
                             ),
                         })
@@ -129,7 +129,7 @@ export default () =>
 
                 await sendChangedCallback(TEST_DEVICE_MODEL)
 
-                assert(fetchStub.callCount === CALLBACK_URLS.length)
+                assert.strictEqual(fetchStub.callCount, CALLBACK_URLS.length)
                 assert(
                     JSON.stringify(changedCallbacks.get(TEST_DEVICE_MODEL.uuid)) ===
                         JSON.stringify(CALLBACK_URLS)
@@ -154,7 +154,7 @@ export default () =>
 
                 await sendChangedCallback(TEST_DEVICE_MODEL)
 
-                assert(fetchStub.callCount === CALLBACK_URLS.length)
+                assert.strictEqual(fetchStub.callCount, CALLBACK_URLS.length)
                 assert(
                     JSON.stringify(changedCallbacks.get(TEST_DEVICE_MODEL.uuid)) ===
                         JSON.stringify([CALLBACK_URLS[1]])

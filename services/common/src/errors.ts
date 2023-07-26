@@ -52,11 +52,11 @@ export class ForbiddenOperationError extends ErrorWithStatus {
  * This error class should be used if an operation is impossible.
  */
 export class ImpossibleOperationError extends ErrorWithStatus {
-    constructor(message: string, status?: number) {
-      super(message, status);
-      this.name = 'ImpossibleOperationError';
-    }
+  constructor(message: string, status?: number) {
+    super(message, status);
+    this.name = 'ImpossibleOperationError';
   }
+}
 
 /**
  * This error class should be used if an object contains an invalid value.
@@ -145,5 +145,15 @@ export class UninitializedRepositoryError extends ErrorWithStatus {
   constructor(message: string) {
     super(message, 500);
     this.name = 'UninitializedRepositoryError';
+  }
+}
+
+/**
+ * This error class should be used when an user is not the owner of a device.
+ */
+export class DeviceOwnershipError extends ErrorWithStatus {
+  constructor() {
+    super(`User is not the owner of the device and does not have further permission`, 403);
+    this.name = 'OwnershipError';
   }
 }

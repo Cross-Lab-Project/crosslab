@@ -1,5 +1,5 @@
+import { repositories } from '../../src/database/dataSource'
 import { UserModel } from '../../src/database/model'
-import { userRepository } from '../../src/database/repositories/userRepository'
 import {
     getAllowlistedUser,
     parseAllowlist,
@@ -65,7 +65,7 @@ export default () =>
             let ALLOWLIST: AllowlistEntry[]
 
             this.beforeAll(function () {
-                findUserStub = sinon.stub(userRepository, 'findOne')
+                findUserStub = sinon.stub(repositories.user, 'findOne')
                 loggerLogStub = sinon.stub(logger, 'log')
                 TOKEN = 'test-token'
                 USERNAME = 'username'
@@ -115,7 +115,7 @@ export default () =>
             let ALLOWLIST_ENTRY: AllowlistEntry
 
             this.beforeAll(function () {
-                findUserStub = sinon.stub(userRepository, 'findOne')
+                findUserStub = sinon.stub(repositories.user, 'findOne')
                 TOKEN = 'test-token'
                 USERNAME = 'username'
                 ALLOWLIST_ENTRY = {
@@ -173,7 +173,7 @@ export default () =>
             let USERNAME: string
 
             this.beforeAll(function () {
-                findUserStub = sinon.stub(userRepository, 'findOne')
+                findUserStub = sinon.stub(repositories.user, 'findOne')
                 TOKEN = 'test-token'
                 USERNAME = 'username'
             })

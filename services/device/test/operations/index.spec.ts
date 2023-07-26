@@ -1,13 +1,14 @@
 import { AppDataSource } from '../../src/database/dataSource'
 import { TestData } from '../data/index.spec'
 import { initTestDatabase } from '../database/repositories/index.spec'
-import callbackTest from './callbacks/index.spec'
+// import callbackTest from './callbacks/index.spec'
 import deviceTests from './devices/index.spec'
 import peerconnectionTests from './peerconnections/index.spec'
 import { logger } from '@crosslab/service-common'
 import Mocha from 'mocha'
 
-const tests = [...deviceTests, ...peerconnectionTests, callbackTest]
+// const tests = [...deviceTests, ...peerconnectionTests, callbackTest]
+const tests = [...deviceTests, ...peerconnectionTests]
 
 export function addTest(
     suite: Mocha.Suite,

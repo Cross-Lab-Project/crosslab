@@ -1,4 +1,4 @@
-import { userRepository } from '../../../../src/database/repositories/userRepository'
+import { repositories } from '../../../../src/database/dataSource'
 import { deleteUsersByUserId } from '../../../../src/operations/users'
 import { TestData } from '../../../data/index.spec'
 import { userNames } from '../../../data/userData.spec'
@@ -19,7 +19,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 )
                 assert(result.status === 204)
                 assert(
-                    !(await userRepository.findOne({
+                    !(await repositories.user.findOne({
                         where: {
                             uuid: userModel.uuid,
                         },
