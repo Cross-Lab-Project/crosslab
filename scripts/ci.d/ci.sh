@@ -13,6 +13,7 @@ SKIP_UPLOAD=true
 SKIP_DOWNLOAD=false
 CLEAN=false
 DEV_VERSION=true
+SKIP_HOUSEKEEPING=false
 
 SUBCOMMANDVARS=""
 
@@ -101,6 +102,11 @@ while [[ $# -gt 0 ]]; do
       fi
       shift # past argument
       shift # past value
+      ;;
+
+    --skip-housekeeping)
+      SKIP_HOUSEKEEPING=true
+      shift
       ;;
 
     --clean)
@@ -326,7 +332,7 @@ while true; do
   break
 done
 
-if [ -z "$TAGS" ]; then
+if [ -z "$TAGS" ] && [ SKIP_HOUSEKEEPING = false ]; then
   echo_start "${BLUE}> Housekeeping${NC}"
   set +e
   ($SCRIPT_DIR/../housekeeping.sh --check > /dev/null 2>&1); exit_code=$?

@@ -1,5 +1,5 @@
 import WebSocket from 'isomorphic-ws';
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 import {
   ClosePeerConnectionMessage,
@@ -11,9 +11,9 @@ import {
   isCreatePeerConnectionMessage,
   isSignalingMessage,
 } from './deviceMessages';
-import {PeerConnection} from './peer/connection';
-import {WebRTCPeerConnection} from './peer/webrtc-connection';
-import {Service} from './service';
+import { PeerConnection } from './peer/connection';
+import { WebRTCPeerConnection } from './peer/webrtc-connection';
+import { Service } from './service';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
@@ -24,7 +24,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
 
-  async connect(connectOptions: {endpoint: string; id: string; token: string}) {
+  async connect(connectOptions: { endpoint: string; id: string; token: string }) {
     this.ws = new WebSocket(connectOptions.endpoint);
 
     this.ws.onopen = () => {
@@ -86,9 +86,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     }
     console.log('creating connection', message);
     const connection = new WebRTCPeerConnection(
-      {} /*{
-      iceServers: [{urls: 'stun:stun.goldi-labs.de:3478'}, {urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi'}],
-    }*/,
+      {
+        iceServers: [{ urls: 'stun:stun.goldi-labs.de:3478' }, { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' }],
+      },
     );
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);

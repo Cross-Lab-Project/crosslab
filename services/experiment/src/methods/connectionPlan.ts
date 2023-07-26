@@ -89,7 +89,7 @@ export function buildConnectionPlan(
 function sortServiceParticipantsByDeviceId(
     serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] }
 ) {
-    const swap = serviceConfig.devices[0] > serviceConfig.devices[1]
+    const swap = serviceConfig.devices[0].uuid > serviceConfig.devices[1].uuid
     return {
         ...serviceConfig,
         participants: swap

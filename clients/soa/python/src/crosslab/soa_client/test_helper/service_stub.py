@@ -10,7 +10,7 @@ from crosslab.soa_client.service import Service
 
 class ServiceStub(Service):
     service_type: str
-    service_direction: Literal["in", "out", "inout"]
+    service_direction: Literal["producer", "consumer", "prosumer"]
     service_id: str
 
     _hasOutgoingTrack: bool
@@ -47,14 +47,14 @@ class ServiceStub(Service):
         self._hasDataChannel = dataChannel
 
         if (self._hasOutgoingTrack and self._hasIncoumingTrack) or self._hasDataChannel:
-            self.service_direction = "inout"
+            self.service_direction = "prosumer"
         elif self._hasIncoumingTrack:
-            self.service_direction = "in"
+            self.service_direction = "consumer"
         elif self._hasOutgoingTrack:
-            self.service_direction = "out"
+            self.service_direction = "producer"
 
         if self._hasOutgoingTrack:
-            self.service_direction = "out"
+            self.service_direction = "producer"
             self._outgoingTrack = outTrack
 
         if self._hasIncoumingTrack:

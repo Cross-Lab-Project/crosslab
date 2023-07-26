@@ -6,6 +6,7 @@ from aiortc import (  # type: ignore
     RTCConfiguration,
     RTCPeerConnection,
     RTCSessionDescription,
+    RTCIceServer,
 )
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
@@ -35,13 +36,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     def __init__(self):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
-        # config = RTCConfiguration(
-        #     [
-        #         RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-        #         RTCIceServer(urls="turn:turn.goldi-labs.de:3478"),
-        #     ]
-        # ) # // see issue #5
-        config = RTCConfiguration([])
+        config = RTCConfiguration(
+            [
+                RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
+                RTCIceServer(urls="turn:turn.goldi-labs.de:3478", username="goldi", credential="goldi"),
+            ]
+        )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
@@ -194,6 +194,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         print("makeAnswer")
         await self.pc.setRemoteDescription(offer)
         self._matchMediaChannels()
+        await self.pc.setRemoteDescription(offer)
         answer = await self.pc.createAnswer()
         assert answer is not None  # TODO: handle this
         await self.pc.setLocalDescription(answer)
@@ -251,6 +252,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             if channel.track:
                 direction = "sendonly"
                 transeiver.sender.replaceTrack(channel.track)
+                videoPreference = filter(
+                    lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
+                )
+                transeiver.setCodecPreferences(list(videoPreference))
 
             if channel.emit("track", transeiver.receiver.track):
                 direction = "sendrecv" if direction == "sendonly" else "recvonly"

@@ -126,11 +126,11 @@ export function websocketHandling(app: Express.Application) {
 
                 // close handler: stop heartbeat and disconnect device
                 ws.on('close', async (code, reason) => {
-                    clearInterval(interval)
                     deviceModel.connected = false
                     await repositories.concreteDevice.save(deviceModel)
                     await sendChangedCallback(deviceModel)
                     connectedDevices.delete(deviceModel.uuid)
+                    clearInterval(interval)
 
                     logger.log(
                         'info',

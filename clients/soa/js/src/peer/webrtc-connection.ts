@@ -7,7 +7,6 @@ bundlePolicy: "max-compat", // transport every stream over a seperate connection
       //peerIdentity: , // target peer identity / security consideration
       rtcpMuxPolicy: "require",
 */
-import * as sdpTransform from 'sdp-transform';
 import {TypedEmitter} from 'tiny-typed-emitter';
 
 import {SignalingMessage} from '../deviceMessages';
@@ -16,7 +15,7 @@ import {Channel, MediaChannel} from './channel';
 import {PeerConnection, PeerConnectionEvents, ServiceConfig} from './connection';
 
 const log = console;
-log.trace = log.debug;
+log.trace = log.log;
 
 interface RTCSignalingCandidateMessage extends SignalingMessage {
   signalingType: 'candidate';
@@ -76,7 +75,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   private onicecandidate(event: RTCPeerConnectionIceEvent) {
     if (event.candidate && trickleIce) {
       this.sendIceCandidate(event.candidate);
-    } else {
+    } else if(!event.candidate && !trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -250,7 +249,6 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     const iceCandidatePromise = new Promise<void>(resolve => {
       this.iceCandidateResolver = resolve;
     });
-    this.iceCandidateResolver;
     log.trace('WebRTCPeerConnection.makeOffer called');
     let offer = await this.pc.createOffer();
     log.trace('WebRTCPeerConnection.makeOffer created offer', {offer});
@@ -345,8 +343,9 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   private modifySDP(sdpString: string): string {
     log.trace('WebRTCPeerConnection.modifySDP called', {sdpString});
-    const sdp = sdpTransform.parse(sdpString);
-    log.trace('WebRTCPeerConnection.modifySDP parsed SDP', {sdp});
+    const sections= sdpString.split('\r\nm=');
+    const midRegex = /a=mid:(\S)/gm;
+    const msidRegex = /(a=msid:- )\S*/gm;
 
     // Update the "a=msid" attribute from the video stream with the right label from the transeiverMap.
     for (const transeiver of this.transeiverMap.keys()) {
@@ -356,20 +355,24 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         mid: transeiver.mid,
         label,
       });
-      const media = sdp.media.find(m => m.mid == transeiver.mid);
-      if (media) {
-        if (!media.msid) {
+      const sectionIdx = sections.findIndex(m => {
+        const result=midRegex.exec(m)
+        return result && result[1] === transeiver.mid;
+      });
+      if (sectionIdx!== -1) {
+        const modifiedSection = sections[sectionIdx].replace(msidRegex, '$1' + label);
+      
+        if (modifiedSection===sections[sectionIdx]) {
           log.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {transeiver});
         } else {
-          media.msid = media.msid.split(' ')[0] + ' ' + label;
+          sections[sectionIdx]=modifiedSection;
         }
       } else {
         log.error('WebRTCPeerConnection.modifySDP no media found for transeiver', {transeiver});
       }
     }
 
-    log.trace('WebRTCPeerConnection.modifySDP modified SDP:', {sdp});
-    sdpString = sdpTransform.write(sdp);
+    sdpString = sections.join('\r\nm=');
     log.trace('WebRTCPeerConnection.modifySDP returns', {sdpString});
     return sdpString;
   }
