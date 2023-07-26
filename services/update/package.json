@@ -14,6 +14,7 @@
         "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
         "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
         "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
+        "build:generate": "npm-run-all build:generate:*",
         "build:compile": "tsc",
         "build": "npm-run-all build:*",
         "start": "node app/index.js",
