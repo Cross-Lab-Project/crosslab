@@ -1,0 +1,1 @@
+../../../common/node/scripts/add-shebang.sh

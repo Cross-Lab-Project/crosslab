@@ -1,4 +1,4 @@
-import { AppDataSource } from '../../src/database/dataSource'
+import { initTestDatabase } from '../database/repositories/index.spec'
 import availabilitySpec from './availability.spec'
 import callbacksSpec from './callbacks.spec'
 // import signalingSpec from './signaling.spec'
@@ -10,7 +10,7 @@ const tests = [availabilitySpec, callbacksSpec, urlFromIdSpec]
 
 describe('Methods', function () {
     this.beforeAll(async function () {
-        await AppDataSource.initialize()
+        await initTestDatabase()
         logger.transports.forEach((transport) => (transport.silent = true))
     })
 

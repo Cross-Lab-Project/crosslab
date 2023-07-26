@@ -1,4 +1,4 @@
-import { AppDataSource } from '../data_source'
+import { AppDataSource } from '../database/dataSource'
 import {
     getProxySignature,
     postProxySignature,

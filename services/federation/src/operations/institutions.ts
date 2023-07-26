@@ -1,15 +1,21 @@
-import { MissingEntityError, InconsistentDatabaseError } from "@crosslab/service-common"
-import { AppDataSource } from "../data_source"
-import { getInstitutionsSignature, postInstitutionsSignature, getInstitutionsByInstitutionIdSignature, patchInstitutionsByInstitutionIdSignature, deleteInstitutionsByInstitutionIdSignature } from "../generated/signatures"
-import { formatInstitution } from "../methods/format"
-import { writeInstitution } from "../methods/write"
-import { InstitutionModel } from "../model"
+import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
+import { AppDataSource } from '../database/dataSource'
+import {
+    getInstitutionsSignature,
+    postInstitutionsSignature,
+    getInstitutionsByInstitutionIdSignature,
+    patchInstitutionsByInstitutionIdSignature,
+    deleteInstitutionsByInstitutionIdSignature,
+} from '../generated/signatures'
+import { formatInstitution } from '../methods/format'
+import { writeInstitution } from '../methods/write'
+import { InstitutionModel } from '../model'
 
 /**
  * This function implements the functionality for handling GET requests on /institutions endpoint.
  * @param _user The user submitting the request.
  */
- export const getInstitutions: getInstitutionsSignature = async (_user) => {
+export const getInstitutions: getInstitutionsSignature = async (_user) => {
     const institutionRepository = AppDataSource.getRepository(InstitutionModel)
     const institutions = await institutionRepository.find()
     return {

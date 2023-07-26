@@ -1,3 +1,10 @@
+const DB_COMMON = {
+  DB_HOST: 'localhost',
+  DB_PORT: '3306',
+  DB_USERNAME: 'service',
+  DB_PASSWORD: 'service',
+};
+
 export const ENV = {
   common: {
     SECURITY_ISSUER: 'http://localhost',
@@ -15,18 +22,26 @@ export const ENV = {
       'federationservice:local:federationservice',
     ].join(','),
     API_TOKEN: 'authservice',
+    DB_NAME: 'auth_service',
+    ...DB_COMMON,
   },
   device: {
     PORT: '3001',
     API_TOKEN: 'deviceservice',
+    DB_NAME: 'device_service',
+    ...DB_COMMON,
   },
   experiment: {
     PORT: '3002',
     API_TOKEN: 'experimentservice',
+    DB_NAME: 'experiment_service',
+    ...DB_COMMON,
   },
   federation: {
     PORT: '3003',
     API_TOKEN: 'federationservice',
+    DB_NAME: 'federation_service',
+    ...DB_COMMON,
   },
   gateway: {
     AUTH_SERVICE_URL: '127.0.0.1:3000',

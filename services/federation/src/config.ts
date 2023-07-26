@@ -1,5 +1,8 @@
 import { logger } from '@crosslab/service-common'
 import { exit } from 'process'
+import { InstitutionModel } from './model'
+import { Migrations } from './database/migrations'
+import { DataSourceOptions } from 'typeorm'
 
 function die(reason: string): string {
     logger.log('error', reason)
@@ -17,4 +20,16 @@ export const config = {
     SECURITY_AUDIENCE:
         process.env.SECURITY_AUDIENCE ??
         die('the environment variable SECURITY_AUDIENCE is not defined!'),
+}
+
+export const dataSourceConfig: DataSourceOptions = {
+    type: 'mariadb',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT ?? '3306'),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    migrations: [...Migrations],
+    migrationsRun: true,
+    entities: [InstitutionModel],
 }

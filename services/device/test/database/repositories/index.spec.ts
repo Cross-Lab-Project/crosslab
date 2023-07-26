@@ -1,5 +1,4 @@
 import { AppDataSource, repositories } from '../../../src/database/dataSource'
-import { Migrations } from '../../../src/database/migrations'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -58,8 +57,7 @@ export async function initTestDatabase(): Promise<TestData> {
             DeviceGroupModel,
             PeerconnectionModel,
         ],
-        migrations: Migrations,
-        migrationsRun: true,
+        synchronize: true,
     }
 
     const testData = prepareTestData()
