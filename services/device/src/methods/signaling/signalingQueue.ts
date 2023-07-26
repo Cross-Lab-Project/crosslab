@@ -17,7 +17,7 @@ export class SignalingQueue {
         | 'peerconnection-created'
         | 'peerconnection-closed' = 'new'
     private _isStopped = false
-    public _onClose: () => void
+    private _onClose: () => void
 
     constructor(peerconnectionUrl: string, deviceUrl: string) {
         this.deviceUrl = deviceUrl
@@ -44,6 +44,7 @@ export class SignalingQueue {
 
     public set onClose(onClose: (() => void) | undefined) {
         this._onClose = () => {
+            this._state = 'peerconnection-closed'
             this.queue.end()
             if (onClose) onClose()
         }

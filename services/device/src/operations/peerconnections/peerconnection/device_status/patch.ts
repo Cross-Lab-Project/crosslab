@@ -3,7 +3,6 @@ import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../
 import { mutexManager } from '../../../../methods/mutexManager'
 import { peerconnectionUrlFromId } from '../../../../methods/urlFromId'
 import { sendClosedCallback, sendStatusChangedCallback } from '../../../callbacks'
-import { deleteOnClose } from '../delete'
 import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common'
 
 /**
@@ -87,24 +86,16 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
                     await sendClosedCallback(peerconnectionModel)
             }
 
-            logger.log('info', 'DEVICE STATUS INFO', {
+            logger.log('info', 'peerconnection devices status info', {
                 data: {
                     peerconnection: peerconnectionModel.uuid,
                     statusDeviceA: peerconnectionModel.deviceA.status,
                     statusDeviceB: peerconnectionModel.deviceB.status,
-                    toBeDeleted: deleteOnClose.has(peerconnectionModel.uuid),
                 },
             })
 
-            if (
-                peerconnectionModel.deviceA.status === 'closed' &&
-                peerconnectionModel.deviceB.status === 'closed' &&
-                deleteOnClose.has(peerconnectionModel.uuid)
-            ) {
-                await repositories.peerconnection.remove(peerconnectionModel)
-            } else {
-                await repositories.peerconnection.save(peerconnectionModel)
-            }
+            await repositories.peerconnection.save(peerconnectionModel)
+
             logger.log(
                 'info',
                 'patchPeerconnectionsByPeerconnectionIdDeviceStatus succeeded'

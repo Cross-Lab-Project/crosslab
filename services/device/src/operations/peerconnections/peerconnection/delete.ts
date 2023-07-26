@@ -1,10 +1,7 @@
 import { repositories } from '../../../database/dataSource'
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
 import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
-import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
 import { logger } from '@crosslab/service-common'
-
-export const deleteOnClose: Set<string> = new Set()
 
 /**
  * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
@@ -19,35 +16,13 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
             where: { uuid: parameters.peerconnection_id },
         })
 
-        if (
-            peerconnectionModel.deviceA.status === 'closed' &&
-            peerconnectionModel.deviceB.status === 'closed'
-        ) {
-            signalingQueueManager.setOnCloseHandler(
-                peerconnectionModel.uuid,
-                async () => {
-                    try {
-                        await repositories.peerconnection.remove(peerconnectionModel)
-                    } catch (error) {
-                        logger.log(
-                            'error',
-                            `Something went wrong while trying to delete peerconnection '${peerconnectionUrlFromId(
-                                peerconnectionModel.uuid
-                            )}'`,
-                            { data: { error } }
-                        )
-                    }
-                }
-            )
-            signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
-        } else {
-            deleteOnClose.add(peerconnectionModel.uuid)
-            signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
-        }
+        await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
+
+        await repositories.peerconnection.remove(peerconnectionModel)
 
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded')
 
         return {
-            status: 202,
+            status: 204,
         }
     }

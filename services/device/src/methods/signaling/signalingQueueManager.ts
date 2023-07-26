@@ -184,7 +184,7 @@ export class SignalingQueueManager {
         )
     }
 
-    public closeSignalingQueues(peerconnectionId: string) {
+    public async closeSignalingQueues(peerconnectionId: string) {
         const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId)
         const queues = this.queueMap.get(peerconnectionUrl)
 
@@ -201,13 +201,29 @@ export class SignalingQueueManager {
             connectionUrl: peerconnectionUrl,
         }
 
-        if (queues.deviceA.queue.state === 'new' && queues.deviceA.queue.onClose)
-            queues.deviceA.queue.onClose()
-        else queues.deviceA.queue.add(closePeerconnectionMessage)
+        const promiseA = new Promise<void>((resolve) => {
+            const originalOnClose = queues.deviceA.queue.onClose
+            queues.deviceA.queue.onClose = () => {
+                if (originalOnClose) originalOnClose()
+                resolve()
+            }
+            if (queues.deviceA.queue.state === 'new' && queues.deviceA.queue.onClose)
+                queues.deviceA.queue.onClose()
+            else queues.deviceA.queue.add(closePeerconnectionMessage)
+        })
 
-        if (queues.deviceB.queue.state === 'new' && queues.deviceB.queue.onClose)
-            queues.deviceB.queue.onClose()
-        else queues.deviceB.queue.add(closePeerconnectionMessage)
+        const promiseB = new Promise<void>((resolve) => {
+            const originalOnClose = queues.deviceB.queue.onClose
+            queues.deviceB.queue.onClose = () => {
+                if (originalOnClose) originalOnClose()
+                resolve()
+            }
+            if (queues.deviceB.queue.state === 'new' && queues.deviceB.queue.onClose)
+                queues.deviceB.queue.onClose()
+            else queues.deviceB.queue.add(closePeerconnectionMessage)
+        })
+
+        return Promise.all([promiseA, promiseB])
     }
 }
 

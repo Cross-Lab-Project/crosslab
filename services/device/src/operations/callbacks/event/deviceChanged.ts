@@ -11,7 +11,6 @@ import { signalingQueueManager } from '../../../methods/signaling/signalingQueue
 export async function handleDeviceChangedEventCallback(
     callback: DeviceChangedEventCallback
 ): Promise<200 | 410> {
-    console.log(callback.device.type)
     switch (callback.device.type) {
         case 'device':
             return await handleConcreteDevice(callback.device)
