@@ -37,6 +37,7 @@ export default () =>
                 availabilityRules: [],
                 connected: false,
                 services: [],
+                isPublic: true,
             }
             TEST_PEERCONNECTION_MODEL = {
                 uuid: 'ea2a852d-b16c-45e0-819f-0af793bb596e',

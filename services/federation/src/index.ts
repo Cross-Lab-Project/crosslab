@@ -1,6 +1,5 @@
-#!/usr/bin/env node
 import { config } from './config'
-import { AppDataSource } from './data_source'
+import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
 import { isUserTypeJWT } from './generated/types'
 import {

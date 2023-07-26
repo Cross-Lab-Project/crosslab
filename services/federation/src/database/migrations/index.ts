@@ -1,3 +1,3 @@
-import { SetupMigration1684337775585 } from './1684337775585-SetupMigration'
+import { Setup1690372749445 } from './1690372749445-Setup'
 
-export const Migrations = [SetupMigration1684337775585]
+export const Migrations = [Setup1690372749445]

@@ -20,6 +20,7 @@
         "build:add-shebang": "bash scripts/add-shebang.sh",
         "build": "npm-run-all build:*",
         "start": "node app/index.js",
+        "predev": "bash scripts/init-db.sh auth_service service service",
         "dev": "env-cmd -e development npx nodemon src/index.ts",
         "format:src": "npx prettier src --write",
         "format:test": "npx prettier test --write",

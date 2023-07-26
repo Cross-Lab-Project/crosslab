@@ -14,6 +14,10 @@ describe('Methods', function () {
         logger.transports.forEach((transport) => (transport.silent = true))
     })
 
+    this.afterAll(async function () {
+        await AppDataSource.teardown()
+    })
+
     for (const test of tests) {
         test()
     }
