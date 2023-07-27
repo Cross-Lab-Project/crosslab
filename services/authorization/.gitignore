@@ -1,0 +1,11 @@
+dist/*
+src/generated
+node_modules
+.npmrc
+*.db
+package.resolved.json
+.packages
+app
+.nyc_output
+coverage
+test/generated

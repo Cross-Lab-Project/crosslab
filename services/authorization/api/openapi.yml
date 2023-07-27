@@ -1,0 +1,154 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab Simple Authorization Service (internal)
+  description: |-
+    This is the OpenAPI description for a simple authentification server, supporting LDAP and Token based authentication.
+  version: 0.0.1
+  x-service-name: Authentication Service
+
+components:
+  securitySchemes:
+    # TuiAuth:
+    #   type: http
+    #   scheme: basic
+    #   description: Basic authentication using the TUI username and password.
+    # AccessToken:
+    #   type: http
+    #   scheme: bearer
+    #   description: A token for user authentication.
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+paths:
+  /authorize:
+    put:
+      operationId: authorize
+      x-internal: true
+      tags:
+        - authorize
+      security: []
+      summary: Make an authorization decision
+      description: |-
+        This endpoint will make an authorization decision based on the given input.
+      requestBody:
+        description: Authorization request.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                  description: The subject of the authorization request. This can either be a fully qualified subject (e.g. user:https://api.goldi-labs.de/user/1) or an encoded JWT token.
+                action:
+                  type: string
+                  description: The action of the authorization request.
+                object:
+                  type: string
+                  description: The object of the authorization request.
+      responses:
+        200:
+          description: Policy evaluation result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: boolean
+                    description: The result of the policy evaluation.
+                  reason:
+                    type: string
+                    description: The reason for the policy evaluation result.
+  /relations/query:
+    put:
+      operationId: queryRelations
+      x-internal: true
+      tags:
+        - authorize
+      security: []
+      summary: Get relations
+      description: |-
+        This endpoint will return the relations satisfying the given query.
+
+        This will be resolved by OpenFGA. So the follwing restrictions from (https://openfga.dev/api/service#/Relationship%20Tuples/Read)[OpenFGA] apply:
+        - object is mandatory. It can either be a fully qualified object (e.g. device:https://api.goldi-labs.de/device/1) or just the type (e.g. device).
+        - subject is mandatory if object is just a type.
+      requestBody:
+        description: Query.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject:
+                  type: string
+                  description: The subject of the relation.
+                relation:
+                  type: string
+                  description: The relation between the subject and the object.
+                object:
+                  type: string
+                  description: The object of the relation.
+  /relations/update:
+    put:
+      operationId: updateRelations
+      x-internal: true
+      tags:
+        - authorize
+      security: []
+      summary: Update relations
+      description: |-
+        This endpoint will update the relations between the given subjects and objects.
+      requestBody:
+        description: Updated identity.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                        description: The subject of the relation.
+                      relation:
+                        type: string
+                        description: The relation between the subject and the object.
+                      object:
+                        type: string
+                        description: The object of the relation.
+                    required:
+                      - subject
+                      - relation
+                      - object
+                remove:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      subject:
+                        type: string
+                        description: The subject of the relation.
+                      relation:
+                        type: string
+                        description: The relation between the subject and the object.
+                      object:
+                        type: string
+                        description: The object of the relation.
+                    required:
+                      - subject
+                      - relation
+                      - object
+      responses:
+        201:
+          description: Relations updated.

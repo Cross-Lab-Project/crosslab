@@ -87,6 +87,26 @@ services/auth:
     dependencies:
       - services/auth:build
 
+services/authorization:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    dependencies:
+      - services/authorization:build-spec
+  - script: build
+    dependencies:
+      - services/common:build
+  - script: build-docker
+    dependencies:
+      - services/authorization:build
+  - script: lint
+    dependencies:
+      - services/authorization:build
+  - script: test
+    dependencies:
+      - services/authorization:build
+
 services/booking:
   - script: build-spec
   - script: lint-spec

@@ -1,0 +1,10 @@
+{
+    "$schema": "https://json.schemastore.org/prettierrc",
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 90,
+    "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+    "quoteProps": "consistent"
+}
