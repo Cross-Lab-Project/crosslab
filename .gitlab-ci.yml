@@ -23,7 +23,7 @@ workflow:
 #       RELEASE: '--release'
 
 build:
-  image: crosslab/devcontainer:build
+  image: crosslab/devcontainer:latest
   stage: build
   script:
     - ./scripts/ci.sh --upload --branch $BRANCH $RELEASE
