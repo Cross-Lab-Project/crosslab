@@ -2,7 +2,7 @@
 	"name": "Crosslab",
 	"build":{
 		"dockerfile": "Dockerfile",
-		"cacheFrom": "crosslab/crosslab-devcontainer",
+		"cacheFrom": "crosslab/crosslab-devcontainer"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
