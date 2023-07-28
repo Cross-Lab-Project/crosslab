@@ -23,9 +23,7 @@ workflow:
 #       RELEASE: '--release'
 
 build:
-  image:
-    name: crosslab/devcontainer:latest
-    pull_policy: always
+  image: crosslab/devcontainer:latest
   stage: build
   script:
     - ./scripts/ci.sh --upload --branch $BRANCH $RELEASE
