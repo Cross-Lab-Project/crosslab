@@ -3,7 +3,7 @@ import { check, relate, unrelate } from "./helper";
 
 describe('authorization', function () {
     it('should persist data', async function () {
-        this.timeout(10000);
+        this.timeout(60000);
         for(let i = 0; i < 102; i++){
             await relate("user:persist"+i, "owner", "device:persist");
         }

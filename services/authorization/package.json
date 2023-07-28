@@ -19,7 +19,7 @@
     "build": "tsc --project tsconfig.build.json",
     "dev": "npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
     "dev-test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --watch --watch-files test/*.ts -R list test/**/*.spec.ts",
-    "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --bail test/**/*.spec.ts"
+    "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts"
   },
   "dependencies": {
     "@crosslab/service-common": "file:../common",
