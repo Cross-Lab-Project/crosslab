@@ -3,3 +3,9 @@ export interface Tuple {
     relation: string,
     object: string
 }
+
+export interface CheckTuple {
+    subject: string,
+    action: string,
+    object: string
+}

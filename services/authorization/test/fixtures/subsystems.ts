@@ -14,4 +14,5 @@ export async function mochaGlobalTeardown() {
     opa_deinit()
     openfga_deinit()
 }
-  
+
+process.env['AUTHORIZATION_PSK'] = 'TestPSK'

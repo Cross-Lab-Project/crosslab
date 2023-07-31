@@ -4,6 +4,8 @@ import { ApplicationDataSource } from "./database/datasource";
 import app from "./app";
 import { openfga_init } from "./openfga";
 import { opa_init } from "./opa";
+import { config } from "./config";
+import { logger } from "@crosslab/service-common";
 
 
 async function initialize(){
@@ -11,6 +13,7 @@ async function initialize(){
     await opa_init()
     await openfga_init()
 
-    app.listen(3030, () => console.log('listening on port 3030'))
+    app.listen(config.PORT)
+    logger.log('info', 'Authorization Service started successfully')
 }
 initialize()

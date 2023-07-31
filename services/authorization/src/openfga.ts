@@ -28,7 +28,14 @@ export async function openfga_init(){
         readyPromiseResolve=resolve
     })
 
-    openfgaProcess=spawn('openfga', ['run', '--log-format', 'json', /*'--playground-enabled=false'*/ ], {stdio: ['ignore', 'pipe', 'pipe']});
+    openfgaProcess=spawn('openfga',
+        [
+            'run',
+            '--log-format', 'json',
+            '--playground-enabled=false',
+            '--grpc-addr', 'localhost:8081',
+            '--http-addr', 'localhost:8080'
+    ], {stdio: ['ignore', 'pipe', 'pipe']});
 
     readline.createInterface({
         input:openfgaProcess.stderr,
@@ -99,4 +106,27 @@ export async function update_relations(add: Tuple[], remove: Tuple[]){
             object: tuple.object,
         })),
     }, {transaction: {disable: true}})
+}
+
+export async function query_relations(subject: string | undefined, relation: string | undefined, object: string){
+    if (!object.includes(':')) object=object+':';
+    let tuples: Tuple[]=[]
+    let continuationToken: string | undefined = undefined
+    do{
+        const result = await fgaClient.read({
+            user: subject,
+            relation: relation,
+            object: object
+        }, {continuationToken})
+        const local_tuples = result.tuples?.map((tuple)=>({
+            subject: tuple.key!.user,
+            relation: tuple.key!.relation,
+            object: tuple.key!.object,
+        }))??[]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tuples=tuples.concat(local_tuples as any)
+        continuationToken=result.continuation_token === '' ? undefined : result.continuation_token
+    } while (continuationToken !== undefined)
+
+    return tuples
 }

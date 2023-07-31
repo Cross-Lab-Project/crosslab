@@ -27,7 +27,7 @@ components:
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 paths:
   /authorize:
-    put:
+    get:
       operationId: authorize
       x-internal: true
       tags:
@@ -36,22 +36,22 @@ paths:
       summary: Make an authorization decision
       description: |-
         This endpoint will make an authorization decision based on the given input.
-      requestBody:
-        description: Authorization request.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                subject:
-                  type: string
-                  description: The subject of the authorization request. This can either be a fully qualified subject (e.g. user:https://api.goldi-labs.de/user/1) or an encoded JWT token.
-                action:
-                  type: string
-                  description: The action of the authorization request.
-                object:
-                  type: string
-                  description: The object of the authorization request.
+      parameters:
+        - in: query
+          name: subject
+          schema:
+            type: string
+          description: The subject of the authorization request. This can either be a fully qualified subject (e.g. user:https://api.goldi-labs.de/user/1) or an encoded JWT token.
+        - in: query
+          name: action
+          schema:
+            type: string
+          description: The action of the authorization request.
+        - in: query
+          name: object
+          schema:
+            type: string
+          description: The object of the authorization request.
       responses:
         200:
           description: Policy evaluation result.
@@ -66,8 +66,51 @@ paths:
                   reason:
                     type: string
                     description: The reason for the policy evaluation result.
+    post:
+      operationId: authorize
+      x-internal: true
+      tags:
+        - authorize
+      security: []
+      summary: Make an authorization decision
+      description: |-
+        This endpoint will make an authorization decision based on the given input.
+      requestBody:
+        description: Authorization request.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  subject:
+                    type: string
+                    description: The subject of the authorization request. This can either be a fully qualified subject (e.g. user:https://api.goldi-labs.de/user/1) or an encoded JWT token.
+                  action:
+                    type: string
+                    description: The action of the authorization request.
+                  object:
+                    type: string
+                    description: The object of the authorization request.
+      responses:
+        200:
+          description: Policy evaluation result.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    result:
+                      type: boolean
+                      description: The result of the policy evaluation.
+                    reason:
+                      type: string
+                      description: The reason for the policy evaluation result.
   /relations/query:
-    put:
+    post:
       operationId: queryRelations
       x-internal: true
       tags:
@@ -96,8 +139,27 @@ paths:
                 object:
                   type: string
                   description: The object of the relation.
+      responses:
+        200:
+          description: Relations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    subject:
+                      type: string
+                      description: The subject of the relation.
+                    relation:
+                      type: string
+                      description: The relation between the subject and the object.
+                    object:
+                      type: string
+                      description: The object of the relation.
   /relations/update:
-    put:
+    post:
       operationId: updateRelations
       x-internal: true
       tags:
