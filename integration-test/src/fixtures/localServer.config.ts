@@ -51,6 +51,7 @@ export const ENV = {
     UPDATE_SERVICE_URL: '127.0.0.1:1',
     SERVER_NAME: 'localhost',
     NGINX_PID_PATH: 'nginx.pid',
+    NGINX_USER: 'www-data',
   },
   'booking-backend': {
     PORT: '3004',
