@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { RoleModel } from '../../../src/database/model'
-import {
-    roleRepository,
-    RoleRepository,
-} from '../../../src/database/repositories/roleRepository'
+import { RoleRepository } from '../../../src/database/repositories/roleRepository'
 import { Role } from '../../../src/generated/types'
 import { RoleName, roleNames } from '../../data/roleData.spec'
 import { initTestDatabase } from './index.spec'
@@ -18,7 +15,7 @@ class RoleRepositoryTestSuite extends AbstractRepositoryTestSuite<
     RoleRepository
 > {
     protected name = 'roles' as const
-    protected repository = roleRepository
+    protected repository = repositories.role
     protected getEntityData = async () => (await initTestDatabase())['roles']
     protected RepositoryClass = RoleRepository
 

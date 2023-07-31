@@ -1,30 +1,35 @@
 import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
 import { DeviceOverviewModel } from '../../model'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
 
-class DeviceOverviewRepository extends AbstractRepository<
+export class DeviceOverviewRepository extends AbstractRepository<
     DeviceOverviewModel,
     DeviceOverview<'request'>,
     DeviceOverview<'response'>
 > {
+    protected dependencies: Record<string, never> = {}
+
     constructor() {
         super('Device Overview')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(DeviceOverviewModel)
+    protected dependenciesMet(): boolean {
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(DeviceOverviewModel)
     }
 
     async write(
         model: DeviceOverviewModel,
         data: DeviceOverviewUpdate<'request'>
     ): Promise<void> {
-        if (data.name) model.name = data.name
-        if (data.description) model.description = data.description
+        if (data.name !== undefined) model.name = data.name
+        if (data.description !== undefined) model.description = data.description
+        if (data.isPublic !== undefined) model.isPublic = data.isPublic
     }
 
     async format(model: DeviceOverviewModel): Promise<DeviceOverview<'response'>> {
@@ -34,8 +39,7 @@ class DeviceOverviewRepository extends AbstractRepository<
             name: model.name,
             description: model.description ?? undefined,
             owner: model.owner,
+            isPublic: model.isPublic,
         }
     }
 }
-
-export const deviceOverviewRepository = new DeviceOverviewRepository()

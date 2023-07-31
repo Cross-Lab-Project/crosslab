@@ -1,28 +1,35 @@
 import { ActiveKey } from '../../types/types'
 import { ActiveKeyModel } from '../model'
-import { keyRepository } from './keyRepository'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
-import { FindOptionsRelations } from 'typeorm'
+import { KeyRepository } from './keyRepository'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager, FindOptionsRelations } from 'typeorm'
 
 export class ActiveKeyRepository extends AbstractRepository<
     ActiveKeyModel,
     ActiveKey<'request'>,
-    ActiveKey<'response'>
+    ActiveKey<'response'>,
+    { key: KeyRepository }
 > {
+    protected dependencies: { key?: KeyRepository } = {}
+
     constructor() {
         super('Active Key')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ActiveKeyModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.key) return false
+
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ActiveKeyModel)
     }
 
     public async write(model: ActiveKeyModel, data: ActiveKey<'request'>): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
         model.use = data.use
-        model.key = await keyRepository.findOneOrFail({
+        model.key = await this.dependencies.key.findOneOrFail({
             where: {
                 uuid: data.key,
             },
@@ -41,5 +48,3 @@ export class ActiveKeyRepository extends AbstractRepository<
         }
     }
 }
-
-export const activeKeyRepository: ActiveKeyRepository = new ActiveKeyRepository()

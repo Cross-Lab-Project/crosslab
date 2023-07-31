@@ -16,5 +16,8 @@ properties:
       - group
       - edge instantiable
       - cloud instantiable
+  isPublic:
+    type: boolean
+    description: If true, the device may be seen and used by every user.
 required:
   - type

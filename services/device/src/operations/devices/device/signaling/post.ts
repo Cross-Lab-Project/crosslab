@@ -1,5 +1,5 @@
 import { connectedDevices } from '../..'
-import { deviceRepository } from '../../../../database/repositories/device'
+import { repositories } from '../../../../database/dataSource'
 import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures'
 import { apiClient } from '../../../../globals'
 import { deviceUrlFromId } from '../../../../methods/urlFromId'
@@ -23,7 +23,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
         logger.log('info', 'postDevicesByDeviceIdSignaling called')
 
         // Get device
-        const deviceModel = await deviceRepository.findOneOrFail({
+        const deviceModel = await repositories.device.findOneOrFail({
             where: { uuid: parameters.device_id },
         })
 

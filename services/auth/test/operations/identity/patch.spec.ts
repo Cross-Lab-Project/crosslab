@@ -1,5 +1,5 @@
 import { config } from '../../../src/config'
-import { userRepository } from '../../../src/database/repositories/userRepository'
+import { repositories } from '../../../src/database/dataSource'
 import { patchIdentity } from '../../../src/operations/identity'
 import { TestData } from '../../data/index.spec'
 import { MissingEntityError } from '@crosslab/service-common'
@@ -26,7 +26,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
             assert(result.status === 200)
             assert(result.body.username === 'newsuperadmin')
-            await userRepository.findOneOrFail({
+            await repositories.user.findOneOrFail({
                 where: {
                     username: 'newsuperadmin',
                 },
@@ -48,7 +48,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 200)
                 assert(result.body.username === 'local:superadmin')
-                await userRepository.findOneOrFail({
+                await repositories.user.findOneOrFail({
                     where: {
                         username: 'local:superadmin',
                     },

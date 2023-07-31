@@ -1,5 +1,4 @@
-import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
-import { userRepository } from '../../../src/database/repositories/userRepository'
+import { repositories } from '../../../src/database/dataSource'
 import { postLogout } from '../../../src/operations/logout'
 import { TestData } from '../../data/index.spec'
 import { MissingEntityError } from '@crosslab/service-common'
@@ -29,7 +28,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
             assert(result.status === 204)
             await assert.rejects(
-                tokenRepository.findOneOrFail({
+                repositories.token.findOneOrFail({
                     where: {
                         token: token.model.token,
                     },
@@ -41,7 +40,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 }
             )
 
-            const userModel = await userRepository.findOneOrFail({
+            const userModel = await repositories.user.findOneOrFail({
                 where: {
                     username: user.model.username,
                 },
@@ -102,14 +101,14 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 204)
 
-                const tokenModel = await tokenRepository.findOneOrFail({
+                const tokenModel = await repositories.token.findOneOrFail({
                     where: {
                         token: token.model.token,
                     },
                 })
                 assert.strictEqual(tokenModel.token, token.model.token)
 
-                const userModel = await userRepository.findOneOrFail({
+                const userModel = await repositories.user.findOneOrFail({
                     where: {
                         username: testData.users.superadmin.model.username,
                     },

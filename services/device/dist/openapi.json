@@ -347,37 +347,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -410,6 +380,9 @@
           },
           {
             "$ref": "#/components/parameters/flat_group"
+          },
+          {
+            "$ref": "#/components/parameters/execute_for"
           }
         ],
         "security": [
@@ -837,37 +810,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
-                          },
-                          "device": {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/device_concrete"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_group"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_cloud_instantiable"
-                              },
-                              {
-                                "$ref": "#/components/schemas/device_edge_instantiable"
-                              }
-                            ]
-                          }
-                        }
+                        "$ref": "#/components/schemas/device_changed"
                       }
                     }
                   }
@@ -1044,9 +987,104 @@
       }
     },
     "/devices/{device_id}/availability": {
+      "get": {
+        "operationId": "get_device_availability",
+        "summary": "Get the availability of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:read",
+              "device:read:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          },
+          {
+            "$ref": "#/components/parameters/start_time"
+          },
+          {
+            "$ref": "#/components/parameters/end_time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the availability of the device.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/availability"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_device_availability_rules",
+        "summary": "Delete the availability rules of a device",
+        "tags": [
+          "device"
+        ],
+        "security": [
+          {
+            "JWT": [
+              "device",
+              "device:write",
+              "device:write:owned"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/device_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The availability rules of the device were deleted successfully."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
       "post": {
-        "operationId": "add_availability_rules",
-        "summary": "Update the device availability",
+        "operationId": "add_device_availability_rules",
+        "summary": "Add availability rules for a device",
         "tags": [
           "device"
         ],
@@ -1398,24 +1436,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-closed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_closed"
                       }
                     }
                   }
@@ -1447,24 +1468,7 @@
                   "content": {
                     "application/json": {
                       "schema": {
-                        "type": "object",
-                        "properties": {
-                          "callbackType": {
-                            "type": "string",
-                            "enum": [
-                              "event"
-                            ]
-                          },
-                          "eventType": {
-                            "type": "string",
-                            "enum": [
-                              "peerconnection-status-changed"
-                            ]
-                          },
-                          "peerconnection": {
-                            "$ref": "#/components/schemas/peerconnection"
-                          }
-                        }
+                        "$ref": "#/components/schemas/peerconnection_status_changed"
                       }
                     }
                   }
@@ -1547,8 +1551,11 @@
           }
         ],
         "responses": {
+          "202": {
+            "description": "The peerconnection will be deleted as soon as it's closed."
+          },
           "204": {
-            "description": "The peer connection was deleted successfully."
+            "description": "The peerconnection was deleted successfully."
           },
           "400": {
             "description": "Bad Request."
@@ -1609,7 +1616,7 @@
           }
         },
         "responses": {
-          "201": {
+          "204": {
             "description": "OK."
           },
           "400": {
@@ -1735,13 +1742,18 @@
             "type": "string",
             "format": "uri",
             "readOnly": true
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
           "url",
           "type",
           "name",
-          "owner"
+          "owner",
+          "isPublic"
         ],
         "x-typeguard": true
       },
@@ -1937,6 +1949,73 @@
         ],
         "x-typeguard": true
       },
+      "callback": {
+        "title": "Callback",
+        "type": "object",
+        "properties": {
+          "callbackType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "callbackType"
+        ],
+        "x-typeguard": true
+      },
+      "event_callback": {
+        "title": "Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "callbackType": {
+                "type": "string",
+                "enum": [
+                  "event"
+                ]
+              },
+              "eventType": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "callbackType",
+              "eventType"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "device_changed": {
+        "title": "Device Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "device-changed"
+                ]
+              },
+              "device": {
+                "$ref": "#/components/schemas/device"
+              }
+            },
+            "required": [
+              "eventType",
+              "device"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
       "device_overview_update": {
         "title": "Device Overview Update",
         "type": "object",
@@ -1958,6 +2037,10 @@
               "edge instantiable",
               "cloud instantiable"
             ]
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "If true, the device may be seen and used by every user."
           }
         },
         "required": [
@@ -2318,6 +2401,7 @@
       },
       "peerconnection_common": {
         "type": "object",
+        "title": "Peerconnection Common",
         "properties": {
           "url": {
             "type": "string",
@@ -2415,6 +2499,60 @@
           }
         ],
         "x-typeguard": true
+      },
+      "peerconnection_closed": {
+        "title": "Peerconnection Closed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-closed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true
+      },
+      "peerconnection_status_changed": {
+        "title": "Peerconnection Status Changed Event Callback",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/event_callback"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "peerconnection-status-changed"
+                ]
+              },
+              "peerconnection": {
+                "$ref": "#/components/schemas/peerconnection"
+              }
+            },
+            "required": [
+              "eventType",
+              "peerconnection"
+            ]
+          }
+        ],
+        "x-typeguard": true
       }
     },
     "parameters": {
@@ -2449,6 +2587,35 @@
         "schema": {
           "type": "boolean",
           "default": false
+        }
+      },
+      "execute_for": {
+        "name": "execute_for",
+        "in": "header",
+        "required": false,
+        "description": "The JWT of a user for which to check the permissions.\n",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "start_time": {
+        "in": "query",
+        "name": "startTime",
+        "description": "Start time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "end_time": {
+        "in": "query",
+        "name": "endTime",
+        "description": "End time of the requested availability",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "peerconnection_url": {

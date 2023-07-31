@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../database/repositories/device'
+import { repositories } from '../../database/dataSource'
 import { postDevicesSignature } from '../../generated/signatures'
 import { changedCallbacks } from '../../methods/callbacks'
 import { deviceUrlFromId } from '../../methods/urlFromId'
@@ -19,9 +19,9 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
             400
         )
 
-    const deviceModel = await deviceRepository.create(body)
+    const deviceModel = await repositories.device.create(body)
     deviceModel.owner = user.JWT.url
-    await deviceRepository.save(deviceModel)
+    await repositories.device.save(deviceModel)
 
     if (parameters.changedUrl) {
         logger.log(
@@ -37,6 +37,6 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
 
     return {
         status: 201,
-        body: await deviceRepository.format(deviceModel),
+        body: await repositories.device.format(deviceModel),
     }
 }

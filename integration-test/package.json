@@ -3,7 +3,9 @@
   "description": "This project contains test cases for the APIs of the different microservices of the crosslab infrastructure.",
   "private": true,
   "scripts": {
+    "pretest": "bash scripts/pre_test.sh",
     "test": "mocha --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts -r src/fixtures/localServer.ts src/**/*.spec.ts",
+    "pretest:debug": "bash scripts/pre_test.sh",
     "test:debug": "mocha --inspect=9101 --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts -r src/fixtures/localServer.ts src/**/*.spec.ts",
     "lint": "eslint ."
   },
@@ -19,6 +21,10 @@
     "@crosslab/service-device": "file:../services/device",
     "@crosslab/service-experiment": "file:../services/experiment",
     "@crosslab/service-federation": "file:../services/federation",
+    "@crosslab/service-booking-backend": "file:../services/booking/src/booking-backend",
+    "@crosslab/service-booking-frontend": "file:../services/booking/src/booking-frontend",
+    "@crosslab/service-device-reservation": "file:../services/booking/src/device-reservation",
+    "@crosslab/service-schedule-service": "file:../services/booking/src/schedule-service",
     "@types/mocha": "^9.1.1",
     "@types/mocha-steps": "^1.3.0",
     "chai": "^4.3.7",

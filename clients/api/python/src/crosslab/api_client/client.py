@@ -38,17 +38,18 @@ from crosslab.api_client.schemas import (
     UpdateIdentityResponse,
     RegisterRequest,
     RegisterResponse,
-    GetScheduleRequest,
-    GetScheduleResponse,
-    BookExperimentRequest,
-    BookExperimentResponse,
+    ScheduleRequest,
+    ScheduleResponse,
+    NewBookingRequest,
+    NewBookingResponse,
     UpdateBookingRequest,
     UpdateBookingResponse,
-    CancelBookingResponse,
-    GetBookingResponse,
     DeleteBookingResponse,
+    GetBookingResponse,
+    DestroyBookingResponse,
     LockBookingResponse,
     UnlockBookingResponse,
+    BookingCallbackResponse,
     ListDevicesResponse,
     CreateDeviceRequest,
     CreateDeviceResponse,
@@ -57,8 +58,10 @@ from crosslab.api_client.schemas import (
     UpdateDeviceResponse,
     DeleteDeviceResponse,
     InstantiateDeviceResponse,
-    AddAvailabilityRulesRequest,
-    AddAvailabilityRulesResponse,
+    GetDeviceAvailabilityResponse,
+    DeleteDeviceAvailabilityRulesResponse,
+    AddDeviceAvailabilityRulesRequest,
+    AddDeviceAvailabilityRulesResponse,
     CreateWebsocketTokenResponse,
     SendSignalingMessageRequest,
     SendSignalingMessageResponse,
@@ -664,7 +667,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_schedule(self, url: str = "/schedule", body: Optional[GetScheduleRequest] = None) -> GetScheduleResponse:  # noqa: E501
+    async def schedule(self, url: str = "/schedule", body: Optional[ScheduleRequest] = None) -> ScheduleResponse:  # noqa: E501
         """
         Returns the free / booked times for given experiment.
         """  # noqa: E501
@@ -686,7 +689,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def book_experiment(self, url: str = "/booking", body: Optional[BookExperimentRequest] = None) -> BookExperimentResponse:  # noqa: E501
+    async def newBooking(self, url: str = "/booking", body: Optional[NewBookingRequest] = None) -> NewBookingResponse:  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501
@@ -708,7 +711,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_booking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
+    async def updateBooking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
         """
         Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
         """  # noqa: E501
@@ -730,7 +733,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def cancel_booking(self, url: str) -> CancelBookingResponse:  # noqa: E501
+    async def deleteBooking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
         """
         Cancels a booking, as long as the booking was originally done by you.
         """  # noqa: E501
@@ -752,7 +755,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_booking(self, url: str) -> GetBookingResponse:  # noqa: E501
+    async def getBooking(self, url: str) -> GetBookingResponse:  # noqa: E501
         """
         Returns whether a list of devices is currently booked for a user
         """  # noqa: E501
@@ -774,7 +777,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def delete_booking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
+    async def destroyBooking(self, url: str) -> DestroyBookingResponse:  # noqa: E501
         """
         Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
         """  # noqa: E501
@@ -796,7 +799,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def lock_booking(self, url: str) -> LockBookingResponse:  # noqa: E501
+    async def lockBooking(self, url: str) -> LockBookingResponse:  # noqa: E501
         """
         Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
         """  # noqa: E501
@@ -818,7 +821,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def unlock_booking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
+    async def unlockBooking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
         """
         Unlocks all devices belonging to a booking, status will be set to 'booked'.
         """  # noqa: E501
@@ -834,6 +837,28 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def bookingCallback(self, url: str) -> BookingCallbackResponse:  # noqa: E501
+        """
+        Callback used for updating device info / booking info.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking_callback\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post")
            
         # transform response
         if status == 200:
@@ -893,7 +918,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_device(self, url: str, flat_group: Optional[bool] = None) -> GetDeviceResponse:  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None, execute_for: Optional[str] = None) -> GetDeviceResponse:  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -915,6 +940,11 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
+        if execute_for:
+            if isinstance(execute_for, list):
+                query_params['execute_for'] = execute_for
+            else:
+                query_params['execute_for'] = str(execute_for)
         
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
@@ -1008,9 +1038,67 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def add_availability_rules(self, url: str, body: Optional[AddAvailabilityRulesRequest] = None) -> AddAvailabilityRulesResponse:  # noqa: E501
+    async def get_device_availability(self, url: str, startTime: Optional[str] = None, endTime: Optional[str] = None) -> GetDeviceAvailabilityResponse:  # noqa: E501
         """
-        Update the device availability
+        Get the availability of a device
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/availability'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if startTime:
+            if isinstance(startTime, list):
+                query_params['startTime'] = startTime
+            else:
+                query_params['startTime'] = str(startTime)
+        if endTime:
+            if isinstance(endTime, list):
+                query_params['endTime'] = endTime
+            else:
+                query_params['endTime'] = str(endTime)
+        
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get", params=query_params)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_device_availability_rules(self, url: str) -> DeleteDeviceAvailabilityRulesResponse:  # noqa: E501
+        """
+        Delete the availability rules of a device
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/availability'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def add_device_availability_rules(self, url: str, body: Optional[AddDeviceAvailabilityRulesRequest] = None) -> AddDeviceAvailabilityRulesResponse:  # noqa: E501
+        """
+        Add availability rules for a device
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -1183,6 +1271,8 @@ class APIClient:
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
+        if status == 202:
+            return resp
         if status == 204:
             return resp
         raise Exception(f"Unexpected status code: {status}")
@@ -1214,7 +1304,7 @@ class APIClient:
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
            
         # transform response
-        if status == 201:
+        if status == 204:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 

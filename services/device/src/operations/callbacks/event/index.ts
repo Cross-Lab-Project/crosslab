@@ -1,3 +1,4 @@
+import { EventCallback, isDeviceChangedEventCallback } from '../../../generated/types'
 import { handleDeviceChangedEventCallback } from './deviceChanged'
 import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common'
 
@@ -8,25 +9,14 @@ import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common'
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-export async function handleEventCallback(callback: {
-    [k: string]: unknown
-}): Promise<200 | 410> {
-    if (!callback.eventType) {
-        throw new MalformedBodyError(
-            "Callbacks of type 'event' require property 'eventType'",
-            400
-        )
-    }
-
-    if (typeof callback.eventType !== 'string') {
-        throw new MalformedBodyError(
-            "Property 'eventType' needs to be of type 'string'",
-            400
-        )
-    }
-
+export async function handleEventCallback(callback: EventCallback): Promise<200 | 410> {
     switch (callback.eventType) {
         case 'device-changed':
+            if (!isDeviceChangedEventCallback(callback))
+                throw new MalformedBodyError(
+                    'Body of request is not a valid device-changed event callback',
+                    400
+                )
             return await handleDeviceChangedEventCallback(callback)
         default:
             throw new InvalidValueError(

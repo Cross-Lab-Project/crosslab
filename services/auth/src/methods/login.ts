@@ -1,7 +1,5 @@
+import { repositories } from '../database/dataSource'
 import { TokenModel, UserModel } from '../database/model'
-import { roleRepository } from '../database/repositories/roleRepository'
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { userRepository } from '../database/repositories/userRepository'
 import {
     AuthenticationError,
     LdapAuthenticationError,
@@ -22,7 +20,7 @@ async function createUserToken(
     userModel: UserModel,
     expiresIn = 3600000
 ): Promise<TokenModel> {
-    const tokenModel = await tokenRepository.create({
+    const tokenModel = await repositories.token.create({
         user: userModel.username,
         scopes: [],
         roles: userModel.roles.map((role) => role.name),
@@ -31,7 +29,7 @@ async function createUserToken(
 
     userModel.tokens.push(tokenModel)
 
-    await userRepository.save(userModel)
+    await repositories.user.save(userModel)
 
     return tokenModel
 }
@@ -42,18 +40,18 @@ async function createUserToken(
  * @returns The newly created TUI user.
  */
 async function createUserTUI(username: string): Promise<UserModel> {
-    const userModel = await userRepository.create({
+    const userModel = await repositories.user.create({
         username: 'tui:' + username,
         password: '',
     })
-    const roleModelUser = await roleRepository.findOneOrFail({
+    const roleModelUser = await repositories.role.findOneOrFail({
         where: {
             name: 'user',
         },
     })
     userModel.roles = [roleModelUser]
     userModel.tokens = []
-    await userRepository.save(userModel)
+    await repositories.user.save(userModel)
 
     return userModel
 }
@@ -103,7 +101,7 @@ export async function loginTui(username: string, password: string): Promise<Toke
     }
 
     // Find User with matching Username
-    let userModel = await userRepository.findOne({
+    let userModel = await repositories.user.findOne({
         where: {
             username: 'tui:' + username,
         },
@@ -130,7 +128,7 @@ export async function loginLocal(
     username: string,
     password: string
 ): Promise<TokenModel> {
-    const userModel = await userRepository.findOne({
+    const userModel = await repositories.user.findOne({
         where: {
             username: `local:${username}`,
         },

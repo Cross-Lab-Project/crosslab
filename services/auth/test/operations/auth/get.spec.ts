@@ -1,8 +1,6 @@
 import { config } from '../../../src/config'
-import { AppDataSource } from '../../../src/database/dataSource'
-import { ActiveKeyModel, TokenModel, UserModel } from '../../../src/database/model'
-import { roleRepository } from '../../../src/database/repositories/roleRepository'
-import { tokenRepository } from '../../../src/database/repositories/tokenRepository'
+import { repositories } from '../../../src/database/dataSource'
+import { TokenModel, UserModel } from '../../../src/database/model'
 import { jwk } from '../../../src/methods/key'
 import { userUrlFromId } from '../../../src/methods/utils'
 import { getAuth } from '../../../src/operations/auth'
@@ -18,10 +16,9 @@ import { createLocalJWKSet, jwtVerify } from 'jose'
 import Mocha from 'mocha'
 import * as sinon from 'sinon'
 
-async function JWTVerify(authorization: string, scopes: string[]) {
-    const activeKeyRepository = AppDataSource.getRepository(ActiveKeyModel)
+async function JWTVerify(jwt: string, scopes: string[]) {
     const activeKey = (
-        await activeKeyRepository.find({
+        await repositories.activeKey.find({
             relations: {
                 key: true,
             },
@@ -29,17 +26,6 @@ async function JWTVerify(authorization: string, scopes: string[]) {
     )[0]
     const jwks = { keys: [jwk(activeKey.key)] }
 
-    const authorization_header = authorization
-    if (authorization_header === undefined) {
-        throw new Error('Authorization header is not set')
-    }
-
-    const bearerTokenResult = /^Bearer (.*)$/.exec(authorization_header)
-    if (bearerTokenResult === null || bearerTokenResult.length != 2) {
-        throw new Error('Authorization header is malformed')
-    }
-
-    const jwt = bearerTokenResult[1]
     if (!jwt) throw new Error('No JWT provided')
     if (!config.SECURITY_ISSUER) throw new Error('No security issuer specified')
 
@@ -60,9 +46,9 @@ async function JWTVerify(authorization: string, scopes: string[]) {
     throw new Error('Missing Scope: one of ' + scopes)
 }
 
-async function checkJWTByTokenModel(authorization: string, token: TokenModel) {
+async function checkJWTByTokenModel(jwt: string, token: TokenModel) {
     for (const scope of token.scopes) {
-        const payload = await JWTVerify(authorization, [scope.name])
+        const payload = await JWTVerify(jwt, [scope.name])
         assert((payload as any).url === userUrlFromId(token.user.uuid))
         assert((payload as any).username === token.user.username)
 
@@ -83,10 +69,10 @@ async function checkJWTByTokenModel(authorization: string, token: TokenModel) {
     }
 }
 
-async function checkJWTByUserModel(authorization: string, user: UserModel) {
+async function checkJWTByUserModel(jwt: string, user: UserModel) {
     const scopes = user.roles.flatMap((role) => role.scopes)
     for (const scope of scopes) {
-        const payload = await JWTVerify(authorization, [scope.name])
+        const payload = await JWTVerify(jwt, [scope.name])
         assert((payload as any).url === userUrlFromId(user.uuid))
         assert((payload as any).username === user.username)
 
@@ -123,9 +109,9 @@ export default function (context: Mocha.Context, testData: TestData) {
                     Authorization: `Bearer ${validUserToken}`,
                 })
                 assert(result.status === 200)
-                assert(result.headers.Authorization)
+                assert(result.headers['X-Request-Authentication'])
                 await checkJWTByTokenModel(
-                    result.headers.Authorization,
+                    result.headers['X-Request-Authentication'],
                     testData.tokens['GET /auth valid user token'].model
                 )
             }
@@ -140,9 +126,9 @@ export default function (context: Mocha.Context, testData: TestData) {
                     Authorization: `Bearer ${allowlistedToken}`,
                 })
                 assert(result.status === 200)
-                assert(result.headers.Authorization)
+                assert(result.headers['X-Request-Authentication'])
                 await checkJWTByUserModel(
-                    result.headers.Authorization,
+                    result.headers['X-Request-Authentication'],
                     testData.users.superadmin.model
                 )
             }
@@ -242,7 +228,7 @@ export default function (context: Mocha.Context, testData: TestData) {
             'should throw an InconsistentDatabaseError if no user is associated with the found token',
             async function () {
                 const tokenRepositoryFindOneOrFailStub = sinon.stub(
-                    tokenRepository,
+                    repositories.token,
                     'findOneOrFail'
                 )
                 tokenRepositoryFindOneOrFailStub.resolves({
@@ -269,7 +255,7 @@ export default function (context: Mocha.Context, testData: TestData) {
         new Mocha.Test(
             'should authenticate a non-allowlisted device with a valid device token',
             async function () {
-                const roleModelDevice = await roleRepository.findOneOrFail({
+                const roleModelDevice = await repositories.role.findOneOrFail({
                     where: {
                         name: 'device',
                     },
@@ -278,8 +264,8 @@ export default function (context: Mocha.Context, testData: TestData) {
                     Authorization: `Bearer ${validDeviceToken}`,
                 })
                 assert(result.status === 200)
-                assert(result.headers.Authorization)
-                await checkJWTByTokenModel(result.headers.Authorization, {
+                assert(result.headers['X-Request-Authentication'])
+                await checkJWTByTokenModel(result.headers['X-Request-Authentication'], {
                     ...testData.tokens['GET /auth valid device token'].model,
                     scopes: roleModelDevice.scopes,
                 })

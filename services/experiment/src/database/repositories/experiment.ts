@@ -1,26 +1,44 @@
 import { Experiment, ExperimentOverview } from '../../generated/types'
 import { experimentUrlFromId } from '../../methods/url'
+import { Instance } from '../../types/types'
 import { ExperimentModel } from '../model'
-import { deviceRepository } from './device'
-import { peerconnectionRepository } from './peerconnection'
-import { roleRepository } from './role'
-import { serviceConfigurationRepository } from './serviceConfiguration'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { DeviceRepository } from './device'
+import { PeerconnectionRepository } from './peerconnection'
+import { RoleRepository } from './role'
+import { ServiceConfigurationRepository } from './serviceConfiguration'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager } from 'typeorm'
+
+type ExperimentRepositoryDependencies = {
+    device: DeviceRepository
+    peerconnection: PeerconnectionRepository
+    role: RoleRepository
+    serviceConfiguration: ServiceConfigurationRepository
+}
 
 export class ExperimentRepository extends AbstractRepository<
     ExperimentModel,
     Experiment<'request'>,
-    Experiment<'response'>
+    Experiment<'response'>,
+    ExperimentRepositoryDependencies
 > {
+    protected dependencies: Partial<ExperimentRepositoryDependencies> = {}
+
     constructor() {
         super('Experiment')
     }
 
-    initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(ExperimentModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.device) return false
+        if (!this.dependencies.peerconnection) return false
+        if (!this.dependencies.role) return false
+        if (!this.dependencies.serviceConfiguration) return false
+
+        return true
+    }
+
+    initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(ExperimentModel)
     }
 
     async create(data?: Experiment<'request'>): Promise<ExperimentModel> {
@@ -33,7 +51,10 @@ export class ExperimentRepository extends AbstractRepository<
         model: ExperimentModel,
         data: Partial<Experiment<'request'>>
     ): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
         if (data.status) model.status = data.status
+
         if (data.bookingTime) {
             if (data.bookingTime.startTime)
                 model.bookingStart = data.bookingTime.startTime
@@ -45,47 +66,71 @@ export class ExperimentRepository extends AbstractRepository<
             model.bookingStart ??= new Date(startTime).toISOString()
             model.bookingEnd ??= new Date(endTime).toISOString()
         }
+
         if (data.devices) {
             for (const device of model.devices ?? []) {
-                await deviceRepository.remove(device)
+                const foundDevice = data.devices.find((d) => d.device === device.url)
+                if (!foundDevice) await this.dependencies.device.remove(device)
+                else device.role = foundDevice.role
             }
-            model.devices = []
+            model.devices ??= []
             for (const device of data.devices) {
-                const deviceModel = await deviceRepository.create(device)
+                const foundDevice = model.devices?.find((d) => d.url === device.url)
+                if (foundDevice) continue
+                const deviceModel = await this.dependencies.device.create(device)
                 model.devices.push(deviceModel)
             }
         }
+
         if (data.roles) {
             for (const role of model.roles ?? []) {
-                await roleRepository.remove(role)
+                await this.dependencies.role.remove(role)
             }
             model.roles = []
             for (const role of data.roles) {
-                const roleModel = await roleRepository.create(role)
+                const roleModel = await this.dependencies.role.create(role)
                 model.roles.push(roleModel)
             }
         }
+
         if (data.serviceConfigurations) {
             for (const serviceConfiguration of model.serviceConfigurations ?? []) {
-                await serviceConfigurationRepository.remove(serviceConfiguration)
+                await this.dependencies.serviceConfiguration.remove(serviceConfiguration)
             }
             model.serviceConfigurations = []
             for (const serviceConfiguration of data.serviceConfigurations) {
                 const serviceConfigurationModel =
-                    await serviceConfigurationRepository.create(serviceConfiguration)
+                    await this.dependencies.serviceConfiguration.create(
+                        serviceConfiguration
+                    )
                 model.serviceConfigurations.push(serviceConfigurationModel)
             }
         }
     }
 
     async format(model: ExperimentModel): Promise<Experiment<'response'>> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const deviceRepository = this.dependencies.device
+        const peerconnectionRepository = this.dependencies.peerconnection
+        const roleRepository = this.dependencies.role
+
+        const instantiatedDevices: (Instance & { instanceOf: string })[] = []
+        for (const device of model.devices ?? []) {
+            if (device.instance)
+                instantiatedDevices.push({
+                    url: device.instance.url,
+                    token: device.instance.token,
+                    instanceOf: device.url,
+                })
+        }
+
         return {
-            url: experimentUrlFromId(model.uuid),
+            ...(await this.formatOverview(model)),
             bookingTime: {
                 startTime: model.bookingStart,
                 endTime: model.bookingEnd,
             },
-            status: model.status,
             devices: await Promise.all(
                 model.devices?.map((device) => deviceRepository.format(device)) ?? []
             ),
@@ -97,10 +142,18 @@ export class ExperimentRepository extends AbstractRepository<
                     peerconnectionRepository.format(connection)
                 ) ?? []
             ),
+            instantiatedDevices,
         }
     }
 
     async remove(model: ExperimentModel): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const deviceRepository = this.dependencies.device
+        const peerconnectionRepository = this.dependencies.peerconnection
+        const roleRepository = this.dependencies.role
+        const serviceConfigurationRepository = this.dependencies.serviceConfiguration
+
         const removePromises: Promise<void>[] = []
 
         if (model.connections)
@@ -135,14 +188,22 @@ export class ExperimentRepository extends AbstractRepository<
     ): Promise<ExperimentOverview<'response'>> {
         return {
             url: experimentUrlFromId(model.uuid),
-            status: model.status,
+            status:
+                model.status === 'booking-locked'
+                    ? 'setup'
+                    : model.status === 'devices-instantiated'
+                    ? 'setup'
+                    : model.status === 'booking-updated'
+                    ? 'setup'
+                    : model.status === 'peerconnections-created'
+                    ? 'setup'
+                    : model.status,
         }
     }
 
     async softRemove(model: ExperimentModel): Promise<void> {
-        if (!this.repository) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
         await this.repository.softRemove(model)
     }
 }
-
-export const experimentRepository = new ExperimentRepository()

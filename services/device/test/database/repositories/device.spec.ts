@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { DeviceModel } from '../../../src/database/model'
-import {
-    deviceRepository,
-    DeviceRepository,
-} from '../../../src/database/repositories/device'
+import { DeviceRepository } from '../../../src/database/repositories/device'
 import { Device, DeviceUpdate } from '../../../src/generated/types'
 import { deviceData, DeviceName, deviceNames } from '../../data/devices/index.spec'
 import { concreteDeviceRepositoryTestSuite } from './device/concreteDevice.spec'
@@ -21,7 +18,7 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
     DeviceRepository
 > {
     protected name = 'devices' as const
-    protected repository = deviceRepository
+    protected repository = repositories.device
     protected getEntityData = async () => (await initTestDatabase()).devices
     protected RepositoryClass = DeviceRepository
 
@@ -42,10 +39,22 @@ class DeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
                     new Mocha.Test(
                         `should write valid data to a model correctly (${key})`,
                         async function () {
-                            const model = await data.repository.create({
-                                name: deviceData[key].request.name,
-                                type: deviceData[key].request.type,
-                            })
+                            const name = deviceData[key].request.name
+                            const type = deviceData[key].request.type
+                            const isPublic = deviceData[key].request.isPublic
+                            const model =
+                                type === 'group'
+                                    ? await data.repository.create({
+                                          name,
+                                          type,
+                                          devices: [],
+                                          isPublic,
+                                      })
+                                    : await data.repository.create({
+                                          name,
+                                          type,
+                                          isPublic,
+                                      })
                             assert(data.validateCreate(model))
                             await data.repository.write(
                                 model,

@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { PeerconnectionModel } from '../../../src/database/model'
-import {
-    peerconnectionRepository,
-    PeerconnectionRepository,
-} from '../../../src/database/repositories/peerconnection'
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection'
 import { Peerconnection } from '../../../src/generated/types'
 import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId'
 import { PeerconnectionName } from '../../data/peerconnections/index.spec'
@@ -17,7 +14,7 @@ class PeerconnectionRepositoryTestSuite extends AbstractRepositoryTestSuite<
     PeerconnectionRepository
 > {
     protected name = 'peerconnections' as const
-    protected repository = peerconnectionRepository
+    protected repository = repositories.peerconnection
     protected getEntityData = async () => (await initTestDatabase()).peerconnections
     protected RepositoryClass = PeerconnectionRepository
 

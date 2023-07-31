@@ -1,9 +1,7 @@
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { userRepository } from '../database/repositories/userRepository'
+import { repositories } from '../database/dataSource'
 import { postDeviceAuthenticationTokenSignature } from '../generated/signatures'
 import { getDevice } from '../methods/api'
-import { OwnershipError } from '../types/errors'
-import { logger } from '@crosslab/service-common'
+import { DeviceOwnershipError, logger } from '@crosslab/service-common'
 
 /**
  * This function implements the functionality for handling POST requests on /device_authentication_token endpoint.
@@ -15,7 +13,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
     async (parameters, user) => {
         logger.log('info', 'postDeviceAuthenticationToken called')
 
-        const userModel = await userRepository.findOneOrFail({
+        const userModel = await repositories.user.findOneOrFail({
             where: {
                 username: user.JWT.username,
             },
@@ -29,10 +27,10 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
             !user.JWT.scopes.includes('device_token:create') &&
             !user.JWT.scopes.includes('device_token:create:instantiable')
         ) {
-            throw new OwnershipError()
+            throw new DeviceOwnershipError()
         }
 
-        const tokenModel = await tokenRepository.create({
+        const tokenModel = await repositories.token.create({
             user: userModel.username,
             scopes: [],
             device: device.url,
@@ -41,7 +39,7 @@ export const postDeviceAuthenticationToken: postDeviceAuthenticationTokenSignatu
 
         userModel.tokens.push(tokenModel)
 
-        await userRepository.save(userModel)
+        await repositories.user.save(userModel)
 
         logger.log('info', 'postDeviceAuthenticationToken succeeded')
 

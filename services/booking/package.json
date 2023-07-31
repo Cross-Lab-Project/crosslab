@@ -1,14 +1,21 @@
 {
   "name": "@crosslab/service-booking",
-  "version": "0.0.1",
+  "version": "0.2.3-dev.ddf69f9",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
-    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
-    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
-    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
+    "build": "bash build.bash",
+    "test": "bash scripts/test.sh",
+    "openapi-lint": "npx @redocly/cli lint ./dist/openapi.yml",
+    "openapi-bundle": "npm run generate",
+    "generate": "bash documentation-and-generation.bash",
+    "watch-openapi": "npx chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'"
   },
-  "author": "Johannes Nau",
-  "license": "UNLICENSED"
+  "author": "Johannes Nau & Marcus Soll",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@cross-lab-project/openapi-codegen": "../../helper/openapi-codegeneration",
+    "@redocly/cli": "^1.0.0-beta.131"
+  }
 }

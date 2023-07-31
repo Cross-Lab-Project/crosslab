@@ -13,11 +13,13 @@
   "exports": {
     ".": {
       "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
     },
     "./test-helper": {
       "import": "./lib/esm/test-helper.js",
-      "require": "./lib/cjs/test-helper.js"
+      "require": "./lib/cjs/test-helper.js",
+      "types": "./lib/types/test-helper.d.ts"
     }
   },
   "author": "Johannes Nau",
@@ -25,6 +27,7 @@
   "dependencies": {
     "jose": "^4.11.1",
     "sqlite3": "^5.1.6",
+    "mysql": "^2.18.1",
     "typeorm": "^0.3.15",
     "express": "^4.18.1",
     "express-winston": "^4.2.0",

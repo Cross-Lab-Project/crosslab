@@ -1,24 +1,30 @@
 import { Role } from '../../generated/types'
 import { roleUrlFromId } from '../../methods/utils'
 import { RoleModel, UserModel } from '../model'
-import { scopeRepository } from './scopeRepository'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
-import { FindOptionsRelations } from 'typeorm'
+import { ScopeRepository } from './scopeRepository'
+import { AbstractRepository } from '@crosslab/service-common'
+import { EntityManager, FindOptionsRelations } from 'typeorm'
 
 export class RoleRepository extends AbstractRepository<
     RoleModel,
     Role<'request'>,
-    Role<'response'>
+    Role<'response'>,
+    { scope: ScopeRepository }
 > {
+    protected dependencies: { scope?: ScopeRepository } = {}
+
     constructor() {
         super('Role')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(RoleModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.scope) return false
+
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(RoleModel)
     }
 
     public async create(data?: Role<'request'>): Promise<RoleModel> {
@@ -29,6 +35,10 @@ export class RoleRepository extends AbstractRepository<
     }
 
     public async write(model: RoleModel, data: Partial<Role<'request'>>): Promise<void> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const scopeRepository = this.dependencies.scope
+
         if (data.name) {
             model.name = data.name
         }
@@ -46,6 +56,10 @@ export class RoleRepository extends AbstractRepository<
     }
 
     public async format(model: RoleModel): Promise<Role<'response'>> {
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+
+        const scopeRepository = this.dependencies.scope
+
         return {
             url: roleUrlFromId(model.uuid),
             id: model.uuid,
@@ -80,5 +94,3 @@ export class RoleRepository extends AbstractRepository<
         }
     }
 }
-
-export const roleRepository: RoleRepository = new RoleRepository()

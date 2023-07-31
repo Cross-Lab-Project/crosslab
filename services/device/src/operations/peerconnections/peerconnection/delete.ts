@@ -1,9 +1,6 @@
-import { peerconnectionRepository } from '../../../database/repositories/peerconnection'
+import { repositories } from '../../../database/dataSource'
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
-import { ClosePeerconnectionMessage } from '../../../generated/types'
-import { apiClient } from '../../../globals'
-import { sendClosedCallback, sendStatusChangedCallback } from '../../../methods/callbacks'
-import { peerconnectionUrlFromId } from '../../../methods/urlFromId'
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
 import { logger } from '@crosslab/service-common'
 
 /**
@@ -15,49 +12,13 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
     async (parameters, _user) => {
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId called')
 
-        const peerconnectionModel = await peerconnectionRepository.findOneOrFail({
+        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
             where: { uuid: parameters.peerconnection_id },
         })
 
-        const closePeerconnectionMessage: ClosePeerconnectionMessage = {
-            messageType: 'command',
-            command: 'closePeerconnection',
-            connectionUrl: peerconnectionUrlFromId(peerconnectionModel.uuid),
-        }
+        await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
 
-        // TODO: handle possible errors
-        try {
-            await apiClient.sendSignalingMessage(
-                peerconnectionModel.deviceA.url,
-                closePeerconnectionMessage,
-                peerconnectionUrlFromId(peerconnectionModel.uuid)
-            )
-        } catch (error) {
-            logger.log(
-                'error',
-                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceA.url}'`,
-                { data: { error } }
-            )
-        }
-
-        try {
-            await apiClient.sendSignalingMessage(
-                peerconnectionModel.deviceB.url,
-                closePeerconnectionMessage,
-                peerconnectionUrlFromId(peerconnectionModel.uuid)
-            )
-        } catch (error) {
-            logger.log(
-                'error',
-                `An error occurred while sending a close-peerconnection message to device '${peerconnectionModel.deviceB.url}'`,
-                { data: { error } }
-            )
-        }
-
-        await sendClosedCallback(peerconnectionModel)
-        await sendStatusChangedCallback(peerconnectionModel)
-
-        await peerconnectionRepository.remove(peerconnectionModel)
+        await repositories.peerconnection.remove(peerconnectionModel)
 
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded')
 

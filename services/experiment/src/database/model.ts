@@ -6,6 +6,8 @@ import {
     ManyToOne,
     OneToMany,
     PrimaryColumn,
+    OneToOne,
+    JoinColumn,
 } from 'typeorm'
 
 @Entity({ name: 'Experiment' })
@@ -13,7 +15,15 @@ export class ExperimentModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string
     @Column()
-    status!: 'created' | 'booked' | 'running' | 'finished' | 'setup'
+    status!:
+        | 'created'
+        | 'booked'
+        | 'running'
+        | 'finished'
+        | 'booking-locked'
+        | 'devices-instantiated'
+        | 'booking-updated'
+        | 'peerconnections-created'
     @Column()
     bookingStart?: string
     @Column()
@@ -23,7 +33,10 @@ export class ExperimentModel {
         cascade: true,
     })
     devices?: DeviceModel[]
-    @OneToMany(() => RoleModel, (role) => role.experiment, { eager: true, onDelete: 'CASCADE', cascade: true })
+    @OneToMany(() => RoleModel, (role) => role.experiment, {
+        onDelete: 'CASCADE',
+        cascade: true,
+    })
     roles?: RoleModel[]
     @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment, {
         onDelete: 'CASCADE',
@@ -48,10 +61,20 @@ export class RoleModel {
     uuid!: string
     @Column()
     name?: string
-    @Column("text", {nullable: true})
+    @Column('text', { nullable: true })
     description?: string | null
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.roles)
     experiment!: ExperimentModel
+}
+
+@Entity({ name: 'Instance' })
+export class InstanceModel {
+    @PrimaryGeneratedColumn('uuid')
+    uuid!: string
+    @Column()
+    url!: string
+    @Column()
+    token!: string
 }
 
 @Entity({ name: 'Device' })
@@ -64,11 +87,9 @@ export class DeviceModel {
     role?: string
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
     experiment!: ExperimentModel
-    @Column('simple-json', {nullable: true})
-    additionalProperties?: {
-        instanceUrl?: string
-        deviceToken?: string
-    }
+    @OneToOne(() => InstanceModel)
+    @JoinColumn()
+    instance?: InstanceModel
 }
 
 @Entity({ name: 'Peerconnection' })
@@ -85,7 +106,7 @@ export class ServiceConfigurationModel {
     uuid!: string
     @Column()
     serviceType!: string
-    @Column("simple-json")
+    @Column('simple-json')
     configuration?: {
         [k: string]: any
     }
@@ -107,7 +128,7 @@ export class ParticipantModel {
     role?: string
     @Column()
     serviceId!: string
-    @Column("simple-json")
+    @Column('simple-json')
     config?: {
         [k: string]: any
     }

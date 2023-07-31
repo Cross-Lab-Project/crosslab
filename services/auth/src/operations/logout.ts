@@ -1,5 +1,4 @@
-import { tokenRepository } from '../database/repositories/tokenRepository'
-import { userRepository } from '../database/repositories/userRepository'
+import { repositories } from '../database/dataSource'
 import { postLogoutSignature } from '../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -12,14 +11,14 @@ import { logger } from '@crosslab/service-common'
 export const postLogout: postLogoutSignature = async (body, user) => {
     logger.log('info', `postLogout called for ${user.JWT?.username}`)
 
-    const userModel = await userRepository.findOneOrFail({
+    const userModel = await repositories.user.findOneOrFail({
         where: {
             username: user.JWT?.username,
         },
     })
 
     const tokenModel = userModel.tokens.find((tm) => tm.token === body.token)
-    if (tokenModel) await tokenRepository.remove(tokenModel)
+    if (tokenModel) await repositories.token.remove(tokenModel)
 
     logger.log('info', 'postLogout succeeded')
 

@@ -8,11 +8,21 @@ properties:
     format: uri
     readOnly: true
   status:
-    type: string
-    description: Status of the experiment
-    enum:
-      - created
-      - booked
-      - setup
-      - running
-      - finished
+    anyOf:
+      - type: string
+        description: Status of the experiment
+        readOnly: true
+        enum:
+          - created
+          - booked
+          - setup
+          - running
+          - finished
+      - type: string
+        description: Status of the experiment
+        writeOnly: true
+        enum:
+          - created
+          - booked
+          - running
+          - finished

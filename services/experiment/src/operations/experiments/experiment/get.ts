@@ -1,4 +1,4 @@
-import { experimentRepository } from '../../../database/repositories/experiment'
+import { repositories } from '../../../database/dataSource'
 import { getExperimentsByExperimentIdSignature } from '../../../generated/signatures'
 import { logger } from '@crosslab/service-common'
 
@@ -17,7 +17,7 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
         `Handling GET request on endpoint /experiments/${parameters.experiment_id}`
     )
 
-    const experimentModel = await experimentRepository.findOneOrFail({
+    const experimentModel = await repositories.experiment.findOneOrFail({
         where: { uuid: parameters.experiment_id },
     })
 
@@ -28,6 +28,6 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
 
     return {
         status: 200,
-        body: await experimentRepository.format(experimentModel),
+        body: await repositories.experiment.format(experimentModel),
     }
 }

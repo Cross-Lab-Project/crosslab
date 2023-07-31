@@ -7,12 +7,14 @@ const type = 'device'
 const name = 'Concrete Device Example'
 const description = 'An example for a concrete device'
 const owner = 'http://localhost/users/superadmin'
+const isPublic = true
 
 const concrete_device: EntityData<ConcreteDeviceRepository> = {
     request: {
         type,
         name,
         description,
+        isPublic,
     },
     model: {
         uuid,
@@ -20,6 +22,7 @@ const concrete_device: EntityData<ConcreteDeviceRepository> = {
         name,
         description,
         owner,
+        isPublic,
         announcedAvailability: [],
         services: [],
         availabilityRules: [],
@@ -31,6 +34,7 @@ const concrete_device: EntityData<ConcreteDeviceRepository> = {
         name,
         description,
         owner,
+        isPublic,
         connected: false,
         announcedAvailability: [],
         services: [],

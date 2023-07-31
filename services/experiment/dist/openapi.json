@@ -6,192 +6,6 @@
     "version": "0.0.1",
     "x-service-name": "Experiment Service"
   },
-  "components": {
-    "securitySchemes": {
-      "JWT": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "description": "As this is the API description of the internal Experiment API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
-      }
-    },
-    "schemas": {
-      "experiment_overview": {
-        "title": "Experiment Overview",
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "description": "URL of the experiment",
-            "format": "uri",
-            "readOnly": true
-          },
-          "status": {
-            "type": "string",
-            "description": "Status of the experiment",
-            "enum": [
-              "created",
-              "booked",
-              "setup",
-              "running",
-              "finished"
-            ]
-          }
-        }
-      },
-      "device": {
-        "title": "Device",
-        "type": "object",
-        "properties": {
-          "device": {
-            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
-            "type": "string",
-            "format": "uri"
-          },
-          "role": {
-            "type": "string",
-            "description": "The name of the device's role."
-          }
-        }
-      },
-      "role": {
-        "title": "role",
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name for an experiment role."
-          },
-          "description": {
-            "type": "string"
-          }
-        }
-      },
-      "participant": {
-        "title": "Participant",
-        "type": "object",
-        "properties": {
-          "role": {
-            "type": "string",
-            "description": "The name of the participant's role."
-          },
-          "serviceId": {
-            "type": "string"
-          },
-          "config": {
-            "type": "object",
-            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-            "additionalProperties": true
-          }
-        }
-      },
-      "service_configuration": {
-        "title": "Service Configuration",
-        "type": "object",
-        "properties": {
-          "serviceType": {
-            "type": "string",
-            "format": "uri",
-            "description": "Type of the service"
-          },
-          "configuration": {
-            "type": "object",
-            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
-            "additionalProperties": true
-          },
-          "participants": {
-            "type": "array",
-            "description": "List of participants for the service",
-            "items": {
-              "$ref": "#/components/schemas/participant"
-            }
-          }
-        }
-      },
-      "experiment": {
-        "title": "Experiment",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/experiment_overview"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "bookingTime": {
-                "type": "object",
-                "properties": {
-                  "startTime": {
-                    "type": "string",
-                    "format": "date-time"
-                  },
-                  "endTime": {
-                    "type": "string",
-                    "format": "date-time"
-                  }
-                }
-              },
-              "devices": {
-                "type": "array",
-                "description": "Devices associated with the experiment",
-                "items": {
-                  "$ref": "#/components/schemas/device"
-                }
-              },
-              "roles": {
-                "type": "array",
-                "description": "Roles that are used in this experiment",
-                "items": {
-                  "$ref": "#/components/schemas/role"
-                }
-              },
-              "connections": {
-                "type": "array",
-                "description": "Connections associated with the experiment",
-                "items": {
-                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
-                  "type": "string",
-                  "format": "uri"
-                },
-                "readOnly": true
-              },
-              "serviceConfigurations": {
-                "type": "array",
-                "description": "Services associated with the experiment",
-                "items": {
-                  "$ref": "#/components/schemas/service_configuration"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "parameters": {
-      "experiment_id": {
-        "in": "path",
-        "name": "experiment_id",
-        "description": "UUID of the experiment",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "example": [
-          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
-        ]
-      },
-      "experiment_changed_url": {
-        "name": "changedURL",
-        "in": "query",
-        "required": false,
-        "description": "An URL that will be called when the experiment status changes.\n",
-        "schema": {
-          "type": "string",
-          "format": "uri"
-        }
-      }
-    }
-  },
   "tags": [
     {
       "name": "experiment",
@@ -578,6 +392,232 @@
           "500": {
             "description": "Server Error."
           }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "As this is the API description of the internal Experiment API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
+      }
+    },
+    "schemas": {
+      "experiment_overview": {
+        "title": "Experiment Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the experiment",
+            "format": "uri",
+            "readOnly": true
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "device": {
+        "title": "Device",
+        "type": "object",
+        "properties": {
+          "device": {
+            "description": "URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).",
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string",
+            "description": "The name of the device's role."
+          }
+        }
+      },
+      "role": {
+        "title": "role",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name for an experiment role."
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "participant": {
+        "title": "Participant",
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The name of the participant's role."
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "config": {
+            "type": "object",
+            "description": "Service configuration of the participant.\n\nThis configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          }
+        }
+      },
+      "service_configuration": {
+        "title": "Service Configuration",
+        "type": "object",
+        "properties": {
+          "serviceType": {
+            "type": "string",
+            "format": "uri",
+            "description": "Type of the service"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the service\n\nThis configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).\n",
+            "additionalProperties": true
+          },
+          "participants": {
+            "type": "array",
+            "description": "List of participants for the service",
+            "items": {
+              "$ref": "#/components/schemas/participant"
+            }
+          }
+        }
+      },
+      "experiment": {
+        "title": "Experiment",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "connections": {
+                "type": "array",
+                "description": "Connections associated with the experiment",
+                "items": {
+                  "description": "URL to the [peer connection](https://cross-lab-project.github.io/crosslab/api/device.html#get-/peerconnections/-peerconnection_id-).",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "readOnly": true
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              },
+              "instantiatedDevices": {
+                "type": "array",
+                "description": "Instantiated devices that need to be started by the user.",
+                "readOnly": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "instanceOf": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "token",
+                    "instanceOf"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "parameters": {
+      "experiment_id": {
+        "in": "path",
+        "name": "experiment_id",
+        "description": "UUID of the experiment",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
+      },
+      "experiment_changed_url": {
+        "name": "changedURL",
+        "in": "query",
+        "required": false,
+        "description": "An URL that will be called when the experiment status changes.\n",
+        "schema": {
+          "type": "string",
+          "format": "uri"
         }
       }
     }

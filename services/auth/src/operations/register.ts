@@ -1,5 +1,4 @@
-import { roleRepository } from '../database/repositories/roleRepository'
-import { userRepository } from '../database/repositories/userRepository'
+import { repositories } from '../database/dataSource'
 import { postRegisterSignature } from '../generated/signatures'
 import { RegistrationError } from '../types/errors'
 import {
@@ -16,7 +15,7 @@ import {
 export const postRegister: postRegisterSignature = async (body) => {
     logger.log('info', 'postRegister called')
 
-    const existingUser = await userRepository.findOne({
+    const existingUser = await repositories.user.findOne({
         where: {
             username: `local:${body.username}`,
         },
@@ -25,19 +24,19 @@ export const postRegister: postRegisterSignature = async (body) => {
     if (existingUser)
         throw new RegistrationError('User with the same username already exists', 400)
 
-    const newUser = await userRepository.create({
+    const newUser = await repositories.user.create({
         username: `local:${body.username}`,
         password: body.password,
     })
 
     try {
-        const roleModelUser = await roleRepository.findOneOrFail({
+        const roleModelUser = await repositories.role.findOneOrFail({
             where: {
                 name: 'user',
             },
         })
-        userRepository.addRoleModelToUserModel(newUser, roleModelUser)
-        await userRepository.save(newUser)
+        repositories.user.addRoleModelToUserModel(newUser, roleModelUser)
+        await repositories.user.save(newUser)
     } catch (error) {
         if (error instanceof MissingEntityError)
             throw new InconsistentDatabaseError("Role 'user' is missing in database", 500)
@@ -48,5 +47,6 @@ export const postRegister: postRegisterSignature = async (body) => {
 
     return {
         status: 201,
+        body: await repositories.user.format(newUser),
     }
 }

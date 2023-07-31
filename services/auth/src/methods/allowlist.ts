@@ -1,5 +1,5 @@
+import { repositories } from '../database/dataSource'
 import { UserModel } from '../database/model'
-import { userRepository } from '../database/repositories/userRepository'
 import { MalformedAllowlistError } from '../types/errors'
 import { AllowlistEntry } from '../types/types'
 import { MissingEntityError, logger } from '@crosslab/service-common'
@@ -47,7 +47,7 @@ export async function resolveAllowlistEntry(
     logger.log('info', 'resolveAllowlistEntry called')
 
     // Search the user with the provided username
-    const userModel = await userRepository.findOne({
+    const userModel = await repositories.user.findOne({
         where: {
             username: allowlistEntry.username,
         },
@@ -71,7 +71,7 @@ export async function getAllowlistedUser(token: string): Promise<UserModel> {
     logger.log('warn', `trying to find allowlisted user ${allowlist[token]}`)
 
     const user = allowlist[token]
-        ? await userRepository.findOne({
+        ? await repositories.user.findOne({
               where: {
                   username: allowlist[token],
               },

@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../../src/database/dataSource'
 import { InstantiableCloudDeviceModel } from '../../../../src/database/model'
-import {
-    instantiableCloudDeviceRepository,
-    InstantiableCloudDeviceRepository,
-} from '../../../../src/database/repositories/device/instantiableCloudDevice'
+import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice'
 import {
     InstantiableCloudDevice,
     InstantiableCloudDeviceUpdate,
@@ -20,7 +17,7 @@ class InstantiableCloudDeviceRepositoryTestSuite extends AbstractRepositoryTestS
     InstantiableCloudDeviceRepository
 > {
     protected name = 'instantiable cloud devices' as const
-    protected repository = instantiableCloudDeviceRepository
+    protected repository = repositories.instantiableCloudDevice
     protected getEntityData = async () =>
         (await initTestDatabase())['instantiable cloud devices']
     protected RepositoryClass = InstantiableCloudDeviceRepository

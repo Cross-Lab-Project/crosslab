@@ -1,25 +1,31 @@
 import { User } from '../../generated/types'
 import { userUrlFromId } from '../../methods/utils'
 import { RoleModel, UserModel } from '../model'
-import { tokenRepository } from './tokenRepository'
-import {
-    AbstractApplicationDataSource,
-    AbstractRepository,
-} from '@crosslab/service-common'
+import { TokenRepository } from './tokenRepository'
+import { AbstractRepository } from '@crosslab/service-common'
 import { hash } from 'bcryptjs'
-import { FindOptionsRelations } from 'typeorm'
+import { EntityManager, FindOptionsRelations } from 'typeorm'
 
 export class UserRepository extends AbstractRepository<
     UserModel,
     User<'request'>,
-    User<'response'>
+    User<'response'>,
+    { token: TokenRepository }
 > {
+    protected dependencies: { token?: TokenRepository } = {}
+
     constructor() {
         super('User')
     }
 
-    public initialize(AppDataSource: AbstractApplicationDataSource): void {
-        this.repository = AppDataSource.getRepository(UserModel)
+    protected dependenciesMet(): boolean {
+        if (!this.dependencies.token) return false
+
+        return true
+    }
+
+    public initialize(entityManager: EntityManager): void {
+        this.repository = entityManager.getRepository(UserModel)
     }
 
     public async create(data?: User<'request'>): Promise<UserModel> {
@@ -44,10 +50,10 @@ export class UserRepository extends AbstractRepository<
     }
 
     public async remove(model: UserModel): Promise<void> {
-        if (!this.repository) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
 
         for (const tokenModel of model.tokens) {
-            await tokenRepository.remove(tokenModel)
+            await this.dependencies.token.remove(tokenModel)
         }
 
         await this.repository.remove(model)
@@ -81,5 +87,3 @@ export class UserRepository extends AbstractRepository<
         }
     }
 }
-
-export const userRepository: UserRepository = new UserRepository()

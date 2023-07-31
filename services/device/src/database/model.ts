@@ -42,6 +42,8 @@ export abstract class DeviceOverviewModel {
     type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
     @Column({ nullable: true })
     owner!: string
+    @Column('boolean', { default: false })
+    isPublic!: boolean
     @DeleteDateColumn()
     deletedAt?: Date
 }

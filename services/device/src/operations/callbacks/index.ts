@@ -1,6 +1,7 @@
 import { handleEventCallback } from './event'
 import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common'
 import express from 'express'
+import { isCallback, isEventCallback } from '../../generated/types'
 
 export * from '../../methods/callbacks'
 
@@ -11,30 +12,21 @@ export * from '../../methods/callbacks'
 export function callbackHandling(app: express.Application) {
     app.post('/callbacks/device', async (req, res, next) => {
         try {
-            const callback: unknown = req.body
+            const callback = req.body
 
-            if (typeof callback !== 'object')
-                throw new MalformedBodyError('Body of callback is not an object', 400)
-
-            if (callback === null)
-                throw new MalformedBodyError('Body of callback is null', 400)
-
-            if (!('callbackType' in callback)) {
+            if (!isCallback(callback))
                 throw new MalformedBodyError(
-                    "Callbacks require property 'callbackType'",
+                    'Body of request is not a valid callback',
                     400
                 )
-            }
-
-            if (typeof callback.callbackType !== 'string') {
-                throw new MalformedBodyError(
-                    "Property 'callbackType' needs to be of type string",
-                    400
-                )
-            }
 
             switch (callback.callbackType) {
                 case 'event':
+                    if (!isEventCallback(callback))
+                        throw new MalformedBodyError(
+                            'Body of request is not a valid event callback',
+                            400
+                        )
                     return res.status(await handleEventCallback(callback)).send()
                 default:
                     throw new InvalidValueError(

@@ -1,4 +1,4 @@
-import { deviceRepository } from '../../../../database/repositories/device'
+import { repositories } from '../../../../database/dataSource'
 import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
 import { deviceUrlFromId } from '../../../../methods/urlFromId'
 import {
@@ -18,7 +18,7 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
     async (parameters, _user) => {
         logger.log('info', 'postDevicesByDeviceIdWebsocket called')
 
-        const deviceModel = await deviceRepository.findOneOrFail({
+        const deviceModel = await repositories.device.findOneOrFail({
             where: {
                 uuid: parameters.device_id,
             },
@@ -31,7 +31,7 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
             )
 
         deviceModel.token = randomUUID()
-        await deviceRepository.save(deviceModel)
+        await repositories.device.save(deviceModel)
 
         setTimeout(async () => {
             logger.log(
@@ -41,13 +41,13 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
                 )}'`
             )
 
-            const deviceModel = await deviceRepository.findOne({
+            const newDeviceModel = await repositories.device.findOne({
                 where: {
                     uuid: parameters.device_id,
                 },
             })
 
-            if (!deviceModel) {
+            if (!newDeviceModel) {
                 logger.error(
                     'error',
                     `device '${deviceUrlFromId(parameters.device_id)}' does not exist`
@@ -55,18 +55,18 @@ export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSigna
                 return
             }
 
-            if (deviceModel.type !== 'device') {
+            if (newDeviceModel.type !== 'device') {
                 logger.error(
                     'error',
                     `device '${deviceUrlFromId(parameters.device_id)}' has type '${
-                        deviceModel.type
+                        newDeviceModel.type
                     }' instead of 'device'`
                 )
                 return
             }
 
-            deviceModel.token = undefined
-            await deviceRepository.save(deviceModel)
+            newDeviceModel.token = undefined
+            await repositories.device.save(newDeviceModel)
         }, 300000)
 
         logger.log('info', 'postDevicesByDeviceIdWebsocket succeeded')

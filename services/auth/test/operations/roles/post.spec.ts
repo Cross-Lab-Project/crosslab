@@ -1,4 +1,4 @@
-import { roleRepository } from '../../../src/database/repositories/roleRepository'
+import { repositories } from '../../../src/database/dataSource'
 import { Role } from '../../../src/generated/types'
 import { postRoles } from '../../../src/operations/roles'
 import { TestData } from '../../data/index.spec'
@@ -21,7 +21,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
             const result = await postRoles(role, testData.userData)
 
-            const roleModel = await roleRepository.findOne({
+            const roleModel = await repositories.role.findOne({
                 where: {
                     name: role.name,
                 },

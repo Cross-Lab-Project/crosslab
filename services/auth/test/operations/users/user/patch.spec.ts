@@ -1,4 +1,4 @@
-import { userRepository } from '../../../../src/database/repositories/userRepository'
+import { repositories } from '../../../../src/database/dataSource'
 import { User } from '../../../../src/generated/types'
 import { userUrlFromId } from '../../../../src/methods/utils'
 import { patchUsersByUserId } from '../../../../src/operations/users'
@@ -45,7 +45,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 200)
 
-                const newUserModel = await userRepository.findOne({
+                const newUserModel = await repositories.user.findOne({
                     where: {
                         uuid: userModel.uuid,
                     },

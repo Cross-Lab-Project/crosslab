@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { ScopeModel } from '../../../src/database/model'
-import {
-    ScopeRepository,
-    scopeRepository,
-} from '../../../src/database/repositories/scopeRepository'
+import { ScopeRepository } from '../../../src/database/repositories/scopeRepository'
 import { Scope } from '../../../src/types/types'
 import { ScopeName } from '../../data/scopeData.spec'
 import { initTestDatabase } from './index.spec'
@@ -16,7 +13,7 @@ class ScopeRepositoryTestSuite extends AbstractRepositoryTestSuite<
     ScopeRepository
 > {
     protected name = 'scopes' as const
-    protected repository = scopeRepository
+    protected repository = repositories.scope
     protected getEntityData = async () => (await initTestDatabase())['scopes']
     protected RepositoryClass = ScopeRepository
 

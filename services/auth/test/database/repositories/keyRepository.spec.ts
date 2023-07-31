@@ -1,9 +1,6 @@
-import { AppDataSource } from '../../../src/database/dataSource'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import { KeyModel } from '../../../src/database/model'
-import {
-    KeyRepository,
-    keyRepository,
-} from '../../../src/database/repositories/keyRepository'
+import { KeyRepository } from '../../../src/database/repositories/keyRepository'
 import { Key } from '../../../src/types/types'
 import { KeyName } from '../../data/keyData.spec'
 import { initTestDatabase } from './index.spec'
@@ -13,7 +10,7 @@ import { FindOptionsWhere } from 'typeorm'
 
 class KeyRepositoryTestSuite extends AbstractRepositoryTestSuite<KeyName, KeyRepository> {
     protected name = 'keys' as const
-    protected repository = keyRepository
+    protected repository = repositories.key
     protected getEntityData = async () => (await initTestDatabase())['keys']
     protected RepositoryClass = KeyRepository
 

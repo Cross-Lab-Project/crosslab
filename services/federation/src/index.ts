@@ -1,13 +1,14 @@
-#!/usr/bin/env node
 import { config } from './config'
-import { AppDataSource } from './data_source'
+import { AppDataSource } from './database/dataSource'
 import { app } from './generated/index'
+import { isUserTypeJWT } from './generated/types'
 import {
     JWTVerify,
     errorHandler,
     logHandling,
     logger,
     missingRouteHandling,
+    parseJwtFromRequestAuthenticationHeader,
     requestIdHandling,
 } from '@crosslab/service-common'
 
@@ -20,7 +21,11 @@ async function startFederationService() {
 
     app.initService({
         security: {
-            JWT: JWTVerify(config) as any,
+            JWT: JWTVerify(
+                config,
+                isUserTypeJWT,
+                parseJwtFromRequestAuthenticationHeader
+            ),
         },
         preHandlers: [requestIdHandling, logHandling],
         postHandlers: [missingRouteHandling],

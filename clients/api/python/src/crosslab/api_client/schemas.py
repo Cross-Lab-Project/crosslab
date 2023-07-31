@@ -356,10 +356,24 @@ class RegisterRequest(TypedDict):
     password: str
 
 
-RegisterResponse: TypeAlias = None
+class RegisterResponse201(TypedDict):
+    """
+    Properties:
+    - url
+    - id
+    - username
+    - password
+    """
+    url: str
+    id: str
+    username: str
+    password: str
 
 
-class GetScheduleRequestExperimentDevicesItems(TypedDict):
+RegisterResponse: TypeAlias = RegisterResponse201
+
+
+class ScheduleRequestExperimentDevicesItems(TypedDict):
     """
     A device might either be a physical/virtual device or a group of device.Properties:
     - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
@@ -367,17 +381,17 @@ class GetScheduleRequestExperimentDevicesItems(TypedDict):
     ID: str
 
 
-class GetScheduleRequestExperiment(TypedDict):
+class ScheduleRequestExperiment(TypedDict):
     """
     An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
     - Devices: List of devices used in experiment.
     - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
     """
-    Devices: List[GetScheduleRequestExperimentDevicesItems]
+    Devices: List[ScheduleRequestExperimentDevicesItems]
     Description: NotRequired[str]
 
 
-class GetScheduleRequestTime(TypedDict):
+class ScheduleRequestTime(TypedDict):
     """
     A time slot represents a slice of time used for bookings.Properties:
     - Start: Start time of the booking.
@@ -387,7 +401,7 @@ class GetScheduleRequestTime(TypedDict):
     End: str
 
 
-class GetScheduleRequest(TypedDict):
+class ScheduleRequest(TypedDict):
     """
     Properties:
     - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
@@ -395,13 +409,13 @@ class GetScheduleRequest(TypedDict):
     - Combined: If true, show only one timetable per device instead of one for all available physical devices.
     - onlyOwn: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
     """
-    Experiment: GetScheduleRequestExperiment
-    Time: GetScheduleRequestTime
+    Experiment: ScheduleRequestExperiment
+    Time: ScheduleRequestTime
     Combined: NotRequired[bool]
     onlyOwn: NotRequired[bool]
 
 
-class GetScheduleResponse200ItemsBookedItems(TypedDict):
+class ScheduleResponse200ItemsBookedItems(TypedDict):
     """
     A time slot represents a slice of time used for bookings.Properties:
     - Start: Start time of the booking.
@@ -411,7 +425,7 @@ class GetScheduleResponse200ItemsBookedItems(TypedDict):
     End: str
 
 
-class GetScheduleResponse200ItemsFreeItems(TypedDict):
+class ScheduleResponse200ItemsFreeItems(TypedDict):
     """
     A time slot represents a slice of time used for bookings.Properties:
     - Start: Start time of the booking.
@@ -421,7 +435,7 @@ class GetScheduleResponse200ItemsFreeItems(TypedDict):
     End: str
 
 
-class GetScheduleResponse200Items(TypedDict):
+class ScheduleResponse200Items(TypedDict):
     """
     Properties:
     - Device: ID of the device (or * if combined).
@@ -429,26 +443,26 @@ class GetScheduleResponse200Items(TypedDict):
     - Free: Array of free times.
     """
     Device: str
-    Booked: List[GetScheduleResponse200ItemsBookedItems]
-    Free: List[GetScheduleResponse200ItemsFreeItems]
+    Booked: List[ScheduleResponse200ItemsBookedItems]
+    Free: List[ScheduleResponse200ItemsFreeItems]
 
 
-GetScheduleResponse200: TypeAlias = List[GetScheduleResponse200Items]
+ScheduleResponse200: TypeAlias = List[ScheduleResponse200Items]
 
 
-GetScheduleResponse404: TypeAlias = str
+ScheduleResponse404: TypeAlias = str
 
 
-GetScheduleResponse422: TypeAlias = str
+ScheduleResponse422: TypeAlias = str
 
 
-GetScheduleResponse500: TypeAlias = str
+ScheduleResponse500: TypeAlias = str
 
 
-GetScheduleResponse: TypeAlias = Union[GetScheduleResponse200, GetScheduleResponse404, GetScheduleResponse422, GetScheduleResponse500]
+ScheduleResponse: TypeAlias = Union[ScheduleResponse200, ScheduleResponse404, ScheduleResponse422, ScheduleResponse500]
 
 
-class BookExperimentRequestExperimentDevicesItems(TypedDict):
+class NewBookingRequestDevicesItems(TypedDict):
     """
     A device might either be a physical/virtual device or a group of device.Properties:
     - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
@@ -456,17 +470,7 @@ class BookExperimentRequestExperimentDevicesItems(TypedDict):
     ID: str
 
 
-class BookExperimentRequestExperiment(TypedDict):
-    """
-    An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
-    - Devices: List of devices used in experiment.
-    - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-    """
-    Devices: List[BookExperimentRequestExperimentDevicesItems]
-    Description: NotRequired[str]
-
-
-class BookExperimentRequestTime(TypedDict):
+class NewBookingRequestTime(TypedDict):
     """
     A time slot represents a slice of time used for bookings.Properties:
     - Start: Start time of the booking.
@@ -476,19 +480,19 @@ class BookExperimentRequestTime(TypedDict):
     End: str
 
 
-class BookExperimentRequest(TypedDict):
+class NewBookingRequest(TypedDict):
     """
     Properties:
-    - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
+    - Devices: List of devices which should be added.
     - Time: A time slot represents a slice of time used for bookings.
     - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
     """
-    Experiment: BookExperimentRequestExperiment
-    Time: BookExperimentRequestTime
+    Devices: List[NewBookingRequestDevicesItems]
+    Time: NewBookingRequestTime
     Type: NotRequired[Literal["normal"]]
 
 
-class BookExperimentResponse200(TypedDict):
+class NewBookingResponse200(TypedDict):
     """
     Properties:
     - BookingID: ID at which the booking can be managed.
@@ -496,10 +500,10 @@ class BookExperimentResponse200(TypedDict):
     BookingID: str
 
 
-BookExperimentResponse500: TypeAlias = str
+NewBookingResponse500: TypeAlias = str
 
 
-BookExperimentResponse: TypeAlias = Union[BookExperimentResponse200, BookExperimentResponse500]
+NewBookingResponse: TypeAlias = Union[NewBookingResponse200, NewBookingResponse500]
 
 
 class UpdateBookingRequestAlt1DevicesItems(TypedDict):
@@ -545,10 +549,10 @@ UpdateBookingResponse500: TypeAlias = str
 UpdateBookingResponse: TypeAlias = Union[UpdateBookingResponse200, UpdateBookingResponse500]
 
 
-CancelBookingResponse500: TypeAlias = str
+DeleteBookingResponse500: TypeAlias = str
 
 
-CancelBookingResponse: TypeAlias = CancelBookingResponse500
+DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
 
 
 class GetBookingResponse200BookingTime(TypedDict):
@@ -599,74 +603,23 @@ GetBookingResponse500: TypeAlias = str
 GetBookingResponse: TypeAlias = Union[GetBookingResponse200, GetBookingResponse500]
 
 
-DeleteBookingResponse500: TypeAlias = str
+DestroyBookingResponse500: TypeAlias = str
 
 
-DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
+DestroyBookingResponse: TypeAlias = DestroyBookingResponse500
 
 
-class LockBookingResponse200BookingTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class LockBookingResponse200Booking(TypedDict):
-    """
-    A booking in the booking system.Properties:
-    - ID: Unique ID of the booking.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Devices
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-    - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
-    - You: If true, this booking was done by you.
-    - External: Shows whether the booking was done by an external institution.
-    - Message: User readable notes about the status of the booking (e.g. if devices are unknown).
-    """
-    ID: str
-    Time: LockBookingResponse200BookingTime
-    Devices: List[str]
-    Type: NotRequired[Literal["normal"]]
-    Status: Literal["pending", "booked", "rejected", "cancelled", "active", "active-pending", "active-rejected"]
-    You: bool
-    External: bool
-    Message: NotRequired[str]
-
-
-class LockBookingResponse200Time(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class LockBookingResponse200TokensItems(TypedDict):
+class LockBookingResponse200Items(TypedDict):
     """
     Properties:
-    - Device
-    - Token
+    - Requested
+    - Selected
     """
-    Device: NotRequired[str]
-    Token: NotRequired[str]
+    Requested: str
+    Selected: str
 
 
-class LockBookingResponse200(TypedDict):
-    """
-    Properties:
-    - Booking: A booking in the booking system.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Tokens: A list of access tokens
-    """
-    Booking: LockBookingResponse200Booking
-    Time: LockBookingResponse200Time
-    Tokens: List[LockBookingResponse200TokensItems]
+LockBookingResponse200: TypeAlias = List[LockBookingResponse200Items]
 
 
 LockBookingResponse500: TypeAlias = str
@@ -681,6 +634,12 @@ UnlockBookingResponse500: TypeAlias = str
 UnlockBookingResponse: TypeAlias = UnlockBookingResponse500
 
 
+BookingCallbackResponse500: TypeAlias = str
+
+
+BookingCallbackResponse: TypeAlias = BookingCallbackResponse500
+
+
 class ListDevicesResponse200Items(TypedDict):
     """
     Properties:
@@ -689,12 +648,14 @@ class ListDevicesResponse200Items(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
     owner: str
+    isPublic: bool
 
 
 ListDevicesResponse200: TypeAlias = List[ListDevicesResponse200Items]
@@ -723,6 +684,7 @@ class CreateDeviceRequestAlt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
     """
@@ -731,6 +693,7 @@ class CreateDeviceRequestAlt1(TypedDict):
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
     owner: str
+    isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt1ServicesItems]]
 
@@ -765,6 +728,7 @@ class CreateDeviceRequestAlt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -777,6 +741,7 @@ class CreateDeviceRequestAlt2(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     owner: str
+    isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -803,6 +768,7 @@ class CreateDeviceRequestAlt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
     """
@@ -811,6 +777,7 @@ class CreateDeviceRequestAlt3(TypedDict):
     description: NotRequired[str]
     type: Literal["edge instantiable"]
     owner: str
+    isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt3ServicesItems]]
 
@@ -831,6 +798,7 @@ class CreateDeviceRequestAlt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
     url: str
@@ -838,6 +806,7 @@ class CreateDeviceRequestAlt4(TypedDict):
     description: NotRequired[str]
     type: Literal["group"]
     owner: str
+    isPublic: bool
     devices: List[CreateDeviceRequestAlt4DevicesItems]
 
 
@@ -864,6 +833,7 @@ class CreateDeviceResponse201Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
     """
@@ -872,6 +842,7 @@ class CreateDeviceResponse201Alt1(TypedDict):
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
     owner: str
+    isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt1ServicesItems]]
 
@@ -906,6 +877,7 @@ class CreateDeviceResponse201Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -918,6 +890,7 @@ class CreateDeviceResponse201Alt2(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     owner: str
+    isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -944,6 +917,7 @@ class CreateDeviceResponse201Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
     """
@@ -952,6 +926,7 @@ class CreateDeviceResponse201Alt3(TypedDict):
     description: NotRequired[str]
     type: Literal["edge instantiable"]
     owner: str
+    isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt3ServicesItems]]
 
@@ -972,6 +947,7 @@ class CreateDeviceResponse201Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
     url: str
@@ -979,6 +955,7 @@ class CreateDeviceResponse201Alt4(TypedDict):
     description: NotRequired[str]
     type: Literal["group"]
     owner: str
+    isPublic: bool
     devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
 
@@ -1008,6 +985,7 @@ class GetDeviceResponse200Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
     """
@@ -1016,6 +994,7 @@ class GetDeviceResponse200Alt1(TypedDict):
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
     owner: str
+    isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt1ServicesItems]]
 
@@ -1050,6 +1029,7 @@ class GetDeviceResponse200Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1062,6 +1042,7 @@ class GetDeviceResponse200Alt2(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     owner: str
+    isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1088,6 +1069,7 @@ class GetDeviceResponse200Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
     """
@@ -1096,6 +1078,7 @@ class GetDeviceResponse200Alt3(TypedDict):
     description: NotRequired[str]
     type: Literal["edge instantiable"]
     owner: str
+    isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt3ServicesItems]]
 
@@ -1116,6 +1099,7 @@ class GetDeviceResponse200Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
     url: str
@@ -1123,6 +1107,7 @@ class GetDeviceResponse200Alt4(TypedDict):
     description: NotRequired[str]
     type: Literal["group"]
     owner: str
+    isPublic: bool
     devices: List[GetDeviceResponse200Alt4DevicesItems]
 
 
@@ -1150,12 +1135,14 @@ class UpdateDeviceRequestAlt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
+    - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
+    isPublic: NotRequired[bool]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt1ServicesItems]]
 
@@ -1178,12 +1165,14 @@ class UpdateDeviceRequestAlt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
+    - isPublic: If true, the device may be seen and used by every user.
     - experiment
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
     type: Literal["device"]
+    isPublic: NotRequired[bool]
     experiment: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt2ServicesItems]]
 
@@ -1206,12 +1195,14 @@ class UpdateDeviceRequestAlt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
+    - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
     type: Literal["edge instantiable"]
+    isPublic: NotRequired[bool]
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt3ServicesItems]]
 
@@ -1230,11 +1221,13 @@ class UpdateDeviceRequestAlt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
+    - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
     name: NotRequired[str]
     description: NotRequired[str]
     type: Literal["group"]
+    isPublic: NotRequired[bool]
     devices: NotRequired[List[UpdateDeviceRequestAlt4DevicesItems]]
 
 
@@ -1261,6 +1254,7 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
     """
@@ -1269,6 +1263,7 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
     owner: str
+    isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt1ServicesItems]]
 
@@ -1303,6 +1298,7 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1315,6 +1311,7 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     owner: str
+    isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1341,6 +1338,7 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
     """
@@ -1349,6 +1347,7 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     description: NotRequired[str]
     type: Literal["edge instantiable"]
     owner: str
+    isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt3ServicesItems]]
 
@@ -1369,6 +1368,7 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
     url: str
@@ -1376,6 +1376,7 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     description: NotRequired[str]
     type: Literal["group"]
     owner: str
+    isPublic: bool
     devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
 
@@ -1418,6 +1419,7 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - owner
+    - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1430,6 +1432,7 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     owner: str
+    isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1449,16 +1452,7 @@ class InstantiateDeviceResponse201(TypedDict):
 InstantiateDeviceResponse: TypeAlias = InstantiateDeviceResponse201
 
 
-class AddAvailabilityRulesRequestItems(TypedDict):
-    """
-    Properties:
-    """
-
-
-AddAvailabilityRulesRequest: TypeAlias = List[AddAvailabilityRulesRequestItems]
-
-
-class AddAvailabilityRulesResponse200Items(TypedDict):
+class GetDeviceAvailabilityResponse200Items(TypedDict):
     """
     Properties:
     - start
@@ -1468,10 +1462,38 @@ class AddAvailabilityRulesResponse200Items(TypedDict):
     end: NotRequired[str]
 
 
-AddAvailabilityRulesResponse200: TypeAlias = List[AddAvailabilityRulesResponse200Items]
+GetDeviceAvailabilityResponse200: TypeAlias = List[GetDeviceAvailabilityResponse200Items]
 
 
-AddAvailabilityRulesResponse: TypeAlias = AddAvailabilityRulesResponse200
+GetDeviceAvailabilityResponse: TypeAlias = GetDeviceAvailabilityResponse200
+
+
+DeleteDeviceAvailabilityRulesResponse: TypeAlias = None
+
+
+class AddDeviceAvailabilityRulesRequestItems(TypedDict):
+    """
+    Properties:
+    """
+
+
+AddDeviceAvailabilityRulesRequest: TypeAlias = List[AddDeviceAvailabilityRulesRequestItems]
+
+
+class AddDeviceAvailabilityRulesResponse200Items(TypedDict):
+    """
+    Properties:
+    - start
+    - end
+    """
+    start: NotRequired[str]
+    end: NotRequired[str]
+
+
+AddDeviceAvailabilityRulesResponse200: TypeAlias = List[AddDeviceAvailabilityRulesResponse200Items]
+
+
+AddDeviceAvailabilityRulesResponse: TypeAlias = AddDeviceAvailabilityRulesResponse200
 
 
 CreateWebsocketTokenResponse200: TypeAlias = str
@@ -1780,20 +1802,38 @@ class PatchPeerconnectionDeviceStatusRequest(TypedDict):
 PatchPeerconnectionDeviceStatusResponse: TypeAlias = None
 
 
+ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+ListExperimentsResponse200ItemsStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+ListExperimentsResponse200ItemsStatus = Union[ListExperimentsResponse200ItemsStatusAlt1, ListExperimentsResponse200ItemsStatusAlt2]
+
+
 class ListExperimentsResponse200Items(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[ListExperimentsResponse200ItemsStatus]
 
 
 ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
 
 
 ListExperimentsResponse: TypeAlias = ListExperimentsResponse200
+
+
+CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentRequestStatus = Union[CreateExperimentRequestStatusAlt1, CreateExperimentRequestStatusAlt2]
 
 
 class CreateExperimentRequestBookingtime(TypedDict):
@@ -1874,24 +1914,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentRequestInstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentRequest(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentRequestStatus]
     bookingTime: NotRequired[CreateExperimentRequestBookingtime]
     devices: NotRequired[List[CreateExperimentRequestDevicesItems]]
     roles: NotRequired[List[CreateExperimentRequestRolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentRequestServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentRequestInstantiateddevicesItems]]
+
+
+CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentResponse201StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentResponse201Status = Union[CreateExperimentResponse201StatusAlt1, CreateExperimentResponse201StatusAlt2]
 
 
 class CreateExperimentResponse201Bookingtime(TypedDict):
@@ -1972,24 +2035,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentResponse201InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentResponse201(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentResponse201Status]
     bookingTime: NotRequired[CreateExperimentResponse201Bookingtime]
     devices: NotRequired[List[CreateExperimentResponse201DevicesItems]]
     roles: NotRequired[List[CreateExperimentResponse201RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentResponse201InstantiateddevicesItems]]
+
+
+CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+CreateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+CreateExperimentResponse202Status = Union[CreateExperimentResponse202StatusAlt1, CreateExperimentResponse202StatusAlt2]
 
 
 class CreateExperimentResponse202Bookingtime(TypedDict):
@@ -2070,27 +2156,50 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItems]]
 
 
+class CreateExperimentResponse202InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class CreateExperimentResponse202(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[CreateExperimentResponse202Status]
     bookingTime: NotRequired[CreateExperimentResponse202Bookingtime]
     devices: NotRequired[List[CreateExperimentResponse202DevicesItems]]
     roles: NotRequired[List[CreateExperimentResponse202RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[CreateExperimentResponse202InstantiateddevicesItems]]
 
 
 CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
+
+
+GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+GetExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+GetExperimentResponse200Status = Union[GetExperimentResponse200StatusAlt1, GetExperimentResponse200StatusAlt2]
 
 
 class GetExperimentResponse200Bookingtime(TypedDict):
@@ -2171,27 +2280,50 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItemsParticipantsItems]]
 
 
+class GetExperimentResponse200InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class GetExperimentResponse200(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[GetExperimentResponse200Status]
     bookingTime: NotRequired[GetExperimentResponse200Bookingtime]
     devices: NotRequired[List[GetExperimentResponse200DevicesItems]]
     roles: NotRequired[List[GetExperimentResponse200RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[GetExperimentResponse200InstantiateddevicesItems]]
 
 
 GetExperimentResponse: TypeAlias = GetExperimentResponse200
+
+
+UpdateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentRequestStatus = Union[UpdateExperimentRequestStatusAlt1, UpdateExperimentRequestStatusAlt2]
 
 
 class UpdateExperimentRequestBookingtime(TypedDict):
@@ -2272,24 +2404,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentRequestInstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentRequest(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentRequestStatus]
     bookingTime: NotRequired[UpdateExperimentRequestBookingtime]
     devices: NotRequired[List[UpdateExperimentRequestDevicesItems]]
     roles: NotRequired[List[UpdateExperimentRequestRolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentRequestInstantiateddevicesItems]]
+
+
+UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentResponse200Status = Union[UpdateExperimentResponse200StatusAlt1, UpdateExperimentResponse200StatusAlt2]
 
 
 class UpdateExperimentResponse200Bookingtime(TypedDict):
@@ -2370,24 +2525,47 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentResponse200InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentResponse200(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentResponse200Status]
     bookingTime: NotRequired[UpdateExperimentResponse200Bookingtime]
     devices: NotRequired[List[UpdateExperimentResponse200DevicesItems]]
     roles: NotRequired[List[UpdateExperimentResponse200RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentResponse200InstantiateddevicesItems]]
+
+
+UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+
+
+UpdateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+
+
+UpdateExperimentResponse202Status = Union[UpdateExperimentResponse202StatusAlt1, UpdateExperimentResponse202StatusAlt2]
 
 
 class UpdateExperimentResponse202Bookingtime(TypedDict):
@@ -2468,24 +2646,38 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItems]]
 
 
+class UpdateExperimentResponse202InstantiateddevicesItems(TypedDict):
+    """
+    Properties:
+    - url
+    - token
+    - instanceOf
+    """
+    url: str
+    token: str
+    instanceOf: str
+
+
 class UpdateExperimentResponse202(TypedDict):
     """
     Properties:
     - url: URL of the experiment
-    - status: Status of the experiment
+    - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
     - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
+    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
     url: NotRequired[str]
-    status: NotRequired[Literal["created", "booked", "setup", "running", "finished"]]
+    status: NotRequired[UpdateExperimentResponse202Status]
     bookingTime: NotRequired[UpdateExperimentResponse202Bookingtime]
     devices: NotRequired[List[UpdateExperimentResponse202DevicesItems]]
     roles: NotRequired[List[UpdateExperimentResponse202RolesItems]]
     connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItems]]
+    instantiatedDevices: NotRequired[List[UpdateExperimentResponse202InstantiateddevicesItems]]
 
 
 UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateExperimentResponse202]

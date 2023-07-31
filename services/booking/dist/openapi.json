@@ -32,7 +32,7 @@
   "paths": {
     "/schedule": {
       "post": {
-        "operationId": "get_schedule",
+        "operationId": "schedule",
         "security": [
           {
             "JWT": []
@@ -42,12 +42,11 @@
           "schedule-service"
         ],
         "summary": "Returns the free / booked times for given experiment.",
+        "x-optional-url": true,
         "requestBody": {
-          "description": "Requested experiment and timeframe.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Schedule Request",
                 "type": "object",
                 "required": [
                   "Experiment",
@@ -154,13 +153,12 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-optional-url": true
+        }
       }
     },
     "/booking": {
       "post": {
-        "operationId": "book_experiment",
+        "operationId": "newBooking",
         "security": [
           {
             "JWT": []
@@ -170,20 +168,23 @@
           "booking-frontend"
         ],
         "summary": "Books an experiment.",
+        "x-optional-url": true,
         "requestBody": {
-          "description": "Experiment, timeframe and type of booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Booking Request",
                 "type": "object",
                 "required": [
-                  "Experiment",
+                  "Devices",
                   "Time"
                 ],
                 "properties": {
-                  "Experiment": {
-                    "$ref": "#/components/schemas/Experiment"
+                  "Devices": {
+                    "type": "array",
+                    "description": "List of devices which should be added.",
+                    "items": {
+                      "$ref": "#/components/schemas/Device"
+                    }
                   },
                   "Time": {
                     "$ref": "#/components/schemas/Timeslot"
@@ -238,13 +239,12 @@
           "503": {
             "description": "Service is unable to respond in time, possibly overloaded. Try again in a few minutes."
           }
-        },
-        "x-optional-url": true
+        }
       }
     },
     "/booking/{ID}": {
       "patch": {
-        "operationId": "update_booking",
+        "operationId": "updateBooking",
         "security": [
           {
             "JWT": []
@@ -252,7 +252,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -260,11 +266,9 @@
         ],
         "summary": "Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.",
         "requestBody": {
-          "description": "Devices or callback to be added to the booking.",
           "content": {
             "application/json": {
               "schema": {
-                "title": "Devices or Callback",
                 "anyOf": [
                   {
                     "type": "object",
@@ -323,6 +327,9 @@
           "401": {
             "description": "No authorisation header found."
           },
+          "404": {
+            "description": "Request contains unknown booking ID."
+          },
           "423": {
             "description": "The booking 'locked' status and the requested locked status do not match."
           },
@@ -343,7 +350,7 @@
         }
       },
       "delete": {
-        "operationId": "cancel_booking",
+        "operationId": "deleteBooking",
         "security": [
           {
             "JWT": []
@@ -351,7 +358,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -388,7 +401,7 @@
         }
       },
       "get": {
-        "operationId": "get_booking",
+        "operationId": "getBooking",
         "security": [
           {
             "JWT": []
@@ -396,7 +409,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -411,9 +430,7 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "Experiment",
                     "Booking",
-                    "Time",
                     "Locked"
                   ],
                   "properties": {
@@ -454,7 +471,7 @@
     },
     "/booking/{ID}/destroy": {
       "delete": {
-        "operationId": "delete_booking",
+        "operationId": "destroyBooking",
         "security": [
           {
             "JWT": []
@@ -462,7 +479,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -475,6 +498,9 @@
           },
           "401": {
             "description": "No authorisation header found."
+          },
+          "403": {
+            "description": "User is not allowed to destroy bookings."
           },
           "404": {
             "description": "Request contains unknown booking ID."
@@ -501,7 +527,7 @@
     },
     "/booking/{ID}/lock": {
       "put": {
-        "operationId": "lock_booking",
+        "operationId": "lockBooking",
         "security": [
           {
             "JWT": []
@@ -509,7 +535,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -522,33 +554,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "Booking",
-                    "Time",
-                    "Tokens"
-                  ],
-                  "properties": {
-                    "Booking": {
-                      "$ref": "#/components/schemas/Booking"
-                    },
-                    "Time": {
-                      "$ref": "#/components/schemas/Timeslot"
-                    },
-                    "Tokens": {
-                      "type": "array",
-                      "description": "A list of access tokens",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "Device": {
-                            "type": "string",
-                            "format": "uri"
-                          },
-                          "Token": {
-                            "type": "string"
-                          }
-                        }
+                  "type": "array",
+                  "description": "The list of booked devices and selected real devices. Order is guaranteed to be the same as in the booking.",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "Requested",
+                      "Selected"
+                    ],
+                    "properties": {
+                      "Requested": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "Selected": {
+                        "type": "string",
+                        "format": "uri"
                       }
                     }
                   }
@@ -561,6 +582,9 @@
           },
           "404": {
             "description": "Request contains unknown ID"
+          },
+          "412": {
+            "description": "The current booking status is not correct."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -579,7 +603,7 @@
         }
       },
       "delete": {
-        "operationId": "unlock_booking",
+        "operationId": "unlockBooking",
         "security": [
           {
             "JWT": []
@@ -587,7 +611,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -603,6 +633,9 @@
           },
           "404": {
             "description": "Request contains unknown ID"
+          },
+          "412": {
+            "description": "The current booking status is not correct."
           },
           "500": {
             "description": "Request could not be answered. An error string containing the reason will be returned.",
@@ -623,7 +656,7 @@
     },
     "/booking_callback/{ID}": {
       "post": {
-        "x-internal": true,
+        "operationId": "bookingCallback",
         "security": [
           {
             "JWT": []
@@ -631,7 +664,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/ID"
+            "$ref": "#/components/parameters/ID",
+            "name": "ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of Booking"
           }
         ],
         "tags": [
@@ -664,6 +703,17 @@
     }
   },
   "components": {
+    "parameters": {
+      "ID": {
+        "in": "path",
+        "name": "ID",
+        "description": "String ID without any specified strcture. Only needed because the validator at the time of writing can not handle inline validation (e.g. ensure that a string extracted from a path is a string).",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      }
+    },
     "schemas": {
       "Booking": {
         "title": "Booking",
@@ -791,17 +841,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "description": "As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.\nThis token will be populated by the API Gateway.\nTo learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description."
-      }
-    },
-    "parameters": {
-      "ID": {
-        "in": "path",
-        "name": "ID",
-        "schema": {
-          "type": "string"
-        },
-        "required": true,
-        "description": "ID of Booking"
       }
     }
   }

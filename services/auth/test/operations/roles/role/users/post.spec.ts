@@ -1,4 +1,4 @@
-import { roleRepository } from '../../../../../src/database/repositories/roleRepository'
+import { repositories } from '../../../../../src/database/dataSource'
 import { postRolesByRoleIdUsers } from '../../../../../src/operations/roles'
 import { TestData } from '../../../../data/index.spec'
 import { userNames } from '../../../../data/userData.spec'
@@ -28,7 +28,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 204)
 
-                const roleModel = await roleRepository.findOne({
+                const roleModel = await repositories.role.findOne({
                     where: {
                         uuid: role_id,
                     },
@@ -57,7 +57,7 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                 assert(result.status === 204)
 
-                const newRoleModel = await roleRepository.findOne({
+                const newRoleModel = await repositories.role.findOne({
                     where: {
                         uuid: roleModel.uuid,
                     },

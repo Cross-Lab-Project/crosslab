@@ -86,19 +86,6 @@ export class InternalRequestError extends ErrorWithStatus {
 }
 
 /**
- * This error class should be used when an user is not the owner of a device.
- */
-export class OwnershipError extends ErrorWithStatus {
-    constructor() {
-        super(
-            `User is not the owner of the device and does not have further permission`,
-            403
-        )
-        this.name = 'OwnershipError'
-    }
-}
-
-/**
  * This error class should be used when an error occurs during the registration of
  * a new user.
  */

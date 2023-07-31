@@ -1,4 +1,4 @@
-import { userRepository } from '../../../src/database/repositories/userRepository'
+import { repositories } from '../../../src/database/dataSource'
 import * as loginMethods from '../../../src/methods/login'
 import { postLogin } from '../../../src/operations/login'
 import { AuthenticationError, LdapAuthenticationError } from '../../../src/types/errors'
@@ -33,7 +33,7 @@ export default function (context: Mocha.Context, testData: TestData) {
                 assert(result.status === 201)
                 assert(result.body)
 
-                const userModel = await userRepository.findOneOrFail({
+                const userModel = await repositories.user.findOneOrFail({
                     where: {
                         username: testData.users.superadmin.model.username,
                     },

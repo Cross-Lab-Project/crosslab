@@ -4,7 +4,7 @@ import { OpenAPIV3_1 } from 'openapi-types'
 export function removeReadOnly(schema: ExtendedSchema): ExtendedSchema {
     const newSchema = removeReadOrWriteOnly(schema, 'readOnly')
     return {
-        ...appendToRefs(newSchema, "_request"),
+        ...appendToRefs(newSchema, '_request'),
         'x-location': schema['x-location'],
         'x-name': schema['x-name'],
         'x-schema-type': schema['x-schema-type'],
@@ -16,7 +16,7 @@ export function removeReadOnly(schema: ExtendedSchema): ExtendedSchema {
 export function removeWriteOnly(schema: ExtendedSchema): ExtendedSchema {
     const newSchema = removeReadOrWriteOnly(schema, 'writeOnly')
     return {
-        ...appendToRefs(newSchema, "_response"),
+        ...appendToRefs(newSchema, '_response'),
         'x-location': schema['x-location'],
         'x-name': schema['x-name'],
         'x-schema-type': schema['x-schema-type'],
@@ -27,7 +27,10 @@ export function removeWriteOnly(schema: ExtendedSchema): ExtendedSchema {
 
 function appendToRefs(schema: OpenAPIV3_1.SchemaObject, appendString: string) {
     const stringifiedSchema = JSON.stringify(schema)
-    const appendedStringifiedSchema = stringifiedSchema.replace(/"(\$ref":".*?)"/g, `"$1${appendString}"`)
+    const appendedStringifiedSchema = stringifiedSchema.replace(
+        /"(\$ref":".*?)"/g,
+        `"$1${appendString}"`
+    )
     return JSON.parse(appendedStringifiedSchema)
 }
 
@@ -82,20 +85,25 @@ function handleObject(
             if (schema.required?.includes(propertyName)) {
                 schema.required = schema.required.filter((name) => name !== propertyName)
             }
+        } else {
+            schema.properties[propertyName] = removeReadOrWriteOnly(
+                schema.properties[propertyName],
+                readOrWriteOnly
+            )
         }
     }
 
-    schema.allOf = schema.allOf?.map((allOfSchema) =>
-        removeReadOrWriteOnly(allOfSchema, readOrWriteOnly)
-    )
+    schema.allOf = schema.allOf
+        ?.map((allOfSchema) => removeReadOrWriteOnly(allOfSchema, readOrWriteOnly))
+        .filter((allOfSchema) => !allOfSchema[readOrWriteOnly])
 
-    schema.anyOf = schema.anyOf?.map((anyOfSchema) =>
-        removeReadOrWriteOnly(anyOfSchema, readOrWriteOnly)
-    )
+    schema.anyOf = schema.anyOf
+        ?.map((anyOfSchema) => removeReadOrWriteOnly(anyOfSchema, readOrWriteOnly))
+        .filter((anyOfSchema) => !anyOfSchema[readOrWriteOnly])
 
-    schema.oneOf = schema.oneOf?.map((oneOfSchema) =>
-        removeReadOrWriteOnly(oneOfSchema, readOrWriteOnly)
-    )
+    schema.oneOf = schema.oneOf
+        ?.map((oneOfSchema) => removeReadOrWriteOnly(oneOfSchema, readOrWriteOnly))
+        .filter((oneOfSchema) => !oneOfSchema[readOrWriteOnly])
 
     return schema
 }
@@ -106,17 +114,17 @@ function handleUndefined(
 ): OpenAPIV3_1.SchemaObject {
     if (schema.type) throw new Error('Schema type is not undefined')
 
-    schema.allOf = schema.allOf?.map((allOfSchema) =>
-        removeReadOrWriteOnly(allOfSchema, readOrWriteOnly)
-    )
+    schema.allOf = schema.allOf
+        ?.map((allOfSchema) => removeReadOrWriteOnly(allOfSchema, readOrWriteOnly))
+        .filter((allOfSchema) => !allOfSchema[readOrWriteOnly])
 
-    schema.anyOf = schema.anyOf?.map((anyOfSchema) =>
-        removeReadOrWriteOnly(anyOfSchema, readOrWriteOnly)
-    )
+    schema.anyOf = schema.anyOf
+        ?.map((anyOfSchema) => removeReadOrWriteOnly(anyOfSchema, readOrWriteOnly))
+        .filter((anyOfSchema) => !anyOfSchema[readOrWriteOnly])
 
-    schema.oneOf = schema.oneOf?.map((oneOfSchema) =>
-        removeReadOrWriteOnly(oneOfSchema, readOrWriteOnly)
-    )
+    schema.oneOf = schema.oneOf
+        ?.map((oneOfSchema) => removeReadOrWriteOnly(oneOfSchema, readOrWriteOnly))
+        .filter((oneOfSchema) => !oneOfSchema[readOrWriteOnly])
 
     return schema
 }

@@ -1,5 +1,4 @@
-import { AppDataSource } from '../../../src/database/dataSource'
-import { Migrations } from '../../../src/database/migrations'
+import { AppDataSource, repositories } from '../../../src/database/dataSource'
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -9,8 +8,6 @@ import {
     DeviceGroupModel,
     PeerconnectionModel,
 } from '../../../src/database/model'
-import { deviceRepository } from '../../../src/database/repositories/device'
-import { peerconnectionRepository } from '../../../src/database/repositories/peerconnection'
 import { deviceNames } from '../../data/devices/index.spec'
 import { prepareTestData, TestData } from '../../data/index.spec'
 import { peerconnectionNames } from '../../data/peerconnections/index.spec'
@@ -60,19 +57,18 @@ export async function initTestDatabase(): Promise<TestData> {
             DeviceGroupModel,
             PeerconnectionModel,
         ],
-        migrations: Migrations,
-        migrationsRun: true,
+        synchronize: true,
     }
 
     const testData = prepareTestData()
     await AppDataSource.initialize(dataSourceConfig)
 
     for (const deviceName of deviceNames) {
-        await deviceRepository.save(testData.devices[deviceName].model)
+        await repositories.device.save(testData.devices[deviceName].model)
     }
 
     for (const peerconnectionName of peerconnectionNames) {
-        await peerconnectionRepository.save(
+        await repositories.peerconnection.save(
             testData.peerconnections[peerconnectionName].model
         )
     }
