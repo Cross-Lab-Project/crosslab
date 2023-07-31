@@ -1,20 +1,31 @@
-DEBIAN_FRONTEND=noninteractive apt-get update
+DEBIAN_FRONTEND=noninteractive
+
+apt-get update
 
 # install additional dependencies for booking service
-DEBIAN_FRONTEND=noninteractive apt-get install -y \
+apt-get install -y \
     rabbitmq-server \
     mariadb-server \
     mariadb-client
 
+# Install Python 3.8 - 3.11
+apt-get -y install software-properties-common
+add-apt-repository -y ppa:deadsnakes/ppa
+apt-get update
+PYTHON_VERSIONS="3.8 3.9 3.10 3.11 3.12"
+for VERSION in ${PYTHON_VERSIONS}; do 
+    apt-get -y install python$VERSION python$VERSION-distutils python$VERSION-dev
+done
+
 # aiortc dependencies
-DEBIAN_FRONTEND=noninteractive apt-get install -y \
+apt-get install -y \
     libavdevice-dev \
     libavfilter-dev \
     libopus-dev \
     libvpx-dev \
     pkg-config
 # other stuff
-DEBIAN_FRONTEND=noninteractive apt-get install -y \
+apt-get install -y \
     jq \
     fd-find \
     nginx
