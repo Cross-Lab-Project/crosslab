@@ -1,4 +1,4 @@
-sudo service mysql start
+sudo service mariadb start
 
 sudo mysql -e "DROP USER IF EXISTS 'service'@localhost;"
 sudo mysql -e "DROP DATABASE IF EXISTS auth_service;"
