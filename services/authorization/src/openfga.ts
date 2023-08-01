@@ -7,6 +7,7 @@ import readline from 'readline';
 import { Tuple } from './types';
 import { ApplicationDataSource } from './database/datasource';
 import { RelationModel } from './database/model';
+import { decode_object, encode_object } from './encoding';
 
 let fgaClient: OpenFgaClient
 
@@ -84,9 +85,9 @@ async function rehydrate(){
     if (relations.length === 0) return
     await fgaClient.write({
         writes: relations.map((tuple: Tuple)=>({
-            user: tuple.subject,
+            user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: tuple.object,
+            object: encode_object(tuple.object),
         }))
     }, {transaction: {disable: true}})
 }
@@ -96,14 +97,14 @@ export async function update_relations(add: Tuple[], remove: Tuple[]){
     await relationRepository.remove(remove)
     await fgaClient.write({
         writes: add.map((tuple: Tuple)=>({
-            user: tuple.subject,
+            user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: tuple.object,
+            object: encode_object(tuple.object),
         })),
         deletes: remove.map((tuple: Tuple)=>({
-            user: tuple.subject,
+            user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: tuple.object,
+            object: encode_object(tuple.object),
         })),
     }, {transaction: {disable: true}})
 }
@@ -114,14 +115,14 @@ export async function query_relations(subject: string | undefined, relation: str
     let continuationToken: string | undefined = undefined
     do{
         const result = await fgaClient.read({
-            user: subject,
+            user: encode_object(subject),
             relation: relation,
-            object: object
+            object: encode_object(object)
         }, {continuationToken})
         const local_tuples = result.tuples?.map((tuple)=>({
-            subject: tuple.key!.user,
+            subject: decode_object(tuple.key!.user),
             relation: tuple.key!.relation,
-            object: tuple.key!.object,
+            object: decode_object(tuple.key!.object),
         }))??[]
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tuples=tuples.concat(local_tuples as any)

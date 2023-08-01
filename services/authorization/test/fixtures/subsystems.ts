@@ -1,5 +1,5 @@
 import { openfga_deinit, openfga_init } from "../../src/openfga";
-import { opa_deinit, opa_init } from "../../src/opa";
+import { opa_deinit, opa_init, opa_set_jwt_secret } from "../../src/opa";
 import { logger } from "@crosslab/service-common";
 import { ApplicationDataSource } from "../../src/database/datasource";
 
@@ -8,6 +8,7 @@ export async function mochaGlobalSetup() {
     await ApplicationDataSource.initialize()
     await opa_init()
     await openfga_init()
+    await opa_set_jwt_secret("secret");
 }
 
 export async function mochaGlobalTeardown() {

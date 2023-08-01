@@ -1,5 +1,12 @@
 package openfga
 
+encode_object(object) := concat(":",[prefix, encoded]) {
+    index := indexof(object, ":")
+    prefix := substring(object, 0, index)
+    id := substring(object, index+1, -1)
+    encoded := urlquery.encode(id)
+}
+
 check_relation(subject, relation, object) := true {
     http.send(
         {
@@ -8,9 +15,9 @@ check_relation(subject, relation, object) := true {
             "body": {
                 "authorization_model_id": input.openfga.authorization_model_id,
                 "tuple_key": {
-                    "user": subject,
+                    "user": encode_object(subject),
                     "relation": relation,
-                    "object": object
+                    "object": encode_object(object)
                 }
             }
         }

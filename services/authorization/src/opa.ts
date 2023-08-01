@@ -35,11 +35,20 @@ export function opa_deinit(){
 }
 
 export async function opa_check(checks: CheckTuple[]){
-    const outputPromise=checks.map((input: CheckTuple)=>
-        fetch('http://localhost:8181/v1/data/crosslab/allow', {
+    const outputPromise=checks.map((input: CheckTuple)=>(
+        fetch('http://localhost:8181/v1/data/crosslab', {
             method: 'POST',
             body: JSON.stringify({input: {...input, ...openfgaOpaData}}),
-        }).then(response => response.json()).then(json => ({result: json.result ?? false, reason: json.reason ?? 'unknown'}))
-    )
+        })
+        .then(response => response.json())
+        .then(json => ({result: json.result.allow ?? false, reason: json.result.reason ?? 'unknown'}))
+    ));
     return await Promise.all(outputPromise)
+}
+
+export async function opa_set_jwt_secret(secret: string){
+    await fetch('http://localhost:8181/v1/data/jwt_secret', {
+        method: 'PUT',
+        body: JSON.stringify(secret),
+    })
 }
