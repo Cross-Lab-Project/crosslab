@@ -17,3 +17,4 @@ export async function mochaGlobalTeardown() {
 }
 
 process.env['AUTHORIZATION_PSK'] = 'TestPSK'
+process.env['JWT_SECRET'] = 'secret'
