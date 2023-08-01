@@ -11,6 +11,9 @@ export * from './database/abstractRepository';
 export * from './database/abstractDataSource';
 import express from 'express';
 
+/**
+ * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.
+ */
 export function parseJwtFromRequestAuthenticationHeader(req: express.Request): string {
   const jwt = req.header('X-Request-Authentication');
   if (jwt === undefined) {
@@ -20,6 +23,9 @@ export function parseJwtFromRequestAuthenticationHeader(req: express.Request): s
   return jwt;
 }
 
+/**
+ * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.
+ */
 export function JWTVerify<T, R extends {scopes: string[]}>(
   options: {JWKS_URL: string; SECURITY_ISSUER: string; SECURITY_AUDIENCE: string},
   validatePayload: (output: JWTPayload) => output is R,
