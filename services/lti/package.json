@@ -1,0 +1,43 @@
+{
+  "name": "@crosslab/lti",
+  "dockerName": "lti",
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "bin": {
+    "crosslab-lti-service": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
+  "scripts": {
+    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
+    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
+    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
+    "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
+    "lint": "eslint .",
+    "build": "tsc --project tsconfig.json",
+    "watch": "COOKIE_SECRET=secret npx nodemon --signal SIGTERM -e ts src/index.ts",
+    "test": "mocha --require ts-node/register test/**/*.spec.ts"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "@types/express": "^4.17.17",
+    "@types/node-fetch": "^2.6.4",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@crosslab/service-common": "file:../common",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "jose": "^4.14.4",
+    "node-fetch": "^2.6.12",
+    "openid-client": "^5.4.3",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17"
+  }
+}

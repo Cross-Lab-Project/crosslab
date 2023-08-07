@@ -19,6 +19,7 @@
 				"ms-python.vscode-pylan1ce",
 				"ryanluker.vscode-coverage-gutters",
 				"onatm.open-in-new-window",
+				"redhat.vscode-yaml",
 				"rvest.vs-code-prettier-eslint"
 			]
 		}
