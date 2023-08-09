@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "Node",
+        "allowSyntheticDefaultImports": true,
+        "target": "ES6",
+        "lib": [
+            "ES6",
+        ],
+        "esModuleInterop": true,
+        "outDir": "app",
+        "rootDir": "src",
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": true
+    }
+}
