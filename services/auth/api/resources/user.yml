@@ -39,6 +39,7 @@ patch:
     - $ref: "../parameters/user_id.yml"
   requestBody:
     description: Updated user
+    required: true
     content:
       application/json:
         $ref: "../content/user_update.yml"

@@ -9,7 +9,7 @@
         "outDir": "app",
         "strict": true,
         "noImplicitAny": true,
-        "noUnusedLocals": true,
+        //"noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,

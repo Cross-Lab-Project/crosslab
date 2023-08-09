@@ -18,6 +18,9 @@
   "overrides": [
     {
       "files": ["*.ts"],
+      "ecmaFeatures": {
+        "jsx": false
+      },
       "rules": {
         "@typescript-eslint/no-shadow": ["error"],
         "no-shadow": "off",
