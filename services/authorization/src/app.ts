@@ -32,6 +32,7 @@ app.get('/authorize', asyncHandler(async (req, res) => {
 
 app.post('/authorize', asyncHandler(async (req, res) => {
     const checks=req.body
+    console.log(req.body)
     if (!Array.isArray(checks)) {res.send({result: false, reason: 'checks is not an array'}); return;}
     if (checks.length === 0) {res.send({result: false, reason: 'checks is empty'}); return;}
     res.send(await opa_check(checks))

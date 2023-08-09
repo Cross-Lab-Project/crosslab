@@ -17,7 +17,7 @@
     "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
     "lint": "eslint .",
     "build": "tsc --project tsconfig.build.json",
-    "dev": "npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
+    "dev": "AUTHORIZATION_PSK=secret JWT_SECRET=secret npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
     "dev-test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --watch --watch-files test/*.ts -R list test/**/*.spec.ts",
     "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts"
   },

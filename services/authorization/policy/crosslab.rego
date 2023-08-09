@@ -10,6 +10,8 @@ default rebac_allow := false
 default allow := false
 default scopes := ["read", "write", "connect"]
 
+
+object := input.object
 # Preprocessing
 object_type := split(input.object, ":")[0]
 
@@ -23,6 +25,10 @@ scopes := payload.scopes
 
 enc := openfga.encode_object(subject)
 
+# override authorization for root
+allow if {
+    subject in ["user:root"] 
+}
 
 # Check Scopes
 scope_allow if {
@@ -49,7 +55,7 @@ rebac_allow if {
 
 # Allow Viewer to view
 rebac_allow if {
-    object_type in ["device", "experiment", "peerconnection", "booking", "federation"]
+    object_type in ["user", "device", "experiment", "peerconnection", "booking", "federation"]
     input.action in ["view"]
     openfga.check_relation(subject, "viewer", input.object)
 }

@@ -18,6 +18,11 @@ export let openfgaOpaData: any
 
 const relationRepository = ApplicationDataSource.getRepository(RelationModel)
 
+export function fix_object_without_colon(object: string){
+    if (!object.includes(':')) object=object+':~~~TYPE~~~';
+    return object
+}
+
 export async function openfga_init(){
     fgaClient= new OpenFgaClient({
         apiScheme: 'http',
@@ -87,7 +92,7 @@ async function rehydrate(){
         writes: relations.map((tuple: Tuple)=>({
             user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: encode_object(tuple.object),
+            object: fix_object_without_colon(encode_object(tuple.object)),
         }))
     }, {transaction: {disable: true}})
 }
@@ -99,12 +104,12 @@ export async function update_relations(add: Tuple[], remove: Tuple[]){
         writes: add.map((tuple: Tuple)=>({
             user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: encode_object(tuple.object),
+            object: fix_object_without_colon(encode_object(tuple.object)),
         })),
         deletes: remove.map((tuple: Tuple)=>({
             user: encode_object(tuple.subject),
             relation: tuple.relation,
-            object: encode_object(tuple.object),
+            object: fix_object_without_colon(encode_object(tuple.object)),
         })),
     }, {transaction: {disable: true}})
 }

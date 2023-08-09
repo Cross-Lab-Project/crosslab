@@ -1,6 +1,8 @@
 model
   schema 1.1
 type user
+  relations
+    define viewer: [user]
 type device
   relations
     define viewer: [user] or owner

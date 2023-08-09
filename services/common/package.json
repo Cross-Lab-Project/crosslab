@@ -16,6 +16,11 @@
       "require": "./lib/cjs/index.js",
       "types": "./lib/types/index.d.ts"
     },
+    "./authorization": {
+      "import": "./lib/esm/authorization/index.js",
+      "require": "./lib/cjs/authorization/index.js",
+      "types": "./lib/types/authorization/index.d.ts"
+    },
     "./test-helper": {
       "import": "./lib/esm/test-helper.js",
       "require": "./lib/cjs/test-helper.js",

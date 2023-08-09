@@ -1,7 +1,7 @@
 import { logger } from '@crosslab/service-common';
 import { spawn} from 'child_process';
 import readline from 'readline';
-import { openfgaOpaData } from './openfga';
+import { fix_object_without_colon, openfgaOpaData } from './openfga';
 import { CheckTuple } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,9 +38,10 @@ export async function opa_check(checks: CheckTuple[]){
     const outputPromise=checks.map((input: CheckTuple)=>(
         fetch('http://localhost:8181/v1/data/crosslab', {
             method: 'POST',
-            body: JSON.stringify({input: {...input, ...openfgaOpaData}}),
+            body: JSON.stringify({input: {...input, object: fix_object_without_colon(input.object), ...openfgaOpaData}}),
         })
         .then(response => response.json())
+        .then(response => {console.log(response); return response})
         .then(json => ({result: json.result.allow ?? false, reason: json.result.reason ?? 'unknown'}))
     ));
     return await Promise.all(outputPromise)

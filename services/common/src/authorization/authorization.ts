@@ -1,18 +1,22 @@
 export type AuthorizationActionTuple = {subject: string; action: string; object: string};
 export type AuthorizationRelationTuple = {subject: string; relation: string; object: string};
-export type AuthorizationConfig = {AUTHORIZATION_SERVER: string; AUTHORIZATION_PSK: string}
+export type AuthorizationConfig = {AUTHORIZATION_SERVER: string; AUTHORIZATION_PSK: string};
+export type AuthorizationResponse = {result: boolean; reason?: string};
 
 export function authorization_functions(config: AuthorizationConfig) {
-  async function check_authorization(tuples: AuthorizationActionTuple[]): Promise<boolean[]>;
-  async function check_authorization(subject: string, action: string, object: string): Promise<boolean>;
+  async function check_authorization(tuples: AuthorizationActionTuple[]): Promise<AuthorizationResponse[]>;
+  async function check_authorization(subject: string, action: string, object: string): Promise<AuthorizationResponse>;
   async function check_authorization(
     subject_or_tuple: string | AuthorizationActionTuple[],
     action?: string,
     object?: string,
-  ): Promise<boolean | boolean[]> {
+  ): Promise<AuthorizationResponse | AuthorizationResponse[]> {
     let tuples: AuthorizationActionTuple[];
     if (Array.isArray(subject_or_tuple)) {
       tuples = subject_or_tuple;
+      if (tuples.length === 0) {
+        return [];
+      }
     } else {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       tuples = [{subject: subject_or_tuple, action: action!, object: object!}];
@@ -23,9 +27,15 @@ export function authorization_functions(config: AuthorizationConfig) {
       body: JSON.stringify(tuples),
     });
     if (response.status === 200) {
-      return (await response.json()).result ?? false;
+      const result = await response.json();
+      console.log(result);
+      if (Array.isArray(subject_or_tuple)) {
+        return result.map((r: {result: boolean; reason: string}) => ({result: r.result ?? false, reason: r.reason}));
+      } else {
+        return {result: result[0].result ?? false, reason: result[0].reason};
+      }
     } else {
-      throw new Error(await response.text());
+      throw new Error(`Unexpected Status Code from Authorization Server: ${response.status}`);
     }
   }
 
@@ -40,8 +50,8 @@ export function authorization_functions(config: AuthorizationConfig) {
     }
   }
 
-  async function relate(tuples: AuthorizationRelationTuple[]): Promise<void>
-  async function relate(subject: string, relation: string, object: string): Promise<void>
+  async function relate(tuples: AuthorizationRelationTuple[]): Promise<void>;
+  async function relate(subject: string, relation: string, object: string): Promise<void>;
   async function relate(subject_or_tuples: string | AuthorizationRelationTuple[], relation?: string, object?: string): Promise<void> {
     let tuples: AuthorizationRelationTuple[];
     if (Array.isArray(subject_or_tuples)) {
@@ -53,8 +63,8 @@ export function authorization_functions(config: AuthorizationConfig) {
     await update_relations(tuples, []);
   }
 
-  async function unrelate(tuples: AuthorizationRelationTuple[]): Promise<void>
-  async function unrelate(subject: string, relation: string, object: string): Promise<void>
+  async function unrelate(tuples: AuthorizationRelationTuple[]): Promise<void>;
+  async function unrelate(subject: string, relation: string, object: string): Promise<void>;
   async function unrelate(subject_or_tuples: string | AuthorizationRelationTuple[], relation?: string, object?: string): Promise<void> {
     let tuples: AuthorizationRelationTuple[];
     if (Array.isArray(subject_or_tuples)) {
