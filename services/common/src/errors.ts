@@ -10,6 +10,13 @@ export abstract class ErrorWithStatus extends Error {
   }
 }
 
+export class HttpError extends ErrorWithStatus {
+  constructor(status: number, message: string, innerError?: Error) {
+    super(message, status, innerError);
+    this.name = 'HttpError';
+  }
+}
+
 export class InternalServerError extends ErrorWithStatus {
   constructor(message: string, innerError?: Error) {
     super(message, 500, innerError);

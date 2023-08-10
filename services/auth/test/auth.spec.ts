@@ -4,7 +4,7 @@ import {createNewToken} from "../src/token/helper";
 import {disable_logs, resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";
-import {createUser} from "../src/user";
+import { createUser } from "../src/user/helper";
 
 describe("Authentication", () => {
   let valid_token: string;

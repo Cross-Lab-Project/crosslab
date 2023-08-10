@@ -2,8 +2,8 @@ import app from "../src/app";
 import {disable_logs, resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";
-import {createUser} from "../src/user";
 import {createNewToken} from "../src/token/helper";
+import {createUser} from "../src/user/helper";
 
 describe("Login", () => {
   before(async function () {
@@ -18,8 +18,8 @@ describe("Login", () => {
       .post("/login")
       .send({username: "user", password: "password"});
 
-    res.should.have.status(200);
-    res.body.should.be.a("string");
+    res.should.have.status(201);
+    res.should.have.header("Content-Type", "application/json; charset=utf-8");
   });
 
   it("should not allow an invalid user to login", async function () {
