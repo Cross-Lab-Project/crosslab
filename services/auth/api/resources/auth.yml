@@ -17,7 +17,7 @@ get:
     200:
       description: Return the JWT which represents the authenticated user.
       headers:
-        Authorization:
+        X-Request-Authentication:
           required: false
           schema:
             type: string
