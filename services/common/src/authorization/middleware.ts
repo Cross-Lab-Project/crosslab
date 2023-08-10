@@ -8,6 +8,7 @@ import {
   authorization_functions,
 } from './authorization';
 import { ForbiddenError, UnauthorizedError } from '../errors';
+import { AuthorizationMockConfig, mock_authorization_functions } from './mock';
 
 export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, 'subject'>;
 export type AuthorizationRelationTupleWithoutSubject = Omit<AuthorizationRelationTuple, 'subject'>;
@@ -54,7 +55,6 @@ function bind_authorization(authorization_funs: ReturnType<typeof authorization_
     if (!Array.isArray(result)) {
       result = [result];
     }
-    console.log(result);
     if (result.some((r: AuthorizationResponse)  => !r.result)) {
       if (user==='user:anonymus'){
         throw new UnauthorizedError();
@@ -66,8 +66,7 @@ function bind_authorization(authorization_funs: ReturnType<typeof authorization_
 
   async function filter<T>(array: T[], action: string, key: (object: T) => string) {
     const authorization_map = await bound_check_authorization(array.map(o => ({action, object: key(o)})));
-    console.log(authorization_map);
-    return array.filter((_, idx) => authorization_map[idx]);
+    return array.filter((_, idx) => authorization_map[idx].result);
   }
 
   return {...authorization_funs, check_authorization: bound_check_authorization, check_authorization_or_fail, filter};
@@ -79,14 +78,21 @@ declare global {
     export interface Request {
       authorization: ReturnType<typeof bind_authorization>;
     }
+
+    export interface Application {
+      authorization_mock: undefined | AuthorizationMockConfig
+    }
   }
 }
 
 export function middleware(config: AuthorizationConfig) {
-  const authorization_funs = authorization_functions(config);
+  let authorization_funs = authorization_functions(config);
   return ((req, _res, next) => {
     const user = req.header('X-Request-Authentication') ?? 'user:anonymus';
 
+    if (req.app.authorization_mock) {
+      authorization_funs = mock_authorization_functions(req.app.authorization_mock);
+    }
     req.authorization = bind_authorization(authorization_funs, user);
 
     next();

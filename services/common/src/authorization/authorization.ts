@@ -28,7 +28,6 @@ export function authorization_functions(config: AuthorizationConfig) {
     });
     if (response.status === 200) {
       const result = await response.json();
-      console.log(result);
       if (Array.isArray(subject_or_tuple)) {
         return result.map((r: {result: boolean; reason: string}) => ({result: r.result ?? false, reason: r.reason}));
       } else {

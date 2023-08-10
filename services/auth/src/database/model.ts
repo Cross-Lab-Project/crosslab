@@ -46,7 +46,7 @@ export class TokenModel {
     expiresOn?: string
 
     @Column('simple-json', { nullable: true })
-    claims?: string[]
+    claims?: object
 
     @ManyToOne(() => UserModel, (user) => user.tokens)
     user!: UserModel
