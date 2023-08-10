@@ -25,7 +25,7 @@ export const getDevicesByDeviceIdAvailability: getDevicesByDeviceIdAvailabilityS
 
         if (deviceModel.type !== 'device')
             throw new ImpossibleOperationError(
-                "Availability can only be retrieved for devices of type 'device'"
+                "Availability can only be retrieved for devices of type 'device'", 500
             )
 
         if (!checkPermission('read', deviceModel, user.JWT))

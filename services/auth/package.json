@@ -15,7 +15,7 @@
     "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
     "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./template -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src/generated && npx prettier --write ./src/generated",
     "build:compile": "tsc --project tsconfig.build.json",
-    "build": "npm-run-all build:*",
+    "build": "npm run build:generate && npm run build:compile",
     "start": "node app/index.js",
     "dev": "env-cmd -e development npx nodemon src/index.ts",
     "lint": "eslint .",
@@ -94,6 +94,7 @@
   "dependencies": {
     "@cross-lab-project/api-client": "file:../../clients/api/js",
     "@crosslab/service-common": "file:../common",
+    "ajv-formats": "^2.1.1",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",

@@ -31,7 +31,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
     const experimentModel = peerconnectionModel.experiment
     if (!experimentModel)
         throw new MissingPropertyError(
-            `Peerconnection model is missing property "experiment"`
+            `Peerconnection model is missing property "experiment"`, 400
         ) // NOTE: error code
 
     switch (callback.peerconnection.status) {

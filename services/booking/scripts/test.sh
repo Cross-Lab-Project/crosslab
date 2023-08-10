@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sudo service rabbitmq-server start
-sudo service mysql start
+sudo service mariadb start
 sudo mysql -e "CREATE DATABASE unittest DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;"
 sudo mysql -e "CREATE USER 'test'@localhost IDENTIFIED BY 'test';"
 sudo mysql -e "GRANT ALL PRIVILEGES ON unittest.* to 'test'@localhost;"

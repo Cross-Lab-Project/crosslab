@@ -1,6 +1,5 @@
 import { repositories } from '../../../database/dataSource'
 import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
-import { apiClient } from '../../../globals'
 import { changedCallbacks } from '../../../methods/callbacks'
 import { checkPermission } from '../../../methods/permission'
 import { deviceUrlFromId } from '../../../methods/urlFromId'
@@ -62,10 +61,6 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     }
     const instance = await repositories.concreteDevice.format(concreteDeviceModel)
 
-    const deviceToken = await apiClient.createDeviceAuthenticationToken(instance.url) // TODO: error handling
-    instantiableDeviceModel.instances ??= []
-    instantiableDeviceModel.instances.push(concreteDeviceModel)
-
     await repositories.device.save(instantiableDeviceModel)
 
     logger.log('info', 'postDevicesByDeviceId succeeded')
@@ -73,7 +68,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     return {
         status: 201,
         body: {
-            deviceToken,
+            deviceToken: "deprecated",
             instance: instance,
         },
     }

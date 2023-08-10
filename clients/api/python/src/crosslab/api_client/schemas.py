@@ -32,12 +32,6 @@ class LogoutRequest(TypedDict):
 LogoutResponse: TypeAlias = None
 
 
-CreateDeviceAuthenticationTokenResponse201: TypeAlias = str
-
-
-CreateDeviceAuthenticationTokenResponse: TypeAlias = CreateDeviceAuthenticationTokenResponse201
-
-
 class ListUsersResponse200Items(TypedDict):
     """
     Properties:
@@ -109,11 +103,9 @@ GetUserResponse: TypeAlias = GetUserResponse200
 class UpdateUserRequest(TypedDict):
     """
     Properties:
-    - username
     - password
     """
-    username: NotRequired[str]
-    password: NotRequired[str]
+    password: str
 
 
 class UpdateUserResponse200(TypedDict):
@@ -136,172 +128,6 @@ UpdateUserResponse: TypeAlias = UpdateUserResponse200
 DeleteUserResponse: TypeAlias = None
 
 
-class GetRolesOfUserResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRolesOfUserResponse200: TypeAlias = List[GetRolesOfUserResponse200Items]
-
-
-GetRolesOfUserResponse: TypeAlias = GetRolesOfUserResponse200
-
-
-AddRolesToUserRequest: TypeAlias = List[str]
-
-
-AddRolesToUserResponse: TypeAlias = None
-
-
-RemoveRolesFromUserRequest: TypeAlias = List[str]
-
-
-RemoveRolesFromUserResponse: TypeAlias = None
-
-
-class ListRolesResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-ListRolesResponse200: TypeAlias = List[ListRolesResponse200Items]
-
-
-ListRolesResponse: TypeAlias = ListRolesResponse200
-
-
-class CreateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class CreateRoleResponse201(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-CreateRoleResponse: TypeAlias = CreateRoleResponse201
-
-
-class GetRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRoleResponse: TypeAlias = GetRoleResponse200
-
-
-class UpdateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class UpdateRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-UpdateRoleResponse: TypeAlias = UpdateRoleResponse200
-
-
-DeleteRoleResponse: TypeAlias = None
-
-
-class GetUsersWithRoleResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - username
-    - password
-    """
-    url: str
-    id: str
-    username: str
-    password: str
-
-
-GetUsersWithRoleResponse200: TypeAlias = List[GetUsersWithRoleResponse200Items]
-
-
-GetUsersWithRoleResponse: TypeAlias = GetUsersWithRoleResponse200
-
-
-AddUsersToRoleRequest: TypeAlias = List[str]
-
-
-AddUsersToRoleResponse: TypeAlias = None
-
-
-RemoveUsersFromRoleRequest: TypeAlias = List[str]
-
-
-RemoveUsersFromRoleResponse: TypeAlias = None
-
-
 class GetIdentityResponse200(TypedDict):
     """
     Properties:
@@ -322,11 +148,9 @@ GetIdentityResponse: TypeAlias = GetIdentityResponse200
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
-    - username
     - password
     """
-    username: NotRequired[str]
-    password: NotRequired[str]
+    password: str
 
 
 class UpdateIdentityResponse200(TypedDict):
@@ -344,33 +168,6 @@ class UpdateIdentityResponse200(TypedDict):
 
 
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
-
-
-class RegisterRequest(TypedDict):
-    """
-    Properties:
-    - username: Username of the user.
-    - password: Password of the user.
-    """
-    username: str
-    password: str
-
-
-class RegisterResponse201(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - username
-    - password
-    """
-    url: str
-    id: str
-    username: str
-    password: str
-
-
-RegisterResponse: TypeAlias = RegisterResponse201
 
 
 class ScheduleRequestExperimentDevicesItems(TypedDict):

@@ -14,7 +14,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     logger.log('info', 'Attempting to book experiment', { data: { experimentUrl } })
 
     if (!experimentModel.devices || experimentModel.devices.length === 0)
-        throw new MissingPropertyError(`Experiment ${experimentUrl} has no devices`)
+        throw new MissingPropertyError(`Experiment ${experimentUrl} has no devices`, 400)
 
     // const currentTime = new Date()
     // const startTime = new Date(experimentModel.bookingStart ?? currentTime)

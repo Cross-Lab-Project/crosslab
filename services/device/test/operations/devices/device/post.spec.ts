@@ -1,5 +1,4 @@
 import { repositories } from '../../../../src/database/dataSource'
-import { apiClient } from '../../../../src/globals'
 import { changedCallbacks } from '../../../../src/methods/callbacks'
 import { postDevicesByDeviceId } from '../../../../src/operations/devices'
 import { instantiableBrowserDeviceNames } from '../../../data/devices/instantiableBrowserDevices/index.spec'
@@ -10,31 +9,9 @@ import { addTest } from '../../index.spec'
 import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common'
 import assert from 'assert'
 import Mocha from 'mocha'
-import * as sinon from 'sinon'
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('POST /devices/{device_id}', context)
-    const DEVICE_TOKEN = '15addcf9-74be-4057-80af-cf85cff08b03'
-    let createDeviceAuthenticationTokenStub: sinon.SinonStub<
-        Parameters<typeof apiClient.createDeviceAuthenticationToken>,
-        ReturnType<typeof apiClient.createDeviceAuthenticationToken>
-    >
-
-    suite.beforeAll(function () {
-        createDeviceAuthenticationTokenStub = sinon.stub(
-            apiClient,
-            'createDeviceAuthenticationToken'
-        )
-        createDeviceAuthenticationTokenStub.resolves(DEVICE_TOKEN)
-    })
-
-    suite.afterEach(function () {
-        createDeviceAuthenticationTokenStub.resetHistory()
-    })
-
-    suite.afterAll(function () {
-        createDeviceAuthenticationTokenStub.restore()
-    })
 
     addTest(
         suite,
@@ -108,11 +85,6 @@ export default function (context: Mocha.Context, testData: TestData) {
                 )
 
                 assert(result.status === 201)
-                assert(result.body.deviceToken === DEVICE_TOKEN)
-                assert(
-                    !createDeviceAuthenticationTokenStub.args[0][0].endsWith('undefined'),
-                    createDeviceAuthenticationTokenStub.args[0][0]
-                )
                 const instanceModel = await repositories.concreteDevice.findOneOrFail({
                     where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })
@@ -145,7 +117,6 @@ export default function (context: Mocha.Context, testData: TestData) {
                 )
 
                 assert(result.status === 201)
-                assert(result.body.deviceToken === DEVICE_TOKEN)
                 const instanceModel = await repositories.concreteDevice.findOneOrFail({
                     where: { uuid: result.body.instance.url.split('/').at(-1) },
                 })

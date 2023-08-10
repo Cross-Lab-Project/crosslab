@@ -24,7 +24,7 @@ export function calculateAvailability(
     end: number
 ): Required<TimeSlot>[] {
     if (start > end)
-        throw new InvalidValueError("calculateAvailability called with 'start' > 'end'")
+        throw new InvalidValueError("calculateAvailability called with 'start' > 'end'", 400)
 
     let availability: TimeSlotModel[] = []
     for (const availabilityRule of availabilityRules) {
