@@ -37,7 +37,7 @@ async function main() {
       '--disable-gpu',
       '--disable-dev-shm-usage',
       '--enable-logging=stderr',
-      '--v=6',
+      '--v=0',
       '--remote-debugging-port=' + chromePort,
       entrypoint,
     ],
