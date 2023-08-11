@@ -86,9 +86,10 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     }
     console.log('creating connection', message);
     const connection = new WebRTCPeerConnection(
-      {
-        iceServers: [{ urls: 'stun:stun.goldi-labs.de:3478' }, { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' }],
-      },
+      {}
+      //{
+      //  iceServers: [{ urls: 'stun:stun.goldi-labs.de:3478' }, { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' }],
+      //},
     );
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
