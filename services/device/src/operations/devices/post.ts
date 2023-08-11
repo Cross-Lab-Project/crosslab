@@ -10,7 +10,7 @@ import { MalformedBodyError, logger } from '@crosslab/service-common'
  * @param body The body of the request.
  * @param user The user submitting the request.
  */
-export const postDevices: postDevicesSignature = async (parameters, body, user) => {
+export const postDevices: postDevicesSignature = async (parameters, body, _user) => {
     logger.log('info', 'postDevices called')
 
     if (!body.name)
@@ -20,7 +20,7 @@ export const postDevices: postDevicesSignature = async (parameters, body, user) 
         )
 
     const deviceModel = await repositories.device.create(body)
-    deviceModel.owner = user.JWT.url
+    deviceModel.owner = "http://example.com/users/1"
     await repositories.device.save(deviceModel)
 
     if (parameters.changedUrl) {

@@ -1,18 +1,10 @@
+import app from './app'
 import { config, dataSourceConfig } from './config'
 import { AppDataSource } from './database/dataSource'
-import { app } from './generated/index'
-import { isUserTypeJWT } from './generated/types'
 import { apiClient } from './globals'
-import { callbackHandling } from './operations/callbacks'
 import { websocketHandling } from './operations/devices'
 import {
-    JWTVerify,
-    errorHandler,
-    logHandling,
     logger,
-    parseJwtFromRequestAuthenticationHeader,
-    missingRouteHandling,
-    requestIdHandling,
 } from '@crosslab/service-common'
 import { IncomingMessage } from 'http'
 import { Socket } from 'net'
@@ -33,23 +25,6 @@ async function startDeviceService() {
     await AppDataSource.initialize(dataSourceConfig)
 
     apiClient.accessToken = config.API_TOKEN
-
-    app.get('/device/status', (_req, res) => {
-        res.send({ status: 'ok' })
-    })
-
-    app.initService({
-        security: {
-            JWT: JWTVerify(
-                config,
-                isUserTypeJWT,
-                parseJwtFromRequestAuthenticationHeader
-            ),
-        },
-        preHandlers: [requestIdHandling, logHandling],
-        postHandlers: [callbackHandling, missingRouteHandling],
-        errorHandler: errorHandler,
-    })
 
     const wsServer = new WebSocket.Server({ noServer: true })
     app.wsListeners = new Map()

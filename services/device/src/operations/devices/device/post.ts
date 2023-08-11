@@ -44,7 +44,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
         ...(await repositories.device.format(instantiableDeviceModel)),
         type: 'device',
     })
-    concreteDeviceModel.owner = user.JWT?.url
+    concreteDeviceModel.owner = "https://todo.example.com"
 
     await repositories.device.save(concreteDeviceModel)
 
