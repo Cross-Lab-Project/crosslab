@@ -1,55 +1,54 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    ManyToOne,
-    OneToMany,
-    PrimaryColumn,
-    PrimaryGeneratedColumn,
-} from 'typeorm'
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity()
 export class UserModel {
-    @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+  @PrimaryGeneratedColumn("uuid")
+  uuid!: string;
 
-    @Index({ unique: true })
-    @Column()
-    username!: string
+  @Index({unique: true})
+  @Column()
+  username!: string;
 
-    @Column()
-    type!: 'local' | 'tui'
+  @Column()
+  type!: "local" | "tui";
 
-    @Column({ nullable: true })
-    password?: string
+  @Column({nullable: true})
+  password?: string;
 
-    @CreateDateColumn()
-    createdOn!: string
+  @CreateDateColumn()
+  createdOn!: string;
 
-    @Column('datetime', { nullable: true })
-    lastLogin?: string
+  @Column("datetime", {nullable: true})
+  lastLogin?: string;
 
-
-    @OneToMany(() => TokenModel, (token) => token.user, {
-        onDelete: 'CASCADE',
-    })
-    tokens!: Promise<TokenModel[]>
+  @OneToMany(() => TokenModel, token => token.user, {
+    onDelete: "CASCADE",
+  })
+  tokens!: Promise<TokenModel[]>;
 }
 
 @Entity()
 export class TokenModel {
-    @PrimaryColumn()
-    token!: string
+  @PrimaryColumn()
+  token!: string;
 
-    @Column('datetime', { nullable: true })
-    expiresOn?: string
+  @Column("datetime", {nullable: true})
+  expiresOn?: string;
 
-    @Column('simple-json', { nullable: true })
-    claims?: object
+  @Column("simple-json", {nullable: true})
+  claims?: object;
 
-    @ManyToOne(() => UserModel, (user) => user.tokens)
-    user!: UserModel
+  @ManyToOne(() => UserModel, user => user.tokens)
+  user!: UserModel;
 }
 
-export const Entities = [UserModel, TokenModel]
+export const Entities = [UserModel, TokenModel];

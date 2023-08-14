@@ -1,14 +1,15 @@
 #! /usr/bin/env node
-import { Option, program } from "commander";
 import SwaggerParser from "@apidevtools/swagger-parser";
-import {
-  quicktype,
-  InputData,
-  JSONSchemaInput,
-  FetchingJSONSchemaStore,
-} from "quicktype-core";
-
+import {Option, program} from "commander";
+import {mkdirSync, readFileSync, writeFileSync} from "fs";
+import {glob} from "glob";
 import nunjucks from "nunjucks";
+import {OpenAPIV3_1} from "openapi-types";
+import {join, resolve} from "path";
+import {FetchingJSONSchemaStore, InputData, JSONSchemaInput, quicktype} from "quicktype-core";
+import yaml from "yaml";
+
+import {Preset, activateFilterCollection, activatePreset, loadPreset} from "./addon";
 import {
   await_filter,
   formatPath_filter,
@@ -22,19 +23,8 @@ import {
   resolveRef_meta_filter,
   upperCamelCase_filter,
 } from "./filter";
-import { readdirSync, writeFileSync, mkdirSync, readFileSync } from "fs";
-import { OpenAPIV3_1 } from "openapi-types";
-import { join, resolve } from "path";
-import yaml from "yaml";
 
-import {
-  activateFilterCollection,
-  activatePreset,
-  loadPreset,
-  Preset,
-} from "./addon";
-
-export { Addon, Preset, FilterCollection, Filter, Global } from "./addon";
+export {Addon, Preset, FilterCollection, Filter, Global} from "./addon";
 
 let inputData: InputData;
 const schema_mapping: string[] = [];
@@ -93,11 +83,7 @@ async function main() {
     .requiredOption("-o, --output <string>", "openapi output directory")
     .option("-f, --filters <string...>", "filter collections to load")
     .option("--keep-refs", "keep references")
-    .addOption(
-      new Option("-p, --preset <string>")
-        .implies({ template: "" })
-        .conflicts("-f")
-    );
+    .addOption(new Option("-p, --preset <string>").implies({template: ""}).conflicts("-f"));
 
   program.parse();
   const options = program.opts();
@@ -112,7 +98,7 @@ async function main() {
     preset = await loadPreset(options.preset);
     templateDir = preset.templatesDir;
   }
-  
+
   if (options.template.startsWith(".")) {
     templateDir = resolve(process.cwd(), options.template);
   }
@@ -134,22 +120,19 @@ async function main() {
   env.addGlobal("type", type);
   env.addGlobal("transformerFromDict", transformerFromDict);
   env.addGlobal("transformerToDict", transformerToDict);
-  
+
   if (preset) {
     activatePreset(preset, env);
   }
-  
+
   const inputs: string = options.input;
 
   function loadAndDeref(input: string): string {
     const file = readFileSync(input, "utf8");
     const schema = yaml.parse(file);
-    return JSON.stringify(schema).replace(
-      /{[^{}]*"\$ref":"([^"]*)"[^{}]*}/g,
-      (_substring, group: string) => {
-        return loadAndDeref(resolve(join(input, "..", group)));
-      }
-    );
+    return JSON.stringify(schema).replace(/{[^{}]*"\$ref":"([^"]*)"[^{}]*}/g, (_substring, group: string) => {
+      return loadAndDeref(resolve(join(input, "..", group)));
+    });
   }
 
   inputData = new InputData();
@@ -157,20 +140,14 @@ async function main() {
   for (const input of inputs) {
     try {
       const openApi = (
-        options["keepRefs"]
-          ? await SwaggerParser.parse(input)
-          : await SwaggerParser.validate(input)
+        options["keepRefs"] ? await SwaggerParser.parse(input) : await SwaggerParser.validate(input)
       ) as OpenAPIV3_1.Document;
       if (openApi.openapi !== "3.1.0") {
-        console.error(
-          `Only OpenAPI 3.1.0 is supported, but ${openApi.openapi} was provided. Please upgrade your OpenAPI file.`
-        );
+        console.error(`Only OpenAPI 3.1.0 is supported, but ${openApi.openapi} was provided. Please upgrade your OpenAPI file.`);
         process.exit(1);
       }
       if (api !== undefined) {
-        console.error(
-          "Multiple OpenAPI Specifications in input files. This tools only support one OpenAPI document at a time."
-        );
+        console.error("Multiple OpenAPI Specifications in input files. This tools only support one OpenAPI document at a time.");
         process.exit(1);
       }
       api = openApi;
@@ -193,13 +170,13 @@ async function main() {
 
   const outputDir = resolve(process.cwd(), options.output);
   // make sure outputDir exists
-  mkdirSync(outputDir, { recursive: true });
+  mkdirSync(outputDir, {recursive: true});
 
   // render all templates in the template directory
 
-  for (const file of readdirSync(templateDir)) {
-    const template = join(templateDir, file);
-    const output = join(outputDir, file.replace(".njk", ""));
+  for (const file of await glob(`${templateDir}/**/*.njk`)) {
+    const template = file;
+    const output = file.replace(".njk", "");
 
     nunjucks.render(template, context, (err, res) => {
       console.log(`Writing ${output}`);
@@ -211,28 +188,17 @@ async function main() {
 
 main();
 
-function extractSchemasFromOpenAPI(
-  schemasIn: InputData,
-  api: OpenAPIV3_1.Document
-): InputData {
+function extractSchemasFromOpenAPI(schemasIn: InputData, api: OpenAPIV3_1.Document): InputData {
   if (api.paths) {
     for (const path of Object.keys(api.paths)) {
       const pathItem = api.paths[path] as OpenAPIV3_1.PathItemObject;
       for (const method of Object.keys(pathItem)) {
-        const operation = pathItem[
-          method as OpenAPIV3_1.HttpMethods
-        ] as OpenAPIV3_1.OperationObject;
-        extractAndAddSchema(
-          operation.requestBody,
-          `${method}_${formatPath_filter(path)}_request_body`
-        );
+        const operation = pathItem[method as OpenAPIV3_1.HttpMethods] as OpenAPIV3_1.OperationObject;
+        extractAndAddSchema(operation.requestBody, `${method}_${formatPath_filter(path)}_request_body`);
 
         const responses = operation.responses;
         for (const key in responses) {
-          extractAndAddSchema(
-            responses[key],
-            `${method}_${formatPath_filter(path)}_response_body_${key}`
-          );
+          extractAndAddSchema(responses[key], `${method}_${formatPath_filter(path)}_response_body_${key}`);
         }
       }
     }
@@ -240,12 +206,8 @@ function extractSchemasFromOpenAPI(
   return schemasIn;
 
   function extractAndAddSchema(
-    contentObject:
-      | OpenAPIV3_1.ReferenceObject
-      | OpenAPIV3_1.ResponseObject
-      | OpenAPIV3_1.RequestBodyObject
-      | undefined,
-    name: string
+    contentObject: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.ResponseObject | OpenAPIV3_1.RequestBodyObject | undefined,
+    name: string,
   ) {
     if (contentObject) {
       if ("content" in contentObject) {
@@ -259,11 +221,7 @@ function extractSchemasFromOpenAPI(
   }
 }
 
-function addJsonSchema(
-  name: string,
-  schema: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject | undefined,
-  schemasIn: InputData
-) {
+function addJsonSchema(name: string, schema: OpenAPIV3_1.ReferenceObject | OpenAPIV3_1.SchemaObject | undefined, schemasIn: InputData) {
   const _name = lowerSnakeCase_filter(name);
   if (schema) {
     schema_mapping.push(_name);
@@ -278,26 +236,14 @@ function addJsonSchema(
 
     let schema_string = JSON.stringify(schema);
     if (schema_string.includes('"const":')) {
-      schema_string = schema_string.replace(
-        /"const":("[^"]*")/g,
-        `"enum":[$1]`
-      );
+      schema_string = schema_string.replace(/"const":("[^"]*")/g, `"enum":[$1]`);
     }
 
     let schema_string_write = schema_string;
     let schema_string_read = schema_string;
-    if (
-      schema_string.includes('"readOnly":') ||
-      schema_string.includes('"writeOnly":')
-    ) {
-      schema_string_write = schema_string.replace(
-        /"[^"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms,
-        ``
-      );
-      schema_string_read = schema_string.replace(
-        /"[^"]*?": {[^{}]*?"Only": true[^{}]*?}/gms,
-        ``
-      );
+    if (schema_string.includes('"readOnly":') || schema_string.includes('"writeOnly":')) {
+      schema_string_write = schema_string.replace(/"[^"]*?": {[^{}]*?"readOnly": true[^{}]*?}/gms, ``);
+      schema_string_read = schema_string.replace(/"[^"]*?": {[^{}]*?"Only": true[^{}]*?}/gms, ``);
     }
 
     schemaInput.addSource({

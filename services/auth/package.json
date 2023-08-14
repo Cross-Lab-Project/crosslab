@@ -13,7 +13,7 @@
     "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
     "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-    "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./template -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src/generated && npx prettier --write ./src/generated",
+    "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./src -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src && npx prettier --write ./src/generated",
     "build:compile": "tsc --project tsconfig.build.json",
     "build": "npm run build:generate && npm run build:compile",
     "start": "node app/index.js",
