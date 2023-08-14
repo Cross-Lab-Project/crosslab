@@ -1,13 +1,15 @@
 #!/usr/bin/env node
-import app from "./app";
+import {init_app} from "./app";
 import {config} from "./config";
 import {init_database} from "./database/datasource";
-import {logger} from "@crosslab/service-common";
+import {logging} from "@crosslab/service-common";
 
 async function initialize() {
   await init_database();
+  logging.init();
+  const app = init_app();
   app.listen(config.PORT);
-  logger.log("info", "Authentication Service started successfully");
+  logging.logger.log("info", "Authentication Service started successfully");
 }
 
 initialize();

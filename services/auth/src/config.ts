@@ -1,4 +1,7 @@
 import {config as CommonConfig} from "@crosslab/service-common";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const config = {
   PORT: parseInt(process.env.PORT ?? "3000"),
@@ -7,9 +10,5 @@ export const config = {
   JWT_SECRET: "secret",
   orm: {
     ...CommonConfig.readOrmConfig(),
-  },
-  authorization_config: {
-    ...CommonConfig.readAuthorizationConfig(),
-    AUTHORIZATION_SERVER: "http://localhost:3010",
   },
 };

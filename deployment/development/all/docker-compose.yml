@@ -1,0 +1,39 @@
+version: "3"
+
+# docker plugin install grafana/loki-docker-driver:2.8.2 --alias loki --grant-all-permissions
+
+services:
+  # Logging
+  loki:
+    image: grafana/loki:2.8.3
+    command: -config.file=/etc/loki/local-config.yaml
+    network_mode: "host"
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SERVER_HTTP_PORT=3101
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    image: grafana/grafana:latest
+    network_mode: "host"
+  # Services
+  gateway:
+    build: ../../../services/gateway
+    environment:
+      PORT: 80
+      AUTH_SERVICE_URL: "127.0.0.1:3000"
+      DEVICE_SERVICE_URL: "127.0.0.1:3001"
+      EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
+      FEDERATION_SERVICE_URL: "127.0.0.1:3003"
+      UPDATE_SERVICE_URL: "127.0.0.1:1"
+      SERVER_NAME: "localhost"
+    network_mode: "host"
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: service=gateway
