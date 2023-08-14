@@ -1,17 +1,18 @@
-import * as express from 'express';
+import * as express from "express";
 
+import {ForbiddenError, UnauthorizedError} from "../errors";
 import {
   AuthorizationActionTuple,
   AuthorizationConfig,
   AuthorizationRelationTuple,
   AuthorizationResponse,
   authorization_functions,
-} from './authorization';
-import { ForbiddenError, UnauthorizedError } from '../errors';
-import { AuthorizationMockConfig, mock_authorization_functions } from './mock';
+} from "./authorization";
+import {AuthorizationMockConfig, mock_authorization_functions} from "./mock";
+import { die } from "../utils";
 
-export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, 'subject'>;
-export type AuthorizationRelationTupleWithoutSubject = Omit<AuthorizationRelationTuple, 'subject'>;
+export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, "subject">;
+export type AuthorizationRelationTupleWithoutSubject = Omit<AuthorizationRelationTuple, "subject">;
 
 function bind_authorization(authorization_funs: ReturnType<typeof authorization_functions>, user: string) {
   const {check_authorization} = authorization_funs;
@@ -37,13 +38,11 @@ function bind_authorization(authorization_funs: ReturnType<typeof authorization_
         return check_authorization(subject_or_action_or_tuples, action_or_object, object);
       }
     } else {
-      return {result: false, reason: 'Invalid arguments'};
+      return {result: false, reason: "Invalid arguments"};
     }
   }
 
-  async function check_authorization_or_fail(
-    tuples: (AuthorizationActionTuple | AuthorizationActionTupleWithoutSubject)[],
-  ): Promise<void>;
+  async function check_authorization_or_fail(tuples: (AuthorizationActionTuple | AuthorizationActionTupleWithoutSubject)[]): Promise<void>;
   async function check_authorization_or_fail(subject: string, action: string, object: string): Promise<void>;
   async function check_authorization_or_fail(action: string, object: string): Promise<void>;
   async function check_authorization_or_fail(
@@ -55,10 +54,10 @@ function bind_authorization(authorization_funs: ReturnType<typeof authorization_
     if (!Array.isArray(result)) {
       result = [result];
     }
-    if (result.some((r: AuthorizationResponse)  => !r.result)) {
-      if (user==='user:anonymus'){
+    if (result.some((r: AuthorizationResponse) => !r.result)) {
+      if (user === "user:anonymus") {
         throw new UnauthorizedError();
-      }else{
+      } else {
         throw new ForbiddenError();
       }
     }
@@ -80,15 +79,29 @@ declare global {
     }
 
     export interface Application {
-      authorization_mock: undefined | AuthorizationMockConfig
+      authorization_mock: undefined | AuthorizationMockConfig;
     }
   }
 }
 
-export function middleware(config: AuthorizationConfig) {
+/**
+ * This middleware adds the authorization functions to the request object.
+ *
+ * The user is read from the `X-Request-Authentication` header. If the header is not set, the user is set to `user:anonymus`.
+ * @param config
+ * @returns
+ */
+export function middleware(config?: AuthorizationConfig) {
+  if (config === undefined) {
+    config = {
+      AUTHORIZATION_SERVER: process.env.AUTHORIZATION_SERVER || die("Environment variable AUTHORIZATION_SERVER must be set"),
+      AUTHORIZATION_PSK: process.env.AUTHORIZATION_PSK || die("Environment variable AUTHORIZATION_PSK must be set"),
+    };
+  }
+  
   let authorization_funs = authorization_functions(config);
   return ((req, _res, next) => {
-    const user = req.header('X-Request-Authentication') ?? 'user:anonymus';
+    const user = req.header("X-Request-Authentication") ?? "user:anonymus";
 
     if (req.app.authorization_mock) {
       authorization_funs = mock_authorization_functions(req.app.authorization_mock);
