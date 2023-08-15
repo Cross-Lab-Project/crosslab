@@ -57,21 +57,26 @@ services:
     logging: *loki-logging
   authentication:
     build: ../../../services/auth
-    logging: *loki-logging
     environment: *common-config
+    network_mode: "host"
+    logging: *loki-logging
   authorization:
     build: ../../../services/authorization
-    logging: *loki-logging
     environment: *common-config
+    network_mode: "host"
+    logging: *loki-logging
   device:
     build: ../../../services/device
-    logging: *loki-logging
     environment: *common-config
+    network_mode: "host"
+    logging: *loki-logging
   experiment:
     build: ../../../services/experiment
-    logging: *loki-logging
     environment: *common-config
+    network_mode: "host"
+    logging: *loki-logging
   federation:
     build: ../../../services/federation
-    logging: *loki-logging
     environment: *common-config
+    network_mode: "host"
+    logging: *loki-logging

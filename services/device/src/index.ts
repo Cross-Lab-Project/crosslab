@@ -1,11 +1,8 @@
 import app from './app'
-import { config, dataSourceConfig } from './config'
-import { AppDataSource } from './database/dataSource'
-import { apiClient } from './globals'
+import { config } from './config'
+import { init_database } from './database/dataSource'
 import { websocketHandling } from './operations/devices'
-import {
-    logger,
-} from '@crosslab/service-common'
+import { logger } from '@crosslab/service-common'
 import { IncomingMessage } from 'http'
 import { Socket } from 'net'
 import WebSocket from 'ws'
@@ -22,9 +19,9 @@ declare global {
 }
 
 async function startDeviceService() {
-    await AppDataSource.initialize(dataSourceConfig)
+    await init_database()
 
-    apiClient.accessToken = config.API_TOKEN
+    //apiClient.accessToken = config.API_TOKEN
 
     const wsServer = new WebSocket.Server({ noServer: true })
     app.wsListeners = new Map()

@@ -14,6 +14,13 @@
                 "<node_internals>/**"
             ],
             "restart": true
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Device Service",
+            "port": 9001,
+            "restart": true
         }
     ]
 }

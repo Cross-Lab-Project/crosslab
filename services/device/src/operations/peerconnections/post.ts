@@ -65,7 +65,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
             )
         }
 
-        // set timeout for checking if devices are connected
+        // set timeout for checking if devices are connected ???
         timeoutMap.set(
             peerconnectionModel.uuid,
             setTimeout(async () => {

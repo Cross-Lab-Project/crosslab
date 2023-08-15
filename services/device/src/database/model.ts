@@ -123,3 +123,13 @@ export abstract class PeerconnectionModel {
     @DeleteDateColumn()
     deletedAt?: Date
 }
+
+export const Entities = [
+    DeviceOverviewModel,
+    InstantiableDeviceOverviewModel,
+    ConcreteDeviceModel,
+    DeviceGroupModel,
+    InstantiableCloudDeviceModel,
+    InstantiableBrowserDeviceModel,
+    PeerconnectionModel,
+]

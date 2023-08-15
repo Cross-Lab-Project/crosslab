@@ -138,3 +138,13 @@ export class ParticipantModel {
     )
     serviceConfiguration!: ServiceConfigurationModel
 }
+
+export const Entities = [
+    ExperimentModel,
+    RoleModel,
+    InstanceModel,
+    DeviceModel,
+    PeerconnectionModel,
+    ServiceConfigurationModel,
+    ParticipantModel,
+]
