@@ -1,4 +1,4 @@
-import app from "../src/app";
+import {app} from "../src/app";
 import {UserModel} from "../src/database/model";
 import {createUser} from "../src/user/helper";
 import {disable_logs, resetDatabase} from "./helper";

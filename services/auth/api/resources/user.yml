@@ -6,8 +6,8 @@ get:
     - user
   security:
     - JWT:
-      - users
-      - users:read
+        - users
+        - users:read
   parameters:
     - $ref: "../parameters/user_id.yml"
   responses:
@@ -33,8 +33,8 @@ patch:
     - user
   security:
     - JWT:
-      - users
-      - users:write
+        - users
+        - users:write
   parameters:
     - $ref: "../parameters/user_id.yml"
   requestBody:
@@ -66,8 +66,8 @@ delete:
     - user
   security:
     - JWT:
-      - users
-      - users:delete
+        - users
+        - users:delete
   parameters:
     - $ref: "../parameters/user_id.yml"
   responses:

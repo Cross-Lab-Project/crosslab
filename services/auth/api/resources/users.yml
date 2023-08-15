@@ -6,8 +6,8 @@ get:
     - user
   security:
     - JWT:
-      - users
-      - users:read
+        - users
+        - users:read
   responses:
     200:
       description: The JSON representation of the users.
@@ -32,8 +32,8 @@ post:
     - user
   security:
     - JWT:
-      - users
-      - users:create
+        - users
+        - users:create
   requestBody:
     required: true
     description: User to be created.

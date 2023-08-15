@@ -16,6 +16,7 @@
     "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./src -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src && npx prettier --write ./src",
     "build:compile": "tsc --project tsconfig.build.json",
     "build": "npm run build:generate && npm run build:compile",
+    "format": "npx prettier . --write",
     "start": "node app/index.js",
     "dev": "npx nodemon src/index.ts",
     "lint": "eslint .",
@@ -25,13 +26,6 @@
     "arrowParens": "avoid",
     "bracketSameLine": true,
     "bracketSpacing": false,
-    "importOrder": [
-      "^@core/(.*)$",
-      "^@features/(.*)$",
-      "^[./]"
-    ],
-    "importOrderSeparation": true,
-    "importOrderSortSpecifiers": true,
     "printWidth": 90,
     "singleQuote": false,
     "trailingComma": "all"

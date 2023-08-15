@@ -1,4 +1,4 @@
-import app from "../src/app";
+import {app} from "../src/app";
 import {disable_logs, resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";

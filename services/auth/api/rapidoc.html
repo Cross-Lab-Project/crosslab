@@ -1,24 +1,25 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8"> <!-- Important: rapi-doc uses utf8 characters -->
-  <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
-</head>
-<body>
-  <rapi-doc id="rapidoc"
-    show-header	= "false"
-    spec-url="../dist/openapi.json"
-    render-style="focused"
-    schema-description-expanded="true"
-    default-schema-tab="schema"
-    schema-style="table"
-    server-url="http://localhost:3000"
-  >
-  </rapi-doc>
-  <script>
-    document.getElementById("rapidoc").addEventListener("spec-loaded", ()=>{
-      document.getElementById("rapidoc").scrollTo(window.location.hash.substr(1))
-    });
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Important: rapi-doc uses utf8 characters -->
+    <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
+  </head>
+  <body>
+    <rapi-doc
+      id="rapidoc"
+      show-header="false"
+      spec-url="../dist/openapi.json"
+      render-style="focused"
+      schema-description-expanded="true"
+      default-schema-tab="schema"
+      schema-style="table"
+      server-url="http://localhost:3000">
+    </rapi-doc>
+    <script>
+      document.getElementById("rapidoc").addEventListener("spec-loaded", () => {
+        document.getElementById("rapidoc").scrollTo(window.location.hash.substr(1));
+      });
+    </script>
+  </body>
 </html>

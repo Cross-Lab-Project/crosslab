@@ -7,8 +7,10 @@ import {router as auth_router} from "./auth";
 import {router as user_router} from "./user";
 import {router as login_logout_router} from "./login_logout";
 
+export let app: express.Express;
+
 export function init_app() {
-  const app = express();
+  app = express();
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));
   app.use(cookieParser());

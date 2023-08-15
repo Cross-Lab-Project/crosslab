@@ -5,7 +5,7 @@ post:
     - authentication
   security:
     - JWT:
-      - logout
+        - logout
   summary: Logout user
   description: |-
     This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture.
