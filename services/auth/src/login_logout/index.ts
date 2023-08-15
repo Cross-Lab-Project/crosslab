@@ -28,7 +28,7 @@ async function prepareTuiUser(username: string, password: string, req: express.R
 
   const user = await createUser(username, password, "tui");
 
-  req.authorization.relate(`user:${user.uuid}`, "viewer", "user");
+  await req.authorization.relate(`user:${user.uuid}`, "viewer", "user");
   return user;
 }
 

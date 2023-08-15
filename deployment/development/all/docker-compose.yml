@@ -20,7 +20,7 @@ x-loki: &loki-logging
     labels: level,service
   
 x-config: &common-config
-  AUTHORIZATION_SERVER: "127.0.0.1:3010"
+  AUTHORIZATION_SERVER: "http://127.0.0.1:3010"
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-please change me}"
   LOGGING: "${LOGGING:-info}"
 
@@ -28,7 +28,9 @@ services:
   # Logging
   loki:
     image: grafana/loki:2.8.3
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/loki.yaml
+    volumes:
+      - ./loki/loki.yaml:/loki.yaml
     network_mode: "host"
   grafana:
     environment:
@@ -62,7 +64,9 @@ services:
     logging: *loki-logging
   authorization:
     build: ../../../services/authorization
-    environment: *common-config
+    environment:
+      <<: *common-config
+      JWT_SECRET: "${JWT_SECRET:-please change me}"
     network_mode: "host"
     logging: *loki-logging
   device:

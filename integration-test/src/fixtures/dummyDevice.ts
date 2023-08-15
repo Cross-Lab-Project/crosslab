@@ -5,8 +5,6 @@ import fs from 'fs';
 import {resolve} from 'path';
 import {TypedEmitter} from 'tiny-typed-emitter';
 
-import {ServerContext} from './localServer';
-
 const repository_dir = resolve(__filename, '../../../../');
 
 export interface DummyDeviceEvents {
@@ -36,14 +34,14 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
 
   public url = '';
   log_file: string;
-  context: Mocha.Context & ServerContext;
+  context: Mocha.Context;
 
   constructor(
     type: ClientType,
     debug: boolean | number = false,
     host_debug: boolean | number = false,
     log_file: string,
-    context: Mocha.Context & ServerContext,
+    context: Mocha.Context,
   ) {
     super();
     switch (type) {

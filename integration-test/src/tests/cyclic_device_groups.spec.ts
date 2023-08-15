@@ -12,6 +12,7 @@ function validateDevices(deviceGroup: DeviceServiceTypes.DeviceGroup, expectedUr
   return true;
 }
 
+// Warum nicht im Device Service Test?
 describe('Cyclic Device Groups', function () {
   let deviceGroup1: DeviceServiceTypes.Device;
   let deviceGroup2: DeviceServiceTypes.Device;

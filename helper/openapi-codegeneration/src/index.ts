@@ -176,7 +176,7 @@ async function main() {
 
   for (const file of await glob(`${templateDir}/**/*.njk`)) {
     const template = file;
-    const output = file.replace(".njk", "");
+    const output = file.replace(templateDir, outputDir).replace(".njk", "");
 
     nunjucks.render(template, context, (err, res) => {
       console.log(`Writing ${output}`);

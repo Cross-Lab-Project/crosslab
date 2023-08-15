@@ -1,0 +1,40 @@
+version: "3"
+
+x-config: &common-config
+  AUTHORIZATION_SERVER: "127.0.0.1:3010"
+  AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-TestPSK}"
+  LOGGING: "${LOGGING:-info}"
+
+services:
+  # Services
+  gateway:
+    build: ../services/gateway
+    environment:
+      <<: *common-config
+      AUTH_SERVICE_URL: "127.0.0.1:3000"
+      DEVICE_SERVICE_URL: "127.0.0.1:3001"
+      EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
+      FEDERATION_SERVICE_URL: "127.0.0.1:3003"
+      UPDATE_SERVICE_URL: "127.0.0.1:1"
+      SERVER_NAME: "localhost"
+    network_mode: "host"
+  authentication:
+    build: ../services/auth
+    environment: *common-config
+    network_mode: "host"
+  authorization:
+    build: ../services/authorization
+    environment: *common-config
+    network_mode: "host"
+  device:
+    build: ../services/device
+    environment: *common-config
+    network_mode: "host"
+  experiment:
+    build: ../services/experiment
+    environment: *common-config
+    network_mode: "host"
+  federation:
+    build: ../services/federation
+    environment: *common-config
+    network_mode: "host"

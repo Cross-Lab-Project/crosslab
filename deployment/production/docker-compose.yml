@@ -1,0 +1,32 @@
+version: "3"
+
+networks:
+  loki:
+
+volumes:
+  loki:
+
+services:
+  loki:
+    image: grafana/loki:2.8.3
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki:/loki
+    networks:
+      - loki
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - ./grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    image: grafana/grafana:latest
+    ports:
+      - "3101:3000"
+    networks:
+      - loki

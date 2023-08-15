@@ -8,7 +8,7 @@ import { CheckTuple } from './types';
 let opaProcess: any
 
 export async function opa_init(){
-    opaProcess = spawn('opa', ['run', '-s', '--bundle', 'policy', '--addr', 'localhost:8181'], {stdio: ['ignore', 'pipe', 'pipe']});
+    opaProcess = spawn('opa', ['run', '-s', '--bundle', 'policy', '--addr', 'localhost:3011'], {stdio: ['ignore', 'pipe', 'pipe']});
     
     readline.createInterface({
         input:opaProcess.stderr,
@@ -36,7 +36,7 @@ export function opa_deinit(){
 
 export async function opa_check(checks: CheckTuple[]){
     const outputPromise=checks.map((input: CheckTuple)=>(
-        fetch('http://localhost:8181/v1/data/crosslab', {
+        fetch('http://localhost:3011/v1/data/crosslab', {
             method: 'POST',
             body: JSON.stringify({input: {...input, object: fix_object_without_colon(input.object), ...openfgaOpaData}}),
         })
@@ -48,7 +48,7 @@ export async function opa_check(checks: CheckTuple[]){
 }
 
 export async function opa_set_jwt_secret(secret: string){
-    await fetch('http://localhost:8181/v1/data/jwt_secret', {
+    await fetch('http://localhost:3011/v1/data/jwt_secret', {
         method: 'PUT',
         body: JSON.stringify(secret),
     })

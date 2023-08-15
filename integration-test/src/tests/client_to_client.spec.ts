@@ -1,4 +1,5 @@
 /// <reference types="../context" />
+import { APIClient } from '@cross-lab-project/api-client';
 import {clientTypes} from '../fixtures/dummyDevice';
 import {ExperimentTest} from '../helper/experimentTest';
 
@@ -32,6 +33,7 @@ for (const client1Type of clientTypes) {
     describe(`${client1Type} Client to ${client2Type} Client Communication`, async function () {
       before(function () {
         this.timeout(120000);
+        this.client = new APIClient("http://localhost")
         this.experiment = new ExperimentTest();
         this.experiment.addDevice(this, client1Type);
         this.experiment.addDevice(this, client2Type,);

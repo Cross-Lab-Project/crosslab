@@ -3,7 +3,12 @@ import {Migrations} from "./migrations";
 import {Entities} from "./model";
 import {DataSource, DataSourceOptions} from "typeorm";
 
-export let ApplicationDataSource: DataSource;
+export let ApplicationDataSource: DataSource = new DataSource({
+  ...config.orm,
+  migrations: [...Migrations],
+  migrationsRun: true,
+  entities: Entities,
+});
 
 export async function init_database(dataSourceConfig?: DataSourceOptions) {
   ApplicationDataSource = new DataSource(

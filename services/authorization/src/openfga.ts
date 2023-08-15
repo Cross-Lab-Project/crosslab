@@ -26,7 +26,7 @@ export function fix_object_without_colon(object: string){
 export async function openfga_init(){
     fgaClient= new OpenFgaClient({
         apiScheme: 'http',
-        apiHost: 'localhost:8080'
+        apiHost: 'localhost:3013'
     });
 
     let readyPromiseResolve: CallableFunction
@@ -39,8 +39,8 @@ export async function openfga_init(){
             'run',
             '--log-format', 'json',
             '--playground-enabled=false',
-            '--grpc-addr', 'localhost:8081',
-            '--http-addr', 'localhost:8080'
+            '--grpc-addr', 'localhost:3012',
+            '--http-addr', 'localhost:3013'
     ], {stdio: ['ignore', 'pipe', 'pipe']});
 
     readline.createInterface({

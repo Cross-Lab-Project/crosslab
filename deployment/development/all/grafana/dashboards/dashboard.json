@@ -98,10 +98,21 @@
             "type": "loki",
             "uid": "P8E80F9AEF21F6940"
           },
-          "editorMode": "builder",
-          "expr": "{service=\"authentication\"} |= `$requestID` | json | line_format `{{.message}}`",
+          "editorMode": "code",
+          "expr": "{service=\"authentication\"} |= `$requestID` |~ `^\\{` | json | line_format `{{.message}}`",
           "queryType": "range",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "P8E80F9AEF21F6940"
+          },
+          "editorMode": "code",
+          "expr": "{service=\"authentication\"} |= `$requestID` !~ `^\\{`",
+          "hide": false,
+          "queryType": "range",
+          "refId": "B"
         }
       ],
       "title": "Authentication Service",
@@ -137,12 +148,12 @@
             "uid": "P8E80F9AEF21F6940"
           },
           "editorMode": "builder",
-          "expr": "{service=\"authentication\"} |= `$requestID` | json | line_format `{{.message}}`",
+          "expr": "{service=\"authorization\"} |= `$requestID` | json | line_format `{{.message}}`",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Authentication Service",
+      "title": "Authorization Service",
       "type": "logs"
     },
     {
@@ -305,7 +316,7 @@
       "type": "logs"
     }
   ],
-  "refresh": "5s",
+  "refresh": "30s",
   "schemaVersion": 38,
   "style": "dark",
   "tags": [],
@@ -314,8 +325,8 @@
       {
         "current": {
           "selected": false,
-          "text": "c90ecd1b03a9d423baf02d876b601291",
-          "value": "c90ecd1b03a9d423baf02d876b601291"
+          "text": "",
+          "value": ""
         },
         "hide": 0,
         "label": "Request Id",
@@ -323,11 +334,11 @@
         "options": [
           {
             "selected": true,
-            "text": "c90ecd1b03a9d423baf02d876b601291",
-            "value": "c90ecd1b03a9d423baf02d876b601291"
+            "text": "",
+            "value": ""
           }
         ],
-        "query": "c90ecd1b03a9d423baf02d876b601291",
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       }
@@ -341,6 +352,6 @@
   "timezone": "",
   "title": "Log Overview",
   "uid": "fd0eae3e-285c-4a88-89ac-035d6f6ff085",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }

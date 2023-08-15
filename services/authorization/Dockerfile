@@ -6,9 +6,6 @@ RUN npm install --global /tmp/packages/*
 RUN rm -rf /tmp/packages
  
 RUN apk add dumb-init curl
-ENV NODE_ENV production
-ENV PORT 8080
-EXPOSE 8080/tcp
 WORKDIR /app
 RUN mkdir db
 RUN chown node:node /app/*
@@ -20,4 +17,9 @@ USER node
 COPY policy /app/policy
 COPY relation_model.fga /app/relation_model.fga
 
+ENV NODE_ENV production
+ENV PORT 3010
+ENV DB_TYPE sqlite
+ENV DB_DATABASE db/auth.db
+EXPOSE 3010/tcp
 CMD ["dumb-init", "crosslab-authorization-service"]
