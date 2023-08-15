@@ -2,6 +2,28 @@ version: "3"
 
 # docker plugin install grafana/loki-docker-driver:2.8.2 --alias loki --grant-all-permissions
 
+x-loki: &loki-logging
+  driver: loki
+  options:
+    loki-url: http://localhost:3100/loki/api/v1/push
+    loki-external-labels: project=crosslab
+    loki-pipeline-stages: |
+      - regex:
+          expression: '"(level)":"(?P<level>\w+)"'
+      - labels:
+          level:
+    loki-relabel-config: |
+      - action: labelmap
+        regex: compose_(service)
+      - action: labelkeep
+        regex: (service|project)
+    labels: level,service
+  
+x-config: &common-config
+  AUTHORIZATION_SERVER: "127.0.0.1:3010"
+  AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-please change me}"
+  LOGGING: "${LOGGING:-info}"
+
 services:
   # Logging
   loki:
@@ -24,7 +46,7 @@ services:
   gateway:
     build: ../../../services/gateway
     environment:
-      PORT: 80
+      <<: *common-config
       AUTH_SERVICE_URL: "127.0.0.1:3000"
       DEVICE_SERVICE_URL: "127.0.0.1:3001"
       EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
@@ -32,8 +54,24 @@ services:
       UPDATE_SERVICE_URL: "127.0.0.1:1"
       SERVER_NAME: "localhost"
     network_mode: "host"
-    logging:
-      driver: loki
-      options:
-        loki-url: http://localhost:3100/loki/api/v1/push
-        loki-external-labels: service=gateway
+    logging: *loki-logging
+  authentication:
+    build: ../../../services/auth
+    logging: *loki-logging
+    environment: *common-config
+  authorization:
+    build: ../../../services/authorization
+    logging: *loki-logging
+    environment: *common-config
+  device:
+    build: ../../../services/device
+    logging: *loki-logging
+    environment: *common-config
+  experiment:
+    build: ../../../services/experiment
+    logging: *loki-logging
+    environment: *common-config
+  federation:
+    build: ../../../services/federation
+    logging: *loki-logging
+    environment: *common-config
