@@ -1,6 +1,6 @@
 title: Callback
 type: object
-properties: 
+properties:
   callbackType:
     type: string
 required:

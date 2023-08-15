@@ -6,9 +6,9 @@ patch:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:write
-      - peerconnection:write:device_status
+        - peerconnection
+        - peerconnection:write
+        - peerconnection:write:device_status
   requestBody:
     required: true
     description: The JSON Representation of the device peer connection.
@@ -20,7 +20,7 @@ patch:
             status:
               $ref: ../schemas/peerconnections/peerconnection_status.yml
           required:
-          - status
+            - status
   responses:
     204:
       description: OK.
@@ -35,5 +35,5 @@ patch:
     500:
       description: Server Error.
   parameters:
-    - $ref: '../parameters/peerconnection_id.yml'
-    - $ref: '../parameters/device_url.yml'
+    - $ref: "../parameters/peerconnection_id.yml"
+    - $ref: "../parameters/device_url.yml"

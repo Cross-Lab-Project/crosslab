@@ -1,6 +1,6 @@
-import { repositories } from '../../../database/dataSource'
-import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
-import { logger } from '@crosslab/service-common'
+import {repositories} from "../../../database/dataSource";
+import {getPeerconnectionsByPeerconnectionIdSignature} from "../../../generated/signatures";
+import {logger} from "@crosslab/service-common";
 
 /**
  * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
@@ -8,17 +8,17 @@ import { logger } from '@crosslab/service-common'
  * @param _user The user submitting the request.
  */
 export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature =
-    async (parameters, _user) => {
-        logger.log('info', 'getPeerconnectionsByPeerconnectionId called')
+  async (parameters, _user) => {
+    logger.log("info", "getPeerconnectionsByPeerconnectionId called");
 
-        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-            where: { uuid: parameters.peerconnection_id },
-        })
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: {uuid: parameters.peerconnection_id},
+    });
 
-        logger.log('info', 'getPeerconnectionsByPeerconnectionId succeeded')
+    logger.log("info", "getPeerconnectionsByPeerconnectionId succeeded");
 
-        return {
-            status: 200,
-            body: await repositories.peerconnection.format(peerconnectionModel),
-        }
-    }
+    return {
+      status: 200,
+      body: await repositories.peerconnection.format(peerconnectionModel),
+    };
+  };

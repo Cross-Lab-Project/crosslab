@@ -6,14 +6,14 @@ get:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:read
+        - peerconnection
+        - peerconnection:read
   responses:
     200:
       description: The list of all peerconnections.
       content:
         application/json:
-          $ref: '../content/peerconnection_list.yml'
+          $ref: "../content/peerconnection_list.yml"
     400:
       description: Bad Request.
     401:
@@ -32,28 +32,28 @@ post:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:create
+        - peerconnection
+        - peerconnection:create
   parameters:
-    - $ref: '../parameters/closed_url.yml'
-    - $ref: '../parameters/status_changed_url.yml'
+    - $ref: "../parameters/closed_url.yml"
+    - $ref: "../parameters/status_changed_url.yml"
   requestBody:
     description: The peerconnection to be created.
     required: true
     content:
       application/json:
-        $ref: '../content/peerconnection.yml'
+        $ref: "../content/peerconnection.yml"
   responses:
     201:
       description: The peerconnection was created. A JSON representation of the new peer connection is returned.
       content:
         application/json:
-          $ref: '../content/peerconnection.yml'
+          $ref: "../content/peerconnection.yml"
     202:
       description: The device service will attempt to create the peerconnection as soon as possible.
       content:
         application/json:
-          $ref: '../content/peerconnection.yml'
+          $ref: "../content/peerconnection.yml"
     400:
       description: Bad Request.
     401:
@@ -66,34 +66,34 @@ post:
       description: Server Error.
   callbacks:
     closed:
-      '{$request.query.closedUrl}':
+      "{$request.query.closedUrl}":
         post:
           security:
             - JWT:
-              - peerconnection
-              - peerconnection:create
+                - peerconnection
+                - peerconnection:create
           summary: Callback for the "peerconnection-closed" event
           requestBody:
             content:
               application/json:
-                $ref: '../content/peerconnection_closed_event.yml'
+                $ref: "../content/peerconnection_closed_event.yml"
           responses:
             2XX:
               description: The event was successfully processed.
             410:
               description: The callback is no longer required.
     status-changed:
-      '{$request.query.statusChangedUrl}':
+      "{$request.query.statusChangedUrl}":
         post:
           security:
             - JWT:
-              - peerconnection
-              - peerconnection:create
+                - peerconnection
+                - peerconnection:create
           summary: Callback for the "peerconnection-status-changed" event
           requestBody:
             content:
               application/json:
-                $ref: '../content/peerconnection_status_changed_event.yml'
+                $ref: "../content/peerconnection_status_changed_event.yml"
           responses:
             2XX:
               description: The event was successfully processed.

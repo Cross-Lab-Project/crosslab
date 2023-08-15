@@ -8,7 +8,7 @@ allOf:
         enum:
           - peerconnection-closed
       peerconnection:
-        $ref: '../peerconnections/peerconnection.yml'
+        $ref: "../peerconnections/peerconnection.yml"
     required:
       - eventType
       - peerconnection

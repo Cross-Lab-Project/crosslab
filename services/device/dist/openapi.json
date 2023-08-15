@@ -21,16 +21,10 @@
       "get": {
         "operationId": "list_devices",
         "summary": "List devices",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:read",
-              "device:read:owned"
-            ]
+            "JWT": ["device", "device:read", "device:read:owned"]
           }
         ],
         "responses": {
@@ -68,15 +62,10 @@
       "post": {
         "operationId": "create_device",
         "summary": "Create a new device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:create"
-            ]
+            "JWT": ["device", "device:create"]
           }
         ],
         "parameters": [
@@ -138,33 +127,18 @@
                           {
                             "interfaceType": "i2c",
                             "availableSignals": {
-                              "sda": [
-                                "PC4"
-                              ],
-                              "scl": [
-                                "PC5"
-                              ]
+                              "sda": ["PC4"],
+                              "scl": ["PC5"]
                             }
                           },
                           {
                             "interfaceType": "spi",
-                            "roles": [
-                              "master",
-                              "slave"
-                            ],
+                            "roles": ["master", "slave"],
                             "availableSignals": {
-                              "miso": [
-                                "PB4"
-                              ],
-                              "mosi": [
-                                "PB3"
-                              ],
-                              "sck": [
-                                "PB5"
-                              ],
-                              "ss-slave": [
-                                "PB2"
-                              ],
+                              "miso": ["PB4"],
+                              "mosi": ["PB3"],
+                              "sck": ["PB5"],
+                              "ss-slave": ["PB2"],
                               "ss-master": [
                                 "PB0",
                                 "PB1",
@@ -252,33 +226,18 @@
                             {
                               "interfaceType": "i2c",
                               "availableSignals": {
-                                "sda": [
-                                  "PC4"
-                                ],
-                                "scl": [
-                                  "PC5"
-                                ]
+                                "sda": ["PC4"],
+                                "scl": ["PC5"]
                               }
                             },
                             {
                               "interfaceType": "spi",
-                              "roles": [
-                                "master",
-                                "slave"
-                              ],
+                              "roles": ["master", "slave"],
                               "availableSignals": {
-                                "miso": [
-                                  "PB4"
-                                ],
-                                "mosi": [
-                                  "PB3"
-                                ],
-                                "sck": [
-                                  "PB5"
-                                ],
-                                "ss-slave": [
-                                  "PB2"
-                                ],
+                                "miso": ["PB4"],
+                                "mosi": ["PB3"],
+                                "sck": ["PB5"],
+                                "ss-slave": ["PB2"],
                                 "ss-master": [
                                   "PB0",
                                   "PB1",
@@ -334,11 +293,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "device",
-                      "device:write",
-                      "device:create"
-                    ]
+                    "JWT": ["device", "device:write", "device:create"]
                   }
                 ],
                 "summary": "Callback for the \"device-changed\" event",
@@ -371,9 +326,7 @@
       "get": {
         "operationId": "get_device",
         "summary": "View a registered device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "parameters": [
           {
             "$ref": "#/components/parameters/device_id"
@@ -387,11 +340,7 @@
         ],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:read",
-              "device:read:owned"
-            ]
+            "JWT": ["device", "device:read", "device:read:owned"]
           }
         ],
         "responses": {
@@ -448,33 +397,18 @@
                             {
                               "interfaceType": "i2c",
                               "availableSignals": {
-                                "sda": [
-                                  "PC4"
-                                ],
-                                "scl": [
-                                  "PC5"
-                                ]
+                                "sda": ["PC4"],
+                                "scl": ["PC5"]
                               }
                             },
                             {
                               "interfaceType": "spi",
-                              "roles": [
-                                "master",
-                                "slave"
-                              ],
+                              "roles": ["master", "slave"],
                               "availableSignals": {
-                                "miso": [
-                                  "PB4"
-                                ],
-                                "mosi": [
-                                  "PB3"
-                                ],
-                                "sck": [
-                                  "PB5"
-                                ],
-                                "ss-slave": [
-                                  "PB2"
-                                ],
+                                "miso": ["PB4"],
+                                "mosi": ["PB3"],
+                                "sck": ["PB5"],
+                                "ss-slave": ["PB2"],
                                 "ss-master": [
                                   "PB0",
                                   "PB1",
@@ -528,16 +462,10 @@
       "patch": {
         "operationId": "update_device",
         "summary": "Update an existing device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:write",
-              "device:write:owned"
-            ]
+            "JWT": ["device", "device:write", "device:write:owned"]
           }
         ],
         "parameters": [
@@ -601,33 +529,18 @@
                           {
                             "interfaceType": "i2c",
                             "availableSignals": {
-                              "sda": [
-                                "PC4"
-                              ],
-                              "scl": [
-                                "PC5"
-                              ]
+                              "sda": ["PC4"],
+                              "scl": ["PC5"]
                             }
                           },
                           {
                             "interfaceType": "spi",
-                            "roles": [
-                              "master",
-                              "slave"
-                            ],
+                            "roles": ["master", "slave"],
                             "availableSignals": {
-                              "miso": [
-                                "PB4"
-                              ],
-                              "mosi": [
-                                "PB3"
-                              ],
-                              "sck": [
-                                "PB5"
-                              ],
-                              "ss-slave": [
-                                "PB2"
-                              ],
+                              "miso": ["PB4"],
+                              "mosi": ["PB3"],
+                              "sck": ["PB5"],
+                              "ss-slave": ["PB2"],
                               "ss-master": [
                                 "PB0",
                                 "PB1",
@@ -715,33 +628,18 @@
                             {
                               "interfaceType": "i2c",
                               "availableSignals": {
-                                "sda": [
-                                  "PC4"
-                                ],
-                                "scl": [
-                                  "PC5"
-                                ]
+                                "sda": ["PC4"],
+                                "scl": ["PC5"]
                               }
                             },
                             {
                               "interfaceType": "spi",
-                              "roles": [
-                                "master",
-                                "slave"
-                              ],
+                              "roles": ["master", "slave"],
                               "availableSignals": {
-                                "miso": [
-                                  "PB4"
-                                ],
-                                "mosi": [
-                                  "PB3"
-                                ],
-                                "sck": [
-                                  "PB5"
-                                ],
-                                "ss-slave": [
-                                  "PB2"
-                                ],
+                                "miso": ["PB4"],
+                                "mosi": ["PB3"],
+                                "sck": ["PB5"],
+                                "ss-slave": ["PB2"],
                                 "ss-master": [
                                   "PB0",
                                   "PB1",
@@ -797,11 +695,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "device",
-                      "device:edit",
-                      "device:create"
-                    ]
+                    "JWT": ["device", "device:edit", "device:create"]
                   }
                 ],
                 "summary": "Callback for the \"device-changed\" event",
@@ -831,16 +725,10 @@
       "delete": {
         "operationId": "delete_device",
         "summary": "Delete a registered device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:delete",
-              "device:delete:owned"
-            ]
+            "JWT": ["device", "device:delete", "device:delete:owned"]
           }
         ],
         "parameters": [
@@ -872,16 +760,10 @@
       "post": {
         "operationId": "instantiate_device",
         "summary": "Instantiate a cloud instantiable device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:instantiate",
-              "device:instantiate:owned"
-            ]
+            "JWT": ["device", "device:instantiate", "device:instantiate:owned"]
           }
         ],
         "parameters": [
@@ -907,10 +789,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "instance",
-                    "deviceToken"
-                  ]
+                  "required": ["instance", "deviceToken"]
                 }
               }
             }
@@ -937,11 +816,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "device",
-                      "device:edit",
-                      "device:create"
-                    ]
+                    "JWT": ["device", "device:edit", "device:create"]
                   }
                 ],
                 "summary": "Callback for the \"device-changed\" event",
@@ -954,15 +829,11 @@
                         "properties": {
                           "callbackType": {
                             "type": "string",
-                            "enum": [
-                              "event"
-                            ]
+                            "enum": ["event"]
                           },
                           "eventType": {
                             "type": "string",
-                            "enum": [
-                              "device-changed"
-                            ]
+                            "enum": ["device-changed"]
                           },
                           "device": {
                             "$ref": "#/components/schemas/device_concrete"
@@ -990,16 +861,10 @@
       "get": {
         "operationId": "get_device_availability",
         "summary": "Get the availability of a device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:read",
-              "device:read:owned"
-            ]
+            "JWT": ["device", "device:read", "device:read:owned"]
           }
         ],
         "parameters": [
@@ -1044,16 +909,10 @@
       "delete": {
         "operationId": "delete_device_availability_rules",
         "summary": "Delete the availability rules of a device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:write",
-              "device:write:owned"
-            ]
+            "JWT": ["device", "device:write", "device:write:owned"]
           }
         ],
         "parameters": [
@@ -1085,16 +944,10 @@
       "post": {
         "operationId": "add_device_availability_rules",
         "summary": "Add availability rules for a device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:write",
-              "device:write:owned"
-            ]
+            "JWT": ["device", "device:write", "device:write:owned"]
           }
         ],
         "parameters": [
@@ -1189,16 +1042,10 @@
       "post": {
         "operationId": "create_websocket_token",
         "summary": "Create new websocket token for device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:connect",
-              "device:connect:current"
-            ]
+            "JWT": ["device", "device:connect", "device:connect:current"]
           }
         ],
         "parameters": [
@@ -1239,15 +1086,10 @@
       "post": {
         "operationId": "send_signaling_message",
         "summary": "Send signaling message to device",
-        "tags": [
-          "device"
-        ],
+        "tags": ["device"],
         "security": [
           {
-            "JWT": [
-              "device",
-              "device:signal"
-            ]
+            "JWT": ["device", "device:signal"]
           }
         ],
         "parameters": [
@@ -1306,15 +1148,10 @@
       "get": {
         "operationId": "list_peerconnections",
         "summary": "List Peer Connection",
-        "tags": [
-          "peerconnection"
-        ],
+        "tags": ["peerconnection"],
         "security": [
           {
-            "JWT": [
-              "peerconnection",
-              "peerconnection:read"
-            ]
+            "JWT": ["peerconnection", "peerconnection:read"]
           }
         ],
         "responses": {
@@ -1352,15 +1189,10 @@
       "post": {
         "operationId": "create_peerconnection",
         "summary": "Create a new Peer Connection",
-        "tags": [
-          "peerconnection"
-        ],
+        "tags": ["peerconnection"],
         "security": [
           {
-            "JWT": [
-              "peerconnection",
-              "peerconnection:create"
-            ]
+            "JWT": ["peerconnection", "peerconnection:create"]
           }
         ],
         "parameters": [
@@ -1425,10 +1257,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "peerconnection",
-                      "peerconnection:create"
-                    ]
+                    "JWT": ["peerconnection", "peerconnection:create"]
                   }
                 ],
                 "summary": "Callback for the \"peerconnection-closed\" event",
@@ -1457,10 +1286,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "peerconnection",
-                      "peerconnection:create"
-                    ]
+                    "JWT": ["peerconnection", "peerconnection:create"]
                   }
                 ],
                 "summary": "Callback for the \"peerconnection-status-changed\" event",
@@ -1492,15 +1318,10 @@
       "get": {
         "operationId": "get_peerconnection",
         "summary": "View a peer connection",
-        "tags": [
-          "peerconnection"
-        ],
+        "tags": ["peerconnection"],
         "security": [
           {
-            "JWT": [
-              "peerconnection",
-              "peerconnection:read"
-            ]
+            "JWT": ["peerconnection", "peerconnection:read"]
           }
         ],
         "responses": {
@@ -1539,15 +1360,10 @@
       "delete": {
         "operationId": "delete_peerconnection",
         "summary": "Delete a peer connection",
-        "tags": [
-          "peerconnection"
-        ],
+        "tags": ["peerconnection"],
         "security": [
           {
-            "JWT": [
-              "peerconnection",
-              "peerconnection:delete"
-            ]
+            "JWT": ["peerconnection", "peerconnection:delete"]
           }
         ],
         "responses": {
@@ -1584,9 +1400,7 @@
       "patch": {
         "operationId": "patch_peerconnection_device_status",
         "summary": "Sets the peerconnection status of a single device.",
-        "tags": [
-          "peerconnection"
-        ],
+        "tags": ["peerconnection"],
         "security": [
           {
             "JWT": [
@@ -1608,9 +1422,7 @@
                     "$ref": "#/components/schemas/peerconnection_status"
                   }
                 },
-                "required": [
-                  "status"
-                ]
+                "required": ["status"]
               }
             }
           }
@@ -1675,9 +1487,7 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "messageType"
-            ]
+            "required": ["messageType"]
           }
         ],
         "x-typeguard": true
@@ -1702,10 +1512,7 @@
                 "$ref": "#/components/schemas/peerconnection_status"
               }
             },
-            "required": [
-              "connectionUrl",
-              "status"
-            ]
+            "required": ["connectionUrl", "status"]
           }
         ],
         "x-typeguard": true
@@ -1731,12 +1538,7 @@
           "type": {
             "type": "string",
             "description": "Type of the device",
-            "enum": [
-              "device",
-              "group",
-              "edge instantiable",
-              "cloud instantiable"
-            ]
+            "enum": ["device", "group", "edge instantiable", "cloud instantiable"]
           },
           "owner": {
             "type": "string",
@@ -1748,13 +1550,7 @@
             "description": "If true, the device may be seen and used by every user."
           }
         },
-        "required": [
-          "url",
-          "type",
-          "name",
-          "owner",
-          "isPublic"
-        ],
+        "required": ["url", "type", "name", "owner", "isPublic"],
         "x-typeguard": true
       },
       "service_description": {
@@ -1770,11 +1566,7 @@
           },
           "serviceDirection": {
             "type": "string",
-            "enum": [
-              "consumer",
-              "producer",
-              "prosumer"
-            ]
+            "enum": ["consumer", "producer", "prosumer"]
           }
         },
         "additionalProperties": true
@@ -1901,9 +1693,7 @@
             "format": "uri"
           }
         },
-        "required": [
-          "url"
-        ]
+        "required": ["url"]
       },
       "device_group": {
         "title": "Device Group",
@@ -1924,9 +1714,7 @@
                 }
               }
             },
-            "required": [
-              "devices"
-            ]
+            "required": ["devices"]
           }
         ],
         "x-typeguard": true
@@ -1957,9 +1745,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "callbackType"
-        ],
+        "required": ["callbackType"],
         "x-typeguard": true
       },
       "event_callback": {
@@ -1973,18 +1759,13 @@
             "properties": {
               "callbackType": {
                 "type": "string",
-                "enum": [
-                  "event"
-                ]
+                "enum": ["event"]
               },
               "eventType": {
                 "type": "string"
               }
             },
-            "required": [
-              "callbackType",
-              "eventType"
-            ]
+            "required": ["callbackType", "eventType"]
           }
         ],
         "x-typeguard": true
@@ -2000,18 +1781,13 @@
             "properties": {
               "eventType": {
                 "type": "string",
-                "enum": [
-                  "device-changed"
-                ]
+                "enum": ["device-changed"]
               },
               "device": {
                 "$ref": "#/components/schemas/device"
               }
             },
-            "required": [
-              "eventType",
-              "device"
-            ]
+            "required": ["eventType", "device"]
           }
         ],
         "x-typeguard": true
@@ -2031,21 +1807,14 @@
           "type": {
             "type": "string",
             "description": "Type of the device",
-            "enum": [
-              "device",
-              "group",
-              "edge instantiable",
-              "cloud instantiable"
-            ]
+            "enum": ["device", "group", "edge instantiable", "cloud instantiable"]
           },
           "isPublic": {
             "type": "boolean",
             "description": "If true, the device may be seen and used by every user."
           }
         },
-        "required": [
-          "type"
-        ]
+        "required": ["type"]
       },
       "device_cloud_instantiable_update": {
         "title": "Instantiable Cloud Device Update",
@@ -2183,11 +1952,7 @@
                 "properties": {
                   "frequency": {
                     "type": "string",
-                    "enum": [
-                      "HOURLY",
-                      "DAILY",
-                      "WEEKLY"
-                    ]
+                    "enum": ["HOURLY", "DAILY", "WEEKLY"]
                   },
                   "until": {
                     "description": "Up to this date-time the time slot will be repeated.",
@@ -2199,9 +1964,7 @@
                     "type": "integer"
                   }
                 },
-                "required": [
-                  "frequency"
-                ]
+                "required": ["frequency"]
               }
             }
           }
@@ -2215,9 +1978,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "messageType"
-        ],
+        "required": ["messageType"],
         "additionalProperties": true,
         "x-typeguard": true
       },
@@ -2237,10 +1998,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "messageType",
-              "command"
-            ]
+            "required": ["messageType", "command"]
           }
         ],
         "x-typeguard": true
@@ -2260,11 +2018,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "serviceType",
-          "serviceId",
-          "remoteServiceId"
-        ],
+        "required": ["serviceType", "serviceId", "remoteServiceId"],
         "additionalProperties": true
       },
       "create_peerconnection_message": {
@@ -2281,11 +2035,7 @@
               },
               "connectionType": {
                 "type": "string",
-                "enum": [
-                  "webrtc",
-                  "websocket",
-                  "local"
-                ]
+                "enum": ["webrtc", "websocket", "local"]
               },
               "connectionUrl": {
                 "type": "string",
@@ -2296,11 +2046,7 @@
                 "items": {
                   "type": "object",
                   "$ref": "#/components/schemas/service_config",
-                  "required": [
-                    "serviceType",
-                    "serviceId",
-                    "remoteServiceId"
-                  ]
+                  "required": ["serviceType", "serviceId", "remoteServiceId"]
                 }
               },
               "tiebreaker": {
@@ -2339,10 +2085,7 @@
                 "format": "uri"
               }
             },
-            "required": [
-              "command",
-              "connectionUrl"
-            ]
+            "required": ["command", "connectionUrl"]
           }
         ],
         "x-typeguard": true
@@ -2361,11 +2104,7 @@
               },
               "signalingType": {
                 "type": "string",
-                "enum": [
-                  "offer",
-                  "answer",
-                  "candidate"
-                ]
+                "enum": ["offer", "answer", "candidate"]
               },
               "connectionUrl": {
                 "type": "string",
@@ -2376,12 +2115,7 @@
                 "additionalProperties": true
               }
             },
-            "required": [
-              "messageType",
-              "signalingType",
-              "connectionUrl",
-              "content"
-            ]
+            "required": ["messageType", "signalingType", "connectionUrl", "content"]
           }
         ],
         "x-typeguard": true
@@ -2390,14 +2124,7 @@
         "title": "Connection Status",
         "type": "string",
         "description": "The status of the peerconnection.",
-        "enum": [
-          "new",
-          "connecting",
-          "connected",
-          "disconnected",
-          "failed",
-          "closed"
-        ]
+        "enum": ["new", "connecting", "connected", "disconnected", "failed", "closed"]
       },
       "peerconnection_common": {
         "type": "object",
@@ -2412,19 +2139,13 @@
           "type": {
             "type": "string",
             "description": "Type of the peerconnection",
-            "enum": [
-              "local",
-              "webrtc"
-            ]
+            "enum": ["local", "webrtc"]
           },
           "status": {
             "$ref": "#/components/schemas/peerconnection_status"
           }
         },
-        "required": [
-          "url",
-          "type"
-        ]
+        "required": ["url", "type"]
       },
       "peerconnection_overview": {
         "title": "Peerconnection Overview",
@@ -2444,9 +2165,7 @@
                 }
               }
             },
-            "required": [
-              "devices"
-            ]
+            "required": ["devices"]
           }
         ]
       },
@@ -2471,9 +2190,7 @@
             }
           }
         },
-        "required": [
-          "url"
-        ]
+        "required": ["url"]
       },
       "peerconnection": {
         "title": "Peerconnection",
@@ -2493,9 +2210,7 @@
                 }
               }
             },
-            "required": [
-              "devices"
-            ]
+            "required": ["devices"]
           }
         ],
         "x-typeguard": true
@@ -2511,18 +2226,13 @@
             "properties": {
               "eventType": {
                 "type": "string",
-                "enum": [
-                  "peerconnection-closed"
-                ]
+                "enum": ["peerconnection-closed"]
               },
               "peerconnection": {
                 "$ref": "#/components/schemas/peerconnection"
               }
             },
-            "required": [
-              "eventType",
-              "peerconnection"
-            ]
+            "required": ["eventType", "peerconnection"]
           }
         ],
         "x-typeguard": true
@@ -2538,18 +2248,13 @@
             "properties": {
               "eventType": {
                 "type": "string",
-                "enum": [
-                  "peerconnection-status-changed"
-                ]
+                "enum": ["peerconnection-status-changed"]
               },
               "peerconnection": {
                 "$ref": "#/components/schemas/peerconnection"
               }
             },
-            "required": [
-              "eventType",
-              "peerconnection"
-            ]
+            "required": ["eventType", "peerconnection"]
           }
         ],
         "x-typeguard": true
@@ -2575,9 +2280,7 @@
           "type": "string",
           "format": "uuid"
         },
-        "example": [
-          "908fec03-ee1e-4996-b11a-0ef8fc7d0909"
-        ]
+        "example": ["908fec03-ee1e-4996-b11a-0ef8fc7d0909"]
       },
       "flat_group": {
         "in": "query",
@@ -2627,9 +2330,7 @@
           "type": "string",
           "format": "uri"
         },
-        "example": [
-          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
-        ]
+        "example": ["f4c69c42-6e1c-44c3-8e44-f74bd22c3713"]
       },
       "closed_url": {
         "name": "closedUrl",
@@ -2660,9 +2361,7 @@
           "type": "string",
           "format": "uuid"
         },
-        "example": [
-          "f4c69c42-6e1c-44c3-8e44-f74bd22c3713"
-        ]
+        "example": ["f4c69c42-6e1c-44c3-8e44-f74bd22c3713"]
       },
       "device_url": {
         "in": "query",

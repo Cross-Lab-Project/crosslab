@@ -2,7 +2,7 @@ title: Event Callback
 allOf:
   - $ref: ./callback.yml
   - type: object
-    properties: 
+    properties:
       callbackType:
         type: string
         enum:

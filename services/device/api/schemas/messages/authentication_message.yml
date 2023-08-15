@@ -8,7 +8,7 @@ allOf:
         const: authenticate
       token:
         type: string
-      authenticated: 
+      authenticated:
         type: boolean
     required:
       - messageType

@@ -1,8 +1,7 @@
-import { repositories } from '../../../database/dataSource'
-import { getDevicesByDeviceIdSignature } from '../../../generated/signatures'
-import { DeviceOwnershipError, logger } from '@crosslab/service-common'
-import { checkPermission } from '../../../methods/permission'
-
+import {repositories} from "../../../database/dataSource";
+import {getDevicesByDeviceIdSignature} from "../../../generated/signatures";
+import {checkPermission} from "../../../methods/permission";
+import {DeviceOwnershipError, logger} from "@crosslab/service-common";
 
 /**
  * This function implements the functionality for handling GET requests on /devices/{device_id} endpoint.
@@ -11,24 +10,24 @@ import { checkPermission } from '../../../methods/permission'
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
-    parameters,
-    user
+  parameters,
+  user,
 ) => {
-    logger.log('info', 'getDevicesByDeviceId called')
+  logger.log("info", "getDevicesByDeviceId called");
 
-    const deviceModel = await repositories.device.findOneOrFail({
-        where: { uuid: parameters.device_id },
-    })
+  const deviceModel = await repositories.device.findOneOrFail({
+    where: {uuid: parameters.device_id},
+  });
 
-    if (!checkPermission('read', deviceModel, user.JWT)) throw new DeviceOwnershipError()
+  if (!checkPermission("read", deviceModel, user.JWT)) throw new DeviceOwnershipError();
 
-    logger.log('info', 'getDevicesByDeviceId succeeded')
+  logger.log("info", "getDevicesByDeviceId succeeded");
 
-    return {
-        status: 200,
-        body: await repositories.device.format(deviceModel, {
-            flat_group: parameters.flat_group,
-            execute_for: parameters.execute_for ?? user.JWT.jwt,
-        }),
-    }
-}
+  return {
+    status: 200,
+    body: await repositories.device.format(deviceModel, {
+      flat_group: parameters.flat_group,
+      execute_for: parameters.execute_for ?? user.JWT.jwt,
+    }),
+  };
+};

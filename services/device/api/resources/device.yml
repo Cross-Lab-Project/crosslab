@@ -69,9 +69,9 @@ patch:
         post:
           security:
             - JWT:
-              - device
-              - device:edit
-              - device:create
+                - device
+                - device:edit
+                - device:create
           summary: Callback for the "device-changed" event
           requestBody:
             required: true
@@ -143,9 +143,9 @@ post:
         post:
           security:
             - JWT:
-              - device
-              - device:edit
-              - device:create
+                - device
+                - device:edit
+                - device:create
           summary: Callback for the "device-changed" event
           requestBody:
             required: true

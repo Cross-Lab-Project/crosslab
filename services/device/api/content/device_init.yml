@@ -4,4 +4,4 @@ schema:
 examples:
   microcontroller:
     value:
-      $ref: '../examples/device_microcontroller.yml'
+      $ref: "../examples/device_microcontroller.yml"

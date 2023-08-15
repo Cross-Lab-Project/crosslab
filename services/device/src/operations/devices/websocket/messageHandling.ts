@@ -1,15 +1,15 @@
-import { ConcreteDeviceModel } from '../../../database/model'
+import {ConcreteDeviceModel} from "../../../database/model";
 import {
-    SignalingMessage,
-    Message,
-    isSignalingMessage,
-    isConnectionStateChangedMessage,
-    ConnectionStateChangedMessage,
-} from '../../../generated/types'
-import { apiClient } from '../../../globals'
-import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
-import { deviceUrlFromId } from '../../../methods/urlFromId'
-import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
+  SignalingMessage,
+  Message,
+  isSignalingMessage,
+  isConnectionStateChangedMessage,
+  ConnectionStateChangedMessage,
+} from "../../../generated/types";
+import {apiClient} from "../../../globals";
+import {signalingQueueManager} from "../../../methods/signaling/signalingQueueManager";
+import {deviceUrlFromId} from "../../../methods/urlFromId";
+import {UnrelatedPeerconnectionError} from "@crosslab/service-common";
 
 /**
  * This function handles a message for a device.
@@ -17,14 +17,14 @@ import { UnrelatedPeerconnectionError } from '@crosslab/service-common'
  * @param message The message to be handled.
  */
 export async function handleDeviceMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: Message
+  deviceModel: ConcreteDeviceModel,
+  message: Message,
 ) {
-    if (isSignalingMessage(message)) {
-        await handleSignalingMessage(deviceModel, message)
-    } else if (isConnectionStateChangedMessage(message)) {
-        await handleConnectionStateChangedMessage(deviceModel, message)
-    }
+  if (isSignalingMessage(message)) {
+    await handleSignalingMessage(deviceModel, message);
+  } else if (isConnectionStateChangedMessage(message)) {
+    await handleConnectionStateChangedMessage(deviceModel, message);
+  }
 }
 
 /**
@@ -33,29 +33,29 @@ export async function handleDeviceMessage(
  * @param message The signaling message to be handled.
  */
 async function handleSignalingMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: SignalingMessage
+  deviceModel: ConcreteDeviceModel,
+  message: SignalingMessage,
 ) {
-    const peerconnection = await apiClient.getPeerconnection(message.connectionUrl)
+  const peerconnection = await apiClient.getPeerconnection(message.connectionUrl);
 
-    const deviceA = peerconnection.devices[0]
-    const deviceB = peerconnection.devices[1]
+  const deviceA = peerconnection.devices[0];
+  const deviceB = peerconnection.devices[1];
 
-    let peerDeviceUrl: string | undefined = undefined
-    if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url
-    if (deviceB.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceA.url
-    if (!peerDeviceUrl) {
-        throw new UnrelatedPeerconnectionError(
-            'Device is not taking part in peerconnection.',
-            400
-        )
-    }
+  let peerDeviceUrl: string | undefined = undefined;
+  if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url;
+  if (deviceB.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceA.url;
+  if (!peerDeviceUrl) {
+    throw new UnrelatedPeerconnectionError(
+      "Device is not taking part in peerconnection.",
+      400,
+    );
+  }
 
-    signalingQueueManager.addSignalingMessage(
-        message.connectionUrl,
-        peerDeviceUrl,
-        message
-    )
+  signalingQueueManager.addSignalingMessage(
+    message.connectionUrl,
+    peerDeviceUrl,
+    message,
+  );
 }
 
 /**
@@ -64,12 +64,12 @@ async function handleSignalingMessage(
  * @param message The connection-state-changed message.
  */
 async function handleConnectionStateChangedMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: ConnectionStateChangedMessage
+  deviceModel: ConcreteDeviceModel,
+  message: ConnectionStateChangedMessage,
 ) {
-    await apiClient.patchPeerconnectionDeviceStatus(
-        message.connectionUrl,
-        { status: message.status },
-        deviceUrlFromId(deviceModel.uuid)
-    )
+  await apiClient.patchPeerconnectionDeviceStatus(
+    message.connectionUrl,
+    {status: message.status},
+    deviceUrlFromId(deviceModel.uuid),
+  );
 }

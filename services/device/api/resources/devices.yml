@@ -65,9 +65,9 @@ post:
         post:
           security:
             - JWT:
-              - device
-              - device:write
-              - device:create
+                - device
+                - device:write
+                - device:create
           summary: Callback for the "device-changed" event
           requestBody:
             required: true
