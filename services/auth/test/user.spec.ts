@@ -1,14 +1,13 @@
 import {app} from "../src/app";
 import {UserModel} from "../src/database/model";
 import {createUser} from "../src/user/helper";
-import {disable_logs, resetDatabase} from "./helper";
+import {resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";
 
 describe("User", () => {
   let users: UserModel[];
   before(async function () {
-    disable_logs();
     await resetDatabase();
     users = await Promise.all([
       await createUser("user1", "password1"),

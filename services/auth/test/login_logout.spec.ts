@@ -1,5 +1,5 @@
 import {app} from "../src/app";
-import {disable_logs, resetDatabase} from "./helper";
+import {resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";
 import {createNewToken} from "../src/token/helper";
@@ -7,7 +7,6 @@ import {createUser} from "../src/user/helper";
 
 describe("Login", () => {
   before(async function () {
-    disable_logs();
     await resetDatabase();
     await createUser("user", "password");
   });

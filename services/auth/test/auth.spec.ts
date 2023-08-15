@@ -1,7 +1,7 @@
 import {app} from "../src/app";
 import {UserModel} from "../src/database/model";
 import {createNewToken} from "../src/token/helper";
-import {disable_logs, resetDatabase} from "./helper";
+import {resetDatabase} from "./helper";
 import chai from "chai";
 import "chai-http";
 import {createUser} from "../src/user/helper";
@@ -11,7 +11,6 @@ describe("Authentication", () => {
   let user: UserModel;
 
   before(async function () {
-    disable_logs();
     await resetDatabase();
     user = await createUser("user", "password");
     valid_token = await createNewToken(user);
