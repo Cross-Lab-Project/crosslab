@@ -5,7 +5,7 @@
 		"cacheFrom": "crosslab/crosslab-devcontainer"
 	},
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {"dockerDefaultAddressPool": "base=172.30.0.0/15,size=24"},
 		"ghcr.io/devcontainers/features/node:1": {},
 		"ghcr.io/devcontainers/features/python:1": {},
 		"./crosslabFeature": {}

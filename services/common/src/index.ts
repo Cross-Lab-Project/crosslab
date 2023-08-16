@@ -15,6 +15,7 @@ export * as config from './config';
 export * as utils from './utils';
 export * as authorization from './authorization'
 export * as logging from './logging'
+export * as error from './error_middleware'
 
 /**
  * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.

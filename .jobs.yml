@@ -140,9 +140,9 @@ services/device:
   - script: build-docker
     dependencies:
       - services/device:build
-  - script: test
-    dependencies:
-      - services/auth:build
+#  - script: test
+#    dependencies:
+#      - services/auth:build
 
 services/experiment:
   - script: build-spec

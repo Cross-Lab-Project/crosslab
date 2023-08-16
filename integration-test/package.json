@@ -3,8 +3,8 @@
   "description": "This project contains test cases for the APIs of the different microservices of the crosslab infrastructure.",
   "private": true,
   "scripts": {
-    "test": "mocha --bail --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts src/**/*.spec.ts",
-    "test:debug": "mocha --inspect=9101 --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts src/**/*.spec.ts",
+    "test": "mocha --bail --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts -r src/fixtures/client.ts src/**/*.spec.ts",
+    "test:debug": "mocha --inspect=9101 --inspect-brk --bail --nolazy --require mocha-steps -r ts-node/register -r src/fixtures/debug.ts -r src/fixtures/client.ts src/**/*.spec.ts",
     "lint": "eslint ."
   },
   "author": "Pierre Helbing",

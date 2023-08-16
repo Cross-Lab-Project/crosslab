@@ -3,7 +3,7 @@ import * as mariadb from "./mariadb";
 import * as sqlite from "./sqlite";
 
 export const Migrations = (() => {
-  switch (config.orm.driver) {
+  switch (config.orm.type) {
     case "sqlite":
       return sqlite.Migrations;
     case "mariadb":

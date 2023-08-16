@@ -1,4 +1,4 @@
-import {errorHandler, logging, authorization} from "@crosslab/service-common";
+import {logging, authorization, error} from "@crosslab/service-common";
 
 import cookieParser from "cookie-parser";
 
@@ -25,7 +25,7 @@ export function init_app() {
     res.send({status: "ok"});
   });
 
-  app.use(errorHandler);
+  app.use(error.middleware);
 
   return app;
 }

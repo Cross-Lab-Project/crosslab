@@ -99,11 +99,11 @@ async function rehydrate(){
 
 export async function update_relations(add: Tuple[], remove: Tuple[]){
     await relationRepository.createQueryBuilder().insert().values(add).orIgnore().execute()
-    await relationRepository.createQueryBuilder().delete().where(remove.map((tuple: Tuple)=>({
+    await relationRepository.remove(remove.map((tuple: Tuple)=>({
         subject: tuple.subject,
         relation: tuple.relation,
         object: tuple.object,
-    }))).execute()
+    })))
     await fgaClient.write({
         writes: add.map((tuple: Tuple)=>({
             user: encode_object(tuple.subject),

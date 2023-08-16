@@ -179,7 +179,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     });
   }
 
-  async stop(client: APIClient) {
+  async stop(client: APIClient, timeout=5000) {
     const closedPromises = this.devices.map(
       device =>
         new Promise<void>(resolve =>
@@ -187,11 +187,22 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ),
     );
     if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
-    await Promise.all(closedPromises);
-    for (const device of this.devices) {
-      device.stop();
-    }
 
-    this._state = State.Stopped;
+    try{
+      await new Promise((resolve, reject)=>{
+        if(timeout){
+          setTimeout(()=>reject("Timeout"), timeout)
+        }
+        Promise.all(closedPromises).then(resolve).catch(reject)
+      });
+    } finally {
+      for (const device of this.devices) {
+        device.stop();
+      }
+      
+      this._state = State.Stopped;
+    }
   }
+
+
 }

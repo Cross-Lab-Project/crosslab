@@ -11,7 +11,9 @@
       "get": {
         "operationId": "auth",
         "x-internal": true,
-        "tags": ["authentication"],
+        "tags": [
+          "authentication"
+        ],
         "security": [],
         "summary": "Authenticate user",
         "description": "This endpoint will authenticate a user and return a JWT for the internal use of the microservice architecture.\nThe return code will always be 200, but the JWT will be empty if the authentication failed.",
@@ -61,7 +63,9 @@
     "/login": {
       "post": {
         "operationId": "login",
-        "tags": ["authentication"],
+        "tags": [
+          "authentication"
+        ],
         "security": [],
         "summary": "Login user",
         "description": "This endpoint will login a user and return an access token for the use of the microservice architecture.",
@@ -121,10 +125,14 @@
     "/logout": {
       "post": {
         "operationId": "logout",
-        "tags": ["authentication"],
+        "tags": [
+          "authentication"
+        ],
         "security": [
           {
-            "JWT": ["logout"]
+            "JWT": [
+              "logout"
+            ]
           }
         ],
         "summary": "Logout user",
@@ -171,10 +179,15 @@
       "get": {
         "operationId": "list_users",
         "summary": "Get all users",
-        "tags": ["user"],
+        "tags": [
+          "user"
+        ],
         "security": [
           {
-            "JWT": ["users", "users:read"]
+            "JWT": [
+              "users",
+              "users:read"
+            ]
           }
         ],
         "responses": {
@@ -212,10 +225,15 @@
       "post": {
         "operationId": "create_user",
         "summary": "Create a user",
-        "tags": ["user"],
+        "tags": [
+          "user"
+        ],
         "security": [
           {
-            "JWT": ["users", "users:create"]
+            "JWT": [
+              "users",
+              "users:create"
+            ]
           }
         ],
         "requestBody": {
@@ -263,10 +281,15 @@
       "get": {
         "operationId": "get_user",
         "summary": "Get a user",
-        "tags": ["user"],
+        "tags": [
+          "user"
+        ],
         "security": [
           {
-            "JWT": ["users", "users:read"]
+            "JWT": [
+              "users",
+              "users:read"
+            ]
           }
         ],
         "parameters": [
@@ -305,10 +328,15 @@
       "patch": {
         "operationId": "update_user",
         "summary": "Update a user",
-        "tags": ["user"],
+        "tags": [
+          "user"
+        ],
         "security": [
           {
-            "JWT": ["users", "users:write"]
+            "JWT": [
+              "users",
+              "users:write"
+            ]
           }
         ],
         "parameters": [
@@ -358,10 +386,15 @@
       "delete": {
         "operationId": "delete_user",
         "summary": "Delete a user",
-        "tags": ["user"],
+        "tags": [
+          "user"
+        ],
         "security": [
           {
-            "JWT": ["users", "users:delete"]
+            "JWT": [
+              "users",
+              "users:delete"
+            ]
           }
         ],
         "parameters": [
@@ -395,10 +428,15 @@
       "get": {
         "operationId": "get_identity",
         "summary": "Get identity",
-        "tags": ["identity"],
+        "tags": [
+          "identity"
+        ],
         "security": [
           {
-            "JWT": ["identity", "identity:read"]
+            "JWT": [
+              "identity",
+              "identity:read"
+            ]
           }
         ],
         "responses": {
@@ -432,10 +470,15 @@
       "patch": {
         "operationId": "update_identity",
         "summary": "Update identity",
-        "tags": ["identity"],
+        "tags": [
+          "identity"
+        ],
         "security": [
           {
-            "JWT": ["identity", "identity:write"]
+            "JWT": [
+              "identity",
+              "identity:write"
+            ]
           }
         ],
         "requestBody": {
@@ -536,13 +579,19 @@
             "type": "string"
           }
         },
-        "required": ["username", "password"]
+        "required": [
+          "username",
+          "password"
+        ]
       },
       "auth_method": {
         "title": "AuthMethod",
         "type": "string",
         "description": "Authentication method.",
-        "enum": ["tui", "local"]
+        "enum": [
+          "tui",
+          "local"
+        ]
       },
       "user": {
         "title": "User",
@@ -565,7 +614,12 @@
             "writeOnly": true
           }
         },
-        "required": ["url", "id", "username", "password"]
+        "required": [
+          "url",
+          "id",
+          "username",
+          "password"
+        ]
       },
       "user_update": {
         "title": "User Update",
@@ -576,7 +630,9 @@
             "writeOnly": true
           }
         },
-        "required": ["password"]
+        "required": [
+          "password"
+        ]
       }
     }
   }
