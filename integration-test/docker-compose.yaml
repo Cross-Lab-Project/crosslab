@@ -8,7 +8,7 @@ x-config: &common-config
 services:
   # Services
   gateway:
-    build: ../services/gateway
+    image: "${GATEWAY_IMAGE}"
     environment:
       <<: *common-config
       AUTH_SERVICE_URL: "127.0.0.1:3000"
@@ -19,22 +19,22 @@ services:
       SERVER_NAME: "localhost"
     network_mode: "host"
   authentication:
-    build: ../services/auth
+    image: "${AUTHENTICATION_IMAGE}"
     environment: *common-config
     network_mode: "host"
   authorization:
-    build: ../services/authorization
+    image: "${AUTHORIZATION_IMAGE}"
     environment: *common-config
     network_mode: "host"
   device:
-    build: ../services/device
+    image: "${DEVICE_IMAGE}"
     environment: *common-config
     network_mode: "host"
   experiment:
-    build: ../services/experiment
+    image: "${EXPERIMENT_IMAGE}"
     environment: *common-config
     network_mode: "host"
   federation:
-    build: ../services/federation
+    image: "${FEDERATION_IMAGE}"
     environment: *common-config
     network_mode: "host"
