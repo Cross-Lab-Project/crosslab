@@ -26,4 +26,5 @@ build:
   image: crosslab/devcontainer:latest
   stage: build
   script:
+    - /usr/local/share/docker-init.sh
     - ./scripts/ci.sh --upload --branch $BRANCH $RELEASE
