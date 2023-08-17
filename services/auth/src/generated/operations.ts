@@ -142,3 +142,28 @@ export type patchIdentityQueryParametersType = never;
 export type patchIdentityRequestBodyType = UserUpdate<"request"> | undefined;
 
 export type patchIdentityResponseBodyType = never | User<"response">;
+
+/**
+ * Typings for the a POST request on /token
+ */
+export const postTokenPath = "/token";
+export type postTokenPathParametersType = never;
+
+export type postTokenQueryParametersType = never;
+
+export type postTokenRequestBodyType = {
+  /**
+   * The username of the user.
+   */
+  username?: string;
+  /**
+   * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+   *
+   */
+  claims?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+};
+
+export type postTokenResponseBodyType = never | string;

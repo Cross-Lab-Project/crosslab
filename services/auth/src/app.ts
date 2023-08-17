@@ -6,6 +6,7 @@ import express from "express";
 import {router as auth_router} from "./auth";
 import {router as user_router} from "./user";
 import {router as login_logout_router} from "./login_logout";
+import {router as token_router} from "./token/routes";
 
 export let app: express.Express;
 
@@ -20,6 +21,7 @@ export function init_app() {
   app.use(auth_router);
   app.use(user_router);
   app.use(login_logout_router);
+  app.use(token_router);
 
   app.get("/auth/status", (_req, res) => {
     res.send({status: "ok"});

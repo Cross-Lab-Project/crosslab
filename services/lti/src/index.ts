@@ -1,10 +1,19 @@
-import app from "./app"
-import { config } from "./config"
-import { ApplicationDataSource } from "./database/datasource"
+import {logging} from "@crosslab/service-common";
+import {init_app} from "./app";
+import {ApplicationDataSource} from "./database/datasource";
 
-async function initialize(){
-    await ApplicationDataSource.initialize()
-    
-    app.listen(config.PORT)
+async function startDeviceService() {
+  logging.init();
+  try {
+    await ApplicationDataSource.initialize();
+    await init_app();
+    logging.logger.info("Device Service started successfully");
+  } catch (e) {
+    logging.logger.error(e);
+  }
 }
-initialize()
+
+/* istanbul ignore if */
+if (require.main === module) {
+  startDeviceService();
+}

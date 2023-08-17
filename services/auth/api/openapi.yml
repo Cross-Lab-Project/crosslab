@@ -25,6 +25,7 @@ components:
         As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.
         This token will be populated by the API Gateway.
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+
 paths:
   /auth:
     $ref: "./resources/auth.yml"
@@ -38,3 +39,6 @@ paths:
     $ref: "./resources/user.yml"
   /identity:
     $ref: "./resources/identity.yml"
+
+  /token:
+    $ref: "./resources/token.yml#/components/paths/token"

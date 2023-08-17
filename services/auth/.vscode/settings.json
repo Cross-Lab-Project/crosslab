@@ -37,5 +37,8 @@
     "BASE_URL": "http://localhost",
     "PORT": "3000",
     "ALLOWLIST": "localhost:superadmin"
+  },
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json": "file:///workspaces/crosslab/services/auth/api/resources/token.yml"
   }
 }

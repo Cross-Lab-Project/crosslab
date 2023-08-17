@@ -1,20 +1,15 @@
-import { logger } from '@crosslab/service-common'
+import {config as CommonConfig} from "@crosslab/service-common";
+import {utils} from "@crosslab/service-common";
+import dotenv from "dotenv";
 
-function die(reason: string): string {
-     logger.log('error', reason)
-     process.exit(1)
-}
-
-function remove_trailing_slash(url: string): string {
-    if (url.endsWith('/')) {
-        return url.slice(0, -1)
-    } else {
-        return url
-    }
-}
+dotenv.config();
 
 export const config = {
-    PORT: parseInt(process.env.PORT ?? '3000'),
-    BASE_URL: remove_trailing_slash(process.env.BASE_URL ?? 'http://localhost:3000'),
-    COOKIE_SECRET: process.env.COOKIE_SECRET ?? die('COOKIE_SECRET not set'),
-}
+  PORT: parseInt(process.env.PORT ?? "3009"),
+  NODE_ENV: process.env.NODE_ENV ?? "development",
+  BASE_URL: process.env.BASE_URL ?? "http://localhost:3009",
+  COOKIE_SECRET: process.env.COOKIE_SECRET ?? utils.die("COOKIE_SECRET not set"),
+  orm: {
+    ...CommonConfig.readOrmConfig(),
+  },
+};

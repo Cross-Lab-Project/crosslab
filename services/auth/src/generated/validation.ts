@@ -275,3 +275,27 @@ export function validatePatchIdentity(
     }
   };
 }
+
+/**
+ * This function validates the POST request on /token
+ */
+export function validatePostToken(
+  handler: RequestHandler<
+    operations.postTokenPathParametersType,
+    operations.postTokenResponseBodyType,
+    operations.postTokenRequestBodyType
+  >,
+) {
+  return async (req: Request, res: Response, next: any) => {
+    try {
+      if (!type_validation.validatePostTokenRequestBodyRequest(req.body)) {
+        const errors = (type_validation.validatePostTokenRequestBodyRequest as any)
+          .errors;
+        throw new ValidationError("Validation Error", errors, 400);
+      }
+      return await handler(req as any, res, next);
+    } catch (err) {
+      next(err);
+    }
+  };
+}

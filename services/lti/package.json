@@ -10,14 +10,9 @@
     "app"
   ],
   "scripts": {
-    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
-    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
-    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
-    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-    "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
     "lint": "eslint .",
     "build": "tsc --project tsconfig.json",
-    "watch": "COOKIE_SECRET=secret npx nodemon --signal SIGTERM -e ts src/index.ts",
+    "dev": "tsc-watch --onSuccess 'node --inspect=9009 ./app/index.js'",
     "test": "mocha --require ts-node/register test/**/*.spec.ts"
   },
   "devDependencies": {
@@ -27,11 +22,13 @@
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
+    "tsc-watch": "^6.0.4",
     "typescript": "^5.1.6"
   },
   "dependencies": {
     "@crosslab/service-common": "file:../common",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
     "jose": "^4.14.4",
