@@ -17,29 +17,29 @@ import {PeerConnection, PeerConnectionEvents, ServiceConfig} from './connection'
 const log = console;
 log.trace = log.log;
 
-interface RTCSignalingCandidateMessage extends SignalingMessage {
+export interface RTCSignalingCandidateMessage extends SignalingMessage {
   signalingType: 'candidate';
   content: RTCIceCandidate;
 }
 
-interface RTCSignalingOfferMessage extends SignalingMessage {
+export interface RTCSignalingOfferMessage extends SignalingMessage {
   signalingType: 'offer';
   content: RTCSessionDescriptionInit;
 }
 
-interface RTCSignalingAnswerMessage extends SignalingMessage {
+export interface RTCSignalingAnswerMessage extends SignalingMessage {
   signalingType: 'answer';
   content: RTCSessionDescriptionInit;
 }
 
 export type RTCSignalingMessage = RTCSignalingCandidateMessage | RTCSignalingOfferMessage | RTCSignalingAnswerMessage;
 
-enum WebRTCRole {
+export enum WebRTCRole {
   Callee,
   Caller,
 }
 
-enum ConnectionState {
+export enum ConnectionState {
   Unitintialized,
   Calling,
   WaitingForCall,
@@ -361,7 +361,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
       });
       if (sectionIdx!== -1) {
         const modifiedSection = sections[sectionIdx].replace(msidRegex, '$1' + label);
-      
+
         if (modifiedSection===sections[sectionIdx]) {
           log.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {transeiver});
         } else {
