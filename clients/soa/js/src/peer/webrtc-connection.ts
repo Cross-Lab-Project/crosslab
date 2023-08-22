@@ -1,7 +1,7 @@
 /*
-bundlePolicy: "max-compat", // transport every stream over a seperate connection if necessary
+bundlePolicy: "max-compat", // transport every stream over a separate connection if necessary
       //certificates: ,// enable certificates for faster (re-)connection time
-      //iceCandidatePoolSize: , //can make the negotion faster
+      //iceCandidatePoolSize: , //can make the negotiation faster
       iceServers: [], // STUN/TURN - Server
       iceTransportPolicy: "all", // We can also connect local und using relay servers
       //peerIdentity: , // target peer identity / security consideration
@@ -40,7 +40,7 @@ enum WebRTCRole {
 }
 
 enum ConnectionState {
-  Unitintialized,
+  Uninitialized,
   Calling,
   WaitingForCall,
   WaitingForAnswer,
@@ -52,11 +52,11 @@ const trickleIce = false;
 export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> implements PeerConnection {
   private signalingQueue: Array<RTCSignalingMessage> = [];
   private candidateQueue: Array<RTCIceCandidate> = [];
-  private isProcessing = true; //dont do anything until connect is called
+  private isProcessing = true; //don't do anything until connect is called
   private role?: WebRTCRole;
-  private _state: ConnectionState = ConnectionState.Unitintialized;
+  private _state: ConnectionState = ConnectionState.Uninitialized;
   private receivingChannels = new Map<string, Channel>();
-  private transeiverMap = new Map<RTCRtpTransceiver, string>();
+  private transceiverMap = new Map<RTCRtpTransceiver, string>();
   private mediaChannelMap = new Map<string, MediaChannel>();
   tiebreaker!: boolean;
   pc: RTCPeerConnection;
@@ -72,10 +72,10 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     }
   }
 
-  private onicecandidate(event: RTCPeerConnectionIceEvent) {
+  private async onicecandidate(event: RTCPeerConnectionIceEvent) {
     if (event.candidate && trickleIce) {
-      this.sendIceCandidate(event.candidate);
-    } else if(!event.candidate && !trickleIce) {
+      await this.sendIceCandidate(event.candidate);
+    } else {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -94,7 +94,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
       if (channel !== undefined && channel.channel_type === 'DataChannel') {
         channel.send = event.channel.send.bind(event.channel);
         event.channel.onmessage = message => {
-          if (channel.ondata) channel.ondata(message.data);
+          if (channel.onData) channel.onData(message.data);
         };
         event.channel.onopen = () => {
           channel._setReady();
@@ -117,7 +117,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   }
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void {
-    log.trace('WebRTCPeerConnection.tranceive called', {
+    log.trace('WebRTCPeerConnection.transmit called', {
       serviceConfig,
       id,
       channel,
@@ -136,10 +136,10 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         console.log(e);
       }
       webrtcChannel.onmessage = event => {
-        if (channel.ondata) channel.ondata(event.data);
+        if (channel.onData) channel.onData(event.data);
       };
     } else if (channel.channel_type === 'MediaChannel') {
-      log.trace('WebRTCPeerConnection.tranceive save channel for later consumption', {
+      log.trace('WebRTCPeerConnection.transmit save channel for later consumption', {
         channel,
         label,
       });
@@ -168,7 +168,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   async handleSignalingMessage(msg: SignalingMessage) {
     this.signalingQueue.push(msg as RTCSignalingMessage);
-    this.executeQueue();
+    this.executeQueue().catch(err => { if(err) throw err });
   }
 
   private async executeQueue() {
@@ -180,7 +180,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         if (!message) break;
         switch (message.signalingType) {
           case 'candidate':
-            this.handleIceCandidate(message);
+            await this.handleIceCandidate(message);
             break;
           case 'offer':
             await this.handleOffer(message);
@@ -196,8 +196,8 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   // Received Signaling and Control handling *************************************************************************
   async connect() {
-    console.log('webrtc connect');
-    assert(this._state === ConnectionState.Unitintialized);
+    log.trace('WebRTCPeerConnection.connect called');
+    assert(this._state === ConnectionState.Uninitialized);
     this.isProcessing = false;
     this.role = this.tiebreaker ? WebRTCRole.Caller : WebRTCRole.Callee;
     if (this.role === WebRTCRole.Caller) {
@@ -280,7 +280,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     });
     log.trace('WebRTCPeerConnection.makeAnswer called', {offer});
     await this.pc.setRemoteDescription(offer);
-    this.matchMediaChannels();
+    await this.matchMediaChannels();
     let answer = await this.pc.createAnswer();
     log.trace('WebRTCPeerConnection.makeAnswer created answer', {answer});
     await this.pc.setLocalDescription(answer); // TODO: gst-webrtc seems to not resolve the promise correctly.
@@ -309,7 +309,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   }
 
   private async addIceCandidate(candidate: RTCIceCandidate) {
-    this.pc.addIceCandidate(candidate);
+    await this.pc.addIceCandidate(candidate);
   }
 
   private async sendIceCandidate(candidate?: RTCIceCandidate) {
@@ -347,28 +347,27 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     const midRegex = /a=mid:(\S)/gm;
     const msidRegex = /(a=msid:- )\S*/gm;
 
-    // Update the "a=msid" attribute from the video stream with the right label from the transeiverMap.
-    for (const transeiver of this.transeiverMap.keys()) {
-      const label = this.transeiverMap.get(transeiver);
-      log.trace('WebRTCPeerConnection.modifySDP setTrack id for transeiver', {
-        transeiver,
-        mid: transeiver.mid,
+    // Update the "a=msid" attribute from the video stream with the right label from the transceiverMap.
+    for (const transceiver of this.transceiverMap.keys()) {
+      const label = this.transceiverMap.get(transceiver);
+      log.trace('WebRTCPeerConnection.modifySDP setTrack id for transceiver', {
+        transceiver: transceiver,
+        mid: transceiver.mid,
         label,
       });
       const sectionIdx = sections.findIndex(m => {
         const result=midRegex.exec(m)
-        return result && result[1] === transeiver.mid;
+        return result && result[1] === transceiver.mid;
       });
       if (sectionIdx!== -1) {
         const modifiedSection = sections[sectionIdx].replace(msidRegex, '$1' + label);
-      
         if (modifiedSection===sections[sectionIdx]) {
-          log.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {transeiver});
+          log.error('WebRTCPeerConnection.modifySDP no msid found for transceiver', {transceiver: transceiver});
         } else {
           sections[sectionIdx]=modifiedSection;
         }
       } else {
-        log.error('WebRTCPeerConnection.modifySDP no media found for transeiver', {transeiver});
+        log.error('WebRTCPeerConnection.modifySDP no media found for transceiver', {transceiver: transceiver});
       }
     }
 
@@ -377,15 +376,15 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     return sdpString;
   }
 
-  private matchMediaChannels() {
+  private async matchMediaChannels() {
     log.trace('WebRTCPeerConnection.matchMediaChannels called');
     const transceivers = this.pc.getTransceivers() as RTCRtpTransceiver[];
-    log.trace('WebRTCPeerConnection.matchMediaChannels transeivers', {
+    log.trace('WebRTCPeerConnection.matchMediaChannels transceivers', {
       transceivers,
     });
     for (const transceiver of transceivers) {
       const label = transceiver.receiver.track.label;
-      log.trace('WebRTCPeerConnection.matchMediaChannels matching tramceiver', {
+      log.trace('WebRTCPeerConnection.matchMediaChannels matching transceiver', {
         transceiver,
         label,
       });
@@ -400,7 +399,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
       if (channel.track) {
         direction = 'sendonly';
         log.trace('WebRTCPeerConnection.matchMediaChannels replace track');
-        transceiver.sender.replaceTrack(channel.track as MediaStreamTrack);
+        await transceiver.sender.replaceTrack(channel.track as MediaStreamTrack);
       }
 
       if (channel.ontrack) {
@@ -409,7 +408,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         channel.ontrack({track: transceiver.receiver.track});
       }
 
-      log.trace(`WebRTCPeerConnection.matchMediaChannels set transeiver to ${direction} `);
+      log.trace(`WebRTCPeerConnection.matchMediaChannels set transceiver to ${direction} `);
       transceiver.direction = direction;
     }
   }
@@ -424,10 +423,10 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         });
         continue;
       }
-      const rtpTranseiver: RTCRtpTransceiver = this.pc.addTransceiver(channel.track ? channel.track : 'video', {direction: 'sendrecv'});
-      this.transeiverMap.set(rtpTranseiver, label);
+      const rtpTransceiver: RTCRtpTransceiver = this.pc.addTransceiver(channel.track ? channel.track : 'video', {direction: 'sendrecv'});
+      this.transceiverMap.set(rtpTransceiver, label);
       if (channel.ontrack) {
-        channel.ontrack({track: rtpTranseiver.receiver.track});
+        channel.ontrack({track: rtpTransceiver.receiver.track});
       }
     }
   }

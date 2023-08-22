@@ -114,7 +114,7 @@ export class ElectricalConnectionService extends TypedEmitter<ElectricalConnecti
           channel.send(JSON.stringify(packet));
         });
         await channel.ready();
-        this.queue.start();
+        this.queue.start().catch(err => { if(err) throw err });
       });
 
       // find the bus set or create a new one

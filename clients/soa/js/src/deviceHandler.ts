@@ -45,7 +45,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
             resolve();
           } else reject('Authentication failed');
         } else {
-          reject(`Expected message with messageType 'authenticate', received ${authenticationMessage.messageType}`);
+          reject(`Expected message with messageType 'authenticate', received '${authenticationMessage.messageType}'`);
         }
       };
     });
@@ -118,16 +118,15 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       this.ws.send(JSON.stringify(connectionStateChangedMessage));
       this.emit('connectionsChanged');
     });
-    connection.connect();
-    this.emit('connectionsChanged');
+    connection.connect().then(() => this.emit('connectionsChanged'));
   }
 
-  private handleSignalingMessage(message: SignalingMessage) {
+  private async handleSignalingMessage(message: SignalingMessage) {
     const connection = this.connections.get(message.connectionUrl);
     if (connection === undefined) {
       throw Error('No Connection for the signaling message was found');
     }
-    connection.handleSignalingMessage(message);
+    await connection.handleSignalingMessage(message);
   }
 
   private handleClosePeerConnectionMessage(message: ClosePeerConnectionMessage) {
