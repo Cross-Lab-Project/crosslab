@@ -168,7 +168,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   async handleSignalingMessage(msg: SignalingMessage) {
     this.signalingQueue.push(msg as RTCSignalingMessage);
-    await this.executeQueue();
+    this.executeQueue().catch(err => { if(err) throw err });
   }
 
   private async executeQueue() {
