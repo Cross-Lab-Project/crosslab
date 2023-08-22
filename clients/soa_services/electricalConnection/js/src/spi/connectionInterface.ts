@@ -44,9 +44,9 @@ export interface SPIMasterInterfaceEvents extends ConnectionInterfaceEvents {
   slaveSelectChanged(event: ReceiveByteEvent): void;
 }
 
-type SPIInterfaceDataType = "SendByte" | "PrepareByte" | "SetSlaveSelect";
+export type SPIInterfaceDataType = "SendByte" | "PrepareByte" | "SetSlaveSelect";
 
-interface SPIInterfaceData {
+export interface SPIInterfaceData {
   type: SPIInterfaceDataType;
   byte?: number;
   value?: boolean;
@@ -63,7 +63,7 @@ export class SPISlaveInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
     throw new Error("Method not implemented.");
   }
@@ -97,7 +97,7 @@ export class SPIMasterInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
     throw new Error("Method not implemented.");
   }

@@ -55,7 +55,7 @@ export class FileService__Producer implements Service {
   }
 }
 
-interface FileService__ConsumerEvents {
+export interface FileService__ConsumerEvents {
   file: (event: FileServiceEvent) => void;
 }
 

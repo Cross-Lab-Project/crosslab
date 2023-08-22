@@ -27,12 +27,12 @@ export enum GPIOState {
   'WeakHigh' = 'weakH',
 }
 
-interface GPIOInterfaceData {
+export interface GPIOInterfaceData {
   driver: string;
   state: GPIOState;
 }
 
-type SignalChangeEvent = {
+export type SignalChangeEvent = {
   state: GPIOState;
   oldState: GPIOState;
 };
