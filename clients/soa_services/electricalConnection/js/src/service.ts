@@ -6,13 +6,13 @@ import {DataChannel} from '@cross-lab-project/soa-client';
 import {PeerConnection} from '@cross-lab-project/soa-client';
 import Queue from 'queue';
 
-interface ConnectionInterfaceConfigurationUpstream extends ConnectionInterfaceConfiguration {
+export interface ConnectionInterfaceConfigurationUpstream extends ConnectionInterfaceConfiguration {
   interfaceType: string;
   interfaceId: string;
   busId: string;
 }
 
-interface ElectricalServiceMessage {
+export interface ElectricalServiceMessage {
   busId: string;
   data: unknown;
 }
@@ -30,11 +30,11 @@ function checkConfig(config: ServiceConfiguration): asserts config is Electrical
   }
 }
 
-interface NewInterfaceEvent {
+export interface NewInterfaceEvent {
   connectionInterface: ConnectionInterface;
 }
 
-interface ElectricalConnectionServiceEvents {
+export interface ElectricalConnectionServiceEvents {
   newInterface: (event: NewInterfaceEvent) => void;
 }
 

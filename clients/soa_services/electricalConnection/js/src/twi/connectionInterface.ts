@@ -31,9 +31,9 @@ export interface TWIMasterInterfaceEvents extends ConnectionInterfaceEvents {
   prepareByte(event: ReceiveByteEvent): void;
 }
 
-type TWIInterfaceDataType = "SendByte" | "PrepareByte" | "SendAddress";
+export type TWIInterfaceDataType = "SendByte" | "PrepareByte" | "SendAddress";
 
-interface TWIInterfaceData {
+export interface TWIInterfaceData {
   type: TWIInterfaceDataType;
   byte?: number;
   address?: number;
@@ -51,7 +51,7 @@ export class TWIMasterInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
     throw new Error("Method not implemented.");
   }
@@ -85,7 +85,7 @@ export class TWISlaveInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
     throw new Error("Method not implemented.");
   }

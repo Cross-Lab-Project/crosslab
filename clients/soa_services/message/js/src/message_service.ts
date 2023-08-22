@@ -54,7 +54,7 @@ export class MessageService__Producer implements Service {
   }
 }
 
-interface MessageService__ConsumerEvents {
+export interface MessageService__ConsumerEvents {
   message: (event: MessageServiceEvent) => void;
 }
 
