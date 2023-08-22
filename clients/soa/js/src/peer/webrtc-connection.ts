@@ -72,10 +72,10 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     }
   }
 
-  private onicecandidate(event: RTCPeerConnectionIceEvent) {
+  private async onicecandidate(event: RTCPeerConnectionIceEvent) {
     if (event.candidate && trickleIce) {
-      this.sendIceCandidate(event.candidate);
-    } else if(!event.candidate && !trickleIce) {
+      await this.sendIceCandidate(event.candidate);
+    } else {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -168,7 +168,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
 
   async handleSignalingMessage(msg: SignalingMessage) {
     this.signalingQueue.push(msg as RTCSignalingMessage);
-    this.executeQueue();
+    await this.executeQueue();
   }
 
   private async executeQueue() {
@@ -180,7 +180,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
         if (!message) break;
         switch (message.signalingType) {
           case 'candidate':
-            this.handleIceCandidate(message);
+            await this.handleIceCandidate(message);
             break;
           case 'offer':
             await this.handleOffer(message);
@@ -280,7 +280,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     });
     log.trace('WebRTCPeerConnection.makeAnswer called', {offer});
     await this.pc.setRemoteDescription(offer);
-    this.matchMediaChannels();
+    await this.matchMediaChannels();
     let answer = await this.pc.createAnswer();
     log.trace('WebRTCPeerConnection.makeAnswer created answer', {answer});
     await this.pc.setLocalDescription(answer); // TODO: gst-webrtc seems to not resolve the promise correctly.
@@ -309,7 +309,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
   }
 
   private async addIceCandidate(candidate: RTCIceCandidate) {
-    this.pc.addIceCandidate(candidate);
+    await this.pc.addIceCandidate(candidate);
   }
 
   private async sendIceCandidate(candidate?: RTCIceCandidate) {
@@ -376,7 +376,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
     return sdpString;
   }
 
-  private matchMediaChannels() {
+  private async matchMediaChannels() {
     log.trace('WebRTCPeerConnection.matchMediaChannels called');
     const transceivers = this.pc.getTransceivers() as RTCRtpTransceiver[];
     log.trace('WebRTCPeerConnection.matchMediaChannels transceivers', {
@@ -399,7 +399,7 @@ export class WebRTCPeerConnection extends TypedEmitter<PeerConnectionEvents> imp
       if (channel.track) {
         direction = 'sendonly';
         log.trace('WebRTCPeerConnection.matchMediaChannels replace track');
-        transceiver.sender.replaceTrack(channel.track as MediaStreamTrack);
+        await transceiver.sender.replaceTrack(channel.track as MediaStreamTrack);
       }
 
       if (channel.ontrack) {
