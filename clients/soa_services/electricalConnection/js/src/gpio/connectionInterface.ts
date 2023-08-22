@@ -68,7 +68,7 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
       this.driverState = state;
       const data: GPIOInterfaceData = {driver: this.driver, state: state};
       this.emit('upstreamData', data);
-      this.downstreamData(data); // use the same mechanismn as any other driver data from external devices
+      this.downstreamData(data); // use the same mechanism as any other driver data from external devices
     }
   }
 

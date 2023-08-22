@@ -1,5 +1,5 @@
 export class DataChannel {
-  ondata?: (data: string | ArrayBuffer | ArrayBufferView | Blob) => void;
+  onData?: (data: string | ArrayBuffer | ArrayBufferView | Blob) => void;
   channel_type = 'DataChannel' as const;
   send: {(data: string): void; (data: Blob): void; (data: ArrayBuffer): void; (data: ArrayBufferView): void};
 

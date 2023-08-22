@@ -11,7 +11,7 @@ export interface WebcamServiceConfiguration extends ServiceConfiguration {
 }
 function checkConfig(config: ServiceConfiguration): asserts config is WebcamServiceConfiguration {
   if (config.serviceType !== ServiceType) {
-    //throw Error("Service Configuration needs to be for Webcamservice type");
+    //throw Error("Service Configuration needs to be for WebcamService type");
   }
 }
 

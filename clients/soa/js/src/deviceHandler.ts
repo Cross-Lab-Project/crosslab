@@ -45,7 +45,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
             resolve();
           } else reject('Authentication failed');
         } else {
-          reject(`Expected message with messageType 'authenticate', received ${authenticationMessage.messageType}`);
+          reject(`Expected message with messageType 'authenticate', received '${authenticationMessage.messageType}'`);
         }
       };
     });
