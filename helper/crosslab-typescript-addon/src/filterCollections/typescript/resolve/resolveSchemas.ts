@@ -1,6 +1,6 @@
 import { formatName } from '../filters/format/formatName'
 import { formatOperation } from '../filters/format/formatOperation'
-import { basicUserTypeSchema, userTypeJwtSchema } from '../schemas/userType'
+import { userTypeSchema } from '../schemas/userType'
 import { ExtendedSchema } from '../types'
 import { removeReadOnly, removeWriteOnly } from './removeReadWriteOnly'
 import { OpenAPIV3_1 } from 'openapi-types'
@@ -25,18 +25,10 @@ export function resolveSchemas(
     // Add UserType schema
     if (isService) {
         extendedSchemas.push({
-            ...basicUserTypeSchema,
+            ...userTypeSchema,
             'x-standalone': true,
-            'x-name': 'BasicUserType',
-            'x-location': `#/components/schemas/basic_user_type`,
-            'x-service-name': 'Utility',
-            'x-schema-type': 'all',
-        })
-        extendedSchemas.push({
-            ...userTypeJwtSchema,
-            'x-standalone': true,
-            'x-name': 'UserTypeJWT',
-            'x-location': `#/components/schemas/user_type_jwt`,
+            'x-name': 'UserType',
+            'x-location': `#/components/schemas/user_type`,
             'x-service-name': 'Utility',
             'x-schema-type': 'all',
         })

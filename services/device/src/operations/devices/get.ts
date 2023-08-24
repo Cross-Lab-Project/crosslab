@@ -1,25 +1,37 @@
-import {repositories} from "../../database/dataSource";
-import {getDevicesSignature} from "../../generated/signatures";
-import {checkPermission} from "../../methods/permission";
-import {logger} from "@crosslab/service-common";
+import { repositories } from '../../database/dataSource';
+import { getDevicesSignature } from '../../generated/signatures';
+import { deviceUrlFromId } from '../../methods/urlFromId';
+import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling GET requests on /devices endpoint.
  * @param user The user submitting the request.
  */
-export const getDevices: getDevicesSignature = async user => {
-  logger.log("info", "getDevices called");
+export const getDevices: getDevicesSignature = async (authorization) => {
+    logger.log('info', 'getDevices called');
 
-  const deviceModels = await repositories.device.find();
+    await authorization.check_authorization_or_fail('view', 'device');
 
-  logger.log("info", "getDevices succeeded");
+    const deviceModels = await repositories.device.find();
 
-  return {
-    status: 200,
-    body: await Promise.all(
-      deviceModels
-        .filter(device => checkPermission("read", device, user.JWT))
-        .map(device => repositories.deviceOverview.format(device)),
-    ),
-  };
+    logger.log('info', 'getDevices succeeded');
+
+    const visibleDevices = deviceModels.filter(
+        async (_value, index) =>
+            (
+                await Promise.all(
+                    deviceModels.map((device) =>
+                        authorization.check_authorization(
+                            'view',
+                            `device:${deviceUrlFromId(device.uuid)}`,
+                        ),
+                    ),
+                )
+            )[index],
+    );
+
+    return {
+        status: 200,
+        body: await Promise.all(visibleDevices.map(repositories.deviceOverview.format)),
+    };
 };

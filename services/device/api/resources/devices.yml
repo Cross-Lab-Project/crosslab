@@ -1,82 +1,82 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  operationId: list_devices
-  summary: List devices
-  tags:
-    - device
-  security:
-    - JWT:
+    operationId: list_devices
+    summary: List devices
+    tags:
         - device
-        - device:read
-        - device:read:owned
-  responses:
-    200:
-      description: The list of all devices.
-      content:
-        application/json:
-          $ref: "../content/device_list.yml"
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
-  x-optional-url: true
-post:
-  operationId: create_device
-  summary: Create a new device
-  tags:
-    - device
-  security:
-    - JWT:
-        - device
-        - device:create
-  parameters:
-    - $ref: "../parameters/device_changed_url.yml"
-  requestBody:
-    description: The device to be created.
-    required: true
-    content:
-      application/json:
-        $ref: "../content/device_init.yml"
-  responses:
-    201:
-      description: The device was created. A JSON representation of the new device is returned.
-      content:
-        application/json:
-          $ref: "../content/device_response.yml"
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
-  callbacks:
-    changed:
-      "{$request.query.changedUrl}":
-        post:
-          security:
-            - JWT:
-                - device
-                - device:write
-                - device:create
-          summary: Callback for the "device-changed" event
-          requestBody:
-            required: true
+    security:
+        - JWT:
+              - device
+              - device:read
+              - device:read:owned
+    responses:
+        200:
+            description: The list of all devices.
             content:
-              application/json:
-                $ref: "../content/device_changed_event.yml"
-          responses:
-            2XX:
-              description: The event was successfully processed.
-            410:
-              description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
-  x-optional-url: true
+                application/json:
+                    $ref: '../content/device_list.yml'
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.
+    x-optional-url: true
+post:
+    operationId: create_device
+    summary: Create a new device
+    tags:
+        - device
+    security:
+        - JWT:
+              - device
+              - device:create
+    parameters:
+        - $ref: '../parameters/device_changed_url.yml'
+    requestBody:
+        description: The device to be created.
+        required: true
+        content:
+            application/json:
+                $ref: '../content/device_init.yml'
+    responses:
+        201:
+            description: The device was created. A JSON representation of the new device is returned.
+            content:
+                application/json:
+                    $ref: '../content/device_response.yml'
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.
+    callbacks:
+        changed:
+            '{$request.query.changedUrl}':
+                post:
+                    security:
+                        - JWT:
+                              - device
+                              - device:write
+                              - device:create
+                    summary: Callback for the "device-changed" event
+                    requestBody:
+                        required: true
+                        content:
+                            application/json:
+                                $ref: '../content/device_changed_event.yml'
+                    responses:
+                        2XX:
+                            description: The event was successfully processed.
+                        410:
+                            description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+    x-optional-url: true

@@ -1,5 +1,5 @@
-import { config } from '../config'
-import { DeviceModel } from '../database/model'
+import { config } from '../config';
+import { DeviceModel } from '../database/model';
 
 /**
  * This function builds the url of an experiment using its id.
@@ -12,7 +12,21 @@ export function experimentUrlFromId(experimentId: string): string {
         (config.BASE_URL.endsWith('/') ? '' : '/') +
         'experiments/' +
         experimentId
-    )
+    );
+}
+
+/**
+ * This function builds the url of a template using its id.
+ * @param templateId The id of the template.
+ * @returns The url of the template.
+ */
+export function templateUrlFromId(templateId: string): string {
+    return (
+        config.BASE_URL +
+        (config.BASE_URL.endsWith('/') ? '' : '/') +
+        'templates/' +
+        templateId
+    );
 }
 
 /**
@@ -23,8 +37,8 @@ export function experimentUrlFromId(experimentId: string): string {
  */
 export function getUrlOrInstanceUrl(deviceModel: DeviceModel): string {
     if (deviceModel.instance && deviceModel.instance.url) {
-        return deviceModel.instance.url
+        return deviceModel.instance.url;
     } else {
-        return deviceModel.url
+        return deviceModel.url;
     }
 }

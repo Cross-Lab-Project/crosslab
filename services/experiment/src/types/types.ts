@@ -1,23 +1,23 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client'
-import { ExperimentModel } from '../database/model'
+import { ExperimentModel } from '../database/model';
+import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 
 export type Instance = {
-    url: string
-    token: string
-}
+    url: string;
+    token: string;
+};
 
 export type ResolvedDevice = DeviceServiceTypes.Device<'response'> & {
-    instanceUrl?: string
-    instanceToken?: string
-}
+    instanceUrl?: string;
+    instanceToken?: string;
+};
 
 export type InstantiatedDevice = DeviceServiceTypes.ConcreteDevice<'response'> & {
-    token: string
-}
+    token: string;
+};
 
 export type ExtraRequire<Type, Key extends keyof Type> = Type & {
-    [Property in Key]-?: Type[Property]
-}
+    [Property in Key]-?: Type[Property];
+};
 
 export type ExperimentModelStatusMapping<T extends ExperimentModel['status']> =
     T extends 'created'
@@ -54,4 +54,4 @@ export type ExperimentModelStatusMapping<T extends ExperimentModel['status']> =
           >
         : T extends 'finished'
         ? ExperimentModel
-        : never
+        : never;

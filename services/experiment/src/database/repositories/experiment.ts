@@ -1,20 +1,20 @@
-import { Experiment, ExperimentOverview } from '../../generated/types'
-import { experimentUrlFromId } from '../../methods/url'
-import { Instance } from '../../types/types'
-import { ExperimentModel } from '../model'
-import { DeviceRepository } from './device'
-import { PeerconnectionRepository } from './peerconnection'
-import { RoleRepository } from './role'
-import { ServiceConfigurationRepository } from './serviceConfiguration'
-import { AbstractRepository } from '@crosslab/service-common'
-import { EntityManager } from 'typeorm'
+import { Experiment, ExperimentOverview } from '../../generated/types';
+import { experimentUrlFromId } from '../../methods/url';
+import { Instance } from '../../types/types';
+import { ExperimentModel } from '../model';
+import { DeviceRepository } from './device';
+import { PeerconnectionRepository } from './peerconnection';
+import { RoleRepository } from './role';
+import { ServiceConfigurationRepository } from './serviceConfiguration';
+import { AbstractRepository } from '@crosslab/service-common';
+import { EntityManager } from 'typeorm';
 
 type ExperimentRepositoryDependencies = {
-    device: DeviceRepository
-    peerconnection: PeerconnectionRepository
-    role: RoleRepository
-    serviceConfiguration: ServiceConfigurationRepository
-}
+    device: DeviceRepository;
+    peerconnection: PeerconnectionRepository;
+    role: RoleRepository;
+    serviceConfiguration: ServiceConfigurationRepository;
+};
 
 export class ExperimentRepository extends AbstractRepository<
     ExperimentModel,
@@ -22,107 +22,108 @@ export class ExperimentRepository extends AbstractRepository<
     Experiment<'response'>,
     ExperimentRepositoryDependencies
 > {
-    protected dependencies: Partial<ExperimentRepositoryDependencies> = {}
+    protected dependencies: Partial<ExperimentRepositoryDependencies> = {};
 
     constructor() {
-        super('Experiment')
+        super('Experiment');
     }
 
     protected dependenciesMet(): boolean {
-        if (!this.dependencies.device) return false
-        if (!this.dependencies.peerconnection) return false
-        if (!this.dependencies.role) return false
-        if (!this.dependencies.serviceConfiguration) return false
+        if (!this.dependencies.device) return false;
+        if (!this.dependencies.peerconnection) return false;
+        if (!this.dependencies.role) return false;
+        if (!this.dependencies.serviceConfiguration) return false;
 
-        return true
+        return true;
     }
 
     initialize(entityManager: EntityManager): void {
-        this.repository = entityManager.getRepository(ExperimentModel)
+        this.repository = entityManager.getRepository(ExperimentModel);
     }
 
     async create(data?: Experiment<'request'>): Promise<ExperimentModel> {
-        const model = await super.create(data)
-        model.status = 'created'
-        return model
+        const model = await super.create(data);
+        model.status = 'created';
+        return model;
     }
 
     async write(
         model: ExperimentModel,
-        data: Partial<Experiment<'request'>>
+        data: Partial<Experiment<'request'>>,
     ): Promise<void> {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        if (data.status) model.status = data.status
+        if (data.status) model.status = data.status;
 
         if (data.bookingTime) {
             if (data.bookingTime.startTime)
-                model.bookingStart = data.bookingTime.startTime
-            if (data.bookingTime.endTime) model.bookingEnd = data.bookingTime.endTime
+                model.bookingStart = data.bookingTime.startTime;
+            if (data.bookingTime.endTime) model.bookingEnd = data.bookingTime.endTime;
         } else {
-            const HOUR = 60 * 60 * 1000
-            const startTime = Date.now()
-            const endTime = startTime + HOUR
-            model.bookingStart ??= new Date(startTime).toISOString()
-            model.bookingEnd ??= new Date(endTime).toISOString()
+            const HOUR = 60 * 60 * 1000;
+            const startTime = Date.now();
+            const endTime = startTime + HOUR;
+            model.bookingStart ??= new Date(startTime).toISOString();
+            model.bookingEnd ??= new Date(endTime).toISOString();
         }
 
         if (data.devices) {
             for (const device of model.devices ?? []) {
-                const foundDevice = data.devices.find((d) => d.device === device.url)
-                if (!foundDevice) await this.dependencies.device.remove(device)
-                else device.role = foundDevice.role
+                const foundDevice = data.devices.find((d) => d.device === device.url);
+                if (!foundDevice) await this.dependencies.device.remove(device);
+                else device.role = foundDevice.role;
             }
-            model.devices ??= []
+            model.devices ??= [];
             for (const device of data.devices) {
-                const foundDevice = model.devices?.find((d) => d.url === device.url)
-                if (foundDevice) continue
-                const deviceModel = await this.dependencies.device.create(device)
-                model.devices.push(deviceModel)
+                const foundDevice = model.devices?.find((d) => d.url === device.url);
+                if (foundDevice) continue;
+                const deviceModel = await this.dependencies.device.create(device);
+                model.devices.push(deviceModel);
             }
         }
 
         if (data.roles) {
             for (const role of model.roles ?? []) {
-                await this.dependencies.role.remove(role)
+                await this.dependencies.role.remove(role);
             }
-            model.roles = []
+            model.roles = [];
             for (const role of data.roles) {
-                const roleModel = await this.dependencies.role.create(role)
-                model.roles.push(roleModel)
+                const roleModel = await this.dependencies.role.create(role);
+                model.roles.push(roleModel);
             }
         }
 
         if (data.serviceConfigurations) {
             for (const serviceConfiguration of model.serviceConfigurations ?? []) {
-                await this.dependencies.serviceConfiguration.remove(serviceConfiguration)
+                await this.dependencies.serviceConfiguration.remove(serviceConfiguration);
             }
-            model.serviceConfigurations = []
+            model.serviceConfigurations = [];
             for (const serviceConfiguration of data.serviceConfigurations) {
                 const serviceConfigurationModel =
                     await this.dependencies.serviceConfiguration.create(
-                        serviceConfiguration
-                    )
-                model.serviceConfigurations.push(serviceConfigurationModel)
+                        serviceConfiguration,
+                    );
+                model.serviceConfigurations.push(serviceConfigurationModel);
             }
         }
     }
 
     async format(model: ExperimentModel): Promise<Experiment<'response'>> {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        const deviceRepository = this.dependencies.device
-        const peerconnectionRepository = this.dependencies.peerconnection
-        const roleRepository = this.dependencies.role
+        const deviceRepository = this.dependencies.device;
+        const peerconnectionRepository = this.dependencies.peerconnection;
+        const roleRepository = this.dependencies.role;
+        const serviceConfigurationRepository = this.dependencies.serviceConfiguration;
 
-        const instantiatedDevices: (Instance & { instanceOf: string })[] = []
+        const instantiatedDevices: (Instance & { instanceOf: string })[] = [];
         for (const device of model.devices ?? []) {
             if (device.instance)
                 instantiatedDevices.push({
                     url: device.instance.url,
                     token: device.instance.token,
                     instanceOf: device.url,
-                })
+                });
         }
 
         return {
@@ -131,60 +132,60 @@ export class ExperimentRepository extends AbstractRepository<
                 startTime: model.bookingStart,
                 endTime: model.bookingEnd,
             },
-            devices: await Promise.all(
-                model.devices?.map((device) => deviceRepository.format(device)) ?? []
-            ),
-            roles: await Promise.all(
-                model.roles?.map((role) => roleRepository.format(role)) ?? []
-            ),
+            devices: await Promise.all(model.devices?.map(deviceRepository.format) ?? []),
+            roles: await Promise.all(model.roles?.map(roleRepository.format) ?? []),
             connections: await Promise.all(
-                model.connections?.map((connection) =>
-                    peerconnectionRepository.format(connection)
-                ) ?? []
+                model.connections?.map(peerconnectionRepository.format) ?? [],
+            ),
+            serviceConfigurations: await Promise.all(
+                model.serviceConfigurations?.map(serviceConfigurationRepository.format) ??
+                    [],
             ),
             instantiatedDevices,
-        }
+        };
     }
 
     async remove(model: ExperimentModel): Promise<void> {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        const deviceRepository = this.dependencies.device
-        const peerconnectionRepository = this.dependencies.peerconnection
-        const roleRepository = this.dependencies.role
-        const serviceConfigurationRepository = this.dependencies.serviceConfiguration
+        const deviceRepository = this.dependencies.device;
+        const peerconnectionRepository = this.dependencies.peerconnection;
+        const roleRepository = this.dependencies.role;
+        const serviceConfigurationRepository = this.dependencies.serviceConfiguration;
 
-        const removePromises: Promise<void>[] = []
+        const removePromises: Promise<void>[] = [];
 
         if (model.connections)
             removePromises.push(
                 ...model.connections.map((connection) =>
-                    peerconnectionRepository.remove(connection)
-                )
-            )
+                    peerconnectionRepository.remove(connection),
+                ),
+            );
 
         if (model.devices)
             removePromises.push(
-                ...model.devices.map((device) => deviceRepository.remove(device))
-            )
+                ...model.devices.map((device) => deviceRepository.remove(device)),
+            );
 
         if (model.roles)
-            removePromises.push(...model.roles.map((role) => roleRepository.remove(role)))
+            removePromises.push(
+                ...model.roles.map((role) => roleRepository.remove(role)),
+            );
 
         if (model.serviceConfigurations)
             removePromises.push(
                 ...model.serviceConfigurations.map((serviceConfiguration) =>
-                    serviceConfigurationRepository.remove(serviceConfiguration)
-                )
-            )
+                    serviceConfigurationRepository.remove(serviceConfiguration),
+                ),
+            );
 
-        await Promise.all(removePromises)
+        await Promise.all(removePromises);
 
-        await super.remove(model)
+        await super.remove(model);
     }
 
     async formatOverview(
-        model: ExperimentModel
+        model: ExperimentModel,
     ): Promise<ExperimentOverview<'response'>> {
         return {
             url: experimentUrlFromId(model.uuid),
@@ -198,12 +199,12 @@ export class ExperimentRepository extends AbstractRepository<
                     : model.status === 'peerconnections-created'
                     ? 'setup'
                     : model.status,
-        }
+        };
     }
 
     async softRemove(model: ExperimentModel): Promise<void> {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError()
+        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        await this.repository.softRemove(model)
+        await this.repository.softRemove(model);
     }
 }

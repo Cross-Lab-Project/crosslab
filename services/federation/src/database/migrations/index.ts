@@ -1,3 +1,11 @@
-import { Setup1690372749445 } from './1690372749445-Setup'
+import { config } from '../../config';
+import * as mariadb from './mariadb';
 
-export const Migrations = [Setup1690372749445]
+export const Migrations = (() => {
+    switch (config.orm.type) {
+        case 'mariadb':
+            return mariadb.Migrations;
+        default:
+            return [];
+    }
+})();

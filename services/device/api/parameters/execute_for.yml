@@ -3,6 +3,6 @@ name: execute_for
 in: header
 required: false
 description: |
-  The JWT of a user for which to check the permissions.
+    The JWT of a user for which to check the permissions.
 schema:
-  type: string
+    type: string

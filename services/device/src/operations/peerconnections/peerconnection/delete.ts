@@ -1,7 +1,8 @@
-import {repositories} from "../../../database/dataSource";
-import {deletePeerconnectionsByPeerconnectionIdSignature} from "../../../generated/signatures";
-import {signalingQueueManager} from "../../../methods/signaling/signalingQueueManager";
-import {logger} from "@crosslab/service-common";
+import { repositories } from '../../../database/dataSource';
+import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures';
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager';
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId';
+import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
@@ -9,20 +10,25 @@ import {logger} from "@crosslab/service-common";
  * @param _user The user submitting the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
-  async (parameters, _user) => {
-    logger.log("info", "deletePeerconnectionsByPeerconnectionId called");
+    async (authorization, parameters) => {
+        logger.log('info', 'deletePeerconnectionsByPeerconnectionId called');
 
-    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-      where: {uuid: parameters.peerconnection_id},
-    });
+        await authorization.check_authorization_or_fail(
+            'delete',
+            `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
+        );
 
-    await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
+        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+            where: { uuid: parameters.peerconnection_id },
+        });
 
-    await repositories.peerconnection.remove(peerconnectionModel);
+        await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
 
-    logger.log("info", "deletePeerconnectionsByPeerconnectionId succeeded");
+        await repositories.peerconnection.remove(peerconnectionModel);
 
-    return {
-      status: 204,
+        logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded');
+
+        return {
+            status: 204,
+        };
     };
-  };

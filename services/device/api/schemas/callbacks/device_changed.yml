@@ -1,15 +1,15 @@
 title: Device Changed Event Callback
 allOf:
-  - $ref: ./event_callback.yml
-  - type: object
-    properties:
-      eventType:
-        type: string
-        enum:
-          - device-changed
-      device:
-        $ref: ../devices/device.yml
-    required:
-      - eventType
-      - device
+    - $ref: ./event_callback.yml
+    - type: object
+      properties:
+          eventType:
+              type: string
+              enum:
+                  - device-changed
+          device:
+              $ref: ../devices/device.yml
+      required:
+          - eventType
+          - device
 x-typeguard: true

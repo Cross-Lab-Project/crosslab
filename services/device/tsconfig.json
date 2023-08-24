@@ -1,22 +1,22 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node16",
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
-    "lib": ["ES2021"],
-    "esModuleInterop": true,
-    "outDir": "app",
-    "strict": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "skipLibCheck": true
-  },
-  "include": ["src", "test"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node16",
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2021",
+        "lib": ["ES2021"],
+        "esModuleInterop": true,
+        "outDir": "app",
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "skipLibCheck": true
+    },
+    "include": ["src", "test"]
 }

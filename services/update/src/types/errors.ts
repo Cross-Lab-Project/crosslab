@@ -1,12 +1,12 @@
-import { ErrorWithStatus } from '../generated/types'
+import { ErrorWithStatus } from '../generated/types';
 
 /**
  * This error class should be used if an entity is not found in the database.
  */
 export class MissingEntityError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'MissingEntityError'
+        super(message, status);
+        this.name = 'MissingEntityError';
     }
 }
 
@@ -15,7 +15,7 @@ export class MissingEntityError extends ErrorWithStatus {
  */
 export class InvalidChangeError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'InvalidChangeError'
+        super(message, status);
+        this.name = 'InvalidChangeError';
     }
 }

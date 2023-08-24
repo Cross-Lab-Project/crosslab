@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Availability
 description: |
-  A list of time slots that the maintainer of the device announced it is available
+    A list of time slots that the maintainer of the device announced it is available
 type: array
 items:
-  $ref: ./time_slot.yml
+    $ref: ./time_slot.yml

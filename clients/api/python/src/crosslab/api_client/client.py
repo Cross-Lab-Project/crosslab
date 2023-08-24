@@ -59,6 +59,13 @@ from crosslab.api_client.schemas import (
     UpdateExperimentRequest,
     UpdateExperimentResponse,
     DeleteExperimentResponse,
+    ListTemplateResponse,
+    CreateTemplateRequest,
+    CreateTemplateResponse,
+    GetTemplateResponse,
+    UpdateTemplateRequest,
+    UpdateTemplateResponse,
+    DeleteTemplateResponse,
     ListInstitutionsResponse,
     CreateInstitutionRequest,
     CreateInstitutionResponse,
@@ -1105,6 +1112,124 @@ class APIClient:
 
         # match path to url schema
         m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def list_template(self, url: str = "/templates") -> ListTemplateResponse:  # noqa: E501
+        """
+        List templates
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/templates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def create_template(self, body: CreateTemplateRequest, url: str = "/templates") -> CreateTemplateResponse:  # noqa: E501
+        """
+        Create a new template
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/templates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 201:
+            return resp
+        if status == 202:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def get_template(self, url: str) -> GetTemplateResponse:  # noqa: E501
+        """
+        View an template.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_template(self, url: str, body: UpdateTemplateRequest) -> UpdateTemplateResponse:  # noqa: E501
+        """
+        Update an existing template.
+        
+        With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
+        
+        If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        if status == 202:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_template(self, url: str) -> DeleteTemplateResponse:  # noqa: E501
+        """
+        Delete an template
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''

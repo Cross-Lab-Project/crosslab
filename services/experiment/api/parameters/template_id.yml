@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: path
+name: template_id
+description: UUID of the template
+required: true
+schema:
+  type: string
+  format: uuid
+example:
+  - 2cec4f8b-67f1-4914-8edb-25cd2cef06fb

@@ -1,156 +1,161 @@
 {
-  "name": "@crosslab/service-device",
-  "dockerName": "device-service",
-  "description": "",
-  "bin": {
-    "crosslab-device-service": "./app/index.js"
-  },
-  "files": [
-    "app"
-  ],
-  "scripts": {
-    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
-    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
-    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
-    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-    "build:generate": "npm-run-all build:generate:*",
-    "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
-    "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
-    "build:compile": "tsc --project tsconfig.build.json",
-    "build:add-shebang": "bash scripts/add-shebang.sh",
-    "build": "npm-run-all build:*",
-    "start": "node app/index.js",
-    "dev": "tsc-watch --project tsconfig.build.json --onSuccess 'node --inspect=9001 ./app/index.js'",
-    "format": "npx prettier . --write",
-    "lint": "eslint .",
-    "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
-    "test:index": "nyc --temp-dir .nyc_output/index --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/index.spec.ts",
-    "test:config": "nyc --temp-dir .nyc_output/config --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/config.spec.ts",
-    "test:methods": "nyc --temp-dir .nyc_output/methods --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/methods/index.spec.ts",
-    "test:database": "nyc --temp-dir .nyc_output/database --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/database/index.spec.ts",
-    "test:generated": "nyc --temp-dir .nyc_output/generated --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/generated/index.spec.ts",
-    "test:operations": "nyc --temp-dir .nyc_output/operations --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/operations/index.spec.ts",
-    "cov": "npm-run-all cov:* && nyc report --reporter=text --reporter=html",
-    "cov:index": "nyc merge .nyc_output/index .nyc_output/index.json",
-    "cov:config": "nyc merge .nyc_output/config .nyc_output/config.json",
-    "cov:methods": "nyc merge .nyc_output/methods .nyc_output/methods.json",
-    "cov:database": "nyc merge .nyc_output/database .nyc_output/database.json",
-    "cov:generated": "nyc merge .nyc_output/generated .nyc_output/generated.json",
-    "cov:operations": "nyc merge .nyc_output/operations .nyc_output/operations.json"
-  },
-  "author": "Johannes Nau",
-  "license": "UNLICENSED",
-  "prettier": {
-    "arrowParens": "avoid",
-    "bracketSameLine": true,
-    "bracketSpacing": false,
-    "printWidth": 90,
-    "singleQuote": false,
-    "trailingComma": "all"
-  },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
+    "name": "@crosslab/service-device",
+    "dockerName": "device-service",
+    "description": "",
+    "bin": {
+        "crosslab-device-service": "./app/index.js"
+    },
+    "files": [
+        "app"
     ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "*.ts"
+    "scripts": {
+        "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
+        "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
+        "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+        "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
+        "build:generate": "npm-run-all build:generate:*",
+        "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
+        "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
+        "build:compile": "tsc --project tsconfig.build.json",
+        "build:add-shebang": "bash scripts/add-shebang.sh",
+        "build": "npm-run-all build:*",
+        "start": "node app/index.js",
+        "dev": "tsc-watch --project tsconfig.build.json --onSuccess 'node --inspect=9001 ./app/index.js'",
+        "format": "npx prettier . --write",
+        "lint": "eslint .",
+        "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
+        "test:index": "nyc --temp-dir .nyc_output/index --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/index.spec.ts",
+        "test:config": "nyc --temp-dir .nyc_output/config --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/config.spec.ts",
+        "test:methods": "nyc --temp-dir .nyc_output/methods --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/methods/index.spec.ts",
+        "test:database": "nyc --temp-dir .nyc_output/database --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/database/index.spec.ts",
+        "test:generated": "nyc --temp-dir .nyc_output/generated --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/generated/index.spec.ts",
+        "test:operations": "nyc --temp-dir .nyc_output/operations --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/operations/index.spec.ts",
+        "cov": "npm-run-all cov:* && nyc report --reporter=text --reporter=html",
+        "cov:index": "nyc merge .nyc_output/index .nyc_output/index.json",
+        "cov:config": "nyc merge .nyc_output/config .nyc_output/config.json",
+        "cov:methods": "nyc merge .nyc_output/methods .nyc_output/methods.json",
+        "cov:database": "nyc merge .nyc_output/database .nyc_output/database.json",
+        "cov:generated": "nyc merge .nyc_output/generated .nyc_output/generated.json",
+        "cov:operations": "nyc merge .nyc_output/operations .nyc_output/operations.json"
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED",
+    "prettier": {
+        "arrowParens": "always",
+        "bracketSameLine": true,
+        "bracketSpacing": true,
+        "printWidth": 90,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "tabWidth": 4,
+        "importOrderParserPlugins": [
+            "typescript",
+            "decorators-legacy"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
         ],
-        "rules": {
-          "max-len": [
-            "error",
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "overrides": [
             {
-              "code": 90
+                "files": [
+                    "*.ts"
+                ],
+                "rules": {
+                    "max-len": [
+                        "error",
+                        {
+                            "code": 90
+                        }
+                    ],
+                    "no-shadow": "off",
+                    "no-undef": "off",
+                    "no-unused-vars": "off",
+                    "@typescript-eslint/no-shadow": [
+                        "error"
+                    ],
+                    "@typescript-eslint/no-unused-vars": [
+                        "warn",
+                        {
+                            "argsIgnorePattern": "^_",
+                            "varsIgnorePattern": "^_",
+                            "caughtErrorsIgnorePattern": "^_"
+                        }
+                    ]
+                },
+                "ecmaFeatures": {
+                    "jsx": false
+                }
             }
-          ],
-          "no-shadow": "off",
-          "no-undef": "off",
-          "no-unused-vars": "off",
-          "@typescript-eslint/no-shadow": [
-            "error"
-          ],
-          "@typescript-eslint/no-unused-vars": [
-            "warn",
-            {
-              "argsIgnorePattern": "^_",
-              "varsIgnorePattern": "^_",
-              "caughtErrorsIgnorePattern": "^_"
-            }
-          ]
-        },
-        "ecmaFeatures": {
-          "jsx": false
-        }
-      }
-    ],
-    "ignorePatterns": [
-      "src/generated/**/*",
-      "src/database/migrations/**/*",
-      "test/generated/**/*",
-      "dist/**/*",
-      "lib/**/*",
-      "app/**/*",
-      "docs/**/*",
-      "http-dist/**/*",
-      "/*.js"
-    ],
-    "root": true
-  },
-  "devDependencies": {
-    "@babel/register": "^7.21.0",
-    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
-    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@types/body-parser": "^1.19.2",
-    "@types/express": "^4.17.13",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^18.0.3",
-    "@types/node-fetch": "^2.6.1",
-    "@types/rewire": "^2.5.28",
-    "@types/seedrandom": "^3.0.5",
-    "@types/sinon": "^10.0.13",
-    "@types/supertest": "^2.0.12",
-    "@types/ws": "^8.5.3",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "env-cmd": "^10.1.0",
-    "eslint": "^8.34.0",
-    "json-schema-faker": "^0.5.0-rcv.46",
-    "mocha": "^10.2.0",
-    "nodemon": "^2.0.19",
-    "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
-    "prettier": "^2.7.1",
-    "randexp": "^0.5.3",
-    "rewire": "^6.0.0",
-    "seedrandom": "^3.0.5",
-    "sinon": "^15.0.2",
-    "supertest": "^6.3.3",
-    "ts-mocha": "^10.0.0",
-    "ts-node": "^10.9.1",
-    "tsc-watch": "^6.0.4",
-    "typescript": "^4.7.4"
-  },
-  "dependencies": {
-    "@cross-lab-project/api-client": "file:../../clients/api/js",
-    "@crosslab/service-common": "file:../common",
-    "ajv-formats": "^2.1.1",
-    "async-mutex": "^0.4.0",
-    "body-parser": "^1.20.0",
-    "express": "^4.18.1",
-    "jose": "^4.10.0",
-    "mysql": "^2.18.1",
-    "node-fetch": "^2.6.7",
-    "queue": "^6.0.2",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.15",
-    "ws": "^8.8.0"
-  }
+        ],
+        "ignorePatterns": [
+            "src/generated/**/*",
+            "src/database/migrations/**/*",
+            "test/generated/**/*",
+            "dist/**/*",
+            "lib/**/*",
+            "app/**/*",
+            "docs/**/*",
+            "http-dist/**/*",
+            "/*.js"
+        ],
+        "root": true
+    },
+    "devDependencies": {
+        "@babel/register": "^7.21.0",
+        "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
+        "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
+        "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+        "@types/body-parser": "^1.19.2",
+        "@types/express": "^4.17.13",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.0.3",
+        "@types/node-fetch": "^2.6.1",
+        "@types/rewire": "^2.5.28",
+        "@types/seedrandom": "^3.0.5",
+        "@types/sinon": "^10.0.13",
+        "@types/supertest": "^2.0.12",
+        "@types/ws": "^8.5.3",
+        "@typescript-eslint/eslint-plugin": "^5.51.0",
+        "@typescript-eslint/parser": "^5.51.0",
+        "env-cmd": "^10.1.0",
+        "eslint": "^8.34.0",
+        "json-schema-faker": "^0.5.0-rcv.46",
+        "mocha": "^10.2.0",
+        "nodemon": "^2.0.19",
+        "npm-run-all": "^4.1.5",
+        "nyc": "^15.1.0",
+        "prettier": "^2.7.1",
+        "randexp": "^0.5.3",
+        "rewire": "^6.0.0",
+        "seedrandom": "^3.0.5",
+        "sinon": "^15.0.2",
+        "supertest": "^6.3.3",
+        "ts-mocha": "^10.0.0",
+        "ts-node": "^10.9.1",
+        "tsc-watch": "^6.0.4",
+        "typescript": "^4.7.4"
+    },
+    "dependencies": {
+        "@cross-lab-project/api-client": "file:../../clients/api/js",
+        "@crosslab/service-common": "file:../common",
+        "ajv-formats": "^2.1.1",
+        "async-mutex": "^0.4.0",
+        "body-parser": "^1.20.0",
+        "express": "^4.18.1",
+        "jose": "^4.10.0",
+        "mysql": "^2.18.1",
+        "node-fetch": "^2.6.7",
+        "queue": "^6.0.2",
+        "sqlite3": "^5.1.6",
+        "typeorm": "^0.3.15",
+        "ws": "^8.8.0"
+    }
 }

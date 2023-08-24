@@ -1,7 +1,8 @@
-import { config as CommonConfig } from '@crosslab/service-common'
-import dotenv from 'dotenv'
+import { Entities } from './database/model';
+import { config as CommonConfig } from '@crosslab/service-common';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 export const config = {
     PORT: parseInt(process.env.PORT ?? '3002'),
@@ -10,5 +11,6 @@ export const config = {
     JWT_SECRET: 'secret',
     orm: {
         ...CommonConfig.readOrmConfig(),
+        entities: Entities,
     },
-}
+};

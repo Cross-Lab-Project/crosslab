@@ -1,5 +1,5 @@
-import { UpdateInformation } from '../generated/types'
-import { UpdateInformationModel } from '../model'
+import { UpdateInformationModel } from '../database/model';
+import { UpdateInformation } from '../generated/types';
 
 /**
  * This function writes the data of a {@link UpdateInformation} to a {@link UpdateInformationModel}.
@@ -8,9 +8,9 @@ import { UpdateInformationModel } from '../model'
  */
 export function writeUpdateInformation(
     updateInformationModel: UpdateInformationModel,
-    updateInformation: UpdateInformation
+    updateInformation: UpdateInformation,
 ) {
-    updateInformationModel.device_id = updateInformation.device_id
-    updateInformationModel.latest_version = updateInformation.latest_version
-    updateInformationModel.latest_version_link = updateInformation.latest_version_link
+    updateInformationModel.device_id = updateInformation.device_id;
+    updateInformationModel.latest_version = updateInformation.latest_version;
+    updateInformationModel.latest_version_link = updateInformation.latest_version_link;
 }

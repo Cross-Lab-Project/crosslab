@@ -1,14 +1,14 @@
-import { config } from '../../config'
-import * as mariadb from './mariadb'
-import * as sqlite from './sqlite'
+import { config } from '../../config';
+import * as mariadb from './mariadb';
+import * as sqlite from './sqlite';
 
 export const Migrations = (() => {
     switch (config.orm.type) {
         case 'sqlite':
-            return sqlite.Migrations
+            return sqlite.Migrations;
         case 'mariadb':
-            return mariadb.Migrations
+            return mariadb.Migrations;
         default:
-            return []
+            return [];
     }
-})()
+})();

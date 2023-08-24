@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Device Update
 anyOf:
-  - $ref: ./device_cloud_instantiable_update.yml
-  - $ref: ./device_concrete_update.yml
-  - $ref: ./device_edge_instantiable_update.yml
-  - $ref: ./device_group_update.yml
+    - $ref: ./device_cloud_instantiable_update.yml
+    - $ref: ./device_concrete_update.yml
+    - $ref: ./device_edge_instantiable_update.yml
+    - $ref: ./device_group_update.yml

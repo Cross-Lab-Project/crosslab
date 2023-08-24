@@ -1,13 +1,13 @@
-import {AsyncLocalStorage} from 'async_hooks';
+import {AsyncLocalStorage} from "async_hooks";
 //import {TransformableInfo} from 'logform';
-import winston, {Logger, createLogger, format, transports} from 'winston';
+import winston, {Logger, createLogger, format, transports} from "winston";
 
 export const asyncLocalStorage = new AsyncLocalStorage<{requestID: string}>();
 
 /**
  * The possible log level names
  */
-type LogLevelName = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+type LogLevelName = "fatal" | "error" | "warn" | "info" | "debug" | "trace";
 
 /**
  * The mapping of the possible log level names to their corresponding level
@@ -57,8 +57,8 @@ const addRequestID = winston.format(info => {
 });*/
 
 export const logger: Logger = createLogger({
-  format: winston.format.combine(addRequestID(),format.json()),
+  format: winston.format.combine(addRequestID(), format.json()),
   exitOnError: false,
   levels: logLevels,
-  transports: [new transports.Console({level: 'debug'})],
+  transports: [new transports.Console({level: "debug"})],
 });

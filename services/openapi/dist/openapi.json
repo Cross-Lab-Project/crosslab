@@ -3186,6 +3186,286 @@
         "x-service-name": "Experiment Service"
       }
     },
+    "/templates": {
+      "get": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "list_template",
+        "summary": "List templates",
+        "tags": [
+          "template"
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/template"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Experiment Service"
+      },
+      "post": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "create_template",
+        "summary": "Create a new template",
+        "tags": [
+          "template"
+        ],
+        "requestBody": {
+          "description": "The template to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/template"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The template was created. A JSON representation of the new template is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The template was created and will be set to running eventually. A JSON representation of the new template is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true,
+        "x-service-name": "Experiment Service"
+      }
+    },
+    "/templates/{template_id}": {
+      "get": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "get_template",
+        "summary": "View an template.",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "patch": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "update_template",
+        "summary": "Update an existing template.",
+        "description": "With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.\n",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the template",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/template"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The JSON Representation of the changed template, that will be set to running eventually",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "delete": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "delete_template",
+        "summary": "Delete an template",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The template was deleted."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-service-name": "Experiment Service"
+      }
+    },
     "/institutions": {
       "get": {
         "operationId": "list_institutions",
@@ -4972,8 +5252,71 @@
                   ]
                 }
               }
-            }
+            },
+            "required": [
+              "devices",
+              "roles",
+              "serviceConfigurations"
+            ]
           }
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "template": {
+        "title": "Template",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the template",
+            "format": "uri",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the template"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the template"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the templated experiment",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/schemas-device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            },
+            "required": [
+              "devices",
+              "roles",
+              "serviceConfigurations"
+            ]
+          }
+        },
+        "required": [
+          "url",
+          "name",
+          "configuration"
         ],
         "x-service-name": "Experiment Service"
       },
@@ -5201,6 +5544,20 @@
           "format": "uri",
           "x-service-name": "Experiment Service"
         }
+      },
+      "template_id": {
+        "in": "path",
+        "name": "template_id",
+        "description": "UUID of the template",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-service-name": "Experiment Service"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
       },
       "institution_id": {
         "in": "path",

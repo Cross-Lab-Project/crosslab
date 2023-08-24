@@ -8,11 +8,10 @@ import express from "express"
 import bodyParser from "body-parser"
 import router from "./routes"
 import { 
-    initServiceOptions,
-    SecurityScheme
+    initServiceOptions
 } from "./types"
 
-export const app: express.Application & { initService: (option: initServiceOptions<SecurityScheme>) => void } = express() as any
+export const app: express.Application & { initService: (option: initServiceOptions) => void } = express() as any
 
 // default error handler
 const defaultErrorHandler: express.ErrorRequestHandler = (err, req, res, _next) => {
@@ -25,13 +24,7 @@ const defaultErrorHandler: express.ErrorRequestHandler = (err, req, res, _next) 
     res.status(status).send({ error, message })
 }
 
-app.initService = (optionsInit) => {
-    const options = {
-        additionalHandlers: [],
-        errorHandler: defaultErrorHandler,
-        ...optionsInit
-    }
-
+app.initService = (options) => {
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -41,7 +34,7 @@ app.initService = (optionsInit) => {
     }
 
     // add routes
-    app.use("/", router(options))
+    app.use("/", router())
 
     // add post handlers
     for (const handler of options.postHandlers ?? []) {

@@ -53,3 +53,7 @@ allOf:
           - url
           - token
           - instanceOf
+    required:
+    - devices
+    - roles
+    - serviceConfigurations

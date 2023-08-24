@@ -21,8 +21,15 @@ tags:
   - name: experiment
     description: |-
       This tag describes the experiment resource.
+  - name: template
+    description: |-
+      This tag describes the template resource
 paths:
   /experiments:
     $ref: './resources/experiments.yml'
   /experiments/{experiment_id}:
     $ref: './resources/experiment.yml'
+  /templates:
+    $ref: './resources/templates.yml'
+  /templates/{template_id}:
+    $ref: './resources/template.yml'

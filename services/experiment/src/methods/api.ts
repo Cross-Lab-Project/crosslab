@@ -1,5 +1,5 @@
-import { config } from '../config'
-import { InternalRequestError } from '../types/errors'
+import { config } from '../config';
+import { InternalRequestError } from '../types/errors';
 import {
     ValidationError,
     InvalidUrlError,
@@ -7,11 +7,11 @@ import {
     FetchError,
     APIClient,
     DeviceServiceTypes,
-} from '@cross-lab-project/api-client'
-import { MissingPropertyError } from '@crosslab/service-common'
-import fetch from 'node-fetch'
+} from '@cross-lab-project/api-client';
+import { MissingPropertyError } from '@crosslab/service-common';
+import fetch from 'node-fetch';
 
-export const apiClient: APIClient = new APIClient(config.BASE_URL)
+export const apiClient: APIClient = new APIClient(config.BASE_URL);
 
 /**
  * TODO: add more information on request/response
@@ -24,23 +24,23 @@ export function handleInternalRequestError(error: unknown) {
         throw new InternalRequestError(
             `An error occurred while trying to fetch the request`,
             error,
-            500
-        )
+            500,
+        );
     else if (error instanceof ValidationError)
         throw new InternalRequestError(
             `An error occurred while trying to validate the request/response`,
             error,
-            500
-        )
+            500,
+        );
     else if (error instanceof InvalidUrlError)
-        throw new InternalRequestError(`The provided url is malformed`, error, 400)
+        throw new InternalRequestError(`The provided url is malformed`, error, 400);
     else if (error instanceof UnsuccessfulRequestError)
         throw new InternalRequestError(
             `The request was unsuccessful`,
             error,
-            error.response.status
-        )
-    else throw error
+            error.response.status,
+        );
+    else throw error;
 }
 
 /**
@@ -54,14 +54,14 @@ export async function startCloudDeviceInstance(
     device: DeviceServiceTypes.InstantiableCloudDevice,
     deviceUrl: string,
     token: string,
-    experimentUrl: string
+    experimentUrl: string,
 ) {
     try {
         if (!device.instantiateUrl)
             throw new MissingPropertyError(
                 'Resolved instantiable cloud device does not have an instantiate url',
-                500
-            ) // NOTE: error code?
+                500,
+            ); // NOTE: error code?
         await fetch(
             device.instantiateUrl +
                 new URLSearchParams([
@@ -75,15 +75,17 @@ export async function startCloudDeviceInstance(
                     ['Content-Type', 'application/json'],
                     ['Authorization', apiClient.accessToken],
                 ],
-            }
-        )
+            },
+        );
     } catch (error) {
         if (error instanceof Error) {
-            throw new FetchError(error.message)
+            throw new FetchError(error.message);
         } else if (typeof error === 'string') {
-            throw new FetchError(error)
+            throw new FetchError(error);
         } else {
-            throw new FetchError('Something went wrong while trying to fetch the request')
+            throw new FetchError(
+                'Something went wrong while trying to fetch the request',
+            );
         }
     }
 }

@@ -1,15 +1,15 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Close Peerconnection Message
 allOf:
-  - $ref: "./command_message.yml"
-  - type: object
-    properties:
-      command:
-        const: closePeerconnection
-      connectionUrl:
-        type: string
-        format: uri
-    required:
-      - command
-      - connectionUrl
+    - $ref: './command_message.yml'
+    - type: object
+      properties:
+          command:
+              const: closePeerconnection
+          connectionUrl:
+              type: string
+              format: uri
+      required:
+          - command
+          - connectionUrl
 x-typeguard: true

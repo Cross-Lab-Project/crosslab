@@ -1,21 +1,15 @@
-import app from './app'
-import { config } from './config'
-import { init_database } from './database/dataSource'
-import { logger } from '@crosslab/service-common'
+import { initApp } from './app';
+import { AppDataSource } from './database/dataSource';
+import { logger } from '@crosslab/service-common';
 
 async function startExperimentService() {
-    await init_database()
+    await AppDataSource.initialize();
+    initApp();
 
-    app.get('/experiment/status', (_req, res) => {
-        res.send({ status: 'ok' })
-    })
-
-    app.listen(config.PORT)
-
-    logger.log('info', 'Experiment Service started successfully')
+    logger.log('info', 'Experiment Service started successfully');
 }
 
 /** istanbul ignore if */
 if (require.main === module) {
-    startExperimentService()
+    startExperimentService();
 }
