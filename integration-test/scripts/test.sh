@@ -9,7 +9,7 @@ export DEVICE_IMAGE=$(docker load -i ../services/device/dist/docker-image.tar | 
 export EXPERIMENT_IMAGE=$(docker load -i ../services/experiment/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
-docker-compose up --no-color > dist/server.log 2>&1 &
+COMPOSE_HTTP_TIMEOUT=600 docker-compose up --no-color > dist/server.log 2>&1 &
 
 rm -rf venv
 virtualenv venv && venv/bin/pip install -r requirements.txt
