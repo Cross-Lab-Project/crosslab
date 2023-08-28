@@ -12,10 +12,11 @@ import { peerconnectionUrlFromId } from '../../methods/urlFromId';
 import { InvalidValueError, logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling POST requests on /peerconnections endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /peerconnections endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  */
 export const postPeerconnections: postPeerconnectionsSignature = async (
     authorization,
@@ -75,7 +76,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
                     logger.log('info', 'devices did not connect');
                     peerconnectionModel.status = 'failed';
                     await repositories.peerconnection.save(peerconnectionModel);
-                    await sendStatusChangedCallback(peerconnectionModel);
+                    sendStatusChangedCallback(peerconnectionModel);
                 } catch (error) {
                     logger.log(
                         'error',

@@ -22,7 +22,7 @@
  * Function signature for handling a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export type {{ operation.name }}Signature = (
-        authorization: BoundAuthorizationFunctions,
+        authorization: BoundAuthorizationFunctions & { user: string },
         {%- if operation.parameters | length > 0 -%}
             parameters: {{ operation.name }}ParametersType
         {%- endif -%}

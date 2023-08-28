@@ -1,7 +1,7 @@
 import { repositories } from '../../../../../src/database/dataSource';
 import { postDevicesByDeviceIdWebsocket } from '../../../../../src/operations/devices';
 import { TestData } from '../../../../data/index.spec';
-import { addTest } from '../../../index.spec';
+import { addTest, stubbedAuthorization } from '../../../index.spec';
 import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
@@ -44,10 +44,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await postDevicesByDeviceIdWebsocket(
-                        { device_id: 'non-existent' },
-                        testData.userData,
-                    );
+                    await postDevicesByDeviceIdWebsocket(stubbedAuthorization, {
+                        device_id: 'non-existent',
+                    });
                 },
                 (error) => {
                     assert(error instanceof MissingEntityError);
@@ -64,12 +63,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await postDevicesByDeviceIdWebsocket(
-                        {
-                            device_id: INSTANTIABLE_DEVICE_ID,
-                        },
-                        testData.userData,
-                    );
+                    await postDevicesByDeviceIdWebsocket(stubbedAuthorization, {
+                        device_id: INSTANTIABLE_DEVICE_ID,
+                    });
                 },
                 (error) => {
                     assert(error instanceof ImpossibleOperationError);
@@ -84,10 +80,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         suite,
         'should successfully generate the websocket token and remove it after 5 minutes',
         async function () {
-            const result = await postDevicesByDeviceIdWebsocket(
-                { device_id: CONCRETE_DEVICE_ID },
-                testData.userData,
-            );
+            const result = await postDevicesByDeviceIdWebsocket(stubbedAuthorization, {
+                device_id: CONCRETE_DEVICE_ID,
+            });
 
             assert.strictEqual(result.status, 200);
             assert(typeof result.body === 'string');

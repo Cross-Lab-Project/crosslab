@@ -25,12 +25,14 @@ export class InstanceRepository extends AbstractRepository<
     async write(model: InstanceModel, data: Partial<Instance>): Promise<void> {
         if (data.token) model.token = data.token;
         if (data.url) model.url = data.url;
+        if (data.codeUrl) model.codeUrl = data.codeUrl;
     }
 
     async format(model: InstanceModel): Promise<Instance> {
         return {
             url: model.url,
             token: model.token,
+            codeUrl: model.codeUrl,
         };
     }
 }

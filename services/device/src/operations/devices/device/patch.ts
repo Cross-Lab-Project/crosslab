@@ -5,12 +5,14 @@ import { deviceUrlFromId } from '../../../methods/urlFromId';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling PATCH requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
- * @throws {InvalidChangeError} Thrown if client tries to update the type of the device.
+ * @throws {InvalidChangeError} Thrown if client tries to update the type of
+ * the device.
  */
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     authorization,
@@ -31,7 +33,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     await repositories.device.write(deviceModel, body ?? { type: deviceModel.type });
     await repositories.device.save(deviceModel);
 
-    await sendChangedCallback(deviceModel);
+    sendChangedCallback(deviceModel);
 
     if (parameters.changedUrl) {
         logger.log(

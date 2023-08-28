@@ -2,7 +2,7 @@ import { getPeerconnectionsByPeerconnectionId } from '../../../../src/operations
 import { TestData } from '../../../data/index.spec';
 import { peerconnectionNames } from '../../../data/peerconnections/index.spec';
 import { peerconnectionRepositoryTestSuite } from '../../../database/repositories/peerconnection.spec';
-import { addTest } from '../../index.spec';
+import { addTest, stubbedAuthorization } from '../../index.spec';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
@@ -16,12 +16,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await getPeerconnectionsByPeerconnectionId(
-                        {
-                            peerconnection_id: 'non-existent',
-                        },
-                        testData.userData,
-                    );
+                    await getPeerconnectionsByPeerconnectionId(stubbedAuthorization, {
+                        peerconnection_id: 'non-existent',
+                    });
                 },
                 (error) => {
                     assert(error instanceof MissingEntityError);
@@ -36,10 +33,10 @@ export default function (context: Mocha.Context, testData: TestData) {
         for (const peerconnectionName of peerconnectionNames) {
             const peerconnection = testData.peerconnections[peerconnectionName];
             const result = await getPeerconnectionsByPeerconnectionId(
+                stubbedAuthorization,
                 {
                     peerconnection_id: peerconnection.model.uuid,
                 },
-                testData.userData,
             );
             assert.strictEqual(result.status, 200);
             assert(

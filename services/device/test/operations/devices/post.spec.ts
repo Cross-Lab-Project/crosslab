@@ -5,7 +5,7 @@ import { postDevices } from '../../../src/operations/devices';
 import { deviceNames } from '../../data/devices/index.spec';
 import { TestData } from '../../data/index.spec';
 import { deviceRepositoryTestSuite } from '../../database/repositories/device.spec';
-import { addTest } from '../index.spec';
+import { addTest, stubbedAuthorization } from '../index.spec';
 import { MalformedBodyError } from '@crosslab/service-common';
 import { EntityData } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
@@ -48,14 +48,11 @@ export default function (context: Mocha.Context, testData: TestData) {
                 isPublic: true,
             };
         });
-        const result = await postDevices({ changedUrl }, device.request, {
-            JWT: {
-                username: 'testuser',
-                url: device.model.owner,
-                scopes: [],
-                jwt: 'jwt',
-            },
-        });
+        const result = await postDevices(
+            stubbedAuthorization,
+            { changedUrl },
+            device.request,
+        );
         assert(result.status === 201);
 
         assert(
@@ -93,19 +90,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await postDevices(
+                        stubbedAuthorization,
                         {},
                         {
                             type: 'device',
                             name: '',
                             isPublic: true,
-                        },
-                        {
-                            JWT: {
-                                username: 'testuser',
-                                url: 'http://localhost/users/testuser',
-                                scopes: [],
-                                jwt: 'jwt',
-                            },
                         },
                     );
                 },

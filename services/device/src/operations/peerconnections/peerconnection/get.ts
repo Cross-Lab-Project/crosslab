@@ -4,9 +4,10 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /peerconnections/{peerconnection_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature =
     async (authorization, parameters) => {

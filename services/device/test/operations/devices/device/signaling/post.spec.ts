@@ -6,7 +6,7 @@ import {
     postDevicesByDeviceIdSignaling,
 } from '../../../../../src/operations/devices';
 import { TestData } from '../../../../data/index.spec';
-import { addTest } from '../../../index.spec';
+import { addTest, stubbedAuthorization } from '../../../index.spec';
 import {
     ImpossibleOperationError,
     MissingEntityError,
@@ -59,12 +59,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await postDevicesByDeviceIdSignaling(
+                        stubbedAuthorization,
                         {
                             device_id: 'non-existent',
                             peerconnection_url: PEERCONNECTION_URL,
                         },
                         SIGNALING_MESSAGE,
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -83,12 +83,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await postDevicesByDeviceIdSignaling(
+                        stubbedAuthorization,
                         {
                             device_id: INSTANTIABLE_DEVICE_ID,
                             peerconnection_url: PEERCONNECTION_URL,
                         },
                         SIGNALING_MESSAGE,
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -115,12 +115,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await postDevicesByDeviceIdSignaling(
+                        stubbedAuthorization,
                         {
                             device_id: CONCRETE_DEVICE_ID,
                             peerconnection_url: PEERCONNECTION_URL,
                         },
                         SIGNALING_MESSAGE,
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -139,12 +139,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await postDevicesByDeviceIdSignaling(
+                        stubbedAuthorization,
                         {
                             device_id: CONCRETE_DEVICE_ID,
                             peerconnection_url: PEERCONNECTION_URL,
                         },
                         SIGNALING_MESSAGE,
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -159,12 +159,12 @@ export default function (context: Mocha.Context, testData: TestData) {
     addTest(suite, 'should successfully send the signaling message', async function () {
         connectedDevices.set(CONCRETE_DEVICE_ID, { send: () => undefined } as any);
         const result = await postDevicesByDeviceIdSignaling(
+            stubbedAuthorization,
             {
                 device_id: CONCRETE_DEVICE_ID,
                 peerconnection_url: PEERCONNECTION_URL,
             },
             SIGNALING_MESSAGE,
-            testData.userData,
         );
         assert.strictEqual(result.status, 200);
     });

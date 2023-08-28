@@ -52,16 +52,16 @@ export class DeviceGroupRepository extends AbstractRepository<
 
     async format(
         model: DeviceGroupModel,
-        options?: { flat_group?: boolean; execute_for?: string },
+        options?: { flatGroup?: boolean; executeFor?: string },
     ): Promise<DeviceGroup<'response'>> {
         if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        const devices: DeviceReference[] = options?.flat_group
+        const devices: DeviceReference[] = options?.flatGroup
             ? await this.resolveDeviceGroup(
                   { ...model, url: deviceUrlFromId(model.uuid) },
                   [],
                   {
-                      execute_for: options.execute_for,
+                      executeFor: options.executeFor,
                   },
               )
             : model.devices;
@@ -79,7 +79,7 @@ export class DeviceGroupRepository extends AbstractRepository<
     private async resolveDeviceGroup(
         deviceGroup: DeviceGroup,
         alreadyResolved: string[],
-        options?: { execute_for?: string },
+        options?: { executeFor?: string },
     ): Promise<Device[]> {
         alreadyResolved.push(deviceGroup.url);
         const devices: Device[] = [];
@@ -104,10 +104,15 @@ export class DeviceGroupRepository extends AbstractRepository<
 
     private async resolveDeviceReference(
         deviceReference: DeviceReference,
-        options?: { execute_for?: string },
+        options?: { executeFor?: string },
     ): Promise<Device | undefined> {
         try {
-            return await apiClient.getDevice(deviceReference.url, options);
+            return await apiClient.getDevice(deviceReference.url, {
+                flat_group: false,
+                headers: options?.executeFor
+                    ? [['X-Request-Authentication', options?.executeFor]]
+                    : [],
+            });
         } catch (error) {
             logger.log(
                 'error',

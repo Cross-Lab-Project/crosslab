@@ -4,9 +4,10 @@ import { deviceUrlFromId } from '../../../methods/urlFromId';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling GET requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
@@ -29,8 +30,8 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     return {
         status: 200,
         body: await repositories.device.format(deviceModel, {
-            flat_group: parameters.flat_group,
-            // execute_for: parameters.execute_for ?? user.JWT.jwt, TODO: change to accomodate new authorization
+            flatGroup: parameters.flat_group,
+            executeFor: authorization.user,
         }),
     };
 };

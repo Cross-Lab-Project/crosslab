@@ -39,7 +39,8 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
     ): boolean {
         assert(data.description === (model.description ?? undefined));
         assert(data.name === model.name);
-        assert(data.owner === model.owner);
+        // TODO: remove or add back if owner becomes usable again
+        // assert(data.owner === model.owner);
         assert(data.type === model.type);
         assert(data.url === deviceUrlFromId(model.uuid));
 
@@ -72,7 +73,8 @@ export abstract class DeviceOverviewRepositoryTestSuite extends AbstractReposito
 
         isEqual &&= first.description === second.description;
         isEqual &&= first.name === second.name;
-        isEqual &&= first.owner === second.owner;
+        // TODO: remove or add back if owner becomes usable again
+        // isEqual &&= first.owner === second.owner;
         isEqual &&= first.type === second.type;
         isEqual &&= first.url === second.url;
 

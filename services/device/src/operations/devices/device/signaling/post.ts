@@ -11,12 +11,15 @@ import {
 } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id}/signaling endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id}/signaling endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
- * @throws {MissingEntityError} Thrown if device is not found in the database or if websocket for device is not found.
- * @throws {InvalidValueError} Thrown if type of device is not "device" or if device is not part of the peerconnection.
+ * @throws {MissingEntityError} Thrown if device is not found in the database
+ * or if websocket for device is not found.
+ * @throws {InvalidValueError} Thrown if type of device is not "device" or if
+ * device is not part of the peerconnection.
  */
 export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature =
     async (authorization, parameters, body) => {

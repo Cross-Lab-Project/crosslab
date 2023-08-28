@@ -5,11 +5,15 @@ import { validateExperimentStatus } from '../../../types/typeguards';
 import { InstantiatedDevice } from '../../../types/types';
 import { apiClient } from '../../api';
 import { experimentUrlFromId } from '../../url';
+import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { logger } from '@crosslab/service-common';
 
 export async function instantiateDevicesExperiment(
     experimentModel: ExperimentModel,
-    instantiationUrls: string[],
+    instantiables: (
+        | DeviceServiceTypes.InstantiableBrowserDevice
+        | DeviceServiceTypes.InstantiableCloudDevice
+    )[],
 ): Promise<InstantiatedDevice[]> {
     const experimentUrl = experimentUrlFromId(experimentModel.uuid);
     logger.log('info', 'Attempting to instantiate devices for experiment', {
@@ -29,19 +33,23 @@ export async function instantiateDevicesExperiment(
 
     // TODO: error handling
     const instances: InstantiatedDevice[] = [];
-    for (const instantiationUrl of instantiationUrls) {
+    for (const instantiable of instantiables) {
         const instantiableDevice = experimentModel.devices.find(
-            (device) => device.url === instantiationUrl,
+            (device) => device.url === instantiable.url,
         );
 
         if (!instantiableDevice || instantiableDevice.instance) continue;
 
-        const instanceData = await apiClient.instantiateDevice(instantiationUrl);
+        const instanceData = await apiClient.instantiateDevice(instantiable.url);
         instances.push({ ...instanceData.instance, token: instanceData.deviceToken });
 
         const instance = await repositories.instance.create({
             url: instanceData.instance.url,
             token: instanceData.deviceToken,
+            codeUrl:
+                instantiable.type === 'edge instantiable'
+                    ? instantiable.codeUrl
+                    : undefined,
         });
         await repositories.instance.save(instance);
 

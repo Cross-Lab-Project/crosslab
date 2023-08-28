@@ -2,7 +2,7 @@ import { repositories } from '../../../../src/database/dataSource';
 import { deleteDevicesByDeviceId } from '../../../../src/operations/devices';
 import { deviceNames } from '../../../data/devices/index.spec';
 import { TestData } from '../../../data/index.spec';
-import { addTest } from '../../index.spec';
+import { addTest, stubbedAuthorization } from '../../index.spec';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
@@ -13,10 +13,9 @@ export default function (context: Mocha.Context, testData: TestData) {
     addTest(suite, 'should delete the device', async function () {
         for (const deviceName of deviceNames) {
             const deviceModel = testData.devices[deviceName].model;
-            const result = await deleteDevicesByDeviceId(
-                { device_id: deviceModel.uuid },
-                testData.userData,
-            );
+            const result = await deleteDevicesByDeviceId(stubbedAuthorization, {
+                device_id: deviceModel.uuid,
+            });
             assert(result.status === 204);
             assert(
                 (await repositories.device.findOne({
@@ -34,10 +33,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await deleteDevicesByDeviceId(
-                        { device_id: 'non-existent' },
-                        testData.userData,
-                    );
+                    await deleteDevicesByDeviceId(stubbedAuthorization, {
+                        device_id: 'non-existent',
+                    });
                 },
                 (error) => {
                     assert(error instanceof MissingEntityError);

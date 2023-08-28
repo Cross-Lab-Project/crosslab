@@ -5,10 +5,31 @@ import { initTestDatabase } from '../database/repositories/index.spec';
 import deviceTests from './devices/index.spec';
 import peerconnectionTests from './peerconnections/index.spec';
 import { logger } from '@crosslab/service-common';
+import {
+    authorization_functions,
+    bind_authorization,
+} from '@crosslab/service-common/authorization';
 import Mocha from 'mocha';
+import * as sinon from 'sinon';
 
 // const tests = [...deviceTests, ...peerconnectionTests, callbackTest]
 const tests = [...deviceTests, ...peerconnectionTests];
+export const stubbedAuthorization = {
+    ...sinon.stub(
+        bind_authorization(
+            authorization_functions({
+                AUTHORIZATION_PSK: 'test',
+                AUTHORIZATION_SERVER: 'test',
+            }),
+            'test',
+        ),
+    ),
+    user: 'user:anonymus',
+};
+
+stubbedAuthorization.check_authorization.resolves({
+    result: true,
+});
 
 export function addTest(
     suite: Mocha.Suite,
@@ -18,10 +39,14 @@ export function addTest(
     suite.addTest(new Mocha.Test(name, fn));
 }
 
+function overrideTestData<T extends TestData>(oldData: T, newData: T) {
+    for (const key in oldData) {
+        oldData[key] = newData[key];
+    }
+}
+
 describe('Operations', function () {
     let testData: TestData;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const suite: Mocha.Suite = this;
 
     this.beforeAll(async function () {
         logger.transports.forEach((transport) => (transport.silent = true));
@@ -33,15 +58,15 @@ describe('Operations', function () {
             await AppDataSource.teardown();
         }
         const newTestData = await initTestDatabase();
-        for (const key in newTestData) {
-            // eslint-disable-next-line
-            (testData as any)[key] = (newTestData as any)[key];
-        }
+        overrideTestData(testData, newTestData);
     });
 
-    it('should initialize the test data', async function () {
-        for (const test of tests) {
-            suite.addSuite(test(suite.ctx, testData));
-        }
-    });
+    it(
+        'should initialize the test data',
+        async function (this: Mocha.Suite) {
+            for (const test of tests) {
+                this.addSuite(test(this.ctx, testData));
+            }
+        }.bind(this),
+    );
 });

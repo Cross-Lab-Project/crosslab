@@ -4,7 +4,6 @@ import { DeviceGroupRepository } from '../../src/database/repositories/device/de
 import { InstantiableBrowserDeviceRepository } from '../../src/database/repositories/device/instantiableBrowserDevice';
 import { InstantiableCloudDeviceRepository } from '../../src/database/repositories/device/instantiableCloudDevice';
 import { PeerconnectionRepository } from '../../src/database/repositories/peerconnection';
-import { UserData, UserType } from '../../src/generated/types';
 import {
     concreteDeviceData,
     ConcreteDeviceName,
@@ -39,17 +38,7 @@ export type TestData = GenericTestData<
         ['devices', DeviceName, DeviceRepository],
         ['peerconnections', PeerconnectionName, PeerconnectionRepository],
     ]
-> & {
-    user: UserType<'JWT'>;
-    userData: UserData<'JWT'>;
-};
-
-const testUser: UserType<'JWT'> = {
-    url: 'http://localhost/users/testuser',
-    username: 'testuser',
-    scopes: ['device'],
-    jwt: 'JWT',
-};
+>;
 
 export function prepareTestData(): TestData {
     return {
@@ -59,9 +48,5 @@ export function prepareTestData(): TestData {
         'instantiable cloud devices': instantiableCloudDeviceData,
         devices: deviceData,
         peerconnections: peerconnectionData,
-        user: testUser,
-        userData: {
-            JWT: testUser,
-        },
     };
 }

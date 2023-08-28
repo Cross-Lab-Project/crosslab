@@ -5,9 +5,10 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /peerconnection/{peerconnection_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
     async (authorization, parameters) => {

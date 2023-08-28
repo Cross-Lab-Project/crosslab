@@ -4,7 +4,7 @@ import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec'
 import { deviceNames } from '../../../data/devices/index.spec';
 import { TestData } from '../../../data/index.spec';
 import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec';
-import { addTest } from '../../index.spec';
+import { addTest, stubbedAuthorization } from '../../index.spec';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
@@ -20,13 +20,10 @@ export default function (context: Mocha.Context, testData: TestData) {
     suite.beforeAll(function () {
         getDeviceStub = sinon.stub(apiClient, 'getDevice');
         getDeviceStub.callsFake(async (url, options) => {
-            const result = await getDevicesByDeviceId(
-                {
-                    device_id: url.split('/').at(-1) ?? 'non-existent',
-                    flat_group: options?.flat_group,
-                },
-                testData.userData,
-            );
+            const result = await getDevicesByDeviceId(stubbedAuthorization, {
+                device_id: url.split('/').at(-1) ?? 'non-existent',
+                flat_group: options?.flat_group,
+            });
             assert(result.status === 200);
             return result.body;
         });
@@ -39,10 +36,9 @@ export default function (context: Mocha.Context, testData: TestData) {
     addTest(suite, 'should return the formatted device', async function () {
         for (const deviceName of deviceNames) {
             const device = testData.devices[deviceName];
-            const result = await getDevicesByDeviceId(
-                { device_id: device.model.uuid },
-                testData.userData,
-            );
+            const result = await getDevicesByDeviceId(stubbedAuthorization, {
+                device_id: device.model.uuid,
+            });
 
             assert(result.status === 200);
             assert(deviceRepositoryTestSuite.validateFormat(device.model, result.body));
@@ -55,10 +51,10 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             for (const deviceGroupName of deviceGroupNames) {
                 const deviceGroup = testData['device groups'][deviceGroupName];
-                const result = await getDevicesByDeviceId(
-                    { device_id: deviceGroup.model.uuid, flat_group: true },
-                    testData.userData,
-                );
+                const result = await getDevicesByDeviceId(stubbedAuthorization, {
+                    device_id: deviceGroup.model.uuid,
+                    flat_group: true,
+                });
 
                 assert(result.status === 200);
                 assert(
@@ -80,10 +76,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await getDevicesByDeviceId(
-                        { device_id: 'non-existent' },
-                        testData.userData,
-                    );
+                    await getDevicesByDeviceId(stubbedAuthorization, {
+                        device_id: 'non-existent',
+                    });
                 },
                 (error) => {
                     assert(error instanceof MissingEntityError);

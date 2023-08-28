@@ -5,10 +5,11 @@ import { deviceUrlFromId } from '../../methods/urlFromId';
 import { MalformedBodyError, logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling POST requests on /devices endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param user The user submitting the request.
  */
 export const postDevices: postDevicesSignature = async (
     authorization,
@@ -26,6 +27,7 @@ export const postDevices: postDevicesSignature = async (
         );
 
     const deviceModel = await repositories.device.create(body);
+    // TODO: remove owner property or change to make it usable again
     deviceModel.owner = 'http://example.com/users/1';
     await repositories.device.save(deviceModel);
 

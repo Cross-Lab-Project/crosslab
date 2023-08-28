@@ -608,7 +608,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_device(self, url: str, flat_group: Optional[bool] = None, execute_for: Optional[str] = None) -> GetDeviceResponse:  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None) -> GetDeviceResponse:  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -630,11 +630,6 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
-        if execute_for:
-            if isinstance(execute_for, list):
-                query_params['execute_for'] = execute_for
-            else:
-                query_params['execute_for'] = str(execute_for)
         
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)

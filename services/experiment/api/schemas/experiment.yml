@@ -43,13 +43,19 @@ allOf:
         items:
           type: object
           properties:
+            codeUrl:
+              type: string
+              format: uri
             url:
               type: string
+              format: uri
             token:
               type: string
             instanceOf:
               type: string
+              format: uri
           required:
+          - codeUrl
           - url
           - token
           - instanceOf

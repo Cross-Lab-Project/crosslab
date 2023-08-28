@@ -4,6 +4,7 @@ import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 export type Instance = {
     url: string;
     token: string;
+    codeUrl?: string;
 };
 
 export type ResolvedDevice = DeviceServiceTypes.Device<'response'> & {

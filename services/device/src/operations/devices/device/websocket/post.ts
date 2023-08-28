@@ -9,10 +9,11 @@ import {
 import { randomUUID } from 'crypto';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id}/token endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id}/token endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
- * @throws {_MissingEntityError} Thrown if device is not found in the database.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
     async (authorization, parameters) => {

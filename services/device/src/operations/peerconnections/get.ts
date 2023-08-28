@@ -3,8 +3,9 @@ import { getPeerconnectionsSignature } from '../../generated/signatures';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling GET requests on /peerconnections endpoint.
- * @param _user The user submitting the request.
+ * This function implements the functionality for handling GET requests on
+ * /peerconnections endpoint.
+ * @param authorization The authorization helper object for the request.
  */
 export const getPeerconnections: getPeerconnectionsSignature = async (authorization) => {
     logger.log('info', 'getPeerconnections called');

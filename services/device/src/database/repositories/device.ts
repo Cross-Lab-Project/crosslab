@@ -110,7 +110,7 @@ export class DeviceRepository extends AbstractRepository<
 
     async format(
         model: DeviceModel,
-        options?: { flat_group?: boolean; execute_for?: string },
+        options?: { flatGroup?: boolean; executeFor?: string },
     ): Promise<Device<'response'>> {
         if (!this._isInitialized()) this.throwUninitializedRepositoryError();
 

@@ -5,9 +5,10 @@ import { deviceUrlFromId } from '../../../methods/urlFromId';
 import { ImpossibleOperationError, logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  * @throws {ImpossibleOperationError} Thrown if device is not instantiable.
  */

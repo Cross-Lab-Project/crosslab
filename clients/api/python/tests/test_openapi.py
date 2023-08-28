@@ -2763,7 +2763,7 @@ async def test_get_device(aioresponses: aioresponses):
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    parameter_list = [{"flat_group": True, "execute_for": "test_string", }, {"execute_for": "test_string", }, {"flat_group": True, }, {}, ]
+    parameter_list = [{"flat_group": True, }, {}, ]
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'{"url":"https://rKemGKMlhNcfBAeYBDdlNW.ieM9N.ZnfxWisMIs34TWLplCB-AYjE6sICZDnfHOU1at","type":"group","name":"proident in anim aute veniam","owner":"https://HeFvjzydnbDafLWsZ.ixrN4oC-Om8TxgI0e.UVQRAyQNqrmskvLXxQSwdSjMZxmIrHvBPiS307XfTFjCY4..V.NUWa","isPublic":true,"devices":[{"url":"http://bKrxtmbtyfsPicg.pvyIy9-oumPBOjo"},{"url":"http://lNhLsyfXesSQfdUnFNwDk.cmmhBOCKId3UIwDHkboh0G+BcBFq+fIIcY"},{"url":"https://RPsgpOCGheCupCp.vjaEjo-9ZMA7dHI3IMVeTbT7OW,"}],"description":"sit veniam commodo Excepteur qui"}')
@@ -4697,61 +4697,61 @@ async def test_create_experiment(aioresponses: aioresponses):
     url_variant = r'experiments'
     full_url = BASE_URL+r'/experiments'
 
-    request = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+    request = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_201_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_201_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_201_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_201_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=full_url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_experiment(url=full_url, body=request, **parameters)
@@ -4887,21 +4887,21 @@ async def test_get_experiment(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_experiment(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_experiment(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_experiment(url=full_url, **parameters)
@@ -5004,47 +5004,47 @@ async def test_update_experiment(aioresponses: aioresponses):
     url_variant = r'experiments/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/experiments/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+    request = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
 
     parameter_list = [{"changedURL": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_200_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=full_url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_202_dict)
 
     for parameters in parameter_list:
-        response_202_dict = json.loads(r'{"bookingTime":{"startTime":"2000-08-14T04:54:14.0Z"},"connections":["https://RFRUTbfSkqxQcWywFSTmDuOSDRcnOIxk.yzupuJ9HQWeBIgSLn+dMhDeAW4tuqmbgRl","http://enWShDUdEGFtr.hsuiPS.t2BOn8bLL3xubBCpiVLe.98ZEHLzSO3XSp,AFtvElXHJ2PdMPdWX45wO0s12","https://bwZNwrnwfJcutHBpkXPJqa.axnbCy9G0vEyww0H5dqjDHZhmIQttCXUjbxqx7fQFdPwXrX55","https://nBTcmkzONDZACdq.dacy2VVrDUDVV1ul"],"status":"created","devices":[],"url":"https://pOmRNBWkB.jwobtIX-jSDbWDTeR9teffFFlIsdWZZsNTpx,yI7hz4+ixJj9b.UOsc5y.43o"}')
+        response_202_dict = json.loads(r'{"devices":[{"role":"irure"},{"device":"http://mQVBjRxbgYT.dxMS9.P88zw2XYkf4,9FmTaqfRv1pv40it.VwrXR","role":"amet nostrud elit"}],"roles":[{"name":"id dolor officia pariatur nisi","description":"pariatur adipisicing ut Lorem"},{"description":"nostrud ea in exercitation Lorem"}],"serviceConfigurations":[{"participants":[]},{"serviceType":"https://YpWxUsYmnlSQXTSdBLmwN.crgxJSt7NzVWiMiOG336Jg+TpniGxO1CkxnfX9ocVCzNsqax-,N","participants":[{"serviceId":"id"}]}],"status":"booked","instantiatedDevices":[{"codeUrl":"http://QeqKWqcdFpMxdyvzrzsEVgqKZVOpSu.ipavlwZf,BciCB2DroHwWaWJDzu1XSYZV7ViqB49RABrWLF2WkUviRFISfzFtyASg1N","url":"http://bOfOPXymJzdHIwpQtkK.njxcBvrL+tDJrsRozPQ,zd.EdNXojNRb7o54kO5QL","token":"eiusmod reprehenderit enim nulla","instanceOf":"https://lIYXPIauGMCHByEBI.iydG9xJiNpTZh98cCoedIWuTh.BnLGYIcukWYpobyoqpJ7eoocZLSYrxITe5Tyr1XR-LXHX7AOPGJ"}],"connections":["https://JUJKnySf.dwlohvpSDLQyF8XxU6pbNH.3w9FJOSC8-vD+3uy","https://wQYyS.ohHlI"]}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_experiment(url=full_url, body=request, **parameters)
@@ -5253,6 +5253,727 @@ async def test_delete_experiment(aioresponses: aioresponses):
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
                 resp = await client.delete_experiment(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_list_template(aioresponses: aioresponses):
+    url = r'/templates'
+    url_variant = r'templates'
+    full_url = BASE_URL+r'/templates'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"url":"http://fNmvkNdandj.lmRiFOpuBhXz6c","name":"dolor incididunt aliquip id","configuration":{"devices":[{"role":"ipsum","device":"http://fwssZRib.nepoBPqmIadnXHJszVzCDdKWdVUt5,RomrlagyAg5"},{"role":"ut sed"},{"device":"http://YdgrPeLaSfM.ycRTT.2Mnj"},{"device":"http://GJqyYpInHIJjpnlaL.fdinyqgMFPJwG+gV8qZvQU2CLh8rD,1zAeZ6wYl0jyt4DL71RbPTJR-56cQ5vkkS9Xn4vH+.AjaiP.dgP1,Go","role":"laborum"}],"roles":[{"name":"reprehenderit ut dolore nulla","description":"dolor amet commodo"},{"description":"dolor Lorem","name":"velit nostrud est cupidatat nulla"}],"serviceConfigurations":[{"serviceType":"http://jGsKjAsVYokGsZUznsjofDhStIuLrTv.ieb6TXz2RXJ3KH7KVYUu8CpO7ui.4u,ueA+f9jEB"},{"serviceType":"http://iRVzjRFJwCCTWOZGgqoguowT.hsTOKZypigTjIaCnbuV8VtvLt50qH"}]},"description":"elit nisi laboris fugiat aliqua"},{"url":"https://fKzmJTigmKbHkHjzGs.uqpkUKdxjT4BwLSQDIAlB44","name":"ea irure esse anim","configuration":{"devices":[{"role":"sed sit nisi mollit"},{"role":"incididunt cupidatat tempor ut proident","device":"http://jDhizZXkbzHgfFT.sfbfy3a5E0W72AoacRpO7JIjgy6S9SV,L7kmMvfQNSjMnulkRrA,5HVCSI5rMpohvDcUVdP-KFZzs,F"},{"device":"https://AWWJAWEeskEU.chdAVLgxtnXlpljWoEN0Yuasv9D+Vx4ECt,yPjY4gAY","role":"in dolore in"}],"roles":[{"description":"labore in laborum consectetur tempor","name":"sed magna dolor ea occaecat"}],"serviceConfigurations":[{"participants":[{"serviceId":"id adipisicing"},{"serviceId":"culpa","role":"adipisicing in"},{"serviceId":"Ut ex laborum ut dolor","role":"sed consectetur veniam nostrud"}],"serviceType":"https://XwxeimtCftlFrTMSKLkBFlblCZ.htrsjFpdS"},{"serviceType":"http://rA.mmoflTJQ1OdZvSXVpUCAL1wC","participants":[{"serviceId":"cillum reprehenderit qui consequat","role":"mollit ad in deserunt"},{"role":"nulla magna incididunt ut tempor"},{"serviceId":"aliquip do in est","role":"culpa"},{"role":"adipisicing ut sint id"}]},{"participants":[{"role":"nostrud","serviceId":"voluptate ut fugiat"},{"serviceId":"officia","role":"est occaecat adipisicing aute irure"},{"serviceId":"laboris aliquip in","role":"minim"},{"role":"Ut reprehenderit Lorem","serviceId":"Excepteur esse dolore aliqua"}],"serviceType":"https://WyppuKyQgOmchzsHa.jhuWn4SuvNtijIfnVh0aDE7ZSREZsweq..d1Bh2sQ"},{"participants":[{"serviceId":"id","role":"ut nulla pariatur Duis"},{"serviceId":"consectetur laborum","role":"dolore do sunt"},{"serviceId":"tempor exercitation Excepteur ullamco","role":"proident cillum Duis"}]},{"serviceType":"http://UNjwfZqlcdTLTLjZTUxLmoeS.nusbT9YpIfkz5zNx,3OpU6o1hP7jNlt3CWd2Esi"}]},"description":"labore sunt reprehenderit magna"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_template(**parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"url":"http://fNmvkNdandj.lmRiFOpuBhXz6c","name":"dolor incididunt aliquip id","configuration":{"devices":[{"role":"ipsum","device":"http://fwssZRib.nepoBPqmIadnXHJszVzCDdKWdVUt5,RomrlagyAg5"},{"role":"ut sed"},{"device":"http://YdgrPeLaSfM.ycRTT.2Mnj"},{"device":"http://GJqyYpInHIJjpnlaL.fdinyqgMFPJwG+gV8qZvQU2CLh8rD,1zAeZ6wYl0jyt4DL71RbPTJR-56cQ5vkkS9Xn4vH+.AjaiP.dgP1,Go","role":"laborum"}],"roles":[{"name":"reprehenderit ut dolore nulla","description":"dolor amet commodo"},{"description":"dolor Lorem","name":"velit nostrud est cupidatat nulla"}],"serviceConfigurations":[{"serviceType":"http://jGsKjAsVYokGsZUznsjofDhStIuLrTv.ieb6TXz2RXJ3KH7KVYUu8CpO7ui.4u,ueA+f9jEB"},{"serviceType":"http://iRVzjRFJwCCTWOZGgqoguowT.hsTOKZypigTjIaCnbuV8VtvLt50qH"}]},"description":"elit nisi laboris fugiat aliqua"},{"url":"https://fKzmJTigmKbHkHjzGs.uqpkUKdxjT4BwLSQDIAlB44","name":"ea irure esse anim","configuration":{"devices":[{"role":"sed sit nisi mollit"},{"role":"incididunt cupidatat tempor ut proident","device":"http://jDhizZXkbzHgfFT.sfbfy3a5E0W72AoacRpO7JIjgy6S9SV,L7kmMvfQNSjMnulkRrA,5HVCSI5rMpohvDcUVdP-KFZzs,F"},{"device":"https://AWWJAWEeskEU.chdAVLgxtnXlpljWoEN0Yuasv9D+Vx4ECt,yPjY4gAY","role":"in dolore in"}],"roles":[{"description":"labore in laborum consectetur tempor","name":"sed magna dolor ea occaecat"}],"serviceConfigurations":[{"participants":[{"serviceId":"id adipisicing"},{"serviceId":"culpa","role":"adipisicing in"},{"serviceId":"Ut ex laborum ut dolor","role":"sed consectetur veniam nostrud"}],"serviceType":"https://XwxeimtCftlFrTMSKLkBFlblCZ.htrsjFpdS"},{"serviceType":"http://rA.mmoflTJQ1OdZvSXVpUCAL1wC","participants":[{"serviceId":"cillum reprehenderit qui consequat","role":"mollit ad in deserunt"},{"role":"nulla magna incididunt ut tempor"},{"serviceId":"aliquip do in est","role":"culpa"},{"role":"adipisicing ut sint id"}]},{"participants":[{"role":"nostrud","serviceId":"voluptate ut fugiat"},{"serviceId":"officia","role":"est occaecat adipisicing aute irure"},{"serviceId":"laboris aliquip in","role":"minim"},{"role":"Ut reprehenderit Lorem","serviceId":"Excepteur esse dolore aliqua"}],"serviceType":"https://WyppuKyQgOmchzsHa.jhuWn4SuvNtijIfnVh0aDE7ZSREZsweq..d1Bh2sQ"},{"participants":[{"serviceId":"id","role":"ut nulla pariatur Duis"},{"serviceId":"consectetur laborum","role":"dolore do sunt"},{"serviceId":"tempor exercitation Excepteur ullamco","role":"proident cillum Duis"}]},{"serviceType":"http://UNjwfZqlcdTLTLjZTUxLmoeS.nusbT9YpIfkz5zNx,3OpU6o1hP7jNlt3CWd2Esi"}]},"description":"labore sunt reprehenderit magna"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_template(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"url":"http://fNmvkNdandj.lmRiFOpuBhXz6c","name":"dolor incididunt aliquip id","configuration":{"devices":[{"role":"ipsum","device":"http://fwssZRib.nepoBPqmIadnXHJszVzCDdKWdVUt5,RomrlagyAg5"},{"role":"ut sed"},{"device":"http://YdgrPeLaSfM.ycRTT.2Mnj"},{"device":"http://GJqyYpInHIJjpnlaL.fdinyqgMFPJwG+gV8qZvQU2CLh8rD,1zAeZ6wYl0jyt4DL71RbPTJR-56cQ5vkkS9Xn4vH+.AjaiP.dgP1,Go","role":"laborum"}],"roles":[{"name":"reprehenderit ut dolore nulla","description":"dolor amet commodo"},{"description":"dolor Lorem","name":"velit nostrud est cupidatat nulla"}],"serviceConfigurations":[{"serviceType":"http://jGsKjAsVYokGsZUznsjofDhStIuLrTv.ieb6TXz2RXJ3KH7KVYUu8CpO7ui.4u,ueA+f9jEB"},{"serviceType":"http://iRVzjRFJwCCTWOZGgqoguowT.hsTOKZypigTjIaCnbuV8VtvLt50qH"}]},"description":"elit nisi laboris fugiat aliqua"},{"url":"https://fKzmJTigmKbHkHjzGs.uqpkUKdxjT4BwLSQDIAlB44","name":"ea irure esse anim","configuration":{"devices":[{"role":"sed sit nisi mollit"},{"role":"incididunt cupidatat tempor ut proident","device":"http://jDhizZXkbzHgfFT.sfbfy3a5E0W72AoacRpO7JIjgy6S9SV,L7kmMvfQNSjMnulkRrA,5HVCSI5rMpohvDcUVdP-KFZzs,F"},{"device":"https://AWWJAWEeskEU.chdAVLgxtnXlpljWoEN0Yuasv9D+Vx4ECt,yPjY4gAY","role":"in dolore in"}],"roles":[{"description":"labore in laborum consectetur tempor","name":"sed magna dolor ea occaecat"}],"serviceConfigurations":[{"participants":[{"serviceId":"id adipisicing"},{"serviceId":"culpa","role":"adipisicing in"},{"serviceId":"Ut ex laborum ut dolor","role":"sed consectetur veniam nostrud"}],"serviceType":"https://XwxeimtCftlFrTMSKLkBFlblCZ.htrsjFpdS"},{"serviceType":"http://rA.mmoflTJQ1OdZvSXVpUCAL1wC","participants":[{"serviceId":"cillum reprehenderit qui consequat","role":"mollit ad in deserunt"},{"role":"nulla magna incididunt ut tempor"},{"serviceId":"aliquip do in est","role":"culpa"},{"role":"adipisicing ut sint id"}]},{"participants":[{"role":"nostrud","serviceId":"voluptate ut fugiat"},{"serviceId":"officia","role":"est occaecat adipisicing aute irure"},{"serviceId":"laboris aliquip in","role":"minim"},{"role":"Ut reprehenderit Lorem","serviceId":"Excepteur esse dolore aliqua"}],"serviceType":"https://WyppuKyQgOmchzsHa.jhuWn4SuvNtijIfnVh0aDE7ZSREZsweq..d1Bh2sQ"},{"participants":[{"serviceId":"id","role":"ut nulla pariatur Duis"},{"serviceId":"consectetur laborum","role":"dolore do sunt"},{"serviceId":"tempor exercitation Excepteur ullamco","role":"proident cillum Duis"}]},{"serviceType":"http://UNjwfZqlcdTLTLjZTUxLmoeS.nusbT9YpIfkz5zNx,3OpU6o1hP7jNlt3CWd2Esi"}]},"description":"labore sunt reprehenderit magna"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_template(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"url":"http://fNmvkNdandj.lmRiFOpuBhXz6c","name":"dolor incididunt aliquip id","configuration":{"devices":[{"role":"ipsum","device":"http://fwssZRib.nepoBPqmIadnXHJszVzCDdKWdVUt5,RomrlagyAg5"},{"role":"ut sed"},{"device":"http://YdgrPeLaSfM.ycRTT.2Mnj"},{"device":"http://GJqyYpInHIJjpnlaL.fdinyqgMFPJwG+gV8qZvQU2CLh8rD,1zAeZ6wYl0jyt4DL71RbPTJR-56cQ5vkkS9Xn4vH+.AjaiP.dgP1,Go","role":"laborum"}],"roles":[{"name":"reprehenderit ut dolore nulla","description":"dolor amet commodo"},{"description":"dolor Lorem","name":"velit nostrud est cupidatat nulla"}],"serviceConfigurations":[{"serviceType":"http://jGsKjAsVYokGsZUznsjofDhStIuLrTv.ieb6TXz2RXJ3KH7KVYUu8CpO7ui.4u,ueA+f9jEB"},{"serviceType":"http://iRVzjRFJwCCTWOZGgqoguowT.hsTOKZypigTjIaCnbuV8VtvLt50qH"}]},"description":"elit nisi laboris fugiat aliqua"},{"url":"https://fKzmJTigmKbHkHjzGs.uqpkUKdxjT4BwLSQDIAlB44","name":"ea irure esse anim","configuration":{"devices":[{"role":"sed sit nisi mollit"},{"role":"incididunt cupidatat tempor ut proident","device":"http://jDhizZXkbzHgfFT.sfbfy3a5E0W72AoacRpO7JIjgy6S9SV,L7kmMvfQNSjMnulkRrA,5HVCSI5rMpohvDcUVdP-KFZzs,F"},{"device":"https://AWWJAWEeskEU.chdAVLgxtnXlpljWoEN0Yuasv9D+Vx4ECt,yPjY4gAY","role":"in dolore in"}],"roles":[{"description":"labore in laborum consectetur tempor","name":"sed magna dolor ea occaecat"}],"serviceConfigurations":[{"participants":[{"serviceId":"id adipisicing"},{"serviceId":"culpa","role":"adipisicing in"},{"serviceId":"Ut ex laborum ut dolor","role":"sed consectetur veniam nostrud"}],"serviceType":"https://XwxeimtCftlFrTMSKLkBFlblCZ.htrsjFpdS"},{"serviceType":"http://rA.mmoflTJQ1OdZvSXVpUCAL1wC","participants":[{"serviceId":"cillum reprehenderit qui consequat","role":"mollit ad in deserunt"},{"role":"nulla magna incididunt ut tempor"},{"serviceId":"aliquip do in est","role":"culpa"},{"role":"adipisicing ut sint id"}]},{"participants":[{"role":"nostrud","serviceId":"voluptate ut fugiat"},{"serviceId":"officia","role":"est occaecat adipisicing aute irure"},{"serviceId":"laboris aliquip in","role":"minim"},{"role":"Ut reprehenderit Lorem","serviceId":"Excepteur esse dolore aliqua"}],"serviceType":"https://WyppuKyQgOmchzsHa.jhuWn4SuvNtijIfnVh0aDE7ZSREZsweq..d1Bh2sQ"},{"participants":[{"serviceId":"id","role":"ut nulla pariatur Duis"},{"serviceId":"consectetur laborum","role":"dolore do sunt"},{"serviceId":"tempor exercitation Excepteur ullamco","role":"proident cillum Duis"}]},{"serviceType":"http://UNjwfZqlcdTLTLjZTUxLmoeS.nusbT9YpIfkz5zNx,3OpU6o1hP7jNlt3CWd2Esi"}]},"description":"labore sunt reprehenderit magna"}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_template(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_template(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_create_template(aioresponses: aioresponses):
+    url = r'/templates'
+    url_variant = r'templates'
+    full_url = BASE_URL+r'/templates'
+
+    request = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_template(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_template(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_get_template(aioresponses: aioresponses):
+    url = r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_template(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_template(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_template(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_template(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_template(aioresponses: aioresponses):
+    url = r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    request = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        response_202_dict = json.loads(r'{"url":"https://GHGlCNoOXfmmQePveRQnIaBdCbZkSltF.ryA-b2Oh,H","name":"ad proident","configuration":{"devices":[{"device":"https://wyCOJBrpVQVKlkMJkRgAVSjPsDHD.hnjk21gBO7AdySNqkhpMKUWCR-clntjER-ws2DNfM9gPJbU7g.VAMpcJL7QMjw+ecgGqF+","role":"officia commodo"},{"role":"Duis Ut","device":"https://RkwyyTzHzIkzrBqf.cpxpEUuJs8jwhQYvkKXbXtENdt,SqyW-ZOsOKcFSmWkAHR"},{"role":"sed labore minim","device":"http://qqwNNeOqB.jbdnOY,V"}],"roles":[{"name":"minim Ut ipsum","description":"ut ullamco in sed"},{"description":"cupidatat ipsum pariatur mollit","name":"culpa sint eiusmod ullamco dolore"},{"name":"Ut mollit sed","description":"proident id"},{"name":"Lorem dolor Duis nulla"}],"serviceConfigurations":[{"serviceType":"https://XVxLPOUAmnxpHhFQBnRerYipJ.qwofcQpobPvwD54MKhB5bCf5rZIt+KURCsykmCT"},{"serviceType":"http://lakFX.wqznJTZZTX36FJ8ljHjnvDs-1XqHGY2q.Mszi-Up9cevxy.+d1Kf2bSD9NGc5zeFDUeR"},{"serviceType":"https://JiXuEaUr.xoqXWdxIABoBnWWQSVzt8rOHn+oGWcruU6jw3E"}]}}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=202, payload=response_202_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_template(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_202_dict)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_template(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_delete_template(aioresponses: aioresponses):
+    url = r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/templates/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_template(url=full_url, **parameters)
 
 
 @pytest.mark.asyncio

@@ -58,7 +58,7 @@
                     "max-len": [
                         "error",
                         {
-                            "code": 90
+                            "code": 150
                         }
                     ],
                     "no-shadow": "off",

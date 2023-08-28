@@ -28,19 +28,24 @@ export async function setupExperiment(
             500,
         );
 
-    const uninstantiatedDevices = resolvedDevices.filter(
-        (device) =>
-            (device.type === 'cloud instantiable' ||
-                device.type === 'edge instantiable') &&
-            (!device.instanceUrl || !device.instanceToken),
-    );
+    const uninstantiatedDevices = [];
+
+    for (const resolvedDevice of resolvedDevices) {
+        if (
+            (resolvedDevice.type === 'cloud instantiable' ||
+                resolvedDevice.type === 'edge instantiable') &&
+            (!resolvedDevice.instanceUrl || !resolvedDevice.instanceToken)
+        ) {
+            uninstantiatedDevices.push(resolvedDevice);
+        }
+    }
 
     await lockBookingExperiment(experimentModel);
 
     if (uninstantiatedDevices) {
         const instances = await instantiateDevicesExperiment(
             experimentModel,
-            uninstantiatedDevices.map((uninstantiatedDevice) => uninstantiatedDevice.url),
+            uninstantiatedDevices,
         );
         await updateBookingExperiment(
             experimentModel,

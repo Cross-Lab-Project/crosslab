@@ -34,16 +34,22 @@ export type DeviceModel =
 export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string;
+
     @Column()
     name!: string;
+
     @Column({ nullable: true })
     description?: string;
+
     @Column()
     type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable';
+
     @Column({ nullable: true })
     owner!: string;
+
     @Column('boolean', { default: false })
     isPublic!: boolean;
+
     @DeleteDateColumn()
     deletedAt?: Date;
 }
@@ -61,18 +67,25 @@ export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewMode
 export class ConcreteDeviceModel extends DeviceOverviewModel {
     @Column()
     type!: 'device';
+
     @Column()
     connected!: boolean;
+
     @Column('simple-json')
     announcedAvailability!: Required<TimeSlot>[];
+
     @Column('simple-json')
     availabilityRules!: AvailabilityRule[];
+
     @Column()
     experiment?: string;
+
     @Column()
     token?: string;
+
     @Column('simple-json')
     services!: ServiceDescription[];
+
     @ManyToOne(
         () => InstantiableDeviceOverviewModel,
         (instantiableDevice) => instantiableDevice.instances,
@@ -84,6 +97,7 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
 export class DeviceGroupModel extends DeviceOverviewModel {
     @Column()
     type!: 'group';
+
     @Column('simple-json')
     devices!: DeviceReference[];
 }
@@ -92,8 +106,10 @@ export class DeviceGroupModel extends DeviceOverviewModel {
 export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
     type!: 'cloud instantiable';
+
     @Column()
     instantiateUrl?: string;
+
     @Column('simple-json')
     services?: ServiceDescription[];
 }
@@ -102,8 +118,10 @@ export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewMode
 export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
     type!: 'edge instantiable';
+
     @Column()
     codeUrl?: string;
+
     @Column('simple-json')
     services?: ServiceDescription[];
 }
@@ -112,14 +130,19 @@ export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewMo
 export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
     uuid!: string;
+
     @Column()
     type!: 'local' | 'webrtc';
+
     @Column('varchar')
     status!: ConnectionStatus;
+
     @Column('simple-json')
     deviceA!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
     @Column('simple-json')
     deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
     @DeleteDateColumn()
     deletedAt?: Date;
 }

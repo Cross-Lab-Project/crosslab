@@ -1520,9 +1520,6 @@
           },
           {
             "$ref": "#/components/parameters/flat_group"
-          },
-          {
-            "$ref": "#/components/parameters/execute_for"
           }
         ],
         "security": [
@@ -5235,17 +5232,24 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "codeUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "uri"
                     },
                     "token": {
                       "type": "string"
                     },
                     "instanceOf": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "uri"
                     }
                   },
                   "required": [
+                    "codeUrl",
                     "url",
                     "token",
                     "instanceOf"
@@ -5424,16 +5428,6 @@
         "schema": {
           "type": "boolean",
           "default": false,
-          "x-service-name": "Device Service"
-        }
-      },
-      "execute_for": {
-        "name": "execute_for",
-        "in": "header",
-        "required": false,
-        "description": "The JWT of a user for which to check the permissions.\n",
-        "schema": {
-          "type": "string",
           "x-service-name": "Device Service"
         }
       },

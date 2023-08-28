@@ -8,8 +8,8 @@ import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
 /**
  * This function implements the functionality for handling PATCH requests on
  * /peerconnections/{peerconnection_id}/device_status endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature =
     async (authorization, parameters, body) => {
@@ -83,9 +83,9 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
             }
 
             if (peerconnectionModel.status !== oldStatus) {
-                await sendStatusChangedCallback(peerconnectionModel);
+                sendStatusChangedCallback(peerconnectionModel);
                 if (peerconnectionModel.status === 'closed')
-                    await sendClosedCallback(peerconnectionModel);
+                    sendClosedCallback(peerconnectionModel);
             }
 
             logger.log('info', 'peerconnection devices status info', {

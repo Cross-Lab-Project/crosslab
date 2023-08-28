@@ -4,8 +4,9 @@ import { deviceUrlFromId } from '../../methods/urlFromId';
 import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling GET requests on /devices endpoint.
- * @param user The user submitting the request.
+ * This function implements the functionality for handling GET requests on
+ * /devices endpoint.
+ * @param authorization The authorization helper object for the request.
  */
 export const getDevices: getDevicesSignature = async (authorization) => {
     logger.log('info', 'getDevices called');
@@ -16,18 +17,17 @@ export const getDevices: getDevicesSignature = async (authorization) => {
 
     logger.log('info', 'getDevices succeeded');
 
+    const visibility = await Promise.all(
+        deviceModels.map((device) =>
+            authorization.check_authorization(
+                'view',
+                `device:${deviceUrlFromId(device.uuid)}`,
+            ),
+        ),
+    );
+
     const visibleDevices = deviceModels.filter(
-        async (_value, index) =>
-            (
-                await Promise.all(
-                    deviceModels.map((device) =>
-                        authorization.check_authorization(
-                            'view',
-                            `device:${deviceUrlFromId(device.uuid)}`,
-                        ),
-                    ),
-                )
-            )[index],
+        (_value, index) => visibility[index].result,
     );
 
     return {

@@ -2,7 +2,7 @@ import { getPeerconnections } from '../../../src/operations/peerconnections';
 import { TestData } from '../../data/index.spec';
 import { peerconnectionNames } from '../../data/peerconnections/index.spec';
 import { peerconnectionRepositoryTestSuite } from '../../database/repositories/peerconnection.spec';
-import { addTest } from '../index.spec';
+import { addTest, stubbedAuthorization } from '../index.spec';
 import assert from 'assert';
 import Mocha from 'mocha';
 
@@ -10,7 +10,7 @@ export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('GET /peerconnections', context);
 
     addTest(suite, 'should get all peerconnections', async function () {
-        const result = await getPeerconnections(testData.userData);
+        const result = await getPeerconnections(stubbedAuthorization);
         assert(result.status === 200);
 
         for (const peerconnectionName of peerconnectionNames) {

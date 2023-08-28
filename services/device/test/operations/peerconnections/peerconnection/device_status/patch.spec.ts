@@ -1,10 +1,10 @@
 import { repositories } from '../../../../../src/database/dataSource';
 import { PeerconnectionModel } from '../../../../../src/database/model';
 import { ConnectionStatus } from '../../../../../src/generated/types';
-import * as callbackFunctions from '../../../../../src/methods/callbacks';
+import * as callbackMethods from '../../../../../src/methods/callbacks';
 import { patchPeerconnectionsByPeerconnectionIdDeviceStatus } from '../../../../../src/operations/peerconnections';
 import { TestData } from '../../../../data/index.spec';
-import { addTest } from '../../../index.spec';
+import { addTest, stubbedAuthorization } from '../../../index.spec';
 import {
     MissingEntityError,
     UnrelatedPeerconnectionError,
@@ -24,20 +24,26 @@ export default function (context: Mocha.Context, testData: TestData) {
     const DEVICE_A_URL = PEERCONNECTION.model.deviceA.url;
     const DEVICE_B_URL = PEERCONNECTION.model.deviceB.url;
 
+    let sendClosedCallbackStub: sinon.SinonStub<
+        Parameters<typeof callbackMethods.sendClosedCallback>,
+        ReturnType<typeof callbackMethods.sendClosedCallback>
+    >;
     let sendStatusChangedCallbackStub: sinon.SinonStub<
-        Parameters<typeof callbackFunctions.sendStatusChangedCallback>,
-        ReturnType<typeof callbackFunctions.sendStatusChangedCallback>
+        Parameters<typeof callbackMethods.sendStatusChangedCallback>,
+        ReturnType<typeof callbackMethods.sendStatusChangedCallback>
     >;
     let peerconnectionRepositoryFindOneOrFailStub: sinon.SinonStub<
         Parameters<typeof repositories.peerconnection.findOneOrFail>,
         ReturnType<typeof repositories.peerconnection.findOneOrFail>
     >;
+    let clock: sinon.SinonFakeTimers;
     const peerconnectionRepositoryFindOneOrFailOriginal =
         repositories.peerconnection.findOneOrFail;
 
     suite.beforeAll(function () {
+        sendClosedCallbackStub = sinon.stub(callbackMethods, 'sendClosedCallback');
         sendStatusChangedCallbackStub = sinon.stub(
-            callbackFunctions,
+            callbackMethods,
             'sendStatusChangedCallback',
         );
         peerconnectionRepositoryFindOneOrFailStub = sinon.stub(
@@ -47,15 +53,21 @@ export default function (context: Mocha.Context, testData: TestData) {
     });
 
     suite.beforeEach(function () {
-        sendStatusChangedCallbackStub.resetHistory();
+        sendClosedCallbackStub.reset();
+        sendStatusChangedCallbackStub.reset();
         peerconnectionRepositoryFindOneOrFailStub.callsFake(
             peerconnectionRepositoryFindOneOrFailOriginal,
         );
     });
 
     suite.afterAll(function () {
+        sendClosedCallbackStub.restore();
         sendStatusChangedCallbackStub.restore();
         peerconnectionRepositoryFindOneOrFailStub.restore();
+    });
+
+    suite.afterEach(function () {
+        if (clock) clock.restore();
     });
 
     addTest(
@@ -65,12 +77,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await patchPeerconnectionsByPeerconnectionIdDeviceStatus(
+                        stubbedAuthorization,
                         {
                             peerconnection_id: 'non-existent',
                             device_url: DEVICE_A_URL,
                         },
                         { status: 'closed' },
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -89,12 +101,12 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await patchPeerconnectionsByPeerconnectionIdDeviceStatus(
+                        stubbedAuthorization,
                         {
                             peerconnection_id: PEERCONNECTION_ID,
                             device_url: 'https://localhost/devices/unrelated',
                         },
                         { status: 'new' },
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -206,12 +218,12 @@ export default function (context: Mocha.Context, testData: TestData) {
 
                     const result =
                         await patchPeerconnectionsByPeerconnectionIdDeviceStatus(
+                            stubbedAuthorization,
                             {
                                 device_url: testCase.deviceUrl,
                                 peerconnection_id: PEERCONNECTION_ID,
                             },
                             { status: testCase.newStatus },
-                            testData.userData,
                         );
 
                     assert.strictEqual(result.status, 204);
@@ -245,6 +257,31 @@ export default function (context: Mocha.Context, testData: TestData) {
             }
         },
     );
+
+    addTest(suite, 'should not wait for callbacks to return', async function () {
+        clock = sinon.useFakeTimers({ shouldAdvanceTime: true });
+
+        sendClosedCallbackStub.callsFake(async () => {
+            await new Promise<void>((resolve) => setTimeout(resolve, 10000));
+        });
+
+        sendStatusChangedCallbackStub.callsFake(async () => {
+            await new Promise<void>((resolve) => setTimeout(resolve, 10000));
+        });
+
+        const peerconnection = testData.peerconnections['example peerconnection'];
+
+        const result = await patchPeerconnectionsByPeerconnectionIdDeviceStatus(
+            stubbedAuthorization,
+            {
+                device_url: peerconnection.model.deviceA.url,
+                peerconnection_id: peerconnection.model.uuid,
+            },
+            { status: 'closed' },
+        );
+
+        assert((result.status = 204));
+    });
 
     return suite;
 }

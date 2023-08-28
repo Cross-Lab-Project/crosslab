@@ -74,7 +74,7 @@ export function websocketHandling(app: Express.Application) {
                         authenticated: true,
                     }),
                 );
-                await sendChangedCallback(deviceModel);
+                sendChangedCallback(deviceModel);
 
                 logger.log(
                     'info',
@@ -103,7 +103,7 @@ export function websocketHandling(app: Express.Application) {
                             );
                             deviceModel.connected = false;
                             await repositories.concreteDevice.save(deviceModel);
-                            await sendChangedCallback(deviceModel);
+                            sendChangedCallback(deviceModel);
                             connectedDevices.delete(deviceModel.uuid);
                             clearInterval(interval);
                             return ws.terminate();
@@ -131,7 +131,7 @@ export function websocketHandling(app: Express.Application) {
                 ws.on('close', async (code, reason) => {
                     deviceModel.connected = false;
                     await repositories.concreteDevice.save(deviceModel);
-                    await sendChangedCallback(deviceModel);
+                    sendChangedCallback(deviceModel);
                     connectedDevices.delete(deviceModel.uuid);
                     clearInterval(interval);
 

@@ -5,7 +5,7 @@ import { instantiableBrowserDeviceNames } from '../../../data/devices/instantiab
 import { instantiableCloudDeviceNames } from '../../../data/devices/instantiableCloudDevices/index.spec';
 import { TestData } from '../../../data/index.spec';
 import { concreteDeviceRepositoryTestSuite } from '../../../database/repositories/device/concreteDevice.spec';
-import { addTest } from '../../index.spec';
+import { addTest, stubbedAuthorization } from '../../index.spec';
 import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
@@ -19,10 +19,9 @@ export default function (context: Mocha.Context, testData: TestData) {
         async function () {
             await assert.rejects(
                 async () => {
-                    await postDevicesByDeviceId(
-                        { device_id: 'non-existent' },
-                        testData.userData,
-                    );
+                    await postDevicesByDeviceId(stubbedAuthorization, {
+                        device_id: 'non-existent',
+                    });
                 },
                 (error) => {
                     assert(error instanceof MissingEntityError);
@@ -45,12 +44,9 @@ export default function (context: Mocha.Context, testData: TestData) {
             for (const deviceModel of deviceModels) {
                 await assert.rejects(
                     async () => {
-                        await postDevicesByDeviceId(
-                            {
-                                device_id: deviceModel.uuid,
-                            },
-                            testData.userData,
-                        );
+                        await postDevicesByDeviceId(stubbedAuthorization, {
+                            device_id: deviceModel.uuid,
+                        });
                     },
                     (error) => {
                         assert(error instanceof ImpossibleOperationError);
@@ -79,10 +75,9 @@ export default function (context: Mocha.Context, testData: TestData) {
             async function () {
                 const deviceModel = instantiableDevices[instantiableDeviceName].model;
 
-                const result = await postDevicesByDeviceId(
-                    { device_id: deviceModel.uuid },
-                    testData.userData,
-                );
+                const result = await postDevicesByDeviceId(stubbedAuthorization, {
+                    device_id: deviceModel.uuid,
+                });
 
                 assert(result.status === 201);
                 const instanceModel = await repositories.concreteDevice.findOneOrFail({
@@ -111,10 +106,10 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const deviceModel = instantiableDevices[instantiableDeviceName].model;
                 const changedUrl = `https://localhost/callbacks/${index}`;
 
-                const result = await postDevicesByDeviceId(
-                    { device_id: deviceModel.uuid, changedUrl },
-                    testData.userData,
-                );
+                const result = await postDevicesByDeviceId(stubbedAuthorization, {
+                    device_id: deviceModel.uuid,
+                    changedUrl,
+                });
 
                 assert(result.status === 201);
                 const instanceModel = await repositories.concreteDevice.findOneOrFail({

@@ -1714,10 +1714,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentRequestInstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -1835,10 +1837,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse201InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -1956,10 +1960,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2080,10 +2086,12 @@ This configuration object will be merged with the participant configuration to b
 class GetExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2204,10 +2212,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentRequestInstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2325,10 +2335,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2446,10 +2458,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str

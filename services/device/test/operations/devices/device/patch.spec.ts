@@ -8,6 +8,7 @@ import {
     ServiceDescription,
 } from '../../../../src/generated/types';
 import { changedCallbacks } from '../../../../src/methods/callbacks';
+import * as callbackMethods from '../../../../src/methods/callbacks';
 import { patchDevicesByDeviceId } from '../../../../src/operations/devices';
 import { concreteDeviceNames } from '../../../data/devices/concreteDevices/index.spec';
 import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec';
@@ -16,16 +17,32 @@ import { instantiableBrowserDeviceNames } from '../../../data/devices/instantiab
 import { instantiableCloudDeviceNames } from '../../../data/devices/instantiableCloudDevices/index.spec';
 import { TestData } from '../../../data/index.spec';
 import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec';
-import { addTest } from '../../index.spec';
+import { addTest, stubbedAuthorization } from '../../index.spec';
 import { InvalidValueError, MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';
+import * as sinon from 'sinon';
 
 export default function (context: Mocha.Context, testData: TestData) {
     const suite = new Mocha.Suite('PATCH /devices/{device_id}', context);
+    let sendChangedCallbackStub: sinon.SinonStub<
+        Parameters<typeof callbackMethods.sendChangedCallback>,
+        ReturnType<typeof callbackMethods.sendChangedCallback>
+    >;
+    let clock: sinon.SinonFakeTimers;
+
+    suite.beforeAll(function () {
+        sendChangedCallbackStub = sinon.stub(callbackMethods, 'sendChangedCallback');
+    });
 
     suite.afterEach(function () {
         changedCallbacks.clear();
+        sendChangedCallbackStub.reset();
+        if (clock) clock.restore();
+    });
+
+    suite.afterAll(function () {
+        sendChangedCallbackStub.restore();
     });
 
     suite.addSuite(buildDeviceSuite('cloud instantiable', testData));
@@ -40,9 +57,9 @@ export default function (context: Mocha.Context, testData: TestData) {
             await assert.rejects(
                 async () => {
                     await patchDevicesByDeviceId(
+                        stubbedAuthorization,
                         { device_id: 'non-existent' },
                         { type: 'device' },
-                        testData.userData,
                     );
                 },
                 (error) => {
@@ -63,14 +80,14 @@ export default function (context: Mocha.Context, testData: TestData) {
                 const changedUrl = 'http://localhost/callbacks';
 
                 const result = await patchDevicesByDeviceId(
+                    stubbedAuthorization,
                     { device_id: device.model.uuid, changedUrl },
                     undefined,
-                    testData.userData,
                 );
 
                 assert(result.status === 200);
                 assert(
-                    deviceRepositoryTestSuite.validateWrite(device.model, device.request),
+                    deviceRepositoryTestSuite.validateFormat(device.model, result.body),
                 );
                 const changedCallbackUrls = changedCallbacks.get(device.model.uuid);
                 assert(changedCallbackUrls);
@@ -79,6 +96,24 @@ export default function (context: Mocha.Context, testData: TestData) {
             }
         },
     );
+
+    addTest(suite, 'should not wait for callbacks to return', async function () {
+        clock = sinon.useFakeTimers({ shouldAdvanceTime: true });
+
+        sendChangedCallbackStub.callsFake(async () => {
+            await new Promise<void>((resolve) => setTimeout(resolve, 10000));
+        });
+
+        const device = testData.devices['concrete device'];
+
+        const result = await patchDevicesByDeviceId(
+            stubbedAuthorization,
+            { device_id: device.model.uuid },
+            undefined,
+        );
+
+        assert(result.status === 200);
+    });
 
     return suite;
 }
@@ -183,9 +218,9 @@ function buildDeviceSuite(
         for (const deviceName of deviceData.names) {
             const device = testData['devices'][deviceName];
             const result = await patchDevicesByDeviceId(
+                stubbedAuthorization,
                 { device_id: device.model.uuid },
                 deviceData.body,
-                testData.userData,
             );
 
             assert(result.status === 200);
@@ -221,9 +256,9 @@ function buildDeviceSuite(
                     await assert.rejects(
                         async () => {
                             await patchDevicesByDeviceId(
+                                stubbedAuthorization,
                                 { device_id: device.model.uuid },
                                 { type: deviceType },
-                                testData.userData,
                             );
                         },
                         (error) => {

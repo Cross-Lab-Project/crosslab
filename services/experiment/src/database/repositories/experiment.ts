@@ -116,13 +116,17 @@ export class ExperimentRepository extends AbstractRepository<
         const roleRepository = this.dependencies.role;
         const serviceConfigurationRepository = this.dependencies.serviceConfiguration;
 
-        const instantiatedDevices: (Instance & { instanceOf: string })[] = [];
+        const instantiatedDevices: (Instance & {
+            instanceOf: string;
+            codeUrl: string;
+        })[] = [];
         for (const device of model.devices ?? []) {
-            if (device.instance)
+            if (device.instance && device.instance.codeUrl)
                 instantiatedDevices.push({
                     url: device.instance.url,
                     token: device.instance.token,
                     instanceOf: device.url,
+                    codeUrl: device.instance.codeUrl,
                 });
         }
 
