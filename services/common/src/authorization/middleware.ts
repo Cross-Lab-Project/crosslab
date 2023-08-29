@@ -10,6 +10,7 @@ import {
 } from "./authorization";
 import {AuthorizationMockConfig, mock_authorization_functions} from "./mock";
 import { die } from "../utils";
+import { decodeJwt } from "jose";
 
 export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, "subject">;
 export type AuthorizationRelationTupleWithoutSubject = Omit<AuthorizationRelationTuple, "subject">;
@@ -75,7 +76,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     export interface Request {
-      authorization: ReturnType<typeof bind_authorization>;
+      authorization: ReturnType<typeof bind_authorization> & {user: string;}
     }
 
     export interface Application {
@@ -102,11 +103,17 @@ export function middleware(config?: AuthorizationConfig) {
   let authorization_funs = authorization_functions(config);
   return ((req, _res, next) => {
     const user = req.header("X-Request-Authentication") ?? "user:anonymus";
+    let user_id= user;
+    try{
+      user_id = decodeJwt(user).sub ?? 'user:anonymus';
+    }catch(e){
+      //ignore
+    }
 
     if (req.app.authorization_mock) {
       authorization_funs = mock_authorization_functions(req.app.authorization_mock);
     }
-    req.authorization = bind_authorization(authorization_funs, user);
+    req.authorization = {...bind_authorization(authorization_funs, user), user: user_id};
 
     next();
   }) as express.RequestHandler;

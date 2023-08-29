@@ -8,6 +8,7 @@ import {
   getUsersByUserIdPath,
   deleteUsersByUserIdPath,
   patchUsersByUserIdPath,
+  getIdentityPath,
 } from "../generated/operations";
 import {
   validateGetUsers,
@@ -15,6 +16,7 @@ import {
   validateGetUsersByUserId,
   validateDeleteUsersByUserId,
   validatePatchUsersByUserId,
+  validateGetIdentity,
 } from "../generated/validation";
 import express from "express";
 import {createUser} from "./helper";
@@ -33,6 +35,20 @@ export function userUrlFromId(id: string): string {
 }
 
 export const router = express.Router();
+
+router.get(
+  getIdentityPath,
+  validateGetIdentity(async (req, res) => {
+    const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {
+      uuid: req.authorization.user,
+    });
+    res.send({
+      username: user.username,
+      id: user.uuid,
+      url: userUrlFromId(user.uuid),
+    });
+  }),
+);
 
 router.get(
   getUsersPath,

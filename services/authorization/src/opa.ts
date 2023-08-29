@@ -41,7 +41,7 @@ export async function opa_check(checks: CheckTuple[]){
             body: JSON.stringify({input: {...input, object: fix_object_without_colon(input.object), ...openfgaOpaData}}),
         })
         .then(response => response.json())
-        //.then(response => {console.log(response); return response})
+        .then(response => {logger.info('opa_check',  {...input, object: fix_object_without_colon(input.object), ...openfgaOpaData, response}); return response})
         .then(json => ({result: json.result.allow ?? false, reason: json.result.reason ?? 'unknown'}))
     ));
     return await Promise.all(outputPromise)

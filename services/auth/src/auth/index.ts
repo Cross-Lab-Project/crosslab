@@ -1,3 +1,4 @@
+import {logger} from "@crosslab/service-common/logging";
 import {config} from "../config";
 import {ApplicationDataSource} from "../database/datasource";
 import {TokenModel} from "../database/model";
@@ -46,12 +47,15 @@ router.get(
       const jwt = await new SignJWT({
         sub: token.user.uuid,
         ipa: req.header("X-Original-Query"),
+        admin: true,
       })
         .setProtectedHeader({alg: "HS256"})
         .setIssuedAt()
         .sign(new TextEncoder().encode(config.JWT_SECRET));
+      logger.info("auth send jwt", {jwt});
       res.setHeader("X-Request-Authentication", jwt);
     } catch (e) {
+      logger.info("auth error", e);
       // ignore
     }
     res.send();

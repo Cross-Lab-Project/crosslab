@@ -46,6 +46,10 @@ scope_allow if {
     "connect" in scopes
 }
 
+rebac_allow if {
+    payload.admin == true
+}
+
 # Allow Owner to edit/delete
 rebac_allow if {
     object_type in ["device", "experiment", "peerconnection", "booking", "federation"]
