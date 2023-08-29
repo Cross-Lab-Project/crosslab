@@ -36,12 +36,14 @@
     "tsc-watch": "^5.0.3",
     "typescript": "^4.6.4"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@apidevtools/swagger-parser": "^10.1.0",
-    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration",
-    "ajv": "^8.11.0",
-    "ajv-formats": "^2.1.1",
     "nunjucks": "^3.2.3",
     "prettier": "^2.6.2"
+  },
+  "peerDependencies": {
+    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration",
+    "ajv": "^8.11.0",
+    "ajv-formats": "^2.1.1"
   }
 }
