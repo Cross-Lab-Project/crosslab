@@ -2,7 +2,7 @@
 	"name": "Crosslab",
 	"build":{
 		"dockerfile": "Dockerfile",
-		"cacheFrom": "crosslab/crosslab-devcontainer"
+		"cacheFrom": "crosslab/devcontainer"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {"dockerDefaultAddressPool": "base=172.30.0.0/15,size=24"},
