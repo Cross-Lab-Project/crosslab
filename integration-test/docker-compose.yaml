@@ -20,11 +20,15 @@ services:
     network_mode: "host"
   authentication:
     image: "${AUTHENTICATION_IMAGE}"
-    environment: *common-config
+    environment:
+      <<: *common-config
+      JWT_SECRET: "secret"
     network_mode: "host"
   authorization:
     image: "${AUTHORIZATION_IMAGE}"
-    environment: *common-config
+    environment:
+      <<: *common-config
+      JWT_SECRET: "secret"
     network_mode: "host"
   device:
     image: "${DEVICE_IMAGE}"
