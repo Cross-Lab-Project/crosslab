@@ -1,0 +1,38 @@
+{
+  "name": "@cross-lab-project/soa-service-parameter",
+  "description": "SOA-Service Parameter",
+  "types": "./lib/types/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cross-Lab-Project/crosslab.git"
+  },
+  "scripts": {
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "npm run build-compile",
+    "watch": "tsc -w",
+    "lint": "eslint ."
+  },
+  "files": [
+    "lib"
+  ],
+  "exports": {
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js"
+    }
+  },
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.34.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@cross-lab-project/soa-client": "file:../../../soa/js",
+    "tiny-typed-emitter": "^2.1.0"
+  }
+}

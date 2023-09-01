@@ -440,6 +440,33 @@ clients/soa_services/message/js:
     tags:
       - test
 
+clients/soa_services/parameter/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/python:build
+    tags:
+      - test
+  - script: test
+    dependencies:
+      - clients/soa_services/message/python:build
+      - helper/python-test-helper:test
+    tags:
+      - test
+
+clients/soa_services/parameter/js:
+  - script: build
+    dependencies:
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/message/js:build
+    tags:
+      - test
+
 ################################################################################
 # Integration Tests ############################################################
 ################################################################################
