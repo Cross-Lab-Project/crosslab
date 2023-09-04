@@ -18,6 +18,8 @@ from crosslab.api_client.schemas import (
     GetIdentityResponse,
     UpdateIdentityRequest,
     UpdateIdentityResponse,
+    CreateTokenRequest,
+    CreateTokenResponse,
     ScheduleRequest,
     ScheduleResponse,
     NewBookingRequest,
@@ -347,6 +349,29 @@ class APIClient:
            
         # transform response
         if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def createToken(self, body: CreateTokenRequest, url: str = "/token") -> CreateTokenResponse:  # noqa: E501
+        """
+        Create a new token
+        
+        This endpoint will create a new token for the use of the microservice architecture."""  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(token)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/token'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 201:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 

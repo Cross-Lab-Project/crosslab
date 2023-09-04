@@ -1329,6 +1329,45 @@ async def test_update_identity(aioresponses: aioresponses):
 
 
 @pytest.mark.asyncio
+async def test_createToken(aioresponses: aioresponses):
+    url = r'/token'
+    url_variant = r'token'
+    full_url = BASE_URL+r'/token'
+
+    request = json.loads(r'{"username":"Ut"}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.createToken(body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.createToken(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.createToken(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'"consectetur in do nisi"')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.createToken(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+
+@pytest.mark.asyncio
 async def test_schedule(aioresponses: aioresponses):
     url = r'/schedule'
     url_variant = r'schedule'

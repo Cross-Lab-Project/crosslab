@@ -170,6 +170,30 @@ class UpdateIdentityResponse200(TypedDict):
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
 
 
+class CreateTokenRequestClaims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequest(TypedDict):
+    """
+    Properties:
+    - username: The username of the user.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
+    """
+    username: NotRequired[str]
+    claims: NotRequired[CreateTokenRequestClaims]
+
+
+CreateTokenResponse201: TypeAlias = str
+
+
+CreateTokenResponse: TypeAlias = CreateTokenResponse201
+
+
 class ScheduleRequestExperimentDevicesItems(TypedDict):
     """
     A device might either be a physical/virtual device or a group of device.Properties:

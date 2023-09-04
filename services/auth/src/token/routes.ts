@@ -16,7 +16,7 @@ router.post(
 
     console.log("username", username);
     if (!username) throw new HttpError(400, "User not found");
-    assert(username !== undefined, "username is undefined")
+    assert(username !== undefined, "username is undefined");
     const user = await ApplicationDataSource.manager.findOneBy(UserModel, {
       username: username,
     });
