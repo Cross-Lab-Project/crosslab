@@ -3043,7 +3043,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/experiment"
+                "$ref": "#/components/schemas/experiment_update"
               }
             }
           }
@@ -3207,7 +3207,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/template"
+                    "$ref": "#/components/schemas/template_overview"
                   }
                 }
               }
@@ -3376,7 +3376,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/template"
+                "$ref": "#/components/schemas/template_update"
               }
             }
           }
@@ -5097,6 +5097,10 @@
             ]
           }
         },
+        "required": [
+          "url",
+          "status"
+        ],
         "x-service-name": "Experiment Service"
       },
       "schemas-device": {
@@ -5113,6 +5117,10 @@
             "description": "The name of the device's role."
           }
         },
+        "required": [
+          "device",
+          "role"
+        ],
         "x-service-name": "Experiment Service"
       },
       "role": {
@@ -5127,6 +5135,9 @@
             "type": "string"
           }
         },
+        "required": [
+          "name"
+        ],
         "x-service-name": "Experiment Service"
       },
       "participant": {
@@ -5260,14 +5271,98 @@
             "required": [
               "devices",
               "roles",
-              "serviceConfigurations"
+              "serviceConfigurations",
+              "connections",
+              "instantiatedDevices"
             ]
           }
         ],
         "x-service-name": "Experiment Service"
       },
-      "template": {
-        "title": "Template",
+      "experiment_overview_update": {
+        "title": "Experiment Overview Update",
+        "type": "object",
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
+            ]
+          }
+        },
+        "x-service-name": "Experiment Service"
+      },
+      "experiment_update": {
+        "title": "Experiment Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/schemas-device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            }
+          }
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "template_overview": {
+        "title": "Template Overview",
         "type": "object",
         "properties": {
           "url": {
@@ -5276,6 +5371,74 @@
             "format": "uri",
             "readOnly": true
           },
+          "name": {
+            "type": "string",
+            "description": "Name of the template"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the template"
+          }
+        },
+        "required": [
+          "url",
+          "name"
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "template": {
+        "title": "Template",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/template_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "configuration": {
+                "type": "object",
+                "description": "Configuration of the templated experiment",
+                "properties": {
+                  "devices": {
+                    "type": "array",
+                    "description": "Devices associated with the templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/schemas-device"
+                    }
+                  },
+                  "roles": {
+                    "type": "array",
+                    "description": "Roles that are used in this templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/role"
+                    }
+                  },
+                  "serviceConfigurations": {
+                    "type": "array",
+                    "description": "Services associated with the templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/service_configuration"
+                    }
+                  }
+                },
+                "required": [
+                  "devices",
+                  "roles",
+                  "serviceConfigurations"
+                ]
+              }
+            },
+            "required": [
+              "configuration"
+            ]
+          }
+        ],
+        "x-service-name": "Experiment Service"
+      },
+      "template_update": {
+        "title": "Template Update",
+        "type": "object",
+        "properties": {
           "name": {
             "type": "string",
             "description": "Name of the template"
@@ -5309,19 +5472,9 @@
                   "$ref": "#/components/schemas/service_configuration"
                 }
               }
-            },
-            "required": [
-              "devices",
-              "roles",
-              "serviceConfigurations"
-            ]
+            }
           }
         },
-        "required": [
-          "url",
-          "name",
-          "configuration"
-        ],
         "x-service-name": "Experiment Service"
       },
       "institution": {

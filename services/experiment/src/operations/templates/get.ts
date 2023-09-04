@@ -18,6 +18,10 @@ export const getTemplates: getTemplatesSignature = async (authorization) => {
 
     return {
         status: 200,
-        body: await Promise.all(templateModels.map(repositories.template.format)),
+        body: await Promise.all(
+            templateModels.map((templateModel) =>
+                repositories.template.formatOverview(templateModel),
+            ),
+        ),
     };
 };

@@ -1,4 +1,4 @@
-import { Template } from '../../generated/types';
+import { Template, TemplateOverview, TemplateUpdate } from '../../generated/types';
 import { templateUrlFromId } from '../../methods/url';
 import { TemplateModel } from '../model';
 import { AbstractRepository } from '@crosslab/service-common';
@@ -23,18 +23,44 @@ export class TemplateRepository extends AbstractRepository<
         this.repository = entityManager.getRepository(TemplateModel);
     }
 
-    async write(model: TemplateModel, data: Partial<Template<'request'>>): Promise<void> {
+    async create(data?: Template<'request'>): Promise<TemplateModel> {
+        const model = await super.create();
+
+        model.configuration = {
+            devices: [],
+            roles: [],
+            serviceConfigurations: [],
+        };
+
+        if (data) await this.write(model, data);
+
+        return model;
+    }
+
+    async write(model: TemplateModel, data: TemplateUpdate<'request'>): Promise<void> {
         if (data.name) model.name = data.name;
         if (data.description !== undefined) model.description = data.description;
-        if (data.configuration) model.configuration = data.configuration;
+        if (data.configuration?.devices)
+            model.configuration.devices = data.configuration.devices;
+        if (data.configuration?.roles)
+            model.configuration.roles = data.configuration.roles;
+        if (data.configuration?.serviceConfigurations)
+            model.configuration.serviceConfigurations =
+                data.configuration.serviceConfigurations;
     }
 
     async format(model: TemplateModel): Promise<Template<'response'>> {
         return {
+            ...(await this.formatOverview(model)),
+            configuration: model.configuration,
+        };
+    }
+
+    async formatOverview(model: TemplateModel): Promise<TemplateOverview<'response'>> {
+        return {
             url: templateUrlFromId(model.uuid),
             name: model.name,
             description: model.description,
-            configuration: model.configuration,
         };
     }
 }

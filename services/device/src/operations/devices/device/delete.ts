@@ -25,6 +25,12 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
         where: { uuid: parameters.device_id },
     });
 
+    await authorization.unrelate(
+        authorization.user,
+        'owner',
+        `device:${deviceUrlFromId(deviceModel.uuid)}`,
+    );
+
     await repositories.device.remove(deviceModel);
 
     logger.log('info', 'deleteDevicesByDeviceId succeeded');

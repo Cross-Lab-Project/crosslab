@@ -27,36 +27,36 @@ export class ExperimentModel {
         | 'booking-updated'
         | 'peerconnections-created';
 
-    @Column()
+    @Column({ nullable: true })
     bookingStart?: string;
 
-    @Column()
+    @Column({ nullable: true })
     bookingEnd?: string;
 
     @OneToMany(() => DeviceModel, (device) => device.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    devices?: DeviceModel[];
+    devices!: DeviceModel[];
 
     @OneToMany(() => RoleModel, (role) => role.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    roles?: RoleModel[];
+    roles!: RoleModel[];
 
     @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    connections?: PeerconnectionModel[];
+    connections!: PeerconnectionModel[];
 
     @OneToMany(
         () => ServiceConfigurationModel,
         (serviceConfiguration) => serviceConfiguration.experiment,
         { onDelete: 'CASCADE', cascade: true },
     )
-    serviceConfigurations?: ServiceConfigurationModel[];
+    serviceConfigurations!: ServiceConfigurationModel[];
 
     @Column({ nullable: true })
     bookingID?: string;
@@ -71,7 +71,7 @@ export class RoleModel {
     uuid!: string;
 
     @Column()
-    name?: string;
+    name!: string;
 
     @Column('text', { nullable: true })
     description?: string | null;
@@ -104,7 +104,7 @@ export class DeviceModel {
     url!: string;
 
     @Column()
-    role?: string;
+    role!: string;
 
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
     experiment!: ExperimentModel;
@@ -131,7 +131,7 @@ export class ServiceConfigurationModel {
     @Column()
     serviceType!: string;
 
-    @Column('simple-json')
+    @Column('simple-json', { nullable: true })
     configuration?: {
         [k: string]: unknown;
     };
@@ -153,7 +153,7 @@ export class ParticipantModel {
     uuid!: string;
 
     @Column()
-    role?: string;
+    role!: string;
 
     @Column()
     serviceId!: string;
@@ -197,4 +197,5 @@ export const Entities = [
     PeerconnectionModel,
     ServiceConfigurationModel,
     ParticipantModel,
+    TemplateModel,
 ];

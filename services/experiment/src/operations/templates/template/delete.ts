@@ -27,6 +27,12 @@ export const deleteTemplatesByTemplateId: deleteTemplatesByTemplateIdSignature =
         where: { uuid: parameters.template_id },
     });
 
+    await authorization.unrelate(
+        authorization.user,
+        'owner',
+        `template:${templateUrlFromId(templateModel.uuid)}`,
+    );
+
     await repositories.template.remove(templateModel);
 
     logger.log(

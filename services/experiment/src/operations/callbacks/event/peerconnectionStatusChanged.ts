@@ -1,5 +1,6 @@
 import { repositories } from '../../../database/dataSource';
 import { apiClient } from '../../../methods/api';
+import { finishExperiment } from '../../../methods/experimentStatus';
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MissingPropertyError } from '@crosslab/service-common';
@@ -62,6 +63,8 @@ export async function handlePeerconnectionStatusChangedEventCallback(
         }
         case 'failed':
             // TODO: handle status failed
+            // TODO: add more fine grained handling than simply finishing the experiment
+            await finishExperiment(experimentModel);
             break;
         case 'new':
             // TODO: handle status new

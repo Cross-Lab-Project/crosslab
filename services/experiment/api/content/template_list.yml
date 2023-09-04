@@ -2,4 +2,4 @@
 schema:
   type: array
   items:
-    $ref: "../schemas/template.yml"
+    $ref: "../schemas/template_overview.yml"

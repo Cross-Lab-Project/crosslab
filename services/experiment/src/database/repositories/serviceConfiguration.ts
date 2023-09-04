@@ -2,7 +2,7 @@ import { ServiceConfiguration } from '../../generated/types';
 import { ServiceConfigurationModel } from '../model';
 import { ParticipantRepository } from './participant';
 import { AbstractRepository } from '@crosslab/service-common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, FindOptionsRelations, Repository } from 'typeorm';
 
 export class ServiceConfigurationRepository extends AbstractRepository<
     ServiceConfigurationModel,
@@ -17,6 +17,15 @@ export class ServiceConfigurationRepository extends AbstractRepository<
     }
 
     protected dependenciesMet(): boolean {
+        return true;
+    }
+
+    protected isInitialized(): this is {
+        repository: Repository<ServiceConfigurationModel>;
+        dependencies: Required<{ participant: ParticipantRepository }>;
+    } {
+        if (!this.dependencies.participant) return false;
+
         return true;
     }
 
@@ -55,7 +64,7 @@ export class ServiceConfigurationRepository extends AbstractRepository<
 
         return {
             serviceType: model.serviceType,
-            configuration: model.configuration,
+            configuration: model.configuration ?? undefined,
             participants: await Promise.all(
                 model.participants?.map((participant) =>
                     participantRepository.format(participant),
@@ -68,17 +77,23 @@ export class ServiceConfigurationRepository extends AbstractRepository<
         if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
         const participantRepository = this.dependencies.participant;
-        const removePromises: Promise<void>[] = [];
 
-        if (model.participants)
-            removePromises.push(
+        if (model.participants) {
+            await Promise.all([
                 ...model.participants.map((participant) =>
                     participantRepository.remove(participant),
                 ),
-            );
-
-        await Promise.all(removePromises);
+            ]);
+        }
 
         await super.remove(model);
+    }
+
+    protected getDefaultFindOptionsRelations():
+        | FindOptionsRelations<ServiceConfigurationModel>
+        | undefined {
+        return {
+            participants: true,
+        };
     }
 }

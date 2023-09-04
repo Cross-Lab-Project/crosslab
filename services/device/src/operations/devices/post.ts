@@ -18,6 +18,7 @@ export const postDevices: postDevicesSignature = async (
 ) => {
     logger.log('info', 'postDevices called');
 
+    // NOTE: create action currently does not exist
     await authorization.check_authorization_or_fail('create', 'device');
 
     if (!body.name)
@@ -29,6 +30,13 @@ export const postDevices: postDevicesSignature = async (
     const deviceModel = await repositories.device.create(body);
     // TODO: remove owner property or change to make it usable again
     deviceModel.owner = 'http://example.com/users/1';
+
+    await authorization.relate(
+        authorization.user,
+        'owner',
+        `device:${deviceUrlFromId(deviceModel.uuid)}`,
+    );
+
     await repositories.device.save(deviceModel);
 
     if (parameters.changedUrl) {

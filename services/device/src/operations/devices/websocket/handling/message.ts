@@ -1,25 +1,54 @@
-import { ConcreteDeviceModel } from '../../../database/model';
+import { ConcreteDeviceModel } from '../../../../database/model';
 import {
-    SignalingMessage,
     Message,
     isSignalingMessage,
     isConnectionStateChangedMessage,
+    SignalingMessage,
     ConnectionStateChangedMessage,
-} from '../../../generated/types';
-import { apiClient } from '../../../globals';
-import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager';
-import { deviceUrlFromId } from '../../../methods/urlFromId';
-import { UnrelatedPeerconnectionError } from '@crosslab/service-common';
+    isMessage,
+} from '../../../../generated/types';
+import { apiClient } from '../../../../globals';
+import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager';
+import { deviceUrlFromId } from '../../../../methods/urlFromId';
+import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
+import WebSocket from 'ws';
+
+export async function messageHandling(
+    ws: WebSocket,
+    deviceModel: ConcreteDeviceModel,
+    rawData: WebSocket.RawData,
+) {
+    // message handler: handle incoming messages from devices
+    try {
+        const msg = JSON.parse(rawData.toString('utf-8'));
+        if (!isMessage(msg)) {
+            logger.log(
+                'error',
+                `Received something that is not a message from device '${deviceUrlFromId(
+                    deviceModel.uuid,
+                )}', disconnecting`,
+            );
+            ws.close(1002, 'Malformed Message');
+            return;
+        }
+        await handleDeviceMessage(deviceModel, msg);
+    } catch (error) {
+        logger.log(
+            'error',
+            `An error occurred while handling an incoming message for device '${deviceUrlFromId(
+                deviceModel.uuid,
+            )}'`,
+            { data: { error } },
+        );
+    }
+}
 
 /**
  * This function handles a message for a device.
  * @param deviceModel The device for which to handle the message.
  * @param message The message to be handled.
  */
-export async function handleDeviceMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: Message,
-) {
+async function handleDeviceMessage(deviceModel: ConcreteDeviceModel, message: Message) {
     if (isSignalingMessage(message)) {
         await handleSignalingMessage(deviceModel, message);
     } else if (isConnectionStateChangedMessage(message)) {

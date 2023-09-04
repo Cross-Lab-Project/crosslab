@@ -25,6 +25,12 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
 
         await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
 
+        await authorization.unrelate(
+            authorization.user,
+            'owner',
+            `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
+        );
+
         await repositories.peerconnection.remove(peerconnectionModel);
 
         logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded');

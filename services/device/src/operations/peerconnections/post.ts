@@ -25,6 +25,7 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 ) => {
     logger.log('info', 'postPeerconnections called');
 
+    // NOTE: create action currently does not exist
     await authorization.check_authorization_or_fail('create', 'peerconnection');
 
     const deviceA = await apiClient.getDevice(body.devices[0].url);
@@ -38,6 +39,12 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     }
 
     const peerconnectionModel = await repositories.peerconnection.create(body);
+
+    await authorization.relate(
+        authorization.user,
+        'owner',
+        `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
+    );
 
     await repositories.peerconnection.save(peerconnectionModel);
 

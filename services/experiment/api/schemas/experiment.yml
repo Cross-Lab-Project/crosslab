@@ -22,7 +22,7 @@ allOf:
         type: array
         description: Roles that are used in this experiment
         items:
-          $ref: "../schemas/role.yml"
+          $ref: "./role.yml"
       connections:
         type: array
         description: Connections associated with the experiment
@@ -63,3 +63,5 @@ allOf:
     - devices
     - roles
     - serviceConfigurations
+    - connections
+    - instantiatedDevices

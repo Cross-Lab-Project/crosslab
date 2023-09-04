@@ -3,7 +3,7 @@ import { AppDataSource } from '../dataSource';
 import { DeviceModel } from '../model';
 import { InstanceRepository } from './instance';
 import { AbstractRepository } from '@crosslab/service-common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, FindOptionsRelations } from 'typeorm';
 
 export class DeviceRepository extends AbstractRepository<
     DeviceModel,
@@ -48,5 +48,13 @@ export class DeviceRepository extends AbstractRepository<
                 if (instance) await repositories.instance.remove(instance);
             });
         else await super.remove(model);
+    }
+
+    protected getDefaultFindOptionsRelations():
+        | FindOptionsRelations<DeviceModel>
+        | undefined {
+        return {
+            instance: true,
+        };
     }
 }

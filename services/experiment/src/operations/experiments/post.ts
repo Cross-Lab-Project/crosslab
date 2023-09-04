@@ -5,6 +5,7 @@ import {
     finishExperiment,
     bookExperiment,
 } from '../../methods/experimentStatus';
+import { experimentUrlFromId } from '../../methods/url';
 import { logger } from '@crosslab/service-common';
 
 /**
@@ -16,6 +17,7 @@ import { logger } from '@crosslab/service-common';
 export const postExperiments: postExperimentsSignature = async (authorization, body) => {
     logger.log('info', 'Handling POST request on endpoint /experiments');
 
+    // NOTE: create action currently does not exist
     await authorization.check_authorization_or_fail('create', 'experiment');
 
     if (body.template === undefined) {
@@ -34,6 +36,13 @@ export const postExperiments: postExperimentsSignature = async (authorization, b
     if (requestedStatus === 'booked') await bookExperiment(experimentModel);
     if (requestedStatus === 'running') await runExperiment(experimentModel);
     if (requestedStatus === 'finished') await finishExperiment(experimentModel);
+
+    await authorization.relate(
+        authorization.user,
+        'owner',
+        `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
+    );
+
     await repositories.experiment.save(experimentModel); // NOTE: truly needed?
 
     logger.log('info', 'Successfully handled POST request on endpoint /experiments');

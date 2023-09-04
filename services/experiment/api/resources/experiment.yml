@@ -48,7 +48,7 @@ patch:
     description: Update the experiment
     content:
       application/json:
-        $ref: "../content/experiment.yml"
+        $ref: "../content/experiment_update.yml"
   responses:
     200:
       description: The JSON Representation of the changed experiment

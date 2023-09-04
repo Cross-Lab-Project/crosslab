@@ -1,5 +1,6 @@
 import { repositories } from '../../database/dataSource';
 import { postTemplatesSignature } from '../../generated/signatures';
+import { templateUrlFromId } from '../../methods/url';
 import { logger } from '@crosslab/service-common';
 
 /**
@@ -14,6 +15,12 @@ export const postTemplates: postTemplatesSignature = async (authorization, body)
     await authorization.check_authorization_or_fail('create', 'template');
 
     const templateModel = await repositories.template.create(body);
+
+    await authorization.relate(
+        authorization.user,
+        'owner',
+        `template:${templateUrlFromId(templateModel.uuid)}`,
+    );
 
     await repositories.template.save(templateModel);
 

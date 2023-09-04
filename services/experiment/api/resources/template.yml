@@ -48,7 +48,7 @@ patch:
     required: true
     content:
       application/json:
-        $ref: "../content/template.yml"
+        $ref: "../content/template_update.yml"
   responses:
     200:
       description: The JSON Representation of the changed template

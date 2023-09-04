@@ -39,6 +39,12 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
         if (experimentModel.status !== 'finished')
             await finishExperiment(experimentModel);
 
+        await authorization.unrelate(
+            authorization.user,
+            'owner',
+            `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
+        );
+
         await repositories.experiment.remove(experimentModel);
 
         logger.log(

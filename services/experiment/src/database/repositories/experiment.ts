@@ -7,7 +7,7 @@ import { PeerconnectionRepository } from './peerconnection';
 import { RoleRepository } from './role';
 import { ServiceConfigurationRepository } from './serviceConfiguration';
 import { AbstractRepository } from '@crosslab/service-common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, FindOptionsRelations } from 'typeorm';
 
 type ExperimentRepositoryDependencies = {
     device: DeviceRepository;
@@ -133,8 +133,8 @@ export class ExperimentRepository extends AbstractRepository<
         return {
             ...(await this.formatOverview(model)),
             bookingTime: {
-                startTime: model.bookingStart,
-                endTime: model.bookingEnd,
+                startTime: model.bookingStart ?? undefined,
+                endTime: model.bookingEnd ?? undefined,
             },
             devices: await Promise.all(model.devices?.map(deviceRepository.format) ?? []),
             roles: await Promise.all(model.roles?.map(roleRepository.format) ?? []),
@@ -142,8 +142,9 @@ export class ExperimentRepository extends AbstractRepository<
                 model.connections?.map(peerconnectionRepository.format) ?? [],
             ),
             serviceConfigurations: await Promise.all(
-                model.serviceConfigurations?.map(serviceConfigurationRepository.format) ??
-                    [],
+                model.serviceConfigurations?.map((serviceConfiguration) =>
+                    serviceConfigurationRepository.format(serviceConfiguration),
+                ) ?? [],
             ),
             instantiatedDevices,
         };
@@ -157,33 +158,23 @@ export class ExperimentRepository extends AbstractRepository<
         const roleRepository = this.dependencies.role;
         const serviceConfigurationRepository = this.dependencies.serviceConfiguration;
 
-        const removePromises: Promise<void>[] = [];
+        await Promise.all([
+            ...model.connections.map((connection) =>
+                peerconnectionRepository.remove(connection),
+            ),
+        ]);
 
-        if (model.connections)
-            removePromises.push(
-                ...model.connections.map((connection) =>
-                    peerconnectionRepository.remove(connection),
-                ),
-            );
+        await Promise.all([
+            ...model.devices.map((device) => deviceRepository.remove(device)),
+        ]);
 
-        if (model.devices)
-            removePromises.push(
-                ...model.devices.map((device) => deviceRepository.remove(device)),
-            );
+        await Promise.all([...model.roles.map((role) => roleRepository.remove(role))]);
 
-        if (model.roles)
-            removePromises.push(
-                ...model.roles.map((role) => roleRepository.remove(role)),
-            );
-
-        if (model.serviceConfigurations)
-            removePromises.push(
-                ...model.serviceConfigurations.map((serviceConfiguration) =>
-                    serviceConfigurationRepository.remove(serviceConfiguration),
-                ),
-            );
-
-        await Promise.all(removePromises);
+        await Promise.all([
+            ...model.serviceConfigurations.map((serviceConfiguration) =>
+                serviceConfigurationRepository.remove(serviceConfiguration),
+            ),
+        ]);
 
         await super.remove(model);
     }
@@ -210,5 +201,20 @@ export class ExperimentRepository extends AbstractRepository<
         if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
         await this.repository.softRemove(model);
+    }
+
+    protected getDefaultFindOptionsRelations():
+        | FindOptionsRelations<ExperimentModel>
+        | undefined {
+        return {
+            connections: true,
+            devices: {
+                instance: true,
+            },
+            roles: true,
+            serviceConfigurations: {
+                participants: true,
+            },
+        };
     }
 }
