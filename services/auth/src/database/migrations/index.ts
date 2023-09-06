@@ -1,4 +1,14 @@
-import {Setup1692104122038} from "./sqlite/1692104122038-Setup";
+import {config} from "../../config";
+import * as mariadb from "./mariadb";
+import * as sqlite from "./sqlite";
 
-export const Migrations = [Setup1692104122038];
-// typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/sqlite/{NAME}
+export const Migrations = (() => {
+  switch (config.orm.type) {
+    case "sqlite":
+      return sqlite.Migrations;
+    case "mariadb":
+      return mariadb.Migrations;
+    default:
+      return [];
+  }
+})();
