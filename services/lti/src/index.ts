@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import {logging} from "@crosslab/service-common";
 import {init_app} from "./app";
 import {ApplicationDataSource} from "./database/datasource";

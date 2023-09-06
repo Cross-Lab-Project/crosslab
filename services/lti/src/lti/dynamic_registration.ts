@@ -31,11 +31,17 @@ export async function handle_dynamic_registration_initiation_request(req:  Reque
             'Authorization': `Bearer ${registration_token}`
         },
         body: JSON.stringify(registration)
-    }).then(res => res.json());
+    });
+
+    if (registration_response.status!=200){
+        throw new Error(`Registration failed with status ${registration_response.status}: ${await registration_response.text()}`)
+    }
+
+    const parsed_registration_response = await registration_response.json()
 
     const platform=platform_repository.create({
         iss: openid_configuration.issuer,
-        client_id: registration_response.client_id,
+        client_id: parsed_registration_response.client_id,
         authentication_request_url: openid_configuration.authorization_endpoint,
         access_token_url: openid_configuration.token_endpoint,
         jwks_url: openid_configuration.jwks_uri

@@ -1,0 +1,1 @@
+../../../common/docker/scripts/publish.sh

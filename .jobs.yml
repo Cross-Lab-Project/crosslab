@@ -223,6 +223,18 @@ services/federation:
     dependencies:
       - services/federation:build
 
+services/lti:
+  - script: build
+    dependencies:
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: build-docker
+    dependencies:
+      - services/lti:build
+
+
 services/update:
   - script: build-spec
     paths:

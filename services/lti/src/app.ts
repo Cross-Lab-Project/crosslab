@@ -5,7 +5,7 @@ import asyncHandler from "express-async-handler";
 import {errorHandler, logHandling} from "@crosslab/service-common";
 import {handle_dynamic_registration_initiation_request} from "./lti/dynamic_registration";
 import * as key_management from "./key_management";
-import {handle_manual_registration} from "./lti/manual_registration";
+import {complete_manual_registration, handle_manual_registration} from "./lti/manual_registration";
 import cookieParser from "cookie-parser";
 import {config} from "./config";
 import {handle_login_request} from "./lti/message";
@@ -29,6 +29,13 @@ export function init_app() {
       }
     }),
   );
+
+  app.post(
+    '/register',
+    asyncHandler(async (req, res) => {
+      await complete_manual_registration(req, res)
+    })
+  )
 
   app.post(
     "/",
