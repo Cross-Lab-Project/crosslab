@@ -2,15 +2,15 @@
 title: Service Config
 type: object
 properties:
-  serviceType:
-    type: string
-    format: uri
-  serviceId:
-    type: string
-  remoteServiceId:
-    type: string
+    serviceType:
+        type: string
+        format: uri
+    serviceId:
+        type: string
+    remoteServiceId:
+        type: string
 required:
-  - serviceType
-  - serviceId
-  - remoteServiceId
+    - serviceType
+    - serviceId
+    - remoteServiceId
 additionalProperties: true

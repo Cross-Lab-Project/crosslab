@@ -172,11 +172,11 @@ services/device:
   - script: build-docker
     dependencies:
       - services/device:build
-#  - script: test
-#    dependencies:
-#      - services/auth:build
-#    tags:
-#      - test
+  - script: test
+    dependencies:
+      - services/device:build
+    tags:
+      - test
 
 services/experiment:
   - script: build-spec

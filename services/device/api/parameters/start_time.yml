@@ -4,5 +4,5 @@ name: startTime
 description: Start time of the requested availability
 required: false
 schema:
-  type: string
-  format: date-time
+    type: string
+    format: date-time

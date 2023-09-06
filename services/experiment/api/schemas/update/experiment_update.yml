@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Experiment Update
+allOf:
+  - $ref: ./experiment_overview_update.yml
+  - type: object
+    properties:
+      bookingTime:
+        type: object
+        properties:
+          startTime:
+            type: string
+            format: date-time
+          endTime:
+            type: string
+            format: date-time
+      devices:
+        type: array
+        description: Devices associated with the experiment
+        items:
+          $ref: "../device.yml"
+      roles:
+        type: array
+        description: Roles that are used in this experiment
+        items:
+          $ref: "../role.yml"
+      serviceConfigurations:
+        type: array
+        description: Services associated with the experiment
+        items:
+          $ref: "../service_configuration.yml"
+

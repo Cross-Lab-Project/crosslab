@@ -13,8 +13,9 @@
         "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
         "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
         "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-        "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
         "build:generate": "npm-run-all build:generate:*",
+        "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
+        "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
         "build:compile": "tsc",
         "build:add-shebang": "bash scripts/add-shebang.sh",
         "build": "npm-run-all build:*",
@@ -22,11 +23,88 @@
         "dev": "tsc-watch --onSuccess 'node --inspect=9001 ./app/index.js'",
         "format": "npx prettier src --write",
         "doc": "typedoc --options ./typedoc.json",
-        "lint": "eslint ."
+        "lint": "eslint .",
+        "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
+        "test:database": "nyc --temp-dir .nyc_output/database --silent --reporter=html ts-mocha --require @babel/register test/database/index.spec.ts",
+        "test:generated": "nyc --temp-dir .nyc_output/generated --silent --reporter=html ts-mocha --require @babel/register test/generated/index.spec.ts",
+        "test:operations": "nyc --temp-dir .nyc_output/operations --silent --reporter=html ts-mocha --require @babel/register test/operations/index.spec.ts",
+        "cov": "npm-run-all cov:* && nyc report --reporter=text --reporter=html",
+        "cov:database": "nyc merge .nyc_output/database .nyc_output/database.json",
+        "cov:generated": "nyc merge .nyc_output/generated .nyc_output/generated.json",
+        "cov:operations": "nyc merge .nyc_output/operations .nyc_output/operations.json"
     },
     "author": "Johannes Nau",
     "license": "UNLICENSED",
+    "prettier": {
+        "arrowParens": "always",
+        "bracketSameLine": true,
+        "bracketSpacing": true,
+        "printWidth": 90,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "tabWidth": 4,
+        "importOrderParserPlugins": [
+            "typescript",
+            "decorators-legacy"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "overrides": [
+            {
+                "files": [
+                    "*.ts"
+                ],
+                "rules": {
+                    "max-len": [
+                        "error",
+                        {
+                            "code": 150
+                        }
+                    ],
+                    "no-shadow": "off",
+                    "no-undef": "off",
+                    "no-unused-vars": "off",
+                    "@typescript-eslint/no-shadow": [
+                        "error"
+                    ],
+                    "@typescript-eslint/no-unused-vars": [
+                        "warn",
+                        {
+                            "argsIgnorePattern": "^_",
+                            "varsIgnorePattern": "^_",
+                            "caughtErrorsIgnorePattern": "^_"
+                        }
+                    ]
+                },
+                "ecmaFeatures": {
+                    "jsx": false
+                }
+            }
+        ],
+        "ignorePatterns": [
+            "src/generated/**/*",
+            "src/database/migrations/**/*",
+            "test/generated/**/*",
+            "dist/**/*",
+            "lib/**/*",
+            "app/**/*",
+            "docs/**/*",
+            "http-dist/**/*",
+            "/*.js"
+        ],
+        "root": true
+    },
     "devDependencies": {
+        "@babel/register": "^7.22.5",
         "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
         "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
         "@trivago/prettier-plugin-sort-imports": "^4.2.0",
@@ -34,14 +112,26 @@
         "@types/express": "^4.17.13",
         "@types/node": "^18.0.3",
         "@types/node-fetch": "^2.6.4",
+        "@types/rewire": "^2.5.28",
+        "@types/seedrandom": "^3.0.5",
+        "@types/sinon": "^10.0.16",
+        "@types/supertest": "^2.0.12",
         "@types/ws": "^8.5.5",
         "@typescript-eslint/eslint-plugin": "^5.51.0",
         "@typescript-eslint/parser": "^5.51.0",
         "env-cmd": "^10.1.0",
         "eslint": "^8.48.0",
+        "json-schema-faker": "^0.5.3",
         "nodemon": "^2.0.19",
         "npm-run-all": "^4.1.5",
+        "nyc": "^15.1.0",
         "prettier": "^2.7.1",
+        "randexp": "^0.5.3",
+        "rewire": "^7.0.0",
+        "seedrandom": "^3.0.5",
+        "sinon": "^15.2.0",
+        "supertest": "^6.3.3",
+        "ts-mocha": "^10.0.0",
         "ts-node": "^10.9.1",
         "tsc-watch": "^6.0.4",
         "typedoc": "^0.25.0",
@@ -55,6 +145,7 @@
         "express": "^4.18.1",
         "express-winston": "^4.2.0",
         "jose": "^4.14.4",
+        "mysql": "^2.18.1",
         "node-fetch": "^2.6.7",
         "sqlite3": "^5.1.6",
         "typeorm": "^0.3.17",

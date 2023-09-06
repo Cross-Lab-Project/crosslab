@@ -1,39 +1,39 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 patch:
-  operationId: patch_peerconnection_device_status
-  summary: Sets the peerconnection status of a single device.
-  tags:
-    - peerconnection
-  security:
-    - JWT:
+    operationId: patch_peerconnection_device_status
+    summary: Sets the peerconnection status of a single device.
+    tags:
         - peerconnection
-        - peerconnection:write
-        - peerconnection:write:device_status
-  requestBody:
-    required: true
-    description: The JSON Representation of the device peer connection.
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            status:
-              $ref: ../schemas/peerconnections/peerconnection_status.yml
-          required:
-            - status
-  responses:
-    204:
-      description: OK.
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
-  parameters:
-    - $ref: "../parameters/peerconnection_id.yml"
-    - $ref: "../parameters/device_url.yml"
+    security:
+        - JWT:
+              - peerconnection
+              - peerconnection:write
+              - peerconnection:write:device_status
+    requestBody:
+        required: true
+        description: The JSON Representation of the device peer connection.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        status:
+                            $ref: ../schemas/peerconnections/peerconnection_status.yml
+                    required:
+                        - status
+    responses:
+        204:
+            description: OK.
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.
+    parameters:
+        - $ref: '../parameters/peerconnection_id.yml'
+        - $ref: '../parameters/device_url.yml'

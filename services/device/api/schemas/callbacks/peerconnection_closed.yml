@@ -1,15 +1,15 @@
 title: Peerconnection Closed Event Callback
 allOf:
-  - $ref: ./event_callback.yml
-  - type: object
-    properties:
-      eventType:
-        type: string
-        enum:
-          - peerconnection-closed
-      peerconnection:
-        $ref: "../peerconnections/peerconnection.yml"
-    required:
-      - eventType
-      - peerconnection
+    - $ref: ./event_callback.yml
+    - type: object
+      properties:
+          eventType:
+              type: string
+              enum:
+                  - peerconnection-closed
+          peerconnection:
+              $ref: '../peerconnections/peerconnection.yml'
+      required:
+          - eventType
+          - peerconnection
 x-typeguard: true

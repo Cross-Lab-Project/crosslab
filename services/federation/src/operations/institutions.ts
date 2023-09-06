@@ -1,121 +1,153 @@
-import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common'
-import { AppDataSource } from '../database/dataSource'
+import { AppDataSource } from '../database/dataSource';
+import { InstitutionModel } from '../database/model';
 import {
     getInstitutionsSignature,
     postInstitutionsSignature,
     getInstitutionsByInstitutionIdSignature,
     patchInstitutionsByInstitutionIdSignature,
     deleteInstitutionsByInstitutionIdSignature,
-} from '../generated/signatures'
-import { formatInstitution } from '../methods/format'
-import { writeInstitution } from '../methods/write'
-import { InstitutionModel } from '../model'
+} from '../generated/signatures';
+import { formatInstitution } from '../methods/format';
+import { institutionUrlFromId } from '../methods/utils';
+import { writeInstitution } from '../methods/write';
+import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling GET requests on /institutions endpoint.
- * @param _user The user submitting the request.
+ * This function implements the functionality for handling GET requests on
+ * /institutions endpoint.
+ * @param authorization The authorization helper object for the request.
  */
-export const getInstitutions: getInstitutionsSignature = async (_user) => {
-    const institutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institutions = await institutionRepository.find()
+export const getInstitutions: getInstitutionsSignature = async (authorization) => {
+    await authorization.check_authorization_or_fail('view', `institution`);
+
+    const institutionRepository = AppDataSource.getRepository(InstitutionModel);
+    const institutions = await institutionRepository.find();
+
     return {
         status: 200,
         body: institutions.map(formatInstitution),
-    }
-}
+    };
+};
 
 /**
- * This function implements the functionality for handling POST requests on /institutions endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /institutions endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  */
-export const postInstitutions: postInstitutionsSignature = async (body, _user) => {
-    const institutionRepository = AppDataSource.getRepository(InstitutionModel)
-    const institution = institutionRepository.create()
-    writeInstitution(institution, body)
-    await institutionRepository.save(institution)
+export const postInstitutions: postInstitutionsSignature = async (
+    authorization,
+    body,
+) => {
+    await authorization.check_authorization_or_fail('create', `institution`);
+
+    const institutionRepository = AppDataSource.getRepository(InstitutionModel);
+    const institution = institutionRepository.create();
+    writeInstitution(institution, body);
+    await institutionRepository.save(institution);
+
     return {
         status: 201,
         body: formatInstitution(institution),
-    }
-}
+    };
+};
 
 /**
- * This function implements the functionality for handling GET requests on /institutions/{institution_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /institutions/{institution_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature =
-    async (parameters, _user) => {
-        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+    async (authorization, parameters) => {
+        await authorization.check_authorization_or_fail(
+            'view',
+            `institution:${institutionUrlFromId(parameters.institution_id)}`,
+        );
+
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel);
         const institution = await institutionRepository.findOneBy({
             uuid: parameters.institution_id,
-        })
+        });
         if (!institution) {
             throw new MissingEntityError(
                 `Could not find institution ${parameters.institution_id}`,
-                404
-            )
+                404,
+            );
         }
+
         return {
             status: 200,
             body: formatInstitution(institution),
-        }
-    }
+        };
+    };
 
 /**
- * This function implements the functionality for handling PATCH requests on /institutions/{institution_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /institutions/{institution_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  */
 export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature =
-    async (parameters, body, _user) => {
-        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+    async (authorization, parameters, body) => {
+        await authorization.check_authorization_or_fail(
+            'edit',
+            `institution:${institutionUrlFromId(parameters.institution_id)}`,
+        );
+
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel);
         const institution = await institutionRepository.findOneBy({
             uuid: parameters.institution_id,
-        })
+        });
         if (!institution) {
             throw new MissingEntityError(
                 `Could not find institution ${parameters.institution_id}`,
-                404
-            )
+                404,
+            );
         }
-        if (body) writeInstitution(institution, body)
-        await institutionRepository.save(institution)
+        if (body) writeInstitution(institution, body);
+        await institutionRepository.save(institution);
+
         return {
             status: 200,
             body: formatInstitution(institution),
-        }
-    }
+        };
+    };
 
 /**
- * This function implements the functionality for handling DELETE requests on /institutions/{institution_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /institutions/{institution_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature =
-    async (parameters, _user) => {
-        const institutionRepository = AppDataSource.getRepository(InstitutionModel)
+    async (authorization, parameters) => {
+        await authorization.check_authorization_or_fail(
+            'delete',
+            `institution:${institutionUrlFromId(parameters.institution_id)}`,
+        );
+
+        const institutionRepository = AppDataSource.getRepository(InstitutionModel);
         const result = await institutionRepository.softDelete({
             uuid: parameters.institution_id,
-        })
+        });
 
         if (!result.affected) {
             throw new MissingEntityError(
                 `Could not find institution ${parameters.institution_id}`,
-                404
-            )
+                404,
+            );
         }
 
         if (result.affected > 1) {
             throw new InconsistentDatabaseError(
                 `More than one institution with id ${parameters.institution_id} deleted`,
-                500
-            )
+                500,
+            );
         }
 
         return {
             status: 204,
-        }
-    }
+        };
+    };

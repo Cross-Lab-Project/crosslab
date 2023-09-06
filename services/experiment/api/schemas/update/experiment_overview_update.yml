@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Experiment Overview Update
+type: object
+properties:
+  status:
+    anyOf:
+      - type: string
+        description: Status of the experiment
+        readOnly: true
+        enum:
+          - created
+          - booked
+          - setup
+          - running
+          - finished
+      - type: string
+        description: Status of the experiment
+        writeOnly: true
+        enum:
+          - created
+          - booked
+          - running
+          - finished

@@ -1,6 +1,7 @@
 import * as express from "express";
 
 import {ForbiddenError, UnauthorizedError} from "../errors";
+import {die} from "../utils";
 import {
   AuthorizationActionTuple,
   AuthorizationConfig,
@@ -9,7 +10,6 @@ import {
   authorization_functions,
 } from "./authorization";
 import {AuthorizationMockConfig, mock_authorization_functions} from "./mock";
-import { die } from "../utils";
 import { decodeJwt } from "jose";
 
 export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, "subject">;
@@ -72,6 +72,8 @@ function bind_authorization(authorization_funs: ReturnType<typeof authorization_
   return {...authorization_funs, check_authorization: bound_check_authorization, check_authorization_or_fail, filter};
 }
 
+export type BoundAuthorizationFunctions = ReturnType<typeof bind_authorization>;
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
@@ -99,7 +101,7 @@ export function middleware(config?: AuthorizationConfig) {
       AUTHORIZATION_PSK: process.env.AUTHORIZATION_PSK || die("Environment variable AUTHORIZATION_PSK must be set"),
     };
   }
-  
+
   let authorization_funs = authorization_functions(config);
   return ((req, _res, next) => {
     const user = req.header("X-Request-Authentication") ?? "user:anonymus";

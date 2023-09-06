@@ -1,25 +1,26 @@
-import {
-    requestIdHandling,
-    logHandling,
-    errorHandler,
-} from '@crosslab/service-common'
+import { config } from './config';
+import { app } from './generated';
+import { authorization, error, logging } from '@crosslab/service-common';
+import express from 'express';
 
-import express from 'express'
-import { router } from './routes'
-
-
-const app = express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-requestIdHandling(app)
-logHandling(app)
-
-app.use(router)
-
-app.get('/device/status', (_req, res) => {
-    res.send({ status: 'ok' })
-})
-
-app.use(errorHandler)
-
-export default app
+export function initApp() {
+    app.initService({
+        preHandlers: [
+            (application) => {
+                application.use(express.json());
+                application.use(express.urlencoded({ extended: false }));
+                application.use(logging.middleware());
+                application.use(authorization.middleware());
+            },
+        ],
+        postHandlers: [
+            (application) => {
+                application.get('/experiment/status', (_req, res) => {
+                    res.send({ status: 'ok' });
+                });
+            },
+        ],
+        errorHandler: error.middleware,
+    });
+    app.listen(config.PORT);
+}

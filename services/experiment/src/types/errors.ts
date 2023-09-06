@@ -1,12 +1,12 @@
-import { ErrorWithStatus } from '../generated/types'
+import { ErrorWithStatus } from '../generated/types';
 
 /**
  * This error class should be used if a service configuration is faulty.
  */
 export class ServiceConfigurationError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'ServiceConfigurationError'
+        super(message, status);
+        this.name = 'ServiceConfigurationError';
     }
 }
 
@@ -15,8 +15,8 @@ export class ServiceConfigurationError extends ErrorWithStatus {
  */
 export class InvalidStateError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'InvalidStateError'
+        super(message, status);
+        this.name = 'InvalidStateError';
     }
 }
 
@@ -24,12 +24,12 @@ export class InvalidStateError extends ErrorWithStatus {
  * This error class should be used as a wrapper for errors thrown by the api-client.
  */
 export class InternalRequestError extends ErrorWithStatus {
-    public internalError: Error
+    public internalError: Error;
 
     constructor(message: string, error: Error, status?: number) {
-        super(message, status)
-        this.name = 'InternalRequestError'
-        this.internalError = error
+        super(message, status);
+        this.name = 'InternalRequestError';
+        this.internalError = error;
     }
 }
 
@@ -38,8 +38,8 @@ export class InternalRequestError extends ErrorWithStatus {
  */
 export class InvalidBookingError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'InvalidBookingError'
+        super(message, status);
+        this.name = 'InvalidBookingError';
     }
 }
 
@@ -49,7 +49,7 @@ export class InvalidBookingError extends ErrorWithStatus {
  */
 export class MalformedExperimentError extends ErrorWithStatus {
     constructor(message: string, status?: number) {
-        super(message, status)
-        this.name = 'MalformedExperimentError'
+        super(message, status);
+        this.name = 'MalformedExperimentError';
     }
 }

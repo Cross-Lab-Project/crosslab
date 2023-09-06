@@ -25,6 +25,74 @@
     },
     "author": "Johannes Nau",
     "license": "UNLICENSED",
+    "prettier": {
+        "arrowParens": "always",
+        "bracketSameLine": true,
+        "bracketSpacing": true,
+        "printWidth": 90,
+        "singleQuote": true,
+        "trailingComma": "all",
+        "tabWidth": 4,
+        "importOrderParserPlugins": [
+            "typescript",
+            "decorators-legacy"
+        ]
+    },
+    "eslintConfig": {
+        "parser": "@typescript-eslint/parser",
+        "plugins": [
+            "@typescript-eslint"
+        ],
+        "extends": [
+            "eslint:recommended",
+            "plugin:@typescript-eslint/eslint-recommended",
+            "plugin:@typescript-eslint/recommended"
+        ],
+        "overrides": [
+            {
+                "files": [
+                    "*.ts"
+                ],
+                "rules": {
+                    "max-len": [
+                        "error",
+                        {
+                            "code": 100
+                        }
+                    ],
+                    "no-shadow": "off",
+                    "no-undef": "off",
+                    "no-unused-vars": "off",
+                    "@typescript-eslint/no-shadow": [
+                        "error"
+                    ],
+                    "@typescript-eslint/no-unused-vars": [
+                        "warn",
+                        {
+                            "argsIgnorePattern": "^_",
+                            "varsIgnorePattern": "^_",
+                            "caughtErrorsIgnorePattern": "^_"
+                        }
+                    ]
+                },
+                "ecmaFeatures": {
+                    "jsx": false
+                }
+            }
+        ],
+        "ignorePatterns": [
+            "src/generated/**/*",
+            "src/database/migrations/**/*",
+            "test/generated/**/*",
+            "dist/**/*",
+            "lib/**/*",
+            "app/**/*",
+            "docs/**/*",
+            "http-dist/**/*",
+            "/*.js"
+        ],
+        "root": true
+    },
     "devDependencies": {
         "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
         "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
@@ -41,7 +109,7 @@
         "npm-run-all": "^4.1.5",
         "prettier": "^2.7.1",
         "ts-node": "^10.9.1",
-        "typescript": "^4.7.3"
+        "typescript": "^5.2.2"
     },
     "dependencies": {
         "@crosslab/service-common": "file:../common",
@@ -52,6 +120,6 @@
         "mysql": "^2.18.1",
         "node-fetch": "^2.6.7",
         "sqlite3": "^5.1.6",
-        "typeorm": "^0.3.15"
+        "typeorm": "^0.3.17"
     }
 }

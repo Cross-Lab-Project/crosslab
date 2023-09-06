@@ -2,22 +2,22 @@
 title: Device Overview Update
 type: object
 properties:
-  name:
-    type: string
-    description: Name of the device
-  description:
-    type: string
-    description: Extended description of the device, features, etc.
-  type:
-    type: string
-    description: Type of the device
-    enum:
-      - device
-      - group
-      - edge instantiable
-      - cloud instantiable
-  isPublic:
-    type: boolean
-    description: If true, the device may be seen and used by every user.
+    name:
+        type: string
+        description: Name of the device
+    description:
+        type: string
+        description: Extended description of the device, features, etc.
+    type:
+        type: string
+        description: Type of the device
+        enum:
+            - device
+            - group
+            - edge instantiable
+            - cloud instantiable
+    isPublic:
+        type: boolean
+        description: If true, the device may be seen and used by every user.
 required:
-  - type
+    - type

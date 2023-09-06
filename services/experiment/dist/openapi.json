@@ -10,6 +10,10 @@
     {
       "name": "experiment",
       "description": "This tag describes the experiment resource."
+    },
+    {
+      "name": "template",
+      "description": "This tag describes the template resource"
     }
   ],
   "paths": {
@@ -257,7 +261,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/experiment"
+                "$ref": "#/components/schemas/experiment_update"
               }
             }
           }
@@ -394,6 +398,281 @@
           }
         }
       }
+    },
+    "/templates": {
+      "get": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "list_template",
+        "summary": "List templates",
+        "tags": [
+          "template"
+        ],
+        "responses": {
+          "200": {
+            "description": "The list of all templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/template_overview"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true
+      },
+      "post": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "create_template",
+        "summary": "Create a new template",
+        "tags": [
+          "template"
+        ],
+        "requestBody": {
+          "description": "The template to be created.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/template"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The template was created. A JSON representation of the new template is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The template was created and will be set to running eventually. A JSON representation of the new template is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        },
+        "x-optional-url": true
+      }
+    },
+    "/templates/{template_id}": {
+      "get": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "get_template",
+        "summary": "View an template.",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "update_template",
+        "summary": "Update an existing template.",
+        "description": "With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.\n",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "requestBody": {
+          "description": "Update the template",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/template_update"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The JSON Representation of the changed template",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "The JSON Representation of the changed template, that will be set to running eventually",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/template"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "JWT": [
+              "template",
+              "template:read",
+              "template:read:owned"
+            ]
+          }
+        ],
+        "operationId": "delete_template",
+        "summary": "Delete an template",
+        "tags": [
+          "template"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/template_id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The template was deleted."
+          },
+          "400": {
+            "description": "Bad Request."
+          },
+          "401": {
+            "description": "Unauthorized."
+          },
+          "403": {
+            "description": "Forbidden."
+          },
+          "404": {
+            "description": "Resource not found."
+          },
+          "500": {
+            "description": "Server Error."
+          }
+        }
+      }
     }
   },
   "components": {
@@ -443,7 +722,11 @@
               }
             ]
           }
-        }
+        },
+        "required": [
+          "url",
+          "status"
+        ]
       },
       "device": {
         "title": "Device",
@@ -458,7 +741,11 @@
             "type": "string",
             "description": "The name of the device's role."
           }
-        }
+        },
+        "required": [
+          "device",
+          "role"
+        ]
       },
       "role": {
         "title": "role",
@@ -471,7 +758,10 @@
           "description": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "name"
+        ]
       },
       "participant": {
         "title": "Participant",
@@ -574,26 +864,233 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "codeUrl": {
+                      "type": "string",
+                      "format": "uri"
+                    },
                     "url": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "uri"
                     },
                     "token": {
                       "type": "string"
                     },
                     "instanceOf": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "uri"
                     }
                   },
                   "required": [
+                    "codeUrl",
                     "url",
                     "token",
                     "instanceOf"
                   ]
                 }
               }
+            },
+            "required": [
+              "devices",
+              "roles",
+              "serviceConfigurations",
+              "connections",
+              "instantiatedDevices"
+            ]
+          }
+        ]
+      },
+      "experiment_overview_update": {
+        "title": "Experiment Overview Update",
+        "type": "object",
+        "properties": {
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "readOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "setup",
+                  "running",
+                  "finished"
+                ]
+              },
+              {
+                "type": "string",
+                "description": "Status of the experiment",
+                "writeOnly": true,
+                "enum": [
+                  "created",
+                  "booked",
+                  "running",
+                  "finished"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "experiment_update": {
+        "title": "Experiment Update",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/experiment_overview_update"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "bookingTime": {
+                "type": "object",
+                "properties": {
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
             }
           }
         ]
+      },
+      "template_overview": {
+        "title": "Template Overview",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL of the template",
+            "format": "uri",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the template"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the template"
+          }
+        },
+        "required": [
+          "url",
+          "name"
+        ]
+      },
+      "template": {
+        "title": "Template",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/template_overview"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "configuration": {
+                "type": "object",
+                "description": "Configuration of the templated experiment",
+                "properties": {
+                  "devices": {
+                    "type": "array",
+                    "description": "Devices associated with the templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/device"
+                    }
+                  },
+                  "roles": {
+                    "type": "array",
+                    "description": "Roles that are used in this templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/role"
+                    }
+                  },
+                  "serviceConfigurations": {
+                    "type": "array",
+                    "description": "Services associated with the templated experiment",
+                    "items": {
+                      "$ref": "#/components/schemas/service_configuration"
+                    }
+                  }
+                },
+                "required": [
+                  "devices",
+                  "roles",
+                  "serviceConfigurations"
+                ]
+              }
+            },
+            "required": [
+              "configuration"
+            ]
+          }
+        ]
+      },
+      "template_update": {
+        "title": "Template Update",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the template"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the template"
+          },
+          "configuration": {
+            "type": "object",
+            "description": "Configuration of the templated experiment",
+            "properties": {
+              "devices": {
+                "type": "array",
+                "description": "Devices associated with the templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/device"
+                }
+              },
+              "roles": {
+                "type": "array",
+                "description": "Roles that are used in this templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/role"
+                }
+              },
+              "serviceConfigurations": {
+                "type": "array",
+                "description": "Services associated with the templated experiment",
+                "items": {
+                  "$ref": "#/components/schemas/service_configuration"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "parameters": {
@@ -619,6 +1116,19 @@
           "type": "string",
           "format": "uri"
         }
+      },
+      "template_id": {
+        "in": "path",
+        "name": "template_id",
+        "description": "UUID of the template",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": [
+          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
+        ]
       }
     }
   }

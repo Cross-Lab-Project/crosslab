@@ -22,7 +22,7 @@ allOf:
         type: array
         description: Roles that are used in this experiment
         items:
-          $ref: "../schemas/role.yml"
+          $ref: "./role.yml"
       connections:
         type: array
         description: Connections associated with the experiment
@@ -43,13 +43,25 @@ allOf:
         items:
           type: object
           properties:
+            codeUrl:
+              type: string
+              format: uri
             url:
               type: string
+              format: uri
             token:
               type: string
             instanceOf:
               type: string
+              format: uri
           required:
+          - codeUrl
           - url
           - token
           - instanceOf
+    required:
+    - devices
+    - roles
+    - serviceConfigurations
+    - connections
+    - instantiatedDevices

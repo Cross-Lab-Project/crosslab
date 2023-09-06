@@ -43,3 +43,4 @@ cp package.resolved.json package.json
 file=$(npm pack --pack-destination=./dist/)
 ln -sf $file dist/npm-latest.tgz
 mv package.bak package.json
+rm package.resolved.json

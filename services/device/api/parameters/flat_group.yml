@@ -4,5 +4,5 @@ name: flat_group
 description: If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.
 required: false
 schema:
-  type: boolean
-  default: false
+    type: boolean
+    default: false

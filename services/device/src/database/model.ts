@@ -5,7 +5,7 @@ import {
     DeviceReference,
     ServiceDescription,
     TimeSlot,
-} from '../generated/types'
+} from '../generated/types';
 import {
     Column,
     Entity,
@@ -15,13 +15,13 @@ import {
     TableInheritance,
     ChildEntity,
     ManyToOne,
-} from 'typeorm'
+} from 'typeorm';
 
 export type DeviceModel =
     | ConcreteDeviceModel
     | DeviceGroupModel
     | InstantiableBrowserDeviceModel
-    | InstantiableCloudDeviceModel
+    | InstantiableCloudDeviceModel;
 
 @Entity({ name: 'Device' })
 @TableInheritance({
@@ -33,19 +33,25 @@ export type DeviceModel =
 })
 export abstract class DeviceOverviewModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    name!: string
+    name!: string;
+
     @Column({ nullable: true })
-    description?: string
+    description?: string;
+
     @Column()
-    type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable'
+    type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable';
+
     @Column({ nullable: true })
-    owner!: string
+    owner!: string;
+
     @Column('boolean', { default: false })
-    isPublic!: boolean
+    isPublic!: boolean;
+
     @DeleteDateColumn()
-    deletedAt?: Date
+    deletedAt?: Date;
 }
 
 @ChildEntity()
@@ -54,74 +60,91 @@ export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewMode
         onDelete: 'CASCADE',
         cascade: true,
     })
-    instances?: ConcreteDeviceModel[]
+    instances?: ConcreteDeviceModel[];
 }
 
 @ChildEntity('device')
 export class ConcreteDeviceModel extends DeviceOverviewModel {
     @Column()
-    type!: 'device'
+    type!: 'device';
+
     @Column()
-    connected!: boolean
+    connected!: boolean;
+
     @Column('simple-json')
-    announcedAvailability!: Required<TimeSlot>[]
+    announcedAvailability!: Required<TimeSlot>[];
+
     @Column('simple-json')
-    availabilityRules!: AvailabilityRule[]
+    availabilityRules!: AvailabilityRule[];
+
     @Column()
-    experiment?: string
+    experiment?: string;
+
     @Column()
-    token?: string
+    token?: string;
+
     @Column('simple-json')
-    services!: ServiceDescription[]
+    services!: ServiceDescription[];
+
     @ManyToOne(
         () => InstantiableDeviceOverviewModel,
-        (instantiableDevice) => instantiableDevice.instances
+        (instantiableDevice) => instantiableDevice.instances,
     )
-    instanceOf?: InstantiableDeviceOverviewModel
+    instanceOf?: InstantiableDeviceOverviewModel;
 }
 
 @ChildEntity('group')
 export class DeviceGroupModel extends DeviceOverviewModel {
     @Column()
-    type!: 'group'
+    type!: 'group';
+
     @Column('simple-json')
-    devices!: DeviceReference[]
+    devices!: DeviceReference[];
 }
 
 @ChildEntity('cloud instantiable')
 export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
-    type!: 'cloud instantiable'
+    type!: 'cloud instantiable';
+
     @Column()
-    instantiateUrl?: string
+    instantiateUrl?: string;
+
     @Column('simple-json')
-    services?: ServiceDescription[]
+    services?: ServiceDescription[];
 }
 
 @ChildEntity('edge instantiable')
 export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewModel {
     @Column()
-    type!: 'edge instantiable'
+    type!: 'edge instantiable';
+
     @Column()
-    codeUrl?: string
+    codeUrl?: string;
+
     @Column('simple-json')
-    services?: ServiceDescription[]
+    services?: ServiceDescription[];
 }
 
 @Entity({ name: 'Peerconnection' })
 export abstract class PeerconnectionModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    type!: 'local' | 'webrtc'
+    type!: 'local' | 'webrtc';
+
     @Column('varchar')
-    status!: ConnectionStatus
+    status!: ConnectionStatus;
+
     @Column('simple-json')
-    deviceA!: ConfiguredDeviceReference & { status: ConnectionStatus }
+    deviceA!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
     @Column('simple-json')
-    deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus }
+    deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
     @DeleteDateColumn()
-    deletedAt?: Date
+    deletedAt?: Date;
 }
 
 export const Entities = [
@@ -132,4 +155,4 @@ export const Entities = [
     InstantiableCloudDeviceModel,
     InstantiableBrowserDeviceModel,
     PeerconnectionModel,
-]
+];

@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  security:
+    - JWT:
+        - template
+        - template:read
+        - template:read:owned
+  operationId: get_template
+  summary: View an template.
+  tags:
+    - template
+  parameters:
+    - $ref: "../parameters/template_id.yml"
+  responses:
+    200:
+      description: The JSON Representation of the template
+      content:
+        application/json:
+          $ref: "../content/template.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  security:
+    - JWT:
+        - template
+        - template:read
+        - template:read:owned
+  operationId: update_template
+  summary: Update an existing template.
+  description: |
+    With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
+
+    If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.
+  tags:
+    - template
+  parameters:
+    - $ref: "../parameters/template_id.yml"
+  requestBody:
+    description: Update the template
+    required: true
+    content:
+      application/json:
+        $ref: "../content/template_update.yml"
+  responses:
+    200:
+      description: The JSON Representation of the changed template
+      content:
+        application/json:
+          $ref: "../content/template.yml"
+    202:
+      description: The JSON Representation of the changed template, that will be set to running eventually
+      content:
+        application/json:
+          $ref: "../content/template.yml"
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+delete:
+  security:
+    - JWT:
+        - template
+        - template:read
+        - template:read:owned
+  operationId: delete_template
+  summary: Delete an template
+  tags:
+    - template
+  parameters:
+    - $ref: "../parameters/template_id.yml"
+  responses:
+    204:
+      description: The template was deleted.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

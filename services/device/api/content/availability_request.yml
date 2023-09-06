@@ -1,29 +1,29 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
-  title: Availability Rules
-  description: The availability rule to be applied.
-  type: array
-  items:
-    $ref: "../schemas/devices/availability/availability_rule.yml"
+    title: Availability Rules
+    description: The availability rule to be applied.
+    type: array
+    items:
+        $ref: '../schemas/devices/availability/availability_rule.yml'
 examples:
-  make_the_device_always_unavailable:
-    description: Make the device always unavailable
-    value:
-      - available: false
-  make_the_device_always_available:
-    description: Make the device always available
-    value:
-      - available: true
-  make_the_device_available_from_monday_9_00_through_friday_17_00:
-    description: Make the device only available from monday 9:00 through friday 17:00
-    value:
-      - available: true
-        start: 2022-05-15T09:00:00Z
-        end: 2022-05-20T17:00:00Z
-        repeat:
-          frequency: WEEKLY
-      - available: false
-        start: 2022-05-20T17:00:00Z
-        end: 2022-05-23T09:00:00Z
-        repeat:
-          frequency: WEEKLY
+    make_the_device_always_unavailable:
+        description: Make the device always unavailable
+        value:
+            - available: false
+    make_the_device_always_available:
+        description: Make the device always available
+        value:
+            - available: true
+    make_the_device_available_from_monday_9_00_through_friday_17_00:
+        description: Make the device only available from monday 9:00 through friday 17:00
+        value:
+            - available: true
+              start: 2022-05-15T09:00:00Z
+              end: 2022-05-20T17:00:00Z
+              repeat:
+                  frequency: WEEKLY
+            - available: false
+              start: 2022-05-20T17:00:00Z
+              end: 2022-05-23T09:00:00Z
+              repeat:
+                  frequency: WEEKLY

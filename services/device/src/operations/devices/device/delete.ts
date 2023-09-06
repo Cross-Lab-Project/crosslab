@@ -1,31 +1,41 @@
-import {repositories} from "../../../database/dataSource";
-import {deleteDevicesByDeviceIdSignature} from "../../../generated/signatures";
-import {checkPermission} from "../../../methods/permission";
-import {DeviceOwnershipError, logger} from "@crosslab/service-common";
+import { repositories } from '../../../database/dataSource';
+import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures';
+import { deviceUrlFromId } from '../../../methods/urlFromId';
+import { logger } from '@crosslab/service-common';
 
 /**
- * This function implements the functionality for handling DELETE requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
-  parameters,
-  user,
+    authorization,
+    parameters,
 ) => {
-  logger.log("info", "deleteDevicesByDeviceId called");
+    logger.log('info', 'deleteDevicesByDeviceId called');
 
-  const deviceModel = await repositories.device.findOneOrFail({
-    where: {uuid: parameters.device_id},
-  });
+    await authorization.check_authorization_or_fail(
+        'delete',
+        `device:${deviceUrlFromId(parameters.device_id)}`,
+    );
 
-  if (!checkPermission("delete", deviceModel, user.JWT)) throw new DeviceOwnershipError();
+    const deviceModel = await repositories.device.findOneOrFail({
+        where: { uuid: parameters.device_id },
+    });
 
-  await repositories.device.remove(deviceModel);
+    await authorization.unrelate(
+        authorization.user,
+        'owner',
+        `device:${deviceUrlFromId(deviceModel.uuid)}`,
+    );
 
-  logger.log("info", "deleteDevicesByDeviceId succeeded");
+    await repositories.device.remove(deviceModel);
 
-  return {
-    status: 204,
-  };
+    logger.log('info', 'deleteDevicesByDeviceId succeeded');
+
+    return {
+        status: 204,
+    };
 };

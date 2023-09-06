@@ -1,89 +1,89 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 get:
-  operationId: get_device_availability
-  summary: Get the availability of a device
-  tags:
-    - device
-  security:
-    - JWT:
+    operationId: get_device_availability
+    summary: Get the availability of a device
+    tags:
         - device
-        - device:read
-        - device:read:owned
-  parameters:
-    - $ref: "../parameters/device_id.yml"
-    - $ref: "../parameters/start_time.yml"
-    - $ref: "../parameters/end_time.yml"
-  responses:
-    200:
-      description: The JSON Representation of the availability of the device.
-      content:
-        application/json:
-          $ref: "../content/availability.yml"
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
+    security:
+        - JWT:
+              - device
+              - device:read
+              - device:read:owned
+    parameters:
+        - $ref: '../parameters/device_id.yml'
+        - $ref: '../parameters/start_time.yml'
+        - $ref: '../parameters/end_time.yml'
+    responses:
+        200:
+            description: The JSON Representation of the availability of the device.
+            content:
+                application/json:
+                    $ref: '../content/availability.yml'
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.
 delete:
-  operationId: delete_device_availability_rules
-  summary: Delete the availability rules of a device
-  tags:
-    - device
-  security:
-    - JWT:
+    operationId: delete_device_availability_rules
+    summary: Delete the availability rules of a device
+    tags:
         - device
-        - device:write
-        - device:write:owned
-  parameters:
-    - $ref: "../parameters/device_id.yml"
-  responses:
-    204:
-      description: The availability rules of the device were deleted successfully.
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
+    security:
+        - JWT:
+              - device
+              - device:write
+              - device:write:owned
+    parameters:
+        - $ref: '../parameters/device_id.yml'
+    responses:
+        204:
+            description: The availability rules of the device were deleted successfully.
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.
 post:
-  operationId: add_device_availability_rules
-  summary: Add availability rules for a device
-  tags:
-    - device
-  security:
-    - JWT:
+    operationId: add_device_availability_rules
+    summary: Add availability rules for a device
+    tags:
         - device
-        - device:write
-        - device:write:owned
-  parameters:
-    - $ref: "../parameters/device_id.yml"
-  requestBody:
-    description: The availability rules to be applied.
-    content:
-      application/json:
-        $ref: "../content/availability_request.yml"
-  responses:
-    200:
-      description: The JSON Representation of the changed availability.
-      content:
-        application/json:
-          $ref: "../content/availability.yml"
-    400:
-      description: Bad Request.
-    401:
-      description: Unauthorized.
-    403:
-      description: Forbidden.
-    404:
-      description: Resource not found.
-    500:
-      description: Server Error.
+    security:
+        - JWT:
+              - device
+              - device:write
+              - device:write:owned
+    parameters:
+        - $ref: '../parameters/device_id.yml'
+    requestBody:
+        description: The availability rules to be applied.
+        content:
+            application/json:
+                $ref: '../content/availability_request.yml'
+    responses:
+        200:
+            description: The JSON Representation of the changed availability.
+            content:
+                application/json:
+                    $ref: '../content/availability.yml'
+        400:
+            description: Bad Request.
+        401:
+            description: Unauthorized.
+        403:
+            description: Forbidden.
+        404:
+            description: Resource not found.
+        500:
+            description: Server Error.

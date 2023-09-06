@@ -1,69 +1,77 @@
-import {connectedDevices} from "../..";
-import {repositories} from "../../../../database/dataSource";
-import {postDevicesByDeviceIdSignalingSignature} from "../../../../generated/signatures";
-import {apiClient} from "../../../../globals";
-import {deviceUrlFromId} from "../../../../methods/urlFromId";
+import { repositories } from '../../../../database/dataSource';
+import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures';
+import { apiClient } from '../../../../globals';
+import { deviceUrlFromId } from '../../../../methods/urlFromId';
 import {
-  ImpossibleOperationError,
-  UnrelatedPeerconnectionError,
-  MissingEntityError,
-  logger,
-} from "@crosslab/service-common";
+    ImpossibleOperationError,
+    UnrelatedPeerconnectionError,
+    MissingEntityError,
+    logger,
+} from '@crosslab/service-common';
+import { connectedDevices } from '../../websocket/handling';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id}/signaling endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id}/signaling endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
- * @throws {MissingEntityError} Thrown if device is not found in the database or if websocket for device is not found.
- * @throws {InvalidValueError} Thrown if type of device is not "device" or if device is not part of the peerconnection.
+ * @throws {MissingEntityError} Thrown if device is not found in the database
+ * or if websocket for device is not found.
+ * @throws {InvalidValueError} Thrown if type of device is not "device" or if
+ * device is not part of the peerconnection.
  */
 export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature =
-  async (parameters, body, _user) => {
-    logger.log("info", "postDevicesByDeviceIdSignaling called");
+    async (authorization, parameters, body) => {
+        logger.log('info', 'postDevicesByDeviceIdSignaling called');
 
-    // Get device
-    const deviceModel = await repositories.device.findOneOrFail({
-      where: {uuid: parameters.device_id},
-    });
+        await authorization.check_authorization_or_fail(
+            'signal',
+            `device:${deviceUrlFromId(parameters.device_id)}`,
+        );
 
-    // Make sure device is a concrete device
-    if (deviceModel.type !== "device")
-      throw new ImpossibleOperationError(
-        `Cannot send signaling message to device with type '${deviceModel.type}'`,
-        400,
-      );
+        // Get device
+        const deviceModel = await repositories.device.findOneOrFail({
+            where: { uuid: parameters.device_id },
+        });
 
-    // Retrieve peerconnection and make sure the device is taking part in it
-    const peerconnection = await apiClient.getPeerconnection(
-      parameters.peerconnection_url,
-    );
-    const deviceA = peerconnection.devices[0];
-    const deviceB = peerconnection.devices[1];
+        // Make sure device is a concrete device
+        if (deviceModel.type !== 'device')
+            throw new ImpossibleOperationError(
+                `Cannot send signaling message to device with type '${deviceModel.type}'`,
+                400,
+            );
 
-    if (
-      !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&
-      !(deviceB.url === deviceUrlFromId(deviceModel.uuid))
-    ) {
-      throw new UnrelatedPeerconnectionError(
-        `Device is not part of the peerconnection`,
-        400,
-      );
-    }
+        // Retrieve peerconnection and make sure the device is taking part in it
+        const peerconnection = await apiClient.getPeerconnection(
+            parameters.peerconnection_url,
+        );
+        const deviceA = peerconnection.devices[0];
+        const deviceB = peerconnection.devices[1];
 
-    const webSocket = connectedDevices.get(parameters.device_id);
+        if (
+            !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&
+            !(deviceB.url === deviceUrlFromId(deviceModel.uuid))
+        ) {
+            throw new UnrelatedPeerconnectionError(
+                `Device is not part of the peerconnection`,
+                400,
+            );
+        }
 
-    if (!webSocket)
-      throw new MissingEntityError(
-        `Could not find websocket connection for device ${parameters.device_id}`,
-        404,
-      );
+        const webSocket = connectedDevices.get(parameters.device_id);
 
-    webSocket.send(JSON.stringify(body));
+        if (!webSocket)
+            throw new MissingEntityError(
+                `Could not find websocket connection for device ${parameters.device_id}`,
+                404,
+            );
 
-    logger.log("info", "postDevicesByDeviceIdSignaling succeeded");
+        webSocket.send(JSON.stringify(body));
 
-    return {
-      status: 200,
+        logger.log('info', 'postDevicesByDeviceIdSignaling succeeded');
+
+        return {
+            status: 200,
+        };
     };
-  };

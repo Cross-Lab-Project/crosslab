@@ -1,8 +1,0 @@
-# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
-name: execute_for
-in: header
-required: false
-description: |
-  The JWT of a user for which to check the permissions.
-schema:
-  type: string

@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
+schema:
+  $ref: '../schemas/update/template_update.yml'

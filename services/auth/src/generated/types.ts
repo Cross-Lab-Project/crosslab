@@ -5,56 +5,28 @@
  */
 import * as type_validation from "./type_validation";
 
-export type BasicUserType<T extends "request" | "response" | "all" = "all"> =
-  T extends "all"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        [k: string]: unknown;
-      }
-    : T extends "request"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        [k: string]: unknown;
-      }
-    : T extends "response"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        [k: string]: unknown;
-      }
-    : never;
-
-export type UserTypeJWT<T extends "request" | "response" | "all" = "all"> =
-  T extends "all"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        jwt: string;
-        [k: string]: unknown;
-      }
-    : T extends "request"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        jwt: string;
-        [k: string]: unknown;
-      }
-    : T extends "response"
-    ? {
-        url: string;
-        username: string;
-        scopes: string[];
-        jwt: string;
-        [k: string]: unknown;
-      }
-    : never;
+export type UserType<T extends "request" | "response" | "all" = "all"> = T extends "all"
+  ? {
+      url: string;
+      username: string;
+      scopes: string[];
+      [k: string]: unknown;
+    }
+  : T extends "request"
+  ? {
+      url: string;
+      username: string;
+      scopes: string[];
+      [k: string]: unknown;
+    }
+  : T extends "response"
+  ? {
+      url: string;
+      username: string;
+      scopes: string[];
+      [k: string]: unknown;
+    }
+  : never;
 
 export type Credentials<T extends "request" | "response" | "all" = "all"> =
   T extends "all"
@@ -145,30 +117,16 @@ export type UserUpdate<T extends "request" | "response" | "all" = "all"> = T ext
     }
   : never;
 
-export function isBasicUserType<T extends "request" | "response" | "all" = "all">(
+export function isUserType<T extends "request" | "response" | "all" = "all">(
   obj: unknown,
   type: "request" | "response" | "all" | T = "all",
-): obj is BasicUserType<T> {
+): obj is UserType<T> {
   switch (type) {
     case "request":
-      return type_validation.validateBasicUserTypeRequest(obj);
+      return type_validation.validateUserTypeRequest(obj);
     case "response":
-      return type_validation.validateBasicUserTypeResponse(obj);
+      return type_validation.validateUserTypeResponse(obj);
     default:
-      return type_validation.validateBasicUserType(obj);
-  }
-}
-
-export function isUserTypeJWT<T extends "request" | "response" | "all" = "all">(
-  obj: unknown,
-  type: "request" | "response" | "all" | T = "all",
-): obj is UserTypeJWT<T> {
-  switch (type) {
-    case "request":
-      return type_validation.validateUserTypeJWTRequest(obj);
-    case "response":
-      return type_validation.validateUserTypeJWTResponse(obj);
-    default:
-      return type_validation.validateUserTypeJWT(obj);
+      return type_validation.validateUserType(obj);
   }
 }

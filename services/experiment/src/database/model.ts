@@ -1,3 +1,4 @@
+import { Device, Role, ServiceConfiguration } from '../generated/types';
 import {
     Column,
     Entity,
@@ -8,12 +9,13 @@ import {
     PrimaryColumn,
     OneToOne,
     JoinColumn,
-} from 'typeorm'
+} from 'typeorm';
 
 @Entity({ name: 'Experiment' })
 export class ExperimentModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
     status!:
         | 'created'
@@ -23,120 +25,168 @@ export class ExperimentModel {
         | 'booking-locked'
         | 'devices-instantiated'
         | 'booking-updated'
-        | 'peerconnections-created'
-    @Column()
-    bookingStart?: string
-    @Column()
-    bookingEnd?: string
+        | 'peerconnections-created';
+
+    @Column({ nullable: true })
+    bookingStart?: string;
+
+    @Column({ nullable: true })
+    bookingEnd?: string;
+
     @OneToMany(() => DeviceModel, (device) => device.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    devices?: DeviceModel[]
+    devices!: DeviceModel[];
+
     @OneToMany(() => RoleModel, (role) => role.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    roles?: RoleModel[]
+    roles!: RoleModel[];
+
     @OneToMany(() => PeerconnectionModel, (peerconnection) => peerconnection.experiment, {
         onDelete: 'CASCADE',
         cascade: true,
     })
-    connections?: PeerconnectionModel[]
+    connections!: PeerconnectionModel[];
+
     @OneToMany(
         () => ServiceConfigurationModel,
         (serviceConfiguration) => serviceConfiguration.experiment,
-        { onDelete: 'CASCADE', cascade: true }
+        { onDelete: 'CASCADE', cascade: true },
     )
-    serviceConfigurations?: ServiceConfigurationModel[]
+    serviceConfigurations!: ServiceConfigurationModel[];
+
     @Column({ nullable: true })
-    bookingID?: string
+    bookingID?: string;
+
     @DeleteDateColumn()
-    deletedAt?: Date
+    deletedAt?: Date;
 }
 
 @Entity({ name: 'Role' })
 export class RoleModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    name?: string
+    name!: string;
+
     @Column('text', { nullable: true })
-    description?: string | null
+    description?: string | null;
+
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.roles)
-    experiment!: ExperimentModel
+    experiment!: ExperimentModel;
 }
 
 @Entity({ name: 'Instance' })
 export class InstanceModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    url!: string
+    url!: string;
+
     @Column()
-    token!: string
+    token!: string;
+
+    @Column({ nullable: true })
+    codeUrl?: string;
 }
 
 @Entity({ name: 'Device' })
 export class DeviceModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    url!: string
+    url!: string;
+
     @Column()
-    role?: string
+    role!: string;
+
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.devices)
-    experiment!: ExperimentModel
+    experiment!: ExperimentModel;
+
     @OneToOne(() => InstanceModel)
     @JoinColumn()
-    instance?: InstanceModel
+    instance?: InstanceModel;
 }
 
 @Entity({ name: 'Peerconnection' })
 export class PeerconnectionModel {
     @PrimaryColumn()
-    url!: string
+    url!: string;
+
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.connections)
-    experiment!: ExperimentModel
+    experiment!: ExperimentModel;
 }
 
 @Entity({ name: 'ServiceConfiguration' })
 export class ServiceConfigurationModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    serviceType!: string
-    @Column('simple-json')
+    serviceType!: string;
+
+    @Column('simple-json', { nullable: true })
     configuration?: {
-        [k: string]: any
-    }
+        [k: string]: unknown;
+    };
+
     @OneToMany(
         () => ParticipantModel,
         (participant) => participant.serviceConfiguration,
-        { onDelete: 'CASCADE', cascade: true }
+        { onDelete: 'CASCADE', cascade: true },
     )
-    participants?: ParticipantModel[]
+    participants?: ParticipantModel[];
+
     @ManyToOne(() => ExperimentModel, (experiment) => experiment.serviceConfigurations)
-    experiment!: ExperimentModel
+    experiment!: ExperimentModel;
 }
 
 @Entity({ name: 'Participant' })
 export class ParticipantModel {
     @PrimaryGeneratedColumn('uuid')
-    uuid!: string
+    uuid!: string;
+
     @Column()
-    role?: string
+    role!: string;
+
     @Column()
-    serviceId!: string
+    serviceId!: string;
+
     @Column('simple-json')
     config?: {
-        [k: string]: any
-    }
+        [k: string]: unknown;
+    };
+
     @ManyToOne(
         () => ServiceConfigurationModel,
-        (serviceConfiguration) => serviceConfiguration.participants
+        (serviceConfiguration) => serviceConfiguration.participants,
     )
-    serviceConfiguration!: ServiceConfigurationModel
+    serviceConfiguration!: ServiceConfigurationModel;
+}
+
+@Entity({ name: 'Template' })
+export class TemplateModel {
+    @PrimaryGeneratedColumn('uuid')
+    uuid!: string;
+
+    @Column()
+    name!: string;
+
+    @Column()
+    description?: string;
+
+    @Column('simple-json')
+    configuration!: {
+        devices: Device[];
+        roles: Role[];
+        serviceConfigurations: ServiceConfiguration[];
+    };
 }
 
 export const Entities = [
@@ -147,4 +197,5 @@ export const Entities = [
     PeerconnectionModel,
     ServiceConfigurationModel,
     ParticipantModel,
-]
+    TemplateModel,
+];

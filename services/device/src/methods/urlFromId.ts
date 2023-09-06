@@ -1,12 +1,12 @@
-import {config} from "../config";
+import { config } from '../config';
 
 /**
  * This function builds the url of a device using its id.
- * @param deviceÍd The id of the device.
+ * @param deviceId The id of the device.
  * @returns The url of the device.
  */
-export function deviceUrlFromId(deviceÍd: string): string {
-  return (config.BASE_URL + "/devices/" + deviceÍd).replace("//devices", "/devices");
+export function deviceUrlFromId(deviceId: string): string {
+    return (config.BASE_URL + '/devices/' + deviceId).replace('//devices', '/devices');
 }
 
 /**
@@ -15,8 +15,8 @@ export function deviceUrlFromId(deviceÍd: string): string {
  * @returns The url of the peerconnection.
  */
 export function peerconnectionUrlFromId(peerconnectionId: string): string {
-  return (config.BASE_URL + "/peerconnections/" + peerconnectionId).replace(
-    "//peerconnections",
-    "/peerconnections",
-  );
+    return (config.BASE_URL + '/peerconnections/' + peerconnectionId).replace(
+        '//peerconnections',
+        '/peerconnections',
+    );
 }

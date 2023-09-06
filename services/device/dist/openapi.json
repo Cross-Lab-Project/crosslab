@@ -380,9 +380,6 @@
           },
           {
             "$ref": "#/components/parameters/flat_group"
-          },
-          {
-            "$ref": "#/components/parameters/execute_for"
           }
         ],
         "security": [
@@ -2587,15 +2584,6 @@
         "schema": {
           "type": "boolean",
           "default": false
-        }
-      },
-      "execute_for": {
-        "name": "execute_for",
-        "in": "header",
-        "required": false,
-        "description": "The JWT of a user for which to check the permissions.\n",
-        "schema": {
-          "type": "string"
         }
       },
       "start_time": {

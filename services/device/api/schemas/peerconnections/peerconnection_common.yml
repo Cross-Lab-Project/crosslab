@@ -2,19 +2,19 @@
 type: object
 title: Peerconnection Common
 properties:
-  url:
-    type: string
-    description: URL of the peerconnection
-    format: uri
-    readOnly: true
-  type:
-    type: string
-    description: Type of the peerconnection
-    enum:
-      - local
-      - webrtc
-  status:
-    $ref: ./peerconnection_status.yml
+    url:
+        type: string
+        description: URL of the peerconnection
+        format: uri
+        readOnly: true
+    type:
+        type: string
+        description: Type of the peerconnection
+        enum:
+            - local
+            - webrtc
+    status:
+        $ref: ./peerconnection_status.yml
 required:
-  - url
-  - type
+    - url
+    - type

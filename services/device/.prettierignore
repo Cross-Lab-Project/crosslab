@@ -1,3 +1,5 @@
 *.md
 .nyc_output
 app
+src/generated
+test/generated

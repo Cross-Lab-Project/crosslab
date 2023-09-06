@@ -4,7 +4,7 @@ name: peerconnection_id
 description: UUID of the peerconnection
 required: true
 schema:
-  type: string
-  format: uuid
+    type: string
+    format: uuid
 example:
-  - f4c69c42-6e1c-44c3-8e44-f74bd22c3713
+    - f4c69c42-6e1c-44c3-8e44-f74bd22c3713

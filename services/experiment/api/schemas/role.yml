@@ -16,3 +16,5 @@ properties:
       #these type.
   description:
     type: string
+required:
+- name
