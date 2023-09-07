@@ -1,8 +1,8 @@
 import WebSocket from 'ws';
 
-export { authenticationHandling } from './authentication';
-export { closeHandling } from './close';
-export { heartbeatHandling } from './heartbeat';
-export { messageHandling } from './message';
+export { authenticationHandling } from './authentication.js';
+export { closeHandling } from './close.js';
+export { heartbeatHandling } from './heartbeat.js';
+export { messageHandling } from './message.js';
 
 export const connectedDevices = new Map<string, WebSocket>();

@@ -6,15 +6,6 @@
     "configurations": [
         {
             "type": "node",
-            "request": "launch",
-            "name": "Launch Device Service",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": ["run", "dev"],
-            "skipFiles": ["<node_internals>/**"],
-            "restart": true
-        },
-        {
-            "type": "node",
             "request": "attach",
             "name": "Attach to Device Service",
             "port": 9001,

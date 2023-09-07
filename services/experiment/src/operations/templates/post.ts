@@ -1,6 +1,6 @@
-import { repositories } from '../../database/dataSource';
-import { postTemplatesSignature } from '../../generated/signatures';
-import { templateUrlFromId } from '../../methods/url';
+import { repositories } from '../../database/dataSource.js';
+import { postTemplatesSignature } from '../../generated/signatures.js';
+import { templateUrlFromId } from '../../methods/url.js';
 import { logger } from '@crosslab/service-common';
 
 /**

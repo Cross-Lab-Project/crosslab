@@ -1,7 +1,7 @@
-import { repositories } from '../../../database/dataSource';
-import { deleteExperimentsByExperimentIdSignature } from '../../../generated/signatures';
-import { finishExperiment } from '../../../methods/experimentStatus';
-import { experimentUrlFromId } from '../../../methods/url';
+import { repositories } from '../../../database/dataSource.js';
+import { deleteExperimentsByExperimentIdSignature } from '../../../generated/signatures.js';
+import { finishExperiment } from '../../../methods/experimentStatus/index.js';
+import { experimentUrlFromId } from '../../../methods/url.js';
 import { logger } from '@crosslab/service-common';
 
 /**

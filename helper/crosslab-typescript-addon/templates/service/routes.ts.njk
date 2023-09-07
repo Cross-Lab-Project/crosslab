@@ -24,19 +24,19 @@
  */
 import express from "express"
 
-import operations from "../operations"
+import operations from "../operations/index.js"
 
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 import {
     {{ signatureDependencies | unique | join(",\n\t") }}
-} from "./signatures"
+} from "./signatures.js"
 
 import {
     {{ validationDependencies | unique | join(",\n\t") }}
-} from "./requestValidation"
+} from "./requestValidation.js"
 
 export default function router(): express.Router {
     const router = express.Router()
@@ -122,4 +122,4 @@ export default function router(): express.Router {
     return router
 }
 {%- endmacro -%}
-{{ generateRoutes() | prettier }}
+{{ generateRoutes() }}

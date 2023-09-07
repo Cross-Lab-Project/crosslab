@@ -1,5 +1,5 @@
-import { experimentUrlFromId } from '../../../src/methods/url';
-import { ExperimentEntityDataWithLinks } from './index.spec';
+import { experimentUrlFromId } from '../../../src/methods/url.js';
+import { ExperimentEntityDataWithLinks } from './index.spec.js';
 
 const uuid = '35353547-9d2c-473c-bc03-40753e15d5bc';
 

@@ -1,4 +1,4 @@
-import { PeerconnectionModel } from '../model';
+import { PeerconnectionModel } from '../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

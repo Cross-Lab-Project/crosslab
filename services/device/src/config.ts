@@ -1,5 +1,5 @@
-import { Migrations } from './database/migrations';
-import { Entities } from './database/model';
+import { Migrations } from './database/migrations/index.js';
+import { Entities } from './database/model.js';
 import { config as CommonConfig } from '@crosslab/service-common';
 import dotenv from 'dotenv';
 

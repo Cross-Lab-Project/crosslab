@@ -1,5 +1,5 @@
-import { repositories } from '../../database/dataSource';
-import { getPeerconnectionsSignature } from '../../generated/signatures';
+import { repositories } from '../../database/dataSource.js';
+import { getPeerconnectionsSignature } from '../../generated/signatures.js';
 import { logger } from '@crosslab/service-common';
 
 /**

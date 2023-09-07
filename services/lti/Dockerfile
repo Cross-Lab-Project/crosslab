@@ -5,7 +5,7 @@ COPY .packages /tmp/packages
 RUN npm install --global /tmp/packages/*
 RUN rm -rf /tmp/packages
  
-COPY /assets /app/assets
+COPY assets /app/assets
 RUN apk add dumb-init curl
 ENV NODE_ENV production
 ENV PORT 8080

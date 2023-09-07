@@ -46,8 +46,8 @@
         * Typings for the a {{ operation.method | upper }} request on {{ operation.path }}
         */
         export const {{ operation.name }}Path = '{{ operation.path | formatExpressPath }}';
-        {{ generateParameterType(operation, 'path') | prettier | replace("{}", "never") }}
-        {{ generateParameterType(operation, 'query') | prettier | replace("{}", "never") }}
+        {{ generateParameterType(operation, 'path') | replace("{}", "never") }}
+        {{ generateParameterType(operation, 'query') | replace("{}", "never") }}
         {{ generateBodyType(operation) }}
         {{ generateResponseBodyType(operation) }}
     {%- endfor %}

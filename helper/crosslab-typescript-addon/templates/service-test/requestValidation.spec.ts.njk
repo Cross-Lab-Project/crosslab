@@ -14,7 +14,7 @@ import {
     validate{{ operation.name | cap }}Input,
     validate{{ operation.name | cap }}Output,
     {%- endfor %}
-} from "../../src/generated/requestValidation"
+} from "../../src/generated/requestValidation.js"
 
 export default () => {
     describe("Request Validation Tests", function () {

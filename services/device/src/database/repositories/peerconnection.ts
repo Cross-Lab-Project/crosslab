@@ -1,6 +1,6 @@
-import { Peerconnection } from '../../generated/types';
-import { peerconnectionUrlFromId } from '../../methods/urlFromId';
-import { PeerconnectionModel } from '../model';
+import { Peerconnection } from '../../generated/types.js';
+import { peerconnectionUrlFromId } from '../../methods/urlFromId.js';
+import { PeerconnectionModel } from '../model.js';
 import { AbstractRepository, InvalidValueError } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

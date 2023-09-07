@@ -10,6 +10,6 @@
   "private": true,
   "dependencies": {
     "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
-    "nodemon": "^2.0.20"
+    "nodemon": "^3.0.1"
   }
 }

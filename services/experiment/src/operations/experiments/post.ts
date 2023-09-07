@@ -1,11 +1,11 @@
-import { repositories } from '../../database/dataSource';
-import { postExperimentsSignature } from '../../generated/signatures';
+import { repositories } from '../../database/dataSource.js';
+import { postExperimentsSignature } from '../../generated/signatures.js';
 import {
     runExperiment,
     finishExperiment,
     bookExperiment,
-} from '../../methods/experimentStatus';
-import { experimentUrlFromId } from '../../methods/url';
+} from '../../methods/experimentStatus/index.js';
+import { experimentUrlFromId } from '../../methods/url.js';
 import { logger } from '@crosslab/service-common';
 
 /**

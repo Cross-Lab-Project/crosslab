@@ -1,10 +1,10 @@
-import { apiClient } from '../../../../src/globals';
-import { getDevicesByDeviceId } from '../../../../src/operations/devices';
-import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec';
-import { deviceNames } from '../../../data/devices/index.spec';
-import { TestData } from '../../../data/index.spec';
-import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { apiClient } from '../../../../src/globals.js.ts";
+import { getDevicesByDeviceId } from '../../../../src/operations/devices.js.ts";
+import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec.js.ts";
+import { deviceNames } from '../../../data/devices/index.spec.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../index.spec.js.ts";
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

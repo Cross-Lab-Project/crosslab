@@ -1,9 +1,9 @@
-import { app } from '../../../src/generated';
-import { callbackHandling } from '../../../src/operations/callbacks';
-import * as eventCallbackHandling from '../../../src/operations/callbacks/event';
-import { TestData } from '../../data/index.spec';
-import { addTest } from '../index.spec';
-import { eventCallbackTest } from './event/index.spec';
+import { app } from '../../../src/generated.js.ts";
+import { callbackHandling } from '../../../src/operations/callbacks.js.ts";
+import * as eventCallbackHandling from '../../../src/operations/callbacks/event.js.ts";
+import { TestData } from '../../data/index.spec.js.ts";
+import { addTest } from '../index.spec.js.ts";
+import { eventCallbackTest } from './event/index.spec.js';
 import {
     InvalidValueError,
     MalformedBodyError,

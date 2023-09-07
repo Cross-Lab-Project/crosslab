@@ -1,5 +1,5 @@
-import deleteSpec from './delete.spec';
-import getSpec from './get.spec';
-import patchSpec from './patch.spec';
+import deleteSpec from './delete.spec.js';
+import getSpec from './get.spec.js';
+import patchSpec from './patch.spec.js';
 
 export default [deleteSpec, getSpec, patchSpec];

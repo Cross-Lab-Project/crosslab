@@ -1,14 +1,14 @@
-import { repositories } from '../../database/dataSource';
-import { postPeerconnectionsSignature } from '../../generated/signatures';
-import { apiClient, timeoutMap } from '../../globals';
+import { repositories } from '../../database/dataSource.js';
+import { postPeerconnectionsSignature } from '../../generated/signatures.js';
+import { apiClient, timeoutMap } from '../../globals.js';
 import {
     callbackUrl,
     sendStatusChangedCallback,
     closedCallbacks,
     statusChangedCallbacks,
-} from '../../methods/callbacks';
-import { signalingQueueManager } from '../../methods/signaling/signalingQueueManager';
-import { peerconnectionUrlFromId } from '../../methods/urlFromId';
+} from '../../methods/callbacks.js';
+import { signalingQueueManager } from '../../methods/signaling/signalingQueueManager.js';
+import { peerconnectionUrlFromId } from '../../methods/urlFromId.js';
 import { InvalidValueError, logger } from '@crosslab/service-common';
 
 /**

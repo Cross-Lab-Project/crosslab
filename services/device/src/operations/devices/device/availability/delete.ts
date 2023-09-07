@@ -1,6 +1,6 @@
-import { repositories } from '../../../../database/dataSource';
-import { deleteDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
+import { repositories } from '../../../../database/dataSource.js';
+import { deleteDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { ImpossibleOperationError, logger } from '@crosslab/service-common';
 
 /**

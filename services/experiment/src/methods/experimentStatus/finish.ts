@@ -1,8 +1,8 @@
-import { repositories } from '../../database/dataSource';
-import { ExperimentModel } from '../../database/model';
-import { validateExperimentStatus } from '../../types/typeguards';
-import { apiClient } from '../api';
-import { experimentUrlFromId } from '../url';
+import { repositories } from '../../database/dataSource.js';
+import { ExperimentModel } from '../../database/model.js';
+import { validateExperimentStatus } from '../../types/typeguards.js';
+import { apiClient } from '../api.js';
+import { experimentUrlFromId } from '../url.js';
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 

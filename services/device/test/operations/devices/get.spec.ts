@@ -1,8 +1,8 @@
-import { getDevices } from '../../../src/operations/devices';
-import { deviceNames } from '../../data/devices/index.spec';
-import { TestData } from '../../data/index.spec';
-import { DeviceOverviewRepositoryTestSuite } from '../../database/repositories/device/deviceOverview.spec';
-import { addTest, stubbedAuthorization } from '../index.spec';
+import { getDevices } from '../../../src/operations/devices.js.ts";
+import { deviceNames } from '../../data/devices/index.spec.js.ts";
+import { TestData } from '../../data/index.spec.js.ts";
+import { DeviceOverviewRepositoryTestSuite } from '../../database/repositories/device/deviceOverview.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../index.spec.js.ts";
 import assert from 'assert';
 import Mocha from 'mocha';
 

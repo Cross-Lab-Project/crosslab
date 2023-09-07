@@ -1,6 +1,6 @@
-import { repositories } from '../../../../database/dataSource';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
-import { sendStatusChangedCallback } from '../../../callbacks';
+import { repositories } from '../../../../database/dataSource.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import { sendStatusChangedCallback } from '../../../callbacks/index.js';
 
 export const disconnectTimeouts = new Map<string, NodeJS.Timeout>();
 

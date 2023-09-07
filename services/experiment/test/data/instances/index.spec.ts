@@ -1,5 +1,5 @@
-import { InstanceRepository } from '../../../src/database/repositories/instance';
-import { example_instance } from './example_instance.spec';
+import { InstanceRepository } from '../../../src/database/repositories/instance.js';
+import { example_instance } from './example_instance.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const instanceNames = ['example instance'] as const;

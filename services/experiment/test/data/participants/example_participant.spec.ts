@@ -1,4 +1,4 @@
-import { ParticipantEntityDataWithLinks } from './index.spec';
+import { ParticipantEntityDataWithLinks } from './index.spec.js';
 
 const serviceId = 'exampleId';
 const config = {};

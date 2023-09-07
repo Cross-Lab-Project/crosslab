@@ -1,7 +1,7 @@
-import { Device } from '../../generated/types';
-import { AppDataSource } from '../dataSource';
-import { DeviceModel } from '../model';
-import { InstanceRepository } from './instance';
+import { Device } from '../../generated/types.js';
+import { AppDataSource } from '../dataSource.js';
+import { DeviceModel } from '../model.js';
+import { InstanceRepository } from './instance.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations } from 'typeorm';
 

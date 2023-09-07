@@ -1,9 +1,9 @@
-import { initApp } from './app';
-import { AppDataSource } from './database/dataSource';
+import { initApp } from './app.js';
+import { AppDataSource } from './database/dataSource.js';
 import { logging } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common/logging';
 
-async function startDeviceService() {
+async function main() {
     logging.init();
     try {
         await AppDataSource.initialize();
@@ -14,7 +14,4 @@ async function startDeviceService() {
     }
 }
 
-/* istanbul ignore if */
-if (require.main === module) {
-    startDeviceService();
-}
+main();

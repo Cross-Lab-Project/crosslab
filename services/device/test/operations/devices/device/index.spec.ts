@@ -1,10 +1,10 @@
-import availabilitySpec from './availability/index.spec';
-import deleteSpec from './delete.spec';
-import getSpec from './get.spec';
-import patchSpec from './patch.spec';
-import postSpec from './post.spec';
-import signalingSpec from './signaling/index.spec';
-import websocketSpec from './websocket/index.spec';
+import availabilitySpec from './availability/index.spec.js';
+import deleteSpec from './delete.spec.js';
+import getSpec from './get.spec.js';
+import patchSpec from './patch.spec.js';
+import postSpec from './post.spec.js';
+import signalingSpec from './signaling/index.spec.js';
+import websocketSpec from './websocket/index.spec.js';
 
 export default [
     getSpec,

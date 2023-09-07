@@ -1,4 +1,4 @@
-import { Device, Role, ServiceConfiguration } from '../generated/types';
+import { Device, Role, ServiceConfiguration } from '../generated/types.js';
 import {
     Column,
     Entity,

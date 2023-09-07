@@ -1,8 +1,8 @@
-import { repositories } from '../../../../src/database/dataSource';
-import { deleteDevicesByDeviceId } from '../../../../src/operations/devices';
-import { deviceNames } from '../../../data/devices/index.spec';
-import { TestData } from '../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { repositories } from '../../../../src/database/dataSource.js.ts";
+import { deleteDevicesByDeviceId } from '../../../../src/operations/devices.js.ts";
+import { deviceNames } from '../../../data/devices/index.spec.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../index.spec.js.ts";
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

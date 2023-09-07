@@ -1,14 +1,14 @@
-import { ServiceConfigurationModel } from '../../../src/database/model';
-import { ServiceConfigurationRepository } from '../../../src/database/repositories/serviceConfiguration';
-import { ServiceConfiguration } from '../../../src/generated/types';
-import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
+import { ServiceConfigurationModel } from '../../../src/database/model.js';
+import { ServiceConfigurationRepository } from '../../../src/database/repositories/serviceConfiguration.js';
+import { ServiceConfiguration } from '../../../src/generated/types.js';
+import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
 import {
     ParticipantModelWithLinks,
     ParticipantName,
     ParticipantWithLinks,
-} from '../participants/index.spec';
-import { example_serviceConfiguration } from './example_serviceConfiguration.spec';
+} from '../participants/index.spec.js';
+import { example_serviceConfiguration } from './example_serviceConfiguration.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const serviceConfigurationNames = ['example serviceConfiguration'] as const;

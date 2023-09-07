@@ -1,13 +1,13 @@
-import { AppDataSource, repositories } from '../../../../src/database/dataSource';
-import { InstantiableBrowserDeviceModel } from '../../../../src/database/model';
-import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice';
+import { AppDataSource, repositories } from '../../../../src/database/dataSource.js.ts";
+import { InstantiableBrowserDeviceModel } from '../../../../src/database/model.js.ts";
+import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice.js.ts";
 import {
     InstantiableBrowserDevice,
     InstantiableBrowserDeviceUpdate,
-} from '../../../../src/generated/types';
-import { InstantiableBrowserDeviceName } from '../../../data/devices/instantiableBrowserDevices/index.spec';
-import { initTestDatabase } from '../index.spec';
-import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec';
+} from '../../../../src/generated/types.js.ts";
+import { InstantiableBrowserDeviceName } from '../../../data/devices/instantiableBrowserDevices/index.spec.js.ts";
+import { initTestDatabase } from '../index.spec.js.ts";
+import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

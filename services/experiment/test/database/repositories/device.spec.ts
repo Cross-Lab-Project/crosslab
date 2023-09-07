@@ -1,9 +1,9 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { DeviceModel } from '../../../src/database/model';
-import { DeviceRepository } from '../../../src/database/repositories/device';
-import { Device } from '../../../src/generated/types';
-import { DeviceName } from '../../data/devices/index.spec';
-import { initTestDatabase } from './index.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { DeviceModel } from '../../../src/database/model.js';
+import { DeviceRepository } from '../../../src/database/repositories/device.js';
+import { Device } from '../../../src/generated/types.js';
+import { DeviceName } from '../../data/devices/index.spec.js';
+import { initTestDatabase } from './index.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

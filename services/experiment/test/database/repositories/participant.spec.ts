@@ -1,10 +1,10 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { ParticipantModel } from '../../../src/database/model';
-import { ParticipantRepository } from '../../../src/database/repositories/participant';
-import { Participant } from '../../../src/generated/types';
-import { ParticipantName } from '../../data/participants/index.spec';
-import { initTestDatabase } from './index.spec';
-import { serviceConfigurationRepositoryTestSuite } from './serviceConfiguration.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { ParticipantModel } from '../../../src/database/model.js';
+import { ParticipantRepository } from '../../../src/database/repositories/participant.js';
+import { Participant } from '../../../src/generated/types.js';
+import { ParticipantName } from '../../data/participants/index.spec.js';
+import { initTestDatabase } from './index.spec.js';
+import { serviceConfigurationRepositoryTestSuite } from './serviceConfiguration.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

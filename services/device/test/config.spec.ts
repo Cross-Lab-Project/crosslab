@@ -1,4 +1,4 @@
-import { AppConfiguration } from '../src/config';
+import { AppConfiguration } from '../src/config.js.ts";
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 import rewire from 'rewire';

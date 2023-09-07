@@ -1,14 +1,14 @@
-import { repositories } from '../../../../database/dataSource';
-import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures';
-import { apiClient } from '../../../../globals';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
+import { repositories } from '../../../../database/dataSource.js';
+import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures.js';
+import { apiClient } from '../../../../globals.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import {
     ImpossibleOperationError,
     UnrelatedPeerconnectionError,
     MissingEntityError,
     logger,
 } from '@crosslab/service-common';
-import { connectedDevices } from '../../websocket/handling';
+import { connectedDevices } from '../../websocket/handling/index.js';
 
 /**
  * This function implements the functionality for handling POST requests on

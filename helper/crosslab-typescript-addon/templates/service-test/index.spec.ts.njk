@@ -5,10 +5,10 @@
 {%- endfor -%}
 
 {%- macro generateIndex() -%}
-import basicValidationTestSuite from './basicValidation.spec'
-import requestValidationTestSuite from './requestValidation.spec'
-import typeguardTestSuite from './types.spec'
-import routesTestSuite from './routes.spec'
+import basicValidationTestSuite from './basicValidation.spec.js'
+import requestValidationTestSuite from './requestValidation.spec.js'
+import typeguardTestSuite from './types.spec.js'
+import routesTestSuite from './routes.spec.js'
 
 describe('Generated', function () {
     this.beforeAll(function () {
@@ -25,4 +25,4 @@ describe('Generated', function () {
 })
 {%- endmacro -%}
 
-{{ generateIndex() | prettier }}
+{{ generateIndex() }}

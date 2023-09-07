@@ -1,15 +1,15 @@
-import { AppDataSource } from '../database/dataSource';
-import { InstitutionModel } from '../database/model';
+import { AppDataSource } from '../database/dataSource.js';
+import { InstitutionModel } from '../database/model.js';
 import {
     getInstitutionsSignature,
     postInstitutionsSignature,
     getInstitutionsByInstitutionIdSignature,
     patchInstitutionsByInstitutionIdSignature,
     deleteInstitutionsByInstitutionIdSignature,
-} from '../generated/signatures';
-import { formatInstitution } from '../methods/format';
-import { institutionUrlFromId } from '../methods/utils';
-import { writeInstitution } from '../methods/write';
+} from '../generated/signatures.js';
+import { formatInstitution } from '../methods/format.js';
+import { institutionUrlFromId } from '../methods/utils.js';
+import { writeInstitution } from '../methods/write.js';
 import { MissingEntityError, InconsistentDatabaseError } from '@crosslab/service-common';
 
 /**

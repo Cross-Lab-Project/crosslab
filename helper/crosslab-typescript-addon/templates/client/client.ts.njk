@@ -30,15 +30,15 @@
  */
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 import {
     {{ signatureDependencies | unique | join(",\n\t") }}
-} from "./signatures"
+} from "./signatures.js"
 
 import {
     {{ validationDependencies | unique | join(",\n\t") }}
-} from "./requestValidation"
+} from "./requestValidation.js"
 
 import fetch from "cross-fetch"
 
@@ -581,4 +581,4 @@ export class APIClient {
     {%- endfor %}
 }
 {%- endmacro -%}
-{{ generateIndex() | prettier }}
+{{ generateIndex() }}

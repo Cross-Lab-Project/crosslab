@@ -1,9 +1,9 @@
-import { RoleModel } from '../../../src/database/model';
-import { RoleRepository } from '../../../src/database/repositories/role';
-import { Role } from '../../../src/generated/types';
-import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
-import { example_role } from './example_role.spec';
+import { RoleModel } from '../../../src/database/model.js';
+import { RoleRepository } from '../../../src/database/repositories/role.js';
+import { Role } from '../../../src/generated/types.js';
+import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
+import { example_role } from './example_role.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const roleNames = ['example role'] as const;

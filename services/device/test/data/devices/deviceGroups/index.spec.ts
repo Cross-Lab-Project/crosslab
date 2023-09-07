@@ -1,8 +1,8 @@
-import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup';
-import device_group from './device_group.spec';
-import device_group_cyclic_1 from './device_group_cyclic_1.spec';
-import device_group_cyclic_2 from './device_group_cyclic_2.spec';
-import device_group_nested from './device_group_nested.spec';
+import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup.js.ts";
+import device_group from './device_group.spec.js';
+import device_group_cyclic_1 from './device_group_cyclic_1.spec.js';
+import device_group_cyclic_2 from './device_group_cyclic_2.spec.js';
+import device_group_nested from './device_group_nested.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const deviceGroupNames = [

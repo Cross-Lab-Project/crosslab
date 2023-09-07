@@ -1,10 +1,10 @@
-import { repositories } from '../../../database/dataSource';
-import { ExperimentModel } from '../../../database/model';
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors';
-import { validateExperimentStatus } from '../../../types/typeguards';
-import { InstantiatedDevice } from '../../../types/types';
-import { apiClient } from '../../api';
-import { experimentUrlFromId } from '../../url';
+import { repositories } from '../../../database/dataSource.js';
+import { ExperimentModel } from '../../../database/model.js';
+import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { InstantiatedDevice } from '../../../types/types.js';
+import { apiClient } from '../../api.js';
+import { experimentUrlFromId } from '../../url.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { logger } from '@crosslab/service-common';
 

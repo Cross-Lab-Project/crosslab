@@ -1,5 +1,5 @@
-import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection';
-import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId';
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection.js.ts";
+import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId.js.ts";
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 const uuid = '184f5ada-84fe-4d33-ab7d-22801be1a4ff';

@@ -1,8 +1,8 @@
-import { getExperimentsByExperimentId } from '../../../../src/operations/experiments';
-import { experimentNames } from '../../../data/experiments/index.spec';
-import { TestData } from '../../../data/index.spec';
-import { experimentRepositoryTestSuite } from '../../../database/repositories/experiment.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { getExperimentsByExperimentId } from '../../../../src/operations/experiments.js';
+import { experimentNames } from '../../../data/experiments/index.spec.js';
+import { TestData } from '../../../data/index.spec.js';
+import { experimentRepositoryTestSuite } from '../../../database/repositories/experiment.spec.js';
+import { addTest, stubbedAuthorization } from '../../index.spec.js';
 import assert from 'assert';
 import Mocha from 'mocha';
 

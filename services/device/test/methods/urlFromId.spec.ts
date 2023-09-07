@@ -1,5 +1,5 @@
-import { config } from '../../src/config';
-import { deviceUrlFromId, peerconnectionUrlFromId } from '../../src/methods/urlFromId';
+import { config } from '../../src/config.js.ts";
+import { deviceUrlFromId, peerconnectionUrlFromId } from '../../src/methods/urlFromId.js.ts";
 import assert from 'assert';
 
 export default () =>

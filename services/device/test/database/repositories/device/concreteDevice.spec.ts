@@ -1,10 +1,10 @@
-import { AppDataSource, repositories } from '../../../../src/database/dataSource';
-import { ConcreteDeviceModel } from '../../../../src/database/model';
-import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice';
-import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../../src/generated/types';
-import { ConcreteDeviceName } from '../../../data/devices/concreteDevices/index.spec';
-import { initTestDatabase } from '../index.spec';
-import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec';
+import { AppDataSource, repositories } from '../../../../src/database/dataSource.js.ts";
+import { ConcreteDeviceModel } from '../../../../src/database/model.js.ts";
+import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice.js.ts";
+import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../../src/generated/types.js.ts";
+import { ConcreteDeviceName } from '../../../data/devices/concreteDevices/index.spec.js.ts";
+import { initTestDatabase } from '../index.spec.js.ts";
+import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

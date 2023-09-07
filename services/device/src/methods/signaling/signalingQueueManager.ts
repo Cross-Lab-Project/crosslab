@@ -1,11 +1,11 @@
-import { repositories } from '../../database/dataSource';
+import { repositories } from '../../database/dataSource.js';
 import {
     ClosePeerconnectionMessage,
     CreatePeerconnectionMessage,
     SignalingMessage,
-} from '../../generated/types';
-import { peerconnectionUrlFromId } from '../urlFromId';
-import { SignalingQueue } from './signalingQueue';
+} from '../../generated/types.js';
+import { peerconnectionUrlFromId } from '../urlFromId.js';
+import { SignalingQueue } from './signalingQueue.js';
 import { MissingEntityError, logger } from '@crosslab/service-common';
 
 export class SignalingQueueManager {

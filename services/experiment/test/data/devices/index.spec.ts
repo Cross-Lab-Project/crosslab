@@ -1,11 +1,11 @@
-import { DeviceModel, InstanceModel } from '../../../src/database/model';
-import { DeviceRepository } from '../../../src/database/repositories/device';
-import { Device } from '../../../src/generated/types';
-import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
-import { InstanceName } from '../instances/index.spec';
-import { RoleName } from '../roles/index.spec';
-import { example_device } from './example_device.spec';
+import { DeviceModel, InstanceModel } from '../../../src/database/model.js';
+import { DeviceRepository } from '../../../src/database/repositories/device.js';
+import { Device } from '../../../src/generated/types.js';
+import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
+import { InstanceName } from '../instances/index.spec.js';
+import { RoleName } from '../roles/index.spec.js';
+import { example_device } from './example_device.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const deviceNames = ['example device'] as const;

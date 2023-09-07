@@ -1,3 +1,3 @@
-export * from "./generated/client"
-export * from "./generated/types"
-export * from "./generated/signatures"
+export * from "./generated/client.js"
+export * from "./generated/types.js"
+export * from "./generated/signatures.js"

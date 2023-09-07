@@ -1,4 +1,4 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js.ts";
 import {
     DeviceOverviewModel,
     ConcreteDeviceModel,
@@ -7,16 +7,16 @@ import {
     InstantiableBrowserDeviceModel,
     DeviceGroupModel,
     PeerconnectionModel,
-} from '../../../src/database/model';
-import { deviceNames } from '../../data/devices/index.spec';
-import { prepareTestData, TestData } from '../../data/index.spec';
-import { peerconnectionNames } from '../../data/peerconnections/index.spec';
-import { deviceRepositoryTestSuite } from './device.spec';
-import { concreteDeviceRepositoryTestSuite } from './device/concreteDevice.spec';
-import { deviceGroupRepositoryTestSuite } from './device/deviceGroup.spec';
-import { instantiableBrowserDeviceRepositoryTestSuite } from './device/instantiableBrowserDevice.spec';
-import { instantiableCloudDeviceRepositoryTestSuite } from './device/instantiableCloudDevice.spec';
-import { peerconnectionRepositoryTestSuite } from './peerconnection.spec';
+} from '../../../src/database/model.js.ts";
+import { deviceNames } from '../../data/devices/index.spec.js.ts";
+import { prepareTestData, TestData } from '../../data/index.spec.js.ts";
+import { peerconnectionNames } from '../../data/peerconnections/index.spec.js.ts";
+import { deviceRepositoryTestSuite } from './device.spec.js';
+import { concreteDeviceRepositoryTestSuite } from './device/concreteDevice.spec.js';
+import { deviceGroupRepositoryTestSuite } from './device/deviceGroup.spec.js';
+import { instantiableBrowserDeviceRepositoryTestSuite } from './device/instantiableBrowserDevice.spec.js';
+import { instantiableCloudDeviceRepositoryTestSuite } from './device/instantiableCloudDevice.spec.js';
+import { peerconnectionRepositoryTestSuite } from './peerconnection.spec.js';
 import { DataSourceOptions } from 'typeorm';
 
 const repositoryTestSuites = [

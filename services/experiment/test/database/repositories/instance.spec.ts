@@ -1,9 +1,9 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { InstanceModel } from '../../../src/database/model';
-import { InstanceRepository } from '../../../src/database/repositories/instance';
-import { Instance } from '../../../src/types/types';
-import { InstanceName } from '../../data/instances/index.spec';
-import { initTestDatabase } from './index.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { InstanceModel } from '../../../src/database/model.js';
+import { InstanceRepository } from '../../../src/database/repositories/instance.js';
+import { Instance } from '../../../src/types/types.js';
+import { InstanceName } from '../../data/instances/index.spec.js';
+import { initTestDatabase } from './index.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

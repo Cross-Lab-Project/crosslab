@@ -1,10 +1,10 @@
-import { PeerconnectionModel } from '../../../../src/database/model';
-import { peerconnectionRepository } from '../../../../src/database/repositories/peerconnection';
-import { apiClient, timeoutMap } from '../../../../src/globals';
-import { signalingQueue } from '../../../../src/methods/signaling';
-import { handleDeviceChangedEventCallback } from '../../../../src/operations/callbacks/event/deviceChanged';
-import { TestData } from '../../../data/index.spec';
-import { addTest } from '../../index.spec';
+import { PeerconnectionModel } from '../../../../src/database/model.js.ts";
+import { peerconnectionRepository } from '../../../../src/database/repositories/peerconnection.js.ts";
+import { apiClient, timeoutMap } from '../../../../src/globals.js.ts";
+import { signalingQueue } from '../../../../src/methods/signaling.js.ts";
+import { handleDeviceChangedEventCallback } from '../../../../src/operations/callbacks/event/deviceChanged.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+import { addTest } from '../../index.spec.js.ts";
 import { MalformedBodyError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

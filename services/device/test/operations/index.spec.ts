@@ -1,9 +1,9 @@
-import { AppDataSource } from '../../src/database/dataSource';
-import { TestData } from '../data/index.spec';
-import { initTestDatabase } from '../database/repositories/index.spec';
-// import callbackTest from './callbacks/index.spec'
-import deviceTests from './devices/index.spec';
-import peerconnectionTests from './peerconnections/index.spec';
+import { AppDataSource } from '../../src/database/dataSource.ts";
+import { TestData } from '../data/index.spec.ts";
+import { initTestDatabase } from '../database/repositories/index.spec.ts";
+// import callbackTest from './callbacks/index.spec.js'
+import deviceTests from './devices/index.spec.js';
+import peerconnectionTests from './peerconnections/index.spec.js';
 import { logger } from '@crosslab/service-common';
 import {
     authorization_functions,

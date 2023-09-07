@@ -1,6 +1,6 @@
-import { InstitutionModel } from '../database/model';
-import { Institution } from '../generated/types';
-import { institutionUrlFromId } from './utils';
+import { InstitutionModel } from '../database/model.js';
+import { Institution } from '../generated/types.js';
+import { institutionUrlFromId } from './utils.js';
 
 /**
  * This function formats a {@link InstitutionModel} to a {@link Institution}.

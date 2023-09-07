@@ -1,4 +1,4 @@
-import { AvailabilityRule, TimeSlot } from '../generated/types';
+import { AvailabilityRule, TimeSlot } from '../generated/types.js';
 import { InvalidValueError, RemoveIndex } from '@crosslab/service-common';
 
 type TimeSlotModel = {

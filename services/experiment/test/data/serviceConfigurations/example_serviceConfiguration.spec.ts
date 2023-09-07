@@ -1,4 +1,4 @@
-import { ServiceConfigurationEntityDataWithLinks } from './index.spec';
+import { ServiceConfigurationEntityDataWithLinks } from './index.spec.js';
 
 const serviceType = 'exampleType';
 

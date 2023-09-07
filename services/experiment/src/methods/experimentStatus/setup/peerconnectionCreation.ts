@@ -1,9 +1,9 @@
-import { repositories } from '../../../database/dataSource';
-import { ExperimentModel } from '../../../database/model';
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors';
-import { validateExperimentStatus } from '../../../types/typeguards';
-import { createPeerconnections } from '../../peerconnection';
-import { experimentUrlFromId } from '../../url';
+import { repositories } from '../../../database/dataSource.js';
+import { ExperimentModel } from '../../../database/model.js';
+import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { createPeerconnections } from '../../peerconnection.js';
+import { experimentUrlFromId } from '../../url.js';
 import { logger } from '@crosslab/service-common';
 
 export async function createPeerconnectionsExperiment(experimentModel: ExperimentModel) {

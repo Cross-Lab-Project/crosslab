@@ -1,6 +1,6 @@
-import { TemplateRepository } from '../../../src/database/repositories/template';
-import { Template } from '../../../src/generated/types';
-import { templateUrlFromId } from '../../../src/methods/url';
+import { TemplateRepository } from '../../../src/database/repositories/template.js';
+import { Template } from '../../../src/generated/types.js';
+import { templateUrlFromId } from '../../../src/methods/url.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 const name = 'Example Template';

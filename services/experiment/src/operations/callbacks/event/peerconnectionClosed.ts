@@ -1,4 +1,4 @@
-import { peerconnectionClosedCallbacks } from '../../callbacks';
+import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 
 /**

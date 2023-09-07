@@ -1,4 +1,4 @@
-import { callbackEventEmitter } from '.';
+import { callbackEventEmitter } from './index.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { logger } from '@crosslab/service-common';
 

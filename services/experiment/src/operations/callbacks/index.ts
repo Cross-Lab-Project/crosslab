@@ -1,5 +1,5 @@
-import { config } from '../../config';
-import { handleEventCallback } from './event';
+import { config } from '../../config.js';
+import { handleEventCallback } from './event/index.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';

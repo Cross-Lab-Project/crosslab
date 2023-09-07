@@ -7,13 +7,13 @@
 {%- macro generateRouteTests() -%}
 import assert from 'assert';
 import request from 'supertest';
-import { app } from '../../src/generated';
+import { app } from '../../src/generated.js';
 import * as sinon from 'sinon';
-import * as requestValidation from '../../src/generated/requestValidation';
-import operations from '../../src/operations';
+import * as requestValidation from '../../src/generated/requestValidation.js';
+import operations from '../../src/operations.js';
 import RandExp from 'randexp';
 import seedrandom from 'seedrandom';
-import { initServiceOptions, ResponseData, ValidationError } from '../../src/generated/types';
+import { initServiceOptions, ResponseData, ValidationError } from '../../src/generated/types.js';
 import rewire from 'rewire';
 
 export default async () => {
@@ -358,4 +358,4 @@ export default async () => {
 }
 {%- endmacro -%}
 
-{{ generateRouteTests() | prettier }}
+{{ generateRouteTests() }}

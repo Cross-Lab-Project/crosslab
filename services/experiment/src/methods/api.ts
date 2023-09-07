@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { InternalRequestError } from '../types/errors';
+import { config } from '../config.js';
+import { InternalRequestError } from '../types/errors.js';
 import {
     ValidationError,
     InvalidUrlError,

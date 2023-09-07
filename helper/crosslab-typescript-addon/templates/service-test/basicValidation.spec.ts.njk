@@ -13,7 +13,7 @@ import {
     {%- for schema in schemas %}
     validate{{ schema["x-name"] | cap }},
     {%- endfor %}
-} from "../../src/generated/basicValidation"
+} from "../../src/generated/basicValidation.js"
 
 export default async () => {
     describe("Basic Validation Tests", function () {

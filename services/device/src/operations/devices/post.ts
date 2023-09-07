@@ -1,7 +1,7 @@
-import { repositories } from '../../database/dataSource';
-import { postDevicesSignature } from '../../generated/signatures';
-import { changedCallbacks } from '../../methods/callbacks';
-import { deviceUrlFromId } from '../../methods/urlFromId';
+import { repositories } from '../../database/dataSource.js';
+import { postDevicesSignature } from '../../generated/signatures.js';
+import { changedCallbacks } from '../../methods/callbacks.js';
+import { deviceUrlFromId } from '../../methods/urlFromId.js';
 import { MalformedBodyError, logger } from '@crosslab/service-common';
 
 /**

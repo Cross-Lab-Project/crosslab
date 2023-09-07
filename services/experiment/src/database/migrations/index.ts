@@ -1,5 +1,5 @@
-import * as mariadb from './mariadb';
-import * as sqlite from './sqlite';
+import * as mariadb from './mariadb/index.js';
+import * as sqlite from './sqlite/index.js';
 import { DataSourceOptions } from 'typeorm';
 
 export const Migrations = (type: DataSourceOptions['type']) => {

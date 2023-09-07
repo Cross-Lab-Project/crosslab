@@ -1,8 +1,8 @@
-import { handleEventCallback } from '../../../../src/operations/callbacks/event';
-import * as deviceChangedEventCallbackHandling from '../../../../src/operations/callbacks/event/deviceChanged';
-import { TestData } from '../../../data/index.spec';
-import { addTest } from '../../index.spec';
-import { deviceChangedEventCallbackTest } from './deviceChanged.spec';
+import { handleEventCallback } from '../../../../src/operations/callbacks/event.js.ts";
+import * as deviceChangedEventCallbackHandling from '../../../../src/operations/callbacks/event/deviceChanged.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+import { addTest } from '../../index.spec.js.ts";
+import { deviceChangedEventCallbackTest } from './deviceChanged.spec.js';
 import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

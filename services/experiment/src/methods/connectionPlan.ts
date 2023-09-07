@@ -3,8 +3,8 @@ import {
     ServiceConfigurationModel,
     DeviceModel,
     ParticipantModel,
-} from '../database/model';
-import { experimentUrlFromId, getUrlOrInstanceUrl } from './url';
+} from '../database/model.js';
+import { experimentUrlFromId, getUrlOrInstanceUrl } from './url.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';

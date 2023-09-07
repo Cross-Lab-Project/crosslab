@@ -1,14 +1,14 @@
-import { connectedDevices } from '.';
-import { repositories } from '../../../../database/dataSource';
-import { ConcreteDeviceModel } from '../../../../database/model';
+import { connectedDevices } from './index.js';
+import { repositories } from '../../../../database/dataSource.js';
+import { ConcreteDeviceModel } from '../../../../database/model.js';
 import {
     isMessage,
     isAuthenticationMessage,
     AuthenticationMessage,
-} from '../../../../generated/types';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
-import { sendChangedCallback } from '../../../callbacks';
-import { removeDisconnectTimeout } from './disconnect';
+} from '../../../../generated/types.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import { sendChangedCallback } from '../../../callbacks/index.js';
+import { removeDisconnectTimeout } from './disconnect.js';
 import { logger } from '@crosslab/service-common';
 import WebSocket from 'ws';
 

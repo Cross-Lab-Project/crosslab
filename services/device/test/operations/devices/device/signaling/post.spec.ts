@@ -1,12 +1,12 @@
-import { SignalingMessage } from '../../../../../src/generated/types';
-import { apiClient } from '../../../../../src/globals';
-import { deviceUrlFromId } from '../../../../../src/methods/urlFromId';
+import { SignalingMessage } from '../../../../../src/generated/types.js.ts";
+import { apiClient } from '../../../../../src/globals.js.ts";
+import { deviceUrlFromId } from '../../../../../src/methods/urlFromId.js.ts";
 import {
     connectedDevices,
     postDevicesByDeviceIdSignaling,
-} from '../../../../../src/operations/devices';
-import { TestData } from '../../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../../index.spec';
+} from '../../../../../src/operations/devices.js.ts";
+import { TestData } from '../../../../data/index.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../../index.spec.js.ts";
 import {
     ImpossibleOperationError,
     MissingEntityError,

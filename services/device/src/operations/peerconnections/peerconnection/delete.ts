@@ -1,7 +1,7 @@
-import { repositories } from '../../../database/dataSource';
-import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures';
-import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager';
-import { peerconnectionUrlFromId } from '../../../methods/urlFromId';
+import { repositories } from '../../../database/dataSource.js';
+import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures.js';
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
 import { logger } from '@crosslab/service-common';
 
 /**

@@ -157,8 +157,8 @@ import {
     {{- "\n\tRequire," if signatures | includes("Require<") }}
     {{- "\n\tNumericRange," if signatures | includes("NumericRange<") }}
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 import { BoundAuthorizationFunctions } from '@crosslab/service-common/authorization';
 
-{{ signatures | prettier }}
+{{ signatures }}

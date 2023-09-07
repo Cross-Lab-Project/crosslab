@@ -2,8 +2,8 @@ import {
     CreatePeerconnectionMessage,
     ClosePeerconnectionMessage,
     SignalingMessage,
-} from '../../generated/types';
-import { apiClient } from '../../globals';
+} from '../../generated/types.js';
+import { apiClient } from '../../globals.js';
 import { logger } from '@crosslab/service-common';
 import Queue from 'queue';
 

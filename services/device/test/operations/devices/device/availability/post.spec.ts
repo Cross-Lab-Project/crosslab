@@ -1,7 +1,7 @@
-import * as callbackMethods from '../../../../../src/methods/callbacks';
-import { postDevicesByDeviceIdAvailability } from '../../../../../src/operations/devices';
-import { TestData } from '../../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../../index.spec';
+import * as callbackMethods from '../../../../../src/methods/callbacks.js.ts";
+import { postDevicesByDeviceIdAvailability } from '../../../../../src/operations/devices.js.ts";
+import { TestData } from '../../../../data/index.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../../index.spec.js.ts";
 import { ImpossibleOperationError, MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

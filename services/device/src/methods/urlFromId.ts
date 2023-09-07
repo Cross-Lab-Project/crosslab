@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config } from '../config.js';
 
 /**
  * This function builds the url of a device using its id.

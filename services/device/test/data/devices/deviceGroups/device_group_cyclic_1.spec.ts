@@ -1,6 +1,6 @@
-import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup';
-import { deviceUrlFromId } from '../../../../src/methods/urlFromId';
-import { concreteDeviceData } from '../concreteDevices/index.spec';
+import { DeviceGroupRepository } from '../../../../src/database/repositories/device/deviceGroup.js.ts";
+import { deviceUrlFromId } from '../../../../src/methods/urlFromId.js.ts";
+import { concreteDeviceData } from '../concreteDevices/index.spec.js.ts";
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 const uuid = '1cd58ddf-ec6b-435f-93ce-2c3d266088a7';

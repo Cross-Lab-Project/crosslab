@@ -1,10 +1,10 @@
-import { repositories } from '../../../../src/database/dataSource';
-import { apiClient } from '../../../../src/globals';
-import * as callbackFunctions from '../../../../src/methods/callbacks';
-import { deletePeerconnectionsByPeerconnectionId } from '../../../../src/operations/peerconnections';
-import { TestData } from '../../../data/index.spec';
-// import { peerconnectionNames } from '../../../data/peerconnections/index.spec'
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { repositories } from '../../../../src/database/dataSource.js.ts";
+import { apiClient } from '../../../../src/globals.js.ts";
+import * as callbackFunctions from '../../../../src/methods/callbacks.js.ts";
+import { deletePeerconnectionsByPeerconnectionId } from '../../../../src/operations/peerconnections.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+// import { peerconnectionNames } from '../../../data/peerconnections/index.spec.js.ts"
+import { addTest, stubbedAuthorization } from '../../index.spec.js.ts";
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

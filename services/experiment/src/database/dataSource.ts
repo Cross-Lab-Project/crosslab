@@ -1,12 +1,12 @@
-import { config } from '../config';
-import { DeviceRepository } from './repositories/device';
-import { ExperimentRepository } from './repositories/experiment';
-import { InstanceRepository } from './repositories/instance';
-import { ParticipantRepository } from './repositories/participant';
-import { PeerconnectionRepository } from './repositories/peerconnection';
-import { RoleRepository } from './repositories/role';
-import { ServiceConfigurationRepository } from './repositories/serviceConfiguration';
-import { TemplateRepository } from './repositories/template';
+import { config } from '../config.js';
+import { DeviceRepository } from './repositories/device.js';
+import { ExperimentRepository } from './repositories/experiment.js';
+import { InstanceRepository } from './repositories/instance.js';
+import { ParticipantRepository } from './repositories/participant.js';
+import { PeerconnectionRepository } from './repositories/peerconnection.js';
+import { RoleRepository } from './repositories/role.js';
+import { ServiceConfigurationRepository } from './repositories/serviceConfiguration.js';
+import { TemplateRepository } from './repositories/template.js';
 import { AbstractApplicationDataSource } from '@crosslab/service-common';
 import { DataSourceOptions } from 'typeorm';
 

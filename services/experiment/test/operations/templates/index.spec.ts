@@ -1,5 +1,5 @@
-import getSpec from './get.spec';
-import postSpec from './post.spec';
-import templateTests from './template/index.spec';
+import getSpec from './get.spec.js';
+import postSpec from './post.spec.js';
+import templateTests from './template/index.spec.js';
 
 export default [getSpec, postSpec, ...templateTests];

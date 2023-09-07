@@ -1,7 +1,7 @@
-import { repositories } from '../../../database/dataSource';
-import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures';
-import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks';
-import { deviceUrlFromId } from '../../../methods/urlFromId';
+import { repositories } from '../../../database/dataSource.js';
+import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
+import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 import { logger } from '@crosslab/service-common';
 
 /**

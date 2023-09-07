@@ -1,6 +1,6 @@
-import { ServiceConfiguration } from '../../generated/types';
-import { ServiceConfigurationModel } from '../model';
-import { ParticipantRepository } from './participant';
+import { ServiceConfiguration } from '../../generated/types.js';
+import { ServiceConfigurationModel } from '../model.js';
+import { ParticipantRepository } from './participant.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations, Repository } from 'typeorm';
 

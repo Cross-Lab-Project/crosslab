@@ -1,5 +1,5 @@
-import { ExperimentModel } from '../database/model';
-import { ExperimentModelStatusMapping } from './types';
+import { ExperimentModel } from '../database/model.js';
+import { ExperimentModelStatusMapping } from './types.js';
 
 export function validateExperimentStatus<T extends ExperimentModel['status']>(
     experimentModel: ExperimentModel,

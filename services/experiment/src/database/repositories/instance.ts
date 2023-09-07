@@ -1,5 +1,5 @@
-import { Instance } from '../../types/types';
-import { InstanceModel } from '../model';
+import { Instance } from '../../types/types.js';
+import { InstanceModel } from '../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

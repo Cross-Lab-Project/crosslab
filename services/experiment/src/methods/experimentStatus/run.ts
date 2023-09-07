@@ -1,11 +1,11 @@
-import { repositories } from '../../database/dataSource';
-import { ExperimentModel } from '../../database/model';
-import { InvalidStateError } from '../../types/errors';
-import { ResolvedDevice } from '../../types/types';
-import { apiClient } from '../api';
-import { experimentUrlFromId } from '../url';
-import { bookExperiment } from './book';
-import { setupExperiment } from './setup';
+import { repositories } from '../../database/dataSource.js';
+import { ExperimentModel } from '../../database/model.js';
+import { InvalidStateError } from '../../types/errors.js';
+import { ResolvedDevice } from '../../types/types.js';
+import { apiClient } from '../api.js';
+import { experimentUrlFromId } from '../url.js';
+import { bookExperiment } from './book.js';
+import { setupExperiment } from './setup/index.js';
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 

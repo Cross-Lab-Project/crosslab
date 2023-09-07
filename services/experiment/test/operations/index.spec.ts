@@ -1,8 +1,8 @@
-import { AppDataSource } from '../../src/database/dataSource';
-import { TestData } from '../data/index.spec';
-import { initTestDatabase } from '../database/repositories/index.spec';
-import experimentTests from './experiments/index.spec';
-import templateTests from './templates/index.spec';
+import { AppDataSource } from '../../src/database/dataSource.js';
+import { TestData } from '../data/index.spec.js';
+import { initTestDatabase } from '../database/repositories/index.spec.js';
+import experimentTests from './experiments/index.spec.js';
+import templateTests from './templates/index.spec.js';
 import { logger } from '@crosslab/service-common';
 import {
     authorization_functions,

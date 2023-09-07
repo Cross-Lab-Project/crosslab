@@ -1,9 +1,9 @@
-import { connectedDevices } from '.';
-import { repositories } from '../../../../database/dataSource';
-import { ConcreteDeviceModel } from '../../../../database/model';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
-import { sendChangedCallback } from '../../../callbacks';
-import { addDisconnectTimeout } from './disconnect';
+import { connectedDevices } from './index.js';
+import { repositories } from '../../../../database/dataSource.js';
+import { ConcreteDeviceModel } from '../../../../database/model.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import { sendChangedCallback } from '../../../callbacks/index.js';
+import { addDisconnectTimeout } from './disconnect.js';
 import { logger } from '@crosslab/service-common';
 
 export async function closeHandling(

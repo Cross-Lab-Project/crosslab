@@ -36,15 +36,15 @@
  */
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 import {
     {{ signatureDependencies | unique | join(",\n\t") }}
-} from "./signatures"
+} from "./signatures.js"
 
 import {
     {{ validationDependencies | unique | join(",\n\t") }}
-} from "./basicValidation"
+} from "./basicValidation.js"
 
 {%- for serviceName, operations in sortedOperations %}
 
@@ -158,4 +158,4 @@ export namespace {{ serviceName | formatName }}RequestValidation {
 }
 {%- endfor %}
 {%- endmacro -%}
-{{ generateRequestValidation() | prettier }}
+{{ generateRequestValidation() }}

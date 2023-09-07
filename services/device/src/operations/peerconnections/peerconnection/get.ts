@@ -1,6 +1,6 @@
-import { repositories } from '../../../database/dataSource';
-import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures';
-import { peerconnectionUrlFromId } from '../../../methods/urlFromId';
+import { repositories } from '../../../database/dataSource.js';
+import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures.js';
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
 import { logger } from '@crosslab/service-common';
 
 /**

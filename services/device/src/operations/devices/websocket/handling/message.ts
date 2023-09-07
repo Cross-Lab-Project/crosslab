@@ -1,4 +1,4 @@
-import { ConcreteDeviceModel } from '../../../../database/model';
+import { ConcreteDeviceModel } from '../../../../database/model.js';
 import {
     Message,
     isSignalingMessage,
@@ -6,10 +6,10 @@ import {
     SignalingMessage,
     ConnectionStateChangedMessage,
     isMessage,
-} from '../../../../generated/types';
-import { apiClient } from '../../../../globals';
-import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
+} from '../../../../generated/types.js';
+import { apiClient } from '../../../../globals.js';
+import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
 import WebSocket from 'ws';
 

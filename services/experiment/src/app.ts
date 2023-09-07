@@ -1,5 +1,5 @@
-import { config } from './config';
-import { app } from './generated';
+import { config } from './config.js';
+import { app } from './generated/index.js';
 import { authorization, error, logging } from '@crosslab/service-common';
 import express from 'express';
 

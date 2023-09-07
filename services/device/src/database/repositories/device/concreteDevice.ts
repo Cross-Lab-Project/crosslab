@@ -1,6 +1,6 @@
-import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types';
-import { ConcreteDeviceModel } from '../../model';
-import { DeviceOverviewRepository } from './deviceOverview';
+import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types.js';
+import { ConcreteDeviceModel } from '../../model.js';
+import { DeviceOverviewRepository } from './deviceOverview.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

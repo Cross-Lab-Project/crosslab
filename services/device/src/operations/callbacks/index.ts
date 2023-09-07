@@ -1,9 +1,9 @@
-import { isCallback, isEventCallback } from '../../generated/types';
-import { handleEventCallback } from './event';
+import { isCallback, isEventCallback } from '../../generated/types.js';
+import { handleEventCallback } from './event/index.js';
 import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common';
 import express from 'express';
 
-export * from '../../methods/callbacks';
+export * from '../../methods/callbacks.js';
 
 /**
  * This function adds the endpoint for incoming callbacks registered by the device service.

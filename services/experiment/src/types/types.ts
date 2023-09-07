@@ -1,4 +1,4 @@
-import { ExperimentModel } from '../database/model';
+import { ExperimentModel } from '../database/model.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 
 export type Instance = {

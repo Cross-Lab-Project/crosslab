@@ -1,13 +1,13 @@
-import { ParticipantModel } from '../../../src/database/model';
-import { ParticipantRepository } from '../../../src/database/repositories/participant';
-import { Participant } from '../../../src/generated/types';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
-import { RoleName } from '../roles/index.spec';
+import { ParticipantModel } from '../../../src/database/model.js';
+import { ParticipantRepository } from '../../../src/database/repositories/participant.js';
+import { Participant } from '../../../src/generated/types.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
+import { RoleName } from '../roles/index.spec.js';
 import {
     ServiceConfigurationModelWithLinks,
     ServiceConfigurationName,
-} from '../serviceConfigurations/index.spec';
-import { example_participant } from './example_participant.spec';
+} from '../serviceConfigurations/index.spec.js';
+import { example_participant } from './example_participant.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const participantNames = ['example participant'] as const;

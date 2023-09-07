@@ -1,7 +1,7 @@
-import { repositories } from '../../database/dataSource';
-import { ExperimentModel } from '../../database/model';
-// import { apiClient } from '../api'
-import { experimentUrlFromId } from '../url';
+import { repositories } from '../../database/dataSource.js';
+import { ExperimentModel } from '../../database/model.js';
+// import { apiClient } from '../api.js'
+import { experimentUrlFromId } from '../url.js';
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 

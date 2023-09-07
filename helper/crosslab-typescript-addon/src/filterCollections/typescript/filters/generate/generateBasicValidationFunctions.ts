@@ -12,7 +12,7 @@ import standaloneCode from 'ajv/dist/standalone'
  */
 function generateBasicValidationFunctions(schemas: ExtendedSchema[]) {
     const ajv: Ajv = new Ajv({
-        code: { source: true, esm: true },
+        code: { source: true, esm: false },
         verbose: true,
         inlineRefs: false,
     })

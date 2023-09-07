@@ -1,11 +1,11 @@
-import { repositories } from '../../../database/dataSource';
-import { ExperimentModel } from '../../../database/model';
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors';
-import { validateExperimentStatus } from '../../../types/typeguards';
-import { experimentUrlFromId } from '../../url';
+import { repositories } from '../../../database/dataSource.js';
+import { ExperimentModel } from '../../../database/model.js';
+import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { experimentUrlFromId } from '../../url.js';
 import { logger } from '@crosslab/service-common';
 
-// import { apiClient } from '../../api'
+// import { apiClient } from '../../api.js'
 
 export async function lockBookingExperiment(experimentModel: ExperimentModel) {
     const experimentUrl = experimentUrlFromId(experimentModel.uuid);

@@ -1,21 +1,21 @@
-import { DeviceRepository } from '../../../src/database/repositories/device';
-import { concreteDeviceData, ConcreteDeviceName } from './concreteDevices/index.spec';
-import { concreteDeviceNames } from './concreteDevices/index.spec';
+import { DeviceRepository } from '../../../src/database/repositories/device.js.ts";
+import { concreteDeviceData, ConcreteDeviceName } from './concreteDevices/index.spec.js';
+import { concreteDeviceNames } from './concreteDevices/index.spec.js';
 import {
     deviceGroupData,
     DeviceGroupName,
     deviceGroupNames,
-} from './deviceGroups/index.spec';
+} from './deviceGroups/index.spec.js';
 import {
     instantiableBrowserDeviceData,
     InstantiableBrowserDeviceName,
     instantiableBrowserDeviceNames,
-} from './instantiableBrowserDevices/index.spec';
+} from './instantiableBrowserDevices/index.spec.js';
 import {
     instantiableCloudDeviceData,
     InstantiableCloudDeviceName,
     instantiableCloudDeviceNames,
-} from './instantiableCloudDevices/index.spec';
+} from './instantiableCloudDevices/index.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const deviceNames = [

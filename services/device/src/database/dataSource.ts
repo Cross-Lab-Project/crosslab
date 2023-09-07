@@ -1,11 +1,11 @@
-import { config } from '../config';
-import { DeviceRepository } from './repositories/device';
-import { ConcreteDeviceRepository } from './repositories/device/concreteDevice';
-import { DeviceGroupRepository } from './repositories/device/deviceGroup';
-import { DeviceOverviewRepository } from './repositories/device/deviceOverview';
-import { InstantiableBrowserDeviceRepository } from './repositories/device/instantiableBrowserDevice';
-import { InstantiableCloudDeviceRepository } from './repositories/device/instantiableCloudDevice';
-import { PeerconnectionRepository } from './repositories/peerconnection';
+import { config } from '../config.js';
+import { DeviceRepository } from './repositories/device.js';
+import { ConcreteDeviceRepository } from './repositories/device/concreteDevice.js';
+import { DeviceGroupRepository } from './repositories/device/deviceGroup.js';
+import { DeviceOverviewRepository } from './repositories/device/deviceOverview.js';
+import { InstantiableBrowserDeviceRepository } from './repositories/device/instantiableBrowserDevice.js';
+import { InstantiableCloudDeviceRepository } from './repositories/device/instantiableCloudDevice.js';
+import { PeerconnectionRepository } from './repositories/peerconnection.js';
 import { AbstractApplicationDataSource } from '@crosslab/service-common';
 
 type RepositoryMapping = {

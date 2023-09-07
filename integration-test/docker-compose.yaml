@@ -1,7 +1,7 @@
 version: "3"
 
 x-config: &common-config
-  AUTHORIZATION_SERVER: "127.0.0.1:3010"
+  AUTHORIZATION_SERVER: "http://127.0.0.1:3010"
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-TestPSK}"
   LOGGING: "${LOGGING:-info}"
 

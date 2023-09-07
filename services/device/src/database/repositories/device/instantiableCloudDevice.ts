@@ -1,9 +1,9 @@
 import {
     InstantiableCloudDevice,
     InstantiableCloudDeviceUpdate,
-} from '../../../generated/types';
-import { InstantiableCloudDeviceModel } from '../../model';
-import { DeviceOverviewRepository } from './deviceOverview';
+} from '../../../generated/types.js';
+import { InstantiableCloudDeviceModel } from '../../model.js';
+import { DeviceOverviewRepository } from './deviceOverview.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

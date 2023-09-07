@@ -1,6 +1,6 @@
-import { repositories } from '../../../../database/dataSource';
-import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
+import { repositories } from '../../../../database/dataSource.js';
+import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import {
     ImpossibleOperationError,
     MissingEntityError as _MissingEntityError,

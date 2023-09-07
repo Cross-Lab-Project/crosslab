@@ -1,6 +1,6 @@
-import { Template, TemplateOverview, TemplateUpdate } from '../../generated/types';
-import { templateUrlFromId } from '../../methods/url';
-import { TemplateModel } from '../model';
+import { Template, TemplateOverview, TemplateUpdate } from '../../generated/types.js';
+import { templateUrlFromId } from '../../methods/url.js';
+import { TemplateModel } from '../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

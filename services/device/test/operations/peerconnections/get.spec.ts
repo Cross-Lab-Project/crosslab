@@ -1,8 +1,8 @@
-import { getPeerconnections } from '../../../src/operations/peerconnections';
-import { TestData } from '../../data/index.spec';
-import { peerconnectionNames } from '../../data/peerconnections/index.spec';
-import { peerconnectionRepositoryTestSuite } from '../../database/repositories/peerconnection.spec';
-import { addTest, stubbedAuthorization } from '../index.spec';
+import { getPeerconnections } from '../../../src/operations/peerconnections.js.ts";
+import { TestData } from '../../data/index.spec.js.ts";
+import { peerconnectionNames } from '../../data/peerconnections/index.spec.js.ts";
+import { peerconnectionRepositoryTestSuite } from '../../database/repositories/peerconnection.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../index.spec.js.ts";
 import assert from 'assert';
 import Mocha from 'mocha';
 

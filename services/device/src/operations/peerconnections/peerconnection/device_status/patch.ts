@@ -1,8 +1,8 @@
-import { repositories } from '../../../../database/dataSource';
-import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../../../../generated/signatures';
-import { mutexManager } from '../../../../methods/mutexManager';
-import { peerconnectionUrlFromId } from '../../../../methods/urlFromId';
-import { sendClosedCallback, sendStatusChangedCallback } from '../../../callbacks';
+import { repositories } from '../../../../database/dataSource.js';
+import { patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature } from '../../../../generated/signatures.js';
+import { mutexManager } from '../../../../methods/mutexManager.js';
+import { peerconnectionUrlFromId } from '../../../../methods/urlFromId.js';
+import { sendClosedCallback, sendStatusChangedCallback } from '../../../callbacks/index.js';
 import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
 
 /**

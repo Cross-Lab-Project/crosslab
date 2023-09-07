@@ -1,4 +1,4 @@
-import { RoleEntityDataWithLinks } from './index.spec';
+import { RoleEntityDataWithLinks } from './index.spec.js';
 
 const name = 'Example Role';
 const description = 'This is an example role.';

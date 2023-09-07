@@ -1,49 +1,49 @@
-import { DeviceRepository } from '../../src/database/repositories/device';
-import { ExperimentRepository } from '../../src/database/repositories/experiment';
-import { InstanceRepository } from '../../src/database/repositories/instance';
-import { ParticipantRepository } from '../../src/database/repositories/participant';
-import { PeerconnectionRepository } from '../../src/database/repositories/peerconnection';
-import { RoleRepository } from '../../src/database/repositories/role';
-import { ServiceConfigurationRepository } from '../../src/database/repositories/serviceConfiguration';
-import { TemplateRepository } from '../../src/database/repositories/template';
+import { DeviceRepository } from '../../src/database/repositories/device.js';
+import { ExperimentRepository } from '../../src/database/repositories/experiment.js';
+import { InstanceRepository } from '../../src/database/repositories/instance.js';
+import { ParticipantRepository } from '../../src/database/repositories/participant.js';
+import { PeerconnectionRepository } from '../../src/database/repositories/peerconnection.js';
+import { RoleRepository } from '../../src/database/repositories/role.js';
+import { ServiceConfigurationRepository } from '../../src/database/repositories/serviceConfiguration.js';
+import { TemplateRepository } from '../../src/database/repositories/template.js';
 import {
     DeviceDataWithLinks,
     DeviceName,
     deviceDataWithLinks,
     resolveLinksDeviceData,
-} from './devices/index.spec';
+} from './devices/index.spec.js';
 import {
     ExperimentDataWithLinks,
     ExperimentName,
     experimentDataWithLinks,
     resolveLinksExperimentData,
-} from './experiments/index.spec';
-import { InstanceName, instanceData } from './instances/index.spec';
+} from './experiments/index.spec.js';
+import { InstanceName, instanceData } from './instances/index.spec.js';
 import {
     ParticipantDataWithLinks,
     ParticipantName,
     participantDataWithLinks,
     resolveLinksParticipantData,
-} from './participants/index.spec';
+} from './participants/index.spec.js';
 import {
     PeerconnectionDataWithLinks,
     PeerconnectionName,
     peerconnectionDataWithLinks,
     resolveLinksPeerconnectionData,
-} from './peerconnections/index.spec';
+} from './peerconnections/index.spec.js';
 import {
     RoleDataWithLinks,
     RoleName,
     resolveLinksRoleData,
     roleDataWithLinks,
-} from './roles/index.spec';
+} from './roles/index.spec.js';
 import {
     ServiceConfigurationDataWithLinks,
     ServiceConfigurationName,
     resolveLinksServiceConfigurationData,
     serviceConfigurationDataWithLinks,
-} from './serviceConfigurations/index.spec';
-import { TemplateName, templateData } from './templates/index.spec';
+} from './serviceConfigurations/index.spec.js';
+import { TemplateName, templateData } from './templates/index.spec.js';
 import { RemoveIndex, ReplaceWith } from '@crosslab/service-common';
 import { GenericTestData } from '@crosslab/service-common/test-helper';
 

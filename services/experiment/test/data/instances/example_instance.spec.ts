@@ -1,4 +1,4 @@
-import { InstanceRepository } from '../../../src/database/repositories/instance';
+import { InstanceRepository } from '../../../src/database/repositories/instance.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 const url = 'https://api.localhost/devices/23d36e49-861e-4b81-9b26-7395032cd0d5';

@@ -1,10 +1,10 @@
-import { repositories } from '../../../../../src/database/dataSource';
-import { PeerconnectionModel } from '../../../../../src/database/model';
-import { ConnectionStatus } from '../../../../../src/generated/types';
-import * as callbackMethods from '../../../../../src/methods/callbacks';
-import { patchPeerconnectionsByPeerconnectionIdDeviceStatus } from '../../../../../src/operations/peerconnections';
-import { TestData } from '../../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../../index.spec';
+import { repositories } from '../../../../../src/database/dataSource.js.ts";
+import { PeerconnectionModel } from '../../../../../src/database/model.js.ts";
+import { ConnectionStatus } from '../../../../../src/generated/types.js.ts";
+import * as callbackMethods from '../../../../../src/methods/callbacks.js.ts";
+import { patchPeerconnectionsByPeerconnectionIdDeviceStatus } from '../../../../../src/operations/peerconnections.js.ts";
+import { TestData } from '../../../../data/index.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../../index.spec.js.ts";
 import {
     MissingEntityError,
     UnrelatedPeerconnectionError,

@@ -3,11 +3,11 @@ import {
     DeviceGroup,
     DeviceGroupUpdate,
     DeviceReference,
-} from '../../../generated/types';
-import { apiClient } from '../../../globals';
-import { deviceUrlFromId } from '../../../methods/urlFromId';
-import { DeviceGroupModel } from '../../model';
-import { DeviceOverviewRepository } from './deviceOverview';
+} from '../../../generated/types.js';
+import { apiClient } from '../../../globals.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { DeviceGroupModel } from '../../model.js';
+import { DeviceOverviewRepository } from './deviceOverview.js';
 import { AbstractRepository, logger } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

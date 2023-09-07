@@ -1,4 +1,4 @@
-import deleteSpec from './delete.spec';
-import getSpec from './get.spec';
+import deleteSpec from './delete.spec.js';
+import getSpec from './get.spec.js';
 
 export default [deleteSpec, getSpec];

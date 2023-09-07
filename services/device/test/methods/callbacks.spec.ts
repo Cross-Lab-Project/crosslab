@@ -1,5 +1,5 @@
-import { repositories } from '../../src/database/dataSource';
-import { DeviceModel, PeerconnectionModel } from '../../src/database/model';
+import { repositories } from '../../src/database/dataSource.js.ts";
+import { DeviceModel, PeerconnectionModel } from '../../src/database/model.js.ts";
 import {
     changedCallbacks,
     closedCallbacks,
@@ -7,7 +7,7 @@ import {
     sendClosedCallback,
     sendStatusChangedCallback,
     statusChangedCallbacks,
-} from '../../src/methods/callbacks';
+} from '../../src/methods/callbacks.js.ts";
 import assert from 'assert';
 import * as fetchModule from 'node-fetch';
 import * as sinon from 'sinon';

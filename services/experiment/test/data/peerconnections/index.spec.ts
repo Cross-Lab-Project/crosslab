@@ -1,8 +1,8 @@
-import { PeerconnectionModel } from '../../../src/database/model';
-import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection';
-import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
-import { example_peerconnection } from './example_peerconnection.spec';
+import { PeerconnectionModel } from '../../../src/database/model.js';
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection.js';
+import { ExperimentModelWithLinks, ExperimentName } from '../experiments/index.spec.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
+import { example_peerconnection } from './example_peerconnection.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const peerconnectionNames = ['example peerconnection'] as const;

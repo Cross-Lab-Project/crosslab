@@ -1,8 +1,8 @@
-import { repositories } from '../../../../src/database/dataSource';
-import { deleteExperimentsByExperimentId } from '../../../../src/operations/experiments';
-import { experimentNames } from '../../../data/experiments/index.spec';
-import { TestData } from '../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { repositories } from '../../../../src/database/dataSource.js';
+import { deleteExperimentsByExperimentId } from '../../../../src/operations/experiments.js';
+import { experimentNames } from '../../../data/experiments/index.spec.js';
+import { TestData } from '../../../data/index.spec.js';
+import { addTest, stubbedAuthorization } from '../../index.spec.js';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

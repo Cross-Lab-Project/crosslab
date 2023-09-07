@@ -2,14 +2,6 @@
 # Helper #######################################################################
 ################################################################################
 
-helper/tsdoc-theme:
-  - script: build
-  - script: lint
-    dependencies:
-      - helper/tsdoc-theme:build
-    tags:
-      - test
-
 helper/openapi-codegeneration:
   - script: build
   - script: lint
@@ -82,6 +74,8 @@ services/auth:
     paths:
       - ./api
   - script: lint-spec
+    paths:
+      - ./api
     dependencies:
       - services/auth:build-spec
     tags:
@@ -112,6 +106,8 @@ services/authorization:
     paths:
       - ./api
   - script: lint-spec
+    paths:
+      - ./api
     dependencies:
       - services/authorization:build-spec
     tags:
@@ -158,6 +154,8 @@ services/device:
     paths:
       - ./api
   - script: lint-spec
+    paths:
+      - ./api
     dependencies:
       - services/device:build-spec
     tags:
@@ -183,6 +181,8 @@ services/experiment:
     paths:
       - ./api
   - script: lint-spec
+    paths:
+      - ./api
     dependencies:
       - services/experiment:build-spec
     tags:
@@ -208,6 +208,8 @@ services/federation:
     paths:
       - ./api
   - script: lint-spec
+    paths:
+      - ./api
     dependencies:
       - services/federation:build-spec
     tags:
@@ -234,27 +236,6 @@ services/lti:
     dependencies:
       - services/lti:build
 
-
-services/update:
-  - script: build-spec
-    paths:
-      - ./api
-  - script: lint-spec
-    dependencies:
-      - services/update:build-spec
-    tags:
-      - test
-  - script: build
-    dependencies:
-      - services/update:build-spec
-      - services/common:build
-      - helper/crosslab-typescript-addon:build
-      - helper/openapi-codegeneration:build
-      - clients/api/js:build
-  - script: build-docker
-    dependencies:
-      - services/update:build
-
 services/openapi:
   - script: build
     dependencies:
@@ -263,7 +244,6 @@ services/openapi:
       - services/device:build-spec
       - services/experiment:build-spec
       - services/federation:build-spec
-      - services/update:build-spec
   - script: lint
     dependencies:
       - services/openapi:build
@@ -288,9 +268,7 @@ clients/api/js:
       - services/device:build-spec
       - services/experiment:build-spec
       - services/federation:build-spec
-      - services/update:build-spec
       - helper/crosslab-typescript-addon:build
-      - helper/tsdoc-theme:build
       - helper/openapi-codegeneration:build
       - services/openapi:build
   - script: lint

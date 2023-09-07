@@ -1,4 +1,4 @@
-import repositorySuite from './repositories/index.spec';
+import repositorySuite from './repositories/index.spec.js';
 import { logger } from '@crosslab/service-common';
 
 const tests = [repositorySuite];

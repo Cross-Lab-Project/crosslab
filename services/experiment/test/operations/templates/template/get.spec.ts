@@ -1,8 +1,8 @@
-import { getTemplatesByTemplateId } from '../../../../src/operations/templates';
-import { TestData } from '../../../data/index.spec';
-import { templateNames } from '../../../data/templates/index.spec';
-import { templateRepositoryTestSuite } from '../../../database/repositories/template.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { getTemplatesByTemplateId } from '../../../../src/operations/templates.js';
+import { TestData } from '../../../data/index.spec.js';
+import { templateNames } from '../../../data/templates/index.spec.js';
+import { templateRepositoryTestSuite } from '../../../database/repositories/template.spec.js';
+import { addTest, stubbedAuthorization } from '../../index.spec.js';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

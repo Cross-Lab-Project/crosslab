@@ -1,5 +1,5 @@
-import { TemplateRepository } from '../../../src/database/repositories/template';
-import { example_template } from './example_template.spec';
+import { TemplateRepository } from '../../../src/database/repositories/template.js';
+import { example_template } from './example_template.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const templateNames = ['example template'] as const;

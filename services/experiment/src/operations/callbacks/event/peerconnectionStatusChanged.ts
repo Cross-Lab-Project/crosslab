@@ -1,7 +1,7 @@
-import { repositories } from '../../../database/dataSource';
-import { apiClient } from '../../../methods/api';
-import { finishExperiment } from '../../../methods/experimentStatus';
-import { peerconnectionStatusChangedCallbacks } from '../../callbacks';
+import { repositories } from '../../../database/dataSource.js';
+import { apiClient } from '../../../methods/api.js';
+import { finishExperiment } from '../../../methods/experimentStatus/index.js';
+import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MissingPropertyError } from '@crosslab/service-common';
 

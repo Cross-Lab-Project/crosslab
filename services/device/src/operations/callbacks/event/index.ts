@@ -1,5 +1,5 @@
-import { EventCallback, isDeviceChangedEventCallback } from '../../../generated/types';
-import { handleDeviceChangedEventCallback } from './deviceChanged';
+import { EventCallback, isDeviceChangedEventCallback } from '../../../generated/types.js';
+import { handleDeviceChangedEventCallback } from './deviceChanged.js';
 import { MalformedBodyError, InvalidValueError } from '@crosslab/service-common';
 
 /**

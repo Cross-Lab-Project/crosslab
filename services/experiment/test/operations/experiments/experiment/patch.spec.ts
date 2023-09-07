@@ -1,6 +1,6 @@
-import { patchExperimentsByExperimentId } from '../../../../src/operations/experiments';
-import { TestData } from '../../../data/index.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+import { patchExperimentsByExperimentId } from '../../../../src/operations/experiments.js';
+import { TestData } from '../../../data/index.spec.js';
+import { addTest, stubbedAuthorization } from '../../index.spec.js';
 import { MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 

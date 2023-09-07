@@ -1,8 +1,8 @@
-import { initTestDatabase } from '../database/repositories/index.spec';
-import availabilitySpec from './availability.spec';
-import callbacksSpec from './callbacks.spec';
-// import signalingSpec from './signaling.spec'
-import urlFromIdSpec from './urlFromId.spec';
+import { initTestDatabase } from '../database/repositories/index.spec.js.ts";
+import availabilitySpec from './availability.spec.js';
+import callbacksSpec from './callbacks.spec.js';
+// import signalingSpec from './signaling.spec.js'
+import urlFromIdSpec from './urlFromId.spec.js';
 import { logger } from '@crosslab/service-common';
 
 // const tests = [availabilitySpec, callbacksSpec, signalingSpec, urlFromIdSpec]

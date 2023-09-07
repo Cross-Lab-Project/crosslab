@@ -5,7 +5,7 @@ import {
     DeviceReference,
     ServiceDescription,
     TimeSlot,
-} from '../generated/types';
+} from '../generated/types.js';
 import {
     Column,
     Entity,
@@ -65,8 +65,7 @@ export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewMode
 
 @ChildEntity('device')
 export class ConcreteDeviceModel extends DeviceOverviewModel {
-    @Column()
-    type!: 'device';
+    declare type: 'device';
 
     @Column()
     connected!: boolean;
@@ -95,8 +94,7 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
 
 @ChildEntity('group')
 export class DeviceGroupModel extends DeviceOverviewModel {
-    @Column()
-    type!: 'group';
+    declare type: 'group';
 
     @Column('simple-json')
     devices!: DeviceReference[];
@@ -104,8 +102,7 @@ export class DeviceGroupModel extends DeviceOverviewModel {
 
 @ChildEntity('cloud instantiable')
 export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewModel {
-    @Column()
-    type!: 'cloud instantiable';
+    declare type: 'cloud instantiable';
 
     @Column()
     instantiateUrl?: string;
@@ -116,8 +113,7 @@ export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewMode
 
 @ChildEntity('edge instantiable')
 export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewModel {
-    @Column()
-    type!: 'edge instantiable';
+    declare type: 'edge instantiable';
 
     @Column()
     codeUrl?: string;

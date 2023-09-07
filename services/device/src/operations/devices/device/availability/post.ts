@@ -1,9 +1,9 @@
-import { repositories } from '../../../../database/dataSource';
-import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures';
-import { WEEK } from '../../../../globals';
-import { calculateAvailability } from '../../../../methods/availability';
-import { sendChangedCallback } from '../../../../methods/callbacks';
-import { deviceUrlFromId } from '../../../../methods/urlFromId';
+import { repositories } from '../../../../database/dataSource.js';
+import { postDevicesByDeviceIdAvailabilitySignature } from '../../../../generated/signatures.js';
+import { WEEK } from '../../../../globals.js';
+import { calculateAvailability } from '../../../../methods/availability.js';
+import { sendChangedCallback } from '../../../../methods/callbacks.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { ImpossibleOperationError, logger } from '@crosslab/service-common';
 
 /**

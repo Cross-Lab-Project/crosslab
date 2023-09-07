@@ -5,26 +5,26 @@
   "main": "./lib/cjs/index.js",
   "scripts": {
     "generate-bv-auth": "npx openapi-codegen -i ../../../services/auth/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-auth": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/authentication.ts",
+    "move-bv-auth": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/authentication.cjs",
     "bv-auth": "npm run generate-bv-auth && npm run move-bv-auth",
     "generate-bv-booking": "npx openapi-codegen -i ../../../services/booking/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-booking": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/booking.ts",
+    "move-bv-booking": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/booking.cjs",
     "bv-booking": "npm run generate-bv-booking && npm run move-bv-booking",
     "generate-bv-device": "npx openapi-codegen -i ../../../services/device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-device": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/device.ts",
+    "move-bv-device": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/device.cjs",
     "bv-device": "npm run generate-bv-device && npm run move-bv-device",
     "generate-bv-experiment": "npx openapi-codegen -i ../../../services/experiment/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-experiment": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/experiment.ts",
+    "move-bv-experiment": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/experiment.cjs",
     "bv-experiment": "npm run generate-bv-experiment && npm run move-bv-experiment",
     "generate-bv-federation": "npx openapi-codegen -i ../../../services/federation/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-federation": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/federation.ts",
+    "move-bv-federation": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/federation.cjs",
     "bv-federation": "npm run generate-bv-federation && npm run move-bv-federation",
     "generate-bv-update": "npx openapi-codegen -i ../../../services/update/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client:basicValidation -o ./src/generated/basicValidation --keep-refs",
-    "move-bv-update": "mv ./src/generated/basicValidation/basicValidation.ts ./src/generated/basicValidation/update.ts",
+    "move-bv-update": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/update.cjs",
     "bv-update": "npm run generate-bv-update && npm run move-bv-update",
     "generate-bv": "npm run bv-auth && npm run bv-booking && npm run bv-device && npm run bv-experiment && npm run bv-federation && npm run bv-update",
     "build-generate": "npm run generate-bv && npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:client -o ./src/generated",
-    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && mkdir lib/cjs/generated/basicValidation && cp src/generated/basicValidation/*.cjs lib/cjs/generated/basicValidation && mkdir lib/esm/generated/basicValidation && cp src/generated/basicValidation/*.cjs lib/esm/generated/basicValidation && echo '{\"type\": \"module\"}' > ./lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > ./lib/cjs/package.json",
     "build": "npm run build-generate && npm run build-compile",
     "format": "npx prettier src --write",
     "docs": "typedoc --options ./typedoc.json",
@@ -45,17 +45,16 @@
   "devDependencies": {
     "@cross-lab-project/codegen-typescript-addon": "file:../../../helper/crosslab-typescript-addon",
     "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
-    "@cross-lab-project/tsdoc-theme": "file:../../../helper/tsdoc-theme",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@types/node": "^18.0.3",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
+    "@types/node": "^20.5.9",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.34.0",
-    "typedoc": "^0.23.20",
-    "typescript": "^4.7.4"
+    "typedoc": "^0.25.1",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "ajv-formats": "^2.1.1",
-    "cross-fetch": "^3.1.5"
+    "cross-fetch": "^4.0.0"
   }
 }

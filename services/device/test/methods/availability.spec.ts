@@ -1,5 +1,5 @@
-import { Availability, AvailabilityRule } from '../../src/generated/types';
-import { calculateAvailability } from '../../src/methods/availability';
+import { Availability, AvailabilityRule } from '../../src/generated/types.js.ts";
+import { calculateAvailability } from '../../src/methods/availability.js.ts";
 import { InvalidValueError } from '@crosslab/service-common';
 import assert from 'assert';
 

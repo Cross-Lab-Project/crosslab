@@ -5,7 +5,7 @@ import {expect} from 'chai';
 import {clientTypes} from '../fixtures/dummyDevice';
 import {ExperimentTest} from '../helper/experimentTest';
 
-const gpioExperimentConfiguration: ExperimentServiceTypes.Experiment = {
+const gpioExperimentConfiguration: Omit<ExperimentServiceTypes.Experiment<'request'>, 'status'> = {
   serviceConfigurations: [
     {
       serviceType: 'http://api.goldi-labs.de/serviceTypes/electrical',

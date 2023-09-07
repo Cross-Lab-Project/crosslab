@@ -1,12 +1,12 @@
-import { DeviceOverviewModel } from '../../../../src/database/model';
-import { DeviceOverviewRepository } from '../../../../src/database/repositories/device/deviceOverview';
+import { DeviceOverviewModel } from '../../../../src/database/model.js.ts";
+import { DeviceOverviewRepository } from '../../../../src/database/repositories/device/deviceOverview.js.ts";
 import {
     Device,
     DeviceOverview,
     DeviceOverviewUpdate,
-} from '../../../../src/generated/types';
-import { deviceUrlFromId } from '../../../../src/methods/urlFromId';
-import { DeviceName } from '../../../data/devices/index.spec';
+} from '../../../../src/generated/types.js.ts";
+import { deviceUrlFromId } from '../../../../src/methods/urlFromId.js.ts";
+import { DeviceName } from '../../../data/devices/index.spec.js.ts";
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 

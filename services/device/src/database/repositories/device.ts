@@ -1,10 +1,10 @@
-import { Device, DeviceUpdate } from '../../generated/types';
-import { DeviceModel } from '../model';
-import { ConcreteDeviceRepository } from './device/concreteDevice';
-import { DeviceGroupRepository } from './device/deviceGroup';
-import { DeviceOverviewRepository } from './device/deviceOverview';
-import { InstantiableBrowserDeviceRepository } from './device/instantiableBrowserDevice';
-import { InstantiableCloudDeviceRepository } from './device/instantiableCloudDevice';
+import { Device, DeviceUpdate } from '../../generated/types.js';
+import { DeviceModel } from '../model.js';
+import { ConcreteDeviceRepository } from './device/concreteDevice.js';
+import { DeviceGroupRepository } from './device/deviceGroup.js';
+import { DeviceOverviewRepository } from './device/deviceOverview.js';
+import { InstantiableBrowserDeviceRepository } from './device/instantiableBrowserDevice.js';
+import { InstantiableCloudDeviceRepository } from './device/instantiableCloudDevice.js';
 import { AbstractRepository, InvalidValueError } from '@crosslab/service-common';
 import { EntityManager, FindManyOptions, FindOneOptions, In } from 'typeorm';
 

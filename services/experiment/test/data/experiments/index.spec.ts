@@ -1,19 +1,19 @@
-import { ExperimentModel } from '../../../src/database/model';
-import { ExperimentRepository } from '../../../src/database/repositories/experiment';
-import { Experiment, Role } from '../../../src/generated/types';
-import { DeviceModelWithLinks, DeviceName, DeviceWithLinks } from '../devices/index.spec';
-import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec';
+import { ExperimentModel } from '../../../src/database/model.js';
+import { ExperimentRepository } from '../../../src/database/repositories/experiment.js';
+import { Experiment, Role } from '../../../src/generated/types.js';
+import { DeviceModelWithLinks, DeviceName, DeviceWithLinks } from '../devices/index.spec.js';
+import { ReplaceWithIteratively, TestDataWithLinks } from '../index.spec.js';
 import {
     PeerconnectionModelWithLinks,
     PeerconnectionName,
-} from '../peerconnections/index.spec';
-import { RoleModelWithLinks, RoleName } from '../roles/index.spec';
+} from '../peerconnections/index.spec.js';
+import { RoleModelWithLinks, RoleName } from '../roles/index.spec.js';
 import {
     ServiceConfigurationModelWithLinks,
     ServiceConfigurationName,
     ServiceConfigurationWithLinks,
-} from '../serviceConfigurations/index.spec';
-import { example_experiment } from './example_experiment.spec';
+} from '../serviceConfigurations/index.spec.js';
+import { example_experiment } from './example_experiment.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const experimentNames = ['example experiment'] as const;

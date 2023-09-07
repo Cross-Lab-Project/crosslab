@@ -1,6 +1,6 @@
-import { repositories } from '../../../database/dataSource';
-import { getExperimentsByExperimentIdSignature } from '../../../generated/signatures';
-import { experimentUrlFromId } from '../../../methods/url';
+import { repositories } from '../../../database/dataSource.js';
+import { getExperimentsByExperimentIdSignature } from '../../../generated/signatures.js';
+import { experimentUrlFromId } from '../../../methods/url.js';
 import { logger } from '@crosslab/service-common';
 
 /**

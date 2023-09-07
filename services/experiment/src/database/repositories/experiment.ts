@@ -1,11 +1,11 @@
-import { Experiment, ExperimentOverview } from '../../generated/types';
-import { experimentUrlFromId } from '../../methods/url';
-import { Instance } from '../../types/types';
-import { ExperimentModel } from '../model';
-import { DeviceRepository } from './device';
-import { PeerconnectionRepository } from './peerconnection';
-import { RoleRepository } from './role';
-import { ServiceConfigurationRepository } from './serviceConfiguration';
+import { Experiment, ExperimentOverview } from '../../generated/types.js';
+import { experimentUrlFromId } from '../../methods/url.js';
+import { Instance } from '../../types/types.js';
+import { ExperimentModel } from '../model.js';
+import { DeviceRepository } from './device.js';
+import { PeerconnectionRepository } from './peerconnection.js';
+import { RoleRepository } from './role.js';
+import { ServiceConfigurationRepository } from './serviceConfiguration.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations } from 'typeorm';
 

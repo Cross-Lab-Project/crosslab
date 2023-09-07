@@ -1,9 +1,9 @@
 import {
     InstantiableBrowserDevice,
     InstantiableBrowserDeviceUpdate,
-} from '../../../generated/types';
-import { InstantiableBrowserDeviceModel } from '../../model';
-import { DeviceOverviewRepository } from './deviceOverview';
+} from '../../../generated/types.js';
+import { InstantiableBrowserDeviceModel } from '../../model.js';
+import { DeviceOverviewRepository } from './deviceOverview.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

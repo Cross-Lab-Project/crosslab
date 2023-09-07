@@ -1,9 +1,9 @@
-import { handleDeviceChangedEventCallback } from './deviceChanged';
-import { handlePeerconnectionClosedEventCallback } from './peerconnectionClosed';
-import { handlePeerconnectionStatusChangedEventCallback } from './peerconnectionStatusChanged';
+import { handleDeviceChangedEventCallback } from './deviceChanged.js';
+import { handlePeerconnectionClosedEventCallback } from './peerconnectionClosed.js';
+import { handlePeerconnectionStatusChangedEventCallback } from './peerconnectionStatusChanged.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 import { TypedEventEmitter } from 'typeorm';
 
 type CallbackEvents = {

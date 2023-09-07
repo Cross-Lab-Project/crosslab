@@ -1,13 +1,13 @@
-import { AppDataSource, repositories } from '../../../../src/database/dataSource';
-import { InstantiableCloudDeviceModel } from '../../../../src/database/model';
-import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice';
+import { AppDataSource, repositories } from '../../../../src/database/dataSource.js.ts";
+import { InstantiableCloudDeviceModel } from '../../../../src/database/model.js.ts";
+import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice.js.ts";
 import {
     InstantiableCloudDevice,
     InstantiableCloudDeviceUpdate,
-} from '../../../../src/generated/types';
-import { InstantiableCloudDeviceName } from '../../../data/devices/instantiableCloudDevices/index.spec';
-import { initTestDatabase } from '../index.spec';
-import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec';
+} from '../../../../src/generated/types.js.ts";
+import { InstantiableCloudDeviceName } from '../../../data/devices/instantiableCloudDevices/index.spec.js.ts";
+import { initTestDatabase } from '../index.spec.js.ts";
+import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

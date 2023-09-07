@@ -1,5 +1,5 @@
-import { Participant } from '../../generated/types';
-import { ParticipantModel } from '../model';
+import { Participant } from '../../generated/types.js';
+import { ParticipantModel } from '../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

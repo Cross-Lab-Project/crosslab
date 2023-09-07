@@ -6,10 +6,10 @@
  */
 import express from "express"
 import bodyParser from "body-parser"
-import router from "./routes"
+import router from "./routes.js"
 import { 
     initServiceOptions
-} from "./types"
+} from "./types.js"
 
 export const app: express.Application & { initService: (option: initServiceOptions) => void } = express() as any
 
@@ -44,4 +44,4 @@ app.initService = (options) => {
     app.use(options.errorHandler ?? defaultErrorHandler)
 }
 {%- endmacro -%}
-{{ generateIndex() | prettier }}
+{{ generateIndex() }}

@@ -1,5 +1,5 @@
-import * as operationsInstitutions from './institutions';
-import * as operationsProxy from './proxy';
+import * as operationsInstitutions from './institutions.js';
+import * as operationsProxy from './proxy.js';
 
 export default {
     ...operationsProxy,

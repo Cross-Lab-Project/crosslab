@@ -1,4 +1,4 @@
-import { PeerconnectionEntityDataWithLinks } from './index.spec';
+import { PeerconnectionEntityDataWithLinks } from './index.spec.js';
 
 const url = 'https://api.localhost/peerconnections/bb1a7d76-2e5a-4fd7-8cbd-6d6af35bb3de';
 

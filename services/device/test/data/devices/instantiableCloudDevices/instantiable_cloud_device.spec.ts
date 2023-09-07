@@ -1,5 +1,5 @@
-import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice';
-import { deviceUrlFromId } from '../../../../src/methods/urlFromId';
+import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice.js.ts";
+import { deviceUrlFromId } from '../../../../src/methods/urlFromId.js.ts";
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 const uuid = '15d9de70-3646-4d05-a83b-3c70862c0b98';

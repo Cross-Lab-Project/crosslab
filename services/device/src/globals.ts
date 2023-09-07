@@ -1,4 +1,4 @@
-import { config } from './config';
+import { config } from './config.js';
 import { APIClient } from '@cross-lab-project/api-client';
 
 export const apiClient = new APIClient(config.BASE_URL);

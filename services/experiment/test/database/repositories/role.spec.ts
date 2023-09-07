@@ -1,10 +1,10 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { RoleModel } from '../../../src/database/model';
-import { RoleRepository } from '../../../src/database/repositories/role';
-import { Role } from '../../../src/generated/types';
-import { RoleName } from '../../data/roles/index.spec';
-import { experimentRepositoryTestSuite } from './experiment.spec';
-import { initTestDatabase } from './index.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { RoleModel } from '../../../src/database/model.js';
+import { RoleRepository } from '../../../src/database/repositories/role.js';
+import { Role } from '../../../src/generated/types.js';
+import { RoleName } from '../../data/roles/index.spec.js';
+import { experimentRepositoryTestSuite } from './experiment.spec.js';
+import { initTestDatabase } from './index.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

@@ -1,6 +1,6 @@
-import { repositories } from '../../../database/dataSource';
-import { getDevicesByDeviceIdSignature } from '../../../generated/signatures';
-import { deviceUrlFromId } from '../../../methods/urlFromId';
+import { repositories } from '../../../database/dataSource.js';
+import { getDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 import { logger } from '@crosslab/service-common';
 
 /**

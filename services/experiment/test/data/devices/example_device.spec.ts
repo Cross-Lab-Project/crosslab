@@ -1,4 +1,4 @@
-import { DeviceEntityDataWithLinks } from './index.spec';
+import { DeviceEntityDataWithLinks } from './index.spec.js';
 
 export const example_device: DeviceEntityDataWithLinks = {
     request: {

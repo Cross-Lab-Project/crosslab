@@ -1,6 +1,6 @@
-import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types';
-import { deviceUrlFromId } from '../../../methods/urlFromId';
-import { DeviceOverviewModel } from '../../model';
+import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { DeviceOverviewModel } from '../../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

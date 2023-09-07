@@ -117,7 +117,8 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       status: 'running',
       roles: this.deviceMetas.map((m, idx) => ({name: 'device' + (idx + 1), description: m.description})),
       devices: this.apiDevices.map((d, idx) => ({role: 'device' + (idx + 1), device: d.url})),
-      ...experiment,
+      serviceConfigurations: [],
+      ...experiment as object,
     };
 
     const apiExperiment = await client.createExperiment(experiment);

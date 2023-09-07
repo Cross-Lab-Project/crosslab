@@ -1,11 +1,11 @@
-import { config } from './config';
-import { app } from './generated';
-import { websocketHandling } from './operations/devices';
+import { config } from './config.js';
+import { app } from './generated/index.js';
+import { websocketHandling } from './operations/devices/websocket/index.js';
 import { logging, authorization, error } from '@crosslab/service-common';
-import express from 'express';
+import express, { Application } from 'express';
 import { IncomingMessage } from 'http';
 import { Socket } from 'net';
-import WebSocket from 'ws';
+import WebSocket, {WebSocketServer} from 'ws';
 
 declare global {
     // eslint-disable-next-line
@@ -18,7 +18,7 @@ declare global {
 }
 
 function setupWebsockets(localApp: express.Application) {
-    const wsServer = new WebSocket.Server({ noServer: true });
+    const wsServer = new WebSocketServer({ noServer: true });
     localApp.wsListeners = new Map();
     localApp.ws = (path, listener) => localApp.wsListeners.set(path, listener);
     websocketHandling(localApp);
@@ -47,7 +47,7 @@ export function initApp() {
     app.initService({
         preHandlers: [
             setupWebsockets,
-            (application) => {
+            (application: Application) => {
                 application.use(express.json());
                 application.use(express.urlencoded({ extended: false }));
                 application.use(logging.middleware());
@@ -55,7 +55,7 @@ export function initApp() {
             },
         ],
         postHandlers: [
-            (application) => {
+            (application: Application) => {
                 application.get('/device/status', (_req, res) => {
                     res.send({ status: 'ok' });
                 });

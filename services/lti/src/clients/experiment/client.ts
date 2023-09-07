@@ -30,6 +30,7 @@ export class Client {
 
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
+        init.headers = init.headers || {"Content-Type": "application/json"};
         try {
             raw_response = await fetch(url, init);
         } catch (error) {

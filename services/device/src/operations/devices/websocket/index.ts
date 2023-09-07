@@ -3,7 +3,7 @@ import {
     heartbeatHandling,
     closeHandling,
     messageHandling,
-} from './handling';
+} from './handling/index.js';
 import { logger } from '@crosslab/service-common';
 
 // TODO: restructure to make it more readable

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-{%- set operations = (api | resolveOperations) -%}
+//@ts-nocheck
+{% set operations = (api | resolveOperations) -%}
 {%- set typeDependencies = [] -%}
 {%- set validationDependencies = [] -%}
 
@@ -36,7 +37,7 @@ import {
     {{ typeDependencies | unique | join(",\n\t") }}
 } from "./types"
 
-import * as type_validation from "./type_validation"
+import * as type_validation from "./type_validation.cjs"
 import * as operations from './operations'
 
 {%- for operation in operations %}

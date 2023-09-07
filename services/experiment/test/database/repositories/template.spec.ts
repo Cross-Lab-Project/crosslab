@@ -1,10 +1,10 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { TemplateModel } from '../../../src/database/model';
-import { TemplateRepository } from '../../../src/database/repositories/template';
-import { Template, TemplateOverview, TemplateUpdate } from '../../../src/generated/types';
-import { templateUrlFromId } from '../../../src/methods/url';
-import { TemplateName } from '../../data/templates/index.spec';
-import { initTestDatabase } from './index.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { TemplateModel } from '../../../src/database/model.js';
+import { TemplateRepository } from '../../../src/database/repositories/template.js';
+import { Template, TemplateOverview, TemplateUpdate } from '../../../src/generated/types.js';
+import { templateUrlFromId } from '../../../src/methods/url.js';
+import { TemplateName } from '../../data/templates/index.spec.js';
+import { initTestDatabase } from './index.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

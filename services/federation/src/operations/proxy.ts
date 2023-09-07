@@ -1,5 +1,5 @@
-import { AppDataSource } from '../database/dataSource';
-import { InstitutionModel } from '../database/model';
+import { AppDataSource } from '../database/dataSource.js';
+import { InstitutionModel } from '../database/model.js';
 import {
     getProxySignature,
     postProxySignature,
@@ -9,7 +9,7 @@ import {
     headProxySignature,
     traceProxySignature,
     putProxySignature,
-} from '../generated/signatures';
+} from '../generated/signatures.js';
 import {
     MissingParameterError,
     InvalidValueError,

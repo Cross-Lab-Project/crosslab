@@ -1,5 +1,5 @@
-import { InstitutionModel } from '../database/model';
-import { Institution } from '../generated/types';
+import { InstitutionModel } from '../database/model.js';
+import { Institution } from '../generated/types.js';
 
 /**
  * This function writes the data of a {@link Institution} to a {@link InstitutionModel}.

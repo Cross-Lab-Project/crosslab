@@ -1,12 +1,12 @@
-import { repositories } from '../database/dataSource';
-import { ExperimentModel } from '../database/model';
+import { repositories } from '../database/dataSource.js';
+import { ExperimentModel } from '../database/model.js';
 import {
     callbackUrl,
     peerconnectionClosedCallbacks,
     peerconnectionStatusChangedCallbacks,
-} from '../operations/callbacks';
-import { apiClient } from './api';
-import { buildConnectionPlan } from './connectionPlan';
+} from '../operations/callbacks/index.js';
+import { apiClient } from './api.js';
+import { buildConnectionPlan } from './connectionPlan.js';
 
 /**
  * This function attempts to establish the peerconnections for an experiment model according to its connection plan.

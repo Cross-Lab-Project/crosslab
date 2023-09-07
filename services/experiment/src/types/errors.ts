@@ -1,4 +1,4 @@
-import { ErrorWithStatus } from '../generated/types';
+import { ErrorWithStatus } from '../generated/types.js';
 
 /**
  * This error class should be used if a service configuration is faulty.

@@ -1,5 +1,5 @@
-import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice';
-import instantiable_cloud_device from './instantiable_cloud_device.spec';
+import { InstantiableCloudDeviceRepository } from '../../../../src/database/repositories/device/instantiableCloudDevice.js.ts";
+import instantiable_cloud_device from './instantiable_cloud_device.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const instantiableCloudDeviceNames = ['instantiable cloud device'] as const;

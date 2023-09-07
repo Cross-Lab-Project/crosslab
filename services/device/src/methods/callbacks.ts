@@ -1,12 +1,12 @@
-import { config } from '../config';
-import { repositories } from '../database/dataSource';
-import { DeviceModel, PeerconnectionModel } from '../database/model';
+import { config } from '../config.js';
+import { repositories } from '../database/dataSource.js';
+import { DeviceModel, PeerconnectionModel } from '../database/model.js';
 import {
     DeviceChangedEventCallback,
     PeerconnectionClosedEventCallback,
     PeerconnectionStatusChangedEventCallback,
-} from '../generated/types';
-import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId';
+} from '../generated/types.js';
+import { deviceUrlFromId, peerconnectionUrlFromId } from './urlFromId.js';
 import { logger } from '@crosslab/service-common';
 import fetch from 'node-fetch';
 

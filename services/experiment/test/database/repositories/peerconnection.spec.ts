@@ -1,9 +1,9 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource';
-import { PeerconnectionModel } from '../../../src/database/model';
-import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection';
-import { PeerconnectionName } from '../../data/peerconnections/index.spec';
-import { experimentRepositoryTestSuite } from './experiment.spec';
-import { initTestDatabase } from './index.spec';
+import { AppDataSource, repositories } from '../../../src/database/dataSource.js';
+import { PeerconnectionModel } from '../../../src/database/model.js';
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection.js';
+import { PeerconnectionName } from '../../data/peerconnections/index.spec.js';
+import { experimentRepositoryTestSuite } from './experiment.spec.js';
+import { initTestDatabase } from './index.spec.js';
 import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
 import assert from 'assert';
 import { FindOptionsWhere } from 'typeorm';

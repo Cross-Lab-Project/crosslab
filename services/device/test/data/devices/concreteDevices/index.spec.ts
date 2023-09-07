@@ -1,6 +1,6 @@
-import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice';
-import concrete_device from './concrete_device.spec';
-import concrete_device_no_description from './concrete_device_no_description.spec';
+import { ConcreteDeviceRepository } from '../../../../src/database/repositories/device/concreteDevice.js.ts";
+import concrete_device from './concrete_device.spec.js';
+import concrete_device_no_description from './concrete_device_no_description.spec.js';
 import { EntityData } from '@crosslab/service-common/test-helper';
 
 export const concreteDeviceNames = [

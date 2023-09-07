@@ -1,4 +1,4 @@
-import { repositories } from '../../../../src/database/dataSource';
+import { repositories } from '../../../../src/database/dataSource.js.ts";
 import {
     ConcreteDeviceUpdate,
     DeviceGroupUpdate,
@@ -6,18 +6,18 @@ import {
     InstantiableBrowserDeviceUpdate,
     InstantiableCloudDeviceUpdate,
     ServiceDescription,
-} from '../../../../src/generated/types';
-import { changedCallbacks } from '../../../../src/methods/callbacks';
-import * as callbackMethods from '../../../../src/methods/callbacks';
-import { patchDevicesByDeviceId } from '../../../../src/operations/devices';
-import { concreteDeviceNames } from '../../../data/devices/concreteDevices/index.spec';
-import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec';
-import { deviceNames } from '../../../data/devices/index.spec';
-import { instantiableBrowserDeviceNames } from '../../../data/devices/instantiableBrowserDevices/index.spec';
-import { instantiableCloudDeviceNames } from '../../../data/devices/instantiableCloudDevices/index.spec';
-import { TestData } from '../../../data/index.spec';
-import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec';
-import { addTest, stubbedAuthorization } from '../../index.spec';
+} from '../../../../src/generated/types.js.ts";
+import { changedCallbacks } from '../../../../src/methods/callbacks.js.ts";
+import * as callbackMethods from '../../../../src/methods/callbacks.js.ts";
+import { patchDevicesByDeviceId } from '../../../../src/operations/devices.js.ts";
+import { concreteDeviceNames } from '../../../data/devices/concreteDevices/index.spec.js.ts";
+import { deviceGroupNames } from '../../../data/devices/deviceGroups/index.spec.js.ts";
+import { deviceNames } from '../../../data/devices/index.spec.js.ts";
+import { instantiableBrowserDeviceNames } from '../../../data/devices/instantiableBrowserDevices/index.spec.js.ts";
+import { instantiableCloudDeviceNames } from '../../../data/devices/instantiableCloudDevices/index.spec.js.ts";
+import { TestData } from '../../../data/index.spec.js.ts";
+import { deviceRepositoryTestSuite } from '../../../database/repositories/device.spec.js.ts";
+import { addTest, stubbedAuthorization } from '../../index.spec.js.ts";
 import { InvalidValueError, MissingEntityError } from '@crosslab/service-common';
 import assert from 'assert';
 import Mocha from 'mocha';

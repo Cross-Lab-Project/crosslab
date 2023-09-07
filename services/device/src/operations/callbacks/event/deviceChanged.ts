@@ -1,7 +1,7 @@
-import { repositories } from '../../../database/dataSource';
-import { ConcreteDevice, DeviceChangedEventCallback } from '../../../generated/types';
-import { apiClient, timeoutMap } from '../../../globals';
-import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager';
+import { repositories } from '../../../database/dataSource.js';
+import { ConcreteDevice, DeviceChangedEventCallback } from '../../../generated/types.js';
+import { apiClient, timeoutMap } from '../../../globals.js';
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
 
 /**
  * This function handles an incoming "device-changed" event callback.

@@ -1,5 +1,5 @@
-import { Role } from '../../generated/types';
-import { RoleModel } from '../model';
+import { Role } from '../../generated/types.js';
+import { RoleModel } from '../model.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 

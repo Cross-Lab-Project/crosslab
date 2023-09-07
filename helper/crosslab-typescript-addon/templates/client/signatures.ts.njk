@@ -39,7 +39,7 @@
  */
 import {
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 {%- for serviceName, operations in sortedOperations %}
 {%- set first = true %}
@@ -178,4 +178,4 @@ export namespace {{ serviceName | formatName }}Signatures {
     {%- set content = content | replace('import {', 'import {\n\tSizedTuple,') -%}
 {%- endif -%}
 
-{{ content | prettier }}
+{{ content }}

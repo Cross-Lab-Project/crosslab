@@ -1,13 +1,13 @@
-import { repositories } from '../../../database/dataSource';
-import { ExperimentModel } from '../../../database/model';
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors';
-import { validateExperimentStatus } from '../../../types/typeguards';
-import { ResolvedDevice } from '../../../types/types';
-import { experimentUrlFromId } from '../../url';
-import { lockBookingExperiment } from './bookingLocking';
-import { updateBookingExperiment } from './bookingUpdate';
-import { instantiateDevicesExperiment } from './deviceInstantiation';
-import { createPeerconnectionsExperiment } from './peerconnectionCreation';
+import { repositories } from '../../../database/dataSource.js';
+import { ExperimentModel } from '../../../database/model.js';
+import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { ResolvedDevice } from '../../../types/types.js';
+import { experimentUrlFromId } from '../../url.js';
+import { lockBookingExperiment } from './bookingLocking.js';
+import { updateBookingExperiment } from './bookingUpdate.js';
+import { instantiateDevicesExperiment } from './deviceInstantiation.js';
+import { createPeerconnectionsExperiment } from './peerconnectionCreation.js';
 import { logger } from '@crosslab/service-common';
 
 export async function setupExperiment(

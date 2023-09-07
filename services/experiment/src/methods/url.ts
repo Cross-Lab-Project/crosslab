@@ -1,5 +1,5 @@
-import { config } from '../config';
-import { DeviceModel } from '../database/model';
+import { config } from '../config.js';
+import { DeviceModel } from '../database/model.js';
 
 /**
  * This function builds the url of an experiment using its id.

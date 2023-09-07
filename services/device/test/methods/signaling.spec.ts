@@ -1,8 +1,8 @@
-import { repositories } from '../../src/database/dataSource';
-import { PeerconnectionModel } from '../../src/database/model';
-import { apiClient } from '../../src/globals';
-import { signalingQueue } from '../../src/methods/signaling';
-import { peerconnectionUrlFromId } from '../../src/methods/urlFromId';
+import { repositories } from '../../src/database/dataSource.js.ts";
+import { PeerconnectionModel } from '../../src/database/model.js.ts";
+import { apiClient } from '../../src/globals.js.ts";
+import { signalingQueue } from '../../src/methods/signaling.js.ts";
+import { peerconnectionUrlFromId } from '../../src/methods/urlFromId.js.ts";
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 import seedrandom from 'seedrandom';
