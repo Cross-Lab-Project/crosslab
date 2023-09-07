@@ -1,6 +1,6 @@
 import {ErrorRequestHandler} from 'express';
 
-import {logger} from '../logger';
+import {logger} from '../logger.js';
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   const status = err.status || 500;

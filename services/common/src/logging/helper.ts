@@ -1,5 +1,5 @@
-import {die} from "../utils";
-import {LogLevel, LoggingConfig, LoggingTransortConfig, logLevelMapping} from "./config";
+import {die} from '../utils.js';
+import {LogLevel, LoggingConfig, LoggingTransortConfig, logLevelMapping} from './config.js';
 
 export function parseConfig(config: LoggingConfig): {LOGGING: LogLevel; LOGGING_TRANSPORT: LoggingTransortConfig[]} {
   let LOGGING = config.LOGGING ?? "info";

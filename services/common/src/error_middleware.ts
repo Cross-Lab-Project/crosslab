@@ -1,5 +1,5 @@
 import {ErrorRequestHandler} from 'express';
-import { logger } from './logging';
+import { logger } from './logging/index.js';
 
 export const middleware: ErrorRequestHandler = (err, req, res, _next) => {
   const status = err.status || 500;

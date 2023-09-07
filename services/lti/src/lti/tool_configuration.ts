@@ -1,4 +1,4 @@
-import { config } from "../config"
+import { config } from "../config.js"
 
 const host = (url: string) => new URL(url).host
 const path = (base_url: string, path: string) => new URL(path, base_url).toString()

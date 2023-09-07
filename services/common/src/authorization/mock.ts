@@ -1,4 +1,4 @@
-import { AuthorizationActionTuple, AuthorizationResponse, AuthorizationRelationTuple, authorization_functions } from "./authorization";
+import { AuthorizationActionTuple, AuthorizationResponse, AuthorizationRelationTuple, authorization_functions } from './authorization.js';
 
 export type AuthorizationMockConfigItem = Partial<AuthorizationActionTuple> & {result: boolean; reason?: string};
 export type AuthorizationMockConfig = AuthorizationMockConfigItem[];

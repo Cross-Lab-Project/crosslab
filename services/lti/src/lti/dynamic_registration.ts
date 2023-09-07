@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import assert from 'node:assert';
 import fetch from 'node-fetch';
-import { tool_configuration } from './tool_configuration';
-import { ApplicationDataSource } from '../database/datasource';
-import { PlatformModel } from '../database/model';
-import { cross_document_message } from '../helper/html_responses';
+import { tool_configuration } from './tool_configuration.js';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { PlatformModel } from '../database/model.js';
+import { cross_document_message } from '../helper/html_responses.js';
 
 const platform_repository = ApplicationDataSource.getRepository(PlatformModel)
 
@@ -13,7 +13,7 @@ export async function handle_dynamic_registration_initiation_request(req:  Reque
     const registration_token = req.query.registration_token as string | undefined;
 
     assert(openid_configuration_url, "openid_configuration_url is required")
-    const openid_configuration = await fetch(openid_configuration_url).then(res => res.json())
+    const openid_configuration = await fetch(openid_configuration_url).then(res => res.json()) as any
 
     const registration = {
         application_type: 'web',
@@ -37,7 +37,7 @@ export async function handle_dynamic_registration_initiation_request(req:  Reque
         throw new Error(`Registration failed with status ${registration_response.status}: ${await registration_response.text()}`)
     }
 
-    const parsed_registration_response = await registration_response.json()
+    const parsed_registration_response = await registration_response.json() as any
 
     const platform=platform_repository.create({
         iss: openid_configuration.issuer,

@@ -1,6 +1,6 @@
 import {DataSource, DataSourceOptions, EntityManager} from 'typeorm';
 
-import {AbstractRepository} from './abstractRepository';
+import {AbstractRepository} from './abstractRepository.js';
 
 type RepositoryDict = {[k: string]: AbstractRepository<object, unknown, unknown, Record<string, object>>};
 

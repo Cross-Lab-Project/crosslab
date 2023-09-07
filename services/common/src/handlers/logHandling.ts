@@ -1,7 +1,7 @@
 import * as express from 'express';
 import expressWinston from 'express-winston';
 
-import {logger} from '../logger';
+import {logger} from '../logger.js';
 
 export function logHandling(app: express.Application) {
   app.use(

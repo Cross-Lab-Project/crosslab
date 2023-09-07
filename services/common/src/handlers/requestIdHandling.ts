@@ -1,7 +1,7 @@
 import {randomUUID} from 'crypto';
 import * as express from 'express';
 
-import {asyncLocalStorage} from '../logger';
+import {asyncLocalStorage} from '../logger.js';
 
 export function requestIdHandling(app: express.Application) {
   app.use(requestIdMiddleware);

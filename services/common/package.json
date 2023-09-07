@@ -3,7 +3,7 @@
   "types": "./lib/types/index.d.ts",
   "main": "./lib/cjs/index.js",
   "scripts": {
-    "build:compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build:compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && echo '{\"type\": \"module\"}' > ./lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > ./lib/cjs/package.json",
     "build": "npm run build:compile",
     "watch": "npx --yes chokidar-cli 'src/**/*.ts' -c 'npm run build'",
     "lint": "eslint ."

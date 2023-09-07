@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { tool_configuration } from './tool_configuration';
-import { config } from '../config';
-import { ApplicationDataSource } from '../database/datasource';
-import { PlatformModel } from '../database/model';
+import { tool_configuration } from './tool_configuration.js';
+import { config } from '../config.js';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { PlatformModel } from '../database/model.js';
 
 const platform_repository = ApplicationDataSource.getRepository(PlatformModel)
 

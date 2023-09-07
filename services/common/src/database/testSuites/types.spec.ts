@@ -1,6 +1,6 @@
 import {FindOptionsWhere} from 'typeorm';
 
-import {AbstractRepository} from '../abstractRepository';
+import {AbstractRepository} from '../abstractRepository.js';
 
 export type SuiteName = 'create' | 'write' | 'save' | 'find' | 'findOne' | 'findOneOrFail' | 'remove' | 'format' | 'additional';
 

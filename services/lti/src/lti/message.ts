@@ -1,523 +1,89 @@
 import {Request, Response} from "express";
-import {tool_configuration} from "./tool_configuration";
-import {ApplicationDataSource} from "../database/datasource";
-import {PlatformModel} from "../database/model";
-import * as generators from "../helper/generators";
-import {nonce_store} from "../helper/nonce";
-import {JWTPayload, createRemoteJWKSet, jwtVerify} from "jose";
-import {post_form_message} from "../helper/html_responses";
-import fetch from "node-fetch";
+import {tool_configuration} from "./tool_configuration.js";
+import {ApplicationDataSource} from "../database/datasource.js";
+import {PlatformModel} from "../database/model.js";
+import * as generators from "../helper/generators.js";
+import {nonce_store} from "../helper/nonce.js";
+import {JWTPayload, createRemoteJWKSet, jwtVerify, SignJWT} from "jose";
+import {post_form_message} from "../helper/html_responses.js";
 import {logging} from "@crosslab/service-common";
+import {authentication} from "../clients/index.js";
+import {ListTemplateResponse200} from "../clients/experiment/schemas.js";
+import {kid, privateKey} from "../key_management.js";
+import {randomBytes} from "crypto";
 
 const platform_repository = ApplicationDataSource.getRepository(PlatformModel);
 
-function handle_deep_linking_request(_req: Request, _res: Response, _payload: JWTPayload) {
-  throw new Error("Function not implemented.");
+function post_form(url: string, message: object): string {
+  return `<form action="${url}" method="post">${Object.entries(message)
+    .map(([key, value]) => `<input type="hidden" name="${key}" value="${value}">`)
+    .join("")}<button type="submit">Select</button></form>`;
 }
 
-const example_experiment = {
-  devices: [
-    {
-      device: "https://api.goldi-labs.de/devices/f1e36955-84d6-4e26-b098-b0527b870220",
-      role: "pspu",
-    },
-    {
-      device: "https://api.goldi-labs.de/devices/c91eb068-12e6-4dd0-9f0b-68888588766d",
-      role: "bpu",
-    },
-    {
-      device: "https://api.goldi-labs.de/devices/cc1de37e-1a6a-4470-affd-12eb41a3231e",
-      role: "ecp",
-    },
-  ],
-  roles: [
-    {
-      name: "pspu",
-    },
-    {
-      name: "bpu",
-    },
-    {
-      name: "ecp",
-    },
-  ],
-  serviceConfigurations: [
-    {
-      serviceType: "http://api.goldi-labs.de/serviceTypes/electrical",
-      configuration: {},
-      participants: [
-        {
-          role: "pspu",
-          serviceId: "sensors",
-          config: {
-            interfaces: [
-              {
-                interfaceId: "1",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitXLeft",
-                },
-                busId: "LimitXLeft",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "2",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitXRight",
-                },
-                busId: "LimitXRight",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "3",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitYBack",
-                },
-                busId: "LimitYBack",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "4",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitYFront",
-                },
-                busId: "LimitYFront",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "5",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitZBottom",
-                },
-                busId: "LimitZBottom",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "6",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitZTop",
-                },
-                busId: "LimitZTop",
-                direction: "out",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "7",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "Proximity",
-                },
-                busId: "Proximity",
-                direction: "out",
-                driver: "pspu",
-              },
-            ],
+async function handle_deep_linking_request(_req: Request, res: Response, payload: JWTPayload) {
+  //const templates = await experiment.listTemplate();
+  const templates: ListTemplateResponse200 = [
+    {name: "Test", description: "Beschreibung", url: "https://www.goldi-labs.de/en/experiment?token=123"},
+  ];
+
+  const deep_linking_settings = (payload["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings"] as any) ?? {};
+  const jwt_fields = {
+    aud: payload.iss as string,
+    iss: payload.aud as string,
+    nonce: randomBytes(32).toString("base64url"),
+    "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiDeepLinkingResponse",
+    "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
+    "https://purl.imsglobal.org/spec/lti/claim/deployment_id": payload["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
+    "https://purl.imsglobal.org/spec/lti-dl/claim/data": deep_linking_settings.data,
+  };
+  logging.logger.log("trace", "response_fields", {response_fields: jwt_fields});
+  const return_url = deep_linking_settings.deep_link_return_url;
+
+  const template_jwts = await Promise.all(
+    templates.map(template => {
+      return new SignJWT({
+        ...jwt_fields,
+        "https://purl.imsglobal.org/spec/lti-dl/claim/content_items": [
+          {
+            type: "ltiResourceLink",
+            url: tool_configuration.redirect_uris[0],
+            custom: {experiment: template.url},
           },
-        },
-        {
-          role: "pspu",
-          serviceId: "actuators",
-          config: {
-            interfaces: [
-              {
-                interfaceId: "8",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "XMotorLeft",
-                },
-                busId: "XMotorLeft",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "9",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "XMotorRight",
-                },
-                busId: "XMotorRight",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "10",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "YMotorBack",
-                },
-                busId: "YMotorBack",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "11",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "YMotorFront",
-                },
-                busId: "YMotorFront",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "12",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "ZMotorBottom",
-                },
-                busId: "ZMotorBottom",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "13",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "ZMotorTop",
-                },
-                busId: "ZMotorTop",
-                direction: "in",
-                driver: "pspu",
-              },
-              {
-                interfaceId: "14",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "Magnet",
-                },
-                busId: "Magnet",
-                direction: "in",
-                driver: "pspu",
-              },
-            ],
-          },
-        },
-        {
-          role: "bpu",
-          serviceId: "signals",
-          config: {
-            interfaces: [
-              {
-                interfaceId: "15",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D00",
-                },
-                busId: "LimitXLeft",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "16",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D01",
-                },
-                busId: "LimitXRight",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "17",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D02",
-                },
-                busId: "LimitYBack",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "18",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D03",
-                },
-                busId: "LimitYFront",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "19",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D04",
-                },
-                busId: "LimitZBottom",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "20",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D05",
-                },
-                busId: "LimitZTop",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "21",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D06",
-                },
-                busId: "Proximity",
-                direction: "in",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "22",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D07",
-                },
-                busId: "XMotorLeft",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "23",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D08",
-                },
-                busId: "XMotorRight",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "24",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D09",
-                },
-                busId: "YMotorBack",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "25",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D10",
-                },
-                busId: "YMotorFront",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "26",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D11",
-                },
-                busId: "ZMotorBottom",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "27",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D12",
-                },
-                busId: "ZMotorTop",
-                direction: "out",
-                driver: "bpu",
-              },
-              {
-                interfaceId: "28",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "D13",
-                },
-                busId: "Magnet",
-                direction: "out",
-                driver: "bpu",
-              },
-            ],
-          },
-        },
-        {
-          role: "ecp",
-          serviceId: "electrical",
-          config: {
-            interfaces: [
-              {
-                interfaceId: "29",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitXLeft / D00",
-                },
-                busId: "LimitXLeft",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "30",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitXRight / D01",
-                },
-                busId: "LimitXRight",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "31",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitYBack / D02",
-                },
-                busId: "LimitYBack",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "32",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitYFront / D03",
-                },
-                busId: "LimitYFront",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "33",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitZBottom / D04",
-                },
-                busId: "LimitZBottom",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "34",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "LimitZTop / D05",
-                },
-                busId: "LimitZTop",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "35",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "Proximity / D06",
-                },
-                busId: "Proximity",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "36",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "XMotorLeft / D07",
-                },
-                busId: "XMotorLeft",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "37",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "XMotorRight / D08",
-                },
-                busId: "XMotorRight",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "38",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "YMotorBack / D09",
-                },
-                busId: "YMotorBack",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "39",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "YMotorFront / D10",
-                },
-                busId: "YMotorFront",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "40",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "ZMotorBottom / D11",
-                },
-                busId: "ZMotorBottom",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "41",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "ZMotorTop / D12",
-                },
-                busId: "ZMotorTop",
-                direction: "in",
-                driver: "ecp",
-              },
-              {
-                interfaceId: "42",
-                interfaceType: "gpio",
-                signals: {
-                  gpio: "Magnet / D13",
-                },
-                busId: "Magnet",
-                direction: "in",
-                driver: "ecp",
-              },
-            ],
-          },
-        },
-      ],
-    },
-    {
-      serviceType: "http://api.goldi-labs.de/serviceTypes/webcam",
-      configuration: {},
-      participants: [
-        {
-          role: "pspu",
-          serviceId: "webcam",
-          config: {},
-        },
-        {
-          role: "ecp",
-          serviceId: "webcam",
-          config: {},
-        },
-      ],
-    },
-  ],
-};
+        ],
+      })
+        .setProtectedHeader({alg: "ES256", kid: kid})
+        .setIssuedAt()
+        .setExpirationTime("5m")
+        .sign(privateKey);
+    }),
+  );
+
+  res.send(
+    "<!DOCTYPE html>" +
+      "<html>" +
+      "<body>" +
+      "<h2>Experiment Selection</h2>" +
+      "<p>If you want to add a new Experiment Template, please visit the main homepage.</p>" +
+      "<table>" +
+      '  <tr align="left">' +
+      "    <th>Name</th>" +
+      "    <th>Description</th>" +
+      "    <th>Selection</th>" +
+      "  </tr>" +
+      templates
+        .map(
+          (template, idx) =>
+            "  <tr>" +
+            `    <td>${template.name}</td>` +
+            `    <td>${template.description}</td>` +
+            `    <td>${post_form(return_url, {JWT: template_jwts[idx]})}</td>`,
+        )
+        .join("\n") +
+      "</table>" +
+      "</body>" +
+      "</html>",
+  );
+}
 
 async function handle_authentication_response(req: Request, res: Response) {
   res.clearCookie("state", {httpOnly: true, sameSite: "none", secure: true});
@@ -538,23 +104,18 @@ async function handle_authentication_response(req: Request, res: Response) {
   }
 
   if (payload["https://purl.imsglobal.org/spec/lti/claim/message_type"] === "LtiResourceLinkRequest") {
-    const token = await fetch("http://localhost:3000/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({username: "jona3814"}),
-    }).then(r => r.json());
+    const token = await authentication.createToken({username: "jona3814"});
     logging.logger.log("trace", "received access token for LTI-Access", {token});
     res.send(
       post_form_message("https://www.goldi-labs.de/en/experiment?token=" + token, {
-        experiment: JSON.stringify({...example_experiment, status: "running"}).replaceAll('"', "&quot;"),
+        //experiment: JSON.stringify({...example_experiment, status: "running"}).replaceAll('"', "&quot;"),
       }),
     );
     return;
   }
-  if (payload['"https://purl.imsglobal.org/spec/lti/claim/message_type'] === "LtiDeepLinkingRequest") {
+  if (payload["https://purl.imsglobal.org/spec/lti/claim/message_type"] === "LtiDeepLinkingRequest") {
     await handle_deep_linking_request(req, res, payload);
+    return;
   }
   res.send(payload);
 }

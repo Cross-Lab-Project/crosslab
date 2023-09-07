@@ -1,15 +1,15 @@
 import * as express from "express";
 
-import {ForbiddenError, UnauthorizedError} from "../errors";
-import {die} from "../utils";
+import {ForbiddenError, UnauthorizedError} from '../errors.js';
+import {die} from '../utils.js';
 import {
   AuthorizationActionTuple,
   AuthorizationConfig,
   AuthorizationRelationTuple,
   AuthorizationResponse,
   authorization_functions,
-} from "./authorization";
-import {AuthorizationMockConfig, mock_authorization_functions} from "./mock";
+} from './authorization.js';
+import {AuthorizationMockConfig, mock_authorization_functions} from './mock.js';
 import { decodeJwt } from "jose";
 
 export type AuthorizationActionTupleWithoutSubject = Omit<AuthorizationActionTuple, "subject">;

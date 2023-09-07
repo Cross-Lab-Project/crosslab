@@ -1,8 +1,8 @@
 import express from "express";
 import {v1 as uuidv1} from "uuid";
 
-import {logger} from "./logging";
-import {requestIdContext} from "./requestId";
+import {logger} from './logging.js';
+import {requestIdContext} from './requestId.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

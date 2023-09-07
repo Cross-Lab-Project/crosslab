@@ -3,12 +3,12 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import {errorHandler, logHandling} from "@crosslab/service-common";
-import {handle_dynamic_registration_initiation_request} from "./lti/dynamic_registration";
-import * as key_management from "./key_management";
-import {complete_manual_registration, handle_manual_registration} from "./lti/manual_registration";
+import {handle_dynamic_registration_initiation_request} from "./lti/dynamic_registration.js";
+import * as key_management from "./key_management.js";
+import {complete_manual_registration, handle_manual_registration} from "./lti/manual_registration.js";
 import cookieParser from "cookie-parser";
-import {config} from "./config";
-import {handle_login_request} from "./lti/message";
+import {config} from "./config.js";
+import {handle_login_request} from "./lti/message.js";
 
 export let app: express.Express;
 

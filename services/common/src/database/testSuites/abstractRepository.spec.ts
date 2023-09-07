@@ -1,16 +1,16 @@
 import Mocha from 'mocha';
 
-import {AbstractApplicationDataSource} from '../abstractDataSource';
-import {AbstractRepository} from '../abstractRepository';
-import {testSuiteCreate} from './create.spec';
-import {testSuiteFind} from './find.spec';
-import {testSuiteFindOne} from './findOne.spec';
-import {testSuiteFindOneOrFail} from './findOneOrFail.spec';
-import {testSuiteFormat} from './format.spec';
-import {testSuiteRemove} from './remove.spec';
-import {testSuiteSave} from './save.spec';
-import {CustomRecord, PartialTestData, RepositoryTestData, SuiteName} from './types.spec';
-import {testSuiteWrite} from './write.spec';
+import {AbstractApplicationDataSource} from '../abstractDataSource.js';
+import {AbstractRepository} from '../abstractRepository.js';
+import {testSuiteCreate} from './create.spec.js';
+import {testSuiteFind} from './find.spec.js';
+import {testSuiteFindOne} from './findOne.spec.js';
+import {testSuiteFindOneOrFail} from './findOneOrFail.spec.js';
+import {testSuiteFormat} from './format.spec.js';
+import {testSuiteRemove} from './remove.spec.js';
+import {testSuiteSave} from './save.spec.js';
+import {CustomRecord, PartialTestData, RepositoryTestData, SuiteName} from './types.spec.js';
+import {testSuiteWrite} from './write.spec.js';
 
 /**
  * An abstract class for a repository.

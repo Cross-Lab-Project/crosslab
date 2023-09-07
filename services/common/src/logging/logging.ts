@@ -1,10 +1,10 @@
 import winston from "winston";
 import LokiTransport from "winston-loki";
 
-import {die} from "../utils";
-import { LogLevel, LoggingConfig, LoggingTransortConfig, logLevelMapping } from "./config";
-import { addRequestID } from "./requestId";
-import { parseConfig } from "./helper";
+import {die} from '../utils.js';
+import { LogLevel, LoggingConfig, LoggingTransortConfig, logLevelMapping } from './config.js';
+import { addRequestID } from './requestId.js';
+import { parseConfig } from './helper.js';
 
 export let logger: winston.Logger;
 

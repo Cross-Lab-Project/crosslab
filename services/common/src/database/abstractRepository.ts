@@ -1,7 +1,7 @@
 import {EntityManager, FindManyOptions, FindOneOptions, FindOptionsRelations, ObjectLiteral, Repository} from 'typeorm';
 
-import {MissingEntityError, UninitializedRepositoryError} from '../errors';
-import {NonNullableProperties} from '../types';
+import {MissingEntityError, UninitializedRepositoryError} from '../errors.js';
+import {NonNullableProperties} from '../types.js';
 
 /**
  * An abstract class for a repository.

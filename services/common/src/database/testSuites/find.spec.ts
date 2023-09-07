@@ -1,9 +1,9 @@
 import assert, {fail} from 'assert';
 import Mocha from 'mocha';
 
-import {UninitializedRepositoryError} from '../../errors';
-import {AbstractRepository} from '../abstractRepository';
-import {ModelType, RepositoryTestData} from './types.spec';
+import {UninitializedRepositoryError} from '../../errors.js';
+import {AbstractRepository} from '../abstractRepository.js';
+import {ModelType, RepositoryTestData} from './types.spec.js';
 
 export function testSuiteFind<K extends string, R extends AbstractRepository<object, unknown, unknown, Record<string, object>>>(
   repositoryTestData: RepositoryTestData<K, R>,

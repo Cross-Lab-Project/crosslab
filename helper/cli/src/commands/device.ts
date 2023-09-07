@@ -68,11 +68,11 @@ export function device(program: Command, getClient: () => APIClient) {
         })
     })
 
-    device.command('token').argument('[device url]').action(async (url?: string) => {
+    /*device.command('token').argument('[device url]').action(async (url?: string) => {
         const client = getClient();
         if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
         if (url == undefined) throw new Error("No device selected");
         const token = await client.createDeviceAuthenticationToken(url);
         console.log(token);
-    })
+    })*/
 }

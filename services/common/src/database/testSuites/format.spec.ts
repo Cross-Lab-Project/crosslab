@@ -1,8 +1,8 @@
 import assert from 'assert';
 import Mocha from 'mocha';
 
-import {AbstractRepository} from '../abstractRepository';
-import {RepositoryTestData, ResponseType} from './types.spec';
+import {AbstractRepository} from '../abstractRepository.js';
+import {RepositoryTestData, ResponseType} from './types.spec.js';
 
 export function testSuiteFormat<K extends string, R extends AbstractRepository<object, unknown, unknown, Record<string, object>>>(
   repositoryTestData: RepositoryTestData<K, R>,
