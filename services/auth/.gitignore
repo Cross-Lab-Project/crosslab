@@ -1,5 +1,4 @@
-dist/*
-!dist/openapi.json
+dist
 node_modules
 .npmrc
 *.db

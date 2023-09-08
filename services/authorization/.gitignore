@@ -1,4 +1,4 @@
-dist/*
+dist
 src/generated
 node_modules
 .npmrc

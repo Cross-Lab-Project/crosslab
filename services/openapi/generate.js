@@ -2,11 +2,9 @@ const fs = require('fs');
 
 const api_documents = [
   '../auth/dist/openapi.json',
-  '../booking/dist/openapi.json',
   '../device/dist/openapi.json',
   '../experiment/dist/openapi.json',
   '../federation/dist/openapi.json',
-  '../update/dist/openapi.json',
 ];
 
 // Make sure the ./gen directory exists
