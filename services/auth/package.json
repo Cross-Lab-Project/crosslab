@@ -14,11 +14,10 @@
     "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
     "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./src -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src",
-    "build:compile": "tsc --project tsconfig.build.json && cp src/generated/**.cjs app/generated",
+    "build:compile": "tsc&& cp src/generated/**.cjs app/generated",
     "build": "npm run build:generate && npm run build:compile",
     "format": "npx prettier . --write",
-    "start": "node app/index.js",
-    "dev": "tsc-watch --project tsconfig.build.json --onSuccess 'node --inspect=9000 ./app/index.js'",
+    "dev": "tsc-watch --onSuccess 'node --inspect=9000 ./app/index.js'",
     "lint": "eslint .",
     "test": "mocha --require ts-node/register test/**/*.spec.ts"
   },
