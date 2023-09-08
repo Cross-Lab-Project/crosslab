@@ -20,7 +20,7 @@
     "start": "node app/index.js",
     "predev": "bash scripts/init-db.sh update_service service service",
     "dev": "env-cmd -e development npx nodemon src/index.ts",
-    "format": "npx prettier src --write",
+    "format": "prettier . --write",
     "lint": "eslint ."
   },
   "author": "Johannes Nau",

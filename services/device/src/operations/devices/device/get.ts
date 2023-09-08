@@ -1,7 +1,8 @@
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../../database/dataSource.js';
 import { getDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
-import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling GET requests on
@@ -11,27 +12,27 @@ import { logger } from '@crosslab/service-common';
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
-    authorization,
-    parameters,
+  authorization,
+  parameters,
 ) => {
-    logger.log('info', 'getDevicesByDeviceId called');
+  logger.log('info', 'getDevicesByDeviceId called');
 
-    await authorization.check_authorization_or_fail(
-        'view',
-        `device:${deviceUrlFromId(parameters.device_id)}`,
-    );
+  await authorization.check_authorization_or_fail(
+    'view',
+    `device:${deviceUrlFromId(parameters.device_id)}`,
+  );
 
-    const deviceModel = await repositories.device.findOneOrFail({
-        where: { uuid: parameters.device_id },
-    });
+  const deviceModel = await repositories.device.findOneOrFail({
+    where: { uuid: parameters.device_id },
+  });
 
-    logger.log('info', 'getDevicesByDeviceId succeeded');
+  logger.log('info', 'getDevicesByDeviceId succeeded');
 
-    return {
-        status: 200,
-        body: await repositories.device.format(deviceModel, {
-            flatGroup: parameters.flat_group,
-            executeFor: authorization.user,
-        }),
-    };
+  return {
+    status: 200,
+    body: await repositories.device.format(deviceModel, {
+      flatGroup: parameters.flat_group,
+      executeFor: authorization.user,
+    }),
+  };
 };

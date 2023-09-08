@@ -1,14 +1,17 @@
 #!/usr/bin/env node
+import { errorHandler, logHandling } from '@crosslab/service-common';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import asyncHandler from 'express-async-handler';
 
-import express from "express";
-import asyncHandler from "express-async-handler";
-import {errorHandler, logHandling} from "@crosslab/service-common";
-import {handle_dynamic_registration_initiation_request} from "./lti/dynamic_registration.js";
-import * as key_management from "./key_management.js";
-import {complete_manual_registration, handle_manual_registration} from "./lti/manual_registration.js";
-import cookieParser from "cookie-parser";
-import {config} from "./config.js";
-import {handle_login_request} from "./lti/message.js";
+import { config } from './config.js';
+import * as key_management from './key_management.js';
+import { handle_dynamic_registration_initiation_request } from './lti/dynamic_registration.js';
+import {
+  complete_manual_registration,
+  handle_manual_registration,
+} from './lti/manual_registration.js';
+import { handle_login_request } from './lti/message.js';
 
 export let app: express.Express;
 
@@ -16,11 +19,11 @@ export function init_app() {
   app = express();
   logHandling(app);
   app.use(express.json());
-  app.use(express.urlencoded({extended: true}));
+  app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser(config.COOKIE_SECRET));
 
   app.get(
-    "/",
+    '/',
     asyncHandler(async (req, res) => {
       if (req.query.openid_configuration) {
         await handle_dynamic_registration_initiation_request(req, res);
@@ -33,12 +36,12 @@ export function init_app() {
   app.post(
     '/register',
     asyncHandler(async (req, res) => {
-      await complete_manual_registration(req, res)
-    })
-  )
+      await complete_manual_registration(req, res);
+    }),
+  );
 
   app.post(
-    "/",
+    '/',
     asyncHandler(async (req, res) => {
       console.log(req.body);
       await handle_login_request(req, res);
@@ -47,16 +50,16 @@ export function init_app() {
   );
 
   app.get(
-    "/.well-known/jwks.json",
+    '/.well-known/jwks.json',
     asyncHandler(async (_req, res) => {
       res.send(key_management.get_jwks());
     }),
   );
 
   app.get(
-    "/logo.png",
+    '/logo.png',
     asyncHandler(async (_req, res) => {
-      res.sendFile("logo.png", {root: "assets/"});
+      res.sendFile('logo.png', { root: 'assets/' });
     }),
   );
 

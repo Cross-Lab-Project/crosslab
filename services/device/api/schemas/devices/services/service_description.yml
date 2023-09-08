@@ -2,15 +2,15 @@
 title: Service Description
 type: object
 properties:
-    serviceType:
-        type: string
-        format: uri
-    serviceId:
-        type: string
-    serviceDirection:
-        type: string
-        enum:
-            - consumer
-            - producer
-            - prosumer
+  serviceType:
+    type: string
+    format: uri
+  serviceId:
+    type: string
+  serviceDirection:
+    type: string
+    enum:
+      - consumer
+      - producer
+      - prosumer
 additionalProperties: true

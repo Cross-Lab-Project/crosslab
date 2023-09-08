@@ -1,7 +1,8 @@
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../database/dataSource.js';
 import { postTemplatesSignature } from '../../generated/signatures.js';
 import { templateUrlFromId } from '../../methods/url.js';
-import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling POST requests on
@@ -10,24 +11,24 @@ import { logger } from '@crosslab/service-common';
  * @param body The body of the request.
  */
 export const postTemplates: postTemplatesSignature = async (authorization, body) => {
-    logger.log('info', 'Handling POST request on endpoint /templates');
+  logger.log('info', 'Handling POST request on endpoint /templates');
 
-    await authorization.check_authorization_or_fail('create', 'template');
+  await authorization.check_authorization_or_fail('create', 'template');
 
-    const templateModel = await repositories.template.create(body);
+  const templateModel = await repositories.template.create(body);
 
-    await authorization.relate(
-        authorization.user,
-        'owner',
-        `template:${templateUrlFromId(templateModel.uuid)}`,
-    );
+  await authorization.relate(
+    authorization.user,
+    'owner',
+    `template:${templateUrlFromId(templateModel.uuid)}`,
+  );
 
-    await repositories.template.save(templateModel);
+  await repositories.template.save(templateModel);
 
-    logger.log('info', 'Successfully handled POST request on endpoint /templates');
+  logger.log('info', 'Successfully handled POST request on endpoint /templates');
 
-    return {
-        status: 201,
-        body: await repositories.template.format(templateModel),
-    };
+  return {
+    status: 201,
+    body: await repositories.template.format(templateModel),
+  };
 };

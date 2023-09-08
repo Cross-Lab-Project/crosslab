@@ -18,7 +18,7 @@
       }
     }
   ],
-  "devices":[
+  "devices": [
     {
       "device": "https://api.goldi-labs.de/devices/b397908f-60ac-450d-a350-ee058341760e",
       "role": "3-Axis-Portal V1"

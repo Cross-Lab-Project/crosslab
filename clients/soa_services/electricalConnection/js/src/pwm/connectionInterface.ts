@@ -1,14 +1,15 @@
-import { TypedEmitter } from "tiny-typed-emitter";
+import { TypedEmitter } from 'tiny-typed-emitter';
+
 import {
-  ConnectionInterfaceConfiguration,
   ConnectionInterface,
-  ConstructableConnectionInterface,
+  ConnectionInterfaceConfiguration,
   ConnectionInterfaceDescription,
   ConnectionInterfaceEvents,
-} from "../connectionInterface";
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
 
-type InterfaceType = "pwm";
-const InterfaceType: InterfaceType = "pwm";
+type InterfaceType = 'pwm';
+const InterfaceType: InterfaceType = 'pwm';
 
 export interface PWMConfiguration extends ConnectionInterfaceConfiguration {
   signals: { ocn: string };
@@ -27,7 +28,10 @@ export interface PWMInterfaceEvents extends ConnectionInterfaceEvents {
   receivePWM(event: ReceivePWMSignalEvent): void;
 }
 
-export class PWMInterface extends TypedEmitter<PWMInterfaceEvents> implements ConnectionInterface {
+export class PWMInterface
+  extends TypedEmitter<PWMInterfaceEvents>
+  implements ConnectionInterface
+{
   interfaceType = InterfaceType;
   readonly configuration: PWMConfiguration;
 
@@ -35,9 +39,9 @@ export class PWMInterface extends TypedEmitter<PWMInterfaceEvents> implements Co
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -46,7 +50,7 @@ export class PWMInterface extends TypedEmitter<PWMInterfaceEvents> implements Co
   }
 
   sendPWMSignal(pwmSignal: PWMSignal): void {
-    this.emit("upstreamData", pwmSignal);
+    this.emit('upstreamData', pwmSignal);
     this.downstreamData(pwmSignal);
   }
 }

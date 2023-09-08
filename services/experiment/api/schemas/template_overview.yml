@@ -7,12 +7,12 @@ properties:
     description: URL of the template
     format: uri
     readOnly: true
-  name: 
+  name:
     type: string
     description: Name of the template
   description:
     type: string
     description: Description of the template
 required:
-- url
-- name
+  - url
+  - name

@@ -1,29 +1,29 @@
-import {config} from "../config";
-import {ApplicationDataSource} from "../database/datasource";
-import {UserModel} from "../database/model";
+import { HttpError } from '@crosslab/service-common';
+import bcrypt from 'bcrypt';
+import express from 'express';
+import { QueryFailedError } from 'typeorm';
+
+import { config } from '../config';
+import { ApplicationDataSource } from '../database/datasource';
+import { UserModel } from '../database/model';
 import {
+  deleteUsersByUserIdPath,
+  getIdentityPath,
+  getUsersByUserIdPath,
   getUsersPath,
   getUsersResponseBodyType,
-  postUsersPath,
-  getUsersByUserIdPath,
-  deleteUsersByUserIdPath,
   patchUsersByUserIdPath,
-  getIdentityPath,
-} from "../generated/operations";
+  postUsersPath,
+} from '../generated/operations';
 import {
-  validateGetUsers,
-  validatePostUsers,
-  validateGetUsersByUserId,
   validateDeleteUsersByUserId,
-  validatePatchUsersByUserId,
   validateGetIdentity,
-} from "../generated/validation";
-import express from "express";
-import {createUser} from "./helper";
-import {QueryFailedError} from "typeorm";
-import {HttpError} from "@crosslab/service-common";
-
-import bcrypt from "bcrypt";
+  validateGetUsers,
+  validateGetUsersByUserId,
+  validatePatchUsersByUserId,
+  validatePostUsers,
+} from '../generated/validation';
+import { createUser } from './helper';
 
 /**
  * This function builds the url of a user using its id.
@@ -31,7 +31,7 @@ import bcrypt from "bcrypt";
  * @returns The url of the user.
  */
 export function userUrlFromId(id: string): string {
-  return config.BASE_URL + (config.BASE_URL.endsWith("/") ? "" : "/") + "users/" + id;
+  return config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'users/' + id;
 }
 
 export const router = express.Router();
@@ -53,15 +53,20 @@ router.get(
 router.get(
   getUsersPath,
   validateGetUsers(async (req, res) => {
-    await req.authorization.check_authorization_or_fail("view", "user");
+    await req.authorization.check_authorization_or_fail('view', 'user');
 
     let users = await ApplicationDataSource.manager.find(UserModel);
-    users = await req.authorization.filter(users, "view", u => `user:${u.uuid}`);
+    users = await req.authorization.filter(users, 'view', u => `user:${u.uuid}`);
 
     type user = getUsersResponseBodyType[number];
     res.send(
       users.map(
-        u => <user>{username: u.username, id: u.uuid, url: userUrlFromId(u.uuid)},
+        u =>
+          <user>{
+            username: u.username,
+            id: u.uuid,
+            url: userUrlFromId(u.uuid),
+          },
       ),
     );
   }),
@@ -70,7 +75,7 @@ router.get(
 router.post(
   postUsersPath,
   validatePostUsers(async (req, res) => {
-    await req.authorization.check_authorization_or_fail("create", "user");
+    await req.authorization.check_authorization_or_fail('create', 'user');
     try {
       const user = await createUser(req.body.username, req.body.password);
       res.status(201).json({
@@ -80,7 +85,7 @@ router.post(
       });
     } catch (err) {
       if (err instanceof QueryFailedError) {
-        throw new HttpError(409, "Username already exists", err);
+        throw new HttpError(409, 'Username already exists', err);
       }
     }
   }),
@@ -90,7 +95,7 @@ router.get(
   getUsersByUserIdPath,
   validateGetUsersByUserId(async (req, res) => {
     await req.authorization.check_authorization_or_fail(
-      "view",
+      'view',
       `user:${req.params.user_id}`,
     );
     const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {
@@ -108,7 +113,7 @@ router.delete(
   deleteUsersByUserIdPath,
   validateDeleteUsersByUserId(async (req, res) => {
     await req.authorization.check_authorization_or_fail(
-      "delete",
+      'delete',
       `user:${req.params.user_id}`,
     );
     const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {
@@ -124,7 +129,7 @@ router.patch(
   patchUsersByUserIdPath,
   validatePatchUsersByUserId(async (req, res) => {
     await req.authorization.check_authorization_or_fail(
-      "write",
+      'write',
       `user:${req.params.user_id}`,
     );
     const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {

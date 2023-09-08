@@ -4,5 +4,5 @@ name: device_url
 description: URL of the device
 required: true
 schema:
-    type: string
-    format: uri
+  type: string
+  format: uri

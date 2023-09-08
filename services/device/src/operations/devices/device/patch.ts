@@ -1,8 +1,9 @@
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../../database/dataSource.js';
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
-import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling PATCH requests on
@@ -15,42 +16,42 @@ import { logger } from '@crosslab/service-common';
  * the device.
  */
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
-    authorization,
-    parameters,
-    body,
+  authorization,
+  parameters,
+  body,
 ) => {
-    logger.log('info', 'patchDevicesByDeviceId called');
+  logger.log('info', 'patchDevicesByDeviceId called');
 
-    await authorization.check_authorization_or_fail(
-        'edit',
-        `device:${deviceUrlFromId(parameters.device_id)}`,
+  await authorization.check_authorization_or_fail(
+    'edit',
+    `device:${deviceUrlFromId(parameters.device_id)}`,
+  );
+
+  const deviceModel = await repositories.device.findOneOrFail({
+    where: { uuid: parameters.device_id },
+  });
+
+  await repositories.device.write(deviceModel, body ?? { type: deviceModel.type });
+  await repositories.device.save(deviceModel);
+
+  sendChangedCallback(deviceModel);
+
+  if (parameters.changedUrl) {
+    logger.log(
+      'info',
+      `registering changed-callback for device '${deviceUrlFromId(
+        deviceModel.uuid,
+      )}' to '${parameters.changedUrl}'`,
     );
+    const changedCallbackURLs = changedCallbacks.get(deviceModel.uuid) ?? [];
+    changedCallbackURLs.push(parameters.changedUrl);
+    changedCallbacks.set(deviceModel.uuid, changedCallbackURLs);
+  }
 
-    const deviceModel = await repositories.device.findOneOrFail({
-        where: { uuid: parameters.device_id },
-    });
+  logger.log('info', 'patchDevicesByDeviceId succeeded');
 
-    await repositories.device.write(deviceModel, body ?? { type: deviceModel.type });
-    await repositories.device.save(deviceModel);
-
-    sendChangedCallback(deviceModel);
-
-    if (parameters.changedUrl) {
-        logger.log(
-            'info',
-            `registering changed-callback for device '${deviceUrlFromId(
-                deviceModel.uuid,
-            )}' to '${parameters.changedUrl}'`,
-        );
-        const changedCallbackURLs = changedCallbacks.get(deviceModel.uuid) ?? [];
-        changedCallbackURLs.push(parameters.changedUrl);
-        changedCallbacks.set(deviceModel.uuid, changedCallbackURLs);
-    }
-
-    logger.log('info', 'patchDevicesByDeviceId succeeded');
-
-    return {
-        status: 200,
-        body: await repositories.device.format(deviceModel),
-    };
+  return {
+    status: 200,
+    body: await repositories.device.format(deviceModel),
+  };
 };

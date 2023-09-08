@@ -1,3 +1,6 @@
+import { MissingPropertyError } from '@crosslab/service-common';
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { InvalidStateError } from '../../types/errors.js';
@@ -6,8 +9,6 @@ import { apiClient } from '../api.js';
 import { experimentUrlFromId } from '../url.js';
 import { bookExperiment } from './book.js';
 import { setupExperiment } from './setup/index.js';
-import { MissingPropertyError } from '@crosslab/service-common';
-import { logger } from '@crosslab/service-common';
 
 /**
  * This function attempts to run an experiment.
@@ -15,38 +16,38 @@ import { logger } from '@crosslab/service-common';
  * @throws {InvalidStateError} Thrown when the status of the experiment is already "finished".
  */
 export async function runExperiment(experimentModel: ExperimentModel) {
-    const experimentUrl = experimentUrlFromId(experimentModel.uuid);
-    logger.log('info', 'Attempting to run experiment', { data: { experimentUrl } });
+  const experimentUrl = experimentUrlFromId(experimentModel.uuid);
+  logger.log('info', 'Attempting to run experiment', { data: { experimentUrl } });
 
-    // make sure experiment is not already finished
-    if (experimentModel.status === 'finished') {
-        throw new InvalidStateError(`Experiment status is already "finished"`, 400);
-    }
+  // make sure experiment is not already finished
+  if (experimentModel.status === 'finished') {
+    throw new InvalidStateError(`Experiment status is already "finished"`, 400);
+  }
 
-    // make sure the experiment contains devices
-    if (!experimentModel.devices || experimentModel.devices.length === 0) {
-        throw new MissingPropertyError(`Experiment does not contain any devices`, 400);
-    }
+  // make sure the experiment contains devices
+  if (!experimentModel.devices || experimentModel.devices.length === 0) {
+    throw new MissingPropertyError(`Experiment does not contain any devices`, 400);
+  }
 
-    // book experiment if status is "created"
-    if (experimentModel.status === 'created') {
-        await bookExperiment(experimentModel);
-    }
+  // book experiment if status is "created"
+  if (experimentModel.status === 'created') {
+    await bookExperiment(experimentModel);
+  }
 
-    const resolvedDevices: ResolvedDevice[] = await Promise.all(
-        experimentModel.devices.map(async (device) => {
-            const resolvedDevice = await apiClient.getDevice(device.url);
-            return {
-                ...resolvedDevice,
-                instanceUrl: device.instance?.url,
-                instanceToken: device.instance?.token,
-            };
-        }),
-    );
+  const resolvedDevices: ResolvedDevice[] = await Promise.all(
+    experimentModel.devices.map(async device => {
+      const resolvedDevice = await apiClient.getDevice(device.url);
+      return {
+        ...resolvedDevice,
+        instanceUrl: device.instance?.url,
+        instanceToken: device.instance?.token,
+      };
+    }),
+  );
 
-    await setupExperiment(experimentModel, resolvedDevices);
+  await setupExperiment(experimentModel, resolvedDevices);
 
-    // save experiment
-    await repositories.experiment.save(experimentModel);
-    logger.log('info', 'Successfully running experiment', { data: { experimentUrl } });
+  // save experiment
+  await repositories.experiment.save(experimentModel);
+  logger.log('info', 'Successfully running experiment', { data: { experimentUrl } });
 }

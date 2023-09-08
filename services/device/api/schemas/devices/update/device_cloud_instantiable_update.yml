@@ -1,15 +1,15 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Instantiable Cloud Device Update
 allOf:
-    - $ref: ./device_overview_update.yml
-    - type: object
-      properties:
-          type:
-              const: cloud instantiable
-          instantiateUrl:
-              type: string
-              format: uri
-          services:
-              type: array
-              items:
-                  $ref: ../services/service_description.yml
+  - $ref: ./device_overview_update.yml
+  - type: object
+    properties:
+      type:
+        const: cloud instantiable
+      instantiateUrl:
+        type: string
+        format: uri
+      services:
+        type: array
+        items:
+          $ref: ../services/service_description.yml

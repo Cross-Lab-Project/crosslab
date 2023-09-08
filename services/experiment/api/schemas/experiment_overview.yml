@@ -27,5 +27,5 @@ properties:
           - running
           - finished
 required:
-- url
-- status
+  - url
+  - status

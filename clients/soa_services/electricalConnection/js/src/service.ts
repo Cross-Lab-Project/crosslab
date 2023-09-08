@@ -1,12 +1,17 @@
-import {TypedEmitter} from 'tiny-typed-emitter';
-import {Prosumer, Service, ServiceConfiguration} from '@cross-lab-project/soa-client';
-
-import {ConnectionInterface, ConnectionInterfaceConfiguration, ConstructableConnectionInterface} from './connectionInterface';
-import {DataChannel} from '@cross-lab-project/soa-client';
-import {PeerConnection} from '@cross-lab-project/soa-client';
+import { Prosumer, Service, ServiceConfiguration } from '@cross-lab-project/soa-client';
+import { DataChannel } from '@cross-lab-project/soa-client';
+import { PeerConnection } from '@cross-lab-project/soa-client';
 import Queue from 'queue';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-interface ConnectionInterfaceConfigurationUpstream extends ConnectionInterfaceConfiguration {
+import {
+  ConnectionInterface,
+  ConnectionInterfaceConfiguration,
+  ConstructableConnectionInterface,
+} from './connectionInterface';
+
+interface ConnectionInterfaceConfigurationUpstream
+  extends ConnectionInterfaceConfiguration {
   interfaceType: string;
   interfaceId: string;
   busId: string;
@@ -24,7 +29,9 @@ export interface ElectricalServiceConfiguration extends ServiceConfiguration {
   serviceType: ServiceType;
   interfaces: ConnectionInterfaceConfigurationUpstream[];
 }
-function checkConfig(config: ServiceConfiguration): asserts config is ElectricalServiceConfiguration {
+function checkConfig(
+  config: ServiceConfiguration,
+): asserts config is ElectricalServiceConfiguration {
   if (config.serviceType !== ServiceType) {
     //throw Error("Service Configuration needs to be for electrical service type");
   }
@@ -38,7 +45,10 @@ interface ElectricalConnectionServiceEvents {
   newInterface: (event: NewInterfaceEvent) => void;
 }
 
-export class ElectricalConnectionService extends TypedEmitter<ElectricalConnectionServiceEvents> implements Service<ServiceType> {
+export class ElectricalConnectionService
+  extends TypedEmitter<ElectricalConnectionServiceEvents>
+  implements Service<ServiceType>
+{
   serviceDirection = Prosumer;
   serviceType = ServiceType;
   serviceId: string;
@@ -54,16 +64,18 @@ export class ElectricalConnectionService extends TypedEmitter<ElectricalConnecti
     super();
     this.serviceId = serviceId;
     this.signals = signals;
-    this.queue = new Queue({autostart: false, concurrency: 1});
+    this.queue = new Queue({ autostart: false, concurrency: 1 });
   }
 
   getMeta() {
-    const interfaceDescriptions = Array.from(this.interfaceConstructors).map(constructors => {
-      return {
-        ...constructors[1].getDescription(),
-        interfaceType: constructors[1].interfaceType,
-      };
-    });
+    const interfaceDescriptions = Array.from(this.interfaceConstructors).map(
+      constructors => {
+        return {
+          ...constructors[1].getDescription(),
+          interfaceType: constructors[1].interfaceType,
+        };
+      },
+    );
     return {
       serviceType: ServiceType,
       serviceId: this.serviceId,
@@ -73,7 +85,10 @@ export class ElectricalConnectionService extends TypedEmitter<ElectricalConnecti
   }
 
   addInterface(electricalInterfaceConstructor: ConstructableConnectionInterface): void {
-    this.interfaceConstructors.set(electricalInterfaceConstructor.interfaceType, electricalInterfaceConstructor);
+    this.interfaceConstructors.set(
+      electricalInterfaceConstructor.interfaceType,
+      electricalInterfaceConstructor,
+    );
   }
 
   retransmit() {
@@ -95,13 +110,15 @@ export class ElectricalConnectionService extends TypedEmitter<ElectricalConnecti
       // find interface or create a new interface
       let electricalInterface = this.interfaces.get(interfaceConfig.interfaceId);
       if (electricalInterface === undefined) {
-        const electricalInterfaceConstructor = this.interfaceConstructors.get(interfaceConfig.interfaceType);
+        const electricalInterfaceConstructor = this.interfaceConstructors.get(
+          interfaceConfig.interfaceType,
+        );
         if (electricalInterfaceConstructor === undefined) {
           throw Error('No Interface for the interface config was found');
         }
         electricalInterface = electricalInterfaceConstructor.create(interfaceConfig);
         this.interfaces.set(interfaceConfig.interfaceId, electricalInterface);
-        this.emit('newInterface', {connectionInterface: electricalInterface});
+        this.emit('newInterface', { connectionInterface: electricalInterface });
       }
 
       // set event handlers

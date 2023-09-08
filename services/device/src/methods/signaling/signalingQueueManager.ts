@@ -1,230 +1,225 @@
+import { MissingEntityError, logger } from '@crosslab/service-common';
+
 import { repositories } from '../../database/dataSource.js';
 import {
-    ClosePeerconnectionMessage,
-    CreatePeerconnectionMessage,
-    SignalingMessage,
+  ClosePeerconnectionMessage,
+  CreatePeerconnectionMessage,
+  SignalingMessage,
 } from '../../generated/types.js';
 import { peerconnectionUrlFromId } from '../urlFromId.js';
 import { SignalingQueue } from './signalingQueue.js';
-import { MissingEntityError, logger } from '@crosslab/service-common';
 
 export class SignalingQueueManager {
-    private queueMap: Map<
-        string,
-        {
-            deviceA: { url: string; queue: SignalingQueue };
-            deviceB: { url: string; queue: SignalingQueue };
-            onClose?: () => void;
-        }
-    >;
+  private queueMap: Map<
+    string,
+    {
+      deviceA: { url: string; queue: SignalingQueue };
+      deviceB: { url: string; queue: SignalingQueue };
+      onClose?: () => void;
+    }
+  >;
 
-    constructor() {
-        this.queueMap = new Map();
+  constructor() {
+    this.queueMap = new Map();
+  }
+
+  public setOnCloseHandler(peerconnectionId: string, onClose: () => void) {
+    const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+    const queues = this.queueMap.get(peerconnectionUrl);
+
+    if (!queues)
+      throw new MissingEntityError(
+        `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
+        404,
+      );
+
+    queues.onClose = () => {
+      onClose();
+      this.queueMap.delete(peerconnectionId);
+    };
+  }
+
+  public async createSignalingQueues(peerconnectionId: string) {
+    const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+
+    logger.log(
+      'info',
+      `Trying to create signaling queues for peerconnection '${peerconnectionUrl}'`,
+    );
+
+    // TODO: change to more meaningful error
+    if (this.queueMap.has(peerconnectionUrl))
+      throw new Error(
+        `Peerconnection '${peerconnectionUrl}' already has signaling queues`,
+      );
+
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: {
+        uuid: peerconnectionId,
+      },
+    });
+
+    if (peerconnectionModel.status !== 'new') {
+      logger.log(
+        'info',
+        `Status of peerconnection '${peerconnectionUrl}' is not 'new', '${peerconnectionModel.status}'`,
+      );
+      return;
     }
 
-    public setOnCloseHandler(peerconnectionId: string, onClose: () => void) {
-        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
-        const queues = this.queueMap.get(peerconnectionUrl);
+    // create SignalingQueues
+    const queueDeviceA = new SignalingQueue(
+      peerconnectionUrl,
+      peerconnectionModel.deviceA.url,
+    );
 
-        if (!queues)
-            throw new MissingEntityError(
-                `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
-                404,
-            );
+    const queueDeviceB = new SignalingQueue(
+      peerconnectionUrl,
+      peerconnectionModel.deviceB.url,
+    );
 
-        queues.onClose = () => {
-            onClose();
-            this.queueMap.delete(peerconnectionId);
-        };
-    }
+    // register onClose handlers
+    queueDeviceA.onClose = () => {
+      const queues = this.queueMap.get(peerconnectionUrl);
+      if (queues?.deviceB.queue.state === 'peerconnection-closed' && queues.onClose) {
+        queues.onClose();
+        this.queueMap.delete(peerconnectionUrl);
+      }
+    };
 
-    public async createSignalingQueues(peerconnectionId: string) {
-        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+    queueDeviceB.onClose = () => {
+      const queues = this.queueMap.get(peerconnectionUrl);
+      if (queues?.deviceA.queue.state === 'peerconnection-closed' && queues.onClose) {
+        queues.onClose();
+        this.queueMap.delete(peerconnectionUrl);
+      }
+    };
 
-        logger.log(
-            'info',
-            `Trying to create signaling queues for peerconnection '${peerconnectionUrl}'`,
-        );
+    // prepare createPeerconnection messages
+    const common = <CreatePeerconnectionMessage>{
+      messageType: 'command',
+      command: 'createPeerconnection',
+      connectionType: peerconnectionModel.type,
+      connectionUrl: peerconnectionUrl,
+    };
 
-        // TODO: change to more meaningful error
-        if (this.queueMap.has(peerconnectionUrl))
-            throw new Error(
-                `Peerconnection '${peerconnectionUrl}' already has signaling queues`,
-            );
+    const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
+      ...common,
+      services: peerconnectionModel.deviceA.config?.services ?? [],
+      tiebreaker: false,
+    };
 
-        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-            where: {
-                uuid: peerconnectionId,
-            },
-        });
+    const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
+      ...common,
+      services: peerconnectionModel.deviceB.config?.services ?? [],
+      tiebreaker: true,
+    };
 
-        if (peerconnectionModel.status !== 'new') {
-            logger.log(
-                'info',
-                `Status of peerconnection '${peerconnectionUrl}' is not 'new', '${peerconnectionModel.status}'`,
-            );
-            return;
-        }
+    // add createPeerconnection messages
+    queueDeviceA.add(createPeerConnectionMessageA);
+    queueDeviceB.add(createPeerConnectionMessageB);
 
-        // create SignalingQueues
-        const queueDeviceA = new SignalingQueue(
-            peerconnectionUrl,
-            peerconnectionModel.deviceA.url,
-        );
+    this.queueMap.set(peerconnectionUrl, {
+      deviceA: { url: peerconnectionModel.deviceA.url, queue: queueDeviceA },
+      deviceB: { url: peerconnectionModel.deviceB.url, queue: queueDeviceB },
+    });
 
-        const queueDeviceB = new SignalingQueue(
-            peerconnectionUrl,
-            peerconnectionModel.deviceB.url,
-        );
+    logger.log(
+      'info',
+      `Successfully created signaling queues for peerconnection '${peerconnectionUrl}'`,
+    );
+  }
 
-        // register onClose handlers
-        queueDeviceA.onClose = () => {
-            const queues = this.queueMap.get(peerconnectionUrl);
-            if (
-                queues?.deviceB.queue.state === 'peerconnection-closed' &&
-                queues.onClose
-            ) {
-                queues.onClose();
-                this.queueMap.delete(peerconnectionUrl);
-            }
-        };
+  public startSignalingQueues(peerconnectionId: string) {
+    const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+    const queues = this.queueMap.get(peerconnectionUrl);
 
-        queueDeviceB.onClose = () => {
-            const queues = this.queueMap.get(peerconnectionUrl);
-            if (
-                queues?.deviceA.queue.state === 'peerconnection-closed' &&
-                queues.onClose
-            ) {
-                queues.onClose();
-                this.queueMap.delete(peerconnectionUrl);
-            }
-        };
+    if (!queues)
+      throw new MissingEntityError(
+        `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
+        404,
+      );
 
-        // prepare createPeerconnection messages
-        const common = <CreatePeerconnectionMessage>{
-            messageType: 'command',
-            command: 'createPeerconnection',
-            connectionType: peerconnectionModel.type,
-            connectionUrl: peerconnectionUrl,
-        };
+    queues.deviceA.queue.start();
+    queues.deviceB.queue.start();
+  }
 
-        const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
-            ...common,
-            services: peerconnectionModel.deviceA.config?.services ?? [],
-            tiebreaker: false,
-        };
+  public stopSignalingQueues(peerconnectionId: string) {
+    const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+    const queues = this.queueMap.get(peerconnectionUrl);
 
-        const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
-            ...common,
-            services: peerconnectionModel.deviceB.config?.services ?? [],
-            tiebreaker: true,
-        };
+    if (!queues)
+      throw new MissingEntityError(
+        `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
+        404,
+      );
 
-        // add createPeerconnection messages
-        queueDeviceA.add(createPeerConnectionMessageA);
-        queueDeviceB.add(createPeerConnectionMessageB);
+    queues.deviceA.queue.stop();
+    queues.deviceB.queue.stop();
+  }
 
-        this.queueMap.set(peerconnectionUrl, {
-            deviceA: { url: peerconnectionModel.deviceA.url, queue: queueDeviceA },
-            deviceB: { url: peerconnectionModel.deviceB.url, queue: queueDeviceB },
-        });
+  public addSignalingMessage(
+    peerconnectionUrl: string,
+    deviceUrl: string,
+    signalingMessage:
+      | CreatePeerconnectionMessage
+      | ClosePeerconnectionMessage
+      | SignalingMessage,
+  ) {
+    const queues = this.queueMap.get(peerconnectionUrl);
 
-        logger.log(
-            'info',
-            `Successfully created signaling queues for peerconnection '${peerconnectionUrl}'`,
-        );
-    }
+    if (queues?.deviceA.url === deviceUrl)
+      return queues.deviceA.queue.add(signalingMessage);
+    if (queues?.deviceB.url === deviceUrl)
+      return queues.deviceB.queue.add(signalingMessage);
 
-    public startSignalingQueues(peerconnectionId: string) {
-        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
-        const queues = this.queueMap.get(peerconnectionUrl);
+    throw new MissingEntityError(
+      `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queue for device '${deviceUrl}'`,
+      404,
+    );
+  }
 
-        if (!queues)
-            throw new MissingEntityError(
-                `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
-                404,
-            );
+  public async closeSignalingQueues(peerconnectionId: string) {
+    const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
+    const queues = this.queueMap.get(peerconnectionUrl);
 
-        queues.deviceA.queue.start();
-        queues.deviceB.queue.start();
-    }
+    // TODO: change to more meaningful error
+    if (!queues)
+      throw new MissingEntityError(
+        `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
+        404,
+      );
 
-    public stopSignalingQueues(peerconnectionId: string) {
-        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
-        const queues = this.queueMap.get(peerconnectionUrl);
+    const closePeerconnectionMessage: ClosePeerconnectionMessage = {
+      messageType: 'command',
+      command: 'closePeerconnection',
+      connectionUrl: peerconnectionUrl,
+    };
 
-        if (!queues)
-            throw new MissingEntityError(
-                `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
-                404,
-            );
+    const promiseA = new Promise<void>(resolve => {
+      const originalOnClose = queues.deviceA.queue.onClose;
+      queues.deviceA.queue.onClose = () => {
+        if (originalOnClose) originalOnClose();
+        resolve();
+      };
+      if (queues.deviceA.queue.state === 'new' && queues.deviceA.queue.onClose)
+        queues.deviceA.queue.onClose();
+      else queues.deviceA.queue.add(closePeerconnectionMessage);
+    });
 
-        queues.deviceA.queue.stop();
-        queues.deviceB.queue.stop();
-    }
+    const promiseB = new Promise<void>(resolve => {
+      const originalOnClose = queues.deviceB.queue.onClose;
+      queues.deviceB.queue.onClose = () => {
+        if (originalOnClose) originalOnClose();
+        resolve();
+      };
+      if (queues.deviceB.queue.state === 'new' && queues.deviceB.queue.onClose)
+        queues.deviceB.queue.onClose();
+      else queues.deviceB.queue.add(closePeerconnectionMessage);
+    });
 
-    public addSignalingMessage(
-        peerconnectionUrl: string,
-        deviceUrl: string,
-        signalingMessage:
-            | CreatePeerconnectionMessage
-            | ClosePeerconnectionMessage
-            | SignalingMessage,
-    ) {
-        const queues = this.queueMap.get(peerconnectionUrl);
-
-        if (queues?.deviceA.url === deviceUrl)
-            return queues.deviceA.queue.add(signalingMessage);
-        if (queues?.deviceB.url === deviceUrl)
-            return queues.deviceB.queue.add(signalingMessage);
-
-        throw new MissingEntityError(
-            `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queue for device '${deviceUrl}'`,
-            404,
-        );
-    }
-
-    public async closeSignalingQueues(peerconnectionId: string) {
-        const peerconnectionUrl = peerconnectionUrlFromId(peerconnectionId);
-        const queues = this.queueMap.get(peerconnectionUrl);
-
-        // TODO: change to more meaningful error
-        if (!queues)
-            throw new MissingEntityError(
-                `Peerconnection '${peerconnectionUrl}' does not have any associated signaling queues`,
-                404,
-            );
-
-        const closePeerconnectionMessage: ClosePeerconnectionMessage = {
-            messageType: 'command',
-            command: 'closePeerconnection',
-            connectionUrl: peerconnectionUrl,
-        };
-
-        const promiseA = new Promise<void>((resolve) => {
-            const originalOnClose = queues.deviceA.queue.onClose;
-            queues.deviceA.queue.onClose = () => {
-                if (originalOnClose) originalOnClose();
-                resolve();
-            };
-            if (queues.deviceA.queue.state === 'new' && queues.deviceA.queue.onClose)
-                queues.deviceA.queue.onClose();
-            else queues.deviceA.queue.add(closePeerconnectionMessage);
-        });
-
-        const promiseB = new Promise<void>((resolve) => {
-            const originalOnClose = queues.deviceB.queue.onClose;
-            queues.deviceB.queue.onClose = () => {
-                if (originalOnClose) originalOnClose();
-                resolve();
-            };
-            if (queues.deviceB.queue.state === 'new' && queues.deviceB.queue.onClose)
-                queues.deviceB.queue.onClose();
-            else queues.deviceB.queue.add(closePeerconnectionMessage);
-        });
-
-        return Promise.all([promiseA, promiseB]);
-    }
+    return Promise.all([promiseA, promiseB]);
+  }
 }
 
 export const signalingQueueManager = new SignalingQueueManager();

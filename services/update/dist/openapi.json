@@ -10,15 +10,10 @@
     "/updates": {
       "get": {
         "operationId": "list_updates",
-        "tags": [
-          "update"
-        ],
+        "tags": ["update"],
         "security": [
           {
-            "JWT": [
-              "update",
-              "update:read"
-            ]
+            "JWT": ["update", "update:read"]
           }
         ],
         "summary": "Get update information for all devices",
@@ -56,15 +51,10 @@
       },
       "post": {
         "operationId": "create_update",
-        "tags": [
-          "update"
-        ],
+        "tags": ["update"],
         "security": [
           {
-            "JWT": [
-              "update",
-              "update:create"
-            ]
+            "JWT": ["update", "update:create"]
           }
         ],
         "summary": "Create new update information",
@@ -112,15 +102,10 @@
     "/updates/{device_id}": {
       "get": {
         "operationId": "get_update",
-        "tags": [
-          "update"
-        ],
+        "tags": ["update"],
         "security": [
           {
-            "JWT": [
-              "update",
-              "update:read"
-            ]
+            "JWT": ["update", "update:read"]
           }
         ],
         "summary": "Get update for device",
@@ -167,15 +152,10 @@
       },
       "patch": {
         "operationId": "patch_update",
-        "tags": [
-          "update"
-        ],
+        "tags": ["update"],
         "security": [
           {
-            "JWT": [
-              "update",
-              "update:write"
-            ]
+            "JWT": ["update", "update:write"]
           }
         ],
         "summary": "Edit update information",
@@ -224,15 +204,10 @@
       },
       "delete": {
         "operationId": "delete_update",
-        "tags": [
-          "update"
-        ],
+        "tags": ["update"],
         "security": [
           {
-            "JWT": [
-              "update",
-              "update:delete"
-            ]
+            "JWT": ["update", "update:delete"]
           }
         ],
         "summary": "Delete update information",
@@ -290,11 +265,7 @@
             "format": "uri"
           }
         },
-        "required": [
-          "device_id",
-          "latest_version",
-          "latest_version_link"
-        ]
+        "required": ["device_id", "latest_version", "latest_version_link"]
       }
     },
     "parameters": {

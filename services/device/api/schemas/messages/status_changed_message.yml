@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Status Changed Message
 allOf:
-    - $ref: './message.yml'
-    - type: object
-      properties:
-          messageType:
-              const: status-changed
-          status:
-              - $ref: '../peerconnections/peerconnection_status.yml'
-      required:
-          - messageType
-          - status
+  - $ref: './message.yml'
+  - type: object
+    properties:
+      messageType:
+        const: status-changed
+      status:
+        - $ref: '../peerconnections/peerconnection_status.yml'
+    required:
+      - messageType
+      - status
 x-typeguard: true

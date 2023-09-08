@@ -1,10 +1,11 @@
-import { filters } from './filters'
-import { FilterCollection } from '@cross-lab-project/openapi-codegen'
+import { FilterCollection } from '@cross-lab-project/openapi-codegen';
+
+import { filters } from './filters';
 
 /**
  * The filter collection for typescript.
  */
 export const TypeScriptFilterCollection: FilterCollection = {
-    name: 'typescript',
-    filters: filters,
-}
+  name: 'typescript',
+  filters: filters,
+};

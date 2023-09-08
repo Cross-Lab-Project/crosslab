@@ -2,7 +2,7 @@
 title: Template Update
 type: object
 properties:
-  name: 
+  name:
     type: string
     description: Name of the template
   description:
@@ -16,14 +16,14 @@ properties:
         type: array
         description: Devices associated with the templated experiment
         items:
-          $ref: "../device.yml"
+          $ref: '../device.yml'
       roles:
         type: array
         description: Roles that are used in this templated experiment
         items:
-          $ref: "../role.yml"
+          $ref: '../role.yml'
       serviceConfigurations:
         type: array
         description: Services associated with the templated experiment
         items:
-          $ref: "../service_configuration.yml"
+          $ref: '../service_configuration.yml'

@@ -1,11 +1,12 @@
-import {logger} from "@crosslab/service-common/logging";
-import {config} from "../config";
-import {ApplicationDataSource} from "../database/datasource";
-import {TokenModel} from "../database/model";
-import {getAuthPath} from "../generated/operations";
-import {validateGetAuth} from "../generated/validation";
-import express from "express";
-import {SignJWT} from "jose";
+import { logger } from '@crosslab/service-common/logging';
+import express from 'express';
+import { SignJWT } from 'jose';
+
+import { config } from '../config';
+import { ApplicationDataSource } from '../database/datasource';
+import { TokenModel } from '../database/model';
+import { getAuthPath } from '../generated/operations';
+import { validateGetAuth } from '../generated/validation';
 
 const bearerTokenRegex = /^Bearer (\S*)$/;
 function parseBearerToken(authorizationHeader: string | undefined): string | undefined {
@@ -26,7 +27,7 @@ function parseQueryToken(query: string | undefined): string | undefined {
     return undefined;
   }
   const params = new URLSearchParams(query);
-  return params.get("authToken") ?? undefined;
+  return params.get('authToken') ?? undefined;
 }
 
 export const router = express.Router();
@@ -35,27 +36,27 @@ router.get(
   getAuthPath,
   validateGetAuth(async (req, res) => {
     const tokenId =
-      parseQueryToken(req.header("X-Original-Query")) ??
-      req.cookies["authToken"] ??
-      parseBearerToken(req.header("Authorization"));
+      parseQueryToken(req.header('X-Original-Query')) ??
+      req.cookies['authToken'] ??
+      parseBearerToken(req.header('Authorization'));
     try {
-      if (tokenId === undefined) throw new Error("No token found");
+      if (tokenId === undefined) throw new Error('No token found');
       const token = await ApplicationDataSource.manager.findOneOrFail(TokenModel, {
-        where: {token: tokenId},
-        relations: {user: true},
+        where: { token: tokenId },
+        relations: { user: true },
       });
       const jwt = await new SignJWT({
         sub: token.user.uuid,
-        ipa: req.header("X-Original-Query"),
+        ipa: req.header('X-Original-Query'),
         admin: true,
       })
-        .setProtectedHeader({alg: "HS256"})
+        .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .sign(new TextEncoder().encode(config.JWT_SECRET));
-      logger.info("auth send jwt", {jwt});
-      res.setHeader("X-Request-Authentication", jwt);
+      logger.info('auth send jwt', { jwt });
+      res.setHeader('X-Request-Authentication', jwt);
     } catch (e) {
-      logger.info("auth error", e);
+      logger.info('auth error', e);
       // ignore
     }
     res.send();

@@ -7,11 +7,11 @@ import signalingSpec from './signaling/index.spec.js';
 import websocketSpec from './websocket/index.spec.js';
 
 export default [
-    getSpec,
-    postSpec,
-    patchSpec,
-    deleteSpec,
-    ...availabilitySpec,
-    ...signalingSpec,
-    ...websocketSpec,
+  getSpec,
+  postSpec,
+  patchSpec,
+  deleteSpec,
+  ...availabilitySpec,
+  ...signalingSpec,
+  ...websocketSpec,
 ];

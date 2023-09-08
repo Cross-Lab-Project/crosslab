@@ -1,7 +1,8 @@
-import { ExtendedSchema } from '../../types'
-import { generateTyping } from '../../typings/typing'
-import { Filter } from '@cross-lab-project/openapi-codegen'
-import { OpenAPIV3_1 } from 'openapi-types'
+import { Filter } from '@cross-lab-project/openapi-codegen';
+import { OpenAPIV3_1 } from 'openapi-types';
+
+import { ExtendedSchema } from '../../types';
+import { generateTyping } from '../../typings/typing';
 
 /**
  * This function defines a filter which attempts to find the type dependencies for
@@ -10,13 +11,13 @@ import { OpenAPIV3_1 } from 'openapi-types'
  * @returns The found type dependencies.
  */
 function typeDependencies(
-    schema: OpenAPIV3_1.SchemaObject,
-    extendedSchemas: ExtendedSchema[] = []
+  schema: OpenAPIV3_1.SchemaObject,
+  extendedSchemas: ExtendedSchema[] = [],
 ) {
-    return generateTyping(schema, { context: extendedSchemas }).typeDependencies
+  return generateTyping(schema, { context: extendedSchemas }).typeDependencies;
 }
 
 export const typeDependenciesFilter: Filter = {
-    name: 'typeDependencies',
-    function: typeDependencies,
-}
+  name: 'typeDependencies',
+  function: typeDependencies,
+};

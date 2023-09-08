@@ -1,7 +1,10 @@
-import {DeviceServiceTypes} from '@cross-lab-project/api-client';
-import {assert} from 'chai';
+import { DeviceServiceTypes } from '@cross-lab-project/api-client';
+import { assert } from 'chai';
 
-function validateDevices(deviceGroup: DeviceServiceTypes.DeviceGroup, expectedUrls: string[]): boolean {
+function validateDevices(
+  deviceGroup: DeviceServiceTypes.DeviceGroup,
+  expectedUrls: string[],
+): boolean {
   if (deviceGroup.devices.length !== expectedUrls.length) return false;
 
   for (const expectedUrl of expectedUrls) {
@@ -56,10 +59,10 @@ describe('Cyclic Device Groups', function () {
     assert(deviceGroup2.type === 'group');
     assert(deviceGroup3.type === 'group');
 
-    deviceGroup1.devices.push({url: deviceGroup2.url});
-    deviceGroup2.devices.push({url: deviceGroup1.url});
-    deviceGroup2.devices.push({url: deviceGroup3.url});
-    deviceGroup3.devices.push({url: deviceGroup1.url});
+    deviceGroup1.devices.push({ url: deviceGroup2.url });
+    deviceGroup2.devices.push({ url: deviceGroup1.url });
+    deviceGroup2.devices.push({ url: deviceGroup3.url });
+    deviceGroup3.devices.push({ url: deviceGroup1.url });
 
     deviceGroup1 = await this.client.updateDevice(deviceGroup1.url, deviceGroup1);
     deviceGroup2 = await this.client.updateDevice(deviceGroup2.url, deviceGroup2);
@@ -71,21 +74,46 @@ describe('Cyclic Device Groups', function () {
 
     const device1 = await this.client.getDevice(deviceGroup1.url);
     assert(device1.type === 'group');
-    assert(validateDevices(device1, [devices[0].url, devices[1].url, devices[2].url, deviceGroup2.url]));
+    assert(
+      validateDevices(device1, [
+        devices[0].url,
+        devices[1].url,
+        devices[2].url,
+        deviceGroup2.url,
+      ]),
+    );
 
     const device2 = await this.client.getDevice(deviceGroup2.url);
     assert(device2.type === 'group');
-    assert(validateDevices(device2, [devices[3].url, devices[4].url, devices[5].url, devices[6].url, deviceGroup1.url, deviceGroup3.url]));
+    assert(
+      validateDevices(device2, [
+        devices[3].url,
+        devices[4].url,
+        devices[5].url,
+        devices[6].url,
+        deviceGroup1.url,
+        deviceGroup3.url,
+      ]),
+    );
 
     const device3 = await this.client.getDevice(deviceGroup3.url);
     assert(device3.type === 'group');
-    assert(validateDevices(device3, [devices[7].url, devices[8].url, devices[9].url, deviceGroup1.url]));
+    assert(
+      validateDevices(device3, [
+        devices[7].url,
+        devices[8].url,
+        devices[9].url,
+        deviceGroup1.url,
+      ]),
+    );
   });
 
   it('should resolve cyclic device groups correctly (flat_group: true)', async function () {
     this.timeout(15000);
 
-    const device1 = await this.client.getDevice(deviceGroup1.url, {flat_group: true});
+    const device1 = await this.client.getDevice(deviceGroup1.url, {
+      flat_group: true,
+    });
     assert(device1.type === 'group');
     assert(
       validateDevices(
@@ -94,7 +122,9 @@ describe('Cyclic Device Groups', function () {
       ),
     );
 
-    const device2 = await this.client.getDevice(deviceGroup2.url, {flat_group: true});
+    const device2 = await this.client.getDevice(deviceGroup2.url, {
+      flat_group: true,
+    });
     assert(device2.type === 'group');
     assert(
       validateDevices(
@@ -103,7 +133,9 @@ describe('Cyclic Device Groups', function () {
       ),
     );
 
-    const device3 = await this.client.getDevice(deviceGroup3.url, {flat_group: true});
+    const device3 = await this.client.getDevice(deviceGroup3.url, {
+      flat_group: true,
+    });
     assert(device3.type === 'group');
     assert(
       validateDevices(

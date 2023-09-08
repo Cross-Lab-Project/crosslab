@@ -13,6 +13,7 @@
     "build-web-compile": "webpack --mode=development && cp -f src-web/index.html http-dist/index.html",
     "build": "npm run build-web-compile && npm run build-compile",
     "start": "node app/index.js",
+    "format": "prettier . --write",
     "lint": "eslint ."
   },
   "author": "Johannes Nau",

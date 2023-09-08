@@ -28,17 +28,17 @@ components:
 
 paths:
   /auth:
-    $ref: "./resources/auth.yml"
+    $ref: './resources/auth.yml'
   /login:
-    $ref: "./resources/login.yml"
+    $ref: './resources/login.yml'
   /logout:
-    $ref: "./resources/logout.yml"
+    $ref: './resources/logout.yml'
   /users:
-    $ref: "./resources/users.yml"
+    $ref: './resources/users.yml'
   /users/{user_id}:
-    $ref: "./resources/user.yml"
+    $ref: './resources/user.yml'
   /identity:
-    $ref: "./resources/identity.yml"
+    $ref: './resources/identity.yml'
 
   /token:
-    $ref: "./resources/token.yml#/components/paths/token"
+    $ref: './resources/token.yml#/components/paths/token'

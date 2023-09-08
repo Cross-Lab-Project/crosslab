@@ -1,5 +1,6 @@
-import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
+
+import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
 
 /**
  * This function handles an incoming "peerconnection-closed" event callback.
@@ -7,11 +8,11 @@ import { DeviceServiceTypes } from '@cross-lab-project/api-client';
  * @returns The status code for the response to the incoming callback.
  */
 export function handlePeerconnectionClosedEventCallback(
-    callback: DeviceServiceTypes.PeerconnectionClosedEventCallback,
+  callback: DeviceServiceTypes.PeerconnectionClosedEventCallback,
 ): 200 | 410 {
-    if (!peerconnectionClosedCallbacks.includes(callback.peerconnection.url)) {
-        return 410;
-    }
-    // TODO: add peerconnection closed handling
-    return 200;
+  if (!peerconnectionClosedCallbacks.includes(callback.peerconnection.url)) {
+    return 410;
+  }
+  // TODO: add peerconnection closed handling
+  return 200;
 }

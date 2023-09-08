@@ -1,44 +1,44 @@
-version: "3"
+version: '3'
 
 x-config: &common-config
-  AUTHORIZATION_SERVER: "http://127.0.0.1:3010"
-  AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-TestPSK}"
-  LOGGING: "${LOGGING:-info}"
+  AUTHORIZATION_SERVER: 'http://127.0.0.1:3010'
+  AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:-TestPSK}'
+  LOGGING: '${LOGGING:-info}'
 
 services:
   # Services
   gateway:
-    image: "${GATEWAY_IMAGE}"
+    image: '${GATEWAY_IMAGE}'
     environment:
       <<: *common-config
-      AUTH_SERVICE_URL: "127.0.0.1:3000"
-      DEVICE_SERVICE_URL: "127.0.0.1:3001"
-      EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
-      FEDERATION_SERVICE_URL: "127.0.0.1:3003"
-      UPDATE_SERVICE_URL: "127.0.0.1:1"
-      SERVER_NAME: "localhost"
-    network_mode: "host"
+      AUTH_SERVICE_URL: '127.0.0.1:3000'
+      DEVICE_SERVICE_URL: '127.0.0.1:3001'
+      EXPERIMENT_SERVICE_URL: '127.0.0.1:3002'
+      FEDERATION_SERVICE_URL: '127.0.0.1:3003'
+      UPDATE_SERVICE_URL: '127.0.0.1:1'
+      SERVER_NAME: 'localhost'
+    network_mode: 'host'
   authentication:
-    image: "${AUTHENTICATION_IMAGE}"
+    image: '${AUTHENTICATION_IMAGE}'
     environment:
       <<: *common-config
-      JWT_SECRET: "secret"
-    network_mode: "host"
+      JWT_SECRET: 'secret'
+    network_mode: 'host'
   authorization:
-    image: "${AUTHORIZATION_IMAGE}"
+    image: '${AUTHORIZATION_IMAGE}'
     environment:
       <<: *common-config
-      JWT_SECRET: "secret"
-    network_mode: "host"
+      JWT_SECRET: 'secret'
+    network_mode: 'host'
   device:
-    image: "${DEVICE_IMAGE}"
+    image: '${DEVICE_IMAGE}'
     environment: *common-config
-    network_mode: "host"
+    network_mode: 'host'
   experiment:
-    image: "${EXPERIMENT_IMAGE}"
+    image: '${EXPERIMENT_IMAGE}'
     environment: *common-config
-    network_mode: "host"
+    network_mode: 'host'
   federation:
-    image: "${FEDERATION_IMAGE}"
+    image: '${FEDERATION_IMAGE}'
     environment: *common-config
-    network_mode: "host"
+    network_mode: 'host'

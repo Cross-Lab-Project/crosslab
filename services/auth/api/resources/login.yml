@@ -13,11 +13,11 @@ post:
       application/json:
         schema:
           allOf:
-            - $ref: "../schemas/credentials.yml"
+            - $ref: '../schemas/credentials.yml'
             - type: object
               properties:
                 method:
-                  $ref: "../schemas/auth_method.yml"
+                  $ref: '../schemas/auth_method.yml'
   responses:
     201:
       description: Return the access token.

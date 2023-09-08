@@ -1,12 +1,13 @@
-import { initApp } from './app.js';
-import { AppDataSource } from './database/dataSource.js';
 import { logger } from '@crosslab/service-common';
 
-async function main() {
-    await AppDataSource.initialize();
-    initApp();
+import { initApp } from './app.js';
+import { AppDataSource } from './database/dataSource.js';
 
-    logger.log('info', 'Federation Service started successfully');
+async function main() {
+  await AppDataSource.initialize();
+  initApp();
+
+  logger.log('info', 'Federation Service started successfully');
 }
 
 main();

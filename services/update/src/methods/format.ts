@@ -7,11 +7,11 @@ import { UpdateInformation } from '../generated/types';
  * @returns The resulting {@link UpdateInformation}.
  */
 export function formatUpdateInformation(
-    updateInformationModel: UpdateInformationModel,
+  updateInformationModel: UpdateInformationModel,
 ): UpdateInformation {
-    return {
-        device_id: updateInformationModel.device_id,
-        latest_version: updateInformationModel.latest_version,
-        latest_version_link: updateInformationModel.latest_version_link,
-    };
+  return {
+    device_id: updateInformationModel.device_id,
+    latest_version: updateInformationModel.latest_version,
+    latest_version_link: updateInformationModel.latest_version_link,
+  };
 }

@@ -1,11 +1,12 @@
-import {ApplicationDataSource} from "../database/datasource";
-import {UserModel} from "../database/model";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
+
+import { ApplicationDataSource } from '../database/datasource';
+import { UserModel } from '../database/model';
 
 export async function createUser(
   username: string,
   password: string,
-  type: "local" | "tui" = "local",
+  type: 'local' | 'tui' = 'local',
 ) {
   const user = ApplicationDataSource.manager.create(UserModel, {
     type,

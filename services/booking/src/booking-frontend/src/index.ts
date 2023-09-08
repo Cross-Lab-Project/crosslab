@@ -1,10 +1,11 @@
-import { app } from "./generated";
 import {
   JWTVerify,
   parseJwtFromRequestAuthenticationHeader,
-} from "@cross-lab-project/service-common";
-import { isUserTypeJWT } from "./generated/types";
-import { config } from "./config";
+} from '@cross-lab-project/service-common';
+
+import { config } from './config';
+import { app } from './generated';
+import { isUserTypeJWT } from './generated/types';
 
 if (require.main === module) {
   app.initService({
@@ -16,11 +17,11 @@ if (require.main === module) {
           SECURITY_ISSUER: config.SECURITY_ISSUER,
         },
         isUserTypeJWT,
-        parseJwtFromRequestAuthenticationHeader
+        parseJwtFromRequestAuthenticationHeader,
       ),
     },
   });
 
-  console.log("Starting booking-frontend");
+  console.log('Starting booking-frontend');
   app.listen(config.PORT);
 }

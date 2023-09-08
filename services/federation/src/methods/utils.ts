@@ -6,10 +6,10 @@ import { config } from '../config.js';
  * @returns The url of the institution.
  */
 export function institutionUrlFromId(institutionId: string): string {
-    return (
-        config.BASE_URL +
-        (config.BASE_URL.endsWith('/') ? '' : '/') +
-        'institutions/' +
-        institutionId
-    );
+  return (
+    config.BASE_URL +
+    (config.BASE_URL.endsWith('/') ? '' : '/') +
+    'institutions/' +
+    institutionId
+  );
 }

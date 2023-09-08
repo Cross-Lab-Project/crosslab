@@ -11,6 +11,7 @@
     "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "build": "npm run build-compile",
     "watch": "tsc -w",
+    "format": "prettier . --write",
     "lint": "eslint ."
   },
   "files": [
@@ -29,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.48.0",
+    "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
   "dependencies": {

@@ -1,7 +1,12 @@
 export class DataChannel {
   ondata?: (data: string | ArrayBuffer | ArrayBufferView | Blob) => void;
   channel_type = 'DataChannel' as const;
-  send: {(data: string): void; (data: Blob): void; (data: ArrayBuffer): void; (data: ArrayBufferView): void};
+  send: {
+    (data: string): void;
+    (data: Blob): void;
+    (data: ArrayBuffer): void;
+    (data: ArrayBufferView): void;
+  };
 
   constructor() {
     this.send = () => {
@@ -26,7 +31,7 @@ export class DataChannel {
 
 export class MediaChannel {
   channel_type = 'MediaChannel' as const;
-  ontrack?: (event: {track: MediaStreamTrack}) => void;
+  ontrack?: (event: { track: MediaStreamTrack }) => void;
   track: MediaStreamTrack | undefined;
 
   constructor(track?: MediaStreamTrack) {

@@ -1,23 +1,25 @@
-import {APIClient} from '@cross-lab-project/api-client';
+import { APIClient } from '@cross-lab-project/api-client';
 import assert from 'assert';
-import {ChildProcessWithoutNullStreams, execSync, spawn} from 'child_process';
+import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
 import fs from 'fs';
-import {resolve} from 'path';
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { resolve } from 'path';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 const repository_dir = resolve(__filename, '../../../../');
 
 export interface DummyDeviceEvents {
   websocketToken(token: string): void;
-  connectionsChanged(connections: {url: string; state: string}[]): void;
+  connectionsChanged(connections: { url: string; state: string }[]): void;
   websocketConnected(): void;
-  gpio(event: {signal: string; value: string}): void;
+  gpio(event: { signal: string; value: string }): void;
 }
 
 function createPythonEnvironment() {
   // if venv is not created, create it
   if (!fs.existsSync(`${repository_dir}/integration-test/venv`)) {
-    execSync('virtualenv venv && venv/bin/pip install -r requirements.txt', {cwd: `${repository_dir}/integration-test`});
+    execSync('virtualenv venv && venv/bin/pip install -r requirements.txt', {
+      cwd: `${repository_dir}/integration-test`,
+    });
   }
 }
 
@@ -46,7 +48,9 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     super();
     switch (type) {
       case 'js':
-        this.binary = `node${host_debug ? ` --inspect-brk=${host_debug}` : ''} node_modules/@crosslab/dummy-device/app/index.js${
+        this.binary = `node${
+          host_debug ? ` --inspect-brk=${host_debug}` : ''
+        } node_modules/@crosslab/dummy-device/app/index.js${
           debug ? ` --browser-inspect ${debug}` : ''
         }`.split(' ');
         if (host_debug) {
@@ -62,10 +66,15 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
         createPythonEnvironment();
         if (debug) {
           this.binary =
-            `${repository_dir}/integration-test/venv/bin/python -m debugpy --listen ${debug} --wait-for-client -m dummy_device`.split(' ');
+            `${repository_dir}/integration-test/venv/bin/python -m debugpy --listen ${debug} --wait-for-client -m dummy_device`.split(
+              ' ',
+            );
           this.debugPrint = `    python dummy device started with debug port ${debug}. Please attach debugger`;
         } else {
-          this.binary = `${repository_dir}/integration-test/venv/bin/python -m dummy_device`.split(' ');
+          this.binary =
+            `${repository_dir}/integration-test/venv/bin/python -m dummy_device`.split(
+              ' ',
+            );
         }
         break;
     }
@@ -78,9 +87,18 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.context.log(this.log_file, 'starting device', 'log');
     this.url = deviceUrl;
 
-    const cli = ['--url', client.url, '--auth-token', client.accessToken, '--device-url', deviceUrl];
+    const cli = [
+      '--url',
+      client.url,
+      '--auth-token',
+      client.accessToken,
+      '--device-url',
+      deviceUrl,
+    ];
 
-    this.process = spawn(this.binary[0], [...this.binary.slice(1), ...cli], {env: {...process.env}});
+    this.process = spawn(this.binary[0], [...this.binary.slice(1), ...cli], {
+      env: { ...process.env },
+    });
     if (this.debugPrint) {
       console.log(this.debugPrint);
     }
@@ -129,8 +147,11 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.process.kill('SIGINT');
   }
 
-  _sendList: {event: string; data: unknown}[] = [];
-  public send(event: 'gpio', data: {signal: string; value: 'strongH' | 'strongL'}): void;
+  _sendList: { event: string; data: unknown }[] = [];
+  public send(
+    event: 'gpio',
+    data: { signal: string; value: 'strongH' | 'strongL' },
+  ): void;
   public send(event: string, data: unknown): void;
   public send(event: string, data: unknown) {
     if (this.ready && this.process) {
@@ -138,7 +159,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
       this.process.stdin.write('[' + event + '] ' + JSON.stringify(data) + '\n');
       this.process.stdin.uncork();
     } else {
-      this._sendList.push({event, data});
+      this._sendList.push({ event, data });
     }
   }
 }

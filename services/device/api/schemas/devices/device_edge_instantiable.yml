@@ -1,16 +1,16 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Instantiable Browser Device
 allOf:
-    - $ref: ./device_overview.yml
-    - type: object
-      properties:
-          type:
-              const: edge instantiable
-          codeUrl:
-              type: string
-              format: uri
-          services:
-              type: array
-              items:
-                  $ref: ./services/service_description.yml
+  - $ref: ./device_overview.yml
+  - type: object
+    properties:
+      type:
+        const: edge instantiable
+      codeUrl:
+        type: string
+        format: uri
+      services:
+        type: array
+        items:
+          $ref: ./services/service_description.yml
 x-typeguard: true

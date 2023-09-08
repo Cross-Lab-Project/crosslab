@@ -4,15 +4,15 @@ description: |
   Information regarding an update. Contains the id of the device,
   the name of the latest version and a link to it.
 type: object
-properties: 
-  device_id: 
+properties:
+  device_id:
     type: string
   latest_version:
     type: string
   latest_version_link:
     type: string
     format: uri
-required: 
+required:
   - device_id
   - latest_version
   - latest_version_link

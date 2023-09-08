@@ -9,9 +9,7 @@
     "watch": "webpack --mode development --watch",
     "serve": "webpack serve"
   },
-  "files": [
-    "http-dist"
-  ],
+  "files": ["http-dist"],
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "devDependencies": {

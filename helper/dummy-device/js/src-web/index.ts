@@ -1,6 +1,9 @@
-import {APIClient} from '@cross-lab-project/api-client';
-import {DeviceHandler} from '@cross-lab-project/soa-client';
-import {ElectricalConnectionService, GPIO} from '@cross-lab-project/soa-service-electrical';
+import { APIClient } from '@cross-lab-project/api-client';
+import { DeviceHandler } from '@cross-lab-project/soa-client';
+import {
+  ElectricalConnectionService,
+  GPIO,
+} from '@cross-lab-project/soa-service-electrical';
 
 const sendEvent = (eventName: string, data?: unknown) => {
   if (data === undefined) {
@@ -13,7 +16,7 @@ const sendEvent = (eventName: string, data?: unknown) => {
 const gpios = new Map<string, GPIO.GPIOInterface>();
 const default_signal_state = new Map<string, GPIO.GPIOState>();
 
-async function app(options: {baseUrl: string; authToken: string; deviceUrl: string}) {
+async function app(options: { baseUrl: string; authToken: string; deviceUrl: string }) {
   const client = new APIClient(options.baseUrl);
   client.accessToken = options.authToken;
 
@@ -49,7 +52,9 @@ async function app(options: {baseUrl: string; authToken: string; deviceUrl: stri
     gpios.set(gpioInterface.configuration.signals.gpio, gpioInterface);
     if (default_signal_state.has(gpioInterface.configuration.signals.gpio)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      gpioInterface.changeDriver(default_signal_state.get(gpioInterface.configuration.signals.gpio)!);
+      gpioInterface.changeDriver(
+        default_signal_state.get(gpioInterface.configuration.signals.gpio)!,
+      );
     }
   });
   electrical.addInterface(gpio);

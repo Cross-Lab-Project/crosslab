@@ -3,9 +3,9 @@ title: Connection Status
 type: string
 description: The status of the peerconnection.
 enum:
-    - new
-    - connecting
-    - connected
-    - disconnected
-    - failed
-    - closed
+  - new
+  - connecting
+  - connected
+  - disconnected
+  - failed
+  - closed

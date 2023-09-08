@@ -1,14 +1,15 @@
-import { TypedEmitter } from "tiny-typed-emitter";
+import { TypedEmitter } from 'tiny-typed-emitter';
+
 import {
-  ConnectionInterfaceConfiguration,
   ConnectionInterface,
-  ConstructableConnectionInterface,
+  ConnectionInterfaceConfiguration,
   ConnectionInterfaceDescription,
   ConnectionInterfaceEvents,
-} from "../connectionInterface";
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
 
-type InterfaceType = "uart";
-const InterfaceType: InterfaceType = "uart";
+type InterfaceType = 'uart';
+const InterfaceType: InterfaceType = 'uart';
 
 export interface UARTConfiguration extends ConnectionInterfaceConfiguration {
   signals: { txd: string; rxd: string };
@@ -37,9 +38,9 @@ export class UARTInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -48,7 +49,7 @@ export class UARTInterface
   }
 
   sendFrame(frame: number): void {
-    this.emit("upstreamData", frame);
+    this.emit('upstreamData', frame);
   }
 }
 

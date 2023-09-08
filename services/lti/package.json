@@ -11,14 +11,15 @@
     "app"
   ],
   "scripts": {
-    "lint": "eslint .",
     "build": "npm run build:generate && npm run build:compile",
     "build:compile": "tsc --project tsconfig.json",
     "build:generate": "npm run build:generate:authentication && npm run build:generate:experiment",
     "build:generate:authentication": "npx openapi-codegen -i ../auth/dist/openapi.json -t ./api_client_template -o ./src/clients/authentication",
     "build:generate:experiment": "npx openapi-codegen -i ../experiment/dist/openapi.json -t ./api_client_template -o ./src/clients/experiment",
     "dev": "tsc-watch --onSuccess 'node --inspect=9009 ./app/index.js'",
-    "test": "mocha --require ts-node/register test/**/*.spec.ts"
+    "test": "mocha --require ts-node/register test/**/*.spec.ts",
+    "format": "prettier . --write",
+    "lint": "eslint ."
   },
   "devDependencies": {
     "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
@@ -27,12 +28,14 @@
     "@types/node-fetch": "^2.6.4",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.1.6"
   },
   "dependencies": {
     "@crosslab/service-common": "file:../common",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "cookie-parser": "^1.4.6",

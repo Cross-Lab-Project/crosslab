@@ -1,46 +1,47 @@
+import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
+import WebSocket from 'ws';
+
 import { ConcreteDeviceModel } from '../../../../database/model.js';
 import {
-    Message,
-    isSignalingMessage,
-    isConnectionStateChangedMessage,
-    SignalingMessage,
-    ConnectionStateChangedMessage,
-    isMessage,
+  ConnectionStateChangedMessage,
+  Message,
+  SignalingMessage,
+  isConnectionStateChangedMessage,
+  isMessage,
+  isSignalingMessage,
 } from '../../../../generated/types.js';
 import { apiClient } from '../../../../globals.js';
 import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
-import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
-import WebSocket from 'ws';
 
 export async function messageHandling(
-    ws: WebSocket,
-    deviceModel: ConcreteDeviceModel,
-    rawData: WebSocket.RawData,
+  ws: WebSocket,
+  deviceModel: ConcreteDeviceModel,
+  rawData: WebSocket.RawData,
 ) {
-    // message handler: handle incoming messages from devices
-    try {
-        const msg = JSON.parse(rawData.toString('utf-8'));
-        if (!isMessage(msg)) {
-            logger.log(
-                'error',
-                `Received something that is not a message from device '${deviceUrlFromId(
-                    deviceModel.uuid,
-                )}', disconnecting`,
-            );
-            ws.close(1002, 'Malformed Message');
-            return;
-        }
-        await handleDeviceMessage(deviceModel, msg);
-    } catch (error) {
-        logger.log(
-            'error',
-            `An error occurred while handling an incoming message for device '${deviceUrlFromId(
-                deviceModel.uuid,
-            )}'`,
-            { data: { error } },
-        );
+  // message handler: handle incoming messages from devices
+  try {
+    const msg = JSON.parse(rawData.toString('utf-8'));
+    if (!isMessage(msg)) {
+      logger.log(
+        'error',
+        `Received something that is not a message from device '${deviceUrlFromId(
+          deviceModel.uuid,
+        )}', disconnecting`,
+      );
+      ws.close(1002, 'Malformed Message');
+      return;
     }
+    await handleDeviceMessage(deviceModel, msg);
+  } catch (error) {
+    logger.log(
+      'error',
+      `An error occurred while handling an incoming message for device '${deviceUrlFromId(
+        deviceModel.uuid,
+      )}'`,
+      { data: { error } },
+    );
+  }
 }
 
 /**
@@ -49,11 +50,11 @@ export async function messageHandling(
  * @param message The message to be handled.
  */
 async function handleDeviceMessage(deviceModel: ConcreteDeviceModel, message: Message) {
-    if (isSignalingMessage(message)) {
-        await handleSignalingMessage(deviceModel, message);
-    } else if (isConnectionStateChangedMessage(message)) {
-        await handleConnectionStateChangedMessage(deviceModel, message);
-    }
+  if (isSignalingMessage(message)) {
+    await handleSignalingMessage(deviceModel, message);
+  } else if (isConnectionStateChangedMessage(message)) {
+    await handleConnectionStateChangedMessage(deviceModel, message);
+  }
 }
 
 /**
@@ -62,29 +63,29 @@ async function handleDeviceMessage(deviceModel: ConcreteDeviceModel, message: Me
  * @param message The signaling message to be handled.
  */
 async function handleSignalingMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: SignalingMessage,
+  deviceModel: ConcreteDeviceModel,
+  message: SignalingMessage,
 ) {
-    const peerconnection = await apiClient.getPeerconnection(message.connectionUrl);
+  const peerconnection = await apiClient.getPeerconnection(message.connectionUrl);
 
-    const deviceA = peerconnection.devices[0];
-    const deviceB = peerconnection.devices[1];
+  const deviceA = peerconnection.devices[0];
+  const deviceB = peerconnection.devices[1];
 
-    let peerDeviceUrl: string | undefined = undefined;
-    if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url;
-    if (deviceB.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceA.url;
-    if (!peerDeviceUrl) {
-        throw new UnrelatedPeerconnectionError(
-            'Device is not taking part in peerconnection.',
-            400,
-        );
-    }
-
-    signalingQueueManager.addSignalingMessage(
-        message.connectionUrl,
-        peerDeviceUrl,
-        message,
+  let peerDeviceUrl: string | undefined = undefined;
+  if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url;
+  if (deviceB.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceA.url;
+  if (!peerDeviceUrl) {
+    throw new UnrelatedPeerconnectionError(
+      'Device is not taking part in peerconnection.',
+      400,
     );
+  }
+
+  signalingQueueManager.addSignalingMessage(
+    message.connectionUrl,
+    peerDeviceUrl,
+    message,
+  );
 }
 
 /**
@@ -93,12 +94,12 @@ async function handleSignalingMessage(
  * @param message The connection-state-changed message.
  */
 async function handleConnectionStateChangedMessage(
-    deviceModel: ConcreteDeviceModel,
-    message: ConnectionStateChangedMessage,
+  deviceModel: ConcreteDeviceModel,
+  message: ConnectionStateChangedMessage,
 ) {
-    await apiClient.patchPeerconnectionDeviceStatus(
-        message.connectionUrl,
-        { status: message.status },
-        deviceUrlFromId(deviceModel.uuid),
-    );
+  await apiClient.patchPeerconnectionDeviceStatus(
+    message.connectionUrl,
+    { status: message.status },
+    deviceUrlFromId(deviceModel.uuid),
+  );
 }

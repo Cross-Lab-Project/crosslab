@@ -63,7 +63,7 @@ paths:
       x-internal: true
       tags:
         - authorize
-      security: 
+      security:
         - PSK: []
       summary: Make an authorization decision
       description: |-
@@ -110,7 +110,7 @@ paths:
       x-internal: true
       tags:
         - authorize
-      security: 
+      security:
         - PSK: []
       summary: Get relations
       description: |-
@@ -152,7 +152,7 @@ paths:
       x-internal: true
       tags:
         - authorize
-      security: 
+      security:
         - PSK: []
       summary: Update relations
       description: |-

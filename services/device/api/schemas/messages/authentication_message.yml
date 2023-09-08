@@ -1,15 +1,15 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Authentication Message
 allOf:
-    - $ref: './message.yml'
-    - type: object
-      properties:
-          messageType:
-              const: authenticate
-          token:
-              type: string
-          authenticated:
-              type: boolean
-      required:
-          - messageType
+  - $ref: './message.yml'
+  - type: object
+    properties:
+      messageType:
+        const: authenticate
+      token:
+        type: string
+      authenticated:
+        type: boolean
+    required:
+      - messageType
 x-typeguard: true

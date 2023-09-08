@@ -10,13 +10,13 @@ get:
   tags:
     - template
   parameters:
-    - $ref: "../parameters/template_id.yml"
+    - $ref: '../parameters/template_id.yml'
   responses:
     200:
       description: The JSON Representation of the template
       content:
         application/json:
-          $ref: "../content/template.yml"
+          $ref: '../content/template.yml'
     400:
       description: Bad Request.
     401:
@@ -42,24 +42,24 @@ patch:
   tags:
     - template
   parameters:
-    - $ref: "../parameters/template_id.yml"
+    - $ref: '../parameters/template_id.yml'
   requestBody:
     description: Update the template
     required: true
     content:
       application/json:
-        $ref: "../content/template_update.yml"
+        $ref: '../content/template_update.yml'
   responses:
     200:
       description: The JSON Representation of the changed template
       content:
         application/json:
-          $ref: "../content/template.yml"
+          $ref: '../content/template.yml'
     202:
       description: The JSON Representation of the changed template, that will be set to running eventually
       content:
         application/json:
-          $ref: "../content/template.yml"
+          $ref: '../content/template.yml'
     400:
       description: Bad Request.
     401:
@@ -81,7 +81,7 @@ delete:
   tags:
     - template
   parameters:
-    - $ref: "../parameters/template_id.yml"
+    - $ref: '../parameters/template_id.yml'
   responses:
     204:
       description: The template was deleted.

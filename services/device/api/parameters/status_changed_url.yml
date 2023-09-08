@@ -3,7 +3,7 @@ name: statusChangedUrl
 in: query
 required: false
 description: |
-    An URL that will be called if the status of the peerconnection changes.
+  An URL that will be called if the status of the peerconnection changes.
 schema:
-    type: string
-    format: uri
+  type: string
+  format: uri

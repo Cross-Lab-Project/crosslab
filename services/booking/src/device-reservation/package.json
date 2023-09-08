@@ -6,12 +6,15 @@
   "scripts": {
     "test": "npm run build && npx nyc --include=\"app/mainLoop.js\" --include=\"app/messageDefinition.js\" mocha --require mocha-suppress-logs --exit app/*_test.js",
     "build": "npx tsc",
-    "start": "npm run build && node app/index.js"
+    "start": "npm run build && node app/index.js",
+    "format": "prettier . --write",
+    "lint": "eslint ."
   },
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
     "@crosslab/booking-service-common": "file:../common",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/amqplib": "^0.10.1",
     "amqplib": "^0.10.0",
     "async-mutex": "^0.4.0",
@@ -23,6 +26,7 @@
     "@types/mocha": "^10.0.0",
     "mocha": "^10.0.0",
     "mocha-suppress-logs": "^0.3.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "prettier": "^3.0.3"
   }
 }

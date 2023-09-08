@@ -7,31 +7,31 @@ import {
   OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
 @Entity()
 export class UserModel {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   uuid!: string;
 
-  @Index({unique: true})
+  @Index({ unique: true })
   @Column()
   username!: string;
 
   @Column()
-  type!: "local" | "tui";
+  type!: 'local' | 'tui';
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   password?: string;
 
   @CreateDateColumn()
   createdOn!: string;
 
-  @Column("datetime", {nullable: true})
+  @Column('datetime', { nullable: true })
   lastLogin?: string;
 
   @OneToMany(() => TokenModel, token => token.user, {
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
   tokens!: Promise<TokenModel[]>;
 }
@@ -41,10 +41,10 @@ export class TokenModel {
   @PrimaryColumn()
   token!: string;
 
-  @Column("datetime", {nullable: true})
+  @Column('datetime', { nullable: true })
   expiresOn?: string;
 
-  @Column("simple-json", {nullable: true})
+  @Column('simple-json', { nullable: true })
   claims?: object;
 
   @ManyToOne(() => UserModel, user => user.tokens)

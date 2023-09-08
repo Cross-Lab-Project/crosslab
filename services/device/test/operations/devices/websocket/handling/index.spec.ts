@@ -5,9 +5,9 @@ import heartbeatSpec from './heartbeat.spec.js';
 import messageSpec from './message.spec.js';
 
 export default [
-    authenticationSpec,
-    closeSpec,
-    disconnectSpec,
-    heartbeatSpec,
-    messageSpec,
+  authenticationSpec,
+  closeSpec,
+  disconnectSpec,
+  heartbeatSpec,
+  messageSpec,
 ];

@@ -1,5 +1,5 @@
 extends:
-    - recommended
+  - recommended
 rules:
-    no-empty-servers: warn
-    path-parameters-defined: warn
+  no-empty-servers: warn
+  path-parameters-defined: warn

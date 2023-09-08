@@ -1,8 +1,8 @@
-import express from "express";
-import {v1 as uuidv1} from "uuid";
+import express from 'express';
+import { v1 as uuidv1 } from 'uuid';
 
-import {logger} from './logging.js';
-import {requestIdContext} from './requestId.js';
+import { logger } from './logging.js';
+import { requestIdContext } from './requestId.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -19,11 +19,13 @@ declare global {
  */
 export function middleware() {
   return function (req, res, next) {
-    req.id = req.get("X-Request-ID") ?? uuidv1();
+    req.id = req.get('X-Request-ID') ?? uuidv1();
     req.startTime = Date.now();
-    res.on("finish", () => {
+    res.on('finish', () => {
       logger.info({
-        message: `${req.method} ${req.url} ${res.statusCode} ${Date.now() - req.startTime}ms`,
+        message: `${req.method} ${req.url} ${res.statusCode} ${
+          Date.now() - req.startTime
+        }ms`,
         method: req.method,
         url: req.url,
         status: res.statusCode,

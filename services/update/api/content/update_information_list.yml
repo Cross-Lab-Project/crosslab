@@ -2,4 +2,4 @@
 schema:
   type: array
   items:
-    $ref: "../schemas/update_information.yml"
+    $ref: '../schemas/update_information.yml'

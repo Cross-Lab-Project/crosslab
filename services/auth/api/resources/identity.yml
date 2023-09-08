@@ -13,7 +13,7 @@ get:
       description: The JSON representation of the corresponding user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:
@@ -37,13 +37,13 @@ patch:
     description: Updated identity.
     content:
       application/json:
-        $ref: "../content/user_update.yml"
+        $ref: '../content/user_update.yml'
   responses:
     200:
       description: The JSON representation of the updated user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:

@@ -15,16 +15,18 @@
     "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
     "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
-    "lint": "eslint .",
     "build": "tsc --project tsconfig.build.json",
     "dev": "AUTHORIZATION_PSK=secret JWT_SECRET=secret npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
     "dev-test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --watch --watch-files test/*.ts -R list test/**/*.spec.ts",
-    "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts"
+    "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts",
+    "format": "prettier . --write",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@crosslab/service-common": "file:../common",
     "@openfga/sdk": "^0.2.8",
     "@openfga/syntax-transformer": "^0.1.3",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@typescript-eslint/parser": "^6.6.0",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
@@ -44,6 +46,7 @@
     "eslint": "^8.48.0",
     "jose": "^4.14.6",
     "mocha": "^10.2.0",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "winston": "^3.10.0"
   }

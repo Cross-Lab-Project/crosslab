@@ -3,7 +3,7 @@ name: closedUrl
 in: query
 required: false
 description: |
-    An URL that will be called once the peer connection is closed.
+  An URL that will be called once the peer connection is closed.
 schema:
-    type: string
-    format: uri
+  type: string
+  format: uri

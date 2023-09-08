@@ -1,15 +1,15 @@
 title: Peerconnection Status Changed Event Callback
 allOf:
-    - $ref: ./event_callback.yml
-    - type: object
-      properties:
-          eventType:
-              type: string
-              enum:
-                  - peerconnection-status-changed
-          peerconnection:
-              $ref: '../peerconnections/peerconnection.yml'
-      required:
-          - eventType
-          - peerconnection
+  - $ref: ./event_callback.yml
+  - type: object
+    properties:
+      eventType:
+        type: string
+        enum:
+          - peerconnection-status-changed
+      peerconnection:
+        $ref: '../peerconnections/peerconnection.yml'
+    required:
+      - eventType
+      - peerconnection
 x-typeguard: true

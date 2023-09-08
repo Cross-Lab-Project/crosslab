@@ -1,64 +1,65 @@
-import {
-    InstantiableBrowserDevice,
-    InstantiableBrowserDeviceUpdate,
-} from '../../../generated/types.js';
-import { InstantiableBrowserDeviceModel } from '../../model.js';
-import { DeviceOverviewRepository } from './deviceOverview.js';
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
+import {
+  InstantiableBrowserDevice,
+  InstantiableBrowserDeviceUpdate,
+} from '../../../generated/types.js';
+import { InstantiableBrowserDeviceModel } from '../../model.js';
+import { DeviceOverviewRepository } from './deviceOverview.js';
+
 export class InstantiableBrowserDeviceRepository extends AbstractRepository<
-    InstantiableBrowserDeviceModel,
-    InstantiableBrowserDevice<'request'>,
-    InstantiableBrowserDevice<'response'>,
-    { deviceOverview: DeviceOverviewRepository }
+  InstantiableBrowserDeviceModel,
+  InstantiableBrowserDevice<'request'>,
+  InstantiableBrowserDevice<'response'>,
+  { deviceOverview: DeviceOverviewRepository }
 > {
-    protected dependencies: { deviceOverview?: DeviceOverviewRepository } = {};
+  protected dependencies: { deviceOverview?: DeviceOverviewRepository } = {};
 
-    constructor() {
-        super('Instantiable Browser Device');
-    }
+  constructor() {
+    super('Instantiable Browser Device');
+  }
 
-    protected dependenciesMet(): boolean {
-        if (!this.dependencies.deviceOverview) return false;
+  protected dependenciesMet(): boolean {
+    if (!this.dependencies.deviceOverview) return false;
 
-        return true;
-    }
+    return true;
+  }
 
-    initialize(entityManager: EntityManager): void {
-        this.repository = entityManager.getRepository(InstantiableBrowserDeviceModel);
-    }
+  initialize(entityManager: EntityManager): void {
+    this.repository = entityManager.getRepository(InstantiableBrowserDeviceModel);
+  }
 
-    async create(
-        data?: InstantiableBrowserDevice<'request'>,
-    ): Promise<InstantiableBrowserDeviceModel> {
-        const model = await super.create(data);
-        model.type = 'edge instantiable';
-        return model;
-    }
+  async create(
+    data?: InstantiableBrowserDevice<'request'>,
+  ): Promise<InstantiableBrowserDeviceModel> {
+    const model = await super.create(data);
+    model.type = 'edge instantiable';
+    return model;
+  }
 
-    async write(
-        model: InstantiableBrowserDeviceModel,
-        data: InstantiableBrowserDeviceUpdate<'request'>,
-    ) {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
+  async write(
+    model: InstantiableBrowserDeviceModel,
+    data: InstantiableBrowserDeviceUpdate<'request'>,
+  ) {
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        await this.dependencies.deviceOverview.write(model, data);
+    await this.dependencies.deviceOverview.write(model, data);
 
-        if (data.codeUrl) model.codeUrl = data.codeUrl;
-        if (data.services) model.services = data.services;
-    }
+    if (data.codeUrl) model.codeUrl = data.codeUrl;
+    if (data.services) model.services = data.services;
+  }
 
-    async format(
-        model: InstantiableBrowserDeviceModel,
-    ): Promise<InstantiableBrowserDevice<'response'>> {
-        if (!this.isInitialized()) this.throwUninitializedRepositoryError();
+  async format(
+    model: InstantiableBrowserDeviceModel,
+  ): Promise<InstantiableBrowserDevice<'response'>> {
+    if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-        return {
-            ...(await this.dependencies.deviceOverview.format(model)),
-            type: 'edge instantiable',
-            codeUrl: model.codeUrl,
-            services: model.services ?? undefined,
-        };
-    }
+    return {
+      ...(await this.dependencies.deviceOverview.format(model)),
+      type: 'edge instantiable',
+      codeUrl: model.codeUrl,
+      services: model.services ?? undefined,
+    };
+  }
 }

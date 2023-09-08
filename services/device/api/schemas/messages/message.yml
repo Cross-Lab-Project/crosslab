@@ -2,9 +2,9 @@
 title: Message
 type: object
 properties:
-    messageType:
-        type: string
+  messageType:
+    type: string
 required:
-    - messageType
+  - messageType
 additionalProperties: true
 x-typeguard: true

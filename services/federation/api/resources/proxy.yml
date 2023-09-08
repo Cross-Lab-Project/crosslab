@@ -10,7 +10,7 @@ get:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -35,7 +35,7 @@ post:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -60,7 +60,7 @@ put:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -85,7 +85,7 @@ patch:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -110,7 +110,7 @@ delete:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -135,7 +135,7 @@ head:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -160,7 +160,7 @@ options:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:
@@ -185,7 +185,7 @@ trace:
     - JWT:
         - authorized_proxy
   parameters:
-    - $ref: "../parameters/url.yml"
+    - $ref: '../parameters/url.yml'
   x-proxy-request: true
   x-internal: true
   responses:

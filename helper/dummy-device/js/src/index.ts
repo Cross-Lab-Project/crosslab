@@ -1,6 +1,6 @@
-import {spawn} from 'child_process';
+import { spawn } from 'child_process';
 import CDP from 'chrome-remote-interface';
-import {Option, program} from 'commander';
+import { Option, program } from 'commander';
 
 const entrypoint = __dirname + '/../http-dist/index.html';
 
@@ -12,9 +12,17 @@ async function main() {
   }
 
   program
-    .addOption(new Option('--url <url>', 'URL of the CrossLab instance').env('CROSSLAB_URL'))
-    .addOption(new Option('--auth-token <token>', 'Token to use for authentication').env('CROSSLAB_TOKEN'))
-    .addOption(new Option('--device-url <device-url>', 'Device url').env('CROSSLAB_DEVICE_URL'))
+    .addOption(
+      new Option('--url <url>', 'URL of the CrossLab instance').env('CROSSLAB_URL'),
+    )
+    .addOption(
+      new Option('--auth-token <token>', 'Token to use for authentication').env(
+        'CROSSLAB_TOKEN',
+      ),
+    )
+    .addOption(
+      new Option('--device-url <device-url>', 'Device url').env('CROSSLAB_DEVICE_URL'),
+    )
     .addOption(new Option('--browser-inspect <port>', 'Chrome Debug Port'));
 
   program.parse();
@@ -41,7 +49,7 @@ async function main() {
       '--remote-debugging-port=' + chromePort,
       entrypoint,
     ],
-    {env: {}},
+    { env: {} },
   );
   chromium.stderr.on('data', (data: string) => {
     console.log(data.toString());
@@ -57,11 +65,11 @@ async function main() {
     });
   });
   console.log('Chromium is ready');
-  await new Promise((resolve) => setTimeout(resolve, 1000)) // wait for target to be ready
+  await new Promise(resolve => setTimeout(resolve, 1000)); // wait for target to be ready
 
-  const protocol = await CDP({port: chromePort});
+  const protocol = await CDP({ port: chromePort });
 
-  const {Debugger, Runtime, Log} = protocol;
+  const { Debugger, Runtime, Log } = protocol;
   await Runtime.enable();
   await Log.enable();
   await Debugger.enable();
@@ -90,16 +98,16 @@ async function main() {
     console.log(...result.args.map(arg => arg.value ?? previewTransform(arg.preview)));
   });
 
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await new Promise(resolve => setTimeout(resolve, 500));
   debugging && (await Debugger.pause());
   const expression = 'window.app(' + JSON.stringify(options) + ')';
-  const appPromise = await (await Runtime.evaluate({expression, silent: false})).result;
+  const appPromise = await (await Runtime.evaluate({ expression, silent: false })).result;
   if (appPromise.objectId === undefined) {
     throw new Error('app() did not return a promise');
   }
   //debugging && console.log(await Debugger.paused());
   //debugging && await Debugger.stepInto();
-  console.log(await Runtime.awaitPromise({promiseObjectId: appPromise.objectId}));
+  console.log(await Runtime.awaitPromise({ promiseObjectId: appPromise.objectId }));
 
   let stdin = '';
   process.stdin.on('data', data => {
@@ -111,7 +119,7 @@ async function main() {
       let [event, argument] = line.split(' ');
       event = event.slice(1, -1);
       const eventExpression = 'window.event("' + event + '",' + argument + ')';
-      Runtime.evaluate({expression: eventExpression, silent: false});
+      Runtime.evaluate({ expression: eventExpression, silent: false });
     }
   });
 

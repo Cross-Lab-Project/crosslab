@@ -1,8 +1,8 @@
 title: Callback
 type: object
 properties:
-    callbackType:
-        type: string
+  callbackType:
+    type: string
 required:
-    - callbackType
+  - callbackType
 x-typeguard: true

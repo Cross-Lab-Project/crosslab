@@ -17,15 +17,14 @@ allOf:
         type: array
         description: Devices associated with the experiment
         items:
-          $ref: "../device.yml"
+          $ref: '../device.yml'
       roles:
         type: array
         description: Roles that are used in this experiment
         items:
-          $ref: "../role.yml"
+          $ref: '../role.yml'
       serviceConfigurations:
         type: array
         description: Services associated with the experiment
         items:
-          $ref: "../service_configuration.yml"
-
+          $ref: '../service_configuration.yml'

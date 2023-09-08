@@ -8,11 +8,11 @@ import { institutionUrlFromId } from './utils.js';
  * @returns The resulting {@link Institution}.
  */
 export function formatInstitution(institutionModel: InstitutionModel): Institution {
-    return {
-        name: institutionModel.name,
-        api: institutionModel.api,
-        url: institutionUrlFromId(institutionModel.uuid),
-        homepage: institutionModel.homepage,
-        federatedApi: institutionModel.federatedApi,
-    };
+  return {
+    name: institutionModel.name,
+    api: institutionModel.api,
+    url: institutionUrlFromId(institutionModel.uuid),
+    homepage: institutionModel.homepage,
+    federatedApi: institutionModel.federatedApi,
+  };
 }

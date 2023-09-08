@@ -38,7 +38,6 @@ export class UnauthorizedError extends ErrorWithStatus {
   }
 }
 
-
 /**
  * This error class should be used if an entity is not found in the database.
  */
@@ -184,18 +183,22 @@ export class UninitializedRepositoryError extends ErrorWithStatus {
  */
 export class DeviceOwnershipError extends ErrorWithStatus {
   constructor() {
-    super(`User is not the owner of the device and does not have further permission`, 403);
+    super(
+      `User is not the owner of the device and does not have further permission`,
+      403,
+    );
     this.name = 'OwnershipError';
   }
 }
 
-
 export class ValidationError extends ErrorWithStatus {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public errors: any;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(message: string, status: number, errors?: any) {
-      super(message, status);
-      this.name = 'ValidationError';
-      this.errors = errors;
+    super(message, status);
+    this.name = 'ValidationError';
+    this.errors = errors;
   }
 }

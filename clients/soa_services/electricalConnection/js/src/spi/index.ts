@@ -1,1 +1,1 @@
-export { ConstructableSPIInterface } from "./connectionInterface";
+export { ConstructableSPIInterface } from './connectionInterface';

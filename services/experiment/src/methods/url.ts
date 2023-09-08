@@ -7,12 +7,12 @@ import { DeviceModel } from '../database/model.js';
  * @returns The url of the experiment.
  */
 export function experimentUrlFromId(experimentId: string): string {
-    return (
-        config.BASE_URL +
-        (config.BASE_URL.endsWith('/') ? '' : '/') +
-        'experiments/' +
-        experimentId
-    );
+  return (
+    config.BASE_URL +
+    (config.BASE_URL.endsWith('/') ? '' : '/') +
+    'experiments/' +
+    experimentId
+  );
 }
 
 /**
@@ -21,12 +21,12 @@ export function experimentUrlFromId(experimentId: string): string {
  * @returns The url of the template.
  */
 export function templateUrlFromId(templateId: string): string {
-    return (
-        config.BASE_URL +
-        (config.BASE_URL.endsWith('/') ? '' : '/') +
-        'templates/' +
-        templateId
-    );
+  return (
+    config.BASE_URL +
+    (config.BASE_URL.endsWith('/') ? '' : '/') +
+    'templates/' +
+    templateId
+  );
 }
 
 /**
@@ -36,9 +36,9 @@ export function templateUrlFromId(templateId: string): string {
  * @returns The instance url or the url of the device.
  */
 export function getUrlOrInstanceUrl(deviceModel: DeviceModel): string {
-    if (deviceModel.instance && deviceModel.instance.url) {
-        return deviceModel.instance.url;
-    } else {
-        return deviceModel.url;
-    }
+  if (deviceModel.instance && deviceModel.instance.url) {
+    return deviceModel.instance.url;
+  } else {
+    return deviceModel.url;
+  }
 }

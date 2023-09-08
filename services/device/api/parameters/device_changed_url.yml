@@ -3,14 +3,14 @@ name: changedUrl
 in: query
 required: false
 description: |
-    **An URL that will be called once the device changes.**
+  **An URL that will be called once the device changes.**
 
-    Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
-    as long as every callback resolves with a successful status code.
+  Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
+  as long as every callback resolves with a successful status code.
 
-    If the callback fails the url MIGHT not be called in the future.
+  If the callback fails the url MIGHT not be called in the future.
 
-    There can be multiple callbacks registered with the same device.
+  There can be multiple callbacks registered with the same device.
 schema:
-    type: string
-    format: uri
+  type: string
+  format: uri

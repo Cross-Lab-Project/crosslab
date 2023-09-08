@@ -1,15 +1,22 @@
-import { ServiceConfiguration, Service, Producer, Consumer } from "@cross-lab-project/soa-client";
-import { MediaChannel } from "@cross-lab-project/soa-client";
-import { PeerConnection } from "@cross-lab-project/soa-client";
-import { TypedEmitter } from "tiny-typed-emitter";
+import {
+  Consumer,
+  Producer,
+  Service,
+  ServiceConfiguration,
+} from '@cross-lab-project/soa-client';
+import { MediaChannel } from '@cross-lab-project/soa-client';
+import { PeerConnection } from '@cross-lab-project/soa-client';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-type ServiceType = "goldi/webcam";
-const ServiceType: ServiceType = "goldi/webcam";
+type ServiceType = 'goldi/webcam';
+const ServiceType: ServiceType = 'goldi/webcam';
 
 export interface WebcamServiceConfiguration extends ServiceConfiguration {
   serviceType: ServiceType;
 }
-function checkConfig(config: ServiceConfiguration): asserts config is WebcamServiceConfiguration {
+function checkConfig(
+  config: ServiceConfiguration,
+): asserts config is WebcamServiceConfiguration {
   if (config.serviceType !== ServiceType) {
     //throw Error("Service Configuration needs to be for Webcamservice type");
   }
@@ -38,7 +45,7 @@ export class WebcamService__Producer implements Service<ServiceType> {
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
     checkConfig(serviceConfig);
     const channel = new MediaChannel(this.track);
-    connection.transmit(serviceConfig, "video", channel);
+    connection.transmit(serviceConfig, 'video', channel);
   }
 }
 interface WebcamService__Consumer_Events {
@@ -68,7 +75,7 @@ export class WebcamService__Consumer
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
     checkConfig(serviceConfig);
     const channel = new MediaChannel();
-    channel.ontrack = (event) => this.emit("track", event);
-    connection.receive(serviceConfig, "video", channel);
+    channel.ontrack = event => this.emit('track', event);
+    connection.receive(serviceConfig, 'video', channel);
   }
 }

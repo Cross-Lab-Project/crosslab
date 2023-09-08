@@ -1,4 +1,4 @@
-import { OpenAPIV3_1 } from 'openapi-types'
+import { OpenAPIV3_1 } from 'openapi-types';
 
 /**
  * This type extends a SchemaObject with the properties 'x-name', 'x-standalone',
@@ -9,70 +9,70 @@ import { OpenAPIV3_1 } from 'openapi-types'
  * service the schema belongs to.
  */
 export type ExtendedSchema = OpenAPIV3_1.SchemaObject & {
-    'x-standalone': boolean
-    'x-name': string
-    'x-location': string
-    'x-service-name': string
-    'x-schema-type': 'request' | 'response' | 'all'
-}
+  'x-standalone': boolean;
+  'x-name': string;
+  'x-location': string;
+  'x-service-name': string;
+  'x-schema-type': 'request' | 'response' | 'all';
+};
 
 export type SimplifiedParameter = {
-    name: string
-    required: boolean
-    in: string
-    description?: string
-    schema?: OpenAPIV3_1.SchemaObject
-}
+  name: string;
+  required: boolean;
+  in: string;
+  description?: string;
+  schema?: OpenAPIV3_1.SchemaObject;
+};
 
 export type SimplifiedRequestBody = {
-    required: boolean
-    description?: string
-    schema?: OpenAPIV3_1.SchemaObject
-}
+  required: boolean;
+  description?: string;
+  schema?: OpenAPIV3_1.SchemaObject;
+};
 
 export type SimplifiedHeader = {
-    name: string
-    required: boolean
-    schema?: OpenAPIV3_1.SchemaObject
-}
+  name: string;
+  required: boolean;
+  schema?: OpenAPIV3_1.SchemaObject;
+};
 
 export type SimplifiedResponse = {
-    status: string
-    description: string
-    schema?: OpenAPIV3_1.SchemaObject
-    headers?: SimplifiedHeader[]
-}
+  status: string;
+  description: string;
+  schema?: OpenAPIV3_1.SchemaObject;
+  headers?: SimplifiedHeader[];
+};
 
 export type SimplifiedOperation = {
-    name: string
-    path: string
-    method: string
-    external: boolean
-    serviceName: string
-    operationId: string
-    summary: string
-    destructureInput: boolean
-    buildUrl: boolean
-    optionalUrl: boolean
-    isProxyRequest: boolean
-    security?: OpenAPIV3_1.SecurityRequirementObject[]
-    parameters?: SimplifiedParameter[]
-    requestBody?: SimplifiedRequestBody
-    responses?: SimplifiedResponse[]
-}
+  name: string;
+  path: string;
+  method: string;
+  external: boolean;
+  serviceName: string;
+  operationId: string;
+  summary: string;
+  destructureInput: boolean;
+  buildUrl: boolean;
+  optionalUrl: boolean;
+  isProxyRequest: boolean;
+  security?: OpenAPIV3_1.SecurityRequirementObject[];
+  parameters?: SimplifiedParameter[];
+  requestBody?: SimplifiedRequestBody;
+  responses?: SimplifiedResponse[];
+};
 
 /**
  * Interface for the property of a destructured schema.
  */
 export interface DestructuredProperty {
-    name: string
-    declaration: string
-    required: boolean
-    description?: string
-    top: boolean
+  name: string;
+  declaration: string;
+  required: boolean;
+  description?: string;
+  top: boolean;
 }
 
 /**
  * Typing for destructured schemas.
  */
-export type DestructuredSchema = DestructuredProperty[]
+export type DestructuredSchema = DestructuredProperty[];

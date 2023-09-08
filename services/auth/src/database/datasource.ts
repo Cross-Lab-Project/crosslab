@@ -1,7 +1,8 @@
-import {config} from "../config";
-import {Migrations} from "./migrations";
-import {Entities} from "./model";
-import {DataSource, DataSourceOptions} from "typeorm";
+import { DataSource, DataSourceOptions } from 'typeorm';
+
+import { config } from '../config';
+import { Migrations } from './migrations';
+import { Entities } from './model';
 
 export let ApplicationDataSource: DataSource = new DataSource({
   ...config.orm,
@@ -13,7 +14,7 @@ export let ApplicationDataSource: DataSource = new DataSource({
 export async function init_database(dataSourceConfig?: DataSourceOptions) {
   ApplicationDataSource = new DataSource(
     dataSourceConfig
-      ? {...dataSourceConfig, entities: Entities}
+      ? { ...dataSourceConfig, entities: Entities }
       : {
           ...config.orm,
           migrations: [...Migrations],

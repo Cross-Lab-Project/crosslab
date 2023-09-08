@@ -21,15 +21,10 @@
       "get": {
         "operationId": "list_institutions",
         "summary": "List institutions",
-        "tags": [
-          "institution"
-        ],
+        "tags": ["institution"],
         "security": [
           {
-            "JWT": [
-              "institution",
-              "institution:read"
-            ]
+            "JWT": ["institution", "institution:read"]
           }
         ],
         "responses": {
@@ -67,15 +62,10 @@
       "post": {
         "operationId": "create_institution",
         "summary": "Create a new institution",
-        "tags": [
-          "institution"
-        ],
+        "tags": ["institution"],
         "security": [
           {
-            "JWT": [
-              "institution",
-              "institution:create"
-            ]
+            "JWT": ["institution", "institution:create"]
           }
         ],
         "requestBody": {
@@ -123,9 +113,7 @@
       "get": {
         "operationId": "get_institution",
         "summary": "View an institution.",
-        "tags": [
-          "institution"
-        ],
+        "tags": ["institution"],
         "parameters": [
           {
             "$ref": "#/components/parameters/institution_id"
@@ -133,10 +121,7 @@
         ],
         "security": [
           {
-            "JWT": [
-              "institution",
-              "institution:read"
-            ]
+            "JWT": ["institution", "institution:read"]
           }
         ],
         "responses": {
@@ -170,15 +155,10 @@
       "patch": {
         "operationId": "update_institution",
         "summary": "Update an institution.",
-        "tags": [
-          "institution"
-        ],
+        "tags": ["institution"],
         "security": [
           {
-            "JWT": [
-              "institution",
-              "institution:write"
-            ]
+            "JWT": ["institution", "institution:write"]
           }
         ],
         "parameters": [
@@ -227,15 +207,10 @@
       "delete": {
         "operationId": "delete_institution",
         "summary": "Delete an institution",
-        "tags": [
-          "institution"
-        ],
+        "tags": ["institution"],
         "security": [
           {
-            "JWT": [
-              "institution",
-              "institution:delete"
-            ]
+            "JWT": ["institution", "institution:delete"]
           }
         ],
         "parameters": [
@@ -270,14 +245,10 @@
         "operationId": "proxy_get",
         "summary": "Make an authorized GET request to an external resource.",
         "description": "Proxies a GET request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -309,14 +280,10 @@
         "operationId": "proxy_post",
         "summary": "Make an authorized POST request to an external resource.",
         "description": "Proxies a POST request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -348,14 +315,10 @@
         "operationId": "proxy_put",
         "summary": "Make an authorized PUT request to an external resource.",
         "description": "Proxies a PUT request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -387,14 +350,10 @@
         "operationId": "proxy_patch",
         "summary": "Make an authorized PATCH request to an external resource.",
         "description": "Proxies a PATCH request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -426,14 +385,10 @@
         "operationId": "proxy_delete",
         "summary": "Make an authorized DELETE request to an external resource.",
         "description": "Proxies a DELETE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -465,14 +420,10 @@
         "operationId": "proxy_head",
         "summary": "Make an authorized HEAD request to an external resource.",
         "description": "Proxies a HEAD request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -504,14 +455,10 @@
         "operationId": "proxy_options",
         "summary": "Make an authorized OPTIONS request to an external resource.",
         "description": "Proxies an OPTIONS request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -543,14 +490,10 @@
         "operationId": "proxy_trace",
         "summary": "Make an authorized TRACE request to an external resource.",
         "description": "Proxies a TRACE request to an external resource. If authentication data is available, it will be included in the request. The Body will be proxied as is.\n",
-        "tags": [
-          "proxy"
-        ],
+        "tags": ["proxy"],
         "security": [
           {
-            "JWT": [
-              "authorized_proxy"
-            ]
+            "JWT": ["authorized_proxy"]
           }
         ],
         "parameters": [
@@ -626,9 +569,7 @@
           "type": "string",
           "format": "uuid"
         },
-        "example": [
-          "5202de35-7f61-4eed-a361-e627619f9d19"
-        ]
+        "example": ["5202de35-7f61-4eed-a361-e627619f9d19"]
       },
       "url": {
         "name": "URL",

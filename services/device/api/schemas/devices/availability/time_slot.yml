@@ -2,9 +2,9 @@
 title: Time Slot
 type: object
 properties:
-    start:
-        type: string
-        format: date-time
-    end:
-        type: string
-        format: date-time
+  start:
+    type: string
+    format: date-time
+  end:
+    type: string
+    format: date-time

@@ -1,1 +1,1 @@
-export * from "./parameter_service";
+export * from './parameter_service';

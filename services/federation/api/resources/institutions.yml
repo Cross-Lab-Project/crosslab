@@ -6,8 +6,8 @@ get:
     - institution
   security:
     - JWT:
-      - institution
-      - institution:read
+        - institution
+        - institution:read
   responses:
     200:
       description: The list of all institutions.
@@ -32,8 +32,8 @@ post:
     - institution
   security:
     - JWT:
-      - institution
-      - institution:create
+        - institution
+        - institution:create
   requestBody:
     description: The institution to be created.
     required: true

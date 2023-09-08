@@ -1,5 +1,5 @@
-import {AsyncLocalStorage} from "async_hooks";
-import winston from "winston";
+import { AsyncLocalStorage } from 'async_hooks';
+import winston from 'winston';
 
 export const requestIdContext = new AsyncLocalStorage<string>();
 

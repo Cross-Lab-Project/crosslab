@@ -1,1 +1,1 @@
-export * from "./webcam";
+export * from './webcam';

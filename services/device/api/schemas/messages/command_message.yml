@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Command Message
 allOf:
-    - $ref: './message.yml'
-    - type: object
-      properties:
-          messageType:
-              const: command
-          command:
-              type: string
-      required:
-          - messageType
-          - command
+  - $ref: './message.yml'
+  - type: object
+    properties:
+      messageType:
+        const: command
+      command:
+        type: string
+    required:
+      - messageType
+      - command
 x-typeguard: true

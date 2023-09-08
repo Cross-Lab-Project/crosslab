@@ -7,13 +7,8 @@
     "allowJs": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "http-dist"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "http-dist"]
 }

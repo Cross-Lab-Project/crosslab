@@ -16,10 +16,10 @@
     "build:generate": "npx openapi-codegen -i ./dist/openapi.json -t ./src -p @cross-lab-project/codegen-typescript-addon:preset:service -o ./src",
     "build:compile": "tsc&& cp src/generated/**.cjs app/generated",
     "build": "npm run build:generate && npm run build:compile",
-    "format": "npx prettier . --write",
     "dev": "tsc-watch --onSuccess 'node --inspect=9000 ./app/index.js'",
-    "lint": "eslint .",
-    "test": "mocha --require ts-node/register test/**/*.spec.ts"
+    "test": "mocha --require ts-node/register test/**/*.spec.ts",
+    "format": "prettier . --write",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@cross-lab-project/api-client": "file:../../clients/api/js",

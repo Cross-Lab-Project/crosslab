@@ -13,7 +13,7 @@ get:
       description: The JSON representation of the users.
       content:
         application/json:
-          $ref: "../content/user_list.yml"
+          $ref: '../content/user_list.yml'
     400:
       description: Bad Request.
     401:
@@ -39,13 +39,13 @@ post:
     description: User to be created.
     content:
       application/json:
-        $ref: "../content/user.yml"
+        $ref: '../content/user.yml'
   responses:
     201:
       description: The JSON representation of the created user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:

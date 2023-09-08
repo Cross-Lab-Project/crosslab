@@ -21,16 +21,10 @@
       "get": {
         "operationId": "list_experiments",
         "summary": "List experiments",
-        "tags": [
-          "experiment"
-        ],
+        "tags": ["experiment"],
         "security": [
           {
-            "JWT": [
-              "experiment",
-              "experiment:read",
-              "experiment:read:owned"
-            ]
+            "JWT": ["experiment", "experiment:read", "experiment:read:owned"]
           }
         ],
         "responses": {
@@ -68,15 +62,10 @@
       "post": {
         "operationId": "create_experiment",
         "summary": "Create a new experiment",
-        "tags": [
-          "experiment"
-        ],
+        "tags": ["experiment"],
         "security": [
           {
-            "JWT": [
-              "experiment",
-              "experiment:create"
-            ]
+            "JWT": ["experiment", "experiment:create"]
           }
         ],
         "requestBody": {
@@ -133,11 +122,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "experiment",
-                      "experiment:create",
-                      "experiment:write"
-                    ]
+                    "JWT": ["experiment", "experiment:create", "experiment:write"]
                   }
                 ],
                 "summary": "Callback for the \"experiment-changed\" event",
@@ -150,15 +135,11 @@
                         "properties": {
                           "callbackType": {
                             "type": "string",
-                            "enum": [
-                              "event"
-                            ]
+                            "enum": ["event"]
                           },
                           "eventType": {
                             "type": "string",
-                            "enum": [
-                              "experiment-changed"
-                            ]
+                            "enum": ["experiment-changed"]
                           },
                           "device": {
                             "$ref": "#/components/schemas/experiment"
@@ -187,9 +168,7 @@
       "get": {
         "operationId": "get_experiment",
         "summary": "View an experiment.",
-        "tags": [
-          "experiment"
-        ],
+        "tags": ["experiment"],
         "parameters": [
           {
             "$ref": "#/components/parameters/experiment_id"
@@ -197,11 +176,7 @@
         ],
         "security": [
           {
-            "JWT": [
-              "experiment",
-              "experiment:read",
-              "experiment:read:owned"
-            ]
+            "JWT": ["experiment", "experiment:read", "experiment:read:owned"]
           }
         ],
         "responses": {
@@ -236,16 +211,10 @@
         "operationId": "update_experiment",
         "summary": "Update an existing experiment.",
         "description": "With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.\n",
-        "tags": [
-          "experiment"
-        ],
+        "tags": ["experiment"],
         "security": [
           {
-            "JWT": [
-              "experiment",
-              "experiment:write",
-              "experiment:write:owned"
-            ]
+            "JWT": ["experiment", "experiment:write", "experiment:write:owned"]
           }
         ],
         "parameters": [
@@ -309,11 +278,7 @@
               "post": {
                 "security": [
                   {
-                    "JWT": [
-                      "experiment",
-                      "experiment:create",
-                      "experiment:write"
-                    ]
+                    "JWT": ["experiment", "experiment:create", "experiment:write"]
                   }
                 ],
                 "summary": "Callback for the \"experiment-changed\" event",
@@ -326,15 +291,11 @@
                         "properties": {
                           "callbackType": {
                             "type": "string",
-                            "enum": [
-                              "event"
-                            ]
+                            "enum": ["event"]
                           },
                           "eventType": {
                             "type": "string",
-                            "enum": [
-                              "experiment-changed"
-                            ]
+                            "enum": ["experiment-changed"]
                           },
                           "device": {
                             "$ref": "#/components/schemas/experiment"
@@ -360,16 +321,10 @@
       "delete": {
         "operationId": "delete_experiment",
         "summary": "Delete an experiment",
-        "tags": [
-          "experiment"
-        ],
+        "tags": ["experiment"],
         "security": [
           {
-            "JWT": [
-              "experiment",
-              "experiment:delete",
-              "experiment:delete:owned"
-            ]
+            "JWT": ["experiment", "experiment:delete", "experiment:delete:owned"]
           }
         ],
         "parameters": [
@@ -403,18 +358,12 @@
       "get": {
         "security": [
           {
-            "JWT": [
-              "template",
-              "template:read",
-              "template:read:owned"
-            ]
+            "JWT": ["template", "template:read", "template:read:owned"]
           }
         ],
         "operationId": "list_template",
         "summary": "List templates",
-        "tags": [
-          "template"
-        ],
+        "tags": ["template"],
         "responses": {
           "200": {
             "description": "The list of all templates.",
@@ -450,18 +399,12 @@
       "post": {
         "security": [
           {
-            "JWT": [
-              "template",
-              "template:read",
-              "template:read:owned"
-            ]
+            "JWT": ["template", "template:read", "template:read:owned"]
           }
         ],
         "operationId": "create_template",
         "summary": "Create a new template",
-        "tags": [
-          "template"
-        ],
+        "tags": ["template"],
         "requestBody": {
           "description": "The template to be created.",
           "required": true,
@@ -517,18 +460,12 @@
       "get": {
         "security": [
           {
-            "JWT": [
-              "template",
-              "template:read",
-              "template:read:owned"
-            ]
+            "JWT": ["template", "template:read", "template:read:owned"]
           }
         ],
         "operationId": "get_template",
         "summary": "View an template.",
-        "tags": [
-          "template"
-        ],
+        "tags": ["template"],
         "parameters": [
           {
             "$ref": "#/components/parameters/template_id"
@@ -565,19 +502,13 @@
       "patch": {
         "security": [
           {
-            "JWT": [
-              "template",
-              "template:read",
-              "template:read:owned"
-            ]
+            "JWT": ["template", "template:read", "template:read:owned"]
           }
         ],
         "operationId": "update_template",
         "summary": "Update an existing template.",
         "description": "With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.\n\nIf a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.\n",
-        "tags": [
-          "template"
-        ],
+        "tags": ["template"],
         "parameters": [
           {
             "$ref": "#/components/parameters/template_id"
@@ -635,18 +566,12 @@
       "delete": {
         "security": [
           {
-            "JWT": [
-              "template",
-              "template:read",
-              "template:read:owned"
-            ]
+            "JWT": ["template", "template:read", "template:read:owned"]
           }
         ],
         "operationId": "delete_template",
         "summary": "Delete an template",
-        "tags": [
-          "template"
-        ],
+        "tags": ["template"],
         "parameters": [
           {
             "$ref": "#/components/parameters/template_id"
@@ -701,32 +626,18 @@
                 "type": "string",
                 "description": "Status of the experiment",
                 "readOnly": true,
-                "enum": [
-                  "created",
-                  "booked",
-                  "setup",
-                  "running",
-                  "finished"
-                ]
+                "enum": ["created", "booked", "setup", "running", "finished"]
               },
               {
                 "type": "string",
                 "description": "Status of the experiment",
                 "writeOnly": true,
-                "enum": [
-                  "created",
-                  "booked",
-                  "running",
-                  "finished"
-                ]
+                "enum": ["created", "booked", "running", "finished"]
               }
             ]
           }
         },
-        "required": [
-          "url",
-          "status"
-        ]
+        "required": ["url", "status"]
       },
       "device": {
         "title": "Device",
@@ -742,10 +653,7 @@
             "description": "The name of the device's role."
           }
         },
-        "required": [
-          "device",
-          "role"
-        ]
+        "required": ["device", "role"]
       },
       "role": {
         "title": "role",
@@ -759,9 +667,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "participant": {
         "title": "Participant",
@@ -880,12 +786,7 @@
                       "format": "uri"
                     }
                   },
-                  "required": [
-                    "codeUrl",
-                    "url",
-                    "token",
-                    "instanceOf"
-                  ]
+                  "required": ["codeUrl", "url", "token", "instanceOf"]
                 }
               }
             },
@@ -909,24 +810,13 @@
                 "type": "string",
                 "description": "Status of the experiment",
                 "readOnly": true,
-                "enum": [
-                  "created",
-                  "booked",
-                  "setup",
-                  "running",
-                  "finished"
-                ]
+                "enum": ["created", "booked", "setup", "running", "finished"]
               },
               {
                 "type": "string",
                 "description": "Status of the experiment",
                 "writeOnly": true,
-                "enum": [
-                  "created",
-                  "booked",
-                  "running",
-                  "finished"
-                ]
+                "enum": ["created", "booked", "running", "finished"]
               }
             ]
           }
@@ -998,10 +888,7 @@
             "description": "Description of the template"
           }
         },
-        "required": [
-          "url",
-          "name"
-        ]
+        "required": ["url", "name"]
       },
       "template": {
         "title": "Template",
@@ -1038,16 +925,10 @@
                     }
                   }
                 },
-                "required": [
-                  "devices",
-                  "roles",
-                  "serviceConfigurations"
-                ]
+                "required": ["devices", "roles", "serviceConfigurations"]
               }
             },
-            "required": [
-              "configuration"
-            ]
+            "required": ["configuration"]
           }
         ]
       },
@@ -1103,9 +984,7 @@
           "type": "string",
           "format": "uuid"
         },
-        "example": [
-          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
-        ]
+        "example": ["2cec4f8b-67f1-4914-8edb-25cd2cef06fb"]
       },
       "experiment_changed_url": {
         "name": "changedURL",
@@ -1126,9 +1005,7 @@
           "type": "string",
           "format": "uuid"
         },
-        "example": [
-          "2cec4f8b-67f1-4914-8edb-25cd2cef06fb"
-        ]
+        "example": ["2cec4f8b-67f1-4914-8edb-25cd2cef06fb"]
       }
     }
   }

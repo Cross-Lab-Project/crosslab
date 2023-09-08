@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * This function defines a filter that checks if a given string starts with the
@@ -8,10 +8,10 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @returns True if the given string ends with the search string, else false.
  */
 function startsWith(string: string, searchString: string) {
-    return string.startsWith(searchString as string)
+  return string.startsWith(searchString as string);
 }
 
 export const startsWithFilter: Filter = {
-    name: 'startsWith',
-    function: startsWith,
-}
+  name: 'startsWith',
+  function: startsWith,
+};

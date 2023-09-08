@@ -2,9 +2,9 @@
 title: Device Reference
 type: object
 properties:
-    url:
-        type: string
-        description: URL of the device
-        format: uri
+  url:
+    type: string
+    description: URL of the device
+    format: uri
 required:
-    - url
+  - url

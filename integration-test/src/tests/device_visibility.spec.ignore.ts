@@ -1,15 +1,20 @@
-import {APIClient, AuthenticationServiceTypes, DeviceServiceTypes} from '@cross-lab-project/api-client';
-import {config} from '../config';
+import {
+  APIClient,
+  AuthenticationServiceTypes,
+  DeviceServiceTypes,
+} from '@cross-lab-project/api-client';
+import { DeviceOwnershipError } from '@crosslab/service-common';
 import assert from 'assert';
-import {DeviceOwnershipError} from '@crosslab/service-common';
+
+import { config } from '../config';
 
 const apiClient = new APIClient(config.API_URL);
 
 describe('Device Visibility', function () {
   const devices: DeviceServiceTypes.Device[] = [];
-  const credentialsUser1 = {username: 'user1', password: 'user1'};
-  const credentialsUser2 = {username: 'user2', password: 'user2'};
-  const credentialsDeveloper = {username: 'developer', password: 'developer'};
+  const credentialsUser1 = { username: 'user1', password: 'user1' };
+  const credentialsUser2 = { username: 'user2', password: 'user2' };
+  const credentialsDeveloper = { username: 'developer', password: 'developer' };
   let user1: AuthenticationServiceTypes.User<'response'>;
   let user2: AuthenticationServiceTypes.User<'response'>;
   let developer: AuthenticationServiceTypes.User<'response'>;
@@ -59,14 +64,17 @@ describe('Device Visibility', function () {
     this.timeout(5000);
 
     for (const user of [
-      {...user1, credentials: credentialsUser1},
-      {...user2, credentials: credentialsUser2},
+      { ...user1, credentials: credentialsUser1 },
+      { ...user2, credentials: credentialsUser2 },
     ]) {
       await apiClient.login(user.credentials.username, user.credentials.password);
 
       const resolvedDevices = await apiClient.listDevices();
 
-      assert.strictEqual(resolvedDevices.length, devices.filter(device => device.owner === user.url || device.isPublic).length);
+      assert.strictEqual(
+        resolvedDevices.length,
+        devices.filter(device => device.owner === user.url || device.isPublic).length,
+      );
 
       for (const device of devices) {
         if (device.owner !== user.url && !device.isPublic) {

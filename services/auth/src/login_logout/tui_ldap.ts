@@ -1,5 +1,5 @@
-import {InternalServerError} from "@crosslab/service-common";
-import * as ldapts from "ldapts";
+import { InternalServerError } from '@crosslab/service-common';
+import * as ldapts from 'ldapts';
 
 /**
  * This function attempts to login at the TUI Ldap system with the provided credentials.
@@ -11,9 +11,9 @@ import * as ldapts from "ldapts";
 export async function loginTui(username: string, password: string): Promise<boolean> {
   // Initialize Ldap Client
   const client = new ldapts.Client({
-    url: "ldaps://ldapauth.tu-ilmenau.de:636",
+    url: 'ldaps://ldapauth.tu-ilmenau.de:636',
     tlsOptions: {
-      minVersion: "TLSv1",
+      minVersion: 'TLSv1',
     },
     timeout: 10000,
   });
@@ -26,9 +26,9 @@ export async function loginTui(username: string, password: string): Promise<bool
     if (err instanceof ldapts.InvalidCredentialsError) {
       return false;
     } else if (err instanceof Error) {
-      throw new InternalServerError("Ldap bind failed", err);
+      throw new InternalServerError('Ldap bind failed', err);
     } else {
-      throw new InternalServerError("Ldap bind failed");
+      throw new InternalServerError('Ldap bind failed');
     }
   }
 

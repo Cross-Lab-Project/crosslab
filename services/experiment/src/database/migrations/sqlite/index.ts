@@ -4,8 +4,8 @@ import { AddTemplateModel1693301834737 } from './1693301834737-AddTemplateModel.
 import { AddNullables1693838288932 } from './1693838288932-AddNullables.js';
 
 export const Migrations = [
-    Setup1692095339848,
-    InstancesCodeUrl1693217063983,
-    AddTemplateModel1693301834737,
-    AddNullables1693838288932,
+  Setup1692095339848,
+  InstancesCodeUrl1693217063983,
+  AddTemplateModel1693301834737,
+  AddNullables1693838288932,
 ];

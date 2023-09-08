@@ -1,14 +1,15 @@
-import { TypedEmitter } from "tiny-typed-emitter";
+import { TypedEmitter } from 'tiny-typed-emitter';
+
 import {
-  ConnectionInterfaceConfiguration,
   ConnectionInterface,
-  ConstructableConnectionInterface,
+  ConnectionInterfaceConfiguration,
   ConnectionInterfaceDescription,
   ConnectionInterfaceEvents,
-} from "../connectionInterface";
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
 
-type InterfaceType = "usart";
-const InterfaceType: InterfaceType = "usart";
+type InterfaceType = 'usart';
+const InterfaceType: InterfaceType = 'usart';
 
 export enum ClockSetting {
   TransmitRisingSampleFalling,
@@ -44,9 +45,9 @@ export class USARTInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -55,7 +56,7 @@ export class USARTInterface
   }
 
   sendFrame(frame: number): void {
-    this.emit("upstreamData", frame);
+    this.emit('upstreamData', frame);
     this.downstreamData(frame);
   }
 }

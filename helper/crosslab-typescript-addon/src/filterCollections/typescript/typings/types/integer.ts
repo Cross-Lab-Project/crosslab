@@ -1,9 +1,9 @@
-import { Typing } from '../typing'
+import { Typing } from '../typing';
 
 export function handleInteger(comment: string): Typing {
-    return {
-        typeDeclaration: 'number',
-        typeDependencies: [],
-        comment: comment,
-    }
+  return {
+    typeDeclaration: 'number',
+    typeDependencies: [],
+    comment: comment,
+  };
 }

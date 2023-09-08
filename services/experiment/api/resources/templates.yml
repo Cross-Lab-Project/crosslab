@@ -52,7 +52,7 @@ post:
       description: The template was created and will be set to running eventually. A JSON representation of the new template is returned.
       content:
         application/json:
-          $ref: "../content/template.yml"
+          $ref: '../content/template.yml'
     400:
       description: Bad Request.
     401:

@@ -1,38 +1,38 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Create Peerconnection Message
 allOf:
-    - $ref: './command_message.yml'
-    - type: object
-      properties:
-          command:
-              const: createPeerconnection
-          connectionType:
-              type: string
-              enum:
-                  - webrtc
-                  - websocket
-                  - local
-          connectionUrl:
-              type: string
-              format: uri
-          services:
-              type: array
-              items:
-                  type: object
-                  $ref: '../devices/services/service_config.yml'
-                  required:
-                      - serviceType
-                      - serviceId
-                      - remoteServiceId
-          tiebreaker:
-              type: boolean
-          config:
-              type: object
-              additionalProperties: true
-      required:
-          - command
-          - connectionType
-          - connectionUrl
-          - services
-          - tiebreaker
+  - $ref: './command_message.yml'
+  - type: object
+    properties:
+      command:
+        const: createPeerconnection
+      connectionType:
+        type: string
+        enum:
+          - webrtc
+          - websocket
+          - local
+      connectionUrl:
+        type: string
+        format: uri
+      services:
+        type: array
+        items:
+          type: object
+          $ref: '../devices/services/service_config.yml'
+          required:
+            - serviceType
+            - serviceId
+            - remoteServiceId
+      tiebreaker:
+        type: boolean
+      config:
+        type: object
+        additionalProperties: true
+    required:
+      - command
+      - connectionType
+      - connectionUrl
+      - services
+      - tiebreaker
 x-typeguard: true

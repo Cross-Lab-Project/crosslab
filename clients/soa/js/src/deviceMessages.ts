@@ -28,7 +28,9 @@ export interface CreatePeerConnectionMessage extends CommandMessage {
   services: ServiceConfiguration[];
   tiebreaker: boolean;
 }
-export function isCreatePeerConnectionMessage(message: CommandMessage): message is CreatePeerConnectionMessage {
+export function isCreatePeerConnectionMessage(
+  message: CommandMessage,
+): message is CreatePeerConnectionMessage {
   return message.command === 'createPeerconnection';
 }
 
@@ -55,7 +57,9 @@ export interface ClosePeerConnectionMessage extends CommandMessage {
   command: 'closePeerconnection';
   connectionUrl: string;
 }
-export function isClosePeerConnectionMessage(message: CommandMessage): message is ClosePeerConnectionMessage {
+export function isClosePeerConnectionMessage(
+  message: CommandMessage,
+): message is ClosePeerConnectionMessage {
   return message.command === 'closePeerconnection';
 }
 

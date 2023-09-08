@@ -1,37 +1,37 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
 post:
-    operationId: send_signaling_message
-    summary: Send signaling message to device
-    tags:
+  operationId: send_signaling_message
+  summary: Send signaling message to device
+  tags:
+    - device
+  security:
+    - JWT:
         - device
-    security:
-        - JWT:
-              - device
-              - device:signal
-    parameters:
-        - $ref: '../parameters/device_id.yml'
-        - $ref: '../parameters/peerconnection_url.yml'
-    requestBody:
-        description: The signaling message to be sent.
-        content:
-            application/json:
-                schema:
-                    title: Sig Message
-                    anyOf:
-                        - $ref: '../schemas/messages/create_peerconnection_message.yml'
-                        - $ref: '../schemas/messages/close_peerconnection_message.yml'
-                        - $ref: '../schemas/messages/signaling_message.yml'
-        required: true
-    responses:
-        200:
-            description: The signaling message was delivered successfully.
-        400:
-            description: Bad Request.
-        401:
-            description: Unauthorized.
-        403:
-            description: Forbidden.
-        404:
-            description: Resource not found.
-        500:
-            description: Server Error.
+        - device:signal
+  parameters:
+    - $ref: '../parameters/device_id.yml'
+    - $ref: '../parameters/peerconnection_url.yml'
+  requestBody:
+    description: The signaling message to be sent.
+    content:
+      application/json:
+        schema:
+          title: Sig Message
+          anyOf:
+            - $ref: '../schemas/messages/create_peerconnection_message.yml'
+            - $ref: '../schemas/messages/close_peerconnection_message.yml'
+            - $ref: '../schemas/messages/signaling_message.yml'
+    required: true
+  responses:
+    200:
+      description: The signaling message was delivered successfully.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

@@ -1,8 +1,9 @@
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../../database/dataSource.js';
 import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures.js';
 import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
 import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
-import { logger } from '@crosslab/service-common';
 
 /**
  * This function implements the functionality for handling DELETE requests on
@@ -11,31 +12,31 @@ import { logger } from '@crosslab/service-common';
  * @param parameters The parameters of the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
-    async (authorization, parameters) => {
-        logger.log('info', 'deletePeerconnectionsByPeerconnectionId called');
+  async (authorization, parameters) => {
+    logger.log('info', 'deletePeerconnectionsByPeerconnectionId called');
 
-        await authorization.check_authorization_or_fail(
-            'delete',
-            `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
-        );
+    await authorization.check_authorization_or_fail(
+      'delete',
+      `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
+    );
 
-        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-            where: { uuid: parameters.peerconnection_id },
-        });
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: { uuid: parameters.peerconnection_id },
+    });
 
-        await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
+    await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
 
-        await authorization.unrelate(
-            authorization.user,
-            'owner',
-            `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
-        );
+    await authorization.unrelate(
+      authorization.user,
+      'owner',
+      `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
+    );
 
-        await repositories.peerconnection.remove(peerconnectionModel);
+    await repositories.peerconnection.remove(peerconnectionModel);
 
-        logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded');
+    logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded');
 
-        return {
-            status: 204,
-        };
+    return {
+      status: 204,
     };
+  };

@@ -3,13 +3,19 @@
     "generate": "npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -t ./template python -o ./src/crosslab/api_client",
     "generate-test": "npx openapi-codegen -i ../../../services/openapi/dist/openapi.json -t ./test_template python -o ./tests",
     "watch-templates": "nodemon --watch template -e njk --exec \"npm run generate\"",
-    "watch-test-templates": "nodemon --watch test_template -e njk --exec \"npm run generate-test\""
+    "watch-test-templates": "nodemon --watch test_template -e njk --exec \"npm run generate-test\"",
+    "format": "prettier . --write",
+    "lint": "eslint ."
   },
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3"
   }
 }
