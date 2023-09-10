@@ -1,8 +1,8 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-import { config } from '../config';
-import { Migrations } from './migrations';
-import { Entities } from './model';
+import { config } from '../config.js';
+import { Migrations } from './migrations/index.js';
+import { Entities } from './model.js';
 
 export let ApplicationDataSource: DataSource = new DataSource({
   ...config.orm,

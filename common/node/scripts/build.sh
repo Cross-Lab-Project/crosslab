@@ -4,10 +4,16 @@ set -e
 SCRIPT_DIR=$(dirname "$0")
 
 VERSION=0.0.0-dev.$(git rev-parse --short HEAD)
+CLEAN=false
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    --clean)
+      CLEAN=true
+      shift # past argument
+      ;;
     --version)
       VERSION="$2"
       shift # past argument
@@ -20,10 +26,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-rm -rf node_modules
+if [ "$CLEAN" = true ]; then
+  rm -rf node_modules
+fi
 
 rm -rf app
-npm ci
+
+if { [ ! -d node_modules ]; }; then
+  npm ci
+fi
 npm run build
 
 mkdir -p dist

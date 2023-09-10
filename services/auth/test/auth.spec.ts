@@ -1,14 +1,14 @@
 import chai from 'chai';
 import 'chai-http';
 
-import { app } from '../src/app';
-import { UserModel } from '../src/database/model';
-import { createNewToken } from '../src/token/helper';
-import { createUser } from '../src/user/helper';
-import { resetDatabase } from './helper';
+import { app } from '../src/app.ts';
+import { UserModel } from '../src/database/model.js';
+import { createNewToken } from '../src/token/helper.js';
+import { createUser } from '../src/user/helper.js';
+import { resetDatabase } from './helper.js';
 
 describe('Authentication', () => {
-  let valid_token: string;
+  let valid_token!: string;
   let user: UserModel;
 
   before(async function () {

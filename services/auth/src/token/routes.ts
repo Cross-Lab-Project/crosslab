@@ -2,11 +2,11 @@ import { HttpError } from '@crosslab/service-common';
 import assert from 'assert';
 import express from 'express';
 
-import { ApplicationDataSource } from '../database/datasource';
-import { UserModel } from '../database/model';
-import { postTokenPath } from '../generated/operations';
-import { validatePostToken } from '../generated/validation';
-import { createNewToken } from '../token/helper';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { UserModel } from '../database/model.js';
+import { postTokenPath } from '../generated/operations.js';
+import { validatePostToken } from '../generated/validation.js';
+import { createNewToken } from '../token/helper.js';
 
 export const router = express.Router();
 

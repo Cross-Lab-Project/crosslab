@@ -1,10 +1,10 @@
 import chai from 'chai';
 import 'chai-http';
 
-import { app } from '../src/app';
-import { UserModel } from '../src/database/model';
-import { createUser } from '../src/user/helper';
-import { resetDatabase } from './helper';
+import { app } from '../src/app.ts';
+import { UserModel } from '../src/database/model.ts';
+import { createUser } from '../src/user/helper.ts';
+import { resetDatabase } from './helper.ts';
 
 describe('User', () => {
   let users: UserModel[];

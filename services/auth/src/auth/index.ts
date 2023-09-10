@@ -2,11 +2,11 @@ import { logger } from '@crosslab/service-common/logging';
 import express from 'express';
 import { SignJWT } from 'jose';
 
-import { config } from '../config';
-import { ApplicationDataSource } from '../database/datasource';
-import { TokenModel } from '../database/model';
-import { getAuthPath } from '../generated/operations';
-import { validateGetAuth } from '../generated/validation';
+import { config } from '../config.js';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { TokenModel } from '../database/model.js';
+import { getAuthPath } from '../generated/operations.js';
+import { validateGetAuth } from '../generated/validation.js';
 
 const bearerTokenRegex = /^Bearer (\S*)$/;
 function parseBearerToken(authorizationHeader: string | undefined): string | undefined {

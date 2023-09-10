@@ -4,9 +4,9 @@ import bcrypt from 'bcrypt';
 import express from 'express';
 import { QueryFailedError } from 'typeorm';
 
-import { config } from '../config';
-import { ApplicationDataSource } from '../database/datasource';
-import { UserModel } from '../database/model';
+import { config } from '../config.js';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { UserModel } from '../database/model.js';
 import {
   deleteUsersByUserIdPath,
   getIdentityPath,
@@ -15,7 +15,7 @@ import {
   getUsersResponseBodyType,
   patchUsersByUserIdPath,
   postUsersPath,
-} from '../generated/operations';
+} from '../generated/operations.js';
 import {
   validateDeleteUsersByUserId,
   validateGetIdentity,
@@ -23,8 +23,8 @@ import {
   validateGetUsersByUserId,
   validatePatchUsersByUserId,
   validatePostUsers,
-} from '../generated/validation';
-import { createUser } from './helper';
+} from '../generated/validation.js';
+import { createUser } from './helper.js';
 
 /**
  * This function builds the url of a user using its id.

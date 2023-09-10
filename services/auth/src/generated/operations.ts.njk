@@ -65,6 +65,6 @@ import {
     {{- "\n\tRequire," if parameterTypes | includes("Require<") }}
     {{- "\n\tNumericRange," if parameterTypes | includes("NumericRange<") }}
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 {{ parameterTypes }}

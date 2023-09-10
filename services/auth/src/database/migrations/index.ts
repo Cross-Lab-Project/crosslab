@@ -1,6 +1,6 @@
-import { config } from '../../config';
-import * as mariadb from './mariadb';
-import * as sqlite from './sqlite';
+import { config } from '../../config.js';
+import * as mariadb from './mariadb/index.js';
+import * as sqlite from './sqlite/index.js';
 
 export const Migrations = (() => {
   switch (config.orm.type) {

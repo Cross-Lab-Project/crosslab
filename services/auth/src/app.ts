@@ -2,10 +2,10 @@ import { authorization, error, logging } from '@crosslab/service-common';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 
-import { router as auth_router } from './auth';
-import { router as login_logout_router } from './login_logout';
-import { router as token_router } from './token/routes';
-import { router as user_router } from './user';
+import { router as auth_router } from './auth/index.js';
+import { router as login_logout_router } from './login_logout/index.js';
+import { router as token_router } from './token/routes.js';
+import { router as user_router } from './user/index.js';
 
 export let app: express.Express;
 

@@ -3,178 +3,219 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import { AuthMethod, Credentials, User, UserUpdate } from './types';
+import {
+    Credentials,
+	AuthMethod,
+	User,
+	UserUpdate
+} from "./types.js"
 
-/**
- * Typings for the a GET request on /auth
- */
-export const getAuthPath = '/auth';
 
-export type getAuthPathParametersType = {};
 
-export type getAuthQueryParametersType = {};
+        /**
+        * Typings for the a GET request on /auth
+        */
+        export const getAuthPath = '/auth';
+        
+    export type getAuthPathParametersType = {
+        }
+        
+    export type getAuthQueryParametersType = {
+        }
+        
+        export type getAuthRequestBodyType = never
+    
+        export type getAuthResponseBodyType = never
 
-export type getAuthRequestBodyType = never;
+        /**
+        * Typings for the a POST request on /login
+        */
+        export const postLoginPath = '/login';
+        
+    export type postLoginPathParametersType = {
+        }
+        
+    export type postLoginQueryParametersType = {
+        }
+        
+        
+        
+        export type postLoginRequestBodyType = Credentials<"request"> & {
+	/**
+	 * Authentication method.
+	 */
+	method?: AuthMethod<"request">
+	[k: string]: unknown
+}
+    
+        export type postLoginResponseBodyType = never| string
 
-export type getAuthResponseBodyType = never;
+        /**
+        * Typings for the a POST request on /logout
+        */
+        export const postLogoutPath = '/logout';
+        
+    export type postLogoutPathParametersType = {
+        }
+        
+    export type postLogoutQueryParametersType = {
+        }
+        
+        
+        
+        export type postLogoutRequestBodyType = {
+	/**
+	 * The token to be invalidated.
+	 */
+	token?: string
+	[k: string]: unknown
+}
+    
+        export type postLogoutResponseBodyType = never
 
-/**
- * Typings for the a POST request on /login
- */
-export const postLoginPath = '/login';
+        /**
+        * Typings for the a GET request on /users
+        */
+        export const getUsersPath = '/users';
+        
+    export type getUsersPathParametersType = {
+        }
+        
+    export type getUsersQueryParametersType = {
+        }
+        
+        export type getUsersRequestBodyType = never
+    
+        export type getUsersResponseBodyType = never| User<"response">[]
 
-export type postLoginPathParametersType = {};
+        /**
+        * Typings for the a POST request on /users
+        */
+        export const postUsersPath = '/users';
+        
+    export type postUsersPathParametersType = {
+        }
+        
+    export type postUsersQueryParametersType = {
+        }
+        
+        
+        
+        export type postUsersRequestBodyType = User<"request">
+    
+        export type postUsersResponseBodyType = never| User<"response">
 
-export type postLoginQueryParametersType = {};
+        /**
+        * Typings for the a GET request on /users/{user_id}
+        */
+        export const getUsersByUserIdPath = '/users/:user_id';
+        
+    export type getUsersByUserIdPathParametersType = {
+        
+                "user_id": string
+            }
+        
+    export type getUsersByUserIdQueryParametersType = {
+        }
+        
+        export type getUsersByUserIdRequestBodyType = never
+    
+        export type getUsersByUserIdResponseBodyType = never| User<"response">
 
-export type postLoginRequestBodyType = Credentials<'request'> & {
-  /**
-   * Authentication method.
-   */
-  method?: AuthMethod<'request'>;
-  [k: string]: unknown;
-};
+        /**
+        * Typings for the a PATCH request on /users/{user_id}
+        */
+        export const patchUsersByUserIdPath = '/users/:user_id';
+        
+    export type patchUsersByUserIdPathParametersType = {
+        
+                "user_id": string
+            }
+        
+    export type patchUsersByUserIdQueryParametersType = {
+        }
+        
+        
+        
+        export type patchUsersByUserIdRequestBodyType = UserUpdate<"request">
+    
+        export type patchUsersByUserIdResponseBodyType = never| User<"response">
 
-export type postLoginResponseBodyType = never | string;
+        /**
+        * Typings for the a DELETE request on /users/{user_id}
+        */
+        export const deleteUsersByUserIdPath = '/users/:user_id';
+        
+    export type deleteUsersByUserIdPathParametersType = {
+        
+                "user_id": string
+            }
+        
+    export type deleteUsersByUserIdQueryParametersType = {
+        }
+        
+        export type deleteUsersByUserIdRequestBodyType = never
+    
+        export type deleteUsersByUserIdResponseBodyType = never
 
-/**
- * Typings for the a POST request on /logout
- */
-export const postLogoutPath = '/logout';
+        /**
+        * Typings for the a GET request on /identity
+        */
+        export const getIdentityPath = '/identity';
+        
+    export type getIdentityPathParametersType = {
+        }
+        
+    export type getIdentityQueryParametersType = {
+        }
+        
+        export type getIdentityRequestBodyType = never
+    
+        export type getIdentityResponseBodyType = never| User<"response">
 
-export type postLogoutPathParametersType = {};
+        /**
+        * Typings for the a PATCH request on /identity
+        */
+        export const patchIdentityPath = '/identity';
+        
+    export type patchIdentityPathParametersType = {
+        }
+        
+    export type patchIdentityQueryParametersType = {
+        }
+        
+        
+        
+        export type patchIdentityRequestBodyType = UserUpdate<"request"> | undefined
+    
+        export type patchIdentityResponseBodyType = never| User<"response">
 
-export type postLogoutQueryParametersType = {};
-
-export type postLogoutRequestBodyType = {
-  /**
-   * The token to be invalidated.
-   */
-  token?: string;
-  [k: string]: unknown;
-};
-
-export type postLogoutResponseBodyType = never;
-
-/**
- * Typings for the a GET request on /users
- */
-export const getUsersPath = '/users';
-
-export type getUsersPathParametersType = {};
-
-export type getUsersQueryParametersType = {};
-
-export type getUsersRequestBodyType = never;
-
-export type getUsersResponseBodyType = never | User<'response'>[];
-
-/**
- * Typings for the a POST request on /users
- */
-export const postUsersPath = '/users';
-
-export type postUsersPathParametersType = {};
-
-export type postUsersQueryParametersType = {};
-
-export type postUsersRequestBodyType = User<'request'>;
-
-export type postUsersResponseBodyType = never | User<'response'>;
-
-/**
- * Typings for the a GET request on /users/{user_id}
- */
-export const getUsersByUserIdPath = '/users/:user_id';
-
-export type getUsersByUserIdPathParametersType = {
-  user_id: string;
-};
-
-export type getUsersByUserIdQueryParametersType = {};
-
-export type getUsersByUserIdRequestBodyType = never;
-
-export type getUsersByUserIdResponseBodyType = never | User<'response'>;
-
-/**
- * Typings for the a PATCH request on /users/{user_id}
- */
-export const patchUsersByUserIdPath = '/users/:user_id';
-
-export type patchUsersByUserIdPathParametersType = {
-  user_id: string;
-};
-
-export type patchUsersByUserIdQueryParametersType = {};
-
-export type patchUsersByUserIdRequestBodyType = UserUpdate<'request'>;
-
-export type patchUsersByUserIdResponseBodyType = never | User<'response'>;
-
-/**
- * Typings for the a DELETE request on /users/{user_id}
- */
-export const deleteUsersByUserIdPath = '/users/:user_id';
-
-export type deleteUsersByUserIdPathParametersType = {
-  user_id: string;
-};
-
-export type deleteUsersByUserIdQueryParametersType = {};
-
-export type deleteUsersByUserIdRequestBodyType = never;
-
-export type deleteUsersByUserIdResponseBodyType = never;
-
-/**
- * Typings for the a GET request on /identity
- */
-export const getIdentityPath = '/identity';
-
-export type getIdentityPathParametersType = {};
-
-export type getIdentityQueryParametersType = {};
-
-export type getIdentityRequestBodyType = never;
-
-export type getIdentityResponseBodyType = never | User<'response'>;
-
-/**
- * Typings for the a PATCH request on /identity
- */
-export const patchIdentityPath = '/identity';
-
-export type patchIdentityPathParametersType = {};
-
-export type patchIdentityQueryParametersType = {};
-
-export type patchIdentityRequestBodyType = UserUpdate<'request'> | undefined;
-
-export type patchIdentityResponseBodyType = never | User<'response'>;
-
-/**
- * Typings for the a POST request on /token
- */
-export const postTokenPath = '/token';
-
-export type postTokenPathParametersType = {};
-
-export type postTokenQueryParametersType = {};
-
-export type postTokenRequestBodyType = {
-  /**
-   * The username of the user.
-   */
-  username?: string;
-  /**
-   * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
-   *
-   */
-  claims?: {
-    [k: string]: unknown;
-  };
-  [k: string]: unknown;
-};
-
-export type postTokenResponseBodyType = never | string;
+        /**
+        * Typings for the a POST request on /token
+        */
+        export const postTokenPath = '/token';
+        
+    export type postTokenPathParametersType = {
+        }
+        
+    export type postTokenQueryParametersType = {
+        }
+        
+        
+        
+        export type postTokenRequestBodyType = {
+	/**
+	 * The username of the user.
+	 */
+	username?: string
+	/**
+	 * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+	 * 
+	 */
+	claims?: {
+		[k: string]: unknown
+	}
+	[k: string]: unknown
+}
+    
+        export type postTokenResponseBodyType = never| string

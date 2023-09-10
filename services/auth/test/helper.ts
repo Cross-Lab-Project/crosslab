@@ -3,8 +3,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import { Server } from 'http';
 
-import { init_app } from '../src/app';
-import { init_database } from '../src/database/datasource';
+import { init_app } from '../src/app.ts';
+import { init_database } from '../src/database/datasource.ts';
 
 chai.use(chaiHttp);
 chai.should();

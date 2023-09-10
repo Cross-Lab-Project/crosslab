@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { ApplicationDataSource } from '../database/datasource';
-import { TokenModel, UserModel } from '../database/model';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { TokenModel, UserModel } from '../database/model.js';
 
 export async function createNewToken(
   user: string | UserModel,

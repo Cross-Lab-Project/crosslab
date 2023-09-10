@@ -2,13 +2,13 @@ import { UnauthorizedError } from '@crosslab/service-common';
 import bcrypt from 'bcrypt';
 import express from 'express';
 
-import { ApplicationDataSource } from '../database/datasource';
-import { UserModel } from '../database/model';
-import { postLoginPath } from '../generated/operations';
-import { validatePostLogin } from '../generated/validation';
-import { createNewToken } from '../token/helper';
-import { createUser } from '../user/helper';
-import { loginTui } from './tui_ldap';
+import { ApplicationDataSource } from '../database/datasource.js';
+import { UserModel } from '../database/model.js';
+import { postLoginPath } from '../generated/operations.js';
+import { validatePostLogin } from '../generated/validation.js';
+import { createNewToken } from '../token/helper.js';
+import { createUser } from '../user/helper.js';
+import { loginTui } from './tui_ldap.js';
 
 async function checkCredentials(user: UserModel, username: string, password: string) {
   if (user === null) return false;

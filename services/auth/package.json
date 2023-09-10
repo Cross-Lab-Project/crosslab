@@ -8,6 +8,7 @@
   "files": [
     "app"
   ],
+  "type": "module",
   "scripts": {
     "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
     "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
