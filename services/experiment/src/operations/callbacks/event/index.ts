@@ -22,9 +22,7 @@ export const callbackEventEmitter =
  * @throws {InvalidValueError} Thrown if the type of the event callback is unknown.
  * @returns The status code of the callback response.
  */
-export async function handleEventCallback(
-  callback: any,
-): Promise<200 | 410> {
+export async function handleEventCallback(callback: any): Promise<200 | 410> {
   switch (callback.eventType) {
     case 'peerconnection-status-changed':
       return await handlePeerconnectionStatusChangedEventCallback(callback);

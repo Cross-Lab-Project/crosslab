@@ -18,7 +18,6 @@ export function deviceIdFromUrl(url: string): string {
   throw new Error('Invalid device url');
 }
 
-
 /**
  * This function builds the url of a peerconnection using its id.
  * @param peerconnectionId The id of the peerconnection.

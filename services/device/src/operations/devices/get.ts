@@ -20,7 +20,10 @@ export const getDevices: getDevicesSignature = async req => {
 
   const visibility = await Promise.all(
     deviceModels.map(device =>
-      req.authorization.check_authorization('view', `device:${deviceUrlFromId(device.uuid)}`),
+      req.authorization.check_authorization(
+        'view',
+        `device:${deviceUrlFromId(device.uuid)}`,
+      ),
     ),
   );
 

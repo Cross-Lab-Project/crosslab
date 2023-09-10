@@ -37,7 +37,8 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
       },
     });
 
-    if (experimentModel.status !== 'finished') await finishExperiment(experimentModel, req.clients);
+    if (experimentModel.status !== 'finished')
+      await finishExperiment(experimentModel, req.clients);
 
     await req.authorization.unrelate(
       req.authorization.user,

@@ -1,4 +1,3 @@
-
 import { logger } from '@crosslab/service-common';
 
 import { callbackEventEmitter } from './index.js';

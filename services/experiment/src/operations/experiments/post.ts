@@ -36,7 +36,8 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
 
   if (requestedStatus === 'booked') await bookExperiment(experimentModel);
   if (requestedStatus === 'running') await runExperiment(experimentModel, req.clients);
-  if (requestedStatus === 'finished') await finishExperiment(experimentModel, req.clients);
+  if (requestedStatus === 'finished')
+    await finishExperiment(experimentModel, req.clients);
 
   await req.authorization.relate(
     req.authorization.user,

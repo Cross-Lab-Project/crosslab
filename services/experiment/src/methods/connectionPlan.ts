@@ -1,6 +1,8 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
+import { CreatePeerconnectionRequest } from '../clients/device/schemas.js';
+import { CreatePeerconnectionRequestDevicesItems } from '../clients/device/schemas.js';
 import {
   DeviceModel,
   ExperimentModel,
@@ -8,8 +10,6 @@ import {
   ServiceConfigurationModel,
 } from '../database/model.js';
 import { experimentUrlFromId, getUrlOrInstanceUrl } from './url.js';
-import { CreatePeerconnectionRequest } from '../clients/device/schemas.js';
-import { CreatePeerconnectionRequestDevicesItems } from '../clients/device/schemas.js';
 
 export function buildConnectionPlan(experiment: ExperimentModel) {
   const experimentUrl = experimentUrlFromId(experiment.uuid);
@@ -23,7 +23,9 @@ export function buildConnectionPlan(experiment: ExperimentModel) {
   if (!experiment.serviceConfigurations)
     throw new MissingPropertyError('Experiment must have a configuration to be run', 400);
 
-  const pairwiseServiceConfigurations = toPairwiseServiceConfig(experiment.serviceConfigurations);
+  const pairwiseServiceConfigurations = toPairwiseServiceConfig(
+    experiment.serviceConfigurations,
+  );
 
   const deviceMappedServiceConfigs = mapRoleConfigToDevices(
     pairwiseServiceConfigurations,
@@ -36,7 +38,7 @@ export function buildConnectionPlan(experiment: ExperimentModel) {
 
   const peerconnections: Record<
     string,
-    Omit<CreatePeerconnectionRequest,'url'> // TODO: Generation Problem
+    Omit<CreatePeerconnectionRequest, 'url'> // TODO: Generation Problem
   > = {};
   for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
     // HOTFIX: for local services: Don't connect local services to each other

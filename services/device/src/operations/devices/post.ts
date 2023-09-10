@@ -12,11 +12,7 @@ import { deviceUrlFromId } from '../../methods/urlFromId.js';
  * @param parameters The parameters of the request.
  * @param body The body of the request.
  */
-export const postDevices: postDevicesSignature = async (
-  req,
-  parameters,
-  body,
-) => {
+export const postDevices: postDevicesSignature = async (req, parameters, body) => {
   logger.log('info', 'postDevices called');
 
   // NOTE: create action currently does not exist

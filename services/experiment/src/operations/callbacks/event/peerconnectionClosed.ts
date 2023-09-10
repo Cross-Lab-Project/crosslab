@@ -1,4 +1,3 @@
-
 import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
 
 /**
@@ -6,9 +5,7 @@ import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
  * @param callback The incoming "peerconnection-closed" callback to be handled.
  * @returns The status code for the response to the incoming callback.
  */
-export function handlePeerconnectionClosedEventCallback(
-  callback: any,
-): 200 | 410 {
+export function handlePeerconnectionClosedEventCallback(callback: any): 200 | 410 {
   if (!peerconnectionClosedCallbacks.includes(callback.peerconnection.url)) {
     return 410;
   }

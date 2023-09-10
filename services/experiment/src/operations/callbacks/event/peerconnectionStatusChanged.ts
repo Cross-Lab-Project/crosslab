@@ -1,9 +1,9 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 
+import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { finishExperiment } from '../../../methods/experimentStatus/index.js';
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
-import { clients } from '../../../clients/index.js';
 
 /**
  * This function handles an incoming "peerconnection-status-changed" event callback.

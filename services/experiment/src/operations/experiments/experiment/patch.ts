@@ -47,7 +47,8 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
     if (experimentModel.status === 'booked') await bookExperiment(experimentModel);
     if (experimentModel.status === 'running')
       await runExperiment(experimentModel, req.clients);
-    if (experimentModel.status === 'finished') await finishExperiment(experimentModel, req.clients);
+    if (experimentModel.status === 'finished')
+      await finishExperiment(experimentModel, req.clients);
     await repositories.experiment.save(experimentModel);
 
     logger.log(
