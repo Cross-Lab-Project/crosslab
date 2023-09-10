@@ -18,7 +18,7 @@
     "build:compile": "tsc&& cp src/generated/**.cjs app/generated",
     "build": "npm run build:generate && npm run build:compile",
     "dev": "tsc-watch --onSuccess 'node --inspect=9000 ./app/index.js'",
-    "test": "mocha --require ts-node/register test/**/*.spec.ts",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"allowImportingTsExtensions\": true}' mocha --require ts-node/register test/**/*.spec.ts",
     "format": "prettier . --write",
     "lint": "eslint ."
   },
