@@ -1,3 +1,3 @@
-import { Setup1694007494176 } from './1694007494176-Setup';
+import { Setup1694181937262 } from './1694181937262-Setup.js';
 
-export const Migrations = [Setup1694007494176];
+export const Migrations = [Setup1694181937262];

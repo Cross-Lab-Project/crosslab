@@ -11,10 +11,10 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
  * @param parameters The parameters of the request.
  */
 export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature =
-  async (authorization, parameters) => {
+  async (req, parameters) => {
     logger.log('info', 'getPeerconnectionsByPeerconnectionId called');
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'view',
       `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
     );

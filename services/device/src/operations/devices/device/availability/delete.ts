@@ -12,10 +12,10 @@ import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const deleteDevicesByDeviceIdAvailability: deleteDevicesByDeviceIdAvailabilitySignature =
-  async (authorization, parameters) => {
+  async (req, parameters) => {
     logger.log('info', 'deleteDevicesByDeviceIdAvailability called');
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'delete',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );

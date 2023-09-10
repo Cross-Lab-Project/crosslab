@@ -15,3 +15,6 @@ sleep 5
 DB_USERNAME=migration DB_PASSWORD=migration DB_DATABASE=migration DB_TYPE=mariadb npx typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/mariadb/${NAME}
 
 docker rm -f migration-db
+
+# Generate sqlite migration
+DB_TYPE=sqlite DB_DATABASE=:memory: npx typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/sqlite/${NAME}

@@ -1,20 +1,21 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { logger } from '@crosslab/service-common';
 
+import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
-import { apiClient } from '../../api.js';
 import { experimentUrlFromId } from '../../url.js';
+
+type edge_instatiable = { url: string; type: 'edge instantiable'; codeUrl: string };
+type cloud_instatiable = { url: string; type: 'cloud instantiable' };
+type Instatiable = edge_instatiable | cloud_instatiable;
 
 export async function instantiateDevicesExperiment(
   experimentModel: ExperimentModel,
-  instantiables: (
-    | DeviceServiceTypes.InstantiableBrowserDevice
-    | DeviceServiceTypes.InstantiableCloudDevice
-  )[],
+  instantiables: Instatiable[],
+  clients: Clients,
 ): Promise<InstantiatedDevice[]> {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to instantiate devices for experiment', {
@@ -41,7 +42,7 @@ export async function instantiateDevicesExperiment(
 
     if (!instantiableDevice || instantiableDevice.instance) continue;
 
-    const instanceData = await apiClient.instantiateDevice(instantiable.url);
+    const instanceData = await clients.device.instantiateDevice(instantiable.url);
     instances.push({ ...instanceData.instance, token: instanceData.deviceToken });
 
     const instance = await repositories.instance.create({

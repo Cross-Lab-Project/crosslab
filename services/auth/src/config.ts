@@ -8,6 +8,8 @@ export const config = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   BASE_URL: process.env.BASE_URL ?? 'http://localhost:3000',
   JWT_SECRET: process.env['JWT_SECRET'] ?? utils.die('JWT_SECRET is not set'),
+  ADMIN_USERNAME: process.env['ADMIN_USERNAME'],
+  ADMIN_PASSWORD: process.env['ADMIN_PASSWORD'],
   orm: {
     ...CommonConfig.readOrmConfig(),
   },

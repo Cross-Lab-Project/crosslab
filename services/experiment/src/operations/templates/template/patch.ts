@@ -12,7 +12,7 @@ import { templateUrlFromId } from '../../../methods/url.js';
  * @param body The body of the request.
  */
 export const patchTemplatesByTemplateId: patchTemplatesByTemplateIdSignature = async (
-  authorization,
+  req,
   parameters,
   body,
 ) => {
@@ -21,7 +21,7 @@ export const patchTemplatesByTemplateId: patchTemplatesByTemplateIdSignature = a
     `Handling PATCH request on endpoint /templates/${parameters.template_id}`,
   );
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'edit',
     `template:${templateUrlFromId(parameters.template_id)}`,
   );

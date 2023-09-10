@@ -7,7 +7,7 @@ import {
 
 import { repositories } from '../../../../database/dataSource.js';
 import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures.js';
-import { apiClient } from '../../../../globals.js';
+import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { connectedDevices } from '../../websocket/handling/index.js';
 
@@ -23,10 +23,10 @@ import { connectedDevices } from '../../websocket/handling/index.js';
  * device is not part of the peerconnection.
  */
 export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSignature =
-  async (authorization, parameters, body) => {
+  async (req, parameters, body) => {
     logger.log('info', 'postDevicesByDeviceIdSignaling called');
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'signal',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );
@@ -44,11 +44,11 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
       );
 
     // Retrieve peerconnection and make sure the device is taking part in it
-    const peerconnection = await apiClient.getPeerconnection(
-      parameters.peerconnection_url,
-    );
-    const deviceA = peerconnection.devices[0];
-    const deviceB = peerconnection.devices[1];
+    const peerconnection = await getPeerconnection({
+      url: parameters.peerconnection_url,
+    });
+    const deviceA = peerconnection.deviceA;
+    const deviceB = peerconnection.deviceB;
 
     if (
       !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&

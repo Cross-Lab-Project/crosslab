@@ -4,14 +4,14 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Experiment Service",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "skipFiles": ["<node_internals>/**"],
-      "restart": true
-    }
+  {
+    "name": "Attach",
+    "port": 9003,
+    "request": "attach",
+    "skipFiles": [
+      "<node_internals>/**"
+    ],
+    "type": "node"
+  }
   ]
 }

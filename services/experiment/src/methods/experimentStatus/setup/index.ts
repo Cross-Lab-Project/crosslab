@@ -1,5 +1,6 @@
 import { logger } from '@crosslab/service-common';
 
+import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
@@ -14,6 +15,7 @@ import { createPeerconnectionsExperiment } from './peerconnectionCreation.js';
 export async function setupExperiment(
   experimentModel: ExperimentModel,
   resolvedDevices: ResolvedDevice[],
+  clients: Clients,
 ) {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Setting up experiment', { data: { experimentUrl } });
@@ -47,6 +49,7 @@ export async function setupExperiment(
     const instances = await instantiateDevicesExperiment(
       experimentModel,
       uninstantiatedDevices,
+      clients,
     );
     await updateBookingExperiment(
       experimentModel,
@@ -57,7 +60,7 @@ export async function setupExperiment(
     await repositories.experiment.save(experimentModel);
   }
 
-  await createPeerconnectionsExperiment(experimentModel);
+  await createPeerconnectionsExperiment(experimentModel, clients);
 
   logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } });
 }

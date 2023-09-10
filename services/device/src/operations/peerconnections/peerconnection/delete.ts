@@ -12,10 +12,10 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
  * @param parameters The parameters of the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
-  async (authorization, parameters) => {
+  async (req, parameters) => {
     logger.log('info', 'deletePeerconnectionsByPeerconnectionId called');
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'delete',
       `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
     );
@@ -26,8 +26,8 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
 
     await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
 
-    await authorization.unrelate(
-      authorization.user,
+    await req.authorization.unrelate(
+      req.authorization.user,
       'owner',
       `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
     );

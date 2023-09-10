@@ -1,4 +1,3 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 
 import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
 
@@ -8,7 +7,7 @@ import { peerconnectionClosedCallbacks } from '../../callbacks/index.js';
  * @returns The status code for the response to the incoming callback.
  */
 export function handlePeerconnectionClosedEventCallback(
-  callback: DeviceServiceTypes.PeerconnectionClosedEventCallback,
+  callback: any,
 ): 200 | 410 {
   if (!peerconnectionClosedCallbacks.includes(callback.peerconnection.url)) {
     return 410;

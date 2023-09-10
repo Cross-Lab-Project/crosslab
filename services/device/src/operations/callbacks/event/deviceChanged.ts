@@ -1,6 +1,7 @@
 import { repositories } from '../../../database/dataSource.js';
 import { ConcreteDevice, DeviceChangedEventCallback } from '../../../generated/types.js';
-import { apiClient, timeoutMap } from '../../../globals.js';
+import { timeoutMap } from '../../../globals.js';
+import { getDevice } from '../../../methods/device.js';
 import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
 
 /**
@@ -33,14 +34,15 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
   );
 
   for (const pendingConnection of pendingConnections) {
-    const deviceA = await apiClient.getDevice(pendingConnection.deviceA.url);
-    const deviceB = await apiClient.getDevice(pendingConnection.deviceB.url);
+    const deviceA = await getDevice({ url: pendingConnection.deviceA.url });
+    const deviceB = await getDevice({ url: pendingConnection.deviceB.url });
 
-    if (deviceA.connected && deviceB.connected) {
-      clearTimeout(timeoutMap.get(pendingConnection.uuid));
-      signalingQueueManager.startSignalingQueues(pendingConnection.uuid);
-      timeoutMap.delete(pendingConnection.uuid);
-    }
+    if (!('connected' in deviceA && 'connected' in deviceB)) continue;
+    if (!(deviceA.connected && deviceB.connected)) continue;
+
+    clearTimeout(timeoutMap.get(pendingConnection.uuid));
+    signalingQueueManager.startSignalingQueues(pendingConnection.uuid);
+    timeoutMap.delete(pendingConnection.uuid);
   }
 
   return pendingConnections.length === 0 ? 410 : 200;

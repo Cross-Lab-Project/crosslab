@@ -17,11 +17,11 @@ import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
-  async (authorization, parameters) => {
+  async (req, parameters) => {
     logger.log('info', 'postDevicesByDeviceIdWebsocket called');
 
     // NOTE: should the connect action be used here?
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'edit',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );

@@ -11,7 +11,7 @@ import { templateUrlFromId } from '../../../methods/url.js';
  * @param parameters The parameters of the request.
  */
 export const getTemplatesByTemplateId: getTemplatesByTemplateIdSignature = async (
-  authorization,
+  req,
   parameters,
 ) => {
   logger.log(
@@ -19,7 +19,7 @@ export const getTemplatesByTemplateId: getTemplatesByTemplateIdSignature = async
     `Handling GET request on endpoint /templates/${parameters.template_id}`,
   );
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'view',
     `template:${templateUrlFromId(parameters.template_id)}`,
   );

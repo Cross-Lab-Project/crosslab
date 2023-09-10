@@ -6,7 +6,7 @@ import {
   CreatePeerconnectionMessage,
   SignalingMessage,
 } from '../../generated/types.js';
-import { apiClient } from '../../globals.js';
+import { sendSignalingMessage } from '../signaling.js';
 
 export class SignalingQueue {
   private queue: Queue;
@@ -84,7 +84,7 @@ export class SignalingQueue {
       | SignalingMessage,
   ) {
     try {
-      await apiClient.sendSignalingMessage(
+      await sendSignalingMessage(
         this.deviceUrl,
         signalingMessage,
         this.peerconnectionUrl,
@@ -98,6 +98,7 @@ export class SignalingQueue {
           peerconnection: this.peerconnectionUrl,
         },
       });
+      throw error;
     }
   }
 

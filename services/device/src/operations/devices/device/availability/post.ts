@@ -16,10 +16,10 @@ import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilitySignature =
-  async (authorization, parameters, body) => {
+  async (req, parameters, body) => {
     logger.log('info', 'postDevicesByDeviceIdAvailability called');
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'edit',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );

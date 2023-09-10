@@ -1,13 +1,18 @@
-import { logger } from '@crosslab/service-common';
+import { logging } from '@crosslab/service-common';
+import { logger } from '@crosslab/service-common/logging';
 
 import { initApp } from './app.js';
 import { AppDataSource } from './database/dataSource.js';
 
 async function main() {
-  await AppDataSource.initialize();
-  initApp();
-
-  logger.log('info', 'Experiment Service started successfully');
+  logging.init();
+  try {
+    await AppDataSource.initialize();
+    initApp();
+    logger.info('Device Service started successfully');
+  } catch (e) {
+    logger.error(e);
+  }
 }
 
 main();

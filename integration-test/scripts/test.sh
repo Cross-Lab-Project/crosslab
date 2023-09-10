@@ -13,7 +13,7 @@ export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-imag
 COMPOSE_HTTP_TIMEOUT=600 docker-compose up --no-color > dist/server.log 2>&1 &
 end_time=$(($(date +%s) + 600))  # Set end time to 10 minutes from now
 
-rm -rf venv
+#rm -rf venv
 virtualenv venv && venv/bin/pip install -r requirements.txt
 npm ci
 
@@ -34,6 +34,8 @@ for url in "http://localhost/auth/status" "http://localhost/device/status" "http
     done
 done
 
+export USERNAME="admin"
+export PASSWORD="admin"
 
 npm run test
 

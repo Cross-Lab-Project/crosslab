@@ -1,5 +1,5 @@
-import { authorization, error, logging } from '@crosslab/service-common';
-import express, { Application } from 'express';
+import { authorization, logging } from '@crosslab/service-common';
+import express, { Application, ErrorRequestHandler } from 'express';
 import { IncomingMessage } from 'http';
 import { Socket } from 'net';
 import WebSocket, { WebSocketServer } from 'ws';
@@ -42,6 +42,28 @@ function setupWebsockets(localApp: express.Application) {
   return localApp;
 }
 
+export const errormiddleware: ErrorRequestHandler = (err, req, res, _next) => {
+  const status = err.status || 500;
+  const message = err.error || err.message;
+  const errorName = err.name || 'Error';
+  const stack = err.stack;
+  if (['ValidationError'].includes(errorName)) {
+    logging.logger.log('warn', 'ValidationError: ', { errors: err.errors });
+  } else if (!(errorName in ['UnauthorizedError', 'ForbiddenError'])) {
+    logging.logger.log('error', 'An error occurred during the handling of a request', {
+      data: {
+        error: errorName,
+        status,
+        message,
+        method: req.method,
+        url: req.url,
+        stack,
+      },
+    });
+  }
+  res.status(status).send({ error: errorName, message });
+};
+
 export function initApp() {
   app.initService({
     preHandlers: [
@@ -60,7 +82,7 @@ export function initApp() {
         });
       },
     ],
-    errorHandler: error.middleware,
+    errorHandler: errormiddleware,
   });
   app.listen(config.PORT);
 }

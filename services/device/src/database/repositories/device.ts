@@ -106,10 +106,7 @@ export class DeviceRepository extends AbstractRepository<
     }
   }
 
-  async format(
-    model: DeviceModel,
-    options?: { flatGroup?: boolean; executeFor?: string },
-  ): Promise<Device<'response'>> {
+  async format(model: DeviceModel): Promise<Device<'response'>> {
     if (!this._isInitialized()) this.throwUninitializedRepositoryError();
 
     switch (model.type) {
@@ -120,7 +117,7 @@ export class DeviceRepository extends AbstractRepository<
       case 'edge instantiable':
         return await this.dependencies.instantiableBrowserDevice.format(model);
       case 'group':
-        return await this.dependencies.deviceGroup.format(model, options);
+        return await this.dependencies.deviceGroup.format(model);
     }
   }
 
@@ -203,7 +200,7 @@ export class DeviceRepository extends AbstractRepository<
     }
   }
 
-  async findOneOrFail(options: FindOneOptions<DeviceModel>): Promise<DeviceModel> {
+  async findOneOrFail(options: FindOneOptions<DeviceModel>) {
     if (!this._isInitialized()) this.throwUninitializedRepositoryError();
 
     const deviceOverview = await this.dependencies.deviceOverview.findOneOrFail(options);

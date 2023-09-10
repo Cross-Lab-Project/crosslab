@@ -8,10 +8,10 @@ import { getExperimentsSignature } from '../../generated/signatures.js';
  * /experiments endpoint.
  * @param authorization The authorization helper object for the request.
  */
-export const getExperiments: getExperimentsSignature = async authorization => {
+export const getExperiments: getExperimentsSignature = async req => {
   logger.log('info', 'Handling GET request on endpoint /experiments');
 
-  await authorization.check_authorization_or_fail('view', 'experiment');
+  await req.authorization.check_authorization_or_fail('view', 'experiment');
 
   const experimentModels = await repositories.experiment.find();
 

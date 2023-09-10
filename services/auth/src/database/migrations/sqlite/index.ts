@@ -1,4 +1,4 @@
-import { Setup1692104122038 } from './1692104122038-Setup';
+import { Setup1694181940864 } from './1694181940864-Setup.js';
 
-export const Migrations = [Setup1692104122038];
-// typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/sqlite/{NAME}
+export const Migrations = [Setup1694181940864];
+

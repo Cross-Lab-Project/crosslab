@@ -17,11 +17,12 @@
     "build:generate": "npm-run-all build:generate:*",
     "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
+    "build:generate:device": "npx openapi-codegen -i ../device/dist/openapi.json -t ./api_client_template -o ./src/clients/device",
     "build:compile": "tsc && cp src/generated/*.cjs app/generated",
     "build:add-shebang": "bash scripts/add-shebang.sh",
     "build": "npm-run-all build:*",
     "start": "node app/index.js",
-    "dev": "tsc-watch --onSuccess 'node --inspect=9001 ./app/index.js'",
+    "dev": "tsc-watch --onSuccess 'node --harmony --inspect=9003 ./app/index.js'",
     "doc": "typedoc --options ./typedoc.json",
     "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
     "test:database": "nyc --temp-dir .nyc_output/database --silent --reporter=html ts-mocha --require @babel/register test/database/index.spec.ts",
@@ -71,7 +72,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@cross-lab-project/api-client": "file:../../clients/api/js",
     "@crosslab/service-common": "file:../common",
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.20.2",

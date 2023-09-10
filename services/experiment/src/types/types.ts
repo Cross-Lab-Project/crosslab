@@ -1,4 +1,4 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
+
 
 import { ExperimentModel } from '../database/model.js';
 
@@ -8,12 +8,12 @@ export type Instance = {
   codeUrl?: string;
 };
 
-export type ResolvedDevice = DeviceServiceTypes.Device<'response'> & {
+export type ResolvedDevice = any & {
   instanceUrl?: string;
   instanceToken?: string;
 };
 
-export type InstantiatedDevice = DeviceServiceTypes.ConcreteDevice<'response'> & {
+export type InstantiatedDevice = any & {
   token: string;
 };
 

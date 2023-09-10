@@ -1,5 +1,4 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
-import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
+import { InvalidValueError } from '@crosslab/service-common';
 import { EventEmitter } from 'events';
 import { TypedEventEmitter } from 'typeorm';
 
@@ -8,11 +7,9 @@ import { handlePeerconnectionClosedEventCallback } from './peerconnectionClosed.
 import { handlePeerconnectionStatusChangedEventCallback } from './peerconnectionStatusChanged.js';
 
 type CallbackEvents = {
-  'device-changed': (device: DeviceServiceTypes.Device) => void;
-  'peerconnection-closed': (peerconnection: DeviceServiceTypes.Peerconnection) => void;
-  'peerconnection-status-changed': (
-    peerconnection: DeviceServiceTypes.Peerconnection,
-  ) => void;
+  'device-changed': (device: any) => void;
+  'peerconnection-closed': (peerconnection: any) => void;
+  'peerconnection-status-changed': (peerconnection: any) => void;
 };
 
 export const callbackEventEmitter =
@@ -26,29 +23,14 @@ export const callbackEventEmitter =
  * @returns The status code of the callback response.
  */
 export async function handleEventCallback(
-  callback: DeviceServiceTypes.EventCallback,
+  callback: any,
 ): Promise<200 | 410> {
   switch (callback.eventType) {
     case 'peerconnection-status-changed':
-      if (!DeviceServiceTypes.isPeerconnectionStatusChangedEventCallback(callback))
-        throw new MalformedBodyError(
-          'Body of request is not a valid peerconnection-status-changed event callback',
-          400,
-        );
       return await handlePeerconnectionStatusChangedEventCallback(callback);
     case 'peerconnection-closed':
-      if (!DeviceServiceTypes.isPeerconnectionClosedEventCallback(callback))
-        throw new MalformedBodyError(
-          'Body of request is not a valid peerconnection-closed event callback',
-          400,
-        );
       return handlePeerconnectionClosedEventCallback(callback);
     case 'device-changed':
-      if (!DeviceServiceTypes.isDeviceChangedEventCallback(callback))
-        throw new MalformedBodyError(
-          'Body of request is not a valid device-changed event callback',
-          400,
-        );
       return handleDeviceChangedEventCallback(callback);
     default:
       throw new InvalidValueError(

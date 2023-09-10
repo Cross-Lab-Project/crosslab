@@ -12,13 +12,13 @@ import { experimentUrlFromId } from '../../../methods/url.js';
  * @param parameters The parameters of the request.
  */
 export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSignature =
-  async (authorization, parameters) => {
+  async (req, parameters) => {
     logger.log(
       'info',
       `Handling DELETE request on endpoint /experiments/${parameters.experiment_id}`,
     );
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'delete',
       `experiment:${experimentUrlFromId(parameters.experiment_id)}`,
     );
@@ -37,10 +37,10 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
       },
     });
 
-    if (experimentModel.status !== 'finished') await finishExperiment(experimentModel);
+    if (experimentModel.status !== 'finished') await finishExperiment(experimentModel, req.clients);
 
-    await authorization.unrelate(
-      authorization.user,
+    await req.authorization.unrelate(
+      req.authorization.user,
       'owner',
       `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
     );

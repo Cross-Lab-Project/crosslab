@@ -3,10 +3,12 @@ import express from 'express';
 
 import { config } from './config.js';
 import { app } from './generated/index.js';
+import { middleware as clientMiddleware } from './clients/index.js';
 
 export function initApp() {
   app.initService({
     preHandlers: [
+      (a)=>a.use(clientMiddleware),
       application => {
         application.use(express.json());
         application.use(express.urlencoded({ extended: false }));

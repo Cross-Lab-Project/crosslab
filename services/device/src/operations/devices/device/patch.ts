@@ -16,13 +16,13 @@ import { deviceUrlFromId } from '../../../methods/urlFromId.js';
  * the device.
  */
 export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
-  authorization,
+  req,
   parameters,
   body,
 ) => {
   logger.log('info', 'patchDevicesByDeviceId called');
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'edit',
     `device:${deviceUrlFromId(parameters.device_id)}`,
   );

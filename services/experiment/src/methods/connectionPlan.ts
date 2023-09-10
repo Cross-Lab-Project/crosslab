@@ -1,4 +1,3 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
@@ -9,10 +8,10 @@ import {
   ServiceConfigurationModel,
 } from '../database/model.js';
 import { experimentUrlFromId, getUrlOrInstanceUrl } from './url.js';
+import { CreatePeerconnectionRequest } from '../clients/device/schemas.js';
+import { CreatePeerconnectionRequestDevicesItems } from '../clients/device/schemas.js';
 
-export function buildConnectionPlan(
-  experiment: ExperimentModel,
-): DeviceServiceTypes.Peerconnection<'request'>[] {
+export function buildConnectionPlan(experiment: ExperimentModel) {
   const experimentUrl = experimentUrlFromId(experiment.uuid);
   logger.log('info', 'Building connection plan', { data: { experimentUrl } });
   if (!experiment.serviceConfigurations || experiment.serviceConfigurations.length === 0)
@@ -21,8 +20,10 @@ export function buildConnectionPlan(
   if (!experiment.devices || experiment.devices.length === 0)
     throw new MissingPropertyError('Experiment must have a device to be run', 400);
 
-  const pairwiseServiceConfigurations: (typeof experiment)['serviceConfigurations'] =
-    toPairwiseServiceConfig(experiment);
+  if (!experiment.serviceConfigurations)
+    throw new MissingPropertyError('Experiment must have a configuration to be run', 400);
+
+  const pairwiseServiceConfigurations = toPairwiseServiceConfig(experiment.serviceConfigurations);
 
   const deviceMappedServiceConfigs = mapRoleConfigToDevices(
     pairwiseServiceConfigurations,
@@ -35,7 +36,7 @@ export function buildConnectionPlan(
 
   const peerconnections: Record<
     string,
-    DeviceServiceTypes.Peerconnection<'request'>
+    Omit<CreatePeerconnectionRequest,'url'> // TODO: Generation Problem
   > = {};
   for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
     // HOTFIX: for local services: Don't connect local services to each other
@@ -97,7 +98,7 @@ function sortServiceParticipantsByDeviceId(
 }
 
 function updateServiceConfig(
-  device: DeviceServiceTypes.ConfiguredDeviceReference,
+  device: CreatePeerconnectionRequestDevicesItems,
   serviceConfig: ServiceConfigurationModel,
   participant: ParticipantModel,
   remoteParticipant: ParticipantModel,
@@ -152,14 +153,11 @@ function mapRoleConfigToDevices(
   return deviceMappedServiceConfigs;
 }
 
-function toPairwiseServiceConfig(experiment: ExperimentModel) {
-  if (!experiment.serviceConfigurations) {
-    throw new MissingPropertyError('Experiment must have a configuration to be run', 400);
-  }
+function toPairwiseServiceConfig(serviceConfigurations: ServiceConfigurationModel[]) {
   const pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'] =
     [];
 
-  for (const serviceConfig of experiment.serviceConfigurations) {
+  for (const serviceConfig of serviceConfigurations) {
     const participants = serviceConfig.participants;
     if (participants) {
       for (let i = 0; i < participants.length; i++) {

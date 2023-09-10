@@ -1,4 +1,5 @@
 import { HttpError } from '@crosslab/service-common';
+import { utils } from '@crosslab/service-common';
 import bcrypt from 'bcrypt';
 import express from 'express';
 import { QueryFailedError } from 'typeorm';
@@ -35,6 +36,24 @@ export function userUrlFromId(id: string): string {
 }
 
 export const router = express.Router();
+
+export async function init_users() {
+  if (
+    config.ADMIN_USERNAME &&
+    (await ApplicationDataSource.manager.find(UserModel)).length === 0
+  ) {
+    const user = ApplicationDataSource.manager.create(UserModel, {
+      type: 'local',
+      isAdmin: true,
+      username: config.ADMIN_USERNAME,
+      password: await bcrypt.hash(
+        config.ADMIN_PASSWORD ?? utils.die('ADMIN_PASSWORD must be supplied'),
+        10,
+      ),
+    });
+    await ApplicationDataSource.manager.save(user);
+  }
+}
 
 router.get(
   getIdentityPath,

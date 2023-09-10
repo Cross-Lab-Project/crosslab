@@ -13,14 +13,14 @@ import { deviceUrlFromId } from '../../methods/urlFromId.js';
  * @param body The body of the request.
  */
 export const postDevices: postDevicesSignature = async (
-  authorization,
+  req,
   parameters,
   body,
 ) => {
   logger.log('info', 'postDevices called');
 
   // NOTE: create action currently does not exist
-  await authorization.check_authorization_or_fail('create', 'device');
+  await req.authorization.check_authorization_or_fail('create', 'device');
 
   if (!body.name)
     throw new MalformedBodyError(
@@ -32,8 +32,8 @@ export const postDevices: postDevicesSignature = async (
   // TODO: remove owner property or change to make it usable again
   deviceModel.owner = 'http://example.com/users/1';
 
-  await authorization.relate(
-    authorization.user,
+  await req.authorization.relate(
+    req.authorization.user,
     'owner',
     `device:${deviceUrlFromId(deviceModel.uuid)}`,
   );

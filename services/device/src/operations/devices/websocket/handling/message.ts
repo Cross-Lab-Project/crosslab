@@ -10,7 +10,7 @@ import {
   isMessage,
   isSignalingMessage,
 } from '../../../../generated/types.js';
-import { apiClient } from '../../../../globals.js';
+import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 
@@ -66,10 +66,10 @@ async function handleSignalingMessage(
   deviceModel: ConcreteDeviceModel,
   message: SignalingMessage,
 ) {
-  const peerconnection = await apiClient.getPeerconnection(message.connectionUrl);
+  const peerconnection = await getPeerconnection({ url: message.connectionUrl });
 
-  const deviceA = peerconnection.devices[0];
-  const deviceB = peerconnection.devices[1];
+  const deviceA = peerconnection.deviceA;
+  const deviceB = peerconnection.deviceB;
 
   let peerDeviceUrl: string | undefined = undefined;
   if (deviceA.url === deviceUrlFromId(deviceModel.uuid)) peerDeviceUrl = deviceB.url;
@@ -94,12 +94,12 @@ async function handleSignalingMessage(
  * @param message The connection-state-changed message.
  */
 async function handleConnectionStateChangedMessage(
-  deviceModel: ConcreteDeviceModel,
-  message: ConnectionStateChangedMessage,
+  _deviceModel: ConcreteDeviceModel,
+  _message: ConnectionStateChangedMessage,
 ) {
-  await apiClient.patchPeerconnectionDeviceStatus(
+  /*await apiClient.patchPeerconnectionDeviceStatus(
     message.connectionUrl,
     { status: message.status },
     deviceUrlFromId(deviceModel.uuid),
-  );
+  );*/
 }

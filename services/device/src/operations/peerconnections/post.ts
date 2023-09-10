@@ -2,13 +2,8 @@ import { InvalidValueError, logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { postPeerconnectionsSignature } from '../../generated/signatures.js';
-import { apiClient, timeoutMap } from '../../globals.js';
-import {
-  callbackUrl,
-  closedCallbacks,
-  sendStatusChangedCallback,
-  statusChangedCallbacks,
-} from '../../methods/callbacks.js';
+import { closedCallbacks, statusChangedCallbacks } from '../../methods/callbacks.js';
+import { getDevice } from '../../methods/device.js';
 import { signalingQueueManager } from '../../methods/signaling/signalingQueueManager.js';
 import { peerconnectionUrlFromId } from '../../methods/urlFromId.js';
 
@@ -20,17 +15,17 @@ import { peerconnectionUrlFromId } from '../../methods/urlFromId.js';
  * @param body The body of the request.
  */
 export const postPeerconnections: postPeerconnectionsSignature = async (
-  authorization,
+  req,
   parameters,
   body,
 ) => {
   logger.log('info', 'postPeerconnections called');
 
   // NOTE: create action currently does not exist
-  await authorization.check_authorization_or_fail('create', 'peerconnection');
+  await req.authorization.check_authorization_or_fail('create', 'peerconnection');
 
-  const deviceA = await apiClient.getDevice(body.devices[0].url);
-  const deviceB = await apiClient.getDevice(body.devices[1].url);
+  const deviceA = await getDevice({ url: body.devices[0].url });
+  const deviceB = await getDevice({ url: body.devices[1].url });
 
   if (deviceA.type !== 'device' || deviceB.type !== 'device') {
     throw new InvalidValueError(
@@ -41,8 +36,8 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 
   const peerconnectionModel = await repositories.peerconnection.create(body);
 
-  await authorization.relate(
-    authorization.user,
+  await req.authorization.relate(
+    req.authorization.user,
     'owner',
     `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
   );
@@ -54,48 +49,6 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
   if (deviceA.connected && deviceB.connected) {
     // peerconnection can be started directly
     signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
-  } else {
-    // need to wait for devices to connect
-    // register changed callbacks for devices to get notified when they connect
-    const n_deviceA = await apiClient.updateDevice(
-      deviceA.url,
-      { type: 'device' },
-      { changedUrl: callbackUrl },
-    );
-    const n_deviceB = await apiClient.updateDevice(
-      deviceB.url,
-      { type: 'device' },
-      { changedUrl: callbackUrl },
-    );
-
-    // check that devices still have the correct type
-    if (n_deviceA.type !== 'device' || n_deviceB.type !== 'device') {
-      throw new InvalidValueError(
-        `Cannot establish a peerconnection between devices of type '${deviceA.type}' and '${deviceB.type}'`,
-        400,
-      );
-    }
-
-    // set timeout for checking if devices are connected ???
-    timeoutMap.set(
-      peerconnectionModel.uuid,
-      setTimeout(async () => {
-        try {
-          logger.log('info', 'devices did not connect');
-          peerconnectionModel.status = 'failed';
-          await repositories.peerconnection.save(peerconnectionModel);
-          sendStatusChangedCallback(peerconnectionModel);
-        } catch (error) {
-          logger.log(
-            'error',
-            `Something went wrong while trying to set status of peerconnection '${peerconnectionUrlFromId(
-              peerconnectionModel.uuid,
-            )}' to 'failed'`,
-            { data: { error } },
-          );
-        }
-      }, 30000),
-    );
   }
 
   if (parameters.closedUrl) {

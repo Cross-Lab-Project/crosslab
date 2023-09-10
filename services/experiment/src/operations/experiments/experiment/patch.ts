@@ -17,13 +17,13 @@ import { experimentUrlFromId } from '../../../methods/url.js';
  * @param body The body of the request.
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
-  async (authorization, parameters, body) => {
+  async (req, parameters, body) => {
     logger.log(
       'info',
       `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`,
     );
 
-    await authorization.check_authorization_or_fail(
+    await req.authorization.check_authorization_or_fail(
       'edit',
       `experiment:${experimentUrlFromId(parameters.experiment_id)}`,
     );
@@ -45,8 +45,9 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
     if (body) await repositories.experiment.write(experimentModel, body);
 
     if (experimentModel.status === 'booked') await bookExperiment(experimentModel);
-    if (experimentModel.status === 'running') await runExperiment(experimentModel);
-    if (experimentModel.status === 'finished') await finishExperiment(experimentModel);
+    if (experimentModel.status === 'running')
+      await runExperiment(experimentModel, req.clients);
+    if (experimentModel.status === 'finished') await finishExperiment(experimentModel, req.clients);
     await repositories.experiment.save(experimentModel);
 
     logger.log(

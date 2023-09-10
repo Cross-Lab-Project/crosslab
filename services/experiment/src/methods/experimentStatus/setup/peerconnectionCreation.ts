@@ -1,5 +1,6 @@
 import { logger } from '@crosslab/service-common';
 
+import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
@@ -7,7 +8,10 @@ import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
 import { experimentUrlFromId } from '../../url.js';
 
-export async function createPeerconnectionsExperiment(experimentModel: ExperimentModel) {
+export async function createPeerconnectionsExperiment(
+  experimentModel: ExperimentModel,
+  clients: Clients,
+) {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to create peerconnections for experiment', {
     data: { experimentUrl },
@@ -24,7 +28,7 @@ export async function createPeerconnectionsExperiment(experimentModel: Experimen
       500,
     );
 
-  await createPeerconnections(experimentModel);
+  await createPeerconnections(experimentModel, clients);
 
   experimentModel.status = 'peerconnections-created';
 

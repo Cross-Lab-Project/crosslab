@@ -18,7 +18,7 @@ x-loki: &loki-logging
       - action: labelkeep
         regex: (service|project)
     labels: level,service
-  
+
 x-config: &common-config
   AUTHORIZATION_SERVER: "http://127.0.0.1:3010"
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-please change me}"
@@ -40,7 +40,7 @@ services:
   grafana:
     environment:
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
       GF_SERVER_HTTP_PORT: 3101
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/dashboard.json
@@ -62,6 +62,8 @@ services:
     build: ../../../services/auth
     environment:
       <<: *common-config
+      ADMIN_USERNAME: 'admin'
+      ADMIN_PASSWORD: 'admin'
       JWT_SECRET: "${JWT_SECRET:-please change me}"
     network_mode: "host"
     logging: *loki-logging
@@ -72,18 +74,18 @@ services:
       JWT_SECRET: "${JWT_SECRET:-please change me}"
     network_mode: "host"
     logging: *loki-logging
-  device:
-    build: ../../../services/device
-    environment:
-      <<: *common-config
-    network_mode: "host"
-    logging: *loki-logging
-  experiment:
-    build: ../../../services/experiment
-    environment:
-      <<: *common-config
-    network_mode: "host"
-    logging: *loki-logging
+  #device:
+  #  build: ../../../services/device
+  #  environment:
+  #    <<: *common-config
+  #  network_mode: "host"
+  #  logging: *loki-logging
+  #experiment:
+  #  build: ../../../services/experiment
+  #  environment:
+  #    <<: *common-config
+  #  network_mode: "host"
+  #  logging: *loki-logging
   federation:
     build: ../../../services/federation
     environment:

@@ -4,6 +4,10 @@ x-config: &common-config
   AUTHORIZATION_SERVER: 'http://127.0.0.1:3010'
   AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:-TestPSK}'
   LOGGING: '${LOGGING:-info}'
+  AUTH_SERVICE_URL: '127.0.0.1:3000'
+  DEVICE_SERVICE_URL: '127.0.0.1:3001'
+  EXPERIMENT_SERVICE_URL: '127.0.0.1:3002'
+  FEDERATION_SERVICE_URL: '127.0.0.1:3003'
 
 services:
   # Services
@@ -11,17 +15,14 @@ services:
     image: '${GATEWAY_IMAGE}'
     environment:
       <<: *common-config
-      AUTH_SERVICE_URL: '127.0.0.1:3000'
-      DEVICE_SERVICE_URL: '127.0.0.1:3001'
-      EXPERIMENT_SERVICE_URL: '127.0.0.1:3002'
-      FEDERATION_SERVICE_URL: '127.0.0.1:3003'
-      UPDATE_SERVICE_URL: '127.0.0.1:1'
       SERVER_NAME: 'localhost'
     network_mode: 'host'
   authentication:
     image: '${AUTHENTICATION_IMAGE}'
     environment:
       <<: *common-config
+      ADMIN_USERNAME: 'admin'
+      ADMIN_PASSWORD: 'admin'
       JWT_SECRET: 'secret'
     network_mode: 'host'
   authorization:

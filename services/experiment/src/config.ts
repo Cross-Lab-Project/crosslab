@@ -12,6 +12,7 @@ export const config = {
   PORT: parseInt(process.env.PORT ?? '3002'),
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   BASE_URL: process.env.BASE_URL ?? 'http://localhost',
+  DEVICE_SERVICE_URL: process.env.DEVICE_SERVICE_URL ?? 'http://localhost:3001',
   JWT_SECRET: 'secret',
   orm: {
     ...basicOrmConfig,

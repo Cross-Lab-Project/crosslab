@@ -108,7 +108,7 @@ describe('Cyclic Device Groups', function () {
     );
   });
 
-  it('should resolve cyclic device groups correctly (flat_group: true)', async function () {
+  xit('should resolve cyclic device groups correctly (flat_group: true)', async function () {
     this.timeout(15000);
 
     const device1 = await this.client.getDevice(deviceGroup1.url, {

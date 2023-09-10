@@ -12,12 +12,12 @@ import { deviceUrlFromId } from '../../../methods/urlFromId.js';
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
-  authorization,
+  req,
   parameters,
 ) => {
   logger.log('info', 'getDevicesByDeviceId called');
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'view',
     `device:${deviceUrlFromId(parameters.device_id)}`,
   );
@@ -30,9 +30,6 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 
   return {
     status: 200,
-    body: await repositories.device.format(deviceModel, {
-      flatGroup: parameters.flat_group,
-      executeFor: authorization.user,
-    }),
+    body: await repositories.device.format(deviceModel),
   };
 };

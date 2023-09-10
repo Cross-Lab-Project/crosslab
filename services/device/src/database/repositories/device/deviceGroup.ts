@@ -1,14 +1,11 @@
-import { AbstractRepository, logger } from '@crosslab/service-common';
+import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
 import {
-  Device,
   DeviceGroup,
   DeviceGroupUpdate,
   DeviceReference,
 } from '../../../generated/types.js';
-import { apiClient } from '../../../globals.js';
-import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 import { DeviceGroupModel } from '../../model.js';
 import { DeviceOverviewRepository } from './deviceOverview.js';
 
@@ -51,21 +48,10 @@ export class DeviceGroupRepository extends AbstractRepository<
     if (data.devices) model.devices = data.devices;
   }
 
-  async format(
-    model: DeviceGroupModel,
-    options?: { flatGroup?: boolean; executeFor?: string },
-  ): Promise<DeviceGroup<'response'>> {
+  async format(model: DeviceGroupModel): Promise<DeviceGroup<'response'>> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-    const devices: DeviceReference[] = options?.flatGroup
-      ? await this.resolveDeviceGroup(
-          { ...model, url: deviceUrlFromId(model.uuid) },
-          [],
-          {
-            executeFor: options.executeFor,
-          },
-        )
-      : model.devices;
+    const devices: DeviceReference[] = model.devices;
 
     return {
       ...(await this.dependencies.deviceOverview.format(model)),
@@ -75,48 +61,5 @@ export class DeviceGroupRepository extends AbstractRepository<
           array.findIndex(device => device.url === value.url) === index,
       ),
     };
-  }
-
-  private async resolveDeviceGroup(
-    deviceGroup: DeviceGroup,
-    alreadyResolved: string[],
-    options?: { executeFor?: string },
-  ): Promise<Device[]> {
-    alreadyResolved.push(deviceGroup.url);
-    const devices: Device[] = [];
-
-    for (const deviceReference of deviceGroup.devices) {
-      const device = await this.resolveDeviceReference(deviceReference, options);
-
-      if (!device) continue;
-
-      if (device.type === 'group') {
-        if (!alreadyResolved.includes(device.url))
-          devices.push(...(await this.resolveDeviceGroup(device, alreadyResolved)));
-      } else {
-        devices.push(device);
-      }
-    }
-
-    return devices;
-  }
-
-  private async resolveDeviceReference(
-    deviceReference: DeviceReference,
-    options?: { executeFor?: string },
-  ): Promise<Device | undefined> {
-    try {
-      return await apiClient.getDevice(deviceReference.url, {
-        flat_group: false,
-        headers: options?.executeFor
-          ? [['X-Request-Authentication', options?.executeFor]]
-          : [],
-      });
-    } catch (error) {
-      logger.log('error', 'An error occured while trying to resolve a device reference', {
-        data: { error },
-      });
-    }
-    return undefined;
   }
 }

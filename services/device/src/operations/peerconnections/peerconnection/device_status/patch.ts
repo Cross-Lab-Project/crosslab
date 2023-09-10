@@ -16,7 +16,7 @@ import {
  * @param parameters The parameters of the request.
  */
 export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnectionsByPeerconnectionIdDeviceStatusSignature =
-  async (authorization, parameters, body) => {
+  async (req, parameters, body) => {
     logger.log('info', 'patchPeerconnectionsByPeerconnectionIdDeviceStatus called', {
       data: {
         peerconnection: parameters.peerconnection_id,
@@ -25,7 +25,7 @@ export const patchPeerconnectionsByPeerconnectionIdDeviceStatus: patchPeerconnec
       },
     });
 
-    await authorization.check_authorization_or_fail('update', `device_status`); // TODO
+    await req.authorization.check_authorization_or_fail('update', `device_status`); // TODO
 
     const release = await mutexManager.acquire(parameters.peerconnection_id);
 

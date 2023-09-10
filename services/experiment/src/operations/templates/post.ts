@@ -10,15 +10,15 @@ import { templateUrlFromId } from '../../methods/url.js';
  * @param authorization The authorization helper object for the request.
  * @param body The body of the request.
  */
-export const postTemplates: postTemplatesSignature = async (authorization, body) => {
+export const postTemplates: postTemplatesSignature = async (req, body) => {
   logger.log('info', 'Handling POST request on endpoint /templates');
 
-  await authorization.check_authorization_or_fail('create', 'template');
+  await req.authorization.check_authorization_or_fail('create', 'template');
 
   const templateModel = await repositories.template.create(body);
 
-  await authorization.relate(
-    authorization.user,
+  await req.authorization.relate(
+    req.authorization.user,
     'owner',
     `template:${templateUrlFromId(templateModel.uuid)}`,
   );

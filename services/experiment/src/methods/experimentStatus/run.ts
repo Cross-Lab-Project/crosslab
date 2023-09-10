@@ -1,11 +1,11 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
+import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { InvalidStateError } from '../../types/errors.js';
 import { ResolvedDevice } from '../../types/types.js';
-import { apiClient } from '../api.js';
 import { experimentUrlFromId } from '../url.js';
 import { bookExperiment } from './book.js';
 import { setupExperiment } from './setup/index.js';
@@ -15,7 +15,7 @@ import { setupExperiment } from './setup/index.js';
  * @param experimentModel The experiment to be run.
  * @throws {InvalidStateError} Thrown when the status of the experiment is already "finished".
  */
-export async function runExperiment(experimentModel: ExperimentModel) {
+export async function runExperiment(experimentModel: ExperimentModel, clients: Clients) {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to run experiment', { data: { experimentUrl } });
 
@@ -36,7 +36,7 @@ export async function runExperiment(experimentModel: ExperimentModel) {
 
   const resolvedDevices: ResolvedDevice[] = await Promise.all(
     experimentModel.devices.map(async device => {
-      const resolvedDevice = await apiClient.getDevice(device.url);
+      const resolvedDevice = await clients.device.getDevice(device.url);
       return {
         ...resolvedDevice,
         instanceUrl: device.instance?.url,
@@ -45,7 +45,7 @@ export async function runExperiment(experimentModel: ExperimentModel) {
     }),
   );
 
-  await setupExperiment(experimentModel, resolvedDevices);
+  await setupExperiment(experimentModel, resolvedDevices, clients);
 
   // save experiment
   await repositories.experiment.save(experimentModel);

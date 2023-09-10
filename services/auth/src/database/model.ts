@@ -21,6 +21,9 @@ export class UserModel {
   @Column()
   type!: 'local' | 'tui';
 
+  @Column()
+  isAdmin!: boolean;
+
   @Column({ nullable: true })
   password?: string;
 

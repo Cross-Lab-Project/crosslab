@@ -37,7 +37,7 @@ scope_allow if {
 }
 
 scope_allow if {
-    input.action in ["edit", "delete"]
+    input.action in ["edit", "delete", "create"]
     "write" in scopes
 }
 

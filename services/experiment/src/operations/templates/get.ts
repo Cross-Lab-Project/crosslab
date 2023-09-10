@@ -8,10 +8,10 @@ import { getTemplatesSignature } from '../../generated/signatures.js';
  * /templates endpoint.
  * @param authorization The authorization helper object for the request.
  */
-export const getTemplates: getTemplatesSignature = async authorization => {
+export const getTemplates: getTemplatesSignature = async req => {
   logger.log('info', 'Handling GET request on endpoint /experiments');
 
-  await authorization.check_authorization_or_fail('view', 'template');
+  await req.authorization.check_authorization_or_fail('view', 'template');
 
   const templateModels = await repositories.template.find();
 

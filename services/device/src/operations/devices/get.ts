@@ -9,10 +9,10 @@ import { deviceUrlFromId } from '../../methods/urlFromId.js';
  * /devices endpoint.
  * @param authorization The authorization helper object for the request.
  */
-export const getDevices: getDevicesSignature = async authorization => {
+export const getDevices: getDevicesSignature = async req => {
   logger.log('info', 'getDevices called');
 
-  await authorization.check_authorization_or_fail('view', 'device');
+  await req.authorization.check_authorization_or_fail('view', 'device');
 
   const deviceModels = await repositories.device.find();
 
@@ -20,7 +20,7 @@ export const getDevices: getDevicesSignature = async authorization => {
 
   const visibility = await Promise.all(
     deviceModels.map(device =>
-      authorization.check_authorization('view', `device:${deviceUrlFromId(device.uuid)}`),
+      req.authorization.check_authorization('view', `device:${deviceUrlFromId(device.uuid)}`),
     ),
   );
 

@@ -15,11 +15,11 @@ import { experimentUrlFromId } from '../../methods/url.js';
  * @param authorization The authorization helper object for the request.
  * @param body The body of the request.
  */
-export const postExperiments: postExperimentsSignature = async (authorization, body) => {
+export const postExperiments: postExperimentsSignature = async (req, body) => {
   logger.log('info', 'Handling POST request on endpoint /experiments');
 
   // NOTE: create action currently does not exist
-  await authorization.check_authorization_or_fail('create', 'experiment');
+  await req.authorization.check_authorization_or_fail('create', 'experiment');
 
   if (body.template === undefined) {
     body.template;
@@ -35,11 +35,11 @@ export const postExperiments: postExperimentsSignature = async (authorization, b
   await repositories.experiment.save(experimentModel);
 
   if (requestedStatus === 'booked') await bookExperiment(experimentModel);
-  if (requestedStatus === 'running') await runExperiment(experimentModel);
-  if (requestedStatus === 'finished') await finishExperiment(experimentModel);
+  if (requestedStatus === 'running') await runExperiment(experimentModel, req.clients);
+  if (requestedStatus === 'finished') await finishExperiment(experimentModel, req.clients);
 
-  await authorization.relate(
-    authorization.user,
+  await req.authorization.relate(
+    req.authorization.user,
     'owner',
     `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
   );

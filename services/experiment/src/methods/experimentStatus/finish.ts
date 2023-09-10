@@ -1,17 +1,20 @@
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 
+import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { validateExperimentStatus } from '../../types/typeguards.js';
-import { apiClient } from '../api.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
  * This function attempts to finish an experiment.
  * @param experimentModel The experiment to be finished.
  */
-export async function finishExperiment(experimentModel: ExperimentModel) {
+export async function finishExperiment(
+  experimentModel: ExperimentModel,
+  clients: Clients,
+) {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to finish experiment', { data: { experimentUrl } });
 
@@ -39,7 +42,7 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
 
       // await apiClient.unlockBooking(experimentModel.bookingID)
       // await apiClient.deleteBooking(experimentModel.bookingID)
-      await deleteInstances(experimentModel);
+      await deleteInstances(experimentModel, clients);
 
       break;
     }
@@ -48,7 +51,7 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
 
       // await apiClient.unlockBooking(experimentModel.bookingID)
       // await apiClient.deleteBooking(experimentModel.bookingID)
-      await deleteInstances(experimentModel);
+      await deleteInstances(experimentModel, clients);
 
       break;
     }
@@ -57,8 +60,8 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
 
       // await apiClient.unlockBooking(experimentModel.bookingID)
       // await apiClient.deleteBooking(experimentModel.bookingID)
-      await deletePeerconnections(experimentModel);
-      await deleteInstances(experimentModel);
+      await deletePeerconnections(experimentModel, clients);
+      await deleteInstances(experimentModel, clients);
 
       break;
     }
@@ -67,8 +70,8 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
 
       // await apiClient.unlockBooking(experimentModel.bookingID)
       // await apiClient.deleteBooking(experimentModel.bookingID)
-      await deletePeerconnections(experimentModel);
-      await deleteInstances(experimentModel);
+      await deletePeerconnections(experimentModel, clients);
+      await deleteInstances(experimentModel, clients);
 
       break;
     }
@@ -82,20 +85,20 @@ export async function finishExperiment(experimentModel: ExperimentModel) {
   logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
 }
 
-async function deleteInstances(experiment: ExperimentModel) {
+async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
   if (experiment.devices) {
     for (const device of experiment.devices) {
       if (device.instance?.url) {
-        await apiClient.deleteDevice(device.instance.url);
+        await clients.device.deleteDevice(device.instance.url);
       }
     }
   }
 }
 
-async function deletePeerconnections(experiment: ExperimentModel) {
+async function deletePeerconnections(experiment: ExperimentModel, clients: Clients) {
   if (experiment.connections) {
     for (const peerconnection of experiment.connections) {
-      await apiClient.deletePeerconnection(peerconnection.url);
+      await clients.device.deletePeerconnection(peerconnection.url);
     }
   }
 }

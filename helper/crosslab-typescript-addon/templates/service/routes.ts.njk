@@ -93,7 +93,7 @@ export default function router(): express.Router {
             }
 
             const result = await operations.{{ operation.name }}(
-                { ...req.authorization, user: req.get("X-Request-Authentication") ?? "user:anonymus" },
+                req,
                 {{- "parameters" if operation.parameters -}}
                 {{- ", " if (operation.parameters and (operation.requestBody or operation.isProxyRequest)) -}}
                 {{- "body" if (operation.requestBody or operation.isProxyRequest) -}}

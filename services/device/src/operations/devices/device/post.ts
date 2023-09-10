@@ -14,12 +14,12 @@ import { deviceUrlFromId } from '../../../methods/urlFromId.js';
  * @throws {ImpossibleOperationError} Thrown if device is not instantiable.
  */
 export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
-  authorization,
+  req,
   parameters,
 ) => {
   logger.log('info', 'postDevicesByDeviceId called');
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'instantiate',
     `device:${deviceUrlFromId(parameters.device_id)}`,
   );

@@ -22,7 +22,7 @@
  * Function signature for handling a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export type {{ operation.name }}Signature = (
-        authorization: BoundAuthorizationFunctions & { user: string },
+        req: express.Request,
         {%- if operation.parameters | length > 0 -%}
             parameters: {{ operation.name }}ParametersType
         {%- endif -%}
@@ -158,7 +158,6 @@ import {
     {{- "\n\tNumericRange," if signatures | includes("NumericRange<") }}
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
 } from "./types.js"
-
-import { BoundAuthorizationFunctions } from '@crosslab/service-common/authorization';
+import express from "express"
 
 {{ signatures }}

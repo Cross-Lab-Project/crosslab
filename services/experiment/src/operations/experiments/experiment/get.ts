@@ -11,7 +11,7 @@ import { experimentUrlFromId } from '../../../methods/url.js';
  * @param parameters The parameters of the request.
  */
 export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature = async (
-  authorization,
+  req,
   parameters,
 ) => {
   logger.log(
@@ -19,7 +19,7 @@ export const getExperimentsByExperimentId: getExperimentsByExperimentIdSignature
     `Handling GET request on endpoint /experiments/${parameters.experiment_id}`,
   );
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'view',
     `experiment:${experimentUrlFromId(parameters.experiment_id)}`,
   );

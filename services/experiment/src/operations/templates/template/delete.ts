@@ -11,7 +11,7 @@ import { templateUrlFromId } from '../../../methods/url.js';
  * @param parameters The parameters of the request.
  */
 export const deleteTemplatesByTemplateId: deleteTemplatesByTemplateIdSignature = async (
-  authorization,
+  req,
   parameters,
 ) => {
   logger.log(
@@ -19,7 +19,7 @@ export const deleteTemplatesByTemplateId: deleteTemplatesByTemplateIdSignature =
     `Handling DELETE request on endpoint /templates/${parameters.template_id}`,
   );
 
-  await authorization.check_authorization_or_fail(
+  await req.authorization.check_authorization_or_fail(
     'delete',
     `template:${templateUrlFromId(parameters.template_id)}`,
   );
@@ -28,8 +28,8 @@ export const deleteTemplatesByTemplateId: deleteTemplatesByTemplateIdSignature =
     where: { uuid: parameters.template_id },
   });
 
-  await authorization.unrelate(
-    authorization.user,
+  await req.authorization.unrelate(
+    req.authorization.user,
     'owner',
     `template:${templateUrlFromId(templateModel.uuid)}`,
   );

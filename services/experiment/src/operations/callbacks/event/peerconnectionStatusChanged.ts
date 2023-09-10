@@ -1,10 +1,9 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { MissingPropertyError } from '@crosslab/service-common';
 
 import { repositories } from '../../../database/dataSource.js';
-import { apiClient } from '../../../methods/api.js';
 import { finishExperiment } from '../../../methods/experimentStatus/index.js';
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
+import { clients } from '../../../clients/index.js';
 
 /**
  * This function handles an incoming "peerconnection-status-changed" event callback.
@@ -13,7 +12,7 @@ import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
  * @returns The status code for the response to the incoming callback.
  */
 export async function handlePeerconnectionStatusChangedEventCallback(
-  callback: DeviceServiceTypes.PeerconnectionStatusChangedEventCallback,
+  callback: any,
 ): Promise<200 | 410> {
   if (!peerconnectionStatusChangedCallbacks.includes(callback.peerconnection.url)) {
     return 410; // TODO: find a solution for this problem (race condition)
@@ -51,7 +50,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
 
       let connected = true;
       for (const pc of experimentModel.connections) {
-        if ((await apiClient.getPeerconnection(pc.url)).status !== 'connected') {
+        if ((await clients.device.getPeerconnection(pc.url)).status !== 'connected') {
           connected = false;
         }
       }
@@ -65,7 +64,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
     case 'failed':
       // TODO: handle status failed
       // TODO: add more fine grained handling than simply finishing the experiment
-      await finishExperiment(experimentModel);
+      await finishExperiment(experimentModel, clients);
       break;
     case 'new':
       // TODO: handle status new

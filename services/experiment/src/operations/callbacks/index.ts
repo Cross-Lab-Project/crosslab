@@ -1,5 +1,4 @@
-import { DeviceServiceTypes } from '@cross-lab-project/api-client';
-import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
+import { InvalidValueError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 import * as express from 'express';
 
@@ -22,16 +21,8 @@ export function callbackHandling(app: express.Application) {
       const callback = req.body;
       logger.log('info', 'received a callback', { data: { callback } });
 
-      if (!DeviceServiceTypes.isCallback(callback))
-        throw new MalformedBodyError('Body of request is not a valid callback', 400);
-
       switch (callback.callbackType) {
         case 'event':
-          if (!DeviceServiceTypes.isEventCallback(callback))
-            throw new MalformedBodyError(
-              'Body of request is not a valid event callback',
-              400,
-            );
           return res.status(await handleEventCallback(callback)).send();
         default:
           throw new InvalidValueError(
