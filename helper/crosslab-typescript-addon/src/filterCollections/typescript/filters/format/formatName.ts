@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * formats the name of an object as follows:
@@ -8,23 +8,23 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @returns formatted name
  */
 export function formatName(name: string, capitalize = true) {
-    const split = name.split(/[ _-]/)
-    const result = split
-        .map((el) => {
-            if (el.length > 1) {
-                return el.charAt(0).toUpperCase() + el.slice(1)
-            } else {
-                return el.toUpperCase()
-            }
-        })
-        .join('')
+  const split = name.split(/[ _-]/);
+  const result = split
+    .map(el => {
+      if (el.length > 1) {
+        return el.charAt(0).toUpperCase() + el.slice(1);
+      } else {
+        return el.toUpperCase();
+      }
+    })
+    .join('');
 
-    if (!capitalize) return result.charAt(0).toLowerCase() + result.slice(1)
+  if (!capitalize) return result.charAt(0).toLowerCase() + result.slice(1);
 
-    return result
+  return result;
 }
 
 export const formatNameFilter: Filter = {
-    name: 'formatName',
-    function: formatName,
-}
+  name: 'formatName',
+  function: formatName,
+};

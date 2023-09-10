@@ -1,7 +1,7 @@
 import * as express from 'express';
 import expressWinston from 'express-winston';
 
-import {logger} from '../logger';
+import { logger } from '../logger.js';
 
 export function logHandling(app: express.Application) {
   app.use(
@@ -16,7 +16,8 @@ export function logHandling(app: express.Application) {
       requestFilter: (req, propName) => {
         if (propName === 'headers' && req.headers.authorization) {
           if ('authorization' in req.headers) req.headers.authorization = 'HIDDEN';
-          if ('x-request-authentication' in req.headers) req.headers['x-request-authentication'] = 'HIDDEN';
+          if ('x-request-authentication' in req.headers)
+            req.headers['x-request-authentication'] = 'HIDDEN';
         }
         return req[propName];
       },

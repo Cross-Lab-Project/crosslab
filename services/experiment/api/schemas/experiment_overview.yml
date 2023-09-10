@@ -26,3 +26,6 @@ properties:
           - booked
           - running
           - finished
+required:
+  - url
+  - status

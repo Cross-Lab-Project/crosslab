@@ -1,57 +1,61 @@
 {
-    "name": "@crosslab/service-federation",
-    "dockerName": "federation-service",
-    "bin": {
-        "crosslab-federation-service": "./app/index.js"
-    },
-    "files": [
-        "app"
-    ],
-    "scripts": {
-        "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
-        "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
-        "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
-        "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
-        "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
-        "build:generate": "npm-run-all build:generate:*",
-        "build:compile": "tsc",
-        "build:add-shebang": "bash scripts/add-shebang.sh",
-        "build": "npm-run-all build:*",
-        "start": "node app/index.js",
-        "predev": "bash scripts/init-db.sh federation_service service service",
-        "dev": "env-cmd -e development npx nodemon src/index.ts",
-        "format": "npx prettier src --write",
-        "lint": "eslint ."
-    },
-    "author": "Johannes Nau",
-    "license": "UNLICENSED",
-    "devDependencies": {
-        "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
-        "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
-        "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-        "@types/body-parser": "^1.19.2",
-        "@types/express": "^4.17.13",
-        "@types/node": "^17.0.41",
-        "@types/node-fetch": "^2.6.1",
-        "@typescript-eslint/eslint-plugin": "^5.51.0",
-        "@typescript-eslint/parser": "^5.51.0",
-        "env-cmd": "^10.1.0",
-        "eslint": "^8.34.0",
-        "nodemon": "^2.0.19",
-        "npm-run-all": "^4.1.5",
-        "prettier": "^2.7.1",
-        "ts-node": "^10.9.1",
-        "typescript": "^4.7.3"
-    },
-    "dependencies": {
-        "@crosslab/service-common": "file:../common",
-        "ajv-formats": "^2.1.1",
-        "body-parser": "^1.20.0",
-        "express": "^4.18.1",
-        "jose": "^4.10.0",
-        "mysql": "^2.18.1",
-        "node-fetch": "^2.6.7",
-        "sqlite3": "^5.1.6",
-        "typeorm": "^0.3.15"
-    }
+  "name": "@crosslab/service-federation",
+  "dockerName": "federation-service",
+  "bin": {
+    "crosslab-federation-service": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
+  "type": "module",
+  "scripts": {
+    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
+    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
+    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
+    "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
+    "build:generate": "npm-run-all build:generate:*",
+    "build:compile": "tsc && cp src/generated/*.cjs app/generated",
+    "build:add-shebang": "bash scripts/add-shebang.sh",
+    "build": "npm-run-all build:*",
+    "start": "node app/index.js",
+    "predev": "bash scripts/init-db.sh federation_service service service",
+    "dev": "env-cmd -e development npx tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9000 ./app/index.js'",
+    "format": "prettier . --write",
+    "lint": "eslint ."
+  },
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
+    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/body-parser": "^1.19.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.13",
+    "@types/node": "^20.5.9",
+    "@types/node-fetch": "^2.6.1",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "env-cmd": "^10.1.0",
+    "eslint": "^8.34.0",
+    "nodemon": "^3.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@crosslab/service-common": "file:../common",
+    "ajv-formats": "^2.1.1",
+    "body-parser": "^1.20.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.1",
+    "jose": "^4.10.0",
+    "mysql": "^2.18.1",
+    "node-fetch": "^3.3.2",
+    "sqlite3": "^5.1.6",
+    "tsc-watch": "^6.0.4",
+    "typeorm": "^0.3.17"
+  }
 }

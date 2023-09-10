@@ -1,108 +1,102 @@
-import { AppDataSource, repositories } from '../../../src/database/dataSource'
-import { PeerconnectionModel } from '../../../src/database/model'
-import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection'
-import { Peerconnection } from '../../../src/generated/types'
-import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId'
-import { PeerconnectionName } from '../../data/peerconnections/index.spec'
-import { initTestDatabase } from './index.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
-import assert from 'assert'
-import { FindOptionsWhere } from 'typeorm'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
+import assert from 'assert';
+import { FindOptionsWhere } from 'typeorm';
+
+import { AppDataSource, repositories } from '../../../src/database/dataSource';
+import { PeerconnectionModel } from '../../../src/database/model';
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection';
+import { Peerconnection } from '../../../src/generated/types';
+import { peerconnectionUrlFromId } from '../../../src/methods/urlFromId';
+import { PeerconnectionName } from '../../data/peerconnections/index.spec';
+import { initTestDatabase } from './index.spec.js';
 
 class PeerconnectionRepositoryTestSuite extends AbstractRepositoryTestSuite<
-    PeerconnectionName,
-    PeerconnectionRepository
+  PeerconnectionName,
+  PeerconnectionRepository
 > {
-    protected name = 'peerconnections' as const
-    protected repository = repositories.peerconnection
-    protected getEntityData = async () => (await initTestDatabase()).peerconnections
-    protected RepositoryClass = PeerconnectionRepository
+  protected name = 'peerconnections' as const;
+  protected repository = repositories.peerconnection;
+  protected getEntityData = async () => (await initTestDatabase()).peerconnections;
+  protected RepositoryClass = PeerconnectionRepository;
 
-    constructor() {
-        super(AppDataSource)
+  constructor() {
+    super(AppDataSource);
+  }
+
+  validateCreate(model: PeerconnectionModel, data?: Peerconnection<'request'>): boolean {
+    if (!data) return true;
+
+    assert(this.validateWrite(model, data));
+
+    return true;
+  }
+
+  validateWrite(model: PeerconnectionModel, data: Peerconnection<'request'>): boolean {
+    if (data.devices) {
+      assert(
+        JSON.stringify(model.deviceA) ===
+          JSON.stringify({ ...data.devices[0], status: 'new' }),
+      );
+      assert(
+        JSON.stringify(model.deviceB) ===
+          JSON.stringify({ ...data.devices[1], status: 'new' }),
+      );
     }
+    if (data.type) assert(model.type === data.type);
 
-    validateCreate(
-        model: PeerconnectionModel,
-        data?: Peerconnection<'request'>
-    ): boolean {
-        if (!data) return true
+    return true;
+  }
 
-        assert(this.validateWrite(model, data))
+  validateFormat(model: PeerconnectionModel, data: Peerconnection<'response'>): boolean {
+    assert(
+      JSON.stringify(data.devices) === JSON.stringify([model.deviceA, model.deviceB]),
+    );
+    assert(data.status === model.status);
+    assert(data.type === model.type);
+    assert(data.url === peerconnectionUrlFromId(model.uuid));
 
-        return true
-    }
+    return true;
+  }
 
-    validateWrite(model: PeerconnectionModel, data: Peerconnection<'request'>): boolean {
-        if (data.devices) {
-            assert(
-                JSON.stringify(model.deviceA) ===
-                    JSON.stringify({ ...data.devices[0], status: 'new' })
-            )
-            assert(
-                JSON.stringify(model.deviceB) ===
-                    JSON.stringify({ ...data.devices[1], status: 'new' })
-            )
-        }
-        if (data.type) assert(model.type === data.type)
+  compareModels(
+    firstModel: PeerconnectionModel,
+    secondModel: PeerconnectionModel,
+    complete?: boolean,
+  ): boolean {
+    const sameId = firstModel.uuid === secondModel.uuid;
 
-        return true
-    }
+    if (!complete) return sameId;
 
-    validateFormat(
-        model: PeerconnectionModel,
-        data: Peerconnection<'response'>
-    ): boolean {
-        assert(
-            JSON.stringify(data.devices) ===
-                JSON.stringify([model.deviceA, model.deviceB])
-        )
-        assert(data.status === model.status)
-        assert(data.type === model.type)
-        assert(data.url === peerconnectionUrlFromId(model.uuid))
+    assert(firstModel.deletedAt === secondModel.deletedAt);
+    assert(JSON.stringify(firstModel.deviceA) === JSON.stringify(secondModel.deviceA));
+    assert(JSON.stringify(firstModel.deviceB) === JSON.stringify(secondModel.deviceB));
+    assert(firstModel.status === secondModel.status);
+    assert(firstModel.type === secondModel.type);
 
-        return true
-    }
+    return true;
+  }
 
-    compareModels(
-        firstModel: PeerconnectionModel,
-        secondModel: PeerconnectionModel,
-        complete?: boolean
-    ): boolean {
-        const sameId = firstModel.uuid === secondModel.uuid
+  compareFormatted(
+    first: Peerconnection<'response'>,
+    second: Peerconnection<'response'>,
+  ): boolean {
+    let isEqual = true;
 
-        if (!complete) return sameId
+    isEqual &&= JSON.stringify(first.devices) === JSON.stringify(second.devices);
+    isEqual &&= first.status === second.status;
+    isEqual &&= first.type === second.type;
+    isEqual &&= first.url === second.url;
 
-        assert(firstModel.deletedAt === secondModel.deletedAt)
-        assert(JSON.stringify(firstModel.deviceA) === JSON.stringify(secondModel.deviceA))
-        assert(JSON.stringify(firstModel.deviceB) === JSON.stringify(secondModel.deviceB))
-        assert(firstModel.status === secondModel.status)
-        assert(firstModel.type === secondModel.type)
+    return isEqual;
+  }
 
-        return true
-    }
-
-    compareFormatted(
-        first: Peerconnection<'response'>,
-        second: Peerconnection<'response'>
-    ): boolean {
-        let isEqual = true
-
-        isEqual &&= JSON.stringify(first.devices) === JSON.stringify(second.devices)
-        isEqual &&= first.status === second.status
-        isEqual &&= first.type === second.type
-        isEqual &&= first.url === second.url
-
-        return isEqual
-    }
-
-    getFindOptionsWhere(
-        model?: PeerconnectionModel
-    ): FindOptionsWhere<PeerconnectionModel> {
-        return {
-            uuid: model ? model.uuid : 'non-existent',
-        }
-    }
+  getFindOptionsWhere(
+    model?: PeerconnectionModel,
+  ): FindOptionsWhere<PeerconnectionModel> {
+    return {
+      uuid: model ? model.uuid : 'non-existent',
+    };
+  }
 }
 
-export const peerconnectionRepositoryTestSuite = new PeerconnectionRepositoryTestSuite()
+export const peerconnectionRepositoryTestSuite = new PeerconnectionRepositoryTestSuite();

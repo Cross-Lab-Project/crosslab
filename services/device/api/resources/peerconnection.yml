@@ -6,8 +6,8 @@ get:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:read
+        - peerconnection
+        - peerconnection:read
   responses:
     200:
       description: The JSON Representation of the device peer connection.
@@ -33,8 +33,8 @@ delete:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:delete
+        - peerconnection
+        - peerconnection:delete
   responses:
     202:
       description: The peerconnection will be deleted as soon as it's closed.

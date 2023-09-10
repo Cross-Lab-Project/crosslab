@@ -14,7 +14,7 @@ get:
       description: The list of all devices.
       content:
         application/json:
-          $ref: "../content/device_list.yml"
+          $ref: '../content/device_list.yml'
     400:
       description: Bad Request.
     401:
@@ -36,19 +36,19 @@ post:
         - device
         - device:create
   parameters:
-    - $ref: "../parameters/device_changed_url.yml"
+    - $ref: '../parameters/device_changed_url.yml'
   requestBody:
     description: The device to be created.
     required: true
     content:
       application/json:
-        $ref: "../content/device_init.yml"
+        $ref: '../content/device_init.yml'
   responses:
     201:
       description: The device was created. A JSON representation of the new device is returned.
       content:
         application/json:
-          $ref: "../content/device_response.yml"
+          $ref: '../content/device_response.yml'
     400:
       description: Bad Request.
     401:
@@ -61,19 +61,19 @@ post:
       description: Server Error.
   callbacks:
     changed:
-      "{$request.query.changedUrl}":
+      '{$request.query.changedUrl}':
         post:
           security:
             - JWT:
-              - device
-              - device:write
-              - device:create
+                - device
+                - device:write
+                - device:create
           summary: Callback for the "device-changed" event
           requestBody:
             required: true
             content:
               application/json:
-                $ref: "../content/device_changed_event.yml"
+                $ref: '../content/device_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.

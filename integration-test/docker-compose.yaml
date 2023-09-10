@@ -1,0 +1,50 @@
+version: '3'
+
+x-config: &common-config
+  AUTHORIZATION_SERVER: 'http://127.0.0.1:3010'
+  AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:-TestPSK}'
+  LOGGING: '${LOGGING:-info}'
+  AUTH_SERVICE_URL: 'http://127.0.0.1:3000'
+  DEVICE_SERVICE_URL: 'http://127.0.0.1:3001'
+  EXPERIMENT_SERVICE_URL: 'http://127.0.0.1:3002'
+  FEDERATION_SERVICE_URL: 'http://127.0.0.1:3003'
+  BASE_URL: 'http://localhost'
+
+services:
+  # Services
+  gateway:
+    image: '${GATEWAY_IMAGE}'
+    environment:
+      <<: *common-config
+      SERVER_NAME: 'localhost'
+      AUTH_SERVICE_URL: '127.0.0.1:3000'
+      DEVICE_SERVICE_URL: '127.0.0.1:3001'
+      EXPERIMENT_SERVICE_URL: '127.0.0.1:3002'
+      FEDERATION_SERVICE_URL: '127.0.0.1:3003'
+    network_mode: 'host'
+  authentication:
+    image: '${AUTHENTICATION_IMAGE}'
+    environment:
+      <<: *common-config
+      ADMIN_USERNAME: 'admin'
+      ADMIN_PASSWORD: 'admin'
+      JWT_SECRET: 'secret'
+    network_mode: 'host'
+  authorization:
+    image: '${AUTHORIZATION_IMAGE}'
+    environment:
+      <<: *common-config
+      JWT_SECRET: 'secret'
+    network_mode: 'host'
+  device:
+    image: '${DEVICE_IMAGE}'
+    environment: *common-config
+    network_mode: 'host'
+  experiment:
+    image: '${EXPERIMENT_IMAGE}'
+    environment: *common-config
+    network_mode: 'host'
+  federation:
+    image: '${FEDERATION_IMAGE}'
+    environment: *common-config
+    network_mode: 'host'

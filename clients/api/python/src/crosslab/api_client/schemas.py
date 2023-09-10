@@ -32,12 +32,6 @@ class LogoutRequest(TypedDict):
 LogoutResponse: TypeAlias = None
 
 
-CreateDeviceAuthenticationTokenResponse201: TypeAlias = str
-
-
-CreateDeviceAuthenticationTokenResponse: TypeAlias = CreateDeviceAuthenticationTokenResponse201
-
-
 class ListUsersResponse200Items(TypedDict):
     """
     Properties:
@@ -109,11 +103,9 @@ GetUserResponse: TypeAlias = GetUserResponse200
 class UpdateUserRequest(TypedDict):
     """
     Properties:
-    - username
     - password
     """
-    username: NotRequired[str]
-    password: NotRequired[str]
+    password: str
 
 
 class UpdateUserResponse200(TypedDict):
@@ -136,172 +128,6 @@ UpdateUserResponse: TypeAlias = UpdateUserResponse200
 DeleteUserResponse: TypeAlias = None
 
 
-class GetRolesOfUserResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRolesOfUserResponse200: TypeAlias = List[GetRolesOfUserResponse200Items]
-
-
-GetRolesOfUserResponse: TypeAlias = GetRolesOfUserResponse200
-
-
-AddRolesToUserRequest: TypeAlias = List[str]
-
-
-AddRolesToUserResponse: TypeAlias = None
-
-
-RemoveRolesFromUserRequest: TypeAlias = List[str]
-
-
-RemoveRolesFromUserResponse: TypeAlias = None
-
-
-class ListRolesResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-ListRolesResponse200: TypeAlias = List[ListRolesResponse200Items]
-
-
-ListRolesResponse: TypeAlias = ListRolesResponse200
-
-
-class CreateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class CreateRoleResponse201(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-CreateRoleResponse: TypeAlias = CreateRoleResponse201
-
-
-class GetRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRoleResponse: TypeAlias = GetRoleResponse200
-
-
-class UpdateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class UpdateRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-UpdateRoleResponse: TypeAlias = UpdateRoleResponse200
-
-
-DeleteRoleResponse: TypeAlias = None
-
-
-class GetUsersWithRoleResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - username
-    - password
-    """
-    url: str
-    id: str
-    username: str
-    password: str
-
-
-GetUsersWithRoleResponse200: TypeAlias = List[GetUsersWithRoleResponse200Items]
-
-
-GetUsersWithRoleResponse: TypeAlias = GetUsersWithRoleResponse200
-
-
-AddUsersToRoleRequest: TypeAlias = List[str]
-
-
-AddUsersToRoleResponse: TypeAlias = None
-
-
-RemoveUsersFromRoleRequest: TypeAlias = List[str]
-
-
-RemoveUsersFromRoleResponse: TypeAlias = None
-
-
 class GetIdentityResponse200(TypedDict):
     """
     Properties:
@@ -322,11 +148,9 @@ GetIdentityResponse: TypeAlias = GetIdentityResponse200
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
-    - username
     - password
     """
-    username: NotRequired[str]
-    password: NotRequired[str]
+    password: str
 
 
 class UpdateIdentityResponse200(TypedDict):
@@ -346,31 +170,28 @@ class UpdateIdentityResponse200(TypedDict):
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
 
 
-class RegisterRequest(TypedDict):
+class CreateTokenRequestClaims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequest(TypedDict):
     """
     Properties:
-    - username: Username of the user.
-    - password: Password of the user.
+    - username: The username of the user.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
     """
-    username: str
-    password: str
+    username: NotRequired[str]
+    claims: NotRequired[CreateTokenRequestClaims]
 
 
-class RegisterResponse201(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - username
-    - password
-    """
-    url: str
-    id: str
-    username: str
-    password: str
+CreateTokenResponse201: TypeAlias = str
 
 
-RegisterResponse: TypeAlias = RegisterResponse201
+CreateTokenResponse: TypeAlias = CreateTokenResponse201
 
 
 class ScheduleRequestExperimentDevicesItems(TypedDict):
@@ -1817,8 +1638,8 @@ class ListExperimentsResponse200Items(TypedDict):
     - url: URL of the experiment
     - status
     """
-    url: NotRequired[str]
-    status: NotRequired[ListExperimentsResponse200ItemsStatus]
+    url: str
+    status: ListExperimentsResponse200ItemsStatus
 
 
 ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
@@ -1852,8 +1673,8 @@ class CreateExperimentRequestDevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class CreateExperimentRequestRolesItems(TypedDict):
@@ -1862,7 +1683,7 @@ class CreateExperimentRequestRolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -1917,10 +1738,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentRequestInstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -1938,14 +1761,14 @@ class CreateExperimentRequest(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentRequestStatus]
+    url: str
+    status: CreateExperimentRequestStatus
     bookingTime: NotRequired[CreateExperimentRequestBookingtime]
-    devices: NotRequired[List[CreateExperimentRequestDevicesItems]]
-    roles: NotRequired[List[CreateExperimentRequestRolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentRequestServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentRequestInstantiateddevicesItems]]
+    devices: List[CreateExperimentRequestDevicesItems]
+    roles: List[CreateExperimentRequestRolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentRequestServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentRequestInstantiateddevicesItems]
 
 
 CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -1973,8 +1796,8 @@ class CreateExperimentResponse201DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class CreateExperimentResponse201RolesItems(TypedDict):
@@ -1983,7 +1806,7 @@ class CreateExperimentResponse201RolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2038,10 +1861,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse201InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2059,14 +1884,14 @@ class CreateExperimentResponse201(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentResponse201Status]
+    url: str
+    status: CreateExperimentResponse201Status
     bookingTime: NotRequired[CreateExperimentResponse201Bookingtime]
-    devices: NotRequired[List[CreateExperimentResponse201DevicesItems]]
-    roles: NotRequired[List[CreateExperimentResponse201RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentResponse201InstantiateddevicesItems]]
+    devices: List[CreateExperimentResponse201DevicesItems]
+    roles: List[CreateExperimentResponse201RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentResponse201ServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentResponse201InstantiateddevicesItems]
 
 
 CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2094,8 +1919,8 @@ class CreateExperimentResponse202DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class CreateExperimentResponse202RolesItems(TypedDict):
@@ -2104,7 +1929,7 @@ class CreateExperimentResponse202RolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2159,10 +1984,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2180,14 +2007,14 @@ class CreateExperimentResponse202(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentResponse202Status]
+    url: str
+    status: CreateExperimentResponse202Status
     bookingTime: NotRequired[CreateExperimentResponse202Bookingtime]
-    devices: NotRequired[List[CreateExperimentResponse202DevicesItems]]
-    roles: NotRequired[List[CreateExperimentResponse202RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentResponse202InstantiateddevicesItems]]
+    devices: List[CreateExperimentResponse202DevicesItems]
+    roles: List[CreateExperimentResponse202RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentResponse202ServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentResponse202InstantiateddevicesItems]
 
 
 CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
@@ -2218,8 +2045,8 @@ class GetExperimentResponse200DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class GetExperimentResponse200RolesItems(TypedDict):
@@ -2228,7 +2055,7 @@ class GetExperimentResponse200RolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2283,10 +2110,12 @@ This configuration object will be merged with the participant configuration to b
 class GetExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2304,14 +2133,14 @@ class GetExperimentResponse200(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[GetExperimentResponse200Status]
+    url: str
+    status: GetExperimentResponse200Status
     bookingTime: NotRequired[GetExperimentResponse200Bookingtime]
-    devices: NotRequired[List[GetExperimentResponse200DevicesItems]]
-    roles: NotRequired[List[GetExperimentResponse200RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[GetExperimentResponse200InstantiateddevicesItems]]
+    devices: List[GetExperimentResponse200DevicesItems]
+    roles: List[GetExperimentResponse200RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[GetExperimentResponse200ServiceconfigurationsItems]
+    instantiatedDevices: List[GetExperimentResponse200InstantiateddevicesItems]
 
 
 GetExperimentResponse: TypeAlias = GetExperimentResponse200
@@ -2342,8 +2171,8 @@ class UpdateExperimentRequestDevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class UpdateExperimentRequestRolesItems(TypedDict):
@@ -2352,7 +2181,7 @@ class UpdateExperimentRequestRolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2404,38 +2233,20 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
-class UpdateExperimentRequestInstantiateddevicesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - token
-    - instanceOf
-    """
-    url: str
-    token: str
-    instanceOf: str
-
-
 class UpdateExperimentRequest(TypedDict):
     """
     Properties:
-    - url: URL of the experiment
     - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
-    - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
-    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
     status: NotRequired[UpdateExperimentRequestStatus]
     bookingTime: NotRequired[UpdateExperimentRequestBookingtime]
     devices: NotRequired[List[UpdateExperimentRequestDevicesItems]]
     roles: NotRequired[List[UpdateExperimentRequestRolesItems]]
-    connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentRequestInstantiateddevicesItems]]
 
 
 UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2463,8 +2274,8 @@ class UpdateExperimentResponse200DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class UpdateExperimentResponse200RolesItems(TypedDict):
@@ -2473,7 +2284,7 @@ class UpdateExperimentResponse200RolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2528,10 +2339,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2549,14 +2362,14 @@ class UpdateExperimentResponse200(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[UpdateExperimentResponse200Status]
+    url: str
+    status: UpdateExperimentResponse200Status
     bookingTime: NotRequired[UpdateExperimentResponse200Bookingtime]
-    devices: NotRequired[List[UpdateExperimentResponse200DevicesItems]]
-    roles: NotRequired[List[UpdateExperimentResponse200RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentResponse200InstantiateddevicesItems]]
+    devices: List[UpdateExperimentResponse200DevicesItems]
+    roles: List[UpdateExperimentResponse200RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[UpdateExperimentResponse200ServiceconfigurationsItems]
+    instantiatedDevices: List[UpdateExperimentResponse200InstantiateddevicesItems]
 
 
 UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2584,8 +2397,8 @@ class UpdateExperimentResponse202DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
 
 
 class UpdateExperimentResponse202RolesItems(TypedDict):
@@ -2594,7 +2407,7 @@ class UpdateExperimentResponse202RolesItems(TypedDict):
     - name: Name for an experiment role.
     - description
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
 
 
@@ -2649,10 +2462,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2670,20 +2485,706 @@ class UpdateExperimentResponse202(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[UpdateExperimentResponse202Status]
+    url: str
+    status: UpdateExperimentResponse202Status
     bookingTime: NotRequired[UpdateExperimentResponse202Bookingtime]
-    devices: NotRequired[List[UpdateExperimentResponse202DevicesItems]]
-    roles: NotRequired[List[UpdateExperimentResponse202RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentResponse202InstantiateddevicesItems]]
+    devices: List[UpdateExperimentResponse202DevicesItems]
+    roles: List[UpdateExperimentResponse202RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[UpdateExperimentResponse202ServiceconfigurationsItems]
+    instantiatedDevices: List[UpdateExperimentResponse202InstantiateddevicesItems]
 
 
 UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateExperimentResponse202]
 
 
 DeleteExperimentResponse: TypeAlias = None
+
+
+class ListTemplateResponse200Items(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+
+
+ListTemplateResponse200: TypeAlias = List[ListTemplateResponse200Items]
+
+
+ListTemplateResponse: TypeAlias = ListTemplateResponse200
+
+
+class CreateTemplateRequestConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateRequestConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateRequestConfiguration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateRequestConfigurationDevicesItems]
+    roles: List[CreateTemplateRequestConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateRequestConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateRequest(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateRequestConfiguration
+
+
+class CreateTemplateResponse201ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateResponse201ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateResponse201Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateResponse201ConfigurationDevicesItems]
+    roles: List[CreateTemplateResponse201ConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateResponse201ConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateResponse201(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateResponse201Configuration
+
+
+class CreateTemplateResponse202ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateResponse202ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateResponse202Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateResponse202ConfigurationDevicesItems]
+    roles: List[CreateTemplateResponse202ConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateResponse202ConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateResponse202(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateResponse202Configuration
+
+
+CreateTemplateResponse: TypeAlias = Union[CreateTemplateResponse201, CreateTemplateResponse202]
+
+
+class GetTemplateResponse200ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class GetTemplateResponse200ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class GetTemplateResponse200Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[GetTemplateResponse200ConfigurationDevicesItems]
+    roles: List[GetTemplateResponse200ConfigurationRolesItems]
+    serviceConfigurations: List[GetTemplateResponse200ConfigurationServiceconfigurationsItems]
+
+
+class GetTemplateResponse200(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: GetTemplateResponse200Configuration
+
+
+GetTemplateResponse: TypeAlias = GetTemplateResponse200
+
+
+class UpdateTemplateRequestConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateRequestConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateRequestConfiguration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: NotRequired[List[UpdateTemplateRequestConfigurationDevicesItems]]
+    roles: NotRequired[List[UpdateTemplateRequestConfigurationRolesItems]]
+    serviceConfigurations: NotRequired[List[UpdateTemplateRequestConfigurationServiceconfigurationsItems]]
+
+
+class UpdateTemplateRequest(TypedDict):
+    """
+    Properties:
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    name: NotRequired[str]
+    description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfiguration]
+
+
+class UpdateTemplateResponse200ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateResponse200ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateResponse200Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[UpdateTemplateResponse200ConfigurationDevicesItems]
+    roles: List[UpdateTemplateResponse200ConfigurationRolesItems]
+    serviceConfigurations: List[UpdateTemplateResponse200ConfigurationServiceconfigurationsItems]
+
+
+class UpdateTemplateResponse200(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: UpdateTemplateResponse200Configuration
+
+
+class UpdateTemplateResponse202ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateResponse202ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    """
+    name: str
+    description: NotRequired[str]
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateResponse202Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[UpdateTemplateResponse202ConfigurationDevicesItems]
+    roles: List[UpdateTemplateResponse202ConfigurationRolesItems]
+    serviceConfigurations: List[UpdateTemplateResponse202ConfigurationServiceconfigurationsItems]
+
+
+class UpdateTemplateResponse202(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: UpdateTemplateResponse202Configuration
+
+
+UpdateTemplateResponse: TypeAlias = Union[UpdateTemplateResponse200, UpdateTemplateResponse202]
+
+
+DeleteTemplateResponse: TypeAlias = None
 
 
 class ListInstitutionsResponse200Items(TypedDict):

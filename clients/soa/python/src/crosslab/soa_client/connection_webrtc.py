@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Literal, cast
 
 from aiortc import (  # type: ignore
     RTCConfiguration,
+    RTCIceServer,
     RTCPeerConnection,
     RTCSessionDescription,
-    RTCIceServer,
 )
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
@@ -39,12 +39,18 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         config = RTCConfiguration(
             [
                 RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-                RTCIceServer(urls="turn:turn.goldi-labs.de:3478", username="goldi", credential="goldi"),
+                RTCIceServer(
+                    urls="turn:turn.goldi-labs.de:3478",
+                    username="goldi",
+                    credential="goldi",
+                ),
             ]
         )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
+            if not self.pc:
+                return  # Fix: Do not access self.pc after close
             print(
                 "connectionstatechanged",
                 self.pc.connectionState,
@@ -253,7 +259,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 direction = "sendonly"
                 transeiver.sender.replaceTrack(channel.track)
                 videoPreference = filter(
-                    lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
+                    lambda x: x.name == "H264",
+                    RTCRtpSender.getCapabilities("video").codecs,
                 )
                 transeiver.setCodecPreferences(list(videoPreference))
 

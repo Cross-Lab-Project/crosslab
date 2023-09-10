@@ -1,2 +1,2 @@
-declare var style: string
-export default style
+declare var style: string;
+export default style;

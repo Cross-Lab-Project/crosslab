@@ -1,15 +1,23 @@
 {
-    "name": "@crosslab/gateway",
-    "dockerName": "gateway-service",
-    "description": "",
-    "scripts": {
-        "generate-device-config": "./oas2nginx.sh --upstream device_service --basepath / ../device/dist/openapi.json > conf/device_service.conf",
-        "generate-experiment-config": "./oas2nginx.sh --upstream experiment_service --basepath / ../experiment/dist/openapi.json > conf/experiment_service.conf",
-        "generate-federation-config": "./oas2nginx.sh --upstream federation_service --basepath / ../federation/dist/openapi.json > conf/federation_service.conf",
-        "generate-auth-config": "./oas2nginx.sh --upstream auth_service --basepath / ../auth/dist/openapi.json > conf/auth_service.conf",
-        "generate-update-config": "./oas2nginx.sh --upstream update_service --basepath / ../update/dist/openapi.json > conf/update_service.conf",
-        "build": "exit 0; npm run generate-device-config && npm run generate-experiment-config && npm run generate-federation-config && npm run generate-auth-config && npm run generate-update-config"
-    },
-    "author": "Johannes Nau",
-    "license": "UNLICENSED"
+  "name": "@crosslab/gateway",
+  "dockerName": "gateway-service",
+  "description": "",
+  "scripts": {
+    "generate-device-config": "./oas2nginx.sh --upstream device_service --basepath / ../device/dist/openapi.json > conf/device_service.conf",
+    "generate-experiment-config": "./oas2nginx.sh --upstream experiment_service --basepath / ../experiment/dist/openapi.json > conf/experiment_service.conf",
+    "generate-federation-config": "./oas2nginx.sh --upstream federation_service --basepath / ../federation/dist/openapi.json > conf/federation_service.conf",
+    "generate-auth-config": "./oas2nginx.sh --upstream auth_service --basepath / ../auth/dist/openapi.json > conf/auth_service.conf",
+    "generate-update-config": "./oas2nginx.sh --upstream update_service --basepath / ../update/dist/openapi.json > conf/update_service.conf",
+    "build": "exit 0; npm run generate-device-config && npm run generate-experiment-config && npm run generate-federation-config && npm run generate-auth-config && npm run generate-update-config",
+    "format": "prettier . --write",
+    "lint": "eslint ."
+  },
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0"
+  }
 }

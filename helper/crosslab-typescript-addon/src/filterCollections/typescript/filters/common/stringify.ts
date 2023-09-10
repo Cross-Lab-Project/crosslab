@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * This function defines a filter which attempts to stringify a given object.
@@ -6,11 +6,12 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @param indentation The indentation to be used during JSON.stringify.
  * @returns The stringified object.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function stringify(object: any, indentation = 0): string {
-    return JSON.stringify(object, null, indentation)
+  return JSON.stringify(object, null, indentation);
 }
 
 export const stringifyFilter: Filter = {
-    name: 'stringify',
-    function: stringify,
-}
+  name: 'stringify',
+  function: stringify,
+};

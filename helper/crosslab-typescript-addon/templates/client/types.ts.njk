@@ -20,7 +20,7 @@
 {% if validationDependencies | length > 0 -%}
 import {
     {{ validationDependencies | unique | join(",\n\t") }}
-} from "./basicValidation"
+} from "./basicValidation.js"
 
 {% endif -%}
 
@@ -170,4 +170,4 @@ export namespace {{ serviceName | formatName }}Types {
 }
 {%- endfor %}
 {%- endmacro -%}
-{{ generateTypes() | prettier }}
+{{ generateTypes() }}

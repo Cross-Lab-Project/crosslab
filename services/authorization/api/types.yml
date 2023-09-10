@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/components
+
+paths:
+schemas:
+  RelationTuple:
+    type: object
+    properties:
+      subject:
+        type: string
+        description: The subject of the relation.
+      relation:
+        type: string
+        description: The relation between the subject and the object.
+      object:
+        type: string
+        description: The object of the relation.
+    required:
+      - subject
+      - relation
+      - object

@@ -1,0 +1,53 @@
+{
+    "python.defaultInterpreterPath": "venv/bin/python",
+    "python.formatting.provider": "none",
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "files.exclude": {
+        //begin generated
+        "**/*.egg-info": true,
+        "**/.mypy_cache": true,
+        "**/.packages": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/__pycache__": true,
+        "**/app": true,
+        "**/build": true,
+        "**/lib": true,
+        "**/node_modules": true,
+        "**/venv": true,
+        //end generated
+    },
+    "files.watcherExclude": {
+        //begin generated
+        "**/*.egg-info": true,
+        "**/.mypy_cache": true,
+        "**/.packages": true,
+        "**/.pytest_cache": true,
+        "**/.tox": true,
+        "**/__pycache__": true,
+        "**/app": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/lib": true,
+        "**/node_modules": true,
+        "**/venv": true,
+        //end generated
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.exclude": [
+        ".tox",
+        "dist"
+    ]
+}

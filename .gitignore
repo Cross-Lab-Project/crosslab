@@ -3,3 +3,4 @@ docs/.jekyll-cache
 docs/Gem*
 **/badge_*.svg
 **/coverage.txt
+**/node_modules

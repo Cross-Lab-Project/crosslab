@@ -1,0 +1,124 @@
+{%- macro typeToTypescript(type, schema, name, renderSubSchema = false) -%}
+    {%- if renderSubSchema -%}
+        {%- if type=="array" -%}
+            {{ typeToTypescript(schema.items.type, schema.items, name+"Items", true) }}
+        {%- elif type == "object" or "allOf" in schema or "anyOf" in schema -%}
+            {{ render_schema(schema, name) }}
+        {%- endif -%}
+    {%- else -%}
+        {%- if type=="string" -%}
+            {%- if "const" in schema -%}
+                "{{ schema.const }}"
+            {%- elif "enum" in schema -%}
+                {%- set pipe = joiner(' | ') -%}
+                {%- for e in schema.enum -%}{{ pipe() }}"{{ e }}"{%- endfor -%}
+            {%- else -%}
+                string
+            {%- endif -%}
+        {%- elif type=="integer" -%}
+            number
+        {%- elif type=="number" -%}
+            float
+        {%- elif type=="boolean" -%}
+            boolean
+        {%- elif type=="array" -%}
+            {{ typeToTypescript(schema.items.type, schema.items, name+"Items") }}[]
+        {%- elif type == "object" or "allOf" in schema or "anyOf" in schema -%}
+            {{ name }}
+        {%- else -%}
+            {{type}}
+        {%- endif -%}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_object_schema(schema, name) -%}
+    {%- set space = joiner("\n\n") -%}
+    {%- for property, value in schema.properties -%}
+        {%- set ret = typeToTypescript(value.type, value, name + (property | capitalize), true, true ) -%}
+        {%- if ret | length -%}{{ space() }}{{ ret }}{%- endif -%}
+    {%- endfor-%}
+    {{ space() }}
+    {% if schema.description -%}
+/**
+    {{ schema.description | indent(4) }}
+*/
+    {%- endif %}
+export type {{ name }} = {
+    {%- for property, value in schema.properties %}
+    {% if value.description %}
+    /* {{ value.description }} */
+    {% endif -%}
+    {%- set required = "required" in schema and property in schema.required -%}
+    {{ property }}{%- if not required -%}?{%- endif -%}: {{ typeToTypescript(value.type, value, name + (property | capitalize), false) }}
+    {%- endfor -%}
+}
+{% endmacro -%}
+
+{%- macro render_allOf_schema(schema, name) -%}
+    {{ render_schema(schema | jsonSchemaCombineAllOf, name) }}
+{%- endmacro -%}
+
+{%- macro render_anyOf_schema(schema, name) -%}
+    {%- set space = joiner("\n\n") -%}
+    {%- for subSchema in schema.anyOf -%}
+        {{ space() }}{{ render_schema(subSchema, name+"Alt"+loop.index) }}
+    {%- endfor -%}
+    {%- set pipe = joiner(' | ') -%}
+    {{ space() }}export type {{ name }} = {% for subSchema in schema.anyOf -%}
+        {{ pipe() }}{{ name+"Alt"+loop.index }}
+    {%- endfor -%}
+{% endmacro -%}
+
+{%- macro render_schema(schema, name) -%}
+    {%- if schema.type == "object" -%}
+        {{ render_object_schema(schema, name) | replace("{}", "never") }}
+    {%- elif "allOf" in schema -%}
+        {{ render_allOf_schema(schema, name) }}
+    {%- elif "anyOf" in schema -%}
+        {{ render_anyOf_schema(schema, name) }}
+    {%- else -%}
+        {%- set ret = typeToTypescript(schema.type, schema, name, true) -%}
+        {%- if ret | length -%}{{ ret + "\n\n"}}{%- endif -%}
+        export type {{ "" + name }} = {{ typeToTypescript(schema.type, schema, name) + "\n" }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_responses_schema(responses, name) -%}
+    {%- set resp = [] -%}
+    {%- for status, response in responses -%}
+        {%- if response.content -%}
+            {%- for contentType, content in response.content -%}
+                {%- if contentType == "application/json" -%}
+                    {%- set resp = (resp.push({status: status, schema: content.schema}), resp) -%}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if resp | length == 0 -%}
+        export type {{ name }} = void {{- "\n" }}
+    {%- else -%}
+        {%- set space = joiner("\n\n") -%}
+        {%- for response in resp -%}
+            {{ space() }}{{ render_schema(response.schema, name+response.status) }}
+        {%- endfor -%}
+        {%- if resp | length == 1 -%}
+            {{ space() }}export type {{ name }} = {{ name+resp[0].status + "\n" }}
+        {%- else -%}
+            {%- set pipe = joiner(' | ') -%}
+            {{ space() }}export type {{ name }} = {%- for response in resp -%}{{ pipe() }}{{ name+response.status }}{%- endfor -%}{{ "\n" }}
+        {%- endif -%}    
+    {%- endif -%}
+{%- endmacro -%}
+
+
+{% set space = joiner("\n\n") -%}
+{%- for path, methods in paths -%}
+    {%- for method, details in methods -%}
+        {%- if details.requestBody -%}
+            {{ space() }}{{ render_schema(details.requestBody.content["application/json"].schema, details.operationId | upperCamelCase + "Request") }}
+        {%- endif -%}
+        {%- if details.responses -%}
+            {{ space() }}{{ render_responses_schema(details.responses, details.operationId | upperCamelCase + "Response") }}
+        {%- endif -%}
+    {%- endfor -%}
+{%- endfor -%}

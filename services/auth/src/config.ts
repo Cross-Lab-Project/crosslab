@@ -1,50 +1,16 @@
-import { Migrations } from './database/migrations'
-import {
-    ScopeModel,
-    RoleModel,
-    UserModel,
-    KeyModel,
-    ActiveKeyModel,
-    TokenModel,
-} from './database/model'
-import { AppConfiguration } from './types/types'
-import { logger } from '@crosslab/service-common'
-import { DataSourceOptions } from 'typeorm'
+import { config as CommonConfig, utils } from '@crosslab/service-common';
+import dotenv from 'dotenv';
 
-export function die(reason: string): string {
-    logger.log('error', reason)
-    process.exit(1)
-}
+dotenv.config();
 
-function initializeAppConfiguration(): AppConfiguration {
-    return {
-        PORT: parseInt(process.env.PORT ?? '3000'),
-        NODE_ENV: process.env.NODE_ENV ?? 'development',
-        BASE_URL: process.env.BASE_URL ?? 'http://localhost:3000',
-        JWKS_URL: process.env.JWKS_URL ?? 'http://localhost/.well-known/jwks.json',
-        SECURITY_ISSUER:
-            process.env.SECURITY_ISSUER ??
-            die('the environment variable SECURITY_ISSUER is not defined!'),
-        SECURITY_AUDIENCE:
-            process.env.SECURITY_AUDIENCE ??
-            die('the environment variable SECURITY_AUDIENCE is not defined!'),
-        ALLOWLIST: process.env.ALLOWLIST ?? '',
-        API_TOKEN:
-            process.env.API_TOKEN ??
-            die('the environment variable API_TOKEN is not defined!'),
-    }
-}
-
-export const config: AppConfiguration = initializeAppConfiguration()
-
-export const dataSourceConfig: DataSourceOptions = {
-    type: 'mariadb',
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT ?? '3306'),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    migrations: [...Migrations],
-    migrationsRun: true,
-    entities: [ScopeModel, RoleModel, UserModel, KeyModel, ActiveKeyModel, TokenModel],
-}
+export const config = {
+  PORT: parseInt(process.env.PORT ?? '3000'),
+  NODE_ENV: process.env.NODE_ENV ?? 'development',
+  BASE_URL: process.env.BASE_URL ?? 'http://localhost:3000',
+  JWT_SECRET: process.env['JWT_SECRET'] ?? utils.die('JWT_SECRET is not set'),
+  ADMIN_USERNAME: process.env['ADMIN_USERNAME'],
+  ADMIN_PASSWORD: process.env['ADMIN_PASSWORD'],
+  orm: {
+    ...CommonConfig.readOrmConfig(),
+  },
+};

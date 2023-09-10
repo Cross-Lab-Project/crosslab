@@ -8,7 +8,6 @@ from crosslab.api_client.schemas import (
     LoginResponse,
     LogoutRequest,
     LogoutResponse,
-    CreateDeviceAuthenticationTokenResponse,
     ListUsersResponse,
     CreateUserRequest,
     CreateUserResponse,
@@ -16,28 +15,11 @@ from crosslab.api_client.schemas import (
     UpdateUserRequest,
     UpdateUserResponse,
     DeleteUserResponse,
-    GetRolesOfUserResponse,
-    AddRolesToUserRequest,
-    AddRolesToUserResponse,
-    RemoveRolesFromUserRequest,
-    RemoveRolesFromUserResponse,
-    ListRolesResponse,
-    CreateRoleRequest,
-    CreateRoleResponse,
-    GetRoleResponse,
-    UpdateRoleRequest,
-    UpdateRoleResponse,
-    DeleteRoleResponse,
-    GetUsersWithRoleResponse,
-    AddUsersToRoleRequest,
-    AddUsersToRoleResponse,
-    RemoveUsersFromRoleRequest,
-    RemoveUsersFromRoleResponse,
     GetIdentityResponse,
     UpdateIdentityRequest,
     UpdateIdentityResponse,
-    RegisterRequest,
-    RegisterResponse,
+    CreateTokenRequest,
+    CreateTokenResponse,
     ScheduleRequest,
     ScheduleResponse,
     NewBookingRequest,
@@ -79,6 +61,13 @@ from crosslab.api_client.schemas import (
     UpdateExperimentRequest,
     UpdateExperimentResponse,
     DeleteExperimentResponse,
+    ListTemplateResponse,
+    CreateTemplateRequest,
+    CreateTemplateResponse,
+    GetTemplateResponse,
+    UpdateTemplateRequest,
+    UpdateTemplateResponse,
+    DeleteTemplateResponse,
     ListInstitutionsResponse,
     CreateInstitutionRequest,
     CreateInstitutionResponse,
@@ -216,38 +205,6 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_device_authentication_token(self, device_url: str, url: str = "/device_authentication_token") -> CreateDeviceAuthenticationTokenResponse:  # noqa: E501
-        """
-        Create a device authentication token
-        
-        This endpoint will create a new device authentication token."""  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(device_authentication_token)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/device_authentication_token'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-
-        # build query params
-        query_params: Dict[str, Union[List[str], str]] = {}
-        if device_url:
-            if isinstance(device_url, list):
-                query_params['device_url'] = device_url
-            else:
-                query_params['device_url'] = str(device_url)
-        
-        # make http call
-        status, resp = await self._fetch(valid_url, method="post", params=query_params)
-           
-        # transform response
-        if status == 201:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
     async def list_users(self, url: str = "/users") -> ListUsersResponse:  # noqa: E501
         """
         Get all users
@@ -314,7 +271,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_user(self, url: str, body: Optional[UpdateUserRequest] = None) -> UpdateUserResponse:  # noqa: E501
+    async def update_user(self, url: str, body: UpdateUserRequest) -> UpdateUserResponse:  # noqa: E501
         """
         Update a user
         """  # noqa: E501
@@ -352,248 +309,6 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-           
-        # transform response
-        if status == 204:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def get_roles_of_user(self, url: str) -> GetRolesOfUserResponse:  # noqa: E501
-        """
-        Get roles of user
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)(\/roles)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/roles'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="get")
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def add_roles_to_user(self, url: str, body: Optional[AddRolesToUserRequest] = None) -> AddRolesToUserResponse:  # noqa: E501
-        """
-        Add roles to user
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)(\/roles)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/roles'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
-           
-        # transform response
-        if status == 204:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def remove_roles_from_user(self, url: str, body: Optional[RemoveRolesFromUserRequest] = None) -> RemoveRolesFromUserResponse:  # noqa: E501
-        """
-        Remove roles from user
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)(\/roles)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/roles'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="delete", body=body)
-           
-        # transform response
-        if status == 204:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def list_roles(self, url: str = "/roles") -> ListRolesResponse:  # noqa: E501
-        """
-        Get all roles
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(roles)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/roles'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="get")
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def create_role(self, url: str = "/roles", body: Optional[CreateRoleRequest] = None) -> CreateRoleResponse:  # noqa: E501
-        """
-        Create a role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(roles)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/roles'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
-           
-        # transform response
-        if status == 201:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def get_role(self, url: str) -> GetRoleResponse:  # noqa: E501
-        """
-        Get a role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="get")
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def update_role(self, url: str, body: Optional[UpdateRoleRequest] = None) -> UpdateRoleResponse:  # noqa: E501
-        """
-        Update a role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=body)
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def delete_role(self, url: str) -> DeleteRoleResponse:  # noqa: E501
-        """
-        Delete a role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="delete")
-           
-        # transform response
-        if status == 204:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def get_users_with_role(self, url: str) -> GetUsersWithRoleResponse:  # noqa: E501
-        """
-        Get users with role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)(\/users)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/users'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="get")
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def add_users_to_role(self, url: str, body: Optional[AddUsersToRoleRequest] = None) -> AddUsersToRoleResponse:  # noqa: E501
-        """
-        Add users to role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)(\/users)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/users'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
-           
-        # transform response
-        if status == 204:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def remove_users_from_role(self, url: str, body: Optional[RemoveUsersFromRoleRequest] = None) -> RemoveUsersFromRoleResponse:  # noqa: E501
-        """
-        Remove users from role
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(roles\/[^?]*?)(\/users)?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/users'
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="delete", body=body)
            
         # transform response
         if status == 204:
@@ -644,19 +359,19 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def register(self, body: RegisterRequest, url: str = "/register") -> RegisterResponse:  # noqa: E501
+    async def createToken(self, body: CreateTokenRequest, url: str = "/token") -> CreateTokenResponse:  # noqa: E501
         """
-        Register user
+        Create a new token
         
-        This endpoint will register a new user."""  # noqa: E501
+        This endpoint will create a new token for the use of the microservice architecture."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(register)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(token)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/register'
+        valid_url = '/'+m.group(2)+'/token'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
         # make http call
@@ -918,7 +633,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def get_device(self, url: str, flat_group: Optional[bool] = None, execute_for: Optional[str] = None) -> GetDeviceResponse:  # noqa: E501
+    async def get_device(self, url: str, flat_group: Optional[bool] = None) -> GetDeviceResponse:  # noqa: E501
         """
         View a registered device
         """  # noqa: E501
@@ -940,11 +655,6 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
-        if execute_for:
-            if isinstance(execute_for, list):
-                query_params['execute_for'] = execute_for
-            else:
-                query_params['execute_for'] = str(execute_for)
         
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
@@ -1422,6 +1132,124 @@ class APIClient:
 
         # match path to url schema
         m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def list_template(self, url: str = "/templates") -> ListTemplateResponse:  # noqa: E501
+        """
+        List templates
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/templates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def create_template(self, body: CreateTemplateRequest, url: str = "/templates") -> CreateTemplateResponse:  # noqa: E501
+        """
+        Create a new template
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/templates'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 201:
+            return resp
+        if status == 202:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def get_template(self, url: str) -> GetTemplateResponse:  # noqa: E501
+        """
+        View an template.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_template(self, url: str, body: UpdateTemplateRequest) -> UpdateTemplateResponse:  # noqa: E501
+        """
+        Update an existing template.
+        
+        With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
+        
+        If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        if status == 202:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_template(self, url: str) -> DeleteTemplateResponse:  # noqa: E501
+        """
+        Delete an template
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''

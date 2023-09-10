@@ -1,110 +1,107 @@
-import { AppDataSource, repositories } from '../../../../src/database/dataSource'
-import { InstantiableBrowserDeviceModel } from '../../../../src/database/model'
-import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice'
+import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper';
+import assert from 'assert';
+import { FindOptionsWhere } from 'typeorm';
+
+import { AppDataSource, repositories } from '../../../../src/database/dataSource';
+import { InstantiableBrowserDeviceModel } from '../../../../src/database/model';
+import { InstantiableBrowserDeviceRepository } from '../../../../src/database/repositories/device/instantiableBrowserDevice';
 import {
-    InstantiableBrowserDevice,
-    InstantiableBrowserDeviceUpdate,
-} from '../../../../src/generated/types'
-import { InstantiableBrowserDeviceName } from '../../../data/devices/instantiableBrowserDevices/index.spec'
-import { initTestDatabase } from '../index.spec'
-import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec'
-import { AbstractRepositoryTestSuite } from '@crosslab/service-common/test-helper'
-import assert from 'assert'
-import { FindOptionsWhere } from 'typeorm'
+  InstantiableBrowserDevice,
+  InstantiableBrowserDeviceUpdate,
+} from '../../../../src/generated/types';
+import { InstantiableBrowserDeviceName } from '../../../data/devices/instantiableBrowserDevices/index.spec';
+import { initTestDatabase } from '../index.spec';
+import { DeviceOverviewRepositoryTestSuite } from './deviceOverview.spec.js';
 
 class InstantiableBrowserDeviceRepositoryTestSuite extends AbstractRepositoryTestSuite<
-    InstantiableBrowserDeviceName,
-    InstantiableBrowserDeviceRepository
+  InstantiableBrowserDeviceName,
+  InstantiableBrowserDeviceRepository
 > {
-    protected name = 'instantiable browser devices' as const
-    protected repository = repositories.instantiableBrowserDevice
-    protected getEntityData = async () =>
-        (await initTestDatabase())['instantiable browser devices']
-    protected RepositoryClass = InstantiableBrowserDeviceRepository
+  protected name = 'instantiable browser devices' as const;
+  protected repository = repositories.instantiableBrowserDevice;
+  protected getEntityData = async () =>
+    (await initTestDatabase())['instantiable browser devices'];
+  protected RepositoryClass = InstantiableBrowserDeviceRepository;
 
-    constructor() {
-        super(AppDataSource)
-    }
+  constructor() {
+    super(AppDataSource);
+  }
 
-    validateCreate(
-        model: InstantiableBrowserDeviceModel,
-        data?: InstantiableBrowserDevice<'request'>
-    ): boolean {
-        if (!data) return true
+  validateCreate(
+    model: InstantiableBrowserDeviceModel,
+    data?: InstantiableBrowserDevice<'request'>,
+  ): boolean {
+    if (!data) return true;
 
-        assert(DeviceOverviewRepositoryTestSuite.validateCreate(model, data))
-        assert(this.validateWrite(model, data))
+    assert(DeviceOverviewRepositoryTestSuite.validateCreate(model, data));
+    assert(this.validateWrite(model, data));
 
-        return true
-    }
+    return true;
+  }
 
-    validateWrite(
-        model: InstantiableBrowserDeviceModel,
-        data: InstantiableBrowserDeviceUpdate<'request'>
-    ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.validateWrite(model, data))
-        if (data.codeUrl) assert(model.codeUrl === data.codeUrl)
-        if (data.services)
-            assert(JSON.stringify(model.services) === JSON.stringify(data.services))
+  validateWrite(
+    model: InstantiableBrowserDeviceModel,
+    data: InstantiableBrowserDeviceUpdate<'request'>,
+  ): boolean {
+    assert(DeviceOverviewRepositoryTestSuite.validateWrite(model, data));
+    if (data.codeUrl) assert(model.codeUrl === data.codeUrl);
+    if (data.services)
+      assert(JSON.stringify(model.services) === JSON.stringify(data.services));
 
-        return true
-    }
+    return true;
+  }
 
-    validateFormat(
-        model: InstantiableBrowserDeviceModel,
-        data: InstantiableBrowserDevice<'response'>
-    ): boolean {
-        assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data))
-        assert(data.codeUrl === model.codeUrl)
-        assert(
-            JSON.stringify(data.services) === JSON.stringify(model.services ?? undefined)
-        )
+  validateFormat(
+    model: InstantiableBrowserDeviceModel,
+    data: InstantiableBrowserDevice<'response'>,
+  ): boolean {
+    assert(DeviceOverviewRepositoryTestSuite.validateFormat(model, data));
+    assert(data.codeUrl === model.codeUrl);
+    assert(JSON.stringify(data.services) === JSON.stringify(model.services ?? undefined));
 
-        return true
-    }
+    return true;
+  }
 
-    compareModels(
-        firstModel: InstantiableBrowserDeviceModel,
-        secondModel: InstantiableBrowserDeviceModel,
-        complete?: boolean
-    ): boolean {
-        const sameId = firstModel.uuid === secondModel.uuid
+  compareModels(
+    firstModel: InstantiableBrowserDeviceModel,
+    secondModel: InstantiableBrowserDeviceModel,
+    complete?: boolean,
+  ): boolean {
+    const sameId = firstModel.uuid === secondModel.uuid;
 
-        if (!complete) return sameId
+    if (!complete) return sameId;
 
-        assert(DeviceOverviewRepositoryTestSuite.compareModels(firstModel, secondModel))
-        assert(firstModel.codeUrl === secondModel.codeUrl)
-        assert(
-            JSON.stringify(firstModel.instances) === JSON.stringify(secondModel.instances)
-        )
-        assert(
-            JSON.stringify(firstModel.services) === JSON.stringify(secondModel.services)
-        )
+    assert(DeviceOverviewRepositoryTestSuite.compareModels(firstModel, secondModel));
+    assert(firstModel.codeUrl === secondModel.codeUrl);
+    assert(
+      JSON.stringify(firstModel.instances) === JSON.stringify(secondModel.instances),
+    );
+    assert(JSON.stringify(firstModel.services) === JSON.stringify(secondModel.services));
 
-        return true
-    }
+    return true;
+  }
 
-    compareFormatted(
-        first: InstantiableBrowserDevice<'response'>,
-        second: InstantiableBrowserDevice<'response'>
-    ): boolean {
-        let isEqual = true
+  compareFormatted(
+    first: InstantiableBrowserDevice<'response'>,
+    second: InstantiableBrowserDevice<'response'>,
+  ): boolean {
+    let isEqual = true;
 
-        isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second)
-        isEqual &&= first.codeUrl === second.codeUrl
-        isEqual &&= JSON.stringify(first.services) === JSON.stringify(second.services)
+    isEqual &&= DeviceOverviewRepositoryTestSuite.compareFormatted(first, second);
+    isEqual &&= first.codeUrl === second.codeUrl;
+    isEqual &&= JSON.stringify(first.services) === JSON.stringify(second.services);
 
-        return isEqual
-    }
+    return isEqual;
+  }
 
-    getFindOptionsWhere(
-        model?: InstantiableBrowserDeviceModel
-    ): FindOptionsWhere<InstantiableBrowserDeviceModel> {
-        return {
-            uuid: model ? model.uuid : 'non-existent',
-        }
-    }
+  getFindOptionsWhere(
+    model?: InstantiableBrowserDeviceModel,
+  ): FindOptionsWhere<InstantiableBrowserDeviceModel> {
+    return {
+      uuid: model ? model.uuid : 'non-existent',
+    };
+  }
 }
 
 export const instantiableBrowserDeviceRepositoryTestSuite =
-    new InstantiableBrowserDeviceRepositoryTestSuite()
+  new InstantiableBrowserDeviceRepositoryTestSuite();

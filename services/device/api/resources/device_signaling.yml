@@ -9,8 +9,8 @@ post:
         - device
         - device:signal
   parameters:
-    - $ref: "../parameters/device_id.yml"
-    - $ref: "../parameters/peerconnection_url.yml"
+    - $ref: '../parameters/device_id.yml'
+    - $ref: '../parameters/peerconnection_url.yml'
   requestBody:
     description: The signaling message to be sent.
     content:
@@ -18,9 +18,9 @@ post:
         schema:
           title: Sig Message
           anyOf:
-            - $ref: "../schemas/messages/create_peerconnection_message.yml"
-            - $ref: "../schemas/messages/close_peerconnection_message.yml"
-            - $ref: "../schemas/messages/signaling_message.yml"
+            - $ref: '../schemas/messages/create_peerconnection_message.yml'
+            - $ref: '../schemas/messages/close_peerconnection_message.yml'
+            - $ref: '../schemas/messages/signaling_message.yml'
     required: true
   responses:
     200:

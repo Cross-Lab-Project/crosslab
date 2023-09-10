@@ -1,3 +1,3 @@
-export * from './delete'
-export * from './get'
-export * from './device_status'
+export * from './delete.js';
+export * from './get.js';
+export * from './device_status/index.js';

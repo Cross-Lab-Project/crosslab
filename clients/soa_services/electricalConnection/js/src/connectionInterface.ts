@@ -1,4 +1,4 @@
-import { TypedEmitter } from "tiny-typed-emitter";
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 export interface ConnectionInterfaceConfiguration {
   signals: { [role: string]: string };

@@ -3,7 +3,7 @@ name: URL
 in: query
 required: false
 description: |
-  The URL of the external resource. 
+  The URL of the external resource.
 schema:
   type: string
   format: uri

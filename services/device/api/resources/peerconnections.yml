@@ -6,8 +6,8 @@ get:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:read
+        - peerconnection
+        - peerconnection:read
   responses:
     200:
       description: The list of all peerconnections.
@@ -32,8 +32,8 @@ post:
     - peerconnection
   security:
     - JWT:
-      - peerconnection
-      - peerconnection:create
+        - peerconnection
+        - peerconnection:create
   parameters:
     - $ref: '../parameters/closed_url.yml'
     - $ref: '../parameters/status_changed_url.yml'
@@ -70,8 +70,8 @@ post:
         post:
           security:
             - JWT:
-              - peerconnection
-              - peerconnection:create
+                - peerconnection
+                - peerconnection:create
           summary: Callback for the "peerconnection-closed" event
           requestBody:
             content:
@@ -87,8 +87,8 @@ post:
         post:
           security:
             - JWT:
-              - peerconnection
-              - peerconnection:create
+                - peerconnection
+                - peerconnection:create
           summary: Callback for the "peerconnection-status-changed" event
           requestBody:
             content:

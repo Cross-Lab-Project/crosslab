@@ -1,1 +1,1 @@
-export * from "./connectionInterface";
+export * from './connectionInterface';

@@ -1,6 +1,6 @@
-import { Institution } from '../generated/types'
-import { InstitutionModel } from '../model'
-import { institutionUrlFromId } from './utils'
+import { InstitutionModel } from '../database/model.js';
+import { Institution } from '../generated/types.js';
+import { institutionUrlFromId } from './utils.js';
 
 /**
  * This function formats a {@link InstitutionModel} to a {@link Institution}.
@@ -8,11 +8,11 @@ import { institutionUrlFromId } from './utils'
  * @returns The resulting {@link Institution}.
  */
 export function formatInstitution(institutionModel: InstitutionModel): Institution {
-    return {
-        name: institutionModel.name,
-        api: institutionModel.api,
-        url: institutionUrlFromId(institutionModel.uuid),
-        homepage: institutionModel.homepage,
-        federatedApi: institutionModel.federatedApi,
-    }
+  return {
+    name: institutionModel.name,
+    api: institutionModel.api,
+    url: institutionUrlFromId(institutionModel.uuid),
+    homepage: institutionModel.homepage,
+    federatedApi: institutionModel.federatedApi,
+  };
 }

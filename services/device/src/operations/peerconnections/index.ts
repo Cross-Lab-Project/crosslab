@@ -1,3 +1,3 @@
-export * from './peerconnection'
-export * from './get'
-export * from './post'
+export * from './peerconnection/index.js';
+export * from './get.js';
+export * from './post.js';

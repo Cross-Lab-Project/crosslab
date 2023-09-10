@@ -8,6 +8,7 @@ auto_envsubst() {
   local output_dir="${NGINX_ENVSUBST_OUTPUT_DIR:-/etc/nginx}"
 
   export NGINX_PID_PATH=${NGINX_PID_PATH:-/var/run/nginx.pid}
+  export NGINX_USER=${NGINX_USER:-nginx}
 
   local template defined_envs relative_path output_path subdir
   defined_envs=$(printf '${%s} ' $(awk "END { for (name in ENVIRON) { print ( name ~ /${filter}/ ) ? name : \"\" } }" < /dev/null ))

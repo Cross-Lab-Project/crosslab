@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * This function formats the path of an operation to an express path.
@@ -6,10 +6,10 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @returns A valid express path.
  */
 export function formatExpressPath(path: string) {
-    return path.replace(/\{(.*?)\}/g, ':$1')
+  return path.replace(/\{(.*?)\}/g, ':$1');
 }
 
 export const formatExpressPathFilter: Filter = {
-    name: 'formatExpressPath',
-    function: formatExpressPath,
-}
+  name: 'formatExpressPath',
+  function: formatExpressPath,
+};

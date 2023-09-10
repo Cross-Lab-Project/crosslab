@@ -1,8 +1,10 @@
-import {DataSource, DataSourceOptions, EntityManager} from 'typeorm';
+import { DataSource, DataSourceOptions, EntityManager } from 'typeorm';
 
-import {AbstractRepository} from './abstractRepository';
+import { AbstractRepository } from './abstractRepository.js';
 
-type RepositoryDict = {[k: string]: AbstractRepository<object, unknown, unknown, Record<string, object>>};
+type RepositoryDict = {
+  [k: string]: AbstractRepository<object, unknown, unknown, Record<string, object>>;
+};
 
 export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
   private _dataSource: DataSource;
@@ -17,7 +19,10 @@ export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
 
   protected abstract createRepositories(): RD;
 
-  private initializeRepositories(repositories: RD, entityManager: EntityManager): Promise<void> | void {
+  private initializeRepositories(
+    repositories: RD,
+    entityManager: EntityManager,
+  ): Promise<void> | void {
     for (const key in repositories) {
       repositories[key].initialize(entityManager);
     }
@@ -38,7 +43,8 @@ export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
   }
 
   public async teardown() {
-    if (!this._dataSource?.isInitialized) throw new Error('Data Source has not been initialized!');
+    if (!this._dataSource?.isInitialized)
+      throw new Error('Data Source has not been initialized!');
 
     await this._dataSource.destroy();
     this.connected = false;
@@ -48,7 +54,9 @@ export abstract class AbstractApplicationDataSource<RD extends RepositoryDict> {
     return this._dataSource;
   }
 
-  public async transaction<T>(runInTransaction: (repositories: RD) => Promise<T>): Promise<T> {
+  public async transaction<T>(
+    runInTransaction: (repositories: RD) => Promise<T>,
+  ): Promise<T> {
     return this._dataSource?.transaction(async entityManager => {
       const repositories = this.createRepositories();
       await this.initializeRepositories(repositories, entityManager);

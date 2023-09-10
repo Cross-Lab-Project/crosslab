@@ -11,6 +11,7 @@
     "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "build": "npm run build-compile",
     "watch": "tsc -w",
+    "format": "prettier . --write",
     "lint": "eslint ."
   },
   "files": [
@@ -25,14 +26,14 @@
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@types/sdp-transform": "^2.4.5",
-    "@types/ws": "^8.5.4",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "eslint": "^8.34.0",
-    "typescript": "^4.7.4",
-    "prettier": "^2.8.4"
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/sdp-transform": "^2.4.6",
+    "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "eslint": "^8.48.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "isomorphic-ws": "^5.0.0",

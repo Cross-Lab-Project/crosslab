@@ -6,7 +6,11 @@ export type RemoveIndex<T> = {
   [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
 };
 
-export type SubstituteType<T, A, B> = T extends A ? B : T extends object ? {[K in keyof T]: SubstituteType<T[K], A, B>} : T;
+export type SubstituteType<T, A, B> = T extends A
+  ? B
+  : T extends object
+  ? { [K in keyof T]: SubstituteType<T[K], A, B> }
+  : T;
 
 export type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object
@@ -18,4 +22,6 @@ export type Subset<K> = {
     : K[attr];
 };
 
-export type NonNullableProperties<T extends {[k: string]: unknown}> = Required<{[k in keyof T]: NonNullable<T[k]>}>;
+export type NonNullableProperties<T extends { [k: string]: unknown }> = Required<{
+  [k in keyof T]: NonNullable<T[k]>;
+}>;

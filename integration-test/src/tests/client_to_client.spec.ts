@@ -1,6 +1,6 @@
 /// <reference types="../context" />
-import {clientTypes} from '../fixtures/dummyDevice';
-import {ExperimentTest} from '../helper/experimentTest';
+import { clientTypes } from '../fixtures/dummyDevice';
+import { ExperimentTest } from '../helper/experimentTest';
 
 const experimentConfig = {
   serviceConfigurations: [
@@ -34,7 +34,7 @@ for (const client1Type of clientTypes) {
         this.timeout(120000);
         this.experiment = new ExperimentTest();
         this.experiment.addDevice(this, client1Type);
-        this.experiment.addDevice(this, client2Type,);
+        this.experiment.addDevice(this, client2Type);
       });
       after(async function () {
         this.timeout(10000);

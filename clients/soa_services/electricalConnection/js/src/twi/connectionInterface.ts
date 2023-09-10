@@ -1,16 +1,17 @@
-import { TypedEmitter } from "tiny-typed-emitter";
-import { ConnectionInterfaceEvents } from "../connectionInterface";
-import {
-  ConnectionInterfaceConfiguration,
-  ConnectionInterface,
-  ConstructableConnectionInterface,
-  ConnectionInterfaceDescription,
-} from "../connectionInterface";
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-type InterfaceType = "twi" | "twiSlave" | "twiMaster";
-const InterfaceType: InterfaceType = "twi";
-const InterfaceTypeSlave: InterfaceType = "twiSlave";
-const InterfaceTypeMaster: InterfaceType = "twiMaster";
+import { ConnectionInterfaceEvents } from '../connectionInterface';
+import {
+  ConnectionInterface,
+  ConnectionInterfaceConfiguration,
+  ConnectionInterfaceDescription,
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
+
+type InterfaceType = 'twi' | 'twiSlave' | 'twiMaster';
+const InterfaceType: InterfaceType = 'twi';
+const InterfaceTypeSlave: InterfaceType = 'twiSlave';
+const InterfaceTypeMaster: InterfaceType = 'twiMaster';
 
 export interface TWIConfiguration extends ConnectionInterfaceConfiguration {
   signals: { scl: string; sda: string };
@@ -31,7 +32,7 @@ export interface TWIMasterInterfaceEvents extends ConnectionInterfaceEvents {
   prepareByte(event: ReceiveByteEvent): void;
 }
 
-type TWIInterfaceDataType = "SendByte" | "PrepareByte" | "SendAddress";
+type TWIInterfaceDataType = 'SendByte' | 'PrepareByte' | 'SendAddress';
 
 interface TWIInterfaceData {
   type: TWIInterfaceDataType;
@@ -51,9 +52,9 @@ export class TWIMasterInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -62,14 +63,18 @@ export class TWIMasterInterface
   }
 
   sendByte(byte: number): void {
-    const data: TWIInterfaceData = { type: "SendByte", byte: byte };
-    this.emit("upstreamData", data);
+    const data: TWIInterfaceData = { type: 'SendByte', byte: byte };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 
   sendAddress(address: number, read: boolean): void {
-    const data: TWIInterfaceData = { type: "SendAddress", address: address, read: read };
-    this.emit("upstreamData", data);
+    const data: TWIInterfaceData = {
+      type: 'SendAddress',
+      address: address,
+      read: read,
+    };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 }
@@ -85,9 +90,9 @@ export class TWISlaveInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -96,8 +101,8 @@ export class TWISlaveInterface
   }
 
   prepareByte(byte: number): void {
-    const data: TWIInterfaceData = { type: "PrepareByte", byte: byte };
-    this.emit("upstreamData", data);
+    const data: TWIInterfaceData = { type: 'PrepareByte', byte: byte };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 }

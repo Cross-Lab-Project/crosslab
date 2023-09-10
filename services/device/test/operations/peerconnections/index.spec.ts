@@ -1,5 +1,5 @@
-import getSpec from './get.spec'
-import peerconnectionSpec from './peerconnection/index.spec'
-import postSpec from './post.spec'
+import getSpec from './get.spec.js';
+import peerconnectionSpec from './peerconnection/index.spec.js';
+import postSpec from './post.spec.js';
 
-export default [getSpec, postSpec, ...peerconnectionSpec]
+export default [getSpec, postSpec, ...peerconnectionSpec];

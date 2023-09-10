@@ -1,0 +1,53 @@
+{
+  "name": "@crosslab/authorization-service",
+  "dockerName": "authorization-service",
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "bin": {
+    "crosslab-authorization-service": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
+  "scripts": {
+    "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
+    "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
+    "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
+    "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "AUTHORIZATION_PSK=secret JWT_SECRET=secret npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
+    "dev-test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --watch --watch-files test/*.ts -R list test/**/*.spec.ts",
+    "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts",
+    "format": "prettier . --write",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@crosslab/service-common": "file:../common",
+    "@openfga/sdk": "^0.2.8",
+    "@openfga/syntax-transformer": "^0.1.3",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "node-fetch": "^3.3.2",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17",
+    "urlencode": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/mocha": "^10.0.1",
+    "@types/node-fetch": "^2.6.4",
+    "@types/urlencode": "^1.1.2",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "chai": "^4.3.8",
+    "chai-http": "^4.4.0",
+    "eslint": "^8.48.0",
+    "jose": "^4.14.6",
+    "mocha": "^10.2.0",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "winston": "^3.10.0"
+  }
+}

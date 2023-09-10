@@ -1,1 +1,1 @@
-export { ConstructableTWIInterface } from "./connectionInterface";
+export { ConstructableTWIInterface } from './connectionInterface';

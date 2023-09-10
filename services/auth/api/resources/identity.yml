@@ -6,14 +6,14 @@ get:
     - identity
   security:
     - JWT:
-      - identity
-      - identity:read
+        - identity
+        - identity:read
   responses:
     200:
       description: The JSON representation of the corresponding user.
-      content: 
+      content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:
@@ -31,19 +31,19 @@ patch:
     - identity
   security:
     - JWT:
-      - identity
-      - identity:write
+        - identity
+        - identity:write
   requestBody:
     description: Updated identity.
     content:
       application/json:
-        $ref: "../content/user_update.yml"
+        $ref: '../content/user_update.yml'
   responses:
     200:
       description: The JSON representation of the updated user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:

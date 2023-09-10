@@ -33,7 +33,7 @@ function get_local_dependencies() {
 
     # for each dependency, recursively call this function
     for dependency in $dependencies; do
-        d=$(get_local_dependencies $(dirname $dependency)/package.json)
+        d=$(get_local_dependencies $dependency/package.json)
         # prefix dependency path to each line
         d=$(echo "$d" | sed 's~^~'$dependency/'~')
         # append to dependencies
@@ -57,6 +57,7 @@ cp $(readlink -f ./dist/npm-latest.tgz) .packages/ | true
 
 # build docker image
 docker build -t $TAG .
+docker tag $TAG $(cat package.json | jq -r '.dockerName'):latest
 
 # Save the container to a tar file
 mkdir -p dist

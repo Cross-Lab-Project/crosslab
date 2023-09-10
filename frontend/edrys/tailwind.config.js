@@ -1,4 +1,4 @@
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   content: ['./src/**/*.ts'],
@@ -23,11 +23,11 @@ module.exports = {
 
         'footer-black': '#191616',
       },*/
-      primary:{
+      primary: {
         DEFAULT: '#3f5e9e',
-        '900': '#1c355d',
-        '100': '#c0dbf1',
-        '50': '#f2f5fc'
+        900: '#1c355d',
+        100: '#c0dbf1',
+        50: '#f2f5fc',
       },
       secondary: {
         DEFAULT: '#f2ab55',
@@ -35,7 +35,7 @@ module.exports = {
     },
     fontFamily: {
       body: 'Roboto Condensed',
-    }  
+    },
   },
   plugins: [],
-}
+};

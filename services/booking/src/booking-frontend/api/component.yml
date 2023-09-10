@@ -1,91 +1,91 @@
-  /booking:
-    post:
-      operationId: 'newBooking'
-      security:
-        - JWT: []
-      tags:
-        - booking-frontend
-      summary: Books an experiment.
-      x-optional-url: true
-      requestBody:
+/booking:
+  post:
+    operationId: 'newBooking'
+    security:
+      - JWT: []
+    tags:
+      - booking-frontend
+    summary: Books an experiment.
+    x-optional-url: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - Devices
+              - Time
+            properties:
+              Devices:
+                type: array
+                description: List of devices which should be added.
+                items:
+                  $ref: '#/components/schemas/Device'
+              Time:
+                $ref: '#/components/schemas/Timeslot'
+              Type:
+                description: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+                type: string
+                enum:
+                  - normal
+    responses:
+      '200':
+        description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
         content:
           application/json:
             schema:
               type: object
               required:
-               - Devices
-               - Time
+                - BookingID
               properties:
-                Devices:
-                  type: array
-                  description: List of devices which should be added.
-                  items:
-                    $ref: '#/components/schemas/Device'
-                Time:
-                  $ref: '#/components/schemas/Timeslot'
-                Type:
-                  description: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+                BookingID:
                   type: string
-                  enum:
-                   - normal
-      responses:
-        '200':
-          description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                 - BookingID
-                properties:
-                  BookingID:
-                    type: string
-                    format: uri
-                    description: ID at which the booking can be managed.
-        '401':
-          description: No authorisation header found.
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                description: Error description
-                type: string
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/{ID}:
-    patch:
-      operationId: 'updateBooking'
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/ID'
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      tags:
-        - booking-frontend
-      summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
-      requestBody:
+                  format: uri
+                  description: ID at which the booking can be managed.
+      '401':
+        description: No authorisation header found.
+      '500':
+        description: >-
+          Request could not be answered. An error string containing the reason
+          will be returned.
         content:
           application/json:
             schema:
-              anyOf:
-              -  type: object
-                 description: Use this request for adding devices.
-                 properties:
-                    Locked:
-                      type: boolean
-                      description: Expresses whether the devices should be locked. Must match current status of booking.
-                    Devices:
-                     type: array
-                     description: List of devices which should be added.
-                     items:
+              description: Error description
+              type: string
+      '503':
+        description: >-
+          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+/booking/{ID}:
+  patch:
+    operationId: 'updateBooking'
+    security:
+      - JWT: []
+    parameters:
+      - $ref: '#/components/parameters/ID'
+        name: ID
+        schema:
+          type: string
+        required: true
+        description: ID of Booking
+    tags:
+      - booking-frontend
+    summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
+    requestBody:
+      content:
+        application/json:
+          schema:
+            anyOf:
+              - type: object
+                description: Use this request for adding devices.
+                properties:
+                  Locked:
+                    type: boolean
+                    description: Expresses whether the devices should be locked. Must match current status of booking.
+                  Devices:
+                    type: array
+                    description: List of devices which should be added.
+                    items:
                       $ref: '#/components/schemas/Device'
               - type: object
                 description: Use this request for adding callbacks.
@@ -94,160 +94,160 @@
                     type: string
                     format: uri
                     description: Callback which should be called at changes.
+      required: true
+    responses:
+      '200':
+        description: The booking change was accepted. The booking status will display whether the booking of all devices was successful.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - BookingID
+              properties:
+                BookingID:
+                  type: string
+                  format: uri
+      '401':
+        description: No authorisation header found.
+      '404':
+        description: Request contains unknown booking ID.
+      '423':
+        description: >-
+          The booking 'locked' status and the requested locked status do not match.
+      '500':
+        description: >-
+          Request could not be answered. An error string containing the reason
+          will be returned.
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Error description
+      '503':
+        description: >-
+          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+  delete:
+    operationId: 'deleteBooking'
+    security:
+      - JWT: []
+    parameters:
+      - $ref: '#/components/parameters/ID'
+        name: ID
+        schema:
+          type: string
         required: true
-      responses:
-        '200':
-          description: The booking change was accepted. The booking status will display whether the booking of all devices was successful.
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - BookingID
-                properties:
-                  BookingID:
-                    type: string
-                    format: uri
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown booking ID.
-        '423':
-          description: >-
-            The booking 'locked' status and the requested locked status do not match.
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error description
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-    delete:
-      operationId: 'deleteBooking'
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/ID'
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      tags:
-        - booking-frontend
-      summary: Cancels a booking, as long as the booking was originally done by you.
-      responses:
-        '200':
-          description: >-
-            The booking was cancelled. All associated devices were released.
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown booking ID.
-        '423':
-          description: >-
-            The booking is currently locked, deletion not possible.
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error description
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-    get:
-      operationId: 'getBooking'
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/ID'
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      tags:
+        description: ID of Booking
+    tags:
       - booking-frontend
-      summary: >-
-        Returns whether a list of devices is currently booked for a user
-      responses:
-        '200':
-          description: Returns the current booking.
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                 - Booking
-                 - Locked
-                properties:
-                  Booking:
-                    $ref: '#/components/schemas/Booking'
-                  Locked:
-                    type: boolean
-                    description: Shows if the booking is in a locked status.
-        '401':
-          description: No authorisation header found.
-        '404':
-          description: Request contains unknown ID
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error code
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
-  /booking/{ID}/destroy:
-    delete:
-      operationId: 'destroyBooking'
-      security:
-        - JWT: []
-      parameters:
-        - $ref: '#/components/parameters/ID'
-          name: ID
-          schema:
-            type: string
-          required: true
-          description: ID of Booking
-      tags:
-        - booking-frontend
-      summary: Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
-      responses:
-        '200':
-          description: >-
-            The booking was cancelled. All associated devices were released.
-        '401':
-          description: No authorisation header found.
-        '403':
-          description: User is not allowed to destroy bookings.
-        '404':
-          description: Request contains unknown booking ID.
-        '423':
-          description: >-
-            The booking is currently locked, deletion not possible.
-        '500':
-          description: >-
-            Request could not be answered. An error string containing the reason
-            will be returned.
-          content:
-            application/json:
-              schema:
-                type: string
-                description: Error description
-        '503':
-          description: >-
-            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+    summary: Cancels a booking, as long as the booking was originally done by you.
+    responses:
+      '200':
+        description: >-
+          The booking was cancelled. All associated devices were released.
+      '401':
+        description: No authorisation header found.
+      '404':
+        description: Request contains unknown booking ID.
+      '423':
+        description: >-
+          The booking is currently locked, deletion not possible.
+      '500':
+        description: >-
+          Request could not be answered. An error string containing the reason
+          will be returned.
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Error description
+      '503':
+        description: >-
+          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+  get:
+    operationId: 'getBooking'
+    security:
+      - JWT: []
+    parameters:
+      - $ref: '#/components/parameters/ID'
+        name: ID
+        schema:
+          type: string
+        required: true
+        description: ID of Booking
+    tags:
+      - booking-frontend
+    summary: >-
+      Returns whether a list of devices is currently booked for a user
+    responses:
+      '200':
+        description: Returns the current booking.
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - Booking
+                - Locked
+              properties:
+                Booking:
+                  $ref: '#/components/schemas/Booking'
+                Locked:
+                  type: boolean
+                  description: Shows if the booking is in a locked status.
+      '401':
+        description: No authorisation header found.
+      '404':
+        description: Request contains unknown ID
+      '500':
+        description: >-
+          Request could not be answered. An error string containing the reason
+          will be returned.
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Error code
+      '503':
+        description: >-
+          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+/booking/{ID}/destroy:
+  delete:
+    operationId: 'destroyBooking'
+    security:
+      - JWT: []
+    parameters:
+      - $ref: '#/components/parameters/ID'
+        name: ID
+        schema:
+          type: string
+        required: true
+        description: ID of Booking
+    tags:
+      - booking-frontend
+    summary: Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
+    responses:
+      '200':
+        description: >-
+          The booking was cancelled. All associated devices were released.
+      '401':
+        description: No authorisation header found.
+      '403':
+        description: User is not allowed to destroy bookings.
+      '404':
+        description: Request contains unknown booking ID.
+      '423':
+        description: >-
+          The booking is currently locked, deletion not possible.
+      '500':
+        description: >-
+          Request could not be answered. An error string containing the reason
+          will be returned.
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Error description
+      '503':
+        description: >-
+          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.

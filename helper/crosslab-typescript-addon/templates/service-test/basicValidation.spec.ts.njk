@@ -6,99 +6,101 @@
  */
 
 import assert from "assert";
-import { JSONSchemaFaker, Schema } from "json-schema-faker";
 import RandExp from "randexp";
 import seedrandom from "seedrandom";
+import { JSONSchemaFaker, Schema } from "json-schema-faker";
 import {
     {%- for schema in schemas %}
     validate{{ schema["x-name"] | cap }},
     {%- endfor %}
-} from "../../src/generated/basicValidation"
+} from "../../src/generated/basicValidation.js"
 
-export default () => describe("Basic Validation Tests", function () {
-    this.beforeAll(function () {
-        const randexpJWT = new RandExp(/^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
-        const randexpMacAddress = new RandExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
+export default async () => {
+    describe("Basic Validation Tests", function () {
+        this.beforeAll(function () {
+            const randexpJWT = new RandExp(/^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)/)
+            const randexpMacAddress = new RandExp(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
 
-        const rngJWT = seedrandom("jwt")
-        const rngMacAddress = seedrandom("mac_address")
+            const rngJWT = seedrandom("jwt")
+            const rngMacAddress = seedrandom("mac_address")
+            
+            randexpJWT.randInt = (from, to) => from + (rngJWT() * (to - from)) 
+            randexpMacAddress.randInt = (from, to) => from + (rngMacAddress() * (to - from)) 
+
+            JSONSchemaFaker.format({
+                "jwt": (_) => randexpJWT.gen(),
+                "mac_address": (_) => randexpMacAddress.gen()
+            })
+        })
+
+    {%- for schema in schemas %}
+
+        it("should correctly validate valid {{ schema["x-name"] }} objects", function () {
+            JSONSchemaFaker.option({
+                random: seedrandom("{{ schema["x-name"] }}")
+            })
+            {% set standardSchema = schema | clone -%}
+            {% for key, value in standardSchema -%}
+                {%- if key | startsWith("x-") -%}
+                    {{ standardSchema | delete(key) }}
+                {%- endif -%}
+            {% endfor -%}
+            const schema: Schema = {{ standardSchema | stringify(4) | indent(8) }}
+            {# for (let i = 0; i < 100; i++) { #}
+            const fake = JSONSchemaFaker.generate(schema)
+            assert(validate{{ schema["x-name"] | cap }}(fake))
+            {# } #}
+        })
+
+        {%- for schemaWithoutUnrequired in (schema | generateSchemasWithoutUnrequired) %}
+
+        it("should correctly validate valid {{ schema["x-name"] }} objects with missing {{ schemaWithoutUnrequired.path }} property", function () {
+            JSONSchemaFaker.option({
+                random: seedrandom("unrequired {{ schema["x-name"] }}")
+            })
+            {% set standardSchemaWithoutUnrequired = schemaWithoutUnrequired.schema | clone -%}
+            {% for key, value in standardSchemaWithoutUnrequired -%}
+                {%- if key | startsWith("x-") -%}
+                    {{ standardSchemaWithoutUnrequired | delete(key) }}
+                {%- endif -%}
+            {% endfor -%}
+            const schema: Schema = {{ standardSchemaWithoutUnrequired | stringify(4) | indent(8) }}
+            {# for (let i = 0; i < 100; i++) { #}
+            const fake = JSONSchemaFaker.generate(schema)
+            assert(validate{{ schema["x-name"] | cap }}(fake))
+            {# } #}
+        })
+        {%- endfor %}
+
+        {%- for invalidSchema in (schema | generateInvalidSchemas) %}
         
-        randexpJWT.randInt = (from, to) => from + (rngJWT() * (to - from)) 
-        randexpMacAddress.randInt = (from, to) => from + (rngMacAddress() * (to - from)) 
-
-        JSONSchemaFaker.format({
-            "jwt": (_) => randexpJWT.gen(),
-            "mac_address": (_) => randexpMacAddress.gen()
+        {% if invalidSchema.operation == "remove" -%}
+        it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property", function () {
+        {% elif invalidSchema.operation == "change-type" -%}
+        it("should correctly validate invalid {{ schema["x-name"] }} objects with changed {{ invalidSchema.path }} property type", function () {
+        {% elif invalidSchema.operation == "negate-type" -%}
+        it("should correctly validate invalid {{ schema["x-name"] }} objects with negated {{ invalidSchema.path }} property type", function () {
+        {% elif invalidSchema.operation == "remove-format" -%}
+        it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property format", function () {
+        {% elif invalidSchema.operation == "remove-enum" -%}
+        it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property enum", function () {
+        {% endif -%}
+            JSONSchemaFaker.option({
+                random: seedrandom("invalid {{ schema["x-name"] }}")
+            })
+            {% set standardInvalidSchema = invalidSchema.schema | clone -%}
+            {% for key, value in standardInvalidSchema -%}
+                {%- if key | startsWith("x-") -%}
+                    {{ standardInvalidSchema | delete(key) }}
+                {%- endif -%}
+            {% endfor -%}
+            const schema: Schema = {{ standardInvalidSchema | stringify(4) | indent(8) }}
+            {# for (let i = 0; i < 100; i++) { #}
+            const fake = JSONSchemaFaker.generate(schema)
+            assert(!validate{{ schema["x-name"] | cap }}(fake))
+            {# } #}
         })
-    })
-
-{%- for schema in schemas %}
-
-    it("should correctly validate valid {{ schema["x-name"] }} objects", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("{{ schema["x-name"] }}")
-        })
-        {% set standardSchema = schema | clone -%}
-        {% for key, value in standardSchema -%}
-            {%- if key | startsWith("x-") -%}
-                {{ standardSchema | delete(key) }}
-            {%- endif -%}
-        {% endfor -%}
-        const schema: Schema = {{ standardSchema | stringify(4) | indent(8) }}
-        {# for (let i = 0; i < 100; i++) { #}
-        const fake = JSONSchemaFaker.generate(schema)
-        assert(validate{{ schema["x-name"] | cap }}(fake))
-        {# } #}
-    })
-
-    {%- for schemaWithoutUnrequired in (schema | generateSchemasWithoutUnrequired) %}
-
-    it("should correctly validate valid {{ schema["x-name"] }} objects with missing {{ schemaWithoutUnrequired.path }} property", function () {
-        JSONSchemaFaker.option({
-            random: seedrandom("unrequired {{ schema["x-name"] }}")
-        })
-        {% set standardSchemaWithoutUnrequired = schemaWithoutUnrequired.schema | clone -%}
-        {% for key, value in standardSchemaWithoutUnrequired -%}
-            {%- if key | startsWith("x-") -%}
-                {{ standardSchemaWithoutUnrequired | delete(key) }}
-            {%- endif -%}
-        {% endfor -%}
-        const schema: Schema = {{ standardSchemaWithoutUnrequired | stringify(4) | indent(8) }}
-        {# for (let i = 0; i < 100; i++) { #}
-        const fake = JSONSchemaFaker.generate(schema)
-        assert(validate{{ schema["x-name"] | cap }}(fake))
-        {# } #}
-    })
+        {%- endfor %}
     {%- endfor %}
-
-    {%- for invalidSchema in (schema | generateInvalidSchemas) %}
-    
-    {% if invalidSchema.operation == "remove" -%}
-    it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property", function () {
-    {% elif invalidSchema.operation == "change-type" -%}
-    it("should correctly validate invalid {{ schema["x-name"] }} objects with changed {{ invalidSchema.path }} property type", function () {
-    {% elif invalidSchema.operation == "negate-type" -%}
-    it("should correctly validate invalid {{ schema["x-name"] }} objects with negated {{ invalidSchema.path }} property type", function () {
-    {% elif invalidSchema.operation == "remove-format" -%}
-    it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property format", function () {
-    {% elif invalidSchema.operation == "remove-enum" -%}
-    it("should correctly validate invalid {{ schema["x-name"] }} objects with removed {{ invalidSchema.path }} property enum", function () {
-    {% endif -%}
-        JSONSchemaFaker.option({
-            random: seedrandom("invalid {{ schema["x-name"] }}")
-        })
-        {% set standardInvalidSchema = invalidSchema.schema | clone -%}
-        {% for key, value in standardInvalidSchema -%}
-            {%- if key | startsWith("x-") -%}
-                {{ standardInvalidSchema | delete(key) }}
-            {%- endif -%}
-        {% endfor -%}
-        const schema: Schema = {{ standardInvalidSchema | stringify(4) | indent(8) }}
-        {# for (let i = 0; i < 100; i++) { #}
-        const fake = JSONSchemaFaker.generate(schema)
-        assert(!validate{{ schema["x-name"] | cap }}(fake))
-        {# } #}
     })
-    {%- endfor %}
-{%- endfor %}
-})
+}

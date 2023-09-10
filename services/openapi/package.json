@@ -1,14 +1,22 @@
 {
-    "name": "@crosslab/openapi-spec",
-    "version": "0.0.1",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "openapi-lint": "node generate.js && npx --yes @redocly/cli lint ./openapi.yml",
-        "openapi-bundle": "node generate.js && npx --yes @redocly/cli bundle ./openapi.yml --output dist/openapi.json && node update.js",
-        "watch-openapi": "npx --yes chokidar-cli './**/*.yml' -c 'npm run openapi-bundle'",
-        "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'rapidoc.html' --files 'dist/openapi.json'"
-    },
-    "author": "Johannes Nau",
-    "license": "UNLICENSED"
+  "name": "@crosslab/openapi-spec",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "openapi-lint": "node generate.js && npx --yes @redocly/cli lint ./openapi.yml",
+    "openapi-bundle": "node generate.js && npx --yes @redocly/cli bundle ./openapi.yml --output dist/openapi.json && node update.js",
+    "watch-openapi": "npx --yes chokidar-cli './**/*.yml' -c 'npm run openapi-bundle'",
+    "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'rapidoc.html' --files 'dist/openapi.json'",
+    "format": "prettier . --write",
+    "lint": "eslint ."
+  },
+  "author": "Johannes Nau",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "^3.0.3"
+  },
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0"
+  }
 }

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json#/$defs/components
+
+components:
+  paths:
+    token:
+      post:
+        operationId: createToken
+        security: []
+        summary: Create a new token
+        description: |-
+          This endpoint will create a new token for the use of the microservice architecture.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The username of the user.
+                  claims:
+                    type: object
+                    description: |
+                      The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+        responses:
+          201:
+            description: The token was created successfully.
+            content:
+              application/json:
+                schema:
+                  type: string

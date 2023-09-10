@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Create Peerconnection Message
 allOf:
-  - $ref: "./command_message.yml"
+  - $ref: './command_message.yml'
   - type: object
     properties:
       command:
@@ -19,7 +19,7 @@ allOf:
         type: array
         items:
           type: object
-          $ref: "../devices/services/service_config.yml"
+          $ref: '../devices/services/service_config.yml'
           required:
             - serviceType
             - serviceId

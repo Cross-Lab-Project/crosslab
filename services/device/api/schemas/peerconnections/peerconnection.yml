@@ -9,7 +9,7 @@ allOf:
         minItems: 2
         maxItems: 2
         items:
-          $ref: "../devices/references/configured_device_reference.yml"
+          $ref: '../devices/references/configured_device_reference.yml'
     required:
       - devices
 x-typeguard: true

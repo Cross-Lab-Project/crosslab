@@ -10,7 +10,7 @@ post:
         - device:connect
         - device:connect:current
   parameters:
-    - $ref: "../parameters/device_id.yml"
+    - $ref: '../parameters/device_id.yml'
   responses:
     200:
       description: The newly generated websocket token for the device.

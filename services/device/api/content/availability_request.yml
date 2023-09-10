@@ -4,7 +4,7 @@ schema:
   description: The availability rule to be applied.
   type: array
   items:
-    $ref: "../schemas/devices/availability/availability_rule.yml"
+    $ref: '../schemas/devices/availability/availability_rule.yml'
 examples:
   make_the_device_always_unavailable:
     description: Make the device always unavailable

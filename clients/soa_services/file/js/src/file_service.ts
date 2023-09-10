@@ -1,9 +1,14 @@
-import {Consumer, Producer, Service, ServiceConfiguration} from '@cross-lab-project/soa-client';
-import {DataChannel} from '@cross-lab-project/soa-client';
-import {PeerConnection} from '@cross-lab-project/soa-client';
-import {TypedEmitter} from 'tiny-typed-emitter';
+import {
+  Consumer,
+  Producer,
+  Service,
+  ServiceConfiguration,
+} from '@cross-lab-project/soa-client';
+import { DataChannel } from '@cross-lab-project/soa-client';
+import { PeerConnection } from '@cross-lab-project/soa-client';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-import {FileServiceEvent} from './messages';
+import { FileServiceEvent } from './messages';
 
 type ServiceType = 'https://api.goldi-labs.de/serviceTypes/file';
 const ServiceType: ServiceType = 'https://api.goldi-labs.de/serviceTypes/file';
@@ -11,7 +16,9 @@ const ServiceType: ServiceType = 'https://api.goldi-labs.de/serviceTypes/file';
 export interface FileServiceConfiguration extends ServiceConfiguration {
   serviceType: ServiceType;
 }
-function checkConfig(config: ServiceConfiguration): asserts config is FileServiceConfiguration {
+function checkConfig(
+  config: ServiceConfiguration,
+): asserts config is FileServiceConfiguration {
   if (config.serviceType !== ServiceType) {
     //throw Error("Service Configuration needs to be for FileService type");
   }
@@ -39,9 +46,9 @@ export class FileService__Producer implements Service {
     checkConfig(serviceConfig);
     const channel = new DataChannel();
     if (connection.tiebreaker) {
-      connection.transmit(serviceConfig, "data", channel);
+      connection.transmit(serviceConfig, 'data', channel);
     } else {
-      connection.receive(serviceConfig, "data", channel);
+      connection.receive(serviceConfig, 'data', channel);
     }
     this.channel = channel;
   }
@@ -49,7 +56,7 @@ export class FileService__Producer implements Service {
   async sendFile(fileType: string, content: Uint8Array) {
     if (this.channel !== undefined) {
       await this.channel.ready();
-      this.channel.send(JSON.stringify({fileType: fileType, length: content.length}));
+      this.channel.send(JSON.stringify({ fileType: fileType, length: content.length }));
       this.channel.send(content);
     }
   }
@@ -59,7 +66,10 @@ interface FileService__ConsumerEvents {
   file: (event: FileServiceEvent) => void;
 }
 
-export class FileService__Consumer extends TypedEmitter<FileService__ConsumerEvents> implements Service {
+export class FileService__Consumer
+  extends TypedEmitter<FileService__ConsumerEvents>
+  implements Service
+{
   serviceType = ServiceType;
   serviceId: string;
   serviceDirection = Consumer;
@@ -82,9 +92,9 @@ export class FileService__Consumer extends TypedEmitter<FileService__ConsumerEve
     const channel = new DataChannel();
     channel.ondata = this.handleData.bind(this);
     if (connection.tiebreaker) {
-      connection.transmit(serviceConfig, "data", channel);
+      connection.transmit(serviceConfig, 'data', channel);
     } else {
-      connection.receive(serviceConfig, "data", channel);
+      connection.receive(serviceConfig, 'data', channel);
     }
   }
 
@@ -95,7 +105,7 @@ export class FileService__Consumer extends TypedEmitter<FileService__ConsumerEve
       this.header = JSON.parse(data);
     } else if (typeof data === 'object' && data instanceof ArrayBuffer) {
       const content = new Uint8Array(data);
-      this.emit('file', {file_type: this.header.fileType, file: content});
+      this.emit('file', { file_type: this.header.fileType, file: content });
     }
   }
 }

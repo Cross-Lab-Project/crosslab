@@ -6,16 +6,16 @@ get:
     - user
   security:
     - JWT:
-      - users
-      - users:read
+        - users
+        - users:read
   parameters:
-    - $ref: "../parameters/user_id.yml"
+    - $ref: '../parameters/user_id.yml'
   responses:
     200:
       description: The JSON respresentation of the user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:
@@ -33,21 +33,22 @@ patch:
     - user
   security:
     - JWT:
-      - users
-      - users:write
+        - users
+        - users:write
   parameters:
-    - $ref: "../parameters/user_id.yml"
+    - $ref: '../parameters/user_id.yml'
   requestBody:
     description: Updated user
+    required: true
     content:
       application/json:
-        $ref: "../content/user_update.yml"
+        $ref: '../content/user_update.yml'
   responses:
     200:
       description: The JSON representation of the updated user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          $ref: '../content/user.yml'
     400:
       description: Bad Request.
     401:
@@ -65,10 +66,10 @@ delete:
     - user
   security:
     - JWT:
-      - users
-      - users:delete
+        - users
+        - users:delete
   parameters:
-    - $ref: "../parameters/user_id.yml"
+    - $ref: '../parameters/user_id.yml'
   responses:
     204:
       description: User deleted successfully

@@ -1,28 +1,42 @@
-import { repositories } from '../../../database/dataSource'
-import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
-import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager'
-import { logger } from '@crosslab/service-common'
+import { logger } from '@crosslab/service-common';
+
+import { repositories } from '../../../database/dataSource.js';
+import { deletePeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures.js';
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
 
 /**
- * This function implements the functionality for handling DELETE requests on /peerconnection/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /peerconnection/{peerconnection_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
-    async (parameters, _user) => {
-        logger.log('info', 'deletePeerconnectionsByPeerconnectionId called')
+  async (req, parameters) => {
+    logger.log('info', 'deletePeerconnectionsByPeerconnectionId called');
 
-        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-            where: { uuid: parameters.peerconnection_id },
-        })
+    await req.authorization.check_authorization_or_fail(
+      'delete',
+      `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
+    );
 
-        await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid)
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: { uuid: parameters.peerconnection_id },
+    });
 
-        await repositories.peerconnection.remove(peerconnectionModel)
+    await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
 
-        logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded')
+    await req.authorization.unrelate(
+      req.authorization.user,
+      'owner',
+      `peerconnection:${peerconnectionUrlFromId(peerconnectionModel.uuid)}`,
+    );
 
-        return {
-            status: 204,
-        }
-    }
+    await repositories.peerconnection.remove(peerconnectionModel);
+
+    logger.log('info', 'deletePeerconnectionsByPeerconnectionId succeeded');
+
+    return {
+      status: 204,
+    };
+  };

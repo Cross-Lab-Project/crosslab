@@ -11,4 +11,4 @@ schema:
       enum:
         - experiment-changed
     device:
-      $ref: "../schemas/experiment.yml"
+      $ref: '../schemas/experiment.yml'

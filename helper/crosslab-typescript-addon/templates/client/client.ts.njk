@@ -30,15 +30,15 @@
  */
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
 
 import {
     {{ signatureDependencies | unique | join(",\n\t") }}
-} from "./signatures"
+} from "./signatures.js"
 
 import {
     {{ validationDependencies | unique | join(",\n\t") }}
-} from "./requestValidation"
+} from "./requestValidation.js"
 
 import fetch from "cross-fetch"
 
@@ -284,23 +284,20 @@ export class APIClient {
             {%- endif %}
 
             {#- Construct optional parameters #}
-            {%- if  (destructured | select("attrequalto", ["required", false]) | length > 0) or 
-                    (operation.parameters and operation.parameters | select("attrequalto", ["required", false]) | length > 0) or
-                    optionalUrl %}
-                options?: {
-                    {#- Add optional properties of destructured request body schema #}
-                    {%- for property in destructured | select("attrequalto", ["required", false]) %}
-                        {{ property.name }}?: {{ property.declaration }},
+            options?: {
+                {#- Add optional properties of destructured request body schema #}
+                headers?: [string, string][],
+                {%- for property in destructured | select("attrequalto", ["required", false]) %}
+                    {{ property.name }}?: {{ property.declaration }},
+                {%- endfor %}
+                {#- Add optional parameters #}
+                {%- if operation.parameters %}
+                    {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) %}
+                        {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
                     {%- endfor %}
-                    {#- Add optional parameters #}
-                    {%- if operation.parameters %}
-                        {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) %}
-                            {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": (operation.serviceName | formatName) + "Types.", "inline": true }) }}
-                        {%- endfor %}
-                    {%- endif %}
-                    {{- "url?: string" if optionalUrl -}}
-                }
-            {%- endif %}
+                {%- endif %}
+                {{- "url?: string" if optionalUrl -}}
+            }
         {%- endset %}
 
         {#- Construct body variable declaration #}
@@ -375,27 +372,23 @@ export class APIClient {
             {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixDirectlyResolved": types + ".", "schemaType": "request" }) if operation.requestBody.schema else signatures + "." + cap_name + "Body" -}},
             {%- endif -%}
 
-            {#- Add declaration of parameters and optional url if defined #}
-            {%- if operation.parameters or optionalUrl -%}
-                {#- Add declaration of required parameters #}
+            {#- Add declaration of required parameters #}
+            {%- if operation.parameters -%}
+                {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) -%}
+                    {{- parameter.name + ": " + (parameter.schema | typeDeclaration) + "," if (parameter.in != "path" or buildUrl) -}}
+                {%- endfor -%}
+            {%- endif -%}
+
+            {#- Add declaration of optional parameters / optional url #}
+            options?: {
+                headers?: [string, string][],
                 {%- if operation.parameters -%}
-                    {%- for parameter in operation.parameters | select("attrequalto", ["required", true]) -%}
-                        {{- parameter.name + ": " + (parameter.schema | typeDeclaration) + "," if (parameter.in != "path" or buildUrl) -}}
+                    {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) -%}
+                        {{- parameter.name + "?: " + (parameter.schema | typeDeclaration) -}},
                     {%- endfor -%}
                 {%- endif -%}
-
-                {#- Add declaration of optional parameters / optional url #}
-                {%- if (operation.parameters and operation.parameters | select("attrequalto", ["required", false]) | length > 0) or optionalUrl -%}
-                    options?: {
-                        {%- if operation.parameters -%}
-                            {%- for parameter in operation.parameters | select("attrequalto", ["required", false]) -%}
-                                {{- parameter.name + "?: " + (parameter.schema | typeDeclaration) -}},
-                            {%- endfor -%}
-                        {%- endif -%}
-                        {{- "url?: string" if optionalUrl -}}
-                    }
-                {%- endif -%}
-            {%- endif -%}
+                {{- "url?: string" if optionalUrl -}}
+            }
         {%- endset %}
 
         {#- Construct body variable declaration #}
@@ -472,7 +465,7 @@ export class APIClient {
     {%- endif -%}
 
     {#- Override input, params and body for logout operation #}
-    {%- set input = ("" if low_name == "logout" else input) -%}
+    {%- set input = ("options?: { headers?: [string, string][] }" if low_name == "logout" else input) -%}
     {%- set params = ("" if low_name == "logout" else params) -%}
     {%- set body = ("const body: AuthenticationServiceSignatures.LogoutBody = { token: this._accessToken }" if low_name == "logout" else body) -%}
 
@@ -551,12 +544,13 @@ export class APIClient {
             headers: [
                 ["Content-Type", "application/json"],
                 {%- for headerParameter in headerParameters %}
-                "{{ headerParameter.name }}", parameters.{{ headerParameter.name }}
+                ["{{ headerParameter.name }}", parameters.{{ headerParameter.name }}],
                 {%- endfor %}
                 {%- if operation.security | selectattr("JWT") | length > 0 -%}
                 {{ "," if headerParameters | length > 0 }}
-                ["Authorization", authorization]
+                ["Authorization", authorization],
                 {%- endif %}
+                ...(options?.headers ?? [])
             ] 
             {%- if operation.requestBody | length > 0 -%}
             , 
@@ -587,4 +581,4 @@ export class APIClient {
     {%- endfor %}
 }
 {%- endmacro -%}
-{{ generateIndex() | prettier }}
+{{ generateIndex() }}

@@ -1,144 +1,168 @@
-import { AppDataSource } from '../database/dataSource'
+import { InvalidChangeError, MissingEntityError } from '@crosslab/service-common';
+
+import { AppDataSource } from '../database/dataSource';
+import { UpdateInformationModel } from '../database/model';
 import {
-    getUpdatesSignature,
-    deleteUpdatesByDeviceIdSignature,
-    getUpdatesByDeviceIdSignature,
-    patchUpdatesByDeviceIdSignature,
-    postUpdatesSignature,
-} from '../generated/signatures'
-import { formatUpdateInformation } from '../methods/format'
-import { writeUpdateInformation } from '../methods/write'
-import { UpdateInformationModel } from '../model'
-import { InvalidChangeError, MissingEntityError } from '@crosslab/service-common'
+  deleteUpdatesByDeviceIdSignature,
+  getUpdatesByDeviceIdSignature,
+  getUpdatesSignature,
+  patchUpdatesByDeviceIdSignature,
+  postUpdatesSignature,
+} from '../generated/signatures';
+import { formatUpdateInformation } from '../methods/format';
+import { writeUpdateInformation } from '../methods/write';
 
 /**
- * This function implements the functionality for handling POST requests on /updates endpoint.
- * @param _user The user submitting the request.
+ * This function implements the functionality for handling POST requests on
+ * /updates endpoint.
+ * @param authorization The authorization helper object for the request.
  */
-export const getUpdates: getUpdatesSignature = async (_user) => {
-    const updateInformationRepository =
-        AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformationArray = await updateInformationRepository.find()
+export const getUpdates: getUpdatesSignature = async authorization => {
+  await authorization.check_authorization_or_fail('view', `update`);
 
-    return {
-        status: 200,
-        body: updateInformationArray.map(formatUpdateInformation),
-    }
-}
+  const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel);
+  const updateInformationArray = await updateInformationRepository.find();
+
+  return {
+    status: 200,
+    body: updateInformationArray.map(formatUpdateInformation),
+  };
+};
 
 /**
- * This function implements the functionality for handling POST requests on /updates endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /updates endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  */
-export const postUpdates: postUpdatesSignature = async (body, _user) => {
-    const updateInformationRepository =
-        AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = updateInformationRepository.create()
+export const postUpdates: postUpdatesSignature = async (authorization, body) => {
+  await authorization.check_authorization_or_fail('create', `update`);
 
-    writeUpdateInformation(updateInformation, body)
-    await updateInformationRepository.save(updateInformation)
+  const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel);
+  const updateInformation = updateInformationRepository.create();
 
-    return {
-        status: 201,
-        body: formatUpdateInformation(updateInformation),
-    }
-}
+  writeUpdateInformation(updateInformation, body);
+  await updateInformationRepository.save(updateInformation);
+
+  return {
+    status: 201,
+    body: formatUpdateInformation(updateInformation),
+  };
+};
 
 /**
- * This function implements the functionality for handling GET requests on /updates/{device_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /updates/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  */
-export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (parameters) => {
-    const updateInformationRepository =
-        AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({
-        device_id: parameters.device_id,
-    })
+export const getUpdatesByDeviceId: getUpdatesByDeviceIdSignature = async (
+  authorization,
+  parameters,
+) => {
+  await authorization.check_authorization_or_fail(
+    'view',
+    `update:${parameters.device_id}`,
+  );
 
-    if (!updateInformation) {
-        throw new MissingEntityError(
-            `Could not find update for device ${parameters.device_id}`,
-            404
-        )
-    }
+  const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel);
+  const updateInformation = await updateInformationRepository.findOneBy({
+    device_id: parameters.device_id,
+  });
 
-    if (parameters.current_version !== updateInformation.latest_version) {
-        return {
-            status: 303,
-            headers: {
-                Location: updateInformation.latest_version_link,
-            },
-        }
-    }
+  if (!updateInformation) {
+    throw new MissingEntityError(
+      `Could not find update for device ${parameters.device_id}`,
+      404,
+    );
+  }
 
+  if (parameters.current_version !== updateInformation.latest_version) {
     return {
-        status: 200,
-    }
-}
+      status: 303,
+      headers: {
+        Location: updateInformation.latest_version_link,
+      },
+    };
+  }
+
+  return {
+    status: 200,
+  };
+};
 
 /**
- * This function implements the functionality for handling DELETE requests on /updates/{device_id} endpoint.
+ * This function implements the functionality for handling DELETE requests on
+ * /updates/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const deleteUpdatesByDeviceId: deleteUpdatesByDeviceIdSignature = async (
-    parameters,
-    _user
+  authorization,
+  parameters,
 ) => {
-    const updateInformationRepository =
-        AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({
-        device_id: parameters.device_id,
-    })
+  await authorization.check_authorization_or_fail(
+    'delete',
+    `update:${parameters.device_id}`,
+  );
 
-    if (!updateInformation) {
-        throw new MissingEntityError(
-            `Could not find update for device ${parameters.device_id}`,
-            404
-        )
-    }
+  const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel);
+  const updateInformation = await updateInformationRepository.findOneBy({
+    device_id: parameters.device_id,
+  });
 
-    await updateInformationRepository.delete(updateInformation)
+  if (!updateInformation) {
+    throw new MissingEntityError(
+      `Could not find update for device ${parameters.device_id}`,
+      404,
+    );
+  }
 
-    return {
-        status: 204,
-    }
-}
+  await updateInformationRepository.delete(updateInformation);
+
+  return {
+    status: 204,
+  };
+};
 
 /**
- * This function implements the functionality for handling PATCH requests on /updates/{device_id} endpoint.
+ * This function implements the functionality for handling PATCH requests on
+ * /updates/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param _user The user submitting the request.
  */
 export const patchUpdatesByDeviceId: patchUpdatesByDeviceIdSignature = async (
-    parameters,
-    body,
-    _user
+  authorization,
+  parameters,
+  body,
 ) => {
-    const updateInformationRepository =
-        AppDataSource.getRepository(UpdateInformationModel)
-    const updateInformation = await updateInformationRepository.findOneBy({
-        device_id: parameters.device_id,
-    })
+  await authorization.check_authorization_or_fail(
+    'edit',
+    `update:${parameters.device_id}`,
+  );
 
-    if (!updateInformation) {
-        throw new MissingEntityError(
-            `Could not find update for device ${parameters.device_id}`,
-            404
-        )
-    }
+  const updateInformationRepository = AppDataSource.getRepository(UpdateInformationModel);
+  const updateInformation = await updateInformationRepository.findOneBy({
+    device_id: parameters.device_id,
+  });
 
-    if (updateInformation.device_id != body.device_id) {
-        throw new InvalidChangeError(`Cannot change device id of update`, 400)
-    }
+  if (!updateInformation) {
+    throw new MissingEntityError(
+      `Could not find update for device ${parameters.device_id}`,
+      404,
+    );
+  }
 
-    writeUpdateInformation(updateInformation, body)
-    await updateInformationRepository.save(updateInformation)
+  if (updateInformation.device_id != body.device_id) {
+    throw new InvalidChangeError(`Cannot change device id of update`, 400);
+  }
 
-    return {
-        status: 200,
-        body: formatUpdateInformation(updateInformation),
-    }
-}
+  writeUpdateInformation(updateInformation, body);
+  await updateInformationRepository.save(updateInformation);
+
+  return {
+    status: 200,
+    body: formatUpdateInformation(updateInformation),
+  };
+};

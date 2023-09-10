@@ -1,11 +1,14 @@
 /// <reference types="../context" />
-import {ExperimentServiceTypes} from '@cross-lab-project/api-client';
-import {expect} from 'chai';
+import { ExperimentServiceTypes } from '@cross-lab-project/api-client';
+import { expect } from 'chai';
 
-import {clientTypes} from '../fixtures/dummyDevice';
-import {ExperimentTest} from '../helper/experimentTest';
+import { clientTypes } from '../fixtures/dummyDevice';
+import { ExperimentTest } from '../helper/experimentTest';
 
-const gpioExperimentConfiguration: ExperimentServiceTypes.Experiment = {
+const gpioExperimentConfiguration: Omit<
+  ExperimentServiceTypes.Experiment<'request'>,
+  'status'
+> = {
   serviceConfigurations: [
     {
       serviceType: 'http://api.goldi-labs.de/serviceTypes/electrical',
@@ -84,19 +87,25 @@ for (const client1Type of clientTypes) {
 
       it('should transmit initial gpio value', async function () {
         this.timeout(this.debug ? 0 : 60000);
-        this.experiment.devices[0].send('gpio', {signal: 'gpio1', value: 'strongH'});
-        this.experiment.devices[0].send('gpio', {signal: 'gpio2', value: 'strongL'});
+        this.experiment.devices[0].send('gpio', {
+          signal: 'gpio1',
+          value: 'strongH',
+        });
+        this.experiment.devices[0].send('gpio', {
+          signal: 'gpio2',
+          value: 'strongL',
+        });
         await this.experiment.run(this.client, gpioExperimentConfiguration);
 
         await this.experiment.eventCount(4);
 
         expect(this.experiment.events[0].gpio).deep.equal([
-          {signal: 'gpio1', value: 'strongH'},
-          {signal: 'gpio2', value: 'strongL'},
+          { signal: 'gpio1', value: 'strongH' },
+          { signal: 'gpio2', value: 'strongL' },
         ]);
         expect(this.experiment.events[1].gpio).deep.equal([
-          {signal: 'gpio1', value: 'strongH'},
-          {signal: 'gpio2', value: 'strongL'},
+          { signal: 'gpio1', value: 'strongH' },
+          { signal: 'gpio2', value: 'strongL' },
         ]);
       });
 
@@ -105,18 +114,24 @@ for (const client1Type of clientTypes) {
 
         await this.experiment.run(this.client, gpioExperimentConfiguration);
 
-        this.experiment.devices[0].send('gpio', {signal: 'gpio1', value: 'strongH'});
-        this.experiment.devices[0].send('gpio', {signal: 'gpio2', value: 'strongL'});
+        this.experiment.devices[0].send('gpio', {
+          signal: 'gpio1',
+          value: 'strongH',
+        });
+        this.experiment.devices[0].send('gpio', {
+          signal: 'gpio2',
+          value: 'strongL',
+        });
 
         await this.experiment.eventCount(4);
 
         expect(this.experiment.events[0].gpio).deep.equal([
-          {signal: 'gpio1', value: 'strongH'},
-          {signal: 'gpio2', value: 'strongL'},
+          { signal: 'gpio1', value: 'strongH' },
+          { signal: 'gpio2', value: 'strongL' },
         ]);
         expect(this.experiment.events[1].gpio).deep.equal([
-          {signal: 'gpio1', value: 'strongH'},
-          {signal: 'gpio2', value: 'strongL'},
+          { signal: 'gpio1', value: 'strongH' },
+          { signal: 'gpio2', value: 'strongL' },
         ]);
       });
     });

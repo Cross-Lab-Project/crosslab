@@ -1,78 +1,86 @@
-import { repositories } from '../../../../database/dataSource'
-import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures'
-import { deviceUrlFromId } from '../../../../methods/urlFromId'
 import {
-    ImpossibleOperationError,
-    MissingEntityError as _MissingEntityError,
-    logger,
-} from '@crosslab/service-common'
-import { randomUUID } from 'crypto'
+  ImpossibleOperationError,
+  MissingEntityError as _MissingEntityError,
+  logger,
+} from '@crosslab/service-common';
+import { randomUUID } from 'crypto';
+
+import { repositories } from '../../../../database/dataSource.js';
+import { postDevicesByDeviceIdWebsocketSignature } from '../../../../generated/signatures.js';
+import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id}/token endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id}/token endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
- * @throws {_MissingEntityError} Thrown if device is not found in the database.
+ * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const postDevicesByDeviceIdWebsocket: postDevicesByDeviceIdWebsocketSignature =
-    async (parameters, _user) => {
-        logger.log('info', 'postDevicesByDeviceIdWebsocket called')
+  async (req, parameters) => {
+    logger.log('info', 'postDevicesByDeviceIdWebsocket called');
 
-        const deviceModel = await repositories.device.findOneOrFail({
-            where: {
-                uuid: parameters.device_id,
-            },
-        })
+    // NOTE: should the connect action be used here?
+    await req.authorization.check_authorization_or_fail(
+      'edit',
+      `device:${deviceUrlFromId(parameters.device_id)}`,
+    );
 
-        if (deviceModel.type !== 'device')
-            throw new ImpossibleOperationError(
-                "A websocket token may only be requested for a device of type 'device'",
-                400
-            )
+    const deviceModel = await repositories.device.findOneOrFail({
+      where: {
+        uuid: parameters.device_id,
+      },
+    });
 
-        deviceModel.token = randomUUID()
-        await repositories.device.save(deviceModel)
+    if (deviceModel.type !== 'device')
+      throw new ImpossibleOperationError(
+        "A websocket token may only be requested for a device of type 'device'",
+        400,
+      );
 
-        setTimeout(async () => {
-            logger.log(
-                'info',
-                `trying to delete websocket token of device '${deviceUrlFromId(
-                    parameters.device_id
-                )}'`
-            )
+    deviceModel.token = randomUUID();
+    await repositories.device.save(deviceModel);
 
-            const newDeviceModel = await repositories.device.findOne({
-                where: {
-                    uuid: parameters.device_id,
-                },
-            })
+    setTimeout(async () => {
+      logger.log(
+        'info',
+        `trying to delete websocket token of device '${deviceUrlFromId(
+          parameters.device_id,
+        )}'`,
+      );
 
-            if (!newDeviceModel) {
-                logger.error(
-                    'error',
-                    `device '${deviceUrlFromId(parameters.device_id)}' does not exist`
-                )
-                return
-            }
+      const newDeviceModel = await repositories.device.findOne({
+        where: {
+          uuid: parameters.device_id,
+        },
+      });
 
-            if (newDeviceModel.type !== 'device') {
-                logger.error(
-                    'error',
-                    `device '${deviceUrlFromId(parameters.device_id)}' has type '${
-                        newDeviceModel.type
-                    }' instead of 'device'`
-                )
-                return
-            }
+      if (!newDeviceModel) {
+        logger.error(
+          'error',
+          `device '${deviceUrlFromId(parameters.device_id)}' does not exist`,
+        );
+        return;
+      }
 
-            newDeviceModel.token = undefined
-            await repositories.device.save(newDeviceModel)
-        }, 300000)
+      if (newDeviceModel.type !== 'device') {
+        logger.error(
+          'error',
+          `device '${deviceUrlFromId(parameters.device_id)}' has type '${
+            newDeviceModel.type
+          }' instead of 'device'`,
+        );
+        return;
+      }
 
-        logger.log('info', 'postDevicesByDeviceIdWebsocket succeeded')
+      newDeviceModel.token = undefined;
+      await repositories.device.save(newDeviceModel);
+    }, 300000);
 
-        return {
-            status: 200,
-            body: deviceModel.token,
-        }
-    }
+    logger.log('info', 'postDevicesByDeviceIdWebsocket succeeded');
+
+    return {
+      status: 200,
+      body: deviceModel.token,
+    };
+  };

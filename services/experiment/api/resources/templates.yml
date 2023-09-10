@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  security:
+    - JWT:
+        - template
+        - template:read
+        - template:read:owned
+  operationId: list_template
+  summary: List templates
+  tags:
+    - template
+  responses:
+    200:
+      description: The list of all templates.
+      content:
+        application/json:
+          $ref: '../content/template_list.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true
+post:
+  security:
+    - JWT:
+        - template
+        - template:read
+        - template:read:owned
+  operationId: create_template
+  summary: Create a new template
+  tags:
+    - template
+  requestBody:
+    description: The template to be created.
+    required: true
+    content:
+      application/json:
+        $ref: '../content/template.yml'
+  responses:
+    201:
+      description: The template was created. A JSON representation of the new template is returned.
+      content:
+        application/json:
+          $ref: '../content/template.yml'
+    202:
+      description: The template was created and will be set to running eventually. A JSON representation of the new template is returned.
+      content:
+        application/json:
+          $ref: '../content/template.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+  x-optional-url: true

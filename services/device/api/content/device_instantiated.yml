@@ -7,5 +7,5 @@ schema:
     deviceToken:
       type: string
   required:
-  - instance
-  - deviceToken
+    - instance
+    - deviceToken

@@ -8,7 +8,8 @@ from crosslab.soa_services.webcam.media import UDPTrack
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
-def test_teardown_reference_leaks(tiebreaker):
+@pytest.mark.asyncio
+async def test_teardown_reference_leaks(tiebreaker):
     con = ConnectionStub(tiebreaker)
 
     stream = UDPTrack(4789 + tiebreaker)

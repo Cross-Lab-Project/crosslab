@@ -5,12 +5,12 @@ get:
     - update
   security:
     - JWT:
-      - update
-      - update:read
+        - update
+        - update:read
   summary: Get update for device
   parameters:
-    - $ref: "../parameters/device_id.yml"
-    - $ref: "../parameters/current_version.yml"
+    - $ref: '../parameters/device_id.yml'
+    - $ref: '../parameters/current_version.yml'
   responses:
     200:
       description: Device is already up-to-date
@@ -38,22 +38,22 @@ patch:
     - update
   security:
     - JWT:
-      - update
-      - update:write
+        - update
+        - update:write
   summary: Edit update information
   parameters:
-    - $ref: "../parameters/device_id.yml"
+    - $ref: '../parameters/device_id.yml'
   requestBody:
     required: true
     content:
       application/json:
-        $ref: "../content/update_information.yml"
+        $ref: '../content/update_information.yml'
   responses:
     200:
       description: Update information edited successfully
       content:
         application/json:
-          $ref: "../content/update_information.yml"
+          $ref: '../content/update_information.yml'
     400:
       description: Bad Request.
     401:
@@ -70,11 +70,11 @@ delete:
     - update
   security:
     - JWT:
-      - update
-      - update:delete
+        - update
+        - update:delete
   summary: Delete update information
   parameters:
-    - $ref: "../parameters/device_id.yml"
+    - $ref: '../parameters/device_id.yml'
   responses:
     204:
       description: Update information was deleted successfully

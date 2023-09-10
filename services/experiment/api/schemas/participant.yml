@@ -11,6 +11,6 @@ properties:
     type: object
     description: |
       Service configuration of the participant.
-      
+
       This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     additionalProperties: true

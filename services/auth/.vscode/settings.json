@@ -1,43 +1,44 @@
 {
-    "files.exclude": {
-        //begin generated
-        "**/*.egg-info": true,
-        "**/.mypy_cache": true,
-        "**/.packages": true,
-        "**/.pytest_cache": true,
-        "**/.tox": true,
-        "**/__pycache__": true,
-        "**/app": true,
-        "**/build": true,
-        "**/lib": true,
-        "**/node_modules": true,
-        "**/venv": true,
-        //end generated
-    },
-    "files.watcherExclude": {
-        //begin generated
-        "**/*.egg-info": true,
-        "**/.mypy_cache": true,
-        "**/.packages": true,
-        "**/.pytest_cache": true,
-        "**/.tox": true,
-        "**/__pycache__": true,
-        "**/app": true,
-        "**/build": true,
-        "**/dist": true,
-        "**/lib": true,
-        "**/node_modules": true,
-        "**/venv": true,
-        //end generated
-    },
-    "mocha.requires": [
-        "ts-node/register"
-    ],
-    "mocha.env": {
-        "SECURITY_ISSUER": "http://localhost",
-        "SECURITY_AUDIENCE": "http://localhost",
-        "BASE_URL": "http://localhost",
-        "PORT": "3000",
-        "ALLOWLIST": "localhost:superadmin"
-    }
+  "files.exclude": {
+    //begin generated
+    "**/*.egg-info": true,
+    "**/.mypy_cache": true,
+    "**/.packages": true,
+    "**/.pytest_cache": true,
+    "**/.tox": true,
+    "**/__pycache__": true,
+    "**/app": true,
+    "**/build": true,
+    "**/lib": true,
+    "**/node_modules": true,
+    "**/venv": true
+    //end generated
+  },
+  "files.watcherExclude": {
+    //begin generated
+    "**/*.egg-info": true,
+    "**/.mypy_cache": true,
+    "**/.packages": true,
+    "**/.pytest_cache": true,
+    "**/.tox": true,
+    "**/__pycache__": true,
+    "**/app": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/lib": true,
+    "**/node_modules": true,
+    "**/venv": true
+    //end generated
+  },
+  "mocha.requires": ["ts-node/register"],
+  "mocha.env": {
+    "SECURITY_ISSUER": "http://localhost",
+    "SECURITY_AUDIENCE": "http://localhost",
+    "BASE_URL": "http://localhost",
+    "PORT": "3000",
+    "ALLOWLIST": "localhost:superadmin"
+  },
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json": "file:///workspaces/crosslab/services/auth/api/resources/token.yml"
+  }
 }

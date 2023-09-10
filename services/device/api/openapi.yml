@@ -19,9 +19,9 @@ components:
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
   schemas:
     authentication_message:
-      $ref: "./schemas/messages/authentication_message.yml"
+      $ref: './schemas/messages/authentication_message.yml'
     connection_state_changed_message:
-      $ref: "./schemas/messages/connection_state_changed_message.yml"
+      $ref: './schemas/messages/connection_state_changed_message.yml'
 tags:
   - name: device
     description: |-
@@ -31,18 +31,18 @@ tags:
       This tag describes the peer connection resource.
 paths:
   /devices:
-    $ref: "./resources/devices.yml"
+    $ref: './resources/devices.yml'
   /devices/{device_id}:
-    $ref: "./resources/device.yml"
+    $ref: './resources/device.yml'
   /devices/{device_id}/availability:
-    $ref: "./resources/device_availability.yml"
+    $ref: './resources/device_availability.yml'
   /devices/{device_id}/websocket:
-    $ref: "./resources/websocket_token.yml"
+    $ref: './resources/websocket_token.yml'
   /devices/{device_id}/signaling:
-    $ref: "./resources/device_signaling.yml"
+    $ref: './resources/device_signaling.yml'
   /peerconnections:
-    $ref: "./resources/peerconnections.yml"
+    $ref: './resources/peerconnections.yml'
   /peerconnections/{peerconnection_id}:
-    $ref: "./resources/peerconnection.yml"
+    $ref: './resources/peerconnection.yml'
   /peerconnections/{peerconnection_id}/device_status:
-    $ref: "./resources/peerconnection_device_status.yml"
+    $ref: './resources/peerconnection_device_status.yml'

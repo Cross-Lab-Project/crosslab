@@ -1,16 +1,16 @@
-"use strict";
+'use strict';
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
-const path = require("path");
-const isProduction = process.env.NODE_ENV == "production";
+const path = require('path');
+const isProduction = process.env.NODE_ENV == 'production';
 const config = {
-  entry: "./src-web/index.ts",
-  mode: "development",
+  entry: './src-web/index.ts',
+  mode: 'development',
   output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "http-dist"),
-    devtoolModuleFilenameTemplate: "file:///[absolute-resource-path]",
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'http-dist'),
+    devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
   },
-  devtool: "eval-source-map",
+  devtool: 'eval-source-map',
   module: {
     rules: [
       {
@@ -18,28 +18,28 @@ const config = {
         exclude: /node_modules/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: [["@babel/preset-env", { targets: "defaults" }]],
+              presets: [['@babel/preset-env', { targets: 'defaults' }]],
             },
           },
           {
-            loader: "ts-loader",
+            loader: 'ts-loader',
             options: {
-              configFile: "tsconfig.web.json",
+              configFile: 'tsconfig.web.json',
             },
           },
-          "source-map-loader",
+          'source-map-loader',
         ],
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js'],
     fallback: {
       url: false,
-      events: require.resolve("events/"),
+      events: require.resolve('events/'),
     },
   },
 };
