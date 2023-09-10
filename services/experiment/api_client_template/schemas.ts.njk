@@ -50,7 +50,7 @@ export type {{ name }} = {
     {% endif -%}
     {%- set required = "required" in schema and property in schema.required -%}
     {{ property }}{%- if not required -%}?{%- endif -%}: {{ typeToTypescript(value.type, value, name + (property | capitalize), false) }}
-    {%- endfor %}
+    {%- endfor -%}
 }
 {% endmacro -%}
 
@@ -71,7 +71,7 @@ export type {{ name }} = {
 
 {%- macro render_schema(schema, name) -%}
     {%- if schema.type == "object" -%}
-        {{ render_object_schema(schema, name) }}
+        {{ render_object_schema(schema, name) | replace("{}", "never") }}
     {%- elif "allOf" in schema -%}
         {{ render_allOf_schema(schema, name) }}
     {%- elif "anyOf" in schema -%}

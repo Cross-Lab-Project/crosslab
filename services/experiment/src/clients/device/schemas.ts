@@ -661,7 +661,7 @@ export type GetDeviceAvailabilityResponse = GetDeviceAvailabilityResponse200;
 
 export type DeleteDeviceAvailabilityRulesResponse = void;
 
-export type AddDeviceAvailabilityRulesRequestItems = {};
+export type AddDeviceAvailabilityRulesRequestItems = never;
 
 export type AddDeviceAvailabilityRulesRequest = AddDeviceAvailabilityRulesRequestItems[];
 
@@ -685,7 +685,7 @@ export type SendSignalingMessageRequestAlt1ServicesItems = {
   remoteServiceId: string;
 };
 
-export type SendSignalingMessageRequestAlt1Config = {};
+export type SendSignalingMessageRequestAlt1Config = never;
 
 export type SendSignalingMessageRequestAlt1 = {
   messageType: 'command';
@@ -703,7 +703,7 @@ export type SendSignalingMessageRequestAlt2 = {
   connectionUrl: string;
 };
 
-export type SendSignalingMessageRequestAlt3Content = {};
+export type SendSignalingMessageRequestAlt3Content = never;
 
 export type SendSignalingMessageRequestAlt3 = {
   messageType: 'signaling';

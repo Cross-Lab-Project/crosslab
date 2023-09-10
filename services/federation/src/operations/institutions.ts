@@ -18,8 +18,8 @@ import { writeInstitution } from '../methods/write.js';
  * /institutions endpoint.
  * @param authorization The authorization helper object for the request.
  */
-export const getInstitutions: getInstitutionsSignature = async authorization => {
-  await authorization.check_authorization_or_fail('view', `institution`);
+export const getInstitutions: getInstitutionsSignature = async req => {
+  await req.authorization.check_authorization_or_fail('view', `institution`);
 
   const institutionRepository = AppDataSource.getRepository(InstitutionModel);
   const institutions = await institutionRepository.find();
@@ -37,10 +37,10 @@ export const getInstitutions: getInstitutionsSignature = async authorization => 
  * @param body The body of the request.
  */
 export const postInstitutions: postInstitutionsSignature = async (
-  authorization,
+  req,
   body,
 ) => {
-  await authorization.check_authorization_or_fail('create', `institution`);
+  await req.authorization.check_authorization_or_fail('create', `institution`);
 
   const institutionRepository = AppDataSource.getRepository(InstitutionModel);
   const institution = institutionRepository.create();
@@ -60,8 +60,8 @@ export const postInstitutions: postInstitutionsSignature = async (
  * @param parameters The parameters of the request.
  */
 export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSignature =
-  async (authorization, parameters) => {
-    await authorization.check_authorization_or_fail(
+  async (req, parameters) => {
+    await req.authorization.check_authorization_or_fail(
       'view',
       `institution:${institutionUrlFromId(parameters.institution_id)}`,
     );
@@ -91,8 +91,8 @@ export const getInstitutionsByInstitutionId: getInstitutionsByInstitutionIdSigna
  * @param body The body of the request.
  */
 export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdSignature =
-  async (authorization, parameters, body) => {
-    await authorization.check_authorization_or_fail(
+  async (req, parameters, body) => {
+    await req.authorization.check_authorization_or_fail(
       'edit',
       `institution:${institutionUrlFromId(parameters.institution_id)}`,
     );
@@ -123,8 +123,8 @@ export const patchInstitutionsByInstitutionId: patchInstitutionsByInstitutionIdS
  * @param parameters The parameters of the request.
  */
 export const deleteInstitutionsByInstitutionId: deleteInstitutionsByInstitutionIdSignature =
-  async (authorization, parameters) => {
-    await authorization.check_authorization_or_fail(
+  async (req, parameters) => {
+    await req.authorization.check_authorization_or_fail(
       'delete',
       `institution:${institutionUrlFromId(parameters.institution_id)}`,
     );
