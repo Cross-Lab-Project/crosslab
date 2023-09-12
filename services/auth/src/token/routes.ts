@@ -18,9 +18,14 @@ router.post(
     console.log('username', username);
     if (!username) throw new HttpError(400, 'User not found');
     assert(username !== undefined, 'username is undefined');
-    const user = await ApplicationDataSource.manager.findOneBy(UserModel, {
+    let user = await ApplicationDataSource.manager.findOneBy(UserModel, {
       username: username,
     });
+    if (user === null){
+      user = await ApplicationDataSource.manager.findOneBy(UserModel, {
+        uuid: username,
+      });
+    }
     if (user === null) throw new HttpError(400, 'User not found');
 
     const token = await createNewToken(user, claims);

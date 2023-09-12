@@ -1,5 +1,6 @@
 import { ImpossibleOperationError, logger } from '@crosslab/service-common';
 
+import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { postDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { changedCallbacks } from '../../../methods/callbacks.js';
@@ -64,10 +65,15 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
 
   logger.log('info', 'postDevicesByDeviceId succeeded');
 
+  const deviceToken = await clients.authentication.createToken({
+    username: req.authorization.user,
+    claims: { device_token: true },
+  });
+
   return {
     status: 201,
     body: {
-      deviceToken: 'deprecated',
+      deviceToken: deviceToken,
       instance: instance,
     },
   };

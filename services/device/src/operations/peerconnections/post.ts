@@ -49,6 +49,44 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
   if (deviceA.connected && deviceB.connected) {
     // peerconnection can be started directly
     signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
+  } else {
+    const waitForDeviceToConnect = new Promise<void>((resolve, reject) => {
+      let interval: ReturnType<typeof setInterval> | undefined = setInterval(async () => {
+        const A = await getDevice({ url: body.devices[0].url });
+        const B = await getDevice({ url: body.devices[1].url });
+
+        const AConnected = A.type === 'device' && A.connected;
+        const BConnected = B.type === 'device' && B.connected;
+
+        logger.log(
+          'info',
+          `Device A connection Status: ${
+            AConnected ? 'connected' : 'disconnected'
+          }, Device B connection Status:  ${BConnected ? 'connected' : 'disconnected'},`,
+        );
+
+        if (AConnected && BConnected) {
+          resolve();
+          clearInterval(interval);
+          interval = undefined;
+        }
+      }, 200);
+      setTimeout(() => {
+        if (interval) {
+          clearInterval(interval);
+          reject();
+        }
+      }, 30000);
+    });
+    const startSignalingQueuesAfterConnected = async () => {
+      try {
+        await waitForDeviceToConnect;
+      } catch (e) {
+        // ignore for now => TODO: Handle Connection failed
+      }
+      signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
+    };
+    startSignalingQueuesAfterConnected();
   }
 
   if (parameters.closedUrl) {

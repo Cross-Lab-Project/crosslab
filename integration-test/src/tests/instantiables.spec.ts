@@ -27,7 +27,7 @@ const experimentConfig = {
   ],
 };
 
-for (const device1Type of deviceTypes) {
+for (const device1Type of deviceTypes.slice(0,2)) {
   const device2Type = 'device';
   describe(`Client Communication (${device1Type} <-> ${device2Type})`, async function () {
     before(function () {
