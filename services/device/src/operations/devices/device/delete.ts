@@ -2,7 +2,9 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../../database/dataSource.js';
 import { deleteDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
+import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { connectedDevices } from '../websocket/handling/index.js';
 
 /**
  * This function implements the functionality for handling DELETE requests on
@@ -33,6 +35,20 @@ export const deleteDevicesByDeviceId: deleteDevicesByDeviceIdSignature = async (
   );
 
   await repositories.device.remove(deviceModel);
+
+  const peerconnections = (await repositories.peerconnection.find()).filter(
+    peerconnection =>
+      peerconnection.deviceA.url === deviceUrlFromId(deviceModel.uuid) ||
+      peerconnection.deviceB.url === deviceUrlFromId(deviceModel.uuid),
+  );
+  for (const peerconnection of peerconnections) {
+    await repositories.peerconnection.remove(peerconnection);
+    await signalingQueueManager.deleteSignalingQueues(peerconnection.uuid);
+  }
+
+  const webSocket = connectedDevices.get(deviceModel.uuid);
+  if (webSocket) webSocket.terminate();
+  connectedDevices.delete(deviceModel.uuid);
 
   logger.log('info', 'deleteDevicesByDeviceId succeeded');
 

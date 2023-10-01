@@ -1,4 +1,5 @@
 import { repositories } from '../../../../database/dataSource.js';
+import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { sendStatusChangedCallback } from '../../../callbacks/index.js';
 
@@ -10,23 +11,15 @@ export function addDisconnectTimeout(deviceId: string) {
   disconnectTimeouts.set(
     deviceId,
     setTimeout(async () => {
-      const peerconnections = await repositories.peerconnection.find({
-        where: [
-          {
-            deviceA: {
-              url: deviceUrlFromId(deviceId),
-            },
-          },
-          {
-            deviceB: {
-              url: deviceUrlFromId(deviceId),
-            },
-          },
-        ],
-      });
+      const peerconnections = (await repositories.peerconnection.find()).filter(
+        peerconnection =>
+          peerconnection.deviceA.url === deviceUrlFromId(deviceId) ||
+          peerconnection.deviceB.url === deviceUrlFromId(deviceId),
+      );
 
       for (const peerconnection of peerconnections) {
-        peerconnection.status = 'failed';
+        peerconnection.status = 'closed';
+        signalingQueueManager.closeSignalingQueues(peerconnection.uuid);
         await repositories.peerconnection.save(peerconnection);
         sendStatusChangedCallback(peerconnection);
       }

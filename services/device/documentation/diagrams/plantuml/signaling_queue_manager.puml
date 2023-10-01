@@ -1,0 +1,17 @@
+@startuml signaling_queue_manager
+
+class SignalingQueueManager {
+    - queueMap
+    - {static} instance
+
+    - constructor()
+    + {static} getInstance()
+    + createSignalingQueues(peerconnectionId)
+    + startSignalingQueues(peerconnectionId)
+    + stopSignalingQueues(peerconnectionId)
+    + addSignalingMessage(peerconnectionId, deviceUrl, signalingMessage)
+    + closeSignalingQueues(peerconnectionId)
+    + deleteSignalingQueues(peerconnectionId)
+}
+
+@enduml

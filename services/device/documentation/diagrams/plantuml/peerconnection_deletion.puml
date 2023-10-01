@@ -1,0 +1,15 @@
+@startuml peerconnection_deletion
+
+participant "Device A" as DA
+participant "Device Service" as DS
+participant "Device B" as DB
+
+DS -> DA : send close-peerconnection message
+DA -> DA : close peerconnection
+
+DS -> DB : send close-peerconnection message
+DB -> DB : close peerconnection
+
+DS -> DS : delete peerconnection
+
+@enduml

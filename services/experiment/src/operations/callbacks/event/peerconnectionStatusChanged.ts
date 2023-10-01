@@ -1,9 +1,11 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 
+import { PeerconnectionStatusChangedEventCallback } from '../../../clients/device/types.js';
 import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { finishExperiment } from '../../../methods/experimentStatus/index.js';
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
+import { callbackEventEmitter } from './index.js';
 
 /**
  * This function handles an incoming "peerconnection-status-changed" event callback.
@@ -12,11 +14,13 @@ import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
  * @returns The status code for the response to the incoming callback.
  */
 export async function handlePeerconnectionStatusChangedEventCallback(
-  callback: any,
+  callback: PeerconnectionStatusChangedEventCallback,
 ): Promise<200 | 410> {
   if (!peerconnectionStatusChangedCallbacks.includes(callback.peerconnection.url)) {
     return 410; // TODO: find a solution for this problem (race condition)
   }
+
+  callbackEventEmitter.emit('peerconnection-status-changed', callback.peerconnection);
 
   // TODO: add peerconnection status changed handling
   const peerconnectionModel = await repositories.peerconnection.findOneOrFail({

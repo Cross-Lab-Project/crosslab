@@ -1,6 +1,8 @@
+import { Peerconnection } from '../clients/device/types.js';
 import { Clients } from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
 import { ExperimentModel } from '../database/model.js';
+import { callbackEventEmitter } from '../operations/callbacks/event/index.js';
 import {
   callbackUrl,
   peerconnectionClosedCallbacks,
@@ -20,15 +22,31 @@ export async function createPeerconnections(
   for (const peerconnectionRequest of peerconnectionRequests) {
     // TODO: error handling
     const peerconnection = await clients.device.createPeerconnection(
-      { url: 'string', ...peerconnectionRequest },
-      undefined,
-      callbackUrl,
-      callbackUrl,
+      peerconnectionRequest,
+      { closedUrl: callbackUrl, statusChangedUrl: callbackUrl },
     );
-    if (!experimentModel.connections) experimentModel.connections = [];
 
     peerconnectionClosedCallbacks.push(peerconnection.url);
     peerconnectionStatusChangedCallbacks.push(peerconnection.url);
+
+    await new Promise<void>((resolve, reject) => {
+      const statusChangedHandler = (pc: Peerconnection<'response'>) => {
+        if (pc.status === 'connected') {
+          callbackEventEmitter.off('peerconnection-status-changed', statusChangedHandler);
+          resolve();
+        } else if (
+          pc.status === 'disconnected' ||
+          pc.status === 'failed' ||
+          pc.status === 'closed'
+        ) {
+          callbackEventEmitter.off('peerconnection-status-changed', statusChangedHandler);
+          reject(`Created peerconnection has status '${pc.status}'`);
+        }
+      };
+      callbackEventEmitter.on('peerconnection-status-changed', statusChangedHandler);
+    });
+
+    if (!experimentModel.connections) experimentModel.connections = [];
 
     // create, push and save new peerconnection
     const peerconnectionModel = await repositories.peerconnection.create(

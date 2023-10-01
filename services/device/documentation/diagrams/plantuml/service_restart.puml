@@ -1,0 +1,24 @@
+@startuml service_restart
+
+participant "Local Device" as LD
+participant "Device Service" as DS
+participant "Remote Device" as RD
+
+LD -> DS : reconnect
+
+LD -> DS : status of peerconnections
+
+alt peerconnections deleted client-side
+    DS -> DS : delete peerconnections
+end
+alt peerconnections status changed client-side
+    DS -> DS : update peerconnection status
+end
+alt peerconnections deleted server-side
+    DS -> LD : send close-peerconnection message
+end
+alt peerconnection status changed server-side
+    DS -> LD : send close-peerconnection message
+end
+
+@enduml

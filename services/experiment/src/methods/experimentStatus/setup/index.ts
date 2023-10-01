@@ -60,7 +60,13 @@ export async function setupExperiment(
     await repositories.experiment.save(experimentModel);
   }
 
-  await createPeerconnectionsExperiment(experimentModel, clients);
+  createPeerconnectionsExperiment(experimentModel, clients).catch(error => {
+    logger.log(
+      'error',
+      'Something went wrong while trying to create the peerconnections',
+      { data: { error } },
+    );
+  });
 
   logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } });
 }

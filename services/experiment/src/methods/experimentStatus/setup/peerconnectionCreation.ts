@@ -8,10 +8,53 @@ import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
 import { experimentUrlFromId } from '../../url.js';
 
+async function checkDevices(
+  experimentModel: ExperimentModel,
+  clients: Clients,
+  connectedMap: Map<string, boolean>,
+) {
+  await Promise.all(
+    experimentModel.devices.map(async device => {
+      const deviceUrl = device.instance ? device.instance.url : device.url;
+      const resolvedDevice = await clients.device.getDevice(deviceUrl);
+      connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
+    }),
+  );
+
+  let allConnected = true;
+
+  for (const value of connectedMap.values()) {
+    allConnected &&= value;
+  }
+
+  return allConnected;
+}
+
 export async function createPeerconnectionsExperiment(
   experimentModel: ExperimentModel,
   clients: Clients,
 ) {
+  const connectedMap = new Map<string, boolean>();
+
+  const connected = await checkDevices(experimentModel, clients, connectedMap);
+
+  if (!connected)
+    await new Promise<void>((resolve, reject) => {
+      let i = 0;
+      const connectionInterval = setInterval(async () => {
+        const allConnected = await checkDevices(experimentModel, clients, connectedMap);
+
+        if (allConnected) {
+          resolve();
+          clearInterval(connectionInterval);
+        } else if (i === 6) {
+          reject('Devices did not connect in time');
+        } else {
+          i++;
+        }
+      }, 5000);
+    });
+
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to create peerconnections for experiment', {
     data: { experimentUrl },

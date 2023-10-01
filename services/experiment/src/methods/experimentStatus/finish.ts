@@ -98,7 +98,12 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
 async function deletePeerconnections(experiment: ExperimentModel, clients: Clients) {
   if (experiment.connections) {
     for (const peerconnection of experiment.connections) {
-      await clients.device.deletePeerconnection(peerconnection.url);
+      try {
+        await clients.device.deletePeerconnection(peerconnection.url);
+      } catch (error) {
+        if (error instanceof Error && error.message.endsWith('404')) break;
+        throw error;
+      }
     }
   }
 }

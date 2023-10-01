@@ -1,5 +1,6 @@
 import asyncio
 import re
+from time import sleep
 from typing import Dict, Optional
 
 import aiohttp
@@ -77,26 +78,49 @@ class DeviceHandler(AsyncIOEventEmitter):
         self._services[service.service_id] = service
 
     async def connect(self, url: str, client: Optional[APIClient] = None):
-        base_url, device_url, token_endpoint, ws_endpoint = derive_endpoints_from_url(
+        self.base_url, self.device_url, self.token_endpoint, self.ws_endpoint = derive_endpoints_from_url(
             url, client.BASE_URL if client else None
         )
 
         if client is None:
-            client = APIClient(base_url)
+            self.client = APIClient(self.base_url)
+        else:
+            self.client = client
 
-        async with client:
-            async with aiohttp.ClientSession() as session:
-                await client.update_device(
-                    device_url, {"type": "device", "services": self.get_service_meta()}
+        async with self.client:
+            async with aiohttp.ClientSession() as self.session:
+                await self.client.update_device(
+                    self.device_url, {"type": "device", "services": self.get_service_meta()}
                 )
-                token = await client.create_websocket_token(token_endpoint)
+                token = await self.client.create_websocket_token(self.token_endpoint)
                 self.emit("websocketToken", token)
-                self.ws = await session.ws_connect(ws_endpoint)
-                await authenticate(self.ws, device_url, token)
+                self.ws = await self.session.ws_connect(self.ws_endpoint, heartbeat=0.1)
+                await authenticate(self.ws, self.device_url, token)
                 self.emit("websocketConnected")
 
                 await self._message_loop()
-                await session.close()
+                print("hello there")
+                await self.reconnect()
+                print("hello there")
+                await self.session.close()
+
+    
+
+    async def reconnect(self):
+        try:
+            print("trying to reconnect...")
+            async with self.client:
+                await self.client.update_device(
+                    self.device_url, {"type": "device", "services": self.get_service_meta()}
+                )
+                token = await self.client.create_websocket_token(self.token_endpoint)
+                self.emit("websocketToken", token)
+                self.ws = await self.session.ws_connect(self.ws_endpoint)
+                await authenticate(self.ws, self.device_url, token)
+                self.emit("websocketConnected")
+        except:
+            print("something went wrong")
+            sleep(20)
 
     def get_service_meta(self):
         return [service.getMeta() for service in self._services.values()]
@@ -106,10 +130,13 @@ class DeviceHandler(AsyncIOEventEmitter):
             msg = await receiveMessage(self.ws)
             if isinstance(msg, aiohttp.WSMessage):
                 if msg.type == aiohttp.WSMsgType.CLOSED:
+                    print("closed")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSING:
+                    print("closing")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSE:
+                    print("close")
                     await self.ws.close()
                     break
                 break
@@ -170,7 +197,8 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
         connection = self._connections.get(msg["connectionUrl"], None)
-        assert connection is not None  # TODO: Error handling
+        if (connection is None): 
+            return
         await connection.close()
         del self._connections[msg["connectionUrl"]]
 

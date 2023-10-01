@@ -1,4 +1,8 @@
-import { InvalidValueError, logger } from '@crosslab/service-common';
+import {
+  DeviceNotConnectedError,
+  InvalidValueError,
+  logger,
+} from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { postPeerconnectionsSignature } from '../../generated/signatures.js';
@@ -21,7 +25,6 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
 ) => {
   logger.log('info', 'postPeerconnections called');
 
-  // NOTE: create action currently does not exist
   await req.authorization.check_authorization_or_fail('create', 'peerconnection');
 
   const deviceA = await getDevice({ url: body.devices[0].url });
@@ -34,6 +37,12 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     );
   }
 
+  if (!deviceA.connected || !deviceB.connected)
+    throw new DeviceNotConnectedError(
+      'One of the participating devices is currently not connected',
+      409,
+    );
+
   const peerconnectionModel = await repositories.peerconnection.create(body);
 
   await req.authorization.relate(
@@ -43,51 +52,6 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
   );
 
   await repositories.peerconnection.save(peerconnectionModel);
-
-  await signalingQueueManager.createSignalingQueues(peerconnectionModel.uuid);
-
-  if (deviceA.connected && deviceB.connected) {
-    // peerconnection can be started directly
-    signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
-  } else {
-    const waitForDeviceToConnect = new Promise<void>((resolve, reject) => {
-      let interval: ReturnType<typeof setInterval> | undefined = setInterval(async () => {
-        const A = await getDevice({ url: body.devices[0].url });
-        const B = await getDevice({ url: body.devices[1].url });
-
-        const AConnected = A.type === 'device' && A.connected;
-        const BConnected = B.type === 'device' && B.connected;
-
-        logger.log(
-          'info',
-          `Device A connection Status: ${
-            AConnected ? 'connected' : 'disconnected'
-          }, Device B connection Status:  ${BConnected ? 'connected' : 'disconnected'},`,
-        );
-
-        if (AConnected && BConnected) {
-          resolve();
-          clearInterval(interval);
-          interval = undefined;
-        }
-      }, 200);
-      setTimeout(() => {
-        if (interval) {
-          clearInterval(interval);
-          reject();
-        }
-      }, 30000);
-    });
-    const startSignalingQueuesAfterConnected = async () => {
-      try {
-        await waitForDeviceToConnect;
-      } catch (e) {
-        // ignore for now => TODO: Handle Connection failed
-      }
-      signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
-    };
-    startSignalingQueuesAfterConnected();
-  }
 
   if (parameters.closedUrl) {
     logger.log(
@@ -110,10 +74,14 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     statusChangedCallbacks.set(peerconnectionModel.uuid, statusChangedCallbackURLs);
   }
 
+  await signalingQueueManager.createSignalingQueues(peerconnectionModel.uuid, true);
+
+  signalingQueueManager.startSignalingQueues(peerconnectionModel.uuid);
+
   logger.log('info', 'postPeerconnections succeeded');
 
   return {
-    status: peerconnectionModel.status === 'connected' ? 201 : 202,
+    status: 201,
     body: await repositories.peerconnection.format(peerconnectionModel),
   };
 };

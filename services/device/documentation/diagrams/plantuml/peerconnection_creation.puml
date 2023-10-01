@@ -1,0 +1,18 @@
+@startuml peerconnection_creation
+
+actor User
+participant "Device Service" as DS
+
+User -> DS : POST /peerconnections
+DS -> DS : check if devices are connected
+alt at least one device is not connected
+    DS --> User : Error: Both devices must be connected!
+end
+
+DS -> DS : create peerconnection
+
+DS -> DS : register callbacks
+
+DS -> DS : start signaling
+
+@enduml

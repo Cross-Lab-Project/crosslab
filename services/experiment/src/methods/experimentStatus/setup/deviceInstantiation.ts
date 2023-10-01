@@ -3,6 +3,7 @@ import { logger } from '@crosslab/service-common';
 import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
+import { callbackUrl } from '../../../operations/callbacks/index.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
@@ -42,7 +43,9 @@ export async function instantiateDevicesExperiment(
 
     if (!instantiableDevice || instantiableDevice.instance) continue;
 
-    const instanceData = await clients.device.instantiateDevice(instantiable.url);
+    const instanceData = await clients.device.instantiateDevice(instantiable.url, {
+      changedUrl: callbackUrl,
+    });
     instances.push({ ...instanceData.instance, token: instanceData.deviceToken });
 
     const instance = await repositories.instance.create({

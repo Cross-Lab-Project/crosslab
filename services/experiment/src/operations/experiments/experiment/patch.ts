@@ -21,6 +21,12 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
     logger.log(
       'info',
       `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`,
+      {
+        data: {
+          user: req.authorization.user,
+          experiment: experimentUrlFromId(parameters.experiment_id),
+        },
+      },
     );
 
     await req.authorization.check_authorization_or_fail(

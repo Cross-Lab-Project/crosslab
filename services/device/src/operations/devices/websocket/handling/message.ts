@@ -1,6 +1,7 @@
 import { UnrelatedPeerconnectionError, logger } from '@crosslab/service-common';
 import WebSocket from 'ws';
 
+import { repositories } from '../../../../database/dataSource.js';
 import { ConcreteDeviceModel } from '../../../../database/model.js';
 import {
   ConnectionStateChangedMessage,
@@ -10,9 +11,18 @@ import {
   isMessage,
   isSignalingMessage,
 } from '../../../../generated/types.js';
+import {
+  sendClosedCallback,
+  sendStatusChangedCallback,
+} from '../../../../methods/callbacks.js';
+import { mutexManager } from '../../../../methods/mutexManager.js';
 import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
-import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import {
+  deviceUrlFromId,
+  peerconnectionIdFromUrl,
+  peerconnectionUrlFromId,
+} from '../../../../methods/urlFromId.js';
 
 export async function messageHandling(
   ws: WebSocket,
@@ -94,12 +104,85 @@ async function handleSignalingMessage(
  * @param message The connection-state-changed message.
  */
 async function handleConnectionStateChangedMessage(
-  _deviceModel: ConcreteDeviceModel,
-  _message: ConnectionStateChangedMessage,
+  deviceModel: ConcreteDeviceModel,
+  message: ConnectionStateChangedMessage,
 ) {
-  /*await apiClient.patchPeerconnectionDeviceStatus(
-    message.connectionUrl,
-    { status: message.status },
-    deviceUrlFromId(deviceModel.uuid),
-  );*/
+  const peerconnectionUUID = peerconnectionIdFromUrl(message.connectionUrl);
+  const release = await mutexManager.acquire(peerconnectionUUID);
+
+  try {
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: { uuid: peerconnectionUUID },
+    });
+
+    if (
+      peerconnectionModel.deviceA.url !== deviceUrlFromId(deviceModel.uuid) &&
+      peerconnectionModel.deviceB.url !== deviceUrlFromId(deviceModel.uuid)
+    ) {
+      throw new UnrelatedPeerconnectionError(
+        `Device '${deviceUrlFromId(
+          deviceModel.uuid,
+        )}' is not taking part in peerconnection '${peerconnectionUrlFromId(
+          peerconnectionUUID,
+        )}'`,
+        400,
+      );
+    }
+
+    if (peerconnectionModel.deviceA.url === deviceUrlFromId(deviceModel.uuid))
+      peerconnectionModel.deviceA.status = message.status;
+
+    if (peerconnectionModel.deviceB.url === deviceUrlFromId(deviceModel.uuid))
+      peerconnectionModel.deviceB.status = message.status;
+
+    const oldStatus = peerconnectionModel.status;
+
+    if (
+      peerconnectionModel.status === 'closed' ||
+      peerconnectionModel.deviceA.status === 'closed' ||
+      peerconnectionModel.deviceB.status === 'closed'
+    ) {
+      peerconnectionModel.status = 'closed';
+    } else if (
+      peerconnectionModel.deviceA.status === 'failed' ||
+      peerconnectionModel.deviceB.status === 'failed'
+    ) {
+      peerconnectionModel.status = 'failed';
+    } else if (
+      peerconnectionModel.deviceA.status === 'disconnected' ||
+      peerconnectionModel.deviceB.status === 'disconnected'
+    ) {
+      peerconnectionModel.status = 'disconnected';
+    } else if (
+      peerconnectionModel.deviceA.status === 'connecting' ||
+      peerconnectionModel.deviceB.status === 'connecting'
+    ) {
+      peerconnectionModel.status = 'connecting';
+    } else if (
+      peerconnectionModel.deviceA.status === 'connected' &&
+      peerconnectionModel.deviceB.status === 'connected'
+    ) {
+      peerconnectionModel.status = 'connected';
+    } else {
+      peerconnectionModel.status = 'new';
+    }
+
+    if (peerconnectionModel.status !== oldStatus) {
+      sendStatusChangedCallback(peerconnectionModel);
+      if (peerconnectionModel.status === 'closed')
+        sendClosedCallback(peerconnectionModel);
+    }
+
+    logger.log('info', 'peerconnection devices status info', {
+      data: {
+        peerconnection: peerconnectionModel.uuid,
+        statusDeviceA: peerconnectionModel.deviceA.status,
+        statusDeviceB: peerconnectionModel.deviceB.status,
+      },
+    });
+
+    await repositories.peerconnection.save(peerconnectionModel);
+  } finally {
+    release();
+  }
 }

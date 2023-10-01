@@ -34,6 +34,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@cross-lab-project/api-client": "file:../../clients/api/js",
     "@crosslab/service-common": "file:../common",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@typescript-eslint/eslint-plugin": "^6.6.0",

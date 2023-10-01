@@ -11,7 +11,7 @@ async function main() {
     await ApplicationDataSource.initialize();
     await init_key_management();
     await init_app();
-    logging.logger.info('Device Service started successfully');
+    logging.logger.info('LTI Service started successfully');
   } catch (e) {
     logging.logger.error(e);
   }

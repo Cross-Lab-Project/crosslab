@@ -1,8 +1,7 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
-import { CreatePeerconnectionRequest } from '../clients/device/schemas.js';
-import { CreatePeerconnectionRequestDevicesItems } from '../clients/device/schemas.js';
+import { Peerconnection } from '../clients/device/types.js';
 import {
   DeviceModel,
   ExperimentModel,
@@ -36,10 +35,7 @@ export function buildConnectionPlan(experiment: ExperimentModel) {
     sortServiceParticipantsByDeviceId(dmsc),
   );
 
-  const peerconnections: Record<
-    string,
-    Omit<CreatePeerconnectionRequest, 'url'> // TODO: Generation Problem
-  > = {};
+  const peerconnections: Record<string, Peerconnection<'request'>> = {};
   for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
     // HOTFIX: for local services: Don't connect local services to each other
     // TODO: create a new connection type 'local' as opposed to 'webrtc' and handle it correctly
@@ -100,7 +96,7 @@ function sortServiceParticipantsByDeviceId(
 }
 
 function updateServiceConfig(
-  device: CreatePeerconnectionRequestDevicesItems,
+  device: Peerconnection<'request'>['devices'][number],
   serviceConfig: ServiceConfigurationModel,
   participant: ParticipantModel,
   remoteParticipant: ParticipantModel,

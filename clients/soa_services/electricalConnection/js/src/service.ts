@@ -128,7 +128,11 @@ export class ElectricalConnectionService
           data,
         };
         this.queue.push(async () => {
-          channel.send(JSON.stringify(packet));
+          try {
+            channel.send(JSON.stringify(packet));
+          } catch (error) {
+            console.error(error);
+          }
         });
         await channel.ready();
         this.queue.start();

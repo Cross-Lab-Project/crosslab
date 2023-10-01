@@ -1,0 +1,19 @@
+@startuml signaling_queue
+
+class SignalingQueue {
+    + readonly deviceUrl: string
+    + readonly peerconnectionUrl: string
+    + readonly status: 'new' | 'started' | 'stopped' | 'closed'
+    - queue: Queue
+    - readonly closedPromise: Promise<void>
+
+    + constructor()
+    + add(signalingMessage)
+    + start()
+    + stop()
+    + close()
+    - readonly onClose: () => void
+    - sendSignalingMessage(signalingMessage)
+}
+
+@enduml

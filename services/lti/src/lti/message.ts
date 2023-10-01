@@ -1,9 +1,9 @@
+import { APIClient } from '@cross-lab-project/api-client';
 import { logging } from '@crosslab/service-common';
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { JWTPayload, SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
 
-import { ListTemplateResponse200 } from '../clients/experiment/schemas.js';
 import { authentication } from '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
@@ -26,19 +26,16 @@ async function handle_deep_linking_request(
   res: Response,
   payload: JWTPayload,
 ) {
-  //const templates = await experiment.listTemplate();
-  const templates: ListTemplateResponse200 = [
-    {
-      name: 'Test',
-      description: 'Beschreibung',
-      url: 'https://www.goldi-labs.de/en/experiment?token=123',
-    },
-  ];
+  const apiClient = new APIClient('https://api.dev.goldi-labs.de');
+  // TODO: replace with solution for inter-service-authentication
+  await apiClient.login('username', 'password');
+  const templates = await apiClient.listTemplate();
 
   const deep_linking_settings =
-    (payload[
-      'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'
-    ] as any) ?? {};
+    (payload['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] as {
+      data: unknown;
+      deep_link_return_url: string;
+    }) ?? {};
   const jwt_fields = {
     aud: payload.iss as string,
     iss: payload.aud as string,
@@ -122,13 +119,20 @@ async function handle_authentication_response(req: Request, res: Response) {
     payload['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
     'LtiResourceLinkRequest'
   ) {
+    const custom = payload['https://purl.imsglobal.org/spec/lti/claim/custom'];
+    const template_url =
+      typeof custom === 'object' &&
+      custom !== null &&
+      'experiment' in custom &&
+      typeof custom['experiment'] === 'string'
+        ? custom.experiment
+        : '';
     const token = await authentication.createToken({ username: 'jona3814' });
     logging.logger.log('trace', 'received access token for LTI-Access', { token });
-    res.send(
-      post_form_message('https://www.goldi-labs.de/en/experiment?token=' + token, {
-        //experiment: JSON.stringify({...example_experiment, status: "running"}).replaceAll('"', "&quot;"),
-      }),
-    );
+    const url = new URL('https://www.dev.goldi-labs.de/en/experiment');
+    url.searchParams.append('token', token);
+    url.searchParams.append('template', template_url);
+    res.send(post_form_message(url.toString(), {}));
     return;
   }
   if (

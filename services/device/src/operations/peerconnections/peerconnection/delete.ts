@@ -8,7 +8,7 @@ import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
 /**
  * This function implements the functionality for handling DELETE requests on
  * /peerconnection/{peerconnection_id} endpoint.
- * @param authorization The authorization helper object for the request.
+ * @param req The incoming request.
  * @param parameters The parameters of the request.
  */
 export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPeerconnectionIdSignature =
@@ -24,7 +24,7 @@ export const deletePeerconnectionsByPeerconnectionId: deletePeerconnectionsByPee
       where: { uuid: parameters.peerconnection_id },
     });
 
-    await signalingQueueManager.closeSignalingQueues(peerconnectionModel.uuid);
+    await signalingQueueManager.deleteSignalingQueues(peerconnectionModel.uuid);
 
     await req.authorization.unrelate(
       req.authorization.user,

@@ -47,7 +47,12 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
 
   await repositories.experiment.save(experimentModel); // NOTE: truly needed?
 
-  logger.log('info', 'Successfully handled POST request on endpoint /experiments');
+  logger.log('info', 'Successfully handled POST request on endpoint /experiments', {
+    data: {
+      user: req.authorization.user,
+      experiment: experimentUrlFromId(experimentModel.uuid),
+    },
+  });
 
   return {
     status: 201,

@@ -22,7 +22,7 @@ const CrosslabTypeScriptAddon: Addon = {
       templatesDir: templateDir + '/templates/service',
     },
     {
-      name: 'client',
+      name: 'api-client',
       filterCollections: [TypeScriptFilterCollection],
       globals: [],
       tests: [
@@ -31,14 +31,14 @@ const CrosslabTypeScriptAddon: Addon = {
           function: attributeEqualTo,
         },
       ],
-      templatesDir: templateDir + '/templates/client',
+      templatesDir: templateDir + '/templates/api-client',
     },
     {
-      name: 'client:basicValidation',
+      name: 'service-client:basicValidation',
       filterCollections: [TypeScriptFilterCollection],
       globals: [],
       tests: [],
-      templatesDir: templateDir + '/templates/client-basicValidation',
+      templatesDir: templateDir + '/templates/service-client-basicValidation',
     },
     {
       name: 'service:test',
@@ -58,6 +58,18 @@ const CrosslabTypeScriptAddon: Addon = {
       globals: [],
       tests: [],
       templatesDir: templateDir + '/templates/scopes',
+    },
+    {
+      name: 'service-client',
+      filterCollections: [TypeScriptFilterCollection],
+      globals: [],
+      tests: [
+        {
+          name: 'attrequalto',
+          function: attributeEqualTo,
+        },
+      ],
+      templatesDir: templateDir + '/templates/service-client',
     },
   ],
 };
