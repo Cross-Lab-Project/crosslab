@@ -132,6 +132,7 @@ async function handle_authentication_response(req: Request, res: Response) {
     const url = new URL('https://www.dev.goldi-labs.de/en/experiment');
     url.searchParams.append('token', token);
     url.searchParams.append('template', template_url);
+    url.searchParams.append('display', 'iframe')
     res.send(post_form_message(url.toString(), {}));
     return;
   }
