@@ -12,8 +12,7 @@ export type LoginRequest = {
     password: string
     
     /* Authentication method. */
-    method?: "tui" | "local"
-}
+    method?: "tui" | "local"}
 
 
 export type LoginResponse201 = string
@@ -27,8 +26,7 @@ export type LoginResponse = LoginResponse201
 export type LogoutRequest = {
     
     /* The token to be invalidated. */
-    token?: string
-}
+    token?: string}
 
 
 export type LogoutResponse = void
@@ -40,8 +38,7 @@ export type ListUsersResponse200Items = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type ListUsersResponse200 = ListUsersResponse200Items[]
@@ -56,8 +53,7 @@ export type CreateUserRequest = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 
@@ -66,8 +62,7 @@ export type CreateUserResponse201 = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type CreateUserResponse = CreateUserResponse201
@@ -79,8 +74,7 @@ export type GetUserResponse200 = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type GetUserResponse = GetUserResponse200
@@ -89,8 +83,7 @@ export type GetUserResponse = GetUserResponse200
 
     
 export type UpdateUserRequest = {
-    password: string
-}
+    password: string}
 
 
 
@@ -99,8 +92,7 @@ export type UpdateUserResponse200 = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type UpdateUserResponse = UpdateUserResponse200
@@ -115,8 +107,7 @@ export type GetIdentityResponse200 = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type GetIdentityResponse = GetIdentityResponse200
@@ -125,8 +116,7 @@ export type GetIdentityResponse = GetIdentityResponse200
 
     
 export type UpdateIdentityRequest = {
-    password: string
-}
+    password: string}
 
 
 
@@ -135,8 +125,7 @@ export type UpdateIdentityResponse200 = {
     url: string
     id: string
     username: string
-    password: string
-}
+    password: string}
 
 
 export type UpdateIdentityResponse = UpdateIdentityResponse200
@@ -147,8 +136,7 @@ export type UpdateIdentityResponse = UpdateIdentityResponse200
     The claims that will be added to the token. If left empty, the token will have the full scope of the user.
     
 */
-export type CreateTokenRequestClaims = {
-}
+export type CreateTokenRequestClaims = never
 
 
 
@@ -160,8 +148,7 @@ export type CreateTokenRequest = {
     
     /* The claims that will be added to the token. If left empty, the token will have the full scope of the user.
  */
-    claims?: CreateTokenRequestClaims
-}
+    claims?: CreateTokenRequestClaims}
 
 
 export type CreateTokenResponse201 = string

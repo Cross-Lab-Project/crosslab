@@ -1,14 +1,27 @@
-import { DataSource } from 'typeorm';
-
-import { Migration1691157818867 } from './migrations/1691157818867-migration.js';
-import { PlatformModel } from './model.js';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 //import { RelationModel } from "./model.js";
+import { config } from '../config.js';
+import { Migrations } from './migrations/index.js';
+import { Entities } from './model.js';
 
-export const ApplicationDataSource = new DataSource({
-  type: 'sqlite',
-  database: 'db/authorization.db',
-  entities: [PlatformModel],
+export let ApplicationDataSource: DataSource = new DataSource({
+  ...config.orm,
+  migrations: [...Migrations],
   migrationsRun: true,
-  migrations: [Migration1691157818867],
+  entities: Entities,
 });
+
+export async function init_database(dataSourceConfig?: DataSourceOptions) {
+  ApplicationDataSource = new DataSource(
+    dataSourceConfig
+      ? { ...dataSourceConfig, entities: Entities }
+      : {
+          ...config.orm,
+          migrations: [...Migrations],
+          migrationsRun: true,
+          entities: Entities,
+        },
+  );
+  await ApplicationDataSource.initialize();
+}

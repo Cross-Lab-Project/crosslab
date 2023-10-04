@@ -13,3 +13,5 @@ export class PlatformModel {
   @Column()
   jwks_url!: string;
 }
+
+export const Entities = [PlatformModel];

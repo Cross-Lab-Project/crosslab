@@ -7,8 +7,6 @@ import { PlatformModel } from '../database/model.js';
 import { cross_document_message } from '../helper/html_responses.js';
 import { tool_configuration } from './tool_configuration.js';
 
-const platform_repository = ApplicationDataSource.getRepository(PlatformModel);
-
 export async function handle_dynamic_registration_initiation_request(
   req: Request,
   res: Response,
@@ -49,14 +47,14 @@ export async function handle_dynamic_registration_initiation_request(
 
   const parsed_registration_response = (await registration_response.json()) as any;
 
-  const platform = platform_repository.create({
+  const platform = ApplicationDataSource.manager.create(PlatformModel, {
     iss: openid_configuration.issuer,
     client_id: parsed_registration_response.client_id,
     authentication_request_url: openid_configuration.authorization_endpoint,
     access_token_url: openid_configuration.token_endpoint,
     jwks_url: openid_configuration.jwks_uri,
   });
-  await platform_repository.save(platform);
+  await ApplicationDataSource.manager.save(platform);
 
   res.send(cross_document_message({ subject: 'org.imsglobal.lti.close' }));
 }

@@ -20,17 +20,20 @@ async function parseResponse(response: Response) {
 }
 
 export class Client {
-    private BASE_URL: string;
-    private SERVICE_URL: string;
+        private BASE_URL: string;
+        private SERVICE_URL: string;
+        private fixedHeaders: Record<string, string>
 
-    constructor(BASE_URL: string, SERVICE_URL?: string) {
+    constructor(BASE_URL: string, SERVICE_URL?: string, fixedHeaders?: Record<string, string>) {
         this.BASE_URL = BASE_URL;
-        this.SERVICE_URL = SERVICE_URL || BASE_URL;
+        this.SERVICE_URL = SERVICE_URL ?? BASE_URL;
+        this.fixedHeaders=fixedHeaders??{};
     }
 
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
-        init.headers = init.headers || {"Content-Type": "application/json"};
+        init.headers = init.headers || { 'Content-Type': 'application/json' };
+        init.headers = {...this.fixedHeaders, ...init.headers,}
         try {
             raw_response = await fetch(url, init);
         } catch (error) {
@@ -58,7 +61,8 @@ export class Client {
         let valid_url = '/'+m[2]+'/experiments'
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "get"});
            
@@ -80,7 +84,8 @@ export class Client {
         let valid_url = '/'+m[2]+'/experiments'
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "post", body: JSON.stringify(body)});
            
@@ -105,7 +110,8 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "get"});
            
@@ -131,13 +137,13 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
 
-        // build query params
         if (changedURL){
+            
             url_with_query_params.searchParams.set('changedURL', changedURL)
+            
         }
-        
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "patch", body: JSON.stringify(body)});
            
@@ -162,7 +168,8 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "delete"});
            
@@ -184,7 +191,8 @@ export class Client {
         let valid_url = '/'+m[2]+'/templates'
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "get"});
            
@@ -206,7 +214,8 @@ export class Client {
         let valid_url = '/'+m[2]+'/templates'
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "post", body: JSON.stringify(body)});
            
@@ -231,7 +240,8 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "get"});
            
@@ -257,7 +267,8 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "patch", body: JSON.stringify(body)});
            
@@ -282,7 +293,8 @@ export class Client {
         let valid_url = '/'+m[2]+''
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
+
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "delete"});
            

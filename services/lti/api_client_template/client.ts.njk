@@ -24,17 +24,20 @@ async function parseResponse(response: Response) {
 }
 
 export class Client {
-    private BASE_URL: string;
-    private SERVICE_URL: string;
+        private BASE_URL: string;
+        private SERVICE_URL: string;
+        private fixedHeaders: Record<string, string>
 
-    constructor(BASE_URL: string, SERVICE_URL?: string) {
+    constructor(BASE_URL: string, SERVICE_URL?: string, fixedHeaders?: Record<string, string>) {
         this.BASE_URL = BASE_URL;
-        this.SERVICE_URL = SERVICE_URL || BASE_URL;
+        this.SERVICE_URL = SERVICE_URL ?? BASE_URL;
+        this.fixedHeaders=fixedHeaders??{};
     }
 
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
-        init.headers = init.headers || {"Content-Type": "application/json"};
+        init.headers = init.headers || { 'Content-Type': 'application/json' };
+        init.headers = {...this.fixedHeaders, ...init.headers,}
         try {
             raw_response = await fetch(url, init);
         } catch (error) {
@@ -55,6 +58,8 @@ export class Client {
     {%- for method, details in methods -%}
 
         {%- set params = [] %}
+        {%- set queryParams = [] %}
+        {%- set optionalQueryParams = [] %}
         {%- set optionalParams = [] %}
         {%- set query_params = [] %}
         {%- if details | hasPathParameter -%}
@@ -79,10 +84,11 @@ export class Client {
                 {%- endif -%}
                 {%- if param.required -%}
                     {%- set params = (params.push(paramName+': '+paramType), params) %}
+                    {%- set queryParams = (queryParams.push({name: paramName, type: paramType}), queryParams) %}
                 {%- else -%}
                     {%- set optionalParams = (optionalParams.push(paramName+'?: '+paramType), optionalParams) %}
+                    {%- set optionalQueryParams = (optionalQueryParams.push({name: paramName, type: paramType}), optionalQueryParams) %}
                 {%- endif -%}
-                {%- set query_params = (query_params.push(param.name), query_params) %}
             {%- endif -%}
         {%- endfor -%}
         {%- if not details | hasPathParameter -%}
@@ -110,16 +116,24 @@ export class Client {
         let valid_url = '/'+m[2]+'{{path | replaceRegEx('^(.*?)([^{}]*)$', '$2')}}'
         if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
 
-        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
-        {%- if query_params | length > 0 %}
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
 
-        // build query params
-        {% for param in query_params -%}
-        if ({{param | lowerCamelCase}}){
-            url_with_query_params.searchParams.set('{{param}}', {{param | lowerCamelCase}})
+        {% for param in optionalQueryParams -%}
+        if ({{param.name | lowerCamelCase}}){
+            {% if param.type == 'boolean' %}
+            url_with_query_params.searchParams.set('{{ param.name }}', "true")
+            {% else %}
+            url_with_query_params.searchParams.set('{{ param.name }}', {{param.name | lowerCamelCase}})
+            {% endif %}
         }
         {% endfor -%}
-        {%- endif %}
+        {% for param in queryParams -%}
+            {% if param.type == 'boolean' %}
+        url_with_query_params.searchParams.set('{{ param.name }}', {{param.name | lowerCamelCase}} ? "true" : "false")
+            {% else %}
+        url_with_query_params.searchParams.set('{{ param.name }}', {{param.name | lowerCamelCase}})
+            {% endif %}
+        {% endfor -%}
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "{{method}}"{% if details.requestBody -%} , body: JSON.stringify(body){% endif %}});
            

@@ -5,8 +5,6 @@ import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
 import { tool_configuration } from './tool_configuration.js';
 
-const platform_repository = ApplicationDataSource.getRepository(PlatformModel);
-
 export async function handle_manual_registration(_req: Request, res: Response) {
   const settings = [
     { name: 'Tool Name', value: tool_configuration.client_name },
@@ -88,14 +86,14 @@ export async function complete_manual_registration(req: Request, res: Response) 
   const access_token_url = req.body.access_token_url as string;
   const authentication_request_url = req.body.authentication_request_url as string;
 
-  const platform = platform_repository.create({
+  const platform = ApplicationDataSource.manager.create(PlatformModel, {
     iss,
     client_id,
     authentication_request_url,
     access_token_url,
     jwks_url,
   });
-  await platform_repository.save(platform);
+  await ApplicationDataSource.manager.save(platform);
 
   res.send(
     '<!DOCTYPE html>' +

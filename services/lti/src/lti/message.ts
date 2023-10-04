@@ -1,10 +1,9 @@
-import { APIClient } from '@cross-lab-project/api-client';
 import { logging } from '@crosslab/service-common';
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { JWTPayload, SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
 
-import { authentication } from '../clients/index.js';
+import { authentication, experiment } from '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
 import * as generators from '../helper/generators.js';
@@ -12,8 +11,6 @@ import { post_form_message } from '../helper/html_responses.js';
 import { nonce_store } from '../helper/nonce.js';
 import { kid, privateKey } from '../key_management.js';
 import { tool_configuration } from './tool_configuration.js';
-
-const platform_repository = ApplicationDataSource.getRepository(PlatformModel);
 
 function post_form(url: string, message: object): string {
   return `<form action="${url}" method="post">${Object.entries(message)
@@ -26,10 +23,7 @@ async function handle_deep_linking_request(
   res: Response,
   payload: JWTPayload,
 ) {
-  const apiClient = new APIClient('https://api.dev.goldi-labs.de');
-  // TODO: replace with solution for inter-service-authentication
-  await apiClient.login('username', 'password');
-  const templates = await apiClient.listTemplate();
+  const templates = await experiment.listTemplate();
 
   const deep_linking_settings =
     (payload['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] as {
@@ -132,7 +126,7 @@ async function handle_authentication_response(req: Request, res: Response) {
     const url = new URL('https://www.dev.goldi-labs.de/en/experiment');
     url.searchParams.append('token', token);
     url.searchParams.append('template', template_url);
-    url.searchParams.append('display', 'iframe')
+    url.searchParams.append('display', 'iframe');
     res.send(post_form_message(url.toString(), {}));
     return;
   }
@@ -160,12 +154,14 @@ export async function handle_login_request(req: Request, res: Response) {
 
   let platform: PlatformModel;
   if (req.body.client_id) {
-    platform = await platform_repository.findOneByOrFail({
+    platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
       iss: req.body.iss,
       client_id: req.body.client_id,
     });
   } else {
-    platform = await platform_repository.findOneByOrFail({ iss: req.body.iss });
+    platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
+      iss: req.body.iss,
+    });
   }
 
   const stateParam = generators.random() + ':' + encodeURIComponent(platform.jwks_url);

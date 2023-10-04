@@ -12,8 +12,7 @@ export type ListExperimentsResponse200Items = {
     
     /* URL of the experiment */
     url: string
-    status: ListExperimentsResponse200ItemsStatus
-}
+    status: ListExperimentsResponse200ItemsStatus}
 
 
 export type ListExperimentsResponse200 = ListExperimentsResponse200Items[]
@@ -34,8 +33,7 @@ export type CreateExperimentRequestStatus = CreateExperimentRequestStatusAlt1 | 
     
 export type CreateExperimentRequestBookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -46,8 +44,7 @@ export type CreateExperimentRequestDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -56,8 +53,7 @@ export type CreateExperimentRequestRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -67,8 +63,7 @@ export type CreateExperimentRequestRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentRequestServiceconfigurationsItemsConfiguration = {
-}
+export type CreateExperimentRequestServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -78,8 +73,7 @@ export type CreateExperimentRequestServiceconfigurationsItemsConfiguration = {
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -94,8 +88,7 @@ export type CreateExperimentRequestServiceconfigurationsItemsParticipantsItems =
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -112,8 +105,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateExperimentRequestServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateExperimentRequestServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateExperimentRequestServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -122,8 +114,7 @@ export type CreateExperimentRequestInstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -148,8 +139,7 @@ export type CreateExperimentRequest = {
     serviceConfigurations: CreateExperimentRequestServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: CreateExperimentRequestInstantiateddevicesItems[]
-}
+    instantiatedDevices: CreateExperimentRequestInstantiateddevicesItems[]}
 
 
 export type CreateExperimentResponse201StatusAlt1 = "created" | "booked" | "setup" | "running" | "finished"
@@ -164,8 +154,7 @@ export type CreateExperimentResponse201Status = CreateExperimentResponse201Statu
     
 export type CreateExperimentResponse201Bookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -176,8 +165,7 @@ export type CreateExperimentResponse201DevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -186,8 +174,7 @@ export type CreateExperimentResponse201RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -197,8 +184,7 @@ export type CreateExperimentResponse201RolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentResponse201ServiceconfigurationsItemsConfiguration = {
-}
+export type CreateExperimentResponse201ServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -208,8 +194,7 @@ export type CreateExperimentResponse201ServiceconfigurationsItemsConfiguration =
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -224,8 +209,7 @@ export type CreateExperimentResponse201ServiceconfigurationsItemsParticipantsIte
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -242,8 +226,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateExperimentResponse201ServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -252,8 +235,7 @@ export type CreateExperimentResponse201InstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -278,8 +260,7 @@ export type CreateExperimentResponse201 = {
     serviceConfigurations: CreateExperimentResponse201ServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: CreateExperimentResponse201InstantiateddevicesItems[]
-}
+    instantiatedDevices: CreateExperimentResponse201InstantiateddevicesItems[]}
 
 
 export type CreateExperimentResponse202StatusAlt1 = "created" | "booked" | "setup" | "running" | "finished"
@@ -294,8 +275,7 @@ export type CreateExperimentResponse202Status = CreateExperimentResponse202Statu
     
 export type CreateExperimentResponse202Bookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -306,8 +286,7 @@ export type CreateExperimentResponse202DevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -316,8 +295,7 @@ export type CreateExperimentResponse202RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -327,8 +305,7 @@ export type CreateExperimentResponse202RolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentResponse202ServiceconfigurationsItemsConfiguration = {
-}
+export type CreateExperimentResponse202ServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -338,8 +315,7 @@ export type CreateExperimentResponse202ServiceconfigurationsItemsConfiguration =
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -354,8 +330,7 @@ export type CreateExperimentResponse202ServiceconfigurationsItemsParticipantsIte
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -372,8 +347,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateExperimentResponse202ServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -382,8 +356,7 @@ export type CreateExperimentResponse202InstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -408,8 +381,7 @@ export type CreateExperimentResponse202 = {
     serviceConfigurations: CreateExperimentResponse202ServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: CreateExperimentResponse202InstantiateddevicesItems[]
-}
+    instantiatedDevices: CreateExperimentResponse202InstantiateddevicesItems[]}
 
 
 export type CreateExperimentResponse =CreateExperimentResponse201 | CreateExperimentResponse202
@@ -427,8 +399,7 @@ export type GetExperimentResponse200Status = GetExperimentResponse200StatusAlt1 
     
 export type GetExperimentResponse200Bookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -439,8 +410,7 @@ export type GetExperimentResponse200DevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -449,8 +419,7 @@ export type GetExperimentResponse200RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -460,8 +429,7 @@ export type GetExperimentResponse200RolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type GetExperimentResponse200ServiceconfigurationsItemsConfiguration = {
-}
+export type GetExperimentResponse200ServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -471,8 +439,7 @@ export type GetExperimentResponse200ServiceconfigurationsItemsConfiguration = {
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type GetExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type GetExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -487,8 +454,7 @@ export type GetExperimentResponse200ServiceconfigurationsItemsParticipantsItems 
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: GetExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: GetExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -505,8 +471,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: GetExperimentResponse200ServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: GetExperimentResponse200ServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: GetExperimentResponse200ServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -515,8 +480,7 @@ export type GetExperimentResponse200InstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -541,8 +505,7 @@ export type GetExperimentResponse200 = {
     serviceConfigurations: GetExperimentResponse200ServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: GetExperimentResponse200InstantiateddevicesItems[]
-}
+    instantiatedDevices: GetExperimentResponse200InstantiateddevicesItems[]}
 
 
 export type GetExperimentResponse = GetExperimentResponse200
@@ -560,8 +523,7 @@ export type UpdateExperimentRequestStatus = UpdateExperimentRequestStatusAlt1 | 
     
 export type UpdateExperimentRequestBookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -572,8 +534,7 @@ export type UpdateExperimentRequestDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -582,8 +543,7 @@ export type UpdateExperimentRequestRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -593,8 +553,7 @@ export type UpdateExperimentRequestRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentRequestServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateExperimentRequestServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -604,8 +563,7 @@ export type UpdateExperimentRequestServiceconfigurationsItemsConfiguration = {
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -620,8 +578,7 @@ export type UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems =
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -638,8 +595,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateExperimentRequestServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -655,8 +611,7 @@ export type UpdateExperimentRequest = {
     roles?: UpdateExperimentRequestRolesItems[]
     
     /* Services associated with the experiment */
-    serviceConfigurations?: UpdateExperimentRequestServiceconfigurationsItems[]
-}
+    serviceConfigurations?: UpdateExperimentRequestServiceconfigurationsItems[]}
 
 
 export type UpdateExperimentResponse200StatusAlt1 = "created" | "booked" | "setup" | "running" | "finished"
@@ -671,8 +626,7 @@ export type UpdateExperimentResponse200Status = UpdateExperimentResponse200Statu
     
 export type UpdateExperimentResponse200Bookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -683,8 +637,7 @@ export type UpdateExperimentResponse200DevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -693,8 +646,7 @@ export type UpdateExperimentResponse200RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -704,8 +656,7 @@ export type UpdateExperimentResponse200RolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -715,8 +666,7 @@ export type UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration =
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -731,8 +681,7 @@ export type UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsIte
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -749,8 +698,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -759,8 +707,7 @@ export type UpdateExperimentResponse200InstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -785,8 +732,7 @@ export type UpdateExperimentResponse200 = {
     serviceConfigurations: UpdateExperimentResponse200ServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: UpdateExperimentResponse200InstantiateddevicesItems[]
-}
+    instantiatedDevices: UpdateExperimentResponse200InstantiateddevicesItems[]}
 
 
 export type UpdateExperimentResponse202StatusAlt1 = "created" | "booked" | "setup" | "running" | "finished"
@@ -801,8 +747,7 @@ export type UpdateExperimentResponse202Status = UpdateExperimentResponse202Statu
     
 export type UpdateExperimentResponse202Bookingtime = {
     startTime?: string
-    endTime?: string
-}
+    endTime?: string}
 
 
 
@@ -813,8 +758,7 @@ export type UpdateExperimentResponse202DevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -823,8 +767,7 @@ export type UpdateExperimentResponse202RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -834,8 +777,7 @@ export type UpdateExperimentResponse202RolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -845,8 +787,7 @@ export type UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration =
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -861,8 +802,7 @@ export type UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsIte
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -879,8 +819,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -889,8 +828,7 @@ export type UpdateExperimentResponse202InstantiateddevicesItems = {
     codeUrl: string
     url: string
     token: string
-    instanceOf: string
-}
+    instanceOf: string}
 
 
 
@@ -915,8 +853,7 @@ export type UpdateExperimentResponse202 = {
     serviceConfigurations: UpdateExperimentResponse202ServiceconfigurationsItems[]
     
     /* Instantiated devices that need to be started by the user. */
-    instantiatedDevices: UpdateExperimentResponse202InstantiateddevicesItems[]
-}
+    instantiatedDevices: UpdateExperimentResponse202InstantiateddevicesItems[]}
 
 
 export type UpdateExperimentResponse =UpdateExperimentResponse200 | UpdateExperimentResponse202
@@ -936,8 +873,7 @@ export type ListTemplateResponse200Items = {
     name: string
     
     /* Description of the template */
-    description?: string
-}
+    description?: string}
 
 
 export type ListTemplateResponse200 = ListTemplateResponse200Items[]
@@ -954,8 +890,7 @@ export type CreateTemplateRequestConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -964,8 +899,7 @@ export type CreateTemplateRequestConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -975,8 +909,7 @@ export type CreateTemplateRequestConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -986,8 +919,7 @@ export type CreateTemplateRequestConfigurationServiceconfigurationsItemsConfigur
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1002,8 +934,7 @@ export type CreateTemplateRequestConfigurationServiceconfigurationsItemsParticip
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1020,8 +951,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1037,8 +967,7 @@ export type CreateTemplateRequestConfiguration = {
     roles: CreateTemplateRequestConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: CreateTemplateRequestConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: CreateTemplateRequestConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1055,8 +984,7 @@ export type CreateTemplateRequest = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: CreateTemplateRequestConfiguration
-}
+    configuration: CreateTemplateRequestConfiguration}
 
 
 
@@ -1067,8 +995,7 @@ export type CreateTemplateResponse201ConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1077,8 +1004,7 @@ export type CreateTemplateResponse201ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1088,8 +1014,7 @@ export type CreateTemplateResponse201ConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1099,8 +1024,7 @@ export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConf
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1115,8 +1039,7 @@ export type CreateTemplateResponse201ConfigurationServiceconfigurationsItemsPart
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1133,8 +1056,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1150,8 +1072,7 @@ export type CreateTemplateResponse201Configuration = {
     roles: CreateTemplateResponse201ConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: CreateTemplateResponse201ConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: CreateTemplateResponse201ConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1168,8 +1089,7 @@ export type CreateTemplateResponse201 = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: CreateTemplateResponse201Configuration
-}
+    configuration: CreateTemplateResponse201Configuration}
 
 
 
@@ -1180,8 +1100,7 @@ export type CreateTemplateResponse202ConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1190,8 +1109,7 @@ export type CreateTemplateResponse202ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1201,8 +1119,7 @@ export type CreateTemplateResponse202ConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1212,8 +1129,7 @@ export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConf
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1228,8 +1144,7 @@ export type CreateTemplateResponse202ConfigurationServiceconfigurationsItemsPart
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1246,8 +1161,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1263,8 +1177,7 @@ export type CreateTemplateResponse202Configuration = {
     roles: CreateTemplateResponse202ConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: CreateTemplateResponse202ConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: CreateTemplateResponse202ConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1281,8 +1194,7 @@ export type CreateTemplateResponse202 = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: CreateTemplateResponse202Configuration
-}
+    configuration: CreateTemplateResponse202Configuration}
 
 
 export type CreateTemplateResponse =CreateTemplateResponse201 | CreateTemplateResponse202
@@ -1296,8 +1208,7 @@ export type GetTemplateResponse200ConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1306,8 +1217,7 @@ export type GetTemplateResponse200ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1317,8 +1227,7 @@ export type GetTemplateResponse200ConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1328,8 +1237,7 @@ export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfigu
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1344,8 +1252,7 @@ export type GetTemplateResponse200ConfigurationServiceconfigurationsItemsPartici
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1362,8 +1269,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1379,8 +1285,7 @@ export type GetTemplateResponse200Configuration = {
     roles: GetTemplateResponse200ConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: GetTemplateResponse200ConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: GetTemplateResponse200ConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1397,8 +1302,7 @@ export type GetTemplateResponse200 = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: GetTemplateResponse200Configuration
-}
+    configuration: GetTemplateResponse200Configuration}
 
 
 export type GetTemplateResponse = GetTemplateResponse200
@@ -1412,8 +1316,7 @@ export type UpdateTemplateRequestConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1422,8 +1325,7 @@ export type UpdateTemplateRequestConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1433,8 +1335,7 @@ export type UpdateTemplateRequestConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1444,8 +1345,7 @@ export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfigur
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1460,8 +1360,7 @@ export type UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticip
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1478,8 +1377,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1495,8 +1393,7 @@ export type UpdateTemplateRequestConfiguration = {
     roles?: UpdateTemplateRequestConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations?: UpdateTemplateRequestConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations?: UpdateTemplateRequestConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1510,8 +1407,7 @@ export type UpdateTemplateRequest = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration?: UpdateTemplateRequestConfiguration
-}
+    configuration?: UpdateTemplateRequestConfiguration}
 
 
 
@@ -1522,8 +1418,7 @@ export type UpdateTemplateResponse200ConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1532,8 +1427,7 @@ export type UpdateTemplateResponse200ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1543,8 +1437,7 @@ export type UpdateTemplateResponse200ConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1554,8 +1447,7 @@ export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConf
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1570,8 +1462,7 @@ export type UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsPart
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1588,8 +1479,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1605,8 +1495,7 @@ export type UpdateTemplateResponse200Configuration = {
     roles: UpdateTemplateResponse200ConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: UpdateTemplateResponse200ConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: UpdateTemplateResponse200ConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1623,8 +1512,7 @@ export type UpdateTemplateResponse200 = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: UpdateTemplateResponse200Configuration
-}
+    configuration: UpdateTemplateResponse200Configuration}
 
 
 
@@ -1635,8 +1523,7 @@ export type UpdateTemplateResponse202ConfigurationDevicesItems = {
     device: string
     
     /* The name of the device's role. */
-    role: string
-}
+    role: string}
 
 
 
@@ -1645,8 +1532,7 @@ export type UpdateTemplateResponse202ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string
-}
+    description?: string}
 
 
 
@@ -1656,8 +1542,7 @@ export type UpdateTemplateResponse202ConfigurationRolesItems = {
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration = {
-}
+export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration = never
 
 
 
@@ -1667,8 +1552,7 @@ export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConf
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     
 */
-export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = {
-}
+export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig = never
 
 
 
@@ -1683,8 +1567,7 @@ export type UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsPart
 
 This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
  */
-    config?: UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig
-}
+    config?: UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig}
 
 
 
@@ -1701,8 +1584,7 @@ This configuration object will be merged with the participant configuration to b
     configuration?: UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration
     
     /* List of participants for the service */
-    participants?: UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems[]
-}
+    participants?: UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems[]}
 
 
 
@@ -1718,8 +1600,7 @@ export type UpdateTemplateResponse202Configuration = {
     roles: UpdateTemplateResponse202ConfigurationRolesItems[]
     
     /* Services associated with the templated experiment */
-    serviceConfigurations: UpdateTemplateResponse202ConfigurationServiceconfigurationsItems[]
-}
+    serviceConfigurations: UpdateTemplateResponse202ConfigurationServiceconfigurationsItems[]}
 
 
 
@@ -1736,8 +1617,7 @@ export type UpdateTemplateResponse202 = {
     description?: string
     
     /* Configuration of the templated experiment */
-    configuration: UpdateTemplateResponse202Configuration
-}
+    configuration: UpdateTemplateResponse202Configuration}
 
 
 export type UpdateTemplateResponse =UpdateTemplateResponse200 | UpdateTemplateResponse202
