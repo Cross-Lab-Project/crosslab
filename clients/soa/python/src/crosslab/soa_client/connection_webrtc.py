@@ -37,14 +37,15 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
         config = RTCConfiguration(
-            [
-                RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-                RTCIceServer(
-                    urls="turn:turn.goldi-labs.de:3478",
-                    username="goldi",
-                    credential="goldi",
-                ),
-            ]
+            []
+            #[
+            #    RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
+            #    RTCIceServer(
+            #        urls="turn:turn.goldi-labs.de:3478",
+            #        username="goldi",
+            #        credential="goldi",
+            #    ),
+            #]
         )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
@@ -139,9 +140,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             datachannel = self.pc.createDataChannel(label)
 
             async def upstreamData(data):
-                datachannel.send(data)
-                await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
-                await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
+                try:
+                    datachannel.send(data)
+                    await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
+                    await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
+                except Exception as e:
+                    pass
 
             def message(data):
                 dchannel.downstreamData(data)

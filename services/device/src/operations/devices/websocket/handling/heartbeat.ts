@@ -13,6 +13,13 @@ export function heartbeatHandling(
   deviceModel: ConcreteDeviceModel,
 ): NodeJS.Timeout {
   let isAlive = true;
+  ws.on('ping', () => {
+    logger.log(
+      'info',
+      `ping received from device '${deviceUrlFromId(deviceModel.uuid)}'`,
+    );
+    ws.pong();
+  });
   ws.on('pong', () => {
     isAlive = true;
     logger.log(

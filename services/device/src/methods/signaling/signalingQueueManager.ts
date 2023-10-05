@@ -1,12 +1,13 @@
 import { MissingEntityError, logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
-import { PeerconnectionModel } from '../../database/model.js';
+import { ConcreteDeviceModel, PeerconnectionModel } from '../../database/model.js';
 import {
   ClosePeerconnectionMessage,
   CreatePeerconnectionMessage,
   SignalingMessage,
 } from '../../generated/types.js';
+import { getDevice } from '../device.js';
 import { peerconnectionUrlFromId } from '../urlFromId.js';
 import { SignalingQueue } from './signalingQueue.js';
 
@@ -110,16 +111,33 @@ export class SignalingQueueManager {
       connectionUrl: peerconnectionUrl,
     };
 
+    const deviceA = await getDevice(peerconnectionModel.deviceA);
+    const deviceB = await getDevice(peerconnectionModel.deviceB);
+    const hasVideo = (device: ConcreteDeviceModel) =>
+      device.services.some(
+        s =>
+          s.serviceType &&
+          s.serviceType.includes('webcam') &&
+          (s.serviceDirection === 'producer' || (s.serviceDirection as string) === 'out'),
+      );
+    const deviceAHasVideo = deviceA instanceof ConcreteDeviceModel && hasVideo(deviceA);
+    const deviceBHasVideo = deviceB instanceof ConcreteDeviceModel && hasVideo(deviceB);
+    logger.log(
+      'info',
+      `deviceAHasVideo: ${deviceAHasVideo}, deviceBHasVideo: ${deviceBHasVideo}`,
+    );
+    const tiebreaker = deviceAHasVideo && !deviceBHasVideo ? true : false;
+
     const createPeerConnectionMessageA: CreatePeerconnectionMessage = {
       ...common,
       services: peerconnectionModel.deviceA.config?.services ?? [],
-      tiebreaker: true,
+      tiebreaker: tiebreaker,
     };
 
     const createPeerConnectionMessageB: CreatePeerconnectionMessage = {
       ...common,
       services: peerconnectionModel.deviceB.config?.services ?? [],
-      tiebreaker: false,
+      tiebreaker: !tiebreaker,
     };
 
     // add createPeerconnection messages
