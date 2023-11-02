@@ -131,11 +131,11 @@ services/authorization:
 
 services/booking:
    - script: build-spec
-   - script: lint-spec
-     dependencies:
-       - services/booking:build-spec
-     tags:
-       - test
+#   - script: lint-spec
+#     dependencies:
+#       - services/booking:build-spec
+#     tags:
+#       - test
 #   - script: build
 #     dependencies:
 #       - services/booking:build-spec

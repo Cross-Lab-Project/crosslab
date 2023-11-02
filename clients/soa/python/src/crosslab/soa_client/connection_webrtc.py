@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Literal, cast
 
 from aiortc import (  # type: ignore
     RTCConfiguration,
-    RTCIceServer,
     RTCPeerConnection,
     RTCSessionDescription,
 )
@@ -38,14 +37,14 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         Connection.__init__(self)
         config = RTCConfiguration(
             []
-            #[
+            # [
             #    RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
             #    RTCIceServer(
             #        urls="turn:turn.goldi-labs.de:3478",
             #        username="goldi",
             #        credential="goldi",
             #    ),
-            #]
+            # ]
         )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
@@ -144,7 +143,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                     datachannel.send(data)
                     await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
                     await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
-                except Exception as e:
+                except Exception:
                     pass
 
             def message(data):

@@ -1,6 +1,5 @@
 import asyncio
 import re
-from time import sleep
 from typing import Dict, Optional
 
 import aiohttp
@@ -175,7 +174,7 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
         connection = self._connections.get(msg["connectionUrl"], None)
-        if (connection is None): 
+        if (connection is None):
             return
         await connection.close()
         del self._connections[msg["connectionUrl"]]
