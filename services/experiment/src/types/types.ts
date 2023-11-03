@@ -6,12 +6,12 @@ export type Instance = {
   codeUrl?: string;
 };
 
-export type ResolvedDevice =  {
+export type ResolvedDevice = any & {
   instanceUrl?: string;
   instanceToken?: string;
 };
 
-export type InstantiatedDevice =  {
+export type InstantiatedDevice = any & {
   token: string;
 };
 
