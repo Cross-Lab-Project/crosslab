@@ -5,7 +5,7 @@ import { patchExperimentsByExperimentId } from '../../../../src/operations/exper
 import { TestData } from '../../../data/index.spec.js';
 import { addTest, stubbedAuthorization } from '../../index.spec.js';
 
-export default function (context: Mocha.Context, testData: TestData) {
+export default function (context: Mocha.Context, _testData: TestData) {
   const suite = new Mocha.Suite('PATCH /experiments/{experiment_id}', context);
 
   addTest(

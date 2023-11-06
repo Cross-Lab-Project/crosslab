@@ -1,5 +1,9 @@
 import { logger } from '@crosslab/service-common';
 
+import {
+  InstantiableBrowserDevice,
+  InstantiableCloudDevice,
+} from '../../../clients/device/types.js';
 import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
@@ -9,13 +13,11 @@ import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
 import { experimentUrlFromId } from '../../url.js';
 
-type edge_instatiable = { url: string; type: 'edge instantiable'; codeUrl: string };
-type cloud_instatiable = { url: string; type: 'cloud instantiable' };
-type Instatiable = edge_instatiable | cloud_instatiable;
+export type Instantiable = InstantiableBrowserDevice | InstantiableCloudDevice;
 
 export async function instantiateDevicesExperiment(
   experimentModel: ExperimentModel,
-  instantiables: Instatiable[],
+  instantiables: Instantiable[],
   clients: Clients,
 ): Promise<InstantiatedDevice[]> {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);

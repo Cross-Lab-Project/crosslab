@@ -1,6 +1,7 @@
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 
+import { UnsuccessfulRequestError } from '../../clients/device/client.js';
 import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
@@ -101,7 +102,8 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
       try {
         await clients.device.deletePeerconnection(peerconnection.url);
       } catch (error) {
-        if (error instanceof Error && error.message.endsWith('404')) break;
+        if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
+          break;
         throw error;
       }
     }

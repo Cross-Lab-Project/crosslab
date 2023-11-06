@@ -9,7 +9,7 @@ import { ResolvedDevice } from '../../../types/types.js';
 import { experimentUrlFromId } from '../../url.js';
 import { lockBookingExperiment } from './bookingLocking.js';
 import { updateBookingExperiment } from './bookingUpdate.js';
-import { instantiateDevicesExperiment } from './deviceInstantiation.js';
+import { Instantiable, instantiateDevicesExperiment } from './deviceInstantiation.js';
 import { createPeerconnectionsExperiment } from './peerconnectionCreation.js';
 
 export async function setupExperiment(
@@ -31,7 +31,7 @@ export async function setupExperiment(
       500,
     );
 
-  const uninstantiatedDevices = [];
+  const uninstantiatedDevices: Instantiable[] = [];
 
   for (const resolvedDevice of resolvedDevices) {
     if (
