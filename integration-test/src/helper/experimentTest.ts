@@ -167,18 +167,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       const deviceToken = instanceData.token;
       apiDevice.instanceUrl = instanceData.url;
 
-      const originalAccessToken = client.accessToken;
-      client.accessToken = deviceToken;
-
       promiseList.push(
         new Promise<void>(resolve =>
           this.devices[idx].once('websocketConnected', resolve),
         ),
       );
       this.events.push({ gpio: [] });
-      this.devices[idx].start(client, instanceUrl);
-
-      client.accessToken = originalAccessToken;
+      this.devices[idx].start(new APIClient(client.url, deviceToken), instanceUrl);
     }
 
     await Promise.all(promiseList);
@@ -186,14 +181,6 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     for (const device of this.devices) {
       assert((await client.getDevice(device.url)).connected, 'Device is not connected');
     }
-
-    // await client.updateExperiment(apiExperiment.url!, {
-    //   status: 'running',
-    //   devices: this.apiDevices.map((d, idx) => ({
-    //     role: 'device' + (idx + 1),
-    //     device: d.type === 'device' ? d.url : (d.instanceUrl as any),
-    //   })),
-    // });
 
     await Promise.all(promiseListConnections);
 
