@@ -6,6 +6,7 @@ import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
+import { simpleQueueManager } from '../../queueManager.js';
 import { experimentUrlFromId } from '../../url.js';
 
 async function checkDevices(
@@ -34,50 +35,60 @@ export async function createPeerconnectionsExperiment(
   experimentModel: ExperimentModel,
   clients: Clients,
 ) {
-  const connectedMap = new Map<string, boolean>();
+  return new Promise<void>(resolve => {
+    simpleQueueManager.addToQueue(experimentModel.uuid, async () => {
+      const connectedMap = new Map<string, boolean>();
 
-  const connected = await checkDevices(experimentModel, clients, connectedMap);
+      const connected = await checkDevices(experimentModel, clients, connectedMap);
 
-  if (!connected)
-    await new Promise<void>((resolve, reject) => {
-      let i = 0;
-      const connectionInterval = setInterval(async () => {
-        const allConnected = await checkDevices(experimentModel, clients, connectedMap);
+      if (!connected)
+        await new Promise<void>((res, rej) => {
+          let i = 0;
+          const connectionInterval = setInterval(async () => {
+            const allConnected = await checkDevices(
+              experimentModel,
+              clients,
+              connectedMap,
+            );
 
-        if (allConnected) {
-          resolve();
-          clearInterval(connectionInterval);
-        } else if (i === 6) {
-          reject('Devices did not connect in time');
-        } else {
-          i++;
-        }
-      }, 5000);
+            if (allConnected) {
+              res();
+              clearInterval(connectionInterval);
+            } else if (i === 6) {
+              rej('Devices did not connect in time');
+            } else {
+              i++;
+            }
+          }, 5000);
+        });
+
+      const experimentUrl = experimentUrlFromId(experimentModel.uuid);
+      logger.log('info', 'Attempting to create peerconnections for experiment', {
+        data: { experimentUrl },
+      });
+
+      if (experimentModel.status !== 'booking-updated')
+        throw new InvalidStateError(
+          `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
+        );
+
+      if (!validateExperimentStatus(experimentModel, 'booking-updated'))
+        throw new MalformedExperimentError(
+          `Experiment is in status 'booking-updated', but does not satisfy the requirements for this status`,
+          500,
+        );
+
+      await createPeerconnections(experimentModel, clients);
+
+      experimentModel.status = 'peerconnections-created';
+
+      await repositories.experiment.save(experimentModel);
+
+      logger.log('info', 'Successfully created peerconnections for experiment', {
+        data: { experimentUrl },
+      });
+
+      resolve();
     });
-
-  const experimentUrl = experimentUrlFromId(experimentModel.uuid);
-  logger.log('info', 'Attempting to create peerconnections for experiment', {
-    data: { experimentUrl },
-  });
-
-  if (experimentModel.status !== 'booking-updated')
-    throw new InvalidStateError(
-      `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
-    );
-
-  if (!validateExperimentStatus(experimentModel, 'booking-updated'))
-    throw new MalformedExperimentError(
-      `Experiment is in status 'booking-updated', but does not satisfy the requirements for this status`,
-      500,
-    );
-
-  await createPeerconnections(experimentModel, clients);
-
-  experimentModel.status = 'peerconnections-created';
-
-  await repositories.experiment.save(experimentModel);
-
-  logger.log('info', 'Successfully created peerconnections for experiment', {
-    data: { experimentUrl },
   });
 }
