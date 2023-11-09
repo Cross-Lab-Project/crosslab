@@ -21,6 +21,7 @@ services:
       DEVICE_SERVICE_DOMAIN: '127.0.0.1:3001'
       EXPERIMENT_SERVICE_DOMAIN: '127.0.0.1:3002'
       FEDERATION_SERVICE_DOMAIN: '127.0.0.1:3003'
+      AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
     network_mode: 'host'
   authentication:
     image: '${AUTHENTICATION_IMAGE}'
