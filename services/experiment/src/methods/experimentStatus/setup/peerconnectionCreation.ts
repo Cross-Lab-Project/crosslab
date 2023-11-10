@@ -84,6 +84,6 @@ export async function createPeerconnectionsExperiment(
       data: { experimentUrl },
     });
   } finally {
-    release;
+    release();
   }
 }
