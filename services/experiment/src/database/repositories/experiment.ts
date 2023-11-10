@@ -54,7 +54,7 @@ export class ExperimentRepository extends AbstractRepository<
   ): Promise<void> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-    if (data.status) model.status = data.status;
+    // if (data.status) model.status = data.status;
 
     if (data.bookingTime) {
       if (data.bookingTime.startTime) model.bookingStart = data.bookingTime.startTime;

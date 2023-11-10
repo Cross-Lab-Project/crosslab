@@ -7,6 +7,7 @@ import {
   finishExperiment,
   runExperiment,
 } from '../../../methods/experimentStatus/index.js';
+import { mutexManager } from '../../../methods/mutexManager.js';
 import { experimentUrlFromId } from '../../../methods/url.js';
 
 /**
@@ -18,52 +19,62 @@ import { experimentUrlFromId } from '../../../methods/url.js';
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
   async (req, parameters, body) => {
-    logger.log(
-      'info',
-      `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`,
-      {
-        data: {
-          user: req.authorization.user,
-          experiment: experimentUrlFromId(parameters.experiment_id),
-        },
-      },
+    const release = await mutexManager.acquire(parameters.experiment_id);
+    const createPeerconnectionsRelease = await mutexManager.acquire(
+      `create-peerconnections:${parameters.experiment_id}`,
     );
-
-    await req.authorization.check_authorization_or_fail(
-      'edit',
-      `experiment:${experimentUrlFromId(parameters.experiment_id)}`,
-    );
-
-    const experimentModel = await repositories.experiment.findOneOrFail({
-      where: { uuid: parameters.experiment_id },
-      relations: {
-        connections: true,
-        devices: {
-          instance: true,
+    createPeerconnectionsRelease();
+    try {
+      logger.log(
+        'info',
+        `Handling PATCH request on endpoint /experiments/${parameters.experiment_id}`,
+        {
+          data: {
+            user: req.authorization.user,
+            experiment: experimentUrlFromId(parameters.experiment_id),
+          },
         },
-        roles: true,
-        serviceConfigurations: {
-          participants: true,
+      );
+
+      await req.authorization.check_authorization_or_fail(
+        'edit',
+        `experiment:${experimentUrlFromId(parameters.experiment_id)}`,
+      );
+
+      const experimentModel = await repositories.experiment.findOneOrFail({
+        where: { uuid: parameters.experiment_id },
+        relations: {
+          connections: true,
+          devices: {
+            instance: true,
+          },
+          roles: true,
+          serviceConfigurations: {
+            participants: true,
+          },
         },
-      },
-    });
+      });
 
-    if (body) await repositories.experiment.write(experimentModel, body);
+      if (body) await repositories.experiment.write(experimentModel, body);
 
-    if (experimentModel.status === 'booked') await bookExperiment(experimentModel);
-    if (experimentModel.status === 'running')
-      await runExperiment(experimentModel, req.clients);
-    if (experimentModel.status === 'finished')
-      await finishExperiment(experimentModel, req.clients);
-    await repositories.experiment.save(experimentModel);
+      const desiredStatus = body?.status ?? experimentModel.status;
 
-    logger.log(
-      'info',
-      `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`,
-    );
+      if (desiredStatus === 'booked') await bookExperiment(experimentModel);
+      if (desiredStatus === 'running') await runExperiment(experimentModel, req.clients);
+      if (desiredStatus === 'finished')
+        await finishExperiment(experimentModel, req.clients);
+      await repositories.experiment.save(experimentModel);
 
-    return {
-      status: 200,
-      body: await repositories.experiment.format(experimentModel),
-    };
+      logger.log(
+        'info',
+        `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`,
+      );
+
+      return {
+        status: 200,
+        body: await repositories.experiment.format(experimentModel),
+      };
+    } finally {
+      release();
+    }
   };
