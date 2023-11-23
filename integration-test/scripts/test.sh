@@ -18,7 +18,7 @@ virtualenv venv && venv/bin/pip install -r requirements.txt
 npm ci
 
 
-for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/auth/status"; do
+for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status"; do
     while true; do
         if curl --output /dev/null --silent --head --fail "$url"; then
             break  # Exit the loop if the URL is accessible

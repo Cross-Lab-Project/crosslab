@@ -6,10 +6,11 @@ import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
+import { mutexManager } from '../../mutexManager.js';
 import { experimentUrlFromId } from '../../url.js';
 import { lockBookingExperiment } from './bookingLocking.js';
 import { updateBookingExperiment } from './bookingUpdate.js';
-import { instantiateDevicesExperiment } from './deviceInstantiation.js';
+import { Instantiable, instantiateDevicesExperiment } from './deviceInstantiation.js';
 import { createPeerconnectionsExperiment } from './peerconnectionCreation.js';
 
 export async function setupExperiment(
@@ -31,7 +32,7 @@ export async function setupExperiment(
       500,
     );
 
-  const uninstantiatedDevices = [];
+  const uninstantiatedDevices: Instantiable[] = [];
 
   for (const resolvedDevice of resolvedDevices) {
     if (
@@ -60,7 +61,11 @@ export async function setupExperiment(
     await repositories.experiment.save(experimentModel);
   }
 
-  createPeerconnectionsExperiment(experimentModel, clients).catch(error => {
+  const release = await mutexManager.acquire(
+    `create-peerconnections:${experimentModel.uuid}`,
+  );
+
+  createPeerconnectionsExperiment(experimentModel, clients, release).catch(error => {
     logger.log(
       'error',
       'Something went wrong while trying to create the peerconnections',

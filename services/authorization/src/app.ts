@@ -10,6 +10,11 @@ import { CheckTuple } from './types';
 
 const app = express();
 logHandling(app);
+
+app.get('/authorization/status', (_req, res) => {
+  res.send({ status: 'ok' });
+});
+
 app.use((req, res, next) => {
   if (req.headers['x-authorization-psk'] !== config.PSK) {
     res.status(401).send('Unauthorized');
@@ -17,6 +22,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+
 app.use(express.json());
 app.get(
   '/authorize',

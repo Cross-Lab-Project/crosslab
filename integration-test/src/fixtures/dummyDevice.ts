@@ -87,6 +87,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.context.log(this.log_file, 'starting device', 'log');
     this.url = deviceUrl;
 
+    assert(client.url && client.accessToken && deviceUrl);
     const cli = [
       '--url',
       client.url,

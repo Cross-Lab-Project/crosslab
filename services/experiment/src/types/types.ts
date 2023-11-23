@@ -1,3 +1,4 @@
+import { Device } from '../clients/device/types.js';
 import { ExperimentModel } from '../database/model.js';
 
 export type Instance = {
@@ -6,12 +7,12 @@ export type Instance = {
   codeUrl?: string;
 };
 
-export type ResolvedDevice = any & {
+export type ResolvedDevice = Device & {
   instanceUrl?: string;
   instanceToken?: string;
 };
 
-export type InstantiatedDevice = any & {
+export type InstantiatedDevice = Device & {
   token: string;
 };
 
