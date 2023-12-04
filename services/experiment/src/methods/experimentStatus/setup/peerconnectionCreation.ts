@@ -1,5 +1,4 @@
 import { logger } from '@crosslab/service-common';
-import { MutexInterface } from 'async-mutex';
 
 import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
@@ -16,7 +15,7 @@ async function checkDevices(
 ) {
   await Promise.all(
     experimentModel.devices.map(async device => {
-      const deviceUrl = device.instance ? device.instance.url : device.url;
+      const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
       const resolvedDevice = await clients.device.getDevice(deviceUrl);
       connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
     }),
@@ -34,56 +33,51 @@ async function checkDevices(
 export async function createPeerconnectionsExperiment(
   experimentModel: ExperimentModel,
   clients: Clients,
-  release: MutexInterface.Releaser,
 ) {
-  try {
-    const connectedMap = new Map<string, boolean>();
+  const connectedMap = new Map<string, boolean>();
 
-    const connected = await checkDevices(experimentModel, clients, connectedMap);
+  const connected = await checkDevices(experimentModel, clients, connectedMap);
 
-    if (!connected)
-      await new Promise<void>((res, rej) => {
-        let i = 0;
-        const connectionInterval = setInterval(async () => {
-          const allConnected = await checkDevices(experimentModel, clients, connectedMap);
+  if (!connected)
+    await new Promise<void>((resolve, reject) => {
+      let i = 0;
+      const connectionInterval = setInterval(async () => {
+        const allConnected = await checkDevices(experimentModel, clients, connectedMap);
 
-          if (allConnected) {
-            res();
-            clearInterval(connectionInterval);
-          } else if (i === 6) {
-            rej('Devices did not connect in time');
-          } else {
-            i++;
-          }
-        }, 5000);
-      });
-
-    const experimentUrl = experimentUrlFromId(experimentModel.uuid);
-    logger.log('info', 'Attempting to create peerconnections for experiment', {
-      data: { experimentUrl },
+        if (allConnected) {
+          resolve();
+          clearInterval(connectionInterval);
+        } else if (i === 6) {
+          reject('Devices did not connect in time');
+        } else {
+          i++;
+        }
+      }, 5000);
     });
 
-    if (experimentModel.status !== 'booking-updated')
-      throw new InvalidStateError(
-        `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
-      );
+  const experimentUrl = experimentUrlFromId(experimentModel.uuid);
+  logger.log('info', 'Attempting to create peerconnections for experiment', {
+    data: { experimentUrl },
+  });
 
-    if (!validateExperimentStatus(experimentModel, 'booking-updated'))
-      throw new MalformedExperimentError(
-        `Experiment is in status 'booking-updated', but does not satisfy the requirements for this status`,
-        500,
-      );
+  if (experimentModel.status !== 'booking-updated')
+    throw new InvalidStateError(
+      `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
+    );
 
-    await createPeerconnections(experimentModel, clients);
+  if (!validateExperimentStatus(experimentModel, 'booking-updated'))
+    throw new MalformedExperimentError(
+      `Experiment is in status 'booking-updated', but does not satisfy the requirements for this status`,
+      500,
+    );
 
-    experimentModel.status = 'peerconnections-created';
+  await createPeerconnections(experimentModel, clients);
 
-    await repositories.experiment.save(experimentModel);
+  experimentModel.status = 'peerconnections-created';
 
-    logger.log('info', 'Successfully created peerconnections for experiment', {
-      data: { experimentUrl },
-    });
-  } finally {
-    release();
-  }
+  await repositories.experiment.save(experimentModel);
+
+  logger.log('info', 'Successfully created peerconnections for experiment', {
+    data: { experimentUrl },
+  });
 }

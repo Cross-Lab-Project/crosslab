@@ -44,7 +44,7 @@ export async function setupExperiment(
     }
   }
 
-  await lockBookingExperiment(experimentModel);
+  await lockBookingExperiment(experimentModel, resolvedDevices);
 
   if (uninstantiatedDevices) {
     const instances = await instantiateDevicesExperiment(
@@ -65,13 +65,15 @@ export async function setupExperiment(
     `create-peerconnections:${experimentModel.uuid}`,
   );
 
-  createPeerconnectionsExperiment(experimentModel, clients, release).catch(error => {
-    logger.log(
-      'error',
-      'Something went wrong while trying to create the peerconnections',
-      { data: { error } },
-    );
-  });
+  createPeerconnectionsExperiment(experimentModel, clients)
+    .catch(error => {
+      logger.log(
+        'error',
+        'Something went wrong while trying to create the peerconnections',
+        { data: { error } },
+      );
+    })
+    .finally(() => release());
 
   logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } });
 }

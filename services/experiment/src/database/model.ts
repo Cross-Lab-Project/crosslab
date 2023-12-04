@@ -113,6 +113,9 @@ export class DeviceModel {
   @OneToOne(() => InstanceModel)
   @JoinColumn()
   instance?: InstanceModel;
+
+  @Column({ nullable: true })
+  resolvedDevice?: string;
 }
 
 @Entity({ name: 'Peerconnection' })

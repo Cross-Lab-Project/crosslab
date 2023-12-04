@@ -38,6 +38,8 @@ export function templateUrlFromId(templateId: string): string {
 export function getUrlOrInstanceUrl(deviceModel: DeviceModel): string {
   if (deviceModel.instance && deviceModel.instance.url) {
     return deviceModel.instance.url;
+  } else if (deviceModel.resolvedDevice) {
+    return deviceModel.resolvedDevice;
   } else {
     return deviceModel.url;
   }

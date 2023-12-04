@@ -25,7 +25,12 @@ function createPythonEnvironment() {
 
 export const clientTypes = ['js', 'python'] as const;
 export type ClientType = (typeof clientTypes)[number];
-export const deviceTypes = ['device', 'edge instantiable', 'cloud instantiable'] as const;
+export const deviceTypes = [
+  'device',
+  'edge instantiable',
+  'cloud instantiable',
+  'group',
+] as const;
 export type DeviceType = (typeof deviceTypes)[number];
 
 export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
