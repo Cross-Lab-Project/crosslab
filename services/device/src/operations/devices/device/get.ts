@@ -1,5 +1,7 @@
 import { logger } from '@crosslab/service-common';
+import { base64url } from 'jose';
 
+import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { getDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
@@ -16,6 +18,18 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
   parameters,
 ) => {
   logger.log('info', 'getDevicesByDeviceId called');
+
+  if (parameters.device_id.startsWith('federated-')) {
+    const url = new TextDecoder().decode(
+      base64url.decode(parameters.device_id.replace('federated-', '')),
+    );
+
+    const federatedDevice = await clients.device.getDevice(url);
+    return {
+      status: 200,
+      body: federatedDevice,
+    };
+  }
 
   await req.authorization.check_authorization_or_fail(
     'view',
