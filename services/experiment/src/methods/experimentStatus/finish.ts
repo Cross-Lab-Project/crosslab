@@ -3,9 +3,9 @@ import assert from 'assert';
 
 import { UnsuccessfulRequestError } from '../../clients/device/client.js';
 import { Clients } from '../../clients/index.js';
-import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { validateExperimentStatus } from '../../types/typeguards.js';
+import { saveExperiment } from '../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
@@ -82,7 +82,7 @@ export async function finishExperiment(
   }
 
   experimentModel.status = 'finished';
-  await repositories.experiment.save(experimentModel);
+  saveExperiment(experimentModel);
   logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
 }
 

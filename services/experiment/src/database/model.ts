@@ -64,6 +64,9 @@ export class ExperimentModel {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @Column({ type: 'simple-json' })
+  additionalAttributes!: object;
 }
 
 @Entity({ name: 'Role' })

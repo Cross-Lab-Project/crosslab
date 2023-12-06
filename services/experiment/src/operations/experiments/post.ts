@@ -2,6 +2,7 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { postExperimentsSignature } from '../../generated/signatures.js';
+import { saveExperiment } from '../../methods/experimentChangedEvent.js';
 import {
   bookExperiment,
   finishExperiment,
@@ -27,12 +28,12 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
     body.template;
   }
 
-  const experimentModel =
-    body.template === undefined
-      ? await repositories.experiment.create(body)
-      : await repositories.experiment.create(body);
+  const experimentModel = await repositories.experiment.create({
+    ...body,
+    status: 'created',
+  });
   const requestedStatus = body.status;
-  await repositories.experiment.save(experimentModel);
+  saveExperiment(experimentModel);
 
   if (requestedStatus === 'booked') await bookExperiment(experimentModel);
   if (requestedStatus === 'running') await runExperiment(experimentModel, req.clients);
@@ -45,7 +46,7 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
     `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
   );
 
-  await repositories.experiment.save(experimentModel); // NOTE: truly needed?
+  saveExperiment(experimentModel); // NOTE: truly needed?
 
   logger.log('info', 'Successfully handled POST request on endpoint /experiments', {
     data: {
@@ -53,6 +54,8 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
       experiment: experimentUrlFromId(experimentModel.uuid),
     },
   });
+
+  console.log(experimentModel);
 
   return {
     status: 201,

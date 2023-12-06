@@ -7,6 +7,7 @@ import {
   peerconnectionStatusChangedCallbacks,
 } from '../operations/callbacks/index.js';
 import { buildConnectionPlan } from './connectionPlan.js';
+import { saveExperiment } from './experimentChangedEvent.js';
 
 /**
  * This function attempts to establish the peerconnections for an experiment model according to its connection plan.
@@ -34,6 +35,6 @@ export async function createPeerconnections(
       peerconnection.url,
     );
     experimentModel.connections.push(peerconnectionModel);
-    await repositories.experiment.save(experimentModel);
+    saveExperiment(experimentModel);
   }
 }

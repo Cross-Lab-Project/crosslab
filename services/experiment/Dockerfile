@@ -14,6 +14,6 @@ USER node
 ENV NODE_ENV production
 ENV PORT 3002
 ENV DB_TYPE sqlite
-ENV DB_DATABASE db/auth.db
+ENV DB_DATABASE db/experiment.db
 EXPOSE 3002/tcp
 CMD ["dumb-init", "crosslab-experiment-service"]

@@ -3,6 +3,7 @@ import { MissingPropertyError } from '@crosslab/service-common';
 import { PeerconnectionStatusChangedEventCallback } from '../../../clients/device/types.js';
 import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
+import { saveExperiment } from '../../../methods/experimentChangedEvent.js';
 import { finishExperiment } from '../../../methods/experimentStatus/index.js';
 import { peerconnectionStatusChangedCallbacks } from '../../callbacks/index.js';
 import { callbackEventEmitter } from './index.js';
@@ -61,7 +62,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
 
       if (experimentModel.status === 'peerconnections-created' && connected) {
         experimentModel.status = 'running';
-        await repositories.experiment.save(experimentModel);
+        saveExperiment(experimentModel);
       }
       break;
     }

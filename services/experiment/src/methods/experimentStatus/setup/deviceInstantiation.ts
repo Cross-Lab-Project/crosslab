@@ -11,6 +11,7 @@ import { callbackUrl } from '../../../operations/callbacks/index.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
+import { saveExperiment } from '../../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../../url.js';
 
 export type Instantiable = InstantiableBrowserDevice | InstantiableCloudDevice;
@@ -63,7 +64,7 @@ export async function instantiateDevicesExperiment(
 
   experimentModel.status = 'devices-instantiated';
 
-  await repositories.experiment.save(experimentModel);
+  saveExperiment(experimentModel);
 
   logger.log('info', 'Successfully instantiated devices for experiment', {
     data: { experimentUrl },

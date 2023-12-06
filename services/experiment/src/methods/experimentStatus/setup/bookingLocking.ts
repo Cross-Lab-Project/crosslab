@@ -1,9 +1,9 @@
 import { logger } from '@crosslab/service-common';
 
-import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { saveExperiment } from '../../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../../url.js';
 
 // import { apiClient } from '../../api.js'
@@ -30,7 +30,7 @@ export async function lockBookingExperiment(experimentModel: ExperimentModel) {
 
   experimentModel.status = 'booking-locked';
 
-  await repositories.experiment.save(experimentModel);
+  saveExperiment(experimentModel);
 
   logger.log('info', 'Successfully locked booking for experiment', {
     data: { experimentUrl },

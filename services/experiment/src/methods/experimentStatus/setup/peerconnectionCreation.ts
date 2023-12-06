@@ -2,10 +2,10 @@ import { logger } from '@crosslab/service-common';
 import { MutexInterface } from 'async-mutex';
 
 import { Clients } from '../../../clients/index.js';
-import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { saveExperiment } from '../../experimentChangedEvent.js';
 import { createPeerconnections } from '../../peerconnection.js';
 import { experimentUrlFromId } from '../../url.js';
 
@@ -78,7 +78,7 @@ export async function createPeerconnectionsExperiment(
 
     experimentModel.status = 'peerconnections-created';
 
-    await repositories.experiment.save(experimentModel);
+    saveExperiment(experimentModel);
 
     logger.log('info', 'Successfully created peerconnections for experiment', {
       data: { experimentUrl },

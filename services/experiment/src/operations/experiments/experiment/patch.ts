@@ -2,6 +2,7 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../../database/dataSource.js';
 import { patchExperimentsByExperimentIdSignature } from '../../../generated/signatures.js';
+import { saveExperiment } from '../../../methods/experimentChangedEvent.js';
 import {
   bookExperiment,
   finishExperiment,
@@ -63,7 +64,7 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
       if (desiredStatus === 'running') await runExperiment(experimentModel, req.clients);
       if (desiredStatus === 'finished')
         await finishExperiment(experimentModel, req.clients);
-      await repositories.experiment.save(experimentModel);
+      saveExperiment(experimentModel);
 
       logger.log(
         'info',

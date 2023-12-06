@@ -1,11 +1,11 @@
 import { logger } from '@crosslab/service-common';
 
 import { Clients } from '../../../clients/index.js';
-import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
+import { saveExperiment } from '../../experimentChangedEvent.js';
 import { mutexManager } from '../../mutexManager.js';
 import { experimentUrlFromId } from '../../url.js';
 import { lockBookingExperiment } from './bookingLocking.js';
@@ -58,7 +58,7 @@ export async function setupExperiment(
     );
   } else {
     experimentModel.status = 'booking-updated';
-    await repositories.experiment.save(experimentModel);
+    saveExperiment(experimentModel);
   }
 
   const release = await mutexManager.acquire(
