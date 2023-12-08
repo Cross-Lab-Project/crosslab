@@ -18,6 +18,7 @@ export async function createPeerconnections(
   clients: Clients,
 ) {
   const peerconnectionRequests = buildConnectionPlan(experimentModel);
+  if (!experimentModel.connections) experimentModel.connections = [];
   for (const peerconnectionRequest of peerconnectionRequests) {
     // TODO: error handling
     const peerconnection = await clients.device.createPeerconnection(
@@ -28,13 +29,12 @@ export async function createPeerconnections(
     peerconnectionClosedCallbacks.push(peerconnection.url);
     peerconnectionStatusChangedCallbacks.push(peerconnection.url);
 
-    if (!experimentModel.connections) experimentModel.connections = [];
 
     // create, push and save new peerconnection
     const peerconnectionModel = await repositories.peerconnection.create(
       peerconnection.url,
     );
     experimentModel.connections.push(peerconnectionModel);
-    saveExperiment(experimentModel);
   }
+  await saveExperiment(experimentModel);
 }

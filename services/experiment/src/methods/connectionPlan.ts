@@ -13,8 +13,6 @@ import { experimentUrlFromId, getUrlOrInstanceUrl } from './url.js';
 export function buildConnectionPlan(experiment: ExperimentModel) {
   const experimentUrl = experimentUrlFromId(experiment.uuid);
   logger.log('info', 'Building connection plan', { data: { experimentUrl } });
-  if (!experiment.serviceConfigurations || experiment.serviceConfigurations.length === 0)
-    throw new MissingPropertyError('Experiment must have a configuration to be run', 400);
 
   if (!experiment.devices || experiment.devices.length === 0)
     throw new MissingPropertyError('Experiment must have a device to be run', 400);
