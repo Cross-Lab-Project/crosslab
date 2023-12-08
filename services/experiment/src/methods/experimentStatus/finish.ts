@@ -82,7 +82,7 @@ export async function finishExperiment(
   }
 
   experimentModel.status = 'finished';
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
   logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
 }
 
@@ -90,7 +90,13 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
   if (experiment.devices) {
     for (const device of experiment.devices) {
       if (device.instance?.url) {
-        await clients.device.deleteDevice(device.instance.url);
+        try{
+          await clients.device.deleteDevice(device.instance.url);
+        } catch (error) {
+          if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
+            break;
+          throw error;
+        }
       }
     }
   }
