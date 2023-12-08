@@ -52,6 +52,7 @@ export async function createPeerconnectionsExperiment(
             clearInterval(connectionInterval);
           } else if (i === 6) {
             rej('Devices did not connect in time');
+            clearInterval(connectionInterval);
           } else {
             i++;
           }
@@ -76,9 +77,10 @@ export async function createPeerconnectionsExperiment(
 
     await createPeerconnections(experimentModel, clients);
 
-    experimentModel.status = 'peerconnections-created';
+    experimentModel.status =
+      experimentModel.connections.length > 0 ? 'peerconnections-created' : 'running';
 
-    saveExperiment(experimentModel);
+    await saveExperiment(experimentModel);
 
     logger.log('info', 'Successfully created peerconnections for experiment', {
       data: { experimentUrl },
