@@ -58,7 +58,7 @@ export async function setupExperiment(
     );
   } else {
     experimentModel.status = 'booking-updated';
-    saveExperiment(experimentModel);
+    await saveExperiment(experimentModel);
   }
 
   const release = await mutexManager.acquire(

@@ -42,6 +42,6 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   // experimentModel.bookingID = BookingID
 
   experimentModel.status = 'booked';
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
   logger.log('info', 'Successfully booked experiment', { data: { experimentUrl } });
 }

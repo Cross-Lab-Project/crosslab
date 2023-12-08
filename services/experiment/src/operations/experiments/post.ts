@@ -33,7 +33,7 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
     status: 'created',
   });
   const requestedStatus = body.status;
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
 
   if (requestedStatus === 'booked') await bookExperiment(experimentModel);
   if (requestedStatus === 'running') await runExperiment(experimentModel, req.clients);
@@ -46,7 +46,7 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
     `experiment:${experimentUrlFromId(experimentModel.uuid)}`,
   );
 
-  saveExperiment(experimentModel); // NOTE: truly needed?
+  await saveExperiment(experimentModel); // NOTE: truly needed?
 
   logger.log('info', 'Successfully handled POST request on endpoint /experiments', {
     data: {

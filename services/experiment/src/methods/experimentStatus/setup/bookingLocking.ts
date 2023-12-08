@@ -30,7 +30,7 @@ export async function lockBookingExperiment(experimentModel: ExperimentModel) {
 
   experimentModel.status = 'booking-locked';
 
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
 
   logger.log('info', 'Successfully locked booking for experiment', {
     data: { experimentUrl },

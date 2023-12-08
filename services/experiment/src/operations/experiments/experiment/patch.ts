@@ -64,7 +64,7 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
       if (desiredStatus === 'running') await runExperiment(experimentModel, req.clients);
       if (desiredStatus === 'finished')
         await finishExperiment(experimentModel, req.clients);
-      saveExperiment(experimentModel);
+      await saveExperiment(experimentModel);
 
       logger.log(
         'info',

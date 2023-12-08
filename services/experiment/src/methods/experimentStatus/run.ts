@@ -48,6 +48,6 @@ export async function runExperiment(experimentModel: ExperimentModel, clients: C
   await setupExperiment(experimentModel, resolvedDevices, clients);
 
   // save experiment
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
   logger.log('info', 'Successfully running experiment', { data: { experimentUrl } });
 }

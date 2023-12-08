@@ -62,7 +62,7 @@ export async function handlePeerconnectionStatusChangedEventCallback(
 
       if (experimentModel.status === 'peerconnections-created' && connected) {
         experimentModel.status = 'running';
-        saveExperiment(experimentModel);
+        await saveExperiment(experimentModel);
       }
       break;
     }

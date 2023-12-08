@@ -64,7 +64,7 @@ export async function instantiateDevicesExperiment(
 
   experimentModel.status = 'devices-instantiated';
 
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
 
   logger.log('info', 'Successfully instantiated devices for experiment', {
     data: { experimentUrl },

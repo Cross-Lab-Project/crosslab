@@ -40,7 +40,7 @@ export async function updateBookingExperiment(
 
   experimentModel.status = 'booking-updated';
 
-  saveExperiment(experimentModel);
+  await saveExperiment(experimentModel);
 
   logger.log('info', 'Successfully updated booking for experiment', {
     data: { experimentUrl },
