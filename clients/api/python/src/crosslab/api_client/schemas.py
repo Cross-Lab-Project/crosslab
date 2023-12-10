@@ -201,14 +201,12 @@ class ListDevicesResponse200Items(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
-    owner: str
     isPublic: bool
 
 
@@ -237,7 +235,6 @@ class CreateDeviceRequestAlt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
@@ -246,7 +243,6 @@ class CreateDeviceRequestAlt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt1ServicesItems]]
@@ -281,7 +277,6 @@ class CreateDeviceRequestAlt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
@@ -294,7 +289,6 @@ class CreateDeviceRequestAlt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
@@ -321,7 +315,6 @@ class CreateDeviceRequestAlt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
@@ -330,7 +323,6 @@ class CreateDeviceRequestAlt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt3ServicesItems]]
@@ -351,7 +343,6 @@ class CreateDeviceRequestAlt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
@@ -359,7 +350,6 @@ class CreateDeviceRequestAlt4(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
     devices: List[CreateDeviceRequestAlt4DevicesItems]
 
@@ -386,7 +376,6 @@ class CreateDeviceResponse201Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
@@ -395,7 +384,6 @@ class CreateDeviceResponse201Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt1ServicesItems]]
@@ -430,7 +418,6 @@ class CreateDeviceResponse201Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
@@ -443,7 +430,6 @@ class CreateDeviceResponse201Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
@@ -470,7 +456,6 @@ class CreateDeviceResponse201Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
@@ -479,7 +464,6 @@ class CreateDeviceResponse201Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt3ServicesItems]]
@@ -500,7 +484,6 @@ class CreateDeviceResponse201Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
@@ -508,7 +491,6 @@ class CreateDeviceResponse201Alt4(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
     devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
@@ -538,7 +520,6 @@ class GetDeviceResponse200Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
@@ -547,7 +528,6 @@ class GetDeviceResponse200Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt1ServicesItems]]
@@ -582,7 +562,6 @@ class GetDeviceResponse200Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
@@ -595,7 +574,6 @@ class GetDeviceResponse200Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
@@ -622,7 +600,6 @@ class GetDeviceResponse200Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
@@ -631,7 +608,6 @@ class GetDeviceResponse200Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt3ServicesItems]]
@@ -652,7 +628,6 @@ class GetDeviceResponse200Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
@@ -660,7 +635,6 @@ class GetDeviceResponse200Alt4(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
     devices: List[GetDeviceResponse200Alt4DevicesItems]
 
@@ -807,7 +781,6 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - instantiateUrl
     - services
@@ -816,7 +789,6 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt1ServicesItems]]
@@ -851,7 +823,6 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
@@ -864,7 +835,6 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
@@ -891,7 +861,6 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - codeUrl
     - services
@@ -900,7 +869,6 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt3ServicesItems]]
@@ -921,7 +889,6 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - devices
     """
@@ -929,7 +896,6 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
     devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
@@ -972,7 +938,6 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
     - connected: If true, the device is connected to the service and can be used.
 
@@ -985,7 +950,6 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
@@ -1126,7 +1090,23 @@ class SendSignalingMessageRequestAlt3(TypedDict):
     content: SendSignalingMessageRequestAlt3Content
 
 
-SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3]
+class SendSignalingMessageRequestAlt4Configuration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class SendSignalingMessageRequestAlt4(TypedDict):
+    """
+    Properties:
+    - messageType
+    - configuration
+    """
+    messageType: Literal["configuration"]
+    configuration: SendSignalingMessageRequestAlt4Configuration
+
+
+SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4]
 
 
 SendSignalingMessageResponse: TypeAlias = None
@@ -1410,14 +1390,22 @@ class CreateExperimentRequestDevicesItems(TypedDict):
     role: str
 
 
+class CreateExperimentRequestRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateExperimentRequestRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentRequestRolesItemsConfiguration]
 
 
 class CreateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
@@ -1533,14 +1521,22 @@ class CreateExperimentResponse201DevicesItems(TypedDict):
     role: str
 
 
+class CreateExperimentResponse201RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateExperimentResponse201RolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentResponse201RolesItemsConfiguration]
 
 
 class CreateExperimentResponse201ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -1656,14 +1652,22 @@ class CreateExperimentResponse202DevicesItems(TypedDict):
     role: str
 
 
+class CreateExperimentResponse202RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateExperimentResponse202RolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentResponse202RolesItemsConfiguration]
 
 
 class CreateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -1782,14 +1786,22 @@ class GetExperimentResponse200DevicesItems(TypedDict):
     role: str
 
 
+class GetExperimentResponse200RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class GetExperimentResponse200RolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[GetExperimentResponse200RolesItemsConfiguration]
 
 
 class GetExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -1908,14 +1920,22 @@ class UpdateExperimentRequestDevicesItems(TypedDict):
     role: str
 
 
+class UpdateExperimentRequestRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateExperimentRequestRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentRequestRolesItemsConfiguration]
 
 
 class UpdateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2011,14 +2031,22 @@ class UpdateExperimentResponse200DevicesItems(TypedDict):
     role: str
 
 
+class UpdateExperimentResponse200RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateExperimentResponse200RolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentResponse200RolesItemsConfiguration]
 
 
 class UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2134,14 +2162,22 @@ class UpdateExperimentResponse202DevicesItems(TypedDict):
     role: str
 
 
+class UpdateExperimentResponse202RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateExperimentResponse202RolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentResponse202RolesItemsConfiguration]
 
 
 class UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2262,14 +2298,22 @@ class CreateTemplateRequestConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class CreateTemplateRequestConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateTemplateRequestConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateRequestConfigurationRolesItemsConfiguration]
 
 
 class CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2356,14 +2400,22 @@ class CreateTemplateResponse201ConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class CreateTemplateResponse201ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateTemplateResponse201ConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse201ConfigurationRolesItemsConfiguration]
 
 
 class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2450,14 +2502,22 @@ class CreateTemplateResponse202ConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class CreateTemplateResponse202ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class CreateTemplateResponse202ConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse202ConfigurationRolesItemsConfiguration]
 
 
 class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2547,14 +2607,22 @@ class GetTemplateResponse200ConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class GetTemplateResponse200ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class GetTemplateResponse200ConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[GetTemplateResponse200ConfigurationRolesItemsConfiguration]
 
 
 class GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2644,14 +2712,22 @@ class UpdateTemplateRequestConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class UpdateTemplateRequestConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateTemplateRequestConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfigurationRolesItemsConfiguration]
 
 
 class UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2736,14 +2812,22 @@ class UpdateTemplateResponse200ConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class UpdateTemplateResponse200ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateTemplateResponse200ConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse200ConfigurationRolesItemsConfiguration]
 
 
 class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2830,14 +2914,22 @@ class UpdateTemplateResponse202ConfigurationDevicesItems(TypedDict):
     role: str
 
 
+class UpdateTemplateResponse202ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
 class UpdateTemplateResponse202ConfigurationRolesItems(TypedDict):
     """
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
     name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse202ConfigurationRolesItemsConfiguration]
 
 
 class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):

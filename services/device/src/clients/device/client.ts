@@ -982,8 +982,6 @@ export class Client {
    * Url of the resource to be accessed.
    * @param sigMessage
    * The signaling message to be sent.
-   * @param peerconnection_url
-   * URL of the peerconnection
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -1002,8 +1000,8 @@ export class Client {
     sigMessage:
       | Types.CreatePeerconnectionMessage<'request'>
       | Types.ClosePeerconnectionMessage<'request'>
-      | Types.SignalingMessage<'request'>,
-    peerconnection_url: string,
+      | Types.SignalingMessage<'request'>
+      | Types.ConfigurationMessage<'request'>,
     options?: {
       headers?: [string, string][];
     },
@@ -1016,13 +1014,7 @@ export class Client {
 
     const parameters = {
       device_id: device_id,
-      peerconnection_url: peerconnection_url,
     };
-
-    const query: [string, string][] = [];
-
-    if (parameters['peerconnection_url'])
-      query.push(['peerconnection_url', parameters['peerconnection_url'].toString()]);
 
     if (!RequestValidation.validateSendSignalingMessageInput(parameters, body))
       throw new ValidationError(
@@ -1034,19 +1026,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
+    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
+      method: 'POST',
+      headers: [
+        ['Content-Type', 'application/json'],
+        ['Authorization', authorization],
+        ...this.fixedHeaders,
+        ...(options?.headers ?? []),
+      ],
+      body: JSON.stringify(body),
+    });
 
     if (!RequestValidation.validateSendSignalingMessageOutput(response))
       throw new ValidationError(

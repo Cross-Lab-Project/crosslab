@@ -84,7 +84,7 @@ patch:
             required: true
             content:
               application/json:
-                $ref: '../content/experiment_event.yml'
+                $ref: '../content/experiment_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.

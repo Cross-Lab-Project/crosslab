@@ -64,6 +64,9 @@ export class ExperimentModel {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @Column({ type: 'simple-json' })
+  additionalAttributes!: object;
 }
 
 @Entity({ name: 'Role' })
@@ -76,6 +79,9 @@ export class RoleModel {
 
   @Column('text', { nullable: true })
   description?: string | null;
+
+  @Column('simple-json', { nullable: true })
+  configuration?: { [k: string]: unknown };
 
   @ManyToOne(() => ExperimentModel, experiment => experiment.roles)
   experiment!: ExperimentModel;

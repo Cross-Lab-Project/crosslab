@@ -1,11 +1,7 @@
 import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
-import { EventEmitter } from 'events';
-import { TypedEventEmitter } from 'typeorm';
 
 import {
-  Device,
   EventCallback,
-  Peerconnection,
   isDeviceChangedEventCallback,
   isPeerconnectionClosedEventCallback,
   isPeerconnectionStatusChangedEventCallback,
@@ -13,15 +9,6 @@ import {
 import { handleDeviceChangedEventCallback } from './deviceChanged.js';
 import { handlePeerconnectionClosedEventCallback } from './peerconnectionClosed.js';
 import { handlePeerconnectionStatusChangedEventCallback } from './peerconnectionStatusChanged.js';
-
-type CallbackEvents = {
-  'device-changed': (device: Device<'response'>) => void;
-  'peerconnection-closed': (peerconnection: Peerconnection<'response'>) => void;
-  'peerconnection-status-changed': (peerconnection: Peerconnection<'response'>) => void;
-};
-
-export const callbackEventEmitter =
-  new EventEmitter() as TypedEventEmitter<CallbackEvents>;
 
 /**
  * This function handles an incoming event callback.

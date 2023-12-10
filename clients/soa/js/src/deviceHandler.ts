@@ -3,11 +3,13 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 
 import {
   ClosePeerConnectionMessage,
+  ConfigurationMessage,
   ConnectionStateChangedMessage,
   CreatePeerConnectionMessage,
   SignalingMessage,
   isClosePeerConnectionMessage,
   isCommandMessage,
+  isConfigurationMessage,
   isCreatePeerConnectionMessage,
   isSignalingMessage,
 } from './deviceMessages';
@@ -17,6 +19,7 @@ import { Service } from './service';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
+  configuration(configuration: { [k: string]: unknown }): void;
 }
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
@@ -74,6 +77,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       }
       if (isSignalingMessage(message)) {
         this.handleSignalingMessage(message);
+      }
+      if (isConfigurationMessage(message)) {
+        this.handleConfigurationMessage(message);
       }
     };
   }
@@ -141,6 +147,10 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     console.log('closing connection', message);
     connection.teardown();
     this.connections.delete(message.connectionUrl);
+  }
+
+  private handleConfigurationMessage(message: ConfigurationMessage) {
+    this.emit('configuration', message.configuration);
   }
 
   getServiceMeta() {

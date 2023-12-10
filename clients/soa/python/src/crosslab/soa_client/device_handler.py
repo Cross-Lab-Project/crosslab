@@ -11,9 +11,10 @@ from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.messages import (
     AuthenticationMessage,
     ClosePeerConnectionMessage,
+    ConfigurationMessage,
+    ConnectionStateChangedMessage,
     CreatePeerConnectionMessage,
     SignalingMessage,
-    ConnectionStateChangedMessage
 )
 from crosslab.soa_client.service import Service
 
@@ -129,6 +130,8 @@ class DeviceHandler(AsyncIOEventEmitter):
                 await self._on_close_peerconnection(msg)
             elif msg["messageType"] == "signaling":
                 await self._on_signaling_message(msg)
+            elif msg["messageType"] == "configuration":
+                await self._on_configuration_message(msg)
             else:
                 raise Exception("Unknown message type")
 
@@ -161,7 +164,7 @@ class DeviceHandler(AsyncIOEventEmitter):
             connectionChangedMessage: ConnectionStateChangedMessage = {
                 "connectionUrl": msg["connectionUrl"],
                 "messageType": "connection-state-changed",
-                "status": connection.state
+                "status": connection.state,
             }
             await self.ws.send_json(connectionChangedMessage)
             self.emit("connectionsChanged")
@@ -174,7 +177,7 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
         connection = self._connections.get(msg["connectionUrl"], None)
-        if (connection is None):
+        if connection is None:
             return
         await connection.close()
         del self._connections[msg["connectionUrl"]]
@@ -183,3 +186,6 @@ class DeviceHandler(AsyncIOEventEmitter):
         connection = self._connections.get(msg["connectionUrl"], None)
         assert connection is not None  # TODO: Error handling
         await connection.handleSignalingMessage(msg)
+
+    async def _on_configuration_message(self, msg: ConfigurationMessage):
+        self.emit("configuration", msg["configuration"])

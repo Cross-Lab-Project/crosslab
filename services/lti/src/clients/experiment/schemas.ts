@@ -48,12 +48,22 @@ export type CreateExperimentRequestDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateExperimentRequestRolesItemsConfiguration = never
+
+
+
     
 export type CreateExperimentRequestRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateExperimentRequestRolesItemsConfiguration}
 
 
 
@@ -169,12 +179,22 @@ export type CreateExperimentResponse201DevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateExperimentResponse201RolesItemsConfiguration = never
+
+
+
     
 export type CreateExperimentResponse201RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateExperimentResponse201RolesItemsConfiguration}
 
 
 
@@ -290,12 +310,22 @@ export type CreateExperimentResponse202DevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateExperimentResponse202RolesItemsConfiguration = never
+
+
+
     
 export type CreateExperimentResponse202RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateExperimentResponse202RolesItemsConfiguration}
 
 
 
@@ -414,12 +444,22 @@ export type GetExperimentResponse200DevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type GetExperimentResponse200RolesItemsConfiguration = never
+
+
+
     
 export type GetExperimentResponse200RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: GetExperimentResponse200RolesItemsConfiguration}
 
 
 
@@ -538,12 +578,22 @@ export type UpdateExperimentRequestDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateExperimentRequestRolesItemsConfiguration = never
+
+
+
     
 export type UpdateExperimentRequestRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateExperimentRequestRolesItemsConfiguration}
 
 
 
@@ -641,12 +691,22 @@ export type UpdateExperimentResponse200DevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateExperimentResponse200RolesItemsConfiguration = never
+
+
+
     
 export type UpdateExperimentResponse200RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateExperimentResponse200RolesItemsConfiguration}
 
 
 
@@ -762,12 +822,22 @@ export type UpdateExperimentResponse202DevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateExperimentResponse202RolesItemsConfiguration = never
+
+
+
     
 export type UpdateExperimentResponse202RolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateExperimentResponse202RolesItemsConfiguration}
 
 
 
@@ -894,12 +964,22 @@ export type CreateTemplateRequestConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateTemplateRequestConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type CreateTemplateRequestConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateTemplateRequestConfigurationRolesItemsConfiguration}
 
 
 
@@ -999,12 +1079,22 @@ export type CreateTemplateResponse201ConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateTemplateResponse201ConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type CreateTemplateResponse201ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateTemplateResponse201ConfigurationRolesItemsConfiguration}
 
 
 
@@ -1104,12 +1194,22 @@ export type CreateTemplateResponse202ConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type CreateTemplateResponse202ConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type CreateTemplateResponse202ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: CreateTemplateResponse202ConfigurationRolesItemsConfiguration}
 
 
 
@@ -1212,12 +1312,22 @@ export type GetTemplateResponse200ConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type GetTemplateResponse200ConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type GetTemplateResponse200ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: GetTemplateResponse200ConfigurationRolesItemsConfiguration}
 
 
 
@@ -1320,12 +1430,22 @@ export type UpdateTemplateRequestConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateTemplateRequestConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type UpdateTemplateRequestConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateTemplateRequestConfigurationRolesItemsConfiguration}
 
 
 
@@ -1422,12 +1542,22 @@ export type UpdateTemplateResponse200ConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateTemplateResponse200ConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type UpdateTemplateResponse200ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateTemplateResponse200ConfigurationRolesItemsConfiguration}
 
 
 
@@ -1527,12 +1657,22 @@ export type UpdateTemplateResponse202ConfigurationDevicesItems = {
 
 
 
+    /**
+    Configuration for all devices with this role.
+*/
+export type UpdateTemplateResponse202ConfigurationRolesItemsConfiguration = never
+
+
+
     
 export type UpdateTemplateResponse202ConfigurationRolesItems = {
     
     /* Name for an experiment role. */
     name: string
-    description?: string}
+    description?: string
+    
+    /* Configuration for all devices with this role. */
+    configuration?: UpdateTemplateResponse202ConfigurationRolesItemsConfiguration}
 
 
 

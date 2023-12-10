@@ -39,7 +39,6 @@ export class DeviceOverviewRepository extends AbstractRepository<
       type: model.type,
       name: model.name,
       description: model.description ?? undefined,
-      owner: model.owner,
       isPublic: model.isPublic,
     };
   }

@@ -2,6 +2,7 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { postExperimentsSignature } from '../../generated/signatures.js';
+import { changedCallbacks } from '../../methods/callbacks.js';
 import {
   bookExperiment,
   finishExperiment,
@@ -15,22 +16,17 @@ import { experimentUrlFromId } from '../../methods/url.js';
  * @param authorization The authorization helper object for the request.
  * @param body The body of the request.
  */
-export const postExperiments: postExperimentsSignature = async (req, body) => {
+export const postExperiments: postExperimentsSignature = async (
+  req,
+  parameters,
+  body,
+) => {
   logger.log('info', 'Handling POST request on endpoint /experiments');
 
   // NOTE: create action currently does not exist
   await req.authorization.check_authorization_or_fail('create', 'experiment');
 
-  if (body.template === undefined) {
-    body.template;
-  } else {
-    body.template;
-  }
-
-  const experimentModel =
-    body.template === undefined
-      ? await repositories.experiment.create(body)
-      : await repositories.experiment.create(body);
+  const experimentModel = await repositories.experiment.create(body);
   const requestedStatus = body.status;
   await repositories.experiment.save(experimentModel);
 
@@ -46,6 +42,18 @@ export const postExperiments: postExperimentsSignature = async (req, body) => {
   );
 
   await repositories.experiment.save(experimentModel); // NOTE: truly needed?
+
+  if (parameters.changedURL) {
+    logger.log(
+      'info',
+      `registering changed-callback for experiment '${experimentUrlFromId(
+        experimentModel.uuid,
+      )}' to '${parameters.changedURL}'`,
+    );
+    const changedCallbackURLs = changedCallbacks.get(experimentModel.uuid) ?? [];
+    changedCallbackURLs.push(parameters.changedURL);
+    changedCallbacks.set(experimentModel.uuid, changedCallbackURLs);
+  }
 
   logger.log('info', 'Successfully handled POST request on endpoint /experiments', {
     data: {

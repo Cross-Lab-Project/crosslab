@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Experiment Changed Event Callback
+allOf:
+  - $ref: ./event_callback.yml
+  - type: object
+    properties:
+      eventType:
+        type: string
+        enum:
+          - experiment-changed
+      experiment:
+        $ref: ../experiment.yml
+    required:
+      - eventType
+      - experiment
+x-typeguard: true

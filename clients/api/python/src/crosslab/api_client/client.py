@@ -633,7 +633,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def send_signaling_message(self, url: str, body: SendSignalingMessageRequest, peerconnection_url: str) -> SendSignalingMessageResponse:  # noqa: E501
+    async def send_signaling_message(self, url: str, body: SendSignalingMessageRequest) -> SendSignalingMessageResponse:  # noqa: E501
         """
         Send signaling message to device
         """  # noqa: E501
@@ -647,17 +647,8 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/signaling'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
-
-        # build query params
-        query_params: Dict[str, Union[List[str], str]] = {}
-        if peerconnection_url:
-            if isinstance(peerconnection_url, list):
-                query_params['peerconnection_url'] = peerconnection_url
-            else:
-                query_params['peerconnection_url'] = str(peerconnection_url)
-        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 200:
@@ -823,7 +814,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def create_experiment(self, body: CreateExperimentRequest, url: str = "/experiments") -> CreateExperimentResponse:  # noqa: E501
+    async def create_experiment(self, body: CreateExperimentRequest, url: str = "/experiments", changedURL: Optional[str] = None) -> CreateExperimentResponse:  # noqa: E501
         """
         Create a new experiment
         """  # noqa: E501
@@ -837,8 +828,17 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/experiments'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if changedURL:
+            if isinstance(changedURL, list):
+                query_params['changedURL'] = changedURL
+            else:
+                query_params['changedURL'] = str(changedURL)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
+        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
            
         # transform response
         if status == 201:

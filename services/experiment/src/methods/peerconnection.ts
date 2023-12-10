@@ -1,6 +1,7 @@
 import { Clients } from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
 import { ExperimentModel } from '../database/model.js';
+import { callbackHandler } from '../operations/callbacks/event/callbackHandler.js';
 import {
   callbackUrl,
   peerconnectionClosedCallbacks,
@@ -22,6 +23,12 @@ export async function createPeerconnections(
     const peerconnection = await clients.device.createPeerconnection(
       peerconnectionRequest,
       { closedUrl: callbackUrl, statusChangedUrl: callbackUrl },
+    );
+
+    callbackHandler.addListener(
+      'peerconnection',
+      peerconnection.url,
+      experimentModel.uuid,
     );
 
     peerconnectionClosedCallbacks.push(peerconnection.url);

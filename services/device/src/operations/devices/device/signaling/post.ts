@@ -7,6 +7,7 @@ import {
 
 import { repositories } from '../../../../database/dataSource.js';
 import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures.js';
+import { isConfigurationMessage } from '../../../../generated/types.js';
 import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { connectedDevices } from '../../websocket/handling/index.js';
@@ -44,20 +45,22 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
       );
 
     // Retrieve peerconnection and make sure the device is taking part in it
-    const peerconnection = await getPeerconnection({
-      url: parameters.peerconnection_url,
-    });
-    const deviceA = peerconnection.deviceA;
-    const deviceB = peerconnection.deviceB;
+    if (!isConfigurationMessage(body)) {
+      const peerconnection = await getPeerconnection({
+        url: body.connectionUrl,
+      });
+      const deviceA = peerconnection.deviceA;
+      const deviceB = peerconnection.deviceB;
 
-    if (
-      !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&
-      !(deviceB.url === deviceUrlFromId(deviceModel.uuid))
-    ) {
-      throw new UnrelatedPeerconnectionError(
-        `Device is not part of the peerconnection`,
-        400,
-      );
+      if (
+        !(deviceA.url === deviceUrlFromId(deviceModel.uuid)) &&
+        !(deviceB.url === deviceUrlFromId(deviceModel.uuid))
+      ) {
+        throw new UnrelatedPeerconnectionError(
+          `Device is not part of the peerconnection`,
+          400,
+        );
+      }
     }
 
     const webSocket = connectedDevices.get(parameters.device_id);

@@ -738,14 +738,6 @@ export function validateSendSignalingMessageInput(
       ).errors;
       return false;
     }
-    if (
-      !BasicValidation.validatePeerconnectionUrlRequest(parameters['peerconnection_url'])
-    ) {
-      (validateSendSignalingMessageInput as FunctionWithErrors).errors = (
-        BasicValidation.validatePeerconnectionUrlRequest as FunctionWithErrors
-      ).errors;
-      return false;
-    }
   } else {
     return false;
   }

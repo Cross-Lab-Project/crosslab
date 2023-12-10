@@ -1,6 +1,6 @@
 import { logger } from '@crosslab/service-common';
 
-import { Clients } from '../../../clients/index.js';
+import { Clients, clients as globalClients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
@@ -54,6 +54,19 @@ export async function createPeerconnectionsExperiment(
         }
       }, 5000);
     });
+
+  for (const device of experimentModel.devices) {
+    await globalClients.device.sendSignalingMessage(
+      device.instance?.url ?? device.resolvedDevice ?? device.url,
+      {
+        messageType: 'configuration',
+        configuration: {
+          experimentUrl: experimentUrlFromId(experimentModel.uuid),
+          ...experimentModel.roles.find(role => role.name === device.role)?.configuration,
+        },
+      },
+    );
+  }
 
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to create peerconnections for experiment', {

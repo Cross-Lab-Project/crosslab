@@ -52,3 +52,8 @@ class ConnectionStateChangedMessage(TypedDict):
     messageType: Literal["connection-state-changed"]
     connectionUrl: str
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+
+
+class ConfigurationMessage(TypedDict):
+    messageType: Literal["configuration"]
+    configuration: dict

@@ -2,7 +2,9 @@ import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations } from 'typeorm';
 
 import { Experiment, ExperimentOverview } from '../../generated/types.js';
+import { sendChangedCallback } from '../../methods/callbacks.js';
 import { experimentUrlFromId } from '../../methods/url.js';
+import { callbackHandler } from '../../operations/callbacks/event/callbackHandler.js';
 import { Instance } from '../../types/types.js';
 import { ExperimentModel } from '../model.js';
 import { DeviceRepository } from './device.js';
@@ -54,11 +56,20 @@ export class ExperimentRepository extends AbstractRepository<
   ): Promise<void> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const {
+      status: _status,
+      bookingTime,
+      devices,
+      roles,
+      serviceConfigurations,
+      ...additionalAttributes
+    } = { ...model.additionalAttributes, ...data };
+
     // if (data.status) model.status = data.status;
 
-    if (data.bookingTime) {
-      if (data.bookingTime.startTime) model.bookingStart = data.bookingTime.startTime;
-      if (data.bookingTime.endTime) model.bookingEnd = data.bookingTime.endTime;
+    if (bookingTime) {
+      if (bookingTime.startTime) model.bookingStart = bookingTime.startTime;
+      if (bookingTime.endTime) model.bookingEnd = bookingTime.endTime;
     } else {
       const HOUR = 60 * 60 * 1000;
       const startTime = Date.now();
@@ -67,43 +78,55 @@ export class ExperimentRepository extends AbstractRepository<
       model.bookingEnd ??= new Date(endTime).toISOString();
     }
 
-    if (data.devices) {
+    if (devices) {
+      const newDevices = [];
       for (const device of model.devices ?? []) {
-        const foundDevice = data.devices.find(d => d.device === device.url);
+        const foundDevice = devices.find(d => d.device === device.url);
         if (!foundDevice) await this.dependencies.device.remove(device);
-        else device.role = foundDevice.role;
+        else {
+          device.role = foundDevice.role;
+          newDevices.push(device);
+        }
       }
-      model.devices ??= [];
-      for (const device of data.devices) {
-        const foundDevice = model.devices?.find(d => d.url === device.url);
-        if (foundDevice) continue;
+      for (const device of devices) {
+        if (newDevices.find(d => d.url === device.url)) continue;
         const deviceModel = await this.dependencies.device.create(device);
-        model.devices.push(deviceModel);
+        newDevices.push(deviceModel);
+        callbackHandler.addListener('device', device.device, model.uuid);
       }
+      model.devices = newDevices;
     }
 
-    if (data.roles) {
+    if (roles) {
       for (const role of model.roles ?? []) {
         await this.dependencies.role.remove(role);
       }
       model.roles = [];
-      for (const role of data.roles) {
+      for (const role of roles) {
         const roleModel = await this.dependencies.role.create(role);
         model.roles.push(roleModel);
       }
     }
 
-    if (data.serviceConfigurations) {
+    if (serviceConfigurations) {
       for (const serviceConfiguration of model.serviceConfigurations ?? []) {
         await this.dependencies.serviceConfiguration.remove(serviceConfiguration);
       }
       model.serviceConfigurations = [];
-      for (const serviceConfiguration of data.serviceConfigurations) {
+      for (const serviceConfiguration of serviceConfigurations) {
         const serviceConfigurationModel =
           await this.dependencies.serviceConfiguration.create(serviceConfiguration);
         model.serviceConfigurations.push(serviceConfigurationModel);
       }
     }
+
+    model.additionalAttributes = additionalAttributes;
+  }
+
+  async save(model: ExperimentModel): Promise<ExperimentModel> {
+    const savedModel = await super.save(model);
+    await sendChangedCallback(savedModel);
+    return savedModel;
   }
 
   async format(model: ExperimentModel): Promise<Experiment<'response'>> {
@@ -145,6 +168,7 @@ export class ExperimentRepository extends AbstractRepository<
         ) ?? [],
       ),
       instantiatedDevices,
+      ...model.additionalAttributes,
     };
   }
 

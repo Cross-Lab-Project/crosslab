@@ -25,8 +25,6 @@ export const postDevices: postDevicesSignature = async (req, parameters, body) =
     );
 
   const deviceModel = await repositories.device.create(body);
-  // TODO: remove owner property or change to make it usable again
-  deviceModel.owner = 'http://example.com/users/1';
 
   await req.authorization.relate(
     req.authorization.user,

@@ -77,7 +77,7 @@ export class Client {
     Create a new experiment
     
     */
-    public async createExperiment(body: schemas.CreateExperimentRequest, url: string = "/experiments"): Promise<schemas.CreateExperimentResponse> {
+    public async createExperiment(body: schemas.CreateExperimentRequest, url: string = "/experiments", changedURL?: string): Promise<schemas.CreateExperimentResponse> {
         // match path to url schema
         const m = new RegExp('^('+escapeRegex(this.BASE_URL)+')?\/?()(experiments)?$').exec(url)
         if (!m) throw new Error("Invalid url")
@@ -86,6 +86,11 @@ export class Client {
 
         const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.SERVICE_URL)
 
+        if (changedURL){
+            
+            url_with_query_params.searchParams.set('changedURL', changedURL)
+            
+        }
         // make http call
         const response = await this.fetch(url_with_query_params, {method: "post", body: JSON.stringify(body)});
            

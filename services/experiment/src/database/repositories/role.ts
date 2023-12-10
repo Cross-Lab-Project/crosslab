@@ -26,12 +26,14 @@ export class RoleRepository extends AbstractRepository<
   async write(model: RoleModel, data: Partial<Role<'request'>>): Promise<void> {
     if (data.name) model.name = data.name;
     if (data.description) model.description = data.description;
+    if (data.configuration) model.configuration = data.configuration;
   }
 
   async format(model: RoleModel): Promise<Role<'response'>> {
     return {
       name: model.name,
       description: model.description ?? undefined,
+      configuration: model.configuration ?? undefined,
     };
   }
 }

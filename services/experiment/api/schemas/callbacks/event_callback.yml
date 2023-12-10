@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Event Callback
+allOf:
+  - $ref: ./callback.yml
+  - type: object
+    properties:
+      callbackType:
+        type: string
+        enum:
+          - event
+      eventType:
+        type: string
+    required:
+      - callbackType
+      - eventType
+x-typeguard: true

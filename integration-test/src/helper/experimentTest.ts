@@ -134,6 +134,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ),
     );
 
+    const promiseListConfiguration = this.devices.map(
+      device =>
+        new Promise<{ [k: string]: unknown }>(resolve =>
+          device.on('configuration', configuration => resolve(configuration)),
+        ),
+    );
+
     experiment = {
       status: 'running',
       roles: this.deviceMetas.map((m, idx) => ({
@@ -182,6 +189,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     }
 
     await Promise.all(promiseListConnections);
+    const configurations = await Promise.all(promiseListConfiguration);
+
+    for (const configuration of configurations) {
+      assert.strictEqual(configuration.experimentUrl, this.experimentUrl);
+    }
 
     this._state = State.Running;
   }
@@ -217,7 +229,22 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           ),
         ),
     );
-    if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
+
+    let running = false;
+
+    for (let i = 0; i < 20; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      if (this.experimentUrl) {
+        const experiment = await client.getExperiment(this.experimentUrl);
+        running = experiment.status === 'running';
+        if (running) {
+          await client.deleteExperiment(this.experimentUrl);
+          break;
+        }
+      }
+    }
+
+    assert(running, 'experiment was not set to running!');
 
     try {
       await new Promise((resolve, reject) => {

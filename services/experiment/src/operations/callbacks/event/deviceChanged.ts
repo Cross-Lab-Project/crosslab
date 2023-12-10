@@ -1,7 +1,5 @@
-import { logger } from '@crosslab/service-common';
-
 import { DeviceChangedEventCallback } from '../../../clients/device/types.js';
-import { callbackEventEmitter } from './index.js';
+import { callbackHandler } from './callbackHandler.js';
 
 /**
  * This function handles an incoming "device-changed" event callback.
@@ -11,9 +9,5 @@ import { callbackEventEmitter } from './index.js';
 export async function handleDeviceChangedEventCallback(
   callback: DeviceChangedEventCallback,
 ): Promise<200 | 410> {
-  logger.log('info', 'Device changed!', { meta: { deviceUrl: callback.device.url } });
-
-  callbackEventEmitter.emit('device-changed', callback.device);
-
-  return 200;
+  return await callbackHandler.handleCallback(callback);
 }
