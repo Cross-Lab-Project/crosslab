@@ -3,7 +3,7 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 
 import * as RequestValidation from './requestValidation.js';
 import * as Signatures from './signatures.js';
@@ -14,13 +14,13 @@ import * as Types from './types.js';
  * @category Errors
  */
 export class ValidationError extends Error {
-    public errors: unknown
+  public errors: unknown;
 
-    constructor(message: string, errors: unknown) {
-        super(message)
-        this.name = "ValidationError"
-        this.errors = errors
-    }
+  constructor(message: string, errors: unknown) {
+    super(message);
+    this.name = 'ValidationError';
+    this.errors = errors;
+  }
 }
 
 /**
@@ -87,6 +87,8 @@ function isValidHttpUrl(string: string) {
     } catch (_) {
         return false
     }
+    return await parseResponse(raw_response);
+  };
 
     return url.protocol === 'http:' || url.protocol === 'https:'
 }

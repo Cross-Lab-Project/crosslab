@@ -7,11 +7,11 @@ import {
 import { Clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
+import { callbackHandler } from '../../../operations/callbacks/event/callbackHandler.js';
 import { callbackUrl } from '../../../operations/callbacks/index.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
-import { saveExperiment } from '../../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../../url.js';
 
 export type Instantiable = InstantiableBrowserDevice | InstantiableCloudDevice;
@@ -49,6 +49,13 @@ export async function instantiateDevicesExperiment(
     const instanceData = await clients.device.instantiateDevice(instantiable.url, {
       changedUrl: callbackUrl,
     });
+
+    callbackHandler.addListener(
+      'device',
+      instanceData.instance.url,
+      experimentModel.uuid,
+    );
+
     instances.push({ ...instanceData.instance, token: instanceData.deviceToken });
 
     const instance = await repositories.instance.create({
@@ -64,7 +71,7 @@ export async function instantiateDevicesExperiment(
 
   experimentModel.status = 'devices-instantiated';
 
-  await saveExperiment(experimentModel);
+  await repositories.experiment.save(experimentModel);
 
   logger.log('info', 'Successfully instantiated devices for experiment', {
     data: { experimentUrl },

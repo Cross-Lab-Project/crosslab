@@ -17,5 +17,9 @@ properties:
       #these type.
   description:
     type: string
+  configuration:
+    type: object
+    description: Configuration for all devices with this role.
+    additionalProperties: true
 required:
   - name

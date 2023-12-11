@@ -68,3 +68,18 @@ export interface ConnectionStateChangedMessage extends Message {
   connectionUrl: string;
   status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
 }
+
+export interface ConfigurationMessage extends Message {
+  messageType: 'configuration';
+  configuration: { [k: string]: unknown };
+}
+
+export function isConfigurationMessage(
+  message: Message,
+): message is ConfigurationMessage {
+  return (
+    message.messageType === 'configuration' &&
+    typeof message.configuration === 'object' &&
+    message.configuration !== null
+  );
+}

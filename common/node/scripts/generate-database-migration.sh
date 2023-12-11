@@ -8,8 +8,8 @@ sudo mysql -e "CREATE USER IF NOT EXISTS 'service'@localhost IDENTIFIED BY 'serv
 sudo mysql -e "GRANT ALL PRIVILEGES ON database_migration.* to 'service'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
-DB_USERNAME=service DB_PASSWORD=service DB_DATABASE=database_migration DB_TYPE=$1 npx typeorm-ts-node-commonjs migration:run -d ./src/database/dataSource.ts
-DB_USERNAME=service DB_PASSWORD=service DB_DATABASE=database_migration DB_TYPE=$1 npx typeorm-ts-node-commonjs migration:generate ./src/database/migrations/$1/$2 -d ./src/database/dataSource.ts
+DB_USERNAME=service DB_PASSWORD=service DB_DATABASE=database_migration DB_TYPE=$1 npx typeorm-ts-node-esm migration:run -d ./src/database/dataSource.ts
+DB_USERNAME=service DB_PASSWORD=service DB_DATABASE=database_migration DB_TYPE=$1 npx typeorm-ts-node-esm migration:generate ./src/database/migrations/$1/$2 -d ./src/database/dataSource.ts
 
 rm -f database_migration
 

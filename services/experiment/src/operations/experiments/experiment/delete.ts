@@ -33,16 +33,6 @@ export const deleteExperimentsByExperimentId: deleteExperimentsByExperimentIdSig
 
       const experimentModel = await repositories.experiment.findOneOrFail({
         where: { uuid: parameters.experiment_id },
-        relations: {
-          connections: true,
-          devices: {
-            instance: true,
-          },
-          roles: true,
-          serviceConfigurations: {
-            participants: true,
-          },
-        },
       });
 
       if (experimentModel.status !== 'finished')

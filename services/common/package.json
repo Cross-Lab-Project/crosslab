@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@crosslab/service-common",
   "types": "./lib/types/index.d.ts",
   "main": "./lib/cjs/index.js",

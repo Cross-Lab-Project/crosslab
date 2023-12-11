@@ -70,6 +70,10 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
     );
   });
 
+  deviceHandler.on('configuration', configuration => {
+    sendEvent('configuration', configuration);
+  });
+
   await deviceHandler.connect({
     endpoint: options.baseUrl.replace('http', 'ws') + '/devices/websocket',
     id: options.deviceUrl,

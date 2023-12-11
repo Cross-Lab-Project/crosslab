@@ -4,7 +4,7 @@ WORKDIR /tmp
 COPY .packages /tmp/packages
 RUN npm install --global /tmp/packages/*
 RUN rm -rf /tmp/packages
- 
+
 RUN apk add dumb-init
 WORKDIR /app
 RUN mkdir db

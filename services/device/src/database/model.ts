@@ -45,9 +45,6 @@ export abstract class DeviceOverviewModel {
   @Column()
   type!: 'device' | 'group' | 'cloud instantiable' | 'edge instantiable';
 
-  @Column({ nullable: true })
-  owner!: string;
-
   @Column('boolean', { default: false })
   isPublic!: boolean;
 

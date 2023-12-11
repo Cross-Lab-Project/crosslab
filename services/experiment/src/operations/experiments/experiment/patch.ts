@@ -2,7 +2,7 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../../database/dataSource.js';
 import { patchExperimentsByExperimentIdSignature } from '../../../generated/signatures.js';
-import { saveExperiment } from '../../../methods/experimentChangedEvent.js';
+import { changedCallbacks } from '../../../methods/callbacks.js';
 import {
   bookExperiment,
   finishExperiment,
@@ -20,6 +20,29 @@ import { experimentUrlFromId } from '../../../methods/url.js';
  */
 export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSignature =
   async (req, parameters, body) => {
+    // NOTE: temporary solution for registering callbacks without mutexes
+    if (parameters.changedURL && (!body || Object.keys(body).length === 0)) {
+      const experimentModel = await repositories.experiment.findOneOrFail({
+        where: { uuid: parameters.experiment_id },
+      });
+      logger.log(
+        'info',
+        `registering changed-callback for experiment '${experimentUrlFromId(
+          experimentModel.uuid,
+        )}' to '${parameters.changedURL}'`,
+      );
+      const changedCallbackURLs = changedCallbacks.get(experimentModel.uuid) ?? [];
+      changedCallbackURLs.push(parameters.changedURL);
+      changedCallbacks.set(experimentModel.uuid, changedCallbackURLs);
+
+      logger.log(
+        'info',
+        `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`,
+      );
+
+      return { status: 200, body: await repositories.experiment.format(experimentModel) };
+    }
+
     const release = await mutexManager.acquire(parameters.experiment_id);
     const createPeerconnectionsRelease = await mutexManager.acquire(
       `create-peerconnections:${parameters.experiment_id}`,
@@ -44,16 +67,6 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
 
       const experimentModel = await repositories.experiment.findOneOrFail({
         where: { uuid: parameters.experiment_id },
-        relations: {
-          connections: true,
-          devices: {
-            instance: true,
-          },
-          roles: true,
-          serviceConfigurations: {
-            participants: true,
-          },
-        },
       });
 
       if (body) await repositories.experiment.write(experimentModel, body);
@@ -64,7 +77,19 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
       if (desiredStatus === 'running') await runExperiment(experimentModel, req.clients);
       if (desiredStatus === 'finished')
         await finishExperiment(experimentModel, req.clients);
-      await saveExperiment(experimentModel);
+      await repositories.experiment.save(experimentModel);
+
+      if (parameters.changedURL) {
+        logger.log(
+          'info',
+          `registering changed-callback for experiment '${experimentUrlFromId(
+            experimentModel.uuid,
+          )}' to '${parameters.changedURL}'`,
+        );
+        const changedCallbackURLs = changedCallbacks.get(experimentModel.uuid) ?? [];
+        changedCallbackURLs.push(parameters.changedURL);
+        changedCallbacks.set(experimentModel.uuid, changedCallbackURLs);
+      }
 
       logger.log(
         'info',

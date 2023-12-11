@@ -1080,7 +1080,6 @@ export interface CreateWebsocketTokenResponse500 extends Types.ErrorResponse {
  */
 export type SendSignalingMessageParameters = {
   device_id: string;
-  peerconnection_url: string;
 };
 
 /**
@@ -1090,7 +1089,8 @@ export type SendSignalingMessageParameters = {
 export type SendSignalingMessageBody =
   | Types.CreatePeerconnectionMessage<'request'>
   | Types.ClosePeerconnectionMessage<'request'>
-  | Types.SignalingMessage<'request'>;
+  | Types.SignalingMessage<'request'>
+  | Types.ConfigurationMessage<'request'>;
 
 /**
  * Typing for all possible responses to the request made by sendSignalingMessage()

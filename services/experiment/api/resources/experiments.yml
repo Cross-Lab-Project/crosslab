@@ -35,6 +35,8 @@ post:
     - JWT:
         - experiment
         - experiment:create
+  parameters:
+    - $ref: '../parameters/experiment_changed_url.yml'
   requestBody:
     description: The experiment to be created.
     required: true
@@ -76,7 +78,7 @@ post:
             required: true
             content:
               application/json:
-                $ref: '../content/experiment_event.yml'
+                $ref: '../content/experiment_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.

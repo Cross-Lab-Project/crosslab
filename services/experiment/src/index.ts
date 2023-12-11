@@ -9,7 +9,7 @@ async function main() {
   try {
     await AppDataSource.initialize();
     initApp();
-    logger.info('Device Service started successfully');
+    logger.info('Experiment Service started successfully');
   } catch (e) {
     logger.error(e);
   }

@@ -35,16 +35,6 @@ function createDummyDevice(type: ClientType, index: number, context: Mocha.Conte
   }
 }
 
-type DeviceMeta = {
-  type: DeviceType;
-  name: string;
-  description: string;
-  isPublic: boolean;
-  instantiateUrl?: string;
-  codeUrl?: string;
-  announcedAvailability?: DeviceServiceTypes.AvailabilityRule[];
-};
-
 enum State {
   None = 0,
   Created = 1,
@@ -59,8 +49,8 @@ type MessageEvents = {
 
 export class ExperimentTest extends TypedEmitter<MessageEvents> {
   devices: DummyDevice[] = [];
-  deviceMetas: DeviceMeta[] = [];
-  apiDevices: (DeviceServiceTypes.ConcreteDevice<'response'> & { url: string })[] = [];
+  deviceMetas: DeviceServiceTypes.Device<'request'>[] = [];
+  apiDevices: (DeviceServiceTypes.Device<'response'> & { url: string })[] = [];
   events: { gpio: Parameters<DummyDeviceEvents['gpio']>[0][] }[] = [];
   experimentUrl?: string;
 
@@ -84,9 +74,17 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
   async createAPIDevices(client: APIClient) {
     for (const deviceMeta of this.deviceMetas) {
-      const apiDevice = (await client.createDevice({
+      if (deviceMeta.type === 'group') {
+        const device = await client.createDevice({
+          type: 'device',
+          name: 'Internal Test Device',
+          isPublic: true,
+        });
+        deviceMeta.devices.push(device);
+      }
+      const apiDevice = await client.createDevice({
         ...deviceMeta,
-      })) as DeviceServiceTypes.ConcreteDevice<'response'>;
+      });
 
       assert(apiDevice.url, 'Device URL is not defined');
 
@@ -101,7 +99,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
     const promiseList = [];
     for (const [idx, device] of this.devices.entries()) {
-      if (this.apiDevices[idx].type === 'device')
+      if (this.apiDevices[idx].type === 'device' || this.apiDevices[idx].type === 'group')
         promiseList.push(
           new Promise<void>(resolve => device.once('websocketConnected', resolve)),
         );
@@ -109,8 +107,9 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       device.on('gpio', event => {
         this.events[idx].gpio.push(event) && this.emit('eventsChanged');
       });
-      if (this.apiDevices[idx].type === 'device')
-        device.start(client, this.apiDevices[idx].url);
+      const apiDevice = this.apiDevices[idx];
+      if (apiDevice.type === 'device') device.start(client, apiDevice.url);
+      if (apiDevice.type === 'group') device.start(client, apiDevice.devices[0].url);
     }
     await Promise.all(promiseList);
 
@@ -135,6 +134,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ),
     );
 
+    const promiseListConfiguration = this.devices.map(
+      device =>
+        new Promise<{ [k: string]: unknown }>(resolve =>
+          device.on('configuration', configuration => resolve(configuration)),
+        ),
+    );
+
     experiment = {
       status: 'running',
       roles: this.deviceMetas.map((m, idx) => ({
@@ -155,7 +161,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
     const promiseList = [];
     for (const [idx, apiDevice] of this.apiDevices.entries()) {
-      if (apiDevice.type === 'device') continue;
+      if (apiDevice.type === 'device' || apiDevice.type === 'group') continue;
 
       const instanceData = apiExperiment.instantiatedDevices?.find(
         device => device.instanceOf === apiDevice.url,
@@ -183,6 +189,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     }
 
     await Promise.all(promiseListConnections);
+    const configurations = await Promise.all(promiseListConfiguration);
+
+    for (const configuration of configurations) {
+      assert.strictEqual(configuration.experimentUrl, this.experimentUrl);
+    }
 
     this._state = State.Running;
   }
@@ -201,15 +212,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       name: name ?? `${deviceTypeName} Device ${this.devices.length}`,
       description: description ?? `A ${deviceTypeName} test device`,
       isPublic: true,
-      instantiateUrl:
-        deviceType === 'cloud instantiable'
-          ? 'http://localhost/edge_instantiable_device'
-          : undefined,
-      codeUrl:
-        deviceType === 'edge instantiable'
-          ? 'http://localhost/cloud_instantiable_device'
-          : undefined,
-      announcedAvailability: deviceType === 'device' ? [{ available: true }] : undefined,
+      instantiateUrl: 'http://localhost/edge_instantiable_device',
+      codeUrl: 'http://localhost/cloud_instantiable_device',
+      announcedAvailability: [{ available: true }],
+      devices: [],
     });
   }
 
@@ -223,7 +229,22 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           ),
         ),
     );
-    if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
+
+    let running = false;
+
+    for (let i = 0; i < 20; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      if (this.experimentUrl) {
+        const experiment = await client.getExperiment(this.experimentUrl);
+        running = experiment.status === 'running';
+        if (running) {
+          await client.deleteExperiment(this.experimentUrl);
+          break;
+        }
+      }
+    }
+
+    assert(running, 'experiment was not set to running!');
 
     try {
       await new Promise((resolve, reject) => {

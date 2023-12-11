@@ -1,11 +1,11 @@
 import { logger } from '@crosslab/service-common';
 
 import { Clients } from '../../../clients/index.js';
+import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
-import { saveExperiment } from '../../experimentChangedEvent.js';
 import { mutexManager } from '../../mutexManager.js';
 import { experimentUrlFromId } from '../../url.js';
 import { lockBookingExperiment } from './bookingLocking.js';
@@ -44,7 +44,7 @@ export async function setupExperiment(
     }
   }
 
-  await lockBookingExperiment(experimentModel);
+  await lockBookingExperiment(experimentModel, resolvedDevices);
 
   if (uninstantiatedDevices) {
     const instances = await instantiateDevicesExperiment(
@@ -58,20 +58,22 @@ export async function setupExperiment(
     );
   } else {
     experimentModel.status = 'booking-updated';
-    await saveExperiment(experimentModel);
+    await repositories.experiment.save(experimentModel);
   }
 
   const release = await mutexManager.acquire(
     `create-peerconnections:${experimentModel.uuid}`,
   );
 
-  createPeerconnectionsExperiment(experimentModel, clients, release).catch(error => {
-    logger.log(
-      'error',
-      'Something went wrong while trying to create the peerconnections',
-      { data: { error } },
-    );
-  });
+  createPeerconnectionsExperiment(experimentModel, clients)
+    .catch(error => {
+      logger.log(
+        'error',
+        'Something went wrong while trying to create the peerconnections',
+        { data: { error } },
+      );
+    })
+    .finally(() => release());
 
   logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } });
 }

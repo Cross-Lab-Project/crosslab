@@ -232,7 +232,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -277,7 +276,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -329,7 +327,6 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -384,7 +381,6 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -450,7 +446,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -515,7 +510,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -558,7 +552,6 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -613,7 +606,6 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -673,7 +665,6 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -726,7 +717,6 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * Type of the device
          */
         type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        owner: string;
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -758,7 +748,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -787,7 +776,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -826,7 +814,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -855,7 +842,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -982,7 +968,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -1011,7 +996,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -1050,7 +1034,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -1079,7 +1062,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * Type of the device
            */
           type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          owner: string;
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -1168,7 +1150,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1197,7 +1178,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1236,7 +1216,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1265,7 +1244,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1414,7 +1392,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1443,7 +1420,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1482,7 +1458,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -1511,7 +1486,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * Type of the device
                */
               type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              owner: string;
               /**
                * If true, the device may be seen and used by every user.
                */
@@ -2485,6 +2459,42 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
       }
     : never;
 
+export type ConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'configuration';
+        configuration: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : T extends 'request'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'configuration';
+        configuration: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'configuration';
+        configuration: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : never;
+
 /**
  * The status of the peerconnection.
  */
@@ -3088,6 +3098,20 @@ export function isSignalingMessage<T extends 'request' | 'response' | 'all' = 'a
       return BasicValidation.validateSignalingMessageResponse(obj);
     default:
       return BasicValidation.validateSignalingMessage(obj);
+  }
+}
+
+export function isConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all'>(
+  obj: unknown,
+  type: 'request' | 'response' | 'all' | T = 'all',
+): obj is ConfigurationMessage<T> {
+  switch (type) {
+    case 'request':
+      return BasicValidation.validateConfigurationMessageRequest(obj);
+    case 'response':
+      return BasicValidation.validateConfigurationMessageResponse(obj);
+    default:
+      return BasicValidation.validateConfigurationMessage(obj);
   }
 }
 

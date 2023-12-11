@@ -152,6 +152,10 @@ async def main_async():
             flush=True,
         ),
     )
+    deviceHandler.on(
+        "configuration",
+        lambda configuration: print("[configuration] " + json.dumps(configuration)),
+    )
 
     async with APIClient(url) as client:
         client.set_auth_token(auth_token)

@@ -1,11 +1,11 @@
-import { MissingPropertyError } from '@crosslab/service-common';
+import { MissingEntityError, MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
 import { Clients } from '../../clients/index.js';
+import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { InvalidStateError } from '../../types/errors.js';
 import { ResolvedDevice } from '../../types/types.js';
-import { saveExperiment } from '../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../url.js';
 import { bookExperiment } from './book.js';
 import { setupExperiment } from './setup/index.js';
@@ -36,18 +36,23 @@ export async function runExperiment(experimentModel: ExperimentModel, clients: C
 
   const resolvedDevices: ResolvedDevice[] = await Promise.all(
     experimentModel.devices.map(async device => {
-      const resolvedDevice = await clients.device.getDevice(device.url);
-      return {
-        ...resolvedDevice,
-        instanceUrl: device.instance?.url,
-        instanceToken: device.instance?.token,
-      };
+      try {
+        const resolvedDevice = await clients.device.getDevice(device.url);
+        return {
+          ...resolvedDevice,
+          instanceUrl: device.instance?.url,
+          instanceToken: device.instance?.token,
+        };
+      } catch (error) {
+        console.error(error);
+        throw new MissingEntityError(`Device "${device.url}" could not be resolved`, 404);
+      }
     }),
   );
 
   await setupExperiment(experimentModel, resolvedDevices, clients);
 
   // save experiment
-  await saveExperiment(experimentModel);
+  await repositories.experiment.save(experimentModel);
   logger.log('info', 'Successfully running experiment', { data: { experimentUrl } });
 }

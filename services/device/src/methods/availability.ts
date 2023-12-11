@@ -130,11 +130,16 @@ function addTimeSlotsFromRule(
         frequency = 7 * 24 * 60 * 60 * 1000;
         break;
     }
-    const until = Date.parse(availabilityRule.repeat.until ?? '') || end;
+    const until = availabilityRule.repeat.until
+      ? Date.parse(availabilityRule.repeat.until)
+      : end;
     let count = availabilityRule.repeat.count;
-    if (frequency <= timeSlot.end - timeSlot.start && !count) {
+
+    if (frequency <= timeSlot.end - timeSlot.start && count === undefined) {
       timeSlot.end = until;
     }
+
+    if (timeSlot.end > until) timeSlot.end = until;
 
     let currentTimeSlot: TimeSlotModel = {
       start: timeSlot.start + frequency,
@@ -231,7 +236,7 @@ function invertTimeSlots(
   start: number,
   end: number,
 ): TimeSlotModel[] {
-  if (availability.length === 0) return [];
+  if (availability.length === 0) return [{ start, end }];
   // logger.log("info",'availability before invert:', JSON.stringify(availability, null, 4))
 
   // sort by starttime

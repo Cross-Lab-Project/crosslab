@@ -57,7 +57,7 @@ export namespace {{ serviceName | formatName }}Signatures {
 
     {%- if operation.responses -%}
         {%- for response in operation.responses -%}
-            {%- if response.status | int < 400 -%}
+            {%- if response.status | string | replace("XX", "00") | int < 400 -%}
                 {%- set success_responses = (success_responses.push(cap_name + "Response" + response.status), success_responses) -%}
             {%- else -%}
                 {%- set error_responses = (error_responses.push(cap_name + "Response" + response.status), error_responses) -%}
@@ -153,8 +153,8 @@ export namespace {{ serviceName | formatName }}Signatures {
      * Typing for a response with status {{ response.status }} to the request made by {{ low_name }}()
      * @category {{ low_name }}()
      */
-    export interface {{ cap_name }}Response{{ response.status }} extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
-        status: {{ response.status }}
+    export interface {{ cap_name }}Response{{ response.status }} extends {{ "SuccessResponse" if response.status | string | replace("XX", "00") | int < 400 else "ErrorResponse" }} {
+    status: {{ ("Types.NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 99) + ">") if (response.status | endsWith("XX")) else response.status }}
         headers{{ "?" if not response.headers }}: {
             {% for header in response.headers -%}
             "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(sortedSchemas[serviceName], { "prefixDirectlyResolved": types + ".", "schemaType": "response" }) | indent(12) if header.schema else "undefined" }},
@@ -176,6 +176,9 @@ export namespace {{ serviceName | formatName }}Signatures {
 {%- endif -%}
 {%- if content | includes("SizedTuple<") -%}
     {%- set content = content | replace('import {', 'import {\n\tSizedTuple,') -%}
+{%- endif -%}
+{%- if content | includes("NumericRange<") -%}
+    {%- set content = content | replace('import {', 'import {\n\tNumericRange,') -%}
 {%- endif -%}
 
 {{ content }}

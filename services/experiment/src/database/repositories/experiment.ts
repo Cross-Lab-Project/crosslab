@@ -2,7 +2,9 @@ import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations } from 'typeorm';
 
 import { Experiment, ExperimentOverview } from '../../generated/types.js';
+import { sendChangedCallback } from '../../methods/callbacks.js';
 import { experimentUrlFromId } from '../../methods/url.js';
+import { callbackHandler } from '../../operations/callbacks/event/callbackHandler.js';
 import { Instance } from '../../types/types.js';
 import { ExperimentModel } from '../model.js';
 import { DeviceRepository } from './device.js';
@@ -63,7 +65,7 @@ export class ExperimentRepository extends AbstractRepository<
       ...additionalAttributes
     } = { ...model.additionalAttributes, ...data };
 
-    //if (status) model.status = status;
+    // if (data.status) model.status = data.status;
 
     if (bookingTime) {
       if (bookingTime.startTime) model.bookingStart = bookingTime.startTime;
@@ -77,18 +79,22 @@ export class ExperimentRepository extends AbstractRepository<
     }
 
     if (devices) {
+      const newDevices = [];
       for (const device of model.devices ?? []) {
         const foundDevice = devices.find(d => d.device === device.url);
         if (!foundDevice) await this.dependencies.device.remove(device);
-        else device.role = foundDevice.role;
+        else {
+          device.role = foundDevice.role;
+          newDevices.push(device);
+        }
       }
-      model.devices ??= [];
       for (const device of devices) {
-        const foundDevice = model.devices?.find(d => d.url === device.url);
-        if (foundDevice) continue;
+        if (newDevices.find(d => d.url === device.url)) continue;
         const deviceModel = await this.dependencies.device.create(device);
-        model.devices.push(deviceModel);
+        newDevices.push(deviceModel);
+        callbackHandler.addListener('device', device.device, model.uuid);
       }
+      model.devices = newDevices;
     }
 
     if (roles) {
@@ -115,6 +121,12 @@ export class ExperimentRepository extends AbstractRepository<
     }
 
     model.additionalAttributes = additionalAttributes;
+  }
+
+  async save(model: ExperimentModel): Promise<ExperimentModel> {
+    const savedModel = await super.save(model);
+    await sendChangedCallback(savedModel);
+    return savedModel;
   }
 
   async format(model: ExperimentModel): Promise<Experiment<'response'>> {

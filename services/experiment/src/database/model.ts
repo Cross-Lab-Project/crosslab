@@ -80,6 +80,9 @@ export class RoleModel {
   @Column('text', { nullable: true })
   description?: string | null;
 
+  @Column('simple-json', { nullable: true })
+  configuration?: { [k: string]: unknown };
+
   @ManyToOne(() => ExperimentModel, experiment => experiment.roles)
   experiment!: ExperimentModel;
 }
@@ -116,6 +119,9 @@ export class DeviceModel {
   @OneToOne(() => InstanceModel)
   @JoinColumn()
   instance?: InstanceModel;
+
+  @Column({ nullable: true })
+  resolvedDevice?: string;
 }
 
 @Entity({ name: 'Peerconnection' })

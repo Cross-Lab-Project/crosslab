@@ -1,8 +1,8 @@
 import { MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
+import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
-import { saveExperiment } from '../experimentChangedEvent.js';
 // import { apiClient } from '../api.js'
 import { experimentUrlFromId } from '../url.js';
 
@@ -42,6 +42,6 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   // experimentModel.bookingID = BookingID
 
   experimentModel.status = 'booked';
-  await saveExperiment(experimentModel);
+  await repositories.experiment.save(experimentModel);
   logger.log('info', 'Successfully booked experiment', { data: { experimentUrl } });
 }

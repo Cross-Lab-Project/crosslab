@@ -110,6 +110,10 @@ export declare function validateSignalingMessage<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): SignalingMessage<T>;
 
+export declare function validateConfigurationMessage<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ConfigurationMessage<T>;
+
 export declare function validateConnectionStatus<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStatus<T>;
@@ -157,10 +161,6 @@ export declare function validateStartTime<T extends 'request' | 'response' | 'al
 export declare function validateEndTime<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): EndTime<T>;
-
-export declare function validatePeerconnectionUrl<
-  T extends 'request' | 'response' | 'all',
->(object: unknown): PeerconnectionUrl<T>;
 
 export declare function validateClosedUrl<T extends 'request' | 'response' | 'all'>(
   object: unknown,
@@ -474,6 +474,14 @@ export declare function validateSignalingMessageResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): SignalingMessageResponse<T>;
 
+export declare function validateConfigurationMessageRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ConfigurationMessageRequest<T>;
+
+export declare function validateConfigurationMessageResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ConfigurationMessageResponse<T>;
+
 export declare function validateConnectionStatusRequest<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStatusRequest<T>;
@@ -569,14 +577,6 @@ export declare function validateEndTimeRequest<T extends 'request' | 'response' 
 export declare function validateEndTimeResponse<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): EndTimeResponse<T>;
-
-export declare function validatePeerconnectionUrlRequest<
-  T extends 'request' | 'response' | 'all',
->(object: unknown): PeerconnectionUrlRequest<T>;
-
-export declare function validatePeerconnectionUrlResponse<
-  T extends 'request' | 'response' | 'all',
->(object: unknown): PeerconnectionUrlResponse<T>;
 
 export declare function validateClosedUrlRequest<
   T extends 'request' | 'response' | 'all',

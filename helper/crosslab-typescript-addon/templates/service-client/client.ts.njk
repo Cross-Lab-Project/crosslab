@@ -174,7 +174,20 @@ export class Client {
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
         try {
-            raw_response = await fetch(url, init);
+            if (
+                url.toString().startsWith(this.baseUrl) ||
+                url.toString().startsWith(this.serviceUrl)
+            ) {
+                raw_response = await fetch(url, init);
+            } else {
+                raw_response = await fetch(
+                appendToUrl(
+                    this.baseUrl,
+                    '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
+                ),
+                init,
+                );
+            }
         } catch (error) {
             if (error instanceof Error) {
                 throw new FetchError(error.message);
@@ -213,6 +226,7 @@ export class Client {
     {%- set bodyName = (operation.requestBody.schema.title | formatName(false)) if operation.requestBody.schema.title else "body" %}
     {%- set requiredUrl = true if operation.parameters and operation.parameters | select("attrequalto", ["in", "path"]) | length > 0 else false %}
     {%- set buildUrl = operation.buildUrl %}
+    {%- set optionalUrl = operation.optionalUrl %}
 
     {#- Handle destructuring of input #}
     {%- if operation.destructureInput %}
@@ -256,6 +270,7 @@ export class Client {
                         {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": "Types.", "inline": true }) }}
                     {%- endfor %}
                 {%- endif %}
+                {{- "url?: string" if optionalUrl -}}
             }
         {%- endset %}
 
@@ -310,6 +325,12 @@ export class Client {
                     {{- "\n\t * " -}} {{ parameter.description }}
                 {%- endfor -%}
             {%- endif -%}
+
+            {#- Construct param tag for optional url #}
+            {%- if optionalUrl -%}
+                {{- "\n\t *" }} @param options.url 
+                {{- "\n\t *" }} Url of the {{ operation.serviceName }} to be used.
+            {%- endif -%}
         {%- endset %}
 
     {%- else %}
@@ -340,6 +361,7 @@ export class Client {
                         {{- parameter.name + "?: " + (parameter.schema | typeDeclaration) -}},
                     {%- endfor -%}
                 {%- endif -%}
+                {{- "url?: string" if optionalUrl -}}
             }
         {%- endset %}
 
@@ -372,6 +394,12 @@ export class Client {
                         {{- "\n\t * " -}} {{- parameter.description | replace(r/\n$/, "") | replace("\n", "\n\t * ") if parameter.description -}}
                     {%- endif -%}
                 {%- endfor -%}
+            {%- endif -%}
+
+            {#- Construct param tag for optional url #}
+            {%- if optionalUrl -%}
+                {{- "\n\t * " -}} @param options.url 
+                {{- "\n\t * " -}} Url of the {{ operation.serviceName }} to be used.
             {%- endif -%}
         {%- endset %}
 
@@ -444,10 +472,12 @@ export class Client {
                 {{- "" }} validateUrl(url, this.baseUrl, '{{ operation.path | replace(r/{.*?}/g, "{}") }}')
             {%- else %}
                 const url = appendToUrl(
-                    this.baseUrl, 
+                    {{ "options?.url ?? " if optionalUrl }}this.baseUrl, 
                     `{{ operation.path | replace(r/{(.*?)}/g, "\${$1}") }}`
                 )
             {%- endif %}
+        {%- elif optionalUrl %}
+            const url = appendToUrl({{ "options?.url ?? " if optionalUrl }}this.baseUrl, "{{ operation.path }}")
         {%- else %}
             const url = appendToUrl(this.baseUrl, "{{ operation.path }}")
         {%- endif %}

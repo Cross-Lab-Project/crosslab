@@ -168,7 +168,20 @@ export class Client {
   private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
     let raw_response;
     try {
-      raw_response = await fetch(url, init);
+      if (
+        url.toString().startsWith(this.baseUrl) ||
+        url.toString().startsWith(this.serviceUrl)
+      ) {
+        raw_response = await fetch(url, init);
+      } else {
+        raw_response = await fetch(
+          appendToUrl(
+            this.baseUrl,
+            '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
+          ),
+          init,
+        );
+      }
     } catch (error) {
       if (error instanceof Error) {
         throw new FetchError(error.message);
@@ -205,6 +218,9 @@ export class Client {
   /**
    * List devices
    *
+   * @param options.url
+   * Url of the  to be used.
+   *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
    * @throws {@link ValidationError | ValidationError }
@@ -219,8 +235,9 @@ export class Client {
    */
   public async listDevices(options?: {
     headers?: [string, string][];
+    url?: string;
   }): Promise<Signatures.ListDevicesSuccessResponse['body']> {
-    const url = appendToUrl(this.baseUrl, '/devices');
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
 
     if (!RequestValidation.validateListDevicesInput())
       throw new ValidationError(
@@ -269,6 +286,8 @@ export class Client {
    * If the callback fails the url MIGHT not be called in the future.
    *
    * There can be multiple callbacks registered with the same device.
+   * @param options.url
+   * Url of the  to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -287,9 +306,10 @@ export class Client {
     options?: {
       headers?: [string, string][];
       changedUrl?: string;
+      url?: string;
     },
   ): Promise<Signatures.CreateDeviceSuccessResponse['body']> {
-    const url = appendToUrl(this.baseUrl, '/devices');
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
 
     const body = device;
 
@@ -962,8 +982,6 @@ export class Client {
    * Url of the resource to be accessed.
    * @param sigMessage
    * The signaling message to be sent.
-   * @param peerconnection_url
-   * URL of the peerconnection
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -982,8 +1000,8 @@ export class Client {
     sigMessage:
       | Types.CreatePeerconnectionMessage<'request'>
       | Types.ClosePeerconnectionMessage<'request'>
-      | Types.SignalingMessage<'request'>,
-    peerconnection_url: string,
+      | Types.SignalingMessage<'request'>
+      | Types.ConfigurationMessage<'request'>,
     options?: {
       headers?: [string, string][];
     },
@@ -996,13 +1014,7 @@ export class Client {
 
     const parameters = {
       device_id: device_id,
-      peerconnection_url: peerconnection_url,
     };
-
-    const query: [string, string][] = [];
-
-    if (parameters['peerconnection_url'])
-      query.push(['peerconnection_url', parameters['peerconnection_url'].toString()]);
 
     if (!RequestValidation.validateSendSignalingMessageInput(parameters, body))
       throw new ValidationError(
@@ -1014,19 +1026,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
+    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
+      method: 'POST',
+      headers: [
+        ['Content-Type', 'application/json'],
+        ['Authorization', authorization],
+        ...this.fixedHeaders,
+        ...(options?.headers ?? []),
+      ],
+      body: JSON.stringify(body),
+    });
 
     if (!RequestValidation.validateSendSignalingMessageOutput(response))
       throw new ValidationError(
@@ -1046,6 +1055,9 @@ export class Client {
   /**
    * List Peer Connection
    *
+   * @param options.url
+   * Url of the  to be used.
+   *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
    * @throws {@link ValidationError | ValidationError }
@@ -1060,8 +1072,9 @@ export class Client {
    */
   public async listPeerconnections(options?: {
     headers?: [string, string][];
+    url?: string;
   }): Promise<Signatures.ListPeerconnectionsSuccessResponse['body']> {
-    const url = appendToUrl(this.baseUrl, '/peerconnections');
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
 
     if (!RequestValidation.validateListPeerconnectionsInput())
       throw new ValidationError(
@@ -1109,6 +1122,8 @@ export class Client {
    * An URL that will be called once the peer connection is closed.
    * @param options.statusChangedUrl
    * An URL that will be called if the status of the peerconnection changes.
+   * @param options.url
+   * Url of the  to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -1129,9 +1144,10 @@ export class Client {
       headers?: [string, string][];
       closedUrl?: string;
       statusChangedUrl?: string;
+      url?: string;
     },
   ): Promise<Signatures.CreatePeerconnectionSuccessResponse['body']> {
-    const url = appendToUrl(this.baseUrl, '/peerconnections');
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
 
     const body = peerconnection;
 

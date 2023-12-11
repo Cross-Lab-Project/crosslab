@@ -13,6 +13,7 @@ export const config = {
   NODE_ENV: process.env.NODE_ENV ?? 'development',
   BASE_URL: process.env.BASE_URL ?? 'http://localhost',
   AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL ?? 'http://localhost:3000',
+  FEDERATION_SERVICE_URL: process.env.FEDERATION_SERVICE_URL ?? 'http://localhost:3001',
   JWT_SECRET: 'secret',
   orm: {
     ...basicOrmConfig,

@@ -3,9 +3,9 @@ import assert from 'assert';
 
 import { UnsuccessfulRequestError } from '../../clients/device/client.js';
 import { Clients } from '../../clients/index.js';
+import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { validateExperimentStatus } from '../../types/typeguards.js';
-import { saveExperiment } from '../experimentChangedEvent.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
@@ -82,7 +82,7 @@ export async function finishExperiment(
   }
 
   experimentModel.status = 'finished';
-  await saveExperiment(experimentModel);
+  await repositories.experiment.save(experimentModel);
   logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
 }
 
@@ -90,7 +90,7 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
   if (experiment.devices) {
     for (const device of experiment.devices) {
       if (device.instance?.url) {
-        try{
+        try {
           await clients.device.deleteDevice(device.instance.url);
         } catch (error) {
           if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
