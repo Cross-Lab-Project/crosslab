@@ -24,6 +24,11 @@ x-config: &common-config
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-please change me}"
   LOGGING: "${LOGGING:-info}"
   BASE_URL: https://api.${DOMAIN}
+  AUTH_SERVICE_DOMAIN: "127.0.0.1:3000"
+  AUTHORIZATION_SERVICE_DOMAIN: "127.0.0.1:3010"
+  DEVICE_SERVICE_DOMAIN: "127.0.0.1:3001"
+  EXPERIMENT_SERVICE_DOMAIN: "127.0.0.1:3002"
+  FEDERATION_SERVICE_DOMAIN: "127.0.0.1:3003"
   AUTH_SERVICE_URL: "127.0.0.1:3000"
   DEVICE_SERVICE_URL: "127.0.0.1:3001"
   EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
@@ -65,6 +70,8 @@ services:
       ADMIN_USERNAME: 'admin'
       ADMIN_PASSWORD: 'admin'
       JWT_SECRET: "${JWT_SECRET:-please change me}"
+    volumes:
+      - ./data:/app/db
     network_mode: "host"
     logging: *loki-logging
   authorization:
@@ -74,18 +81,22 @@ services:
       JWT_SECRET: "${JWT_SECRET:-please change me}"
     network_mode: "host"
     logging: *loki-logging
-  #device:
-  #  build: ../../../services/device
-  #  environment:
-  #    <<: *common-config
-  #  network_mode: "host"
-  #  logging: *loki-logging
-  #experiment:
-  #  build: ../../../services/experiment
-  #  environment:
-  #    <<: *common-config
-  #  network_mode: "host"
-  #  logging: *loki-logging
+  device:
+    build: ../../../services/device
+    environment:
+      <<: *common-config
+    volumes:
+      - ./data:/app/db
+    network_mode: "host"
+    logging: *loki-logging
+  experiment:
+    build: ../../../services/experiment
+    environment:
+      <<: *common-config
+    volumes:
+      - ./data:/app/db
+    network_mode: "host"
+    logging: *loki-logging
   federation:
     build: ../../../services/federation
     environment:
