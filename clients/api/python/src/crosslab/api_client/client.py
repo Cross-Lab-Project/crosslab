@@ -186,7 +186,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_users(self, url: str = "/users") -> ListUsersResponse:  # noqa: E501
+    async def list_users(self, url: str = "/users", username: Optional[str] = None) -> ListUsersResponse:  # noqa: E501
         """
         Get all users
         """  # noqa: E501
@@ -200,8 +200,17 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/users'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if username:
+            if isinstance(username, list):
+                query_params['username'] = username
+            else:
+                query_params['username'] = str(username)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="get")
+        status, resp = await self._fetch(valid_url, method="get", params=query_params)
            
         # transform response
         if status == 200:

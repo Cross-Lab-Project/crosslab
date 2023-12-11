@@ -346,7 +346,7 @@ async def test_list_users(aioresponses: aioresponses):
     url_variant = r'users'
     full_url = BASE_URL+r'/users'
 
-    parameter_list = [{}, ]
+    parameter_list = [{"username": "test_string", }, {}, ]
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'[{"url":"http://SyrjwTQktCePOwvKc.blfpSOA","id":"amet in irure ullamco","username":"proident occaecat","password":"do"},{"url":"https://FZTzXTceuBxxrAqTMCqKPQwFuhRlTkh.ozV,iY4Cq5F6ByZLCcSu8yqfCD","id":"dolor mollit in","username":"do in dolor aliquip anim","password":"adipisicing"},{"url":"http://ShyjZbZHQpYRrA.yqwHM27xmpypXQe.OAYKAUMLLLKDlgGO2MpdZKOinzOJ4Iz.QZxUUB4WRkvFk6O5kNaDA","id":"minim adipisicing consequat nostrud","username":"id ut officia aute","password":"ullamco irure nulla magna"}]')
@@ -1334,7 +1334,7 @@ async def test_createToken(aioresponses: aioresponses):
     url_variant = r'token'
     full_url = BASE_URL+r'/token'
 
-    request = json.loads(r'{"username":"Ut"}')
+    request = json.loads(r'{"user":"deserunt sit voluptate officia","claims":{"ad4":"sunt Lorem id in","cupidatate3":-9476452.79204902,"quie":true}}')
 
     parameter_list = [{}, ]
 

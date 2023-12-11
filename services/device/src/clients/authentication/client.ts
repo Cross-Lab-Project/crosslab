@@ -341,6 +341,8 @@ export class Client {
   /**
    * Get all users
    *
+   * @param options.username
+   * filter for users with a specific username
    * @param options.url
    * Url of the  to be used.
    *
@@ -358,11 +360,21 @@ export class Client {
    */
   public async listUsers(options?: {
     headers?: [string, string][];
+    username?: string;
     url?: string;
   }): Promise<Signatures.ListUsersSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/users');
 
-    if (!RequestValidation.validateListUsersInput())
+    const parameters = {
+      username: options?.username,
+    };
+
+    const query: [string, string][] = [];
+
+    if (parameters['username'])
+      query.push(['username', parameters['username'].toString()]);
+
+    if (!RequestValidation.validateListUsersInput(parameters))
       throw new ValidationError(
         'Request validation failed!',
         (RequestValidation.validateListUsersInput as Types.FunctionWithErrors).errors,
@@ -370,15 +382,18 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    const response = await this.fetch(
+      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateListUsersOutput(response))
       throw new ValidationError(
@@ -796,20 +811,35 @@ export class Client {
    * The token was created successfully.
    */
   public async createToken(
-    body: {
-      /**
-       * The username of the user.
-       */
-      username?: string;
-      /**
-       * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
-       *
-       */
-      claims?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    },
+    body:
+      | {
+          /**
+           * Url or uuid of the user that will be used to create the token.
+           */
+          user: string;
+          /**
+           * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+           *
+           */
+          claims?: {
+            [k: string]: unknown;
+          };
+          [k: string]: unknown;
+        }
+      | {
+          /**
+           * Url or uuid of the user that will be used to create the token.
+           */
+          username: string;
+          /**
+           * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+           *
+           */
+          claims?: {
+            [k: string]: unknown;
+          };
+          [k: string]: unknown;
+        },
     options?: {
       headers?: [string, string][];
     },

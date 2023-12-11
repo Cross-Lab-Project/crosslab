@@ -537,12 +537,12 @@ function validate27(
   validate27.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserId = validate28;
+exports.validateUsername = validate28;
 const schema13 = {
   type: 'string',
   'x-standalone': false,
-  'x-name': 'UserId',
-  'x-location': '#/components/parameters/user_id/schema',
+  'x-name': 'Username',
+  'x-location': '#/components/parameters/user_search_username/schema',
   'x-schema-type': 'all',
 };
 function validate28(
@@ -569,8 +569,40 @@ function validate28(
   validate28.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthXRequestAuthentication = validate29;
+exports.validateUserId = validate29;
 const schema14 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'UserId',
+  'x-location': '#/components/parameters/user_id/schema',
+  'x-schema-type': 'all',
+};
+function validate29(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate29.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema14.type,
+        parentSchema: schema14,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate29.errors = vErrors;
+  return errors === 0;
+}
+exports.validateAuthXRequestAuthentication = validate30;
+const schema15 = {
   type: 'string',
   format: 'jwt',
   description: 'The JWT which represents the authenticated user.',
@@ -580,7 +612,7 @@ const schema14 = {
   'x-schema-type': 'all',
 };
 const formats4 = /^Bearer ([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-+/=]*)/;
-function validate29(
+function validate30(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -590,7 +622,7 @@ function validate29(
     if (errors === 0) {
       if (typeof data === 'string') {
         if (!formats4.test(data)) {
-          validate29.errors = [
+          validate30.errors = [
             {
               instancePath,
               schemaPath: '#/format',
@@ -598,22 +630,22 @@ function validate29(
               params: { format: 'jwt' },
               message: 'must match format "' + 'jwt' + '"',
               schema: 'jwt',
-              parentSchema: schema14,
+              parentSchema: schema15,
               data,
             },
           ];
           return false;
         }
       } else {
-        validate29.errors = [
+        validate30.errors = [
           {
             instancePath,
             schemaPath: '#/type',
             keyword: 'type',
             params: { type: 'string' },
             message: 'must be string',
-            schema: schema14.type,
-            parentSchema: schema14,
+            schema: schema15.type,
+            parentSchema: schema15,
             data,
           },
         ];
@@ -621,11 +653,11 @@ function validate29(
       }
     }
   }
-  validate29.errors = vErrors;
+  validate30.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginBody = validate30;
-const schema15 = {
+exports.validateLoginBody = validate31;
+const schema16 = {
   allOf: [
     {
       title: 'Credentials',
@@ -653,7 +685,7 @@ const schema15 = {
   'x-location': '#/paths//login/post/requestBody/content/application/json/schema',
   'x-schema-type': 'all',
 };
-function validate30(
+function validate31(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -667,15 +699,15 @@ function validate30(
         (data.username === undefined && (missing0 = 'username')) ||
         (data.password === undefined && (missing0 = 'password'))
       ) {
-        validate30.errors = [
+        validate31.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/0/required',
             keyword: 'required',
             params: { missingProperty: missing0 },
             message: "must have required property '" + missing0 + "'",
-            schema: schema15.allOf[0].required,
-            parentSchema: schema15.allOf[0],
+            schema: schema16.allOf[0].required,
+            parentSchema: schema16.allOf[0],
             data,
           },
         ];
@@ -685,15 +717,15 @@ function validate30(
           let data0 = data.username;
           const _errs2 = errors;
           if (typeof data0 !== 'string') {
-            validate30.errors = [
+            validate31.errors = [
               {
                 instancePath: instancePath + '/username',
                 schemaPath: '#/allOf/0/properties/username/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema15.allOf[0].properties.username.type,
-                parentSchema: schema15.allOf[0].properties.username,
+                schema: schema16.allOf[0].properties.username.type,
+                parentSchema: schema16.allOf[0].properties.username,
                 data: data0,
               },
             ];
@@ -708,15 +740,15 @@ function validate30(
             let data1 = data.password;
             const _errs4 = errors;
             if (typeof data1 !== 'string') {
-              validate30.errors = [
+              validate31.errors = [
                 {
                   instancePath: instancePath + '/password',
                   schemaPath: '#/allOf/0/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema15.allOf[0].properties.password.type,
-                  parentSchema: schema15.allOf[0].properties.password,
+                  schema: schema16.allOf[0].properties.password.type,
+                  parentSchema: schema16.allOf[0].properties.password,
                   data: data1,
                 },
               ];
@@ -729,15 +761,15 @@ function validate30(
         }
       }
     } else {
-      validate30.errors = [
+      validate31.errors = [
         {
           instancePath,
           schemaPath: '#/allOf/0/type',
           keyword: 'type',
           params: { type: 'object' },
           message: 'must be object',
-          schema: schema15.allOf[0].type,
-          parentSchema: schema15.allOf[0],
+          schema: schema16.allOf[0].type,
+          parentSchema: schema16.allOf[0],
           data,
         },
       ];
@@ -752,30 +784,30 @@ function validate30(
         if (data.method !== undefined) {
           let data2 = data.method;
           if (typeof data2 !== 'string') {
-            validate30.errors = [
+            validate31.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema15.allOf[1].properties.method.type,
-                parentSchema: schema15.allOf[1].properties.method,
+                schema: schema16.allOf[1].properties.method.type,
+                parentSchema: schema16.allOf[1].properties.method,
                 data: data2,
               },
             ];
             return false;
           }
           if (!(data2 === 'tui' || data2 === 'local')) {
-            validate30.errors = [
+            validate31.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/enum',
                 keyword: 'enum',
-                params: { allowedValues: schema15.allOf[1].properties.method.enum },
+                params: { allowedValues: schema16.allOf[1].properties.method.enum },
                 message: 'must be equal to one of the allowed values',
-                schema: schema15.allOf[1].properties.method.enum,
-                parentSchema: schema15.allOf[1].properties.method,
+                schema: schema16.allOf[1].properties.method.enum,
+                parentSchema: schema16.allOf[1].properties.method,
                 data: data2,
               },
             ];
@@ -783,15 +815,15 @@ function validate30(
           }
         }
       } else {
-        validate30.errors = [
+        validate31.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/1/type',
             keyword: 'type',
             params: { type: 'object' },
             message: 'must be object',
-            schema: schema15.allOf[1].type,
-            parentSchema: schema15.allOf[1],
+            schema: schema16.allOf[1].type,
+            parentSchema: schema16.allOf[1],
             data,
           },
         ];
@@ -800,11 +832,11 @@ function validate30(
     }
     var valid0 = _errs6 === errors;
   }
-  validate30.errors = vErrors;
+  validate31.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginResponse201 = validate31;
-const schema16 = {
+exports.validateLoginResponse201 = validate32;
+const schema17 = {
   description: 'The access token.',
   type: 'string',
   'x-standalone': false,
@@ -812,32 +844,32 @@ const schema16 = {
   'x-location': '#/paths//login/post/responses/201/content/application/json/schema',
   'x-schema-type': 'all',
 };
-function validate31(
+function validate32(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
   let vErrors = null;
   let errors = 0;
   if (typeof data !== 'string') {
-    validate31.errors = [
+    validate32.errors = [
       {
         instancePath,
         schemaPath: '#/type',
         keyword: 'type',
         params: { type: 'string' },
         message: 'must be string',
-        schema: schema16.type,
-        parentSchema: schema16,
+        schema: schema17.type,
+        parentSchema: schema17,
         data,
       },
     ];
     return false;
   }
-  validate31.errors = vErrors;
+  validate32.errors = vErrors;
   return errors === 0;
 }
-exports.validateLogoutBody = validate32;
-const schema17 = {
+exports.validateLogoutBody = validate33;
+const schema18 = {
   type: 'object',
   properties: { token: { type: 'string', description: 'The token to be invalidated.' } },
   'x-standalone': false,
@@ -845,7 +877,7 @@ const schema17 = {
   'x-location': '#/paths//logout/post/requestBody/content/application/json/schema',
   'x-schema-type': 'all',
 };
-function validate32(
+function validate33(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -856,15 +888,15 @@ function validate32(
       if (data.token !== undefined) {
         let data0 = data.token;
         if (typeof data0 !== 'string') {
-          validate32.errors = [
+          validate33.errors = [
             {
               instancePath: instancePath + '/token',
               schemaPath: '#/properties/token/type',
               keyword: 'type',
               params: { type: 'string' },
               message: 'must be string',
-              schema: schema17.properties.token.type,
-              parentSchema: schema17.properties.token,
+              schema: schema18.properties.token.type,
+              parentSchema: schema18.properties.token,
               data: data0,
             },
           ];
@@ -872,26 +904,26 @@ function validate32(
         }
       }
     } else {
-      validate32.errors = [
+      validate33.errors = [
         {
           instancePath,
           schemaPath: '#/type',
           keyword: 'type',
           params: { type: 'object' },
           message: 'must be object',
-          schema: schema17.type,
-          parentSchema: schema17,
+          schema: schema18.type,
+          parentSchema: schema18,
           data,
         },
       ];
       return false;
     }
   }
-  validate32.errors = vErrors;
+  validate33.errors = vErrors;
   return errors === 0;
 }
-exports.validateListUsersResponse200 = validate33;
-const schema18 = {
+exports.validateListUsersResponse200 = validate34;
+const schema19 = {
   type: 'array',
   items: {
     title: 'User',
@@ -909,7 +941,7 @@ const schema18 = {
   'x-location': '#/paths//users/get/responses/200/content/application/json/schema',
   'x-schema-type': 'all',
 };
-function validate33(
+function validate34(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -931,15 +963,15 @@ function validate33(
               (data0.username === undefined && (missing0 = 'username')) ||
               (data0.password === undefined && (missing0 = 'password'))
             ) {
-              validate33.errors = [
+              validate34.errors = [
                 {
                   instancePath: instancePath + '/' + i0,
                   schemaPath: '#/items/required',
                   keyword: 'required',
                   params: { missingProperty: missing0 },
                   message: "must have required property '" + missing0 + "'",
-                  schema: schema18.items.required,
-                  parentSchema: schema18.items,
+                  schema: schema19.items.required,
+                  parentSchema: schema19.items,
                   data: data0,
                 },
               ];
@@ -952,7 +984,7 @@ function validate33(
                   if (errors === _errs3) {
                     if (typeof data1 === 'string') {
                       if (!formats0(data1)) {
-                        validate33.errors = [
+                        validate34.errors = [
                           {
                             instancePath: instancePath + '/' + i0 + '/url',
                             schemaPath: '#/items/properties/url/format',
@@ -960,22 +992,22 @@ function validate33(
                             params: { format: 'uri' },
                             message: 'must match format "' + 'uri' + '"',
                             schema: 'uri',
-                            parentSchema: schema18.items.properties.url,
+                            parentSchema: schema19.items.properties.url,
                             data: data1,
                           },
                         ];
                         return false;
                       }
                     } else {
-                      validate33.errors = [
+                      validate34.errors = [
                         {
                           instancePath: instancePath + '/' + i0 + '/url',
                           schemaPath: '#/items/properties/url/type',
                           keyword: 'type',
                           params: { type: 'string' },
                           message: 'must be string',
-                          schema: schema18.items.properties.url.type,
-                          parentSchema: schema18.items.properties.url,
+                          schema: schema19.items.properties.url.type,
+                          parentSchema: schema19.items.properties.url,
                           data: data1,
                         },
                       ];
@@ -992,15 +1024,15 @@ function validate33(
                   let data2 = data0.id;
                   const _errs5 = errors;
                   if (typeof data2 !== 'string') {
-                    validate33.errors = [
+                    validate34.errors = [
                       {
                         instancePath: instancePath + '/' + i0 + '/id',
                         schemaPath: '#/items/properties/id/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema18.items.properties.id.type,
-                        parentSchema: schema18.items.properties.id,
+                        schema: schema19.items.properties.id.type,
+                        parentSchema: schema19.items.properties.id,
                         data: data2,
                       },
                     ];
@@ -1015,15 +1047,15 @@ function validate33(
                     let data3 = data0.username;
                     const _errs7 = errors;
                     if (typeof data3 !== 'string') {
-                      validate33.errors = [
+                      validate34.errors = [
                         {
                           instancePath: instancePath + '/' + i0 + '/username',
                           schemaPath: '#/items/properties/username/type',
                           keyword: 'type',
                           params: { type: 'string' },
                           message: 'must be string',
-                          schema: schema18.items.properties.username.type,
-                          parentSchema: schema18.items.properties.username,
+                          schema: schema19.items.properties.username.type,
+                          parentSchema: schema19.items.properties.username,
                           data: data3,
                         },
                       ];
@@ -1038,15 +1070,15 @@ function validate33(
                       let data4 = data0.password;
                       const _errs9 = errors;
                       if (typeof data4 !== 'string') {
-                        validate33.errors = [
+                        validate34.errors = [
                           {
                             instancePath: instancePath + '/' + i0 + '/password',
                             schemaPath: '#/items/properties/password/type',
                             keyword: 'type',
                             params: { type: 'string' },
                             message: 'must be string',
-                            schema: schema18.items.properties.password.type,
-                            parentSchema: schema18.items.properties.password,
+                            schema: schema19.items.properties.password.type,
+                            parentSchema: schema19.items.properties.password,
                             data: data4,
                           },
                         ];
@@ -1061,15 +1093,15 @@ function validate33(
               }
             }
           } else {
-            validate33.errors = [
+            validate34.errors = [
               {
                 instancePath: instancePath + '/' + i0,
                 schemaPath: '#/items/type',
                 keyword: 'type',
                 params: { type: 'object' },
                 message: 'must be object',
-                schema: schema18.items.type,
-                parentSchema: schema18.items,
+                schema: schema19.items.type,
+                parentSchema: schema19.items,
                 data: data0,
               },
             ];
@@ -1082,26 +1114,26 @@ function validate33(
         }
       }
     } else {
-      validate33.errors = [
+      validate34.errors = [
         {
           instancePath,
           schemaPath: '#/type',
           keyword: 'type',
           params: { type: 'array' },
           message: 'must be array',
-          schema: schema18.type,
-          parentSchema: schema18,
+          schema: schema19.type,
+          parentSchema: schema19,
           data,
         },
       ];
       return false;
     }
   }
-  validate33.errors = vErrors;
+  validate34.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateUserBody = validate34;
-const schema19 = {
+exports.validateCreateUserBody = validate35;
+const schema20 = {
   title: 'User',
   type: 'object',
   properties: {
@@ -1114,185 +1146,6 @@ const schema19 = {
   'x-standalone': false,
   'x-name': 'createUserBody',
   'x-location': '#/paths//users/post/requestBody/content/application/json/schema',
-  'x-schema-type': 'all',
-};
-function validate34(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate34.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema19.required,
-            parentSchema: schema19,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate34.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema19.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate34.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema19.properties.url.type,
-                    parentSchema: schema19.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate34.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema19.properties.id.type,
-                  parentSchema: schema19.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate34.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema19.properties.username.type,
-                    parentSchema: schema19.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
-            if (valid0) {
-              if (data.password !== undefined) {
-                let data3 = data.password;
-                const _errs7 = errors;
-                if (typeof data3 !== 'string') {
-                  validate34.errors = [
-                    {
-                      instancePath: instancePath + '/password',
-                      schemaPath: '#/properties/password/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema19.properties.password.type,
-                      parentSchema: schema19.properties.password,
-                      data: data3,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs7 === errors;
-              } else {
-                var valid0 = true;
-              }
-            }
-          }
-        }
-      }
-    } else {
-      validate34.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-          schema: schema19.type,
-          parentSchema: schema19,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate34.errors = vErrors;
-  return errors === 0;
-}
-exports.validateCreateUserResponse201 = validate35;
-const schema20 = {
-  title: 'User',
-  type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
-  },
-  required: ['url', 'id', 'username', 'password'],
-  'x-standalone': false,
-  'x-name': 'createUserResponse201',
-  'x-location': '#/paths//users/post/responses/201/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate35(
@@ -1458,7 +1311,7 @@ function validate35(
   validate35.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetUserResponse200 = validate36;
+exports.validateCreateUserResponse201 = validate36;
 const schema21 = {
   title: 'User',
   type: 'object',
@@ -1470,9 +1323,8 @@ const schema21 = {
   },
   required: ['url', 'id', 'username', 'password'],
   'x-standalone': false,
-  'x-name': 'getUserResponse200',
-  'x-location':
-    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema',
+  'x-name': 'createUserResponse201',
+  'x-location': '#/paths//users/post/responses/201/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate36(
@@ -1638,16 +1490,21 @@ function validate36(
   validate36.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserBody = validate37;
+exports.validateGetUserResponse200 = validate37;
 const schema22 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: { password: { type: 'string', writeOnly: true } },
-  required: ['password'],
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
+  },
+  required: ['url', 'id', 'username', 'password'],
   'x-standalone': false,
-  'x-name': 'updateUserBody',
+  'x-name': 'getUserResponse200',
   'x-location':
-    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema',
+    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate37(
@@ -1659,7 +1516,12 @@ function validate37(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (data.password === undefined && (missing0 = 'password')) {
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
         validate37.errors = [
           {
             instancePath,
@@ -1674,22 +1536,118 @@ function validate37(
         ];
         return false;
       } else {
-        if (data.password !== undefined) {
-          let data0 = data.password;
-          if (typeof data0 !== 'string') {
-            validate37.errors = [
-              {
-                instancePath: instancePath + '/password',
-                schemaPath: '#/properties/password/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema22.properties.password.type,
-                parentSchema: schema22.properties.password,
-                data: data0,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate37.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema22.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate37.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema22.properties.url.type,
+                    parentSchema: schema22.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate37.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema22.properties.id.type,
+                  parentSchema: schema22.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate37.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema22.properties.username.type,
+                    parentSchema: schema22.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+            if (valid0) {
+              if (data.password !== undefined) {
+                let data3 = data.password;
+                const _errs7 = errors;
+                if (typeof data3 !== 'string') {
+                  validate37.errors = [
+                    {
+                      instancePath: instancePath + '/password',
+                      schemaPath: '#/properties/password/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema22.properties.password.type,
+                      parentSchema: schema22.properties.password,
+                      data: data3,
+                    },
+                  ];
+                  return false;
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
           }
         }
       }
@@ -1712,21 +1670,16 @@ function validate37(
   validate37.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserResponse200 = validate38;
+exports.validateUpdateUserBody = validate38;
 const schema23 = {
-  title: 'User',
+  title: 'User Update',
   type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
-  },
-  required: ['url', 'id', 'username', 'password'],
+  properties: { password: { type: 'string', writeOnly: true } },
+  required: ['password'],
   'x-standalone': false,
-  'x-name': 'updateUserResponse200',
+  'x-name': 'updateUserBody',
   'x-location':
-    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema',
+    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate38(
@@ -1738,12 +1691,7 @@ function validate38(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
+      if (data.password === undefined && (missing0 = 'password')) {
         validate38.errors = [
           {
             instancePath,
@@ -1758,118 +1706,22 @@ function validate38(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate38.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema23.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate38.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema23.properties.url.type,
-                    parentSchema: schema23.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate38.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema23.properties.id.type,
-                  parentSchema: schema23.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate38.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema23.properties.username.type,
-                    parentSchema: schema23.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
-            if (valid0) {
-              if (data.password !== undefined) {
-                let data3 = data.password;
-                const _errs7 = errors;
-                if (typeof data3 !== 'string') {
-                  validate38.errors = [
-                    {
-                      instancePath: instancePath + '/password',
-                      schemaPath: '#/properties/password/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema23.properties.password.type,
-                      parentSchema: schema23.properties.password,
-                      data: data3,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs7 === errors;
-              } else {
-                var valid0 = true;
-              }
-            }
+        if (data.password !== undefined) {
+          let data0 = data.password;
+          if (typeof data0 !== 'string') {
+            validate38.errors = [
+              {
+                instancePath: instancePath + '/password',
+                schemaPath: '#/properties/password/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema23.properties.password.type,
+                parentSchema: schema23.properties.password,
+                data: data0,
+              },
+            ];
+            return false;
           }
         }
       }
@@ -1892,7 +1744,7 @@ function validate38(
   validate38.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetIdentityResponse200 = validate39;
+exports.validateUpdateUserResponse200 = validate39;
 const schema24 = {
   title: 'User',
   type: 'object',
@@ -1904,8 +1756,9 @@ const schema24 = {
   },
   required: ['url', 'id', 'username', 'password'],
   'x-standalone': false,
-  'x-name': 'getIdentityResponse200',
-  'x-location': '#/paths//identity/get/responses/200/content/application/json/schema',
+  'x-name': 'updateUserResponse200',
+  'x-location':
+    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate39(
@@ -2071,15 +1924,20 @@ function validate39(
   validate39.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityBody = validate40;
+exports.validateGetIdentityResponse200 = validate40;
 const schema25 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: { password: { type: 'string', writeOnly: true } },
-  required: ['password'],
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
+  },
+  required: ['url', 'id', 'username', 'password'],
   'x-standalone': false,
-  'x-name': 'updateIdentityBody',
-  'x-location': '#/paths//identity/patch/requestBody/content/application/json/schema',
+  'x-name': 'getIdentityResponse200',
+  'x-location': '#/paths//identity/get/responses/200/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate40(
@@ -2091,7 +1949,12 @@ function validate40(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (data.password === undefined && (missing0 = 'password')) {
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
         validate40.errors = [
           {
             instancePath,
@@ -2106,22 +1969,118 @@ function validate40(
         ];
         return false;
       } else {
-        if (data.password !== undefined) {
-          let data0 = data.password;
-          if (typeof data0 !== 'string') {
-            validate40.errors = [
-              {
-                instancePath: instancePath + '/password',
-                schemaPath: '#/properties/password/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema25.properties.password.type,
-                parentSchema: schema25.properties.password,
-                data: data0,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate40.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema25.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate40.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema25.properties.url.type,
+                    parentSchema: schema25.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate40.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema25.properties.id.type,
+                  parentSchema: schema25.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate40.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema25.properties.username.type,
+                    parentSchema: schema25.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+            if (valid0) {
+              if (data.password !== undefined) {
+                let data3 = data.password;
+                const _errs7 = errors;
+                if (typeof data3 !== 'string') {
+                  validate40.errors = [
+                    {
+                      instancePath: instancePath + '/password',
+                      schemaPath: '#/properties/password/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema25.properties.password.type,
+                      parentSchema: schema25.properties.password,
+                      data: data3,
+                    },
+                  ];
+                  return false;
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
           }
         }
       }
@@ -2144,20 +2103,15 @@ function validate40(
   validate40.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityResponse200 = validate41;
+exports.validateUpdateIdentityBody = validate41;
 const schema26 = {
-  title: 'User',
+  title: 'User Update',
   type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
-  },
-  required: ['url', 'id', 'username', 'password'],
+  properties: { password: { type: 'string', writeOnly: true } },
+  required: ['password'],
   'x-standalone': false,
-  'x-name': 'updateIdentityResponse200',
-  'x-location': '#/paths//identity/patch/responses/200/content/application/json/schema',
+  'x-name': 'updateIdentityBody',
+  'x-location': '#/paths//identity/patch/requestBody/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate41(
@@ -2169,12 +2123,7 @@ function validate41(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
+      if (data.password === undefined && (missing0 = 'password')) {
         validate41.errors = [
           {
             instancePath,
@@ -2189,118 +2138,22 @@ function validate41(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate41.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema26.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate41.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema26.properties.url.type,
-                    parentSchema: schema26.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate41.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema26.properties.id.type,
-                  parentSchema: schema26.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate41.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema26.properties.username.type,
-                    parentSchema: schema26.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
-            if (valid0) {
-              if (data.password !== undefined) {
-                let data3 = data.password;
-                const _errs7 = errors;
-                if (typeof data3 !== 'string') {
-                  validate41.errors = [
-                    {
-                      instancePath: instancePath + '/password',
-                      schemaPath: '#/properties/password/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema26.properties.password.type,
-                      parentSchema: schema26.properties.password,
-                      data: data3,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs7 === errors;
-              } else {
-                var valid0 = true;
-              }
-            }
+        if (data.password !== undefined) {
+          let data0 = data.password;
+          if (typeof data0 !== 'string') {
+            validate41.errors = [
+              {
+                instancePath: instancePath + '/password',
+                schemaPath: '#/properties/password/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema26.properties.password.type,
+                parentSchema: schema26.properties.password,
+                data: data0,
+              },
+            ];
+            return false;
           }
         }
       }
@@ -2323,20 +2176,20 @@ function validate41(
   validate41.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenBody = validate42;
+exports.validateUpdateIdentityResponse200 = validate42;
 const schema27 = {
+  title: 'User',
   type: 'object',
   properties: {
-    username: { type: 'string', description: 'The username of the user.' },
-    claims: {
-      type: 'object',
-      description:
-        'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
-    },
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
   },
+  required: ['url', 'id', 'username', 'password'],
   'x-standalone': false,
-  'x-name': 'createTokenBody',
-  'x-location': '#/paths//token/post/requestBody/content/application/json/schema',
+  'x-name': 'updateIdentityResponse200',
+  'x-location': '#/paths//identity/patch/responses/200/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate42(
@@ -2347,50 +2200,140 @@ function validate42(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.username !== undefined) {
-        let data0 = data.username;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate42.errors = [
-            {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema27.properties.username.type,
-              parentSchema: schema27.properties.username,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
+        validate42.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema27.required,
+            parentSchema: schema27,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.claims !== undefined) {
-          let data1 = data.claims;
-          const _errs3 = errors;
-          if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
-            validate42.errors = [
-              {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/properties/claims/type',
-                keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema27.properties.claims.type,
-                parentSchema: schema27.properties.claims,
-                data: data1,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate42.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema27.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate42.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema27.properties.url.type,
+                    parentSchema: schema27.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate42.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema27.properties.id.type,
+                  parentSchema: schema27.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate42.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema27.properties.username.type,
+                    parentSchema: schema27.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+            if (valid0) {
+              if (data.password !== undefined) {
+                let data3 = data.password;
+                const _errs7 = errors;
+                if (typeof data3 !== 'string') {
+                  validate42.errors = [
+                    {
+                      instancePath: instancePath + '/password',
+                      schemaPath: '#/properties/password/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema27.properties.password.type,
+                      parentSchema: schema27.properties.password,
+                      data: data3,
+                    },
+                  ];
+                  return false;
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
+            }
+          }
         }
       }
     } else {
@@ -2412,12 +2355,43 @@ function validate42(
   validate42.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenResponse201 = validate43;
+exports.validateCreateTokenBody = validate43;
 const schema28 = {
-  type: 'string',
+  oneOf: [
+    {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['user'],
+    },
+    {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['username'],
+    },
+  ],
   'x-standalone': false,
-  'x-name': 'createTokenResponse201',
-  'x-location': '#/paths//token/post/responses/201/content/application/json/schema',
+  'x-name': 'createTokenBody',
+  'x-location': '#/paths//token/post/requestBody/content/application/json/schema',
   'x-schema-type': 'all',
 };
 function validate43(
@@ -2426,26 +2400,278 @@ function validate43(
 ) {
   let vErrors = null;
   let errors = 0;
+  const _errs0 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs1 = errors;
+  if (errors === _errs1) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (data.user === undefined && (missing0 = 'user')) {
+        const err0 = {
+          instancePath,
+          schemaPath: '#/oneOf/0/required',
+          keyword: 'required',
+          params: { missingProperty: missing0 },
+          message: "must have required property '" + missing0 + "'",
+          schema: schema28.oneOf[0].required,
+          parentSchema: schema28.oneOf[0],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+        errors++;
+      } else {
+        if (data.user !== undefined) {
+          let data0 = data.user;
+          const _errs3 = errors;
+          if (typeof data0 !== 'string') {
+            const err1 = {
+              instancePath: instancePath + '/user',
+              schemaPath: '#/oneOf/0/properties/user/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema28.oneOf[0].properties.user.type,
+              parentSchema: schema28.oneOf[0].properties.user,
+              data: data0,
+            };
+            if (vErrors === null) {
+              vErrors = [err1];
+            } else {
+              vErrors.push(err1);
+            }
+            errors++;
+          }
+          var valid1 = _errs3 === errors;
+        } else {
+          var valid1 = true;
+        }
+        if (valid1) {
+          if (data.claims !== undefined) {
+            let data1 = data.claims;
+            const _errs5 = errors;
+            if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
+              const err2 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/0/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema28.oneOf[0].properties.claims.type,
+                parentSchema: schema28.oneOf[0].properties.claims,
+                data: data1,
+              };
+              if (vErrors === null) {
+                vErrors = [err2];
+              } else {
+                vErrors.push(err2);
+              }
+              errors++;
+            }
+            var valid1 = _errs5 === errors;
+          } else {
+            var valid1 = true;
+          }
+        }
+      }
+    } else {
+      const err3 = {
+        instancePath,
+        schemaPath: '#/oneOf/0/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema28.oneOf[0].type,
+        parentSchema: schema28.oneOf[0],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err3];
+      } else {
+        vErrors.push(err3);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs1 === errors;
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+  const _errs7 = errors;
+  if (errors === _errs7) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing1;
+      if (data.username === undefined && (missing1 = 'username')) {
+        const err4 = {
+          instancePath,
+          schemaPath: '#/oneOf/1/required',
+          keyword: 'required',
+          params: { missingProperty: missing1 },
+          message: "must have required property '" + missing1 + "'",
+          schema: schema28.oneOf[1].required,
+          parentSchema: schema28.oneOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err4];
+        } else {
+          vErrors.push(err4);
+        }
+        errors++;
+      } else {
+        if (data.username !== undefined) {
+          let data2 = data.username;
+          const _errs9 = errors;
+          if (typeof data2 !== 'string') {
+            const err5 = {
+              instancePath: instancePath + '/username',
+              schemaPath: '#/oneOf/1/properties/username/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema28.oneOf[1].properties.username.type,
+              parentSchema: schema28.oneOf[1].properties.username,
+              data: data2,
+            };
+            if (vErrors === null) {
+              vErrors = [err5];
+            } else {
+              vErrors.push(err5);
+            }
+            errors++;
+          }
+          var valid2 = _errs9 === errors;
+        } else {
+          var valid2 = true;
+        }
+        if (valid2) {
+          if (data.claims !== undefined) {
+            let data3 = data.claims;
+            const _errs11 = errors;
+            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+              const err6 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/1/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema28.oneOf[1].properties.claims.type,
+                parentSchema: schema28.oneOf[1].properties.claims,
+                data: data3,
+              };
+              if (vErrors === null) {
+                vErrors = [err6];
+              } else {
+                vErrors.push(err6);
+              }
+              errors++;
+            }
+            var valid2 = _errs11 === errors;
+          } else {
+            var valid2 = true;
+          }
+        }
+      }
+    } else {
+      const err7 = {
+        instancePath,
+        schemaPath: '#/oneOf/1/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema28.oneOf[1].type,
+        parentSchema: schema28.oneOf[1],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err7];
+      } else {
+        vErrors.push(err7);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs7 === errors;
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+  if (!valid0) {
+    const err8 = {
+      instancePath,
+      schemaPath: '#/oneOf',
+      keyword: 'oneOf',
+      params: { passingSchemas: passing0 },
+      message: 'must match exactly one schema in oneOf',
+      schema: schema28.oneOf,
+      parentSchema: schema28,
+      data,
+    };
+    if (vErrors === null) {
+      vErrors = [err8];
+    } else {
+      vErrors.push(err8);
+    }
+    errors++;
+    validate43.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs0;
+    if (vErrors !== null) {
+      if (_errs0) {
+        vErrors.length = _errs0;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+  validate43.errors = vErrors;
+  return errors === 0;
+}
+exports.validateCreateTokenResponse201 = validate44;
+const schema29 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'createTokenResponse201',
+  'x-location': '#/paths//token/post/responses/201/content/application/json/schema',
+  'x-schema-type': 'all',
+};
+function validate44(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
   if (typeof data !== 'string') {
-    validate43.errors = [
+    validate44.errors = [
       {
         instancePath,
         schemaPath: '#/type',
         keyword: 'type',
         params: { type: 'string' },
         message: 'must be string',
-        schema: schema28.type,
-        parentSchema: schema28,
+        schema: schema29.type,
+        parentSchema: schema29,
         data,
       },
     ];
     return false;
   }
-  validate43.errors = vErrors;
+  validate44.errors = vErrors;
   return errors === 0;
 }
-exports.validateCredentialsRequest = validate44;
-const schema29 = {
+exports.validateCredentialsRequest = validate45;
+const schema30 = {
   title: 'Credentials',
   type: 'object',
   properties: {
@@ -2457,113 +2683,6 @@ const schema29 = {
   'x-name': 'CredentialsRequest',
   'x-location': '#/components/schemas/credentials_request',
   'x-schema-type': 'request',
-};
-function validate44(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate44.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema29.required,
-            parentSchema: schema29,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
-          const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate44.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema29.properties.username.type,
-                parentSchema: schema29.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate44.errors = [
-                {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema29.properties.password.type,
-                  parentSchema: schema29.properties.password,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
-      validate44.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-          schema: schema29.type,
-          parentSchema: schema29,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate44.errors = vErrors;
-  return errors === 0;
-}
-exports.validateCredentialsResponse = validate45;
-const schema30 = {
-  title: 'Credentials',
-  type: 'object',
-  properties: {
-    username: { description: 'Username of the user.', type: 'string' },
-    password: { description: 'Password of the user.', type: 'string' },
-  },
-  required: ['username', 'password'],
-  'x-standalone': true,
-  'x-name': 'CredentialsResponse',
-  'x-location': '#/components/schemas/credentials_response',
-  'x-schema-type': 'response',
 };
 function validate45(
   data,
@@ -2658,8 +2777,115 @@ function validate45(
   validate45.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthMethodRequest = validate46;
+exports.validateCredentialsResponse = validate46;
 const schema31 = {
+  title: 'Credentials',
+  type: 'object',
+  properties: {
+    username: { description: 'Username of the user.', type: 'string' },
+    password: { description: 'Password of the user.', type: 'string' },
+  },
+  required: ['username', 'password'],
+  'x-standalone': true,
+  'x-name': 'CredentialsResponse',
+  'x-location': '#/components/schemas/credentials_response',
+  'x-schema-type': 'response',
+};
+function validate46(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (errors === 0) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
+        validate46.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema31.required,
+            parentSchema: schema31,
+            data,
+          },
+        ];
+        return false;
+      } else {
+        if (data.username !== undefined) {
+          let data0 = data.username;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate46.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema31.properties.username.type,
+                parentSchema: schema31.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.password !== undefined) {
+            let data1 = data.password;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate46.errors = [
+                {
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema31.properties.password.type,
+                  parentSchema: schema31.properties.password,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
+      validate46.errors = [
+        {
+          instancePath,
+          schemaPath: '#/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema31.type,
+          parentSchema: schema31,
+          data,
+        },
+      ];
+      return false;
+    }
+  }
+  validate46.errors = vErrors;
+  return errors === 0;
+}
+exports.validateAuthMethodRequest = validate47;
+const schema32 = {
   title: 'AuthMethod',
   type: 'string',
   description: 'Authentication method.',
@@ -2668,56 +2894,6 @@ const schema31 = {
   'x-name': 'AuthMethodRequest',
   'x-location': '#/components/schemas/auth_method_request',
   'x-schema-type': 'request',
-};
-function validate46(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (typeof data !== 'string') {
-    validate46.errors = [
-      {
-        instancePath,
-        schemaPath: '#/type',
-        keyword: 'type',
-        params: { type: 'string' },
-        message: 'must be string',
-        schema: schema31.type,
-        parentSchema: schema31,
-        data,
-      },
-    ];
-    return false;
-  }
-  if (!(data === 'tui' || data === 'local')) {
-    validate46.errors = [
-      {
-        instancePath,
-        schemaPath: '#/enum',
-        keyword: 'enum',
-        params: { allowedValues: schema31.enum },
-        message: 'must be equal to one of the allowed values',
-        schema: schema31.enum,
-        parentSchema: schema31,
-        data,
-      },
-    ];
-    return false;
-  }
-  validate46.errors = vErrors;
-  return errors === 0;
-}
-exports.validateAuthMethodResponse = validate47;
-const schema32 = {
-  title: 'AuthMethod',
-  type: 'string',
-  description: 'Authentication method.',
-  enum: ['tui', 'local'],
-  'x-standalone': true,
-  'x-name': 'AuthMethodResponse',
-  'x-location': '#/components/schemas/auth_method_response',
-  'x-schema-type': 'response',
 };
 function validate47(
   data,
@@ -2758,8 +2934,58 @@ function validate47(
   validate47.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserRequest = validate48;
+exports.validateAuthMethodResponse = validate48;
 const schema33 = {
+  title: 'AuthMethod',
+  type: 'string',
+  description: 'Authentication method.',
+  enum: ['tui', 'local'],
+  'x-standalone': true,
+  'x-name': 'AuthMethodResponse',
+  'x-location': '#/components/schemas/auth_method_response',
+  'x-schema-type': 'response',
+};
+function validate48(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate48.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema33.type,
+        parentSchema: schema33,
+        data,
+      },
+    ];
+    return false;
+  }
+  if (!(data === 'tui' || data === 'local')) {
+    validate48.errors = [
+      {
+        instancePath,
+        schemaPath: '#/enum',
+        keyword: 'enum',
+        params: { allowedValues: schema33.enum },
+        message: 'must be equal to one of the allowed values',
+        schema: schema33.enum,
+        parentSchema: schema33,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate48.errors = vErrors;
+  return errors === 0;
+}
+exports.validateUserRequest = validate49;
+const schema34 = {
   title: 'User',
   type: 'object',
   properties: {
@@ -2772,7 +2998,7 @@ const schema33 = {
   'x-location': '#/components/schemas/user_request',
   'x-schema-type': 'request',
 };
-function validate48(
+function validate49(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -2784,115 +3010,6 @@ function validate48(
       if (
         (data.username === undefined && (missing0 = 'username')) ||
         (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate48.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema33.required,
-            parentSchema: schema33,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
-          const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate48.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema33.properties.username.type,
-                parentSchema: schema33.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate48.errors = [
-                {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema33.properties.password.type,
-                  parentSchema: schema33.properties.password,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
-      validate48.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-          schema: schema33.type,
-          parentSchema: schema33,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate48.errors = vErrors;
-  return errors === 0;
-}
-exports.validateUserResponse = validate49;
-const schema34 = {
-  title: 'User',
-  type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-  },
-  required: ['url', 'id', 'username'],
-  'x-standalone': true,
-  'x-name': 'UserResponse',
-  'x-location': '#/components/schemas/user_response',
-  'x-schema-type': 'response',
-};
-function validate49(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
       ) {
         validate49.errors = [
           {
@@ -2908,62 +3025,42 @@ function validate49(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
+        if (data.username !== undefined) {
+          let data0 = data.username;
           const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate49.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema34.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate49.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema34.properties.url.type,
-                    parentSchema: schema34.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
+          if (typeof data0 !== 'string') {
+            validate49.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema34.properties.username.type,
+                parentSchema: schema34.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
+          if (data.password !== undefined) {
+            let data1 = data.password;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate49.errors = [
                 {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema34.properties.id.type,
-                  parentSchema: schema34.properties.id,
+                  schema: schema34.properties.password.type,
+                  parentSchema: schema34.properties.password,
                   data: data1,
                 },
               ];
@@ -2972,30 +3069,6 @@ function validate49(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate49.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema34.properties.username.type,
-                    parentSchema: schema34.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
           }
         }
       }
@@ -3018,16 +3091,20 @@ function validate49(
   validate49.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserUpdateRequest = validate50;
+exports.validateUserResponse = validate50;
 const schema35 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: { password: { type: 'string', writeOnly: true } },
-  required: ['password'],
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+  },
+  required: ['url', 'id', 'username'],
   'x-standalone': true,
-  'x-name': 'UserUpdateRequest',
-  'x-location': '#/components/schemas/user_update_request',
-  'x-schema-type': 'request',
+  'x-name': 'UserResponse',
+  'x-location': '#/components/schemas/user_response',
+  'x-schema-type': 'response',
 };
 function validate50(
   data,
@@ -3038,7 +3115,11 @@ function validate50(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (data.password === undefined && (missing0 = 'password')) {
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
+      ) {
         validate50.errors = [
           {
             instancePath,
@@ -3053,22 +3134,94 @@ function validate50(
         ];
         return false;
       } else {
-        if (data.password !== undefined) {
-          let data0 = data.password;
-          if (typeof data0 !== 'string') {
-            validate50.errors = [
-              {
-                instancePath: instancePath + '/password',
-                schemaPath: '#/properties/password/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema35.properties.password.type,
-                parentSchema: schema35.properties.password,
-                data: data0,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate50.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema35.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate50.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema35.properties.url.type,
+                    parentSchema: schema35.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate50.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema35.properties.id.type,
+                  parentSchema: schema35.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate50.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema35.properties.username.type,
+                    parentSchema: schema35.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -3091,16 +3244,16 @@ function validate50(
   validate50.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserUpdateResponse = validate51;
+exports.validateUserUpdateRequest = validate51;
 const schema36 = {
   title: 'User Update',
   type: 'object',
-  properties: {},
-  required: [],
+  properties: { password: { type: 'string', writeOnly: true } },
+  required: ['password'],
   'x-standalone': true,
-  'x-name': 'UserUpdateResponse',
-  'x-location': '#/components/schemas/user_update_response',
-  'x-schema-type': 'response',
+  'x-name': 'UserUpdateRequest',
+  'x-location': '#/components/schemas/user_update_request',
+  'x-schema-type': 'request',
 };
 function validate51(
   data,
@@ -3109,7 +3262,43 @@ function validate51(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (data.password === undefined && (missing0 = 'password')) {
+        validate51.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema36.required,
+            parentSchema: schema36,
+            data,
+          },
+        ];
+        return false;
+      } else {
+        if (data.password !== undefined) {
+          let data0 = data.password;
+          if (typeof data0 !== 'string') {
+            validate51.errors = [
+              {
+                instancePath: instancePath + '/password',
+                schemaPath: '#/properties/password/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema36.properties.password.type,
+                parentSchema: schema36.properties.password,
+                data: data0,
+              },
+            ];
+            return false;
+          }
+        }
+      }
+    } else {
       validate51.errors = [
         {
           instancePath,
@@ -3128,13 +3317,16 @@ function validate51(
   validate51.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthorizationRequest = validate52;
+exports.validateUserUpdateResponse = validate52;
 const schema37 = {
-  type: 'string',
-  'x-standalone': false,
-  'x-name': 'AuthorizationRequest',
-  'x-location': '#/components/parameters/authorization/schema_request',
-  'x-schema-type': 'request',
+  title: 'User Update',
+  type: 'object',
+  properties: {},
+  required: [],
+  'x-standalone': true,
+  'x-name': 'UserUpdateResponse',
+  'x-location': '#/components/schemas/user_update_response',
+  'x-schema-type': 'response',
 };
 function validate52(
   data,
@@ -3142,31 +3334,33 @@ function validate52(
 ) {
   let vErrors = null;
   let errors = 0;
-  if (typeof data !== 'string') {
-    validate52.errors = [
-      {
-        instancePath,
-        schemaPath: '#/type',
-        keyword: 'type',
-        params: { type: 'string' },
-        message: 'must be string',
-        schema: schema37.type,
-        parentSchema: schema37,
-        data,
-      },
-    ];
-    return false;
+  if (errors === 0) {
+    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
+      validate52.errors = [
+        {
+          instancePath,
+          schemaPath: '#/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema37.type,
+          parentSchema: schema37,
+          data,
+        },
+      ];
+      return false;
+    }
   }
   validate52.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthorizationResponse = validate53;
+exports.validateAuthorizationRequest = validate53;
 const schema38 = {
   type: 'string',
   'x-standalone': false,
-  'x-name': 'AuthorizationResponse',
-  'x-location': '#/components/parameters/authorization/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'AuthorizationRequest',
+  'x-location': '#/components/parameters/authorization/schema_request',
+  'x-schema-type': 'request',
 };
 function validate53(
   data,
@@ -3192,15 +3386,13 @@ function validate53(
   validate53.errors = vErrors;
   return errors === 0;
 }
-exports.validateXRealIPRequest = validate54;
+exports.validateAuthorizationResponse = validate54;
 const schema39 = {
   type: 'string',
-  format: 'ipv4',
-  description: 'The IP address of the client.',
   'x-standalone': false,
-  'x-name': 'XRealIPRequest',
-  'x-location': '#/components/parameters/x_real_ip/schema_request',
-  'x-schema-type': 'request',
+  'x-name': 'AuthorizationResponse',
+  'x-location': '#/components/parameters/authorization/schema_response',
+  'x-schema-type': 'response',
 };
 function validate54(
   data,
@@ -3208,53 +3400,33 @@ function validate54(
 ) {
   let vErrors = null;
   let errors = 0;
-  if (errors === 0) {
-    if (errors === 0) {
-      if (typeof data === 'string') {
-        if (!formats2.test(data)) {
-          validate54.errors = [
-            {
-              instancePath,
-              schemaPath: '#/format',
-              keyword: 'format',
-              params: { format: 'ipv4' },
-              message: 'must match format "' + 'ipv4' + '"',
-              schema: 'ipv4',
-              parentSchema: schema39,
-              data,
-            },
-          ];
-          return false;
-        }
-      } else {
-        validate54.errors = [
-          {
-            instancePath,
-            schemaPath: '#/type',
-            keyword: 'type',
-            params: { type: 'string' },
-            message: 'must be string',
-            schema: schema39.type,
-            parentSchema: schema39,
-            data,
-          },
-        ];
-        return false;
-      }
-    }
+  if (typeof data !== 'string') {
+    validate54.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema39.type,
+        parentSchema: schema39,
+        data,
+      },
+    ];
+    return false;
   }
   validate54.errors = vErrors;
   return errors === 0;
 }
-exports.validateXRealIPResponse = validate55;
+exports.validateXRealIPRequest = validate55;
 const schema40 = {
   type: 'string',
   format: 'ipv4',
   description: 'The IP address of the client.',
   'x-standalone': false,
-  'x-name': 'XRealIPResponse',
-  'x-location': '#/components/parameters/x_real_ip/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'XRealIPRequest',
+  'x-location': '#/components/parameters/x_real_ip/schema_request',
+  'x-schema-type': 'request',
 };
 function validate55(
   data,
@@ -3300,14 +3472,15 @@ function validate55(
   validate55.errors = vErrors;
   return errors === 0;
 }
-exports.validateXForwardedProtoRequest = validate56;
+exports.validateXRealIPResponse = validate56;
 const schema41 = {
   type: 'string',
-  description: 'The protocol of the client.',
+  format: 'ipv4',
+  description: 'The IP address of the client.',
   'x-standalone': false,
-  'x-name': 'XForwardedProtoRequest',
-  'x-location': '#/components/parameters/x_forwarded_proto/schema_request',
-  'x-schema-type': 'request',
+  'x-name': 'XRealIPResponse',
+  'x-location': '#/components/parameters/x_real_ip/schema_response',
+  'x-schema-type': 'response',
 };
 function validate56(
   data,
@@ -3315,32 +3488,52 @@ function validate56(
 ) {
   let vErrors = null;
   let errors = 0;
-  if (typeof data !== 'string') {
-    validate56.errors = [
-      {
-        instancePath,
-        schemaPath: '#/type',
-        keyword: 'type',
-        params: { type: 'string' },
-        message: 'must be string',
-        schema: schema41.type,
-        parentSchema: schema41,
-        data,
-      },
-    ];
-    return false;
+  if (errors === 0) {
+    if (errors === 0) {
+      if (typeof data === 'string') {
+        if (!formats2.test(data)) {
+          validate56.errors = [
+            {
+              instancePath,
+              schemaPath: '#/format',
+              keyword: 'format',
+              params: { format: 'ipv4' },
+              message: 'must match format "' + 'ipv4' + '"',
+              schema: 'ipv4',
+              parentSchema: schema41,
+              data,
+            },
+          ];
+          return false;
+        }
+      } else {
+        validate56.errors = [
+          {
+            instancePath,
+            schemaPath: '#/type',
+            keyword: 'type',
+            params: { type: 'string' },
+            message: 'must be string',
+            schema: schema41.type,
+            parentSchema: schema41,
+            data,
+          },
+        ];
+        return false;
+      }
+    }
   }
   validate56.errors = vErrors;
   return errors === 0;
 }
-exports.validateXForwardedProtoResponse = validate57;
+exports.validateXForwardedProtoRequest = validate57;
 const schema42 = {
   type: 'string',
   description: 'The protocol of the client.',
   'x-standalone': false,
-  'x-name': 'XForwardedProtoResponse',
-  'x-location': '#/components/parameters/x_forwarded_proto/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'XForwardedProtoRequest',
+  'x-location': '#/components/parameters/x_forwarded_proto/schema_request',
+  'x-schema-type': 'request',
 };
 function validate57(
   data,
@@ -3366,13 +3559,14 @@ function validate57(
   validate57.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserIdRequest = validate58;
+exports.validateXForwardedProtoResponse = validate58;
 const schema43 = {
   type: 'string',
+  description: 'The protocol of the client.',
   'x-standalone': false,
-  'x-name': 'UserIdRequest',
-  'x-location': '#/components/parameters/user_id/schema_request',
-  'x-schema-type': 'request',
+  'x-name': 'XForwardedProtoResponse',
+  'x-location': '#/components/parameters/x_forwarded_proto/schema_response',
+  'x-schema-type': 'response',
 };
 function validate58(
   data,
@@ -3398,13 +3592,13 @@ function validate58(
   validate58.errors = vErrors;
   return errors === 0;
 }
-exports.validateUserIdResponse = validate59;
+exports.validateUsernameRequest = validate59;
 const schema44 = {
   type: 'string',
   'x-standalone': false,
-  'x-name': 'UserIdResponse',
-  'x-location': '#/components/parameters/user_id/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'UsernameRequest',
+  'x-location': '#/components/parameters/user_search_username/schema_request',
+  'x-schema-type': 'request',
 };
 function validate59(
   data,
@@ -3430,8 +3624,104 @@ function validate59(
   validate59.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthXRequestAuthenticationRequest = validate60;
+exports.validateUsernameResponse = validate60;
 const schema45 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'UsernameResponse',
+  'x-location': '#/components/parameters/user_search_username/schema_response',
+  'x-schema-type': 'response',
+};
+function validate60(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate60.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema45.type,
+        parentSchema: schema45,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate60.errors = vErrors;
+  return errors === 0;
+}
+exports.validateUserIdRequest = validate61;
+const schema46 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'UserIdRequest',
+  'x-location': '#/components/parameters/user_id/schema_request',
+  'x-schema-type': 'request',
+};
+function validate61(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate61.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema46.type,
+        parentSchema: schema46,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate61.errors = vErrors;
+  return errors === 0;
+}
+exports.validateUserIdResponse = validate62;
+const schema47 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'UserIdResponse',
+  'x-location': '#/components/parameters/user_id/schema_response',
+  'x-schema-type': 'response',
+};
+function validate62(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate62.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema47.type,
+        parentSchema: schema47,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate62.errors = vErrors;
+  return errors === 0;
+}
+exports.validateAuthXRequestAuthenticationRequest = validate63;
+const schema48 = {
   type: 'string',
   format: 'jwt',
   description: 'The JWT which represents the authenticated user.',
@@ -3441,7 +3731,7 @@ const schema45 = {
     '#/paths//auth/get/responses/200/headers/X-Request-Authentication/schema_request',
   'x-schema-type': 'request',
 };
-function validate60(
+function validate63(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -3451,7 +3741,7 @@ function validate60(
     if (errors === 0) {
       if (typeof data === 'string') {
         if (!formats4.test(data)) {
-          validate60.errors = [
+          validate63.errors = [
             {
               instancePath,
               schemaPath: '#/format',
@@ -3459,22 +3749,22 @@ function validate60(
               params: { format: 'jwt' },
               message: 'must match format "' + 'jwt' + '"',
               schema: 'jwt',
-              parentSchema: schema45,
+              parentSchema: schema48,
               data,
             },
           ];
           return false;
         }
       } else {
-        validate60.errors = [
+        validate63.errors = [
           {
             instancePath,
             schemaPath: '#/type',
             keyword: 'type',
             params: { type: 'string' },
             message: 'must be string',
-            schema: schema45.type,
-            parentSchema: schema45,
+            schema: schema48.type,
+            parentSchema: schema48,
             data,
           },
         ];
@@ -3482,11 +3772,11 @@ function validate60(
       }
     }
   }
-  validate60.errors = vErrors;
+  validate63.errors = vErrors;
   return errors === 0;
 }
-exports.validateAuthXRequestAuthenticationResponse = validate61;
-const schema46 = {
+exports.validateAuthXRequestAuthenticationResponse = validate64;
+const schema49 = {
   type: 'string',
   format: 'jwt',
   description: 'The JWT which represents the authenticated user.',
@@ -3496,7 +3786,7 @@ const schema46 = {
     '#/paths//auth/get/responses/200/headers/X-Request-Authentication/schema_response',
   'x-schema-type': 'response',
 };
-function validate61(
+function validate64(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -3506,7 +3796,7 @@ function validate61(
     if (errors === 0) {
       if (typeof data === 'string') {
         if (!formats4.test(data)) {
-          validate61.errors = [
+          validate64.errors = [
             {
               instancePath,
               schemaPath: '#/format',
@@ -3514,22 +3804,22 @@ function validate61(
               params: { format: 'jwt' },
               message: 'must match format "' + 'jwt' + '"',
               schema: 'jwt',
-              parentSchema: schema46,
+              parentSchema: schema49,
               data,
             },
           ];
           return false;
         }
       } else {
-        validate61.errors = [
+        validate64.errors = [
           {
             instancePath,
             schemaPath: '#/type',
             keyword: 'type',
             params: { type: 'string' },
             message: 'must be string',
-            schema: schema46.type,
-            parentSchema: schema46,
+            schema: schema49.type,
+            parentSchema: schema49,
             data,
           },
         ];
@@ -3537,11 +3827,11 @@ function validate61(
       }
     }
   }
-  validate61.errors = vErrors;
+  validate64.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginBodyRequest = validate62;
-const schema47 = {
+exports.validateLoginBodyRequest = validate65;
+const schema50 = {
   allOf: [
     {
       title: 'Credentials',
@@ -3569,7 +3859,7 @@ const schema47 = {
   'x-location': '#/paths//login/post/requestBody/content/application/json/schema_request',
   'x-schema-type': 'request',
 };
-function validate62(
+function validate65(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -3583,15 +3873,15 @@ function validate62(
         (data.username === undefined && (missing0 = 'username')) ||
         (data.password === undefined && (missing0 = 'password'))
       ) {
-        validate62.errors = [
+        validate65.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/0/required',
             keyword: 'required',
             params: { missingProperty: missing0 },
             message: "must have required property '" + missing0 + "'",
-            schema: schema47.allOf[0].required,
-            parentSchema: schema47.allOf[0],
+            schema: schema50.allOf[0].required,
+            parentSchema: schema50.allOf[0],
             data,
           },
         ];
@@ -3601,15 +3891,15 @@ function validate62(
           let data0 = data.username;
           const _errs2 = errors;
           if (typeof data0 !== 'string') {
-            validate62.errors = [
+            validate65.errors = [
               {
                 instancePath: instancePath + '/username',
                 schemaPath: '#/allOf/0/properties/username/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema47.allOf[0].properties.username.type,
-                parentSchema: schema47.allOf[0].properties.username,
+                schema: schema50.allOf[0].properties.username.type,
+                parentSchema: schema50.allOf[0].properties.username,
                 data: data0,
               },
             ];
@@ -3624,15 +3914,15 @@ function validate62(
             let data1 = data.password;
             const _errs4 = errors;
             if (typeof data1 !== 'string') {
-              validate62.errors = [
+              validate65.errors = [
                 {
                   instancePath: instancePath + '/password',
                   schemaPath: '#/allOf/0/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema47.allOf[0].properties.password.type,
-                  parentSchema: schema47.allOf[0].properties.password,
+                  schema: schema50.allOf[0].properties.password.type,
+                  parentSchema: schema50.allOf[0].properties.password,
                   data: data1,
                 },
               ];
@@ -3645,15 +3935,15 @@ function validate62(
         }
       }
     } else {
-      validate62.errors = [
+      validate65.errors = [
         {
           instancePath,
           schemaPath: '#/allOf/0/type',
           keyword: 'type',
           params: { type: 'object' },
           message: 'must be object',
-          schema: schema47.allOf[0].type,
-          parentSchema: schema47.allOf[0],
+          schema: schema50.allOf[0].type,
+          parentSchema: schema50.allOf[0],
           data,
         },
       ];
@@ -3668,30 +3958,30 @@ function validate62(
         if (data.method !== undefined) {
           let data2 = data.method;
           if (typeof data2 !== 'string') {
-            validate62.errors = [
+            validate65.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema47.allOf[1].properties.method.type,
-                parentSchema: schema47.allOf[1].properties.method,
+                schema: schema50.allOf[1].properties.method.type,
+                parentSchema: schema50.allOf[1].properties.method,
                 data: data2,
               },
             ];
             return false;
           }
           if (!(data2 === 'tui' || data2 === 'local')) {
-            validate62.errors = [
+            validate65.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/enum',
                 keyword: 'enum',
-                params: { allowedValues: schema47.allOf[1].properties.method.enum },
+                params: { allowedValues: schema50.allOf[1].properties.method.enum },
                 message: 'must be equal to one of the allowed values',
-                schema: schema47.allOf[1].properties.method.enum,
-                parentSchema: schema47.allOf[1].properties.method,
+                schema: schema50.allOf[1].properties.method.enum,
+                parentSchema: schema50.allOf[1].properties.method,
                 data: data2,
               },
             ];
@@ -3699,15 +3989,15 @@ function validate62(
           }
         }
       } else {
-        validate62.errors = [
+        validate65.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/1/type',
             keyword: 'type',
             params: { type: 'object' },
             message: 'must be object',
-            schema: schema47.allOf[1].type,
-            parentSchema: schema47.allOf[1],
+            schema: schema50.allOf[1].type,
+            parentSchema: schema50.allOf[1],
             data,
           },
         ];
@@ -3716,11 +4006,11 @@ function validate62(
     }
     var valid0 = _errs6 === errors;
   }
-  validate62.errors = vErrors;
+  validate65.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginBodyResponse = validate63;
-const schema48 = {
+exports.validateLoginBodyResponse = validate66;
+const schema51 = {
   allOf: [
     {
       title: 'Credentials',
@@ -3749,7 +4039,7 @@ const schema48 = {
     '#/paths//login/post/requestBody/content/application/json/schema_response',
   'x-schema-type': 'response',
 };
-function validate63(
+function validate66(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
@@ -3763,15 +4053,15 @@ function validate63(
         (data.username === undefined && (missing0 = 'username')) ||
         (data.password === undefined && (missing0 = 'password'))
       ) {
-        validate63.errors = [
+        validate66.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/0/required',
             keyword: 'required',
             params: { missingProperty: missing0 },
             message: "must have required property '" + missing0 + "'",
-            schema: schema48.allOf[0].required,
-            parentSchema: schema48.allOf[0],
+            schema: schema51.allOf[0].required,
+            parentSchema: schema51.allOf[0],
             data,
           },
         ];
@@ -3781,15 +4071,15 @@ function validate63(
           let data0 = data.username;
           const _errs2 = errors;
           if (typeof data0 !== 'string') {
-            validate63.errors = [
+            validate66.errors = [
               {
                 instancePath: instancePath + '/username',
                 schemaPath: '#/allOf/0/properties/username/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema48.allOf[0].properties.username.type,
-                parentSchema: schema48.allOf[0].properties.username,
+                schema: schema51.allOf[0].properties.username.type,
+                parentSchema: schema51.allOf[0].properties.username,
                 data: data0,
               },
             ];
@@ -3804,15 +4094,15 @@ function validate63(
             let data1 = data.password;
             const _errs4 = errors;
             if (typeof data1 !== 'string') {
-              validate63.errors = [
+              validate66.errors = [
                 {
                   instancePath: instancePath + '/password',
                   schemaPath: '#/allOf/0/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema48.allOf[0].properties.password.type,
-                  parentSchema: schema48.allOf[0].properties.password,
+                  schema: schema51.allOf[0].properties.password.type,
+                  parentSchema: schema51.allOf[0].properties.password,
                   data: data1,
                 },
               ];
@@ -3825,15 +4115,15 @@ function validate63(
         }
       }
     } else {
-      validate63.errors = [
+      validate66.errors = [
         {
           instancePath,
           schemaPath: '#/allOf/0/type',
           keyword: 'type',
           params: { type: 'object' },
           message: 'must be object',
-          schema: schema48.allOf[0].type,
-          parentSchema: schema48.allOf[0],
+          schema: schema51.allOf[0].type,
+          parentSchema: schema51.allOf[0],
           data,
         },
       ];
@@ -3848,30 +4138,30 @@ function validate63(
         if (data.method !== undefined) {
           let data2 = data.method;
           if (typeof data2 !== 'string') {
-            validate63.errors = [
+            validate66.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/type',
                 keyword: 'type',
                 params: { type: 'string' },
                 message: 'must be string',
-                schema: schema48.allOf[1].properties.method.type,
-                parentSchema: schema48.allOf[1].properties.method,
+                schema: schema51.allOf[1].properties.method.type,
+                parentSchema: schema51.allOf[1].properties.method,
                 data: data2,
               },
             ];
             return false;
           }
           if (!(data2 === 'tui' || data2 === 'local')) {
-            validate63.errors = [
+            validate66.errors = [
               {
                 instancePath: instancePath + '/method',
                 schemaPath: '#/allOf/1/properties/method/enum',
                 keyword: 'enum',
-                params: { allowedValues: schema48.allOf[1].properties.method.enum },
+                params: { allowedValues: schema51.allOf[1].properties.method.enum },
                 message: 'must be equal to one of the allowed values',
-                schema: schema48.allOf[1].properties.method.enum,
-                parentSchema: schema48.allOf[1].properties.method,
+                schema: schema51.allOf[1].properties.method.enum,
+                parentSchema: schema51.allOf[1].properties.method,
                 data: data2,
               },
             ];
@@ -3879,15 +4169,15 @@ function validate63(
           }
         }
       } else {
-        validate63.errors = [
+        validate66.errors = [
           {
             instancePath,
             schemaPath: '#/allOf/1/type',
             keyword: 'type',
             params: { type: 'object' },
             message: 'must be object',
-            schema: schema48.allOf[1].type,
-            parentSchema: schema48.allOf[1],
+            schema: schema51.allOf[1].type,
+            parentSchema: schema51.allOf[1],
             data,
           },
         ];
@@ -3896,11 +4186,11 @@ function validate63(
     }
     var valid0 = _errs6 === errors;
   }
-  validate63.errors = vErrors;
+  validate66.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginResponse201Request = validate64;
-const schema49 = {
+exports.validateLoginResponse201Request = validate67;
+const schema52 = {
   description: 'The access token.',
   type: 'string',
   'x-standalone': false,
@@ -3909,32 +4199,32 @@ const schema49 = {
     '#/paths//login/post/responses/201/content/application/json/schema_request',
   'x-schema-type': 'request',
 };
-function validate64(
+function validate67(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
   let vErrors = null;
   let errors = 0;
   if (typeof data !== 'string') {
-    validate64.errors = [
+    validate67.errors = [
       {
         instancePath,
         schemaPath: '#/type',
         keyword: 'type',
         params: { type: 'string' },
         message: 'must be string',
-        schema: schema49.type,
-        parentSchema: schema49,
+        schema: schema52.type,
+        parentSchema: schema52,
         data,
       },
     ];
     return false;
   }
-  validate64.errors = vErrors;
+  validate67.errors = vErrors;
   return errors === 0;
 }
-exports.validateLoginResponse201Response = validate65;
-const schema50 = {
+exports.validateLoginResponse201Response = validate68;
+const schema53 = {
   description: 'The access token.',
   type: 'string',
   'x-standalone': false,
@@ -3943,32 +4233,32 @@ const schema50 = {
     '#/paths//login/post/responses/201/content/application/json/schema_response',
   'x-schema-type': 'response',
 };
-function validate65(
+function validate68(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
 ) {
   let vErrors = null;
   let errors = 0;
   if (typeof data !== 'string') {
-    validate65.errors = [
+    validate68.errors = [
       {
         instancePath,
         schemaPath: '#/type',
         keyword: 'type',
         params: { type: 'string' },
         message: 'must be string',
-        schema: schema50.type,
-        parentSchema: schema50,
+        schema: schema53.type,
+        parentSchema: schema53,
         data,
       },
     ];
     return false;
   }
-  validate65.errors = vErrors;
+  validate68.errors = vErrors;
   return errors === 0;
 }
-exports.validateLogoutBodyRequest = validate66;
-const schema51 = {
+exports.validateLogoutBodyRequest = validate69;
+const schema54 = {
   type: 'object',
   properties: { token: { type: 'string', description: 'The token to be invalidated.' } },
   'x-standalone': false,
@@ -3977,264 +4267,6 @@ const schema51 = {
     '#/paths//logout/post/requestBody/content/application/json/schema_request',
   'x-schema-type': 'request',
 };
-function validate66(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.token !== undefined) {
-        let data0 = data.token;
-        if (typeof data0 !== 'string') {
-          validate66.errors = [
-            {
-              instancePath: instancePath + '/token',
-              schemaPath: '#/properties/token/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema51.properties.token.type,
-              parentSchema: schema51.properties.token,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-      }
-    } else {
-      validate66.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-          schema: schema51.type,
-          parentSchema: schema51,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate66.errors = vErrors;
-  return errors === 0;
-}
-exports.validateLogoutBodyResponse = validate67;
-const schema52 = {
-  type: 'object',
-  properties: { token: { type: 'string', description: 'The token to be invalidated.' } },
-  'x-standalone': false,
-  'x-name': 'logoutBodyResponse',
-  'x-location':
-    '#/paths//logout/post/requestBody/content/application/json/schema_response',
-  'x-schema-type': 'response',
-};
-function validate67(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.token !== undefined) {
-        let data0 = data.token;
-        if (typeof data0 !== 'string') {
-          validate67.errors = [
-            {
-              instancePath: instancePath + '/token',
-              schemaPath: '#/properties/token/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema52.properties.token.type,
-              parentSchema: schema52.properties.token,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-      }
-    } else {
-      validate67.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
-          schema: schema52.type,
-          parentSchema: schema52,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate67.errors = vErrors;
-  return errors === 0;
-}
-exports.validateListUsersResponse200Request = validate68;
-const schema53 = {
-  type: 'array',
-  items: {
-    title: 'User',
-    type: 'object',
-    properties: {
-      username: { type: 'string' },
-      password: { type: 'string', writeOnly: true },
-    },
-    required: ['username', 'password'],
-  },
-  'x-standalone': false,
-  'x-name': 'listUsersResponse200Request',
-  'x-location':
-    '#/paths//users/get/responses/200/content/application/json/schema_request',
-  'x-schema-type': 'request',
-};
-function validate68(
-  data,
-  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
-) {
-  let vErrors = null;
-  let errors = 0;
-  if (errors === 0) {
-    if (Array.isArray(data)) {
-      var valid0 = true;
-      const len0 = data.length;
-      for (let i0 = 0; i0 < len0; i0++) {
-        let data0 = data[i0];
-        const _errs1 = errors;
-        if (errors === _errs1) {
-          if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-            let missing0;
-            if (
-              (data0.username === undefined && (missing0 = 'username')) ||
-              (data0.password === undefined && (missing0 = 'password'))
-            ) {
-              validate68.errors = [
-                {
-                  instancePath: instancePath + '/' + i0,
-                  schemaPath: '#/items/required',
-                  keyword: 'required',
-                  params: { missingProperty: missing0 },
-                  message: "must have required property '" + missing0 + "'",
-                  schema: schema53.items.required,
-                  parentSchema: schema53.items,
-                  data: data0,
-                },
-              ];
-              return false;
-            } else {
-              if (data0.username !== undefined) {
-                let data1 = data0.username;
-                const _errs3 = errors;
-                if (typeof data1 !== 'string') {
-                  validate68.errors = [
-                    {
-                      instancePath: instancePath + '/' + i0 + '/username',
-                      schemaPath: '#/items/properties/username/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema53.items.properties.username.type,
-                      parentSchema: schema53.items.properties.username,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-                var valid1 = _errs3 === errors;
-              } else {
-                var valid1 = true;
-              }
-              if (valid1) {
-                if (data0.password !== undefined) {
-                  let data2 = data0.password;
-                  const _errs5 = errors;
-                  if (typeof data2 !== 'string') {
-                    validate68.errors = [
-                      {
-                        instancePath: instancePath + '/' + i0 + '/password',
-                        schemaPath: '#/items/properties/password/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema53.items.properties.password.type,
-                        parentSchema: schema53.items.properties.password,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                  var valid1 = _errs5 === errors;
-                } else {
-                  var valid1 = true;
-                }
-              }
-            }
-          } else {
-            validate68.errors = [
-              {
-                instancePath: instancePath + '/' + i0,
-                schemaPath: '#/items/type',
-                keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema53.items.type,
-                parentSchema: schema53.items,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-        }
-        var valid0 = _errs1 === errors;
-        if (!valid0) {
-          break;
-        }
-      }
-    } else {
-      validate68.errors = [
-        {
-          instancePath,
-          schemaPath: '#/type',
-          keyword: 'type',
-          params: { type: 'array' },
-          message: 'must be array',
-          schema: schema53.type,
-          parentSchema: schema53,
-          data,
-        },
-      ];
-      return false;
-    }
-  }
-  validate68.errors = vErrors;
-  return errors === 0;
-}
-exports.validateListUsersResponse200Response = validate69;
-const schema54 = {
-  type: 'array',
-  items: {
-    title: 'User',
-    type: 'object',
-    properties: {
-      url: { type: 'string', format: 'uri', readOnly: true },
-      id: { type: 'string', readOnly: true },
-      username: { type: 'string' },
-    },
-    required: ['url', 'id', 'username'],
-  },
-  'x-standalone': false,
-  'x-name': 'listUsersResponse200Response',
-  'x-location':
-    '#/paths//users/get/responses/200/content/application/json/schema_response',
-  'x-schema-type': 'response',
-};
 function validate69(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
@@ -4242,144 +4274,23 @@ function validate69(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (Array.isArray(data)) {
-      var valid0 = true;
-      const len0 = data.length;
-      for (let i0 = 0; i0 < len0; i0++) {
-        let data0 = data[i0];
-        const _errs1 = errors;
-        if (errors === _errs1) {
-          if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-            let missing0;
-            if (
-              (data0.url === undefined && (missing0 = 'url')) ||
-              (data0.id === undefined && (missing0 = 'id')) ||
-              (data0.username === undefined && (missing0 = 'username'))
-            ) {
-              validate69.errors = [
-                {
-                  instancePath: instancePath + '/' + i0,
-                  schemaPath: '#/items/required',
-                  keyword: 'required',
-                  params: { missingProperty: missing0 },
-                  message: "must have required property '" + missing0 + "'",
-                  schema: schema54.items.required,
-                  parentSchema: schema54.items,
-                  data: data0,
-                },
-              ];
-              return false;
-            } else {
-              if (data0.url !== undefined) {
-                let data1 = data0.url;
-                const _errs3 = errors;
-                if (errors === _errs3) {
-                  if (errors === _errs3) {
-                    if (typeof data1 === 'string') {
-                      if (!formats0(data1)) {
-                        validate69.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/url',
-                            schemaPath: '#/items/properties/url/format',
-                            keyword: 'format',
-                            params: { format: 'uri' },
-                            message: 'must match format "' + 'uri' + '"',
-                            schema: 'uri',
-                            parentSchema: schema54.items.properties.url,
-                            data: data1,
-                          },
-                        ];
-                        return false;
-                      }
-                    } else {
-                      validate69.errors = [
-                        {
-                          instancePath: instancePath + '/' + i0 + '/url',
-                          schemaPath: '#/items/properties/url/type',
-                          keyword: 'type',
-                          params: { type: 'string' },
-                          message: 'must be string',
-                          schema: schema54.items.properties.url.type,
-                          parentSchema: schema54.items.properties.url,
-                          data: data1,
-                        },
-                      ];
-                      return false;
-                    }
-                  }
-                }
-                var valid1 = _errs3 === errors;
-              } else {
-                var valid1 = true;
-              }
-              if (valid1) {
-                if (data0.id !== undefined) {
-                  let data2 = data0.id;
-                  const _errs5 = errors;
-                  if (typeof data2 !== 'string') {
-                    validate69.errors = [
-                      {
-                        instancePath: instancePath + '/' + i0 + '/id',
-                        schemaPath: '#/items/properties/id/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema54.items.properties.id.type,
-                        parentSchema: schema54.items.properties.id,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                  var valid1 = _errs5 === errors;
-                } else {
-                  var valid1 = true;
-                }
-                if (valid1) {
-                  if (data0.username !== undefined) {
-                    let data3 = data0.username;
-                    const _errs7 = errors;
-                    if (typeof data3 !== 'string') {
-                      validate69.errors = [
-                        {
-                          instancePath: instancePath + '/' + i0 + '/username',
-                          schemaPath: '#/items/properties/username/type',
-                          keyword: 'type',
-                          params: { type: 'string' },
-                          message: 'must be string',
-                          schema: schema54.items.properties.username.type,
-                          parentSchema: schema54.items.properties.username,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                    var valid1 = _errs7 === errors;
-                  } else {
-                    var valid1 = true;
-                  }
-                }
-              }
-            }
-          } else {
-            validate69.errors = [
-              {
-                instancePath: instancePath + '/' + i0,
-                schemaPath: '#/items/type',
-                keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema54.items.type,
-                parentSchema: schema54.items,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-        }
-        var valid0 = _errs1 === errors;
-        if (!valid0) {
-          break;
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      if (data.token !== undefined) {
+        let data0 = data.token;
+        if (typeof data0 !== 'string') {
+          validate69.errors = [
+            {
+              instancePath: instancePath + '/token',
+              schemaPath: '#/properties/token/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema54.properties.token.type,
+              parentSchema: schema54.properties.token,
+              data: data0,
+            },
+          ];
+          return false;
         }
       }
     } else {
@@ -4388,8 +4299,8 @@ function validate69(
           instancePath,
           schemaPath: '#/type',
           keyword: 'type',
-          params: { type: 'array' },
-          message: 'must be array',
+          params: { type: 'object' },
+          message: 'must be object',
           schema: schema54.type,
           parentSchema: schema54,
           data,
@@ -4401,19 +4312,15 @@ function validate69(
   validate69.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateUserBodyRequest = validate70;
+exports.validateLogoutBodyResponse = validate70;
 const schema55 = {
-  title: 'User',
   type: 'object',
-  properties: {
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
-  },
-  required: ['username', 'password'],
+  properties: { token: { type: 'string', description: 'The token to be invalidated.' } },
   'x-standalone': false,
-  'x-name': 'createUserBodyRequest',
-  'x-location': '#/paths//users/post/requestBody/content/application/json/schema_request',
-  'x-schema-type': 'request',
+  'x-name': 'logoutBodyResponse',
+  'x-location':
+    '#/paths//logout/post/requestBody/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate70(
   data,
@@ -4423,70 +4330,22 @@ function validate70(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate70.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema55.required,
-            parentSchema: schema55,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
-          const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate70.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema55.properties.username.type,
-                parentSchema: schema55.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate70.errors = [
-                {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema55.properties.password.type,
-                  parentSchema: schema55.properties.password,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
+      if (data.token !== undefined) {
+        let data0 = data.token;
+        if (typeof data0 !== 'string') {
+          validate70.errors = [
+            {
+              instancePath: instancePath + '/token',
+              schemaPath: '#/properties/token/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema55.properties.token.type,
+              parentSchema: schema55.properties.token,
+              data: data0,
+            },
+          ];
+          return false;
         }
       }
     } else {
@@ -4508,21 +4367,23 @@ function validate70(
   validate70.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateUserBodyResponse = validate71;
+exports.validateListUsersResponse200Request = validate71;
 const schema56 = {
-  title: 'User',
-  type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
+  type: 'array',
+  items: {
+    title: 'User',
+    type: 'object',
+    properties: {
+      username: { type: 'string' },
+      password: { type: 'string', writeOnly: true },
+    },
+    required: ['username', 'password'],
   },
-  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'createUserBodyResponse',
+  'x-name': 'listUsersResponse200Request',
   'x-location':
-    '#/paths//users/post/requestBody/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//users/get/responses/200/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate71(
   data,
@@ -4531,116 +4392,99 @@ function validate71(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
-      ) {
-        validate71.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema56.required,
-            parentSchema: schema56,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
+    if (Array.isArray(data)) {
+      var valid0 = true;
+      const len0 = data.length;
+      for (let i0 = 0; i0 < len0; i0++) {
+        let data0 = data[i0];
+        const _errs1 = errors;
+        if (errors === _errs1) {
+          if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
+            let missing0;
+            if (
+              (data0.username === undefined && (missing0 = 'username')) ||
+              (data0.password === undefined && (missing0 = 'password'))
+            ) {
+              validate71.errors = [
+                {
+                  instancePath: instancePath + '/' + i0,
+                  schemaPath: '#/items/required',
+                  keyword: 'required',
+                  params: { missingProperty: missing0 },
+                  message: "must have required property '" + missing0 + "'",
+                  schema: schema56.items.required,
+                  parentSchema: schema56.items,
+                  data: data0,
+                },
+              ];
+              return false;
+            } else {
+              if (data0.username !== undefined) {
+                let data1 = data0.username;
+                const _errs3 = errors;
+                if (typeof data1 !== 'string') {
                   validate71.errors = [
                     {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema56.properties.url,
-                      data: data0,
+                      instancePath: instancePath + '/' + i0 + '/username',
+                      schemaPath: '#/items/properties/username/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema56.items.properties.username.type,
+                      parentSchema: schema56.items.properties.username,
+                      data: data1,
                     },
                   ];
                   return false;
                 }
+                var valid1 = _errs3 === errors;
               } else {
-                validate71.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema56.properties.url.type,
-                    parentSchema: schema56.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
+                var valid1 = true;
+              }
+              if (valid1) {
+                if (data0.password !== undefined) {
+                  let data2 = data0.password;
+                  const _errs5 = errors;
+                  if (typeof data2 !== 'string') {
+                    validate71.errors = [
+                      {
+                        instancePath: instancePath + '/' + i0 + '/password',
+                        schemaPath: '#/items/properties/password/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema56.items.properties.password.type,
+                        parentSchema: schema56.items.properties.password,
+                        data: data2,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid1 = _errs5 === errors;
+                } else {
+                  var valid1 = true;
+                }
               }
             }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate71.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema56.properties.id.type,
-                  parentSchema: schema56.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
           } else {
-            var valid0 = true;
+            validate71.errors = [
+              {
+                instancePath: instancePath + '/' + i0,
+                schemaPath: '#/items/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema56.items.type,
+                parentSchema: schema56.items,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate71.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema56.properties.username.type,
-                    parentSchema: schema56.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
-          }
+        }
+        var valid0 = _errs1 === errors;
+        if (!valid0) {
+          break;
         }
       }
     } else {
@@ -4649,8 +4493,8 @@ function validate71(
           instancePath,
           schemaPath: '#/type',
           keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
+          params: { type: 'array' },
+          message: 'must be array',
           schema: schema56.type,
           parentSchema: schema56,
           data,
@@ -4662,20 +4506,24 @@ function validate71(
   validate71.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateUserResponse201Request = validate72;
+exports.validateListUsersResponse200Response = validate72;
 const schema57 = {
-  title: 'User',
-  type: 'object',
-  properties: {
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
+  type: 'array',
+  items: {
+    title: 'User',
+    type: 'object',
+    properties: {
+      url: { type: 'string', format: 'uri', readOnly: true },
+      id: { type: 'string', readOnly: true },
+      username: { type: 'string' },
+    },
+    required: ['url', 'id', 'username'],
   },
-  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'createUserResponse201Request',
+  'x-name': 'listUsersResponse200Response',
   'x-location':
-    '#/paths//users/post/responses/201/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/get/responses/200/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate72(
   data,
@@ -4684,71 +4532,144 @@ function validate72(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate72.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema57.required,
-            parentSchema: schema57,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
-          const _errs1 = errors;
-          if (typeof data0 !== 'string') {
+    if (Array.isArray(data)) {
+      var valid0 = true;
+      const len0 = data.length;
+      for (let i0 = 0; i0 < len0; i0++) {
+        let data0 = data[i0];
+        const _errs1 = errors;
+        if (errors === _errs1) {
+          if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
+            let missing0;
+            if (
+              (data0.url === undefined && (missing0 = 'url')) ||
+              (data0.id === undefined && (missing0 = 'id')) ||
+              (data0.username === undefined && (missing0 = 'username'))
+            ) {
+              validate72.errors = [
+                {
+                  instancePath: instancePath + '/' + i0,
+                  schemaPath: '#/items/required',
+                  keyword: 'required',
+                  params: { missingProperty: missing0 },
+                  message: "must have required property '" + missing0 + "'",
+                  schema: schema57.items.required,
+                  parentSchema: schema57.items,
+                  data: data0,
+                },
+              ];
+              return false;
+            } else {
+              if (data0.url !== undefined) {
+                let data1 = data0.url;
+                const _errs3 = errors;
+                if (errors === _errs3) {
+                  if (errors === _errs3) {
+                    if (typeof data1 === 'string') {
+                      if (!formats0(data1)) {
+                        validate72.errors = [
+                          {
+                            instancePath: instancePath + '/' + i0 + '/url',
+                            schemaPath: '#/items/properties/url/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema57.items.properties.url,
+                            data: data1,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate72.errors = [
+                        {
+                          instancePath: instancePath + '/' + i0 + '/url',
+                          schemaPath: '#/items/properties/url/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema57.items.properties.url.type,
+                          parentSchema: schema57.items.properties.url,
+                          data: data1,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid1 = _errs3 === errors;
+              } else {
+                var valid1 = true;
+              }
+              if (valid1) {
+                if (data0.id !== undefined) {
+                  let data2 = data0.id;
+                  const _errs5 = errors;
+                  if (typeof data2 !== 'string') {
+                    validate72.errors = [
+                      {
+                        instancePath: instancePath + '/' + i0 + '/id',
+                        schemaPath: '#/items/properties/id/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema57.items.properties.id.type,
+                        parentSchema: schema57.items.properties.id,
+                        data: data2,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid1 = _errs5 === errors;
+                } else {
+                  var valid1 = true;
+                }
+                if (valid1) {
+                  if (data0.username !== undefined) {
+                    let data3 = data0.username;
+                    const _errs7 = errors;
+                    if (typeof data3 !== 'string') {
+                      validate72.errors = [
+                        {
+                          instancePath: instancePath + '/' + i0 + '/username',
+                          schemaPath: '#/items/properties/username/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema57.items.properties.username.type,
+                          parentSchema: schema57.items.properties.username,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                    var valid1 = _errs7 === errors;
+                  } else {
+                    var valid1 = true;
+                  }
+                }
+              }
+            }
+          } else {
             validate72.errors = [
               {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
+                instancePath: instancePath + '/' + i0,
+                schemaPath: '#/items/type',
                 keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema57.properties.username.type,
-                parentSchema: schema57.properties.username,
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema57.items.type,
+                parentSchema: schema57.items,
                 data: data0,
               },
             ];
             return false;
           }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
         }
-        if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate72.errors = [
-                {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema57.properties.password.type,
-                  parentSchema: schema57.properties.password,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
+        var valid0 = _errs1 === errors;
+        if (!valid0) {
+          break;
         }
       }
     } else {
@@ -4757,8 +4678,8 @@ function validate72(
           instancePath,
           schemaPath: '#/type',
           keyword: 'type',
-          params: { type: 'object' },
-          message: 'must be object',
+          params: { type: 'array' },
+          message: 'must be array',
           schema: schema57.type,
           parentSchema: schema57,
           data,
@@ -4770,21 +4691,19 @@ function validate72(
   validate72.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateUserResponse201Response = validate73;
+exports.validateCreateUserBodyRequest = validate73;
 const schema58 = {
   title: 'User',
   type: 'object',
   properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
   },
-  required: ['url', 'id', 'username'],
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'createUserResponse201Response',
-  'x-location':
-    '#/paths//users/post/responses/201/content/application/json/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'createUserBodyRequest',
+  'x-location': '#/paths//users/post/requestBody/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate73(
   data,
@@ -4796,9 +4715,8 @@ function validate73(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
       ) {
         validate73.errors = [
           {
@@ -4814,62 +4732,42 @@ function validate73(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
+        if (data.username !== undefined) {
+          let data0 = data.username;
           const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate73.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema58.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate73.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema58.properties.url.type,
-                    parentSchema: schema58.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
+          if (typeof data0 !== 'string') {
+            validate73.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema58.properties.username.type,
+                parentSchema: schema58.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
+          if (data.password !== undefined) {
+            let data1 = data.password;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate73.errors = [
                 {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema58.properties.id.type,
-                  parentSchema: schema58.properties.id,
+                  schema: schema58.properties.password.type,
+                  parentSchema: schema58.properties.password,
                   data: data1,
                 },
               ];
@@ -4878,30 +4776,6 @@ function validate73(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate73.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema58.properties.username.type,
-                    parentSchema: schema58.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
           }
         }
       }
@@ -4924,20 +4798,21 @@ function validate73(
   validate73.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetUserResponse200Request = validate74;
+exports.validateCreateUserBodyResponse = validate74;
 const schema59 = {
   title: 'User',
   type: 'object',
   properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
   },
-  required: ['username', 'password'],
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'getUserResponse200Request',
+  'x-name': 'createUserBodyResponse',
   'x-location':
-    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/post/requestBody/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate74(
   data,
@@ -4949,8 +4824,9 @@ function validate74(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
       ) {
         validate74.errors = [
           {
@@ -4966,42 +4842,62 @@ function validate74(
         ];
         return false;
       } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
+        if (data.url !== undefined) {
+          let data0 = data.url;
           const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate74.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema59.properties.username.type,
-                parentSchema: schema59.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate74.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema59.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate74.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema59.properties.url.type,
+                    parentSchema: schema59.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
+          if (data.id !== undefined) {
+            let data1 = data.id;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate74.errors = [
                 {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema59.properties.password.type,
-                  parentSchema: schema59.properties.password,
+                  schema: schema59.properties.id.type,
+                  parentSchema: schema59.properties.id,
                   data: data1,
                 },
               ];
@@ -5010,6 +4906,30 @@ function validate74(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate74.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema59.properties.username.type,
+                    parentSchema: schema59.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -5032,21 +4952,20 @@ function validate74(
   validate74.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetUserResponse200Response = validate75;
+exports.validateCreateUserResponse201Request = validate75;
 const schema60 = {
   title: 'User',
   type: 'object',
   properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
   },
-  required: ['url', 'id', 'username'],
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'getUserResponse200Response',
+  'x-name': 'createUserResponse201Request',
   'x-location':
-    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//users/post/responses/201/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate75(
   data,
@@ -5058,9 +4977,8 @@ function validate75(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
       ) {
         validate75.errors = [
           {
@@ -5076,62 +4994,42 @@ function validate75(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
+        if (data.username !== undefined) {
+          let data0 = data.username;
           const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate75.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema60.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate75.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema60.properties.url.type,
-                    parentSchema: schema60.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
+          if (typeof data0 !== 'string') {
+            validate75.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema60.properties.username.type,
+                parentSchema: schema60.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
+          if (data.password !== undefined) {
+            let data1 = data.password;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate75.errors = [
                 {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema60.properties.id.type,
-                  parentSchema: schema60.properties.id,
+                  schema: schema60.properties.password.type,
+                  parentSchema: schema60.properties.password,
                   data: data1,
                 },
               ];
@@ -5140,30 +5038,6 @@ function validate75(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate75.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema60.properties.username.type,
-                    parentSchema: schema60.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
           }
         }
       }
@@ -5186,17 +5060,21 @@ function validate75(
   validate75.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserBodyRequest = validate76;
+exports.validateCreateUserResponse201Response = validate76;
 const schema61 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: { password: { type: 'string', writeOnly: true } },
-  required: ['password'],
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+  },
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'updateUserBodyRequest',
+  'x-name': 'createUserResponse201Response',
   'x-location':
-    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/post/responses/201/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate76(
   data,
@@ -5207,7 +5085,11 @@ function validate76(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (data.password === undefined && (missing0 = 'password')) {
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
+      ) {
         validate76.errors = [
           {
             instancePath,
@@ -5222,22 +5104,94 @@ function validate76(
         ];
         return false;
       } else {
-        if (data.password !== undefined) {
-          let data0 = data.password;
-          if (typeof data0 !== 'string') {
-            validate76.errors = [
-              {
-                instancePath: instancePath + '/password',
-                schemaPath: '#/properties/password/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema61.properties.password.type,
-                parentSchema: schema61.properties.password,
-                data: data0,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate76.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema61.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate76.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema61.properties.url.type,
+                    parentSchema: schema61.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate76.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema61.properties.id.type,
+                  parentSchema: schema61.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate76.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema61.properties.username.type,
+                    parentSchema: schema61.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -5260,17 +5214,20 @@ function validate76(
   validate76.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserBodyResponse = validate77;
+exports.validateGetUserResponse200Request = validate77;
 const schema62 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: {},
-  required: [],
+  properties: {
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
+  },
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'updateUserBodyResponse',
+  'x-name': 'getUserResponse200Request',
   'x-location':
-    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate77(
   data,
@@ -5279,7 +5236,74 @@ function validate77(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
+        validate77.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema62.required,
+            parentSchema: schema62,
+            data,
+          },
+        ];
+        return false;
+      } else {
+        if (data.username !== undefined) {
+          let data0 = data.username;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate77.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema62.properties.username.type,
+                parentSchema: schema62.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.password !== undefined) {
+            let data1 = data.password;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate77.errors = [
+                {
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema62.properties.password.type,
+                  parentSchema: schema62.properties.password,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
       validate77.errors = [
         {
           instancePath,
@@ -5298,20 +5322,21 @@ function validate77(
   validate77.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserResponse200Request = validate78;
+exports.validateGetUserResponse200Response = validate78;
 const schema63 = {
   title: 'User',
   type: 'object',
   properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
   },
-  required: ['username', 'password'],
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'updateUserResponse200Request',
+  'x-name': 'getUserResponse200Response',
   'x-location':
-    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/{user_id}/get/responses/200/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate78(
   data,
@@ -5323,8 +5348,9 @@ function validate78(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
       ) {
         validate78.errors = [
           {
@@ -5340,42 +5366,62 @@ function validate78(
         ];
         return false;
       } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
+        if (data.url !== undefined) {
+          let data0 = data.url;
           const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate78.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema63.properties.username.type,
-                parentSchema: schema63.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate78.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema63.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate78.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema63.properties.url.type,
+                    parentSchema: schema63.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
+          if (data.id !== undefined) {
+            let data1 = data.id;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate78.errors = [
                 {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema63.properties.password.type,
-                  parentSchema: schema63.properties.password,
+                  schema: schema63.properties.id.type,
+                  parentSchema: schema63.properties.id,
                   data: data1,
                 },
               ];
@@ -5384,6 +5430,30 @@ function validate78(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate78.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema63.properties.username.type,
+                    parentSchema: schema63.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -5406,21 +5476,17 @@ function validate78(
   validate78.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateUserResponse200Response = validate79;
+exports.validateUpdateUserBodyRequest = validate79;
 const schema64 = {
-  title: 'User',
+  title: 'User Update',
   type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-  },
-  required: ['url', 'id', 'username'],
+  properties: { password: { type: 'string', writeOnly: true } },
+  required: ['password'],
   'x-standalone': false,
-  'x-name': 'updateUserResponse200Response',
+  'x-name': 'updateUserBodyRequest',
   'x-location':
-    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate79(
   data,
@@ -5431,11 +5497,7 @@ function validate79(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
-      ) {
+      if (data.password === undefined && (missing0 = 'password')) {
         validate79.errors = [
           {
             instancePath,
@@ -5450,94 +5512,22 @@ function validate79(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate79.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema64.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate79.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema64.properties.url.type,
-                    parentSchema: schema64.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate79.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema64.properties.id.type,
-                  parentSchema: schema64.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate79.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema64.properties.username.type,
-                    parentSchema: schema64.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
+        if (data.password !== undefined) {
+          let data0 = data.password;
+          if (typeof data0 !== 'string') {
+            validate79.errors = [
+              {
+                instancePath: instancePath + '/password',
+                schemaPath: '#/properties/password/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema64.properties.password.type,
+                parentSchema: schema64.properties.password,
+                data: data0,
+              },
+            ];
+            return false;
           }
         }
       }
@@ -5560,20 +5550,17 @@ function validate79(
   validate79.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetIdentityResponse200Request = validate80;
+exports.validateUpdateUserBodyResponse = validate80;
 const schema65 = {
-  title: 'User',
+  title: 'User Update',
   type: 'object',
-  properties: {
-    username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
-  },
-  required: ['username', 'password'],
+  properties: {},
+  required: [],
   'x-standalone': false,
-  'x-name': 'getIdentityResponse200Request',
+  'x-name': 'updateUserBodyResponse',
   'x-location':
-    '#/paths//identity/get/responses/200/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/{user_id}/patch/requestBody/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate80(
   data,
@@ -5582,74 +5569,7 @@ function validate80(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing0;
-      if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
-      ) {
-        validate80.errors = [
-          {
-            instancePath,
-            schemaPath: '#/required',
-            keyword: 'required',
-            params: { missingProperty: missing0 },
-            message: "must have required property '" + missing0 + "'",
-            schema: schema65.required,
-            parentSchema: schema65,
-            data,
-          },
-        ];
-        return false;
-      } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
-          const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate80.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema65.properties.username.type,
-                parentSchema: schema65.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate80.errors = [
-                {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema65.properties.password.type,
-                  parentSchema: schema65.properties.password,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-        }
-      }
-    } else {
+    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
       validate80.errors = [
         {
           instancePath,
@@ -5668,21 +5588,20 @@ function validate80(
   validate80.errors = vErrors;
   return errors === 0;
 }
-exports.validateGetIdentityResponse200Response = validate81;
+exports.validateUpdateUserResponse200Request = validate81;
 const schema66 = {
   title: 'User',
   type: 'object',
   properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
   },
-  required: ['url', 'id', 'username'],
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'getIdentityResponse200Response',
+  'x-name': 'updateUserResponse200Request',
   'x-location':
-    '#/paths//identity/get/responses/200/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate81(
   data,
@@ -5694,9 +5613,8 @@ function validate81(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
       ) {
         validate81.errors = [
           {
@@ -5712,62 +5630,42 @@ function validate81(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
+        if (data.username !== undefined) {
+          let data0 = data.username;
           const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate81.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema66.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate81.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema66.properties.url.type,
-                    parentSchema: schema66.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
+          if (typeof data0 !== 'string') {
+            validate81.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema66.properties.username.type,
+                parentSchema: schema66.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
+          if (data.password !== undefined) {
+            let data1 = data.password;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate81.errors = [
                 {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema66.properties.id.type,
-                  parentSchema: schema66.properties.id,
+                  schema: schema66.properties.password.type,
+                  parentSchema: schema66.properties.password,
                   data: data1,
                 },
               ];
@@ -5776,30 +5674,6 @@ function validate81(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate81.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema66.properties.username.type,
-                    parentSchema: schema66.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
           }
         }
       }
@@ -5822,17 +5696,21 @@ function validate81(
   validate81.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityBodyRequest = validate82;
+exports.validateUpdateUserResponse200Response = validate82;
 const schema67 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: { password: { type: 'string', writeOnly: true } },
-  required: ['password'],
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+  },
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'updateIdentityBodyRequest',
+  'x-name': 'updateUserResponse200Response',
   'x-location':
-    '#/paths//identity/patch/requestBody/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//users/{user_id}/patch/responses/200/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate82(
   data,
@@ -5843,7 +5721,11 @@ function validate82(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (data.password === undefined && (missing0 = 'password')) {
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
+      ) {
         validate82.errors = [
           {
             instancePath,
@@ -5858,22 +5740,94 @@ function validate82(
         ];
         return false;
       } else {
-        if (data.password !== undefined) {
-          let data0 = data.password;
-          if (typeof data0 !== 'string') {
-            validate82.errors = [
-              {
-                instancePath: instancePath + '/password',
-                schemaPath: '#/properties/password/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema67.properties.password.type,
-                parentSchema: schema67.properties.password,
-                data: data0,
-              },
-            ];
-            return false;
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate82.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema67.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate82.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema67.properties.url.type,
+                    parentSchema: schema67.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate82.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema67.properties.id.type,
+                  parentSchema: schema67.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate82.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema67.properties.username.type,
+                    parentSchema: schema67.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -5896,17 +5850,20 @@ function validate82(
   validate82.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityBodyResponse = validate83;
+exports.validateGetIdentityResponse200Request = validate83;
 const schema68 = {
-  title: 'User Update',
+  title: 'User',
   type: 'object',
-  properties: {},
-  required: [],
+  properties: {
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
+  },
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'updateIdentityBodyResponse',
+  'x-name': 'getIdentityResponse200Request',
   'x-location':
-    '#/paths//identity/patch/requestBody/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//identity/get/responses/200/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate83(
   data,
@@ -5915,7 +5872,74 @@ function validate83(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
+        validate83.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema68.required,
+            parentSchema: schema68,
+            data,
+          },
+        ];
+        return false;
+      } else {
+        if (data.username !== undefined) {
+          let data0 = data.username;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate83.errors = [
+              {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema68.properties.username.type,
+                parentSchema: schema68.properties.username,
+                data: data0,
+              },
+            ];
+            return false;
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.password !== undefined) {
+            let data1 = data.password;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate83.errors = [
+                {
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema68.properties.password.type,
+                  parentSchema: schema68.properties.password,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+        }
+      }
+    } else {
       validate83.errors = [
         {
           instancePath,
@@ -5934,20 +5958,21 @@ function validate83(
   validate83.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityResponse200Request = validate84;
+exports.validateGetIdentityResponse200Response = validate84;
 const schema69 = {
   title: 'User',
   type: 'object',
   properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
     username: { type: 'string' },
-    password: { type: 'string', writeOnly: true },
   },
-  required: ['username', 'password'],
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'updateIdentityResponse200Request',
+  'x-name': 'getIdentityResponse200Response',
   'x-location':
-    '#/paths//identity/patch/responses/200/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//identity/get/responses/200/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate84(
   data,
@@ -5959,8 +5984,9 @@ function validate84(
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
       if (
-        (data.username === undefined && (missing0 = 'username')) ||
-        (data.password === undefined && (missing0 = 'password'))
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
       ) {
         validate84.errors = [
           {
@@ -5976,42 +6002,62 @@ function validate84(
         ];
         return false;
       } else {
-        if (data.username !== undefined) {
-          let data0 = data.username;
+        if (data.url !== undefined) {
+          let data0 = data.url;
           const _errs1 = errors;
-          if (typeof data0 !== 'string') {
-            validate84.errors = [
-              {
-                instancePath: instancePath + '/username',
-                schemaPath: '#/properties/username/type',
-                keyword: 'type',
-                params: { type: 'string' },
-                message: 'must be string',
-                schema: schema69.properties.username.type,
-                parentSchema: schema69.properties.username,
-                data: data0,
-              },
-            ];
-            return false;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate84.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema69.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate84.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema69.properties.url.type,
+                    parentSchema: schema69.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
           }
           var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.password !== undefined) {
-            let data1 = data.password;
+          if (data.id !== undefined) {
+            let data1 = data.id;
             const _errs3 = errors;
             if (typeof data1 !== 'string') {
               validate84.errors = [
                 {
-                  instancePath: instancePath + '/password',
-                  schemaPath: '#/properties/password/type',
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
                   keyword: 'type',
                   params: { type: 'string' },
                   message: 'must be string',
-                  schema: schema69.properties.password.type,
-                  parentSchema: schema69.properties.password,
+                  schema: schema69.properties.id.type,
+                  parentSchema: schema69.properties.id,
                   data: data1,
                 },
               ];
@@ -6020,6 +6066,30 @@ function validate84(
             var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate84.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema69.properties.username.type,
+                    parentSchema: schema69.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
           }
         }
       }
@@ -6042,21 +6112,17 @@ function validate84(
   validate84.errors = vErrors;
   return errors === 0;
 }
-exports.validateUpdateIdentityResponse200Response = validate85;
+exports.validateUpdateIdentityBodyRequest = validate85;
 const schema70 = {
-  title: 'User',
+  title: 'User Update',
   type: 'object',
-  properties: {
-    url: { type: 'string', format: 'uri', readOnly: true },
-    id: { type: 'string', readOnly: true },
-    username: { type: 'string' },
-  },
-  required: ['url', 'id', 'username'],
+  properties: { password: { type: 'string', writeOnly: true } },
+  required: ['password'],
   'x-standalone': false,
-  'x-name': 'updateIdentityResponse200Response',
+  'x-name': 'updateIdentityBodyRequest',
   'x-location':
-    '#/paths//identity/patch/responses/200/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//identity/patch/requestBody/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate85(
   data,
@@ -6067,11 +6133,7 @@ function validate85(
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
       let missing0;
-      if (
-        (data.url === undefined && (missing0 = 'url')) ||
-        (data.id === undefined && (missing0 = 'id')) ||
-        (data.username === undefined && (missing0 = 'username'))
-      ) {
+      if (data.password === undefined && (missing0 = 'password')) {
         validate85.errors = [
           {
             instancePath,
@@ -6086,94 +6148,22 @@ function validate85(
         ];
         return false;
       } else {
-        if (data.url !== undefined) {
-          let data0 = data.url;
-          const _errs1 = errors;
-          if (errors === _errs1) {
-            if (errors === _errs1) {
-              if (typeof data0 === 'string') {
-                if (!formats0(data0)) {
-                  validate85.errors = [
-                    {
-                      instancePath: instancePath + '/url',
-                      schemaPath: '#/properties/url/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema70.properties.url,
-                      data: data0,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate85.errors = [
-                  {
-                    instancePath: instancePath + '/url',
-                    schemaPath: '#/properties/url/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema70.properties.url.type,
-                    parentSchema: schema70.properties.url,
-                    data: data0,
-                  },
-                ];
-                return false;
-              }
-            }
-          }
-          var valid0 = _errs1 === errors;
-        } else {
-          var valid0 = true;
-        }
-        if (valid0) {
-          if (data.id !== undefined) {
-            let data1 = data.id;
-            const _errs3 = errors;
-            if (typeof data1 !== 'string') {
-              validate85.errors = [
-                {
-                  instancePath: instancePath + '/id',
-                  schemaPath: '#/properties/id/type',
-                  keyword: 'type',
-                  params: { type: 'string' },
-                  message: 'must be string',
-                  schema: schema70.properties.id.type,
-                  parentSchema: schema70.properties.id,
-                  data: data1,
-                },
-              ];
-              return false;
-            }
-            var valid0 = _errs3 === errors;
-          } else {
-            var valid0 = true;
-          }
-          if (valid0) {
-            if (data.username !== undefined) {
-              let data2 = data.username;
-              const _errs5 = errors;
-              if (typeof data2 !== 'string') {
-                validate85.errors = [
-                  {
-                    instancePath: instancePath + '/username',
-                    schemaPath: '#/properties/username/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema70.properties.username.type,
-                    parentSchema: schema70.properties.username,
-                    data: data2,
-                  },
-                ];
-                return false;
-              }
-              var valid0 = _errs5 === errors;
-            } else {
-              var valid0 = true;
-            }
+        if (data.password !== undefined) {
+          let data0 = data.password;
+          if (typeof data0 !== 'string') {
+            validate85.errors = [
+              {
+                instancePath: instancePath + '/password',
+                schemaPath: '#/properties/password/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema70.properties.password.type,
+                parentSchema: schema70.properties.password,
+                data: data0,
+              },
+            ];
+            return false;
           }
         }
       }
@@ -6196,21 +6186,17 @@ function validate85(
   validate85.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenBodyRequest = validate86;
+exports.validateUpdateIdentityBodyResponse = validate86;
 const schema71 = {
+  title: 'User Update',
   type: 'object',
-  properties: {
-    username: { type: 'string', description: 'The username of the user.' },
-    claims: {
-      type: 'object',
-      description:
-        'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
-    },
-  },
+  properties: {},
+  required: [],
   'x-standalone': false,
-  'x-name': 'createTokenBodyRequest',
-  'x-location': '#/paths//token/post/requestBody/content/application/json/schema_request',
-  'x-schema-type': 'request',
+  'x-name': 'updateIdentityBodyResponse',
+  'x-location':
+    '#/paths//identity/patch/requestBody/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate86(
   data,
@@ -6219,54 +6205,7 @@ function validate86(
   let vErrors = null;
   let errors = 0;
   if (errors === 0) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.username !== undefined) {
-        let data0 = data.username;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate86.errors = [
-            {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema71.properties.username.type,
-              parentSchema: schema71.properties.username,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
-      } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.claims !== undefined) {
-          let data1 = data.claims;
-          const _errs3 = errors;
-          if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
-            validate86.errors = [
-              {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/properties/claims/type',
-                keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema71.properties.claims.type,
-                parentSchema: schema71.properties.claims,
-                data: data1,
-              },
-            ];
-            return false;
-          }
-          var valid0 = _errs3 === errors;
-        } else {
-          var valid0 = true;
-        }
-      }
-    } else {
+    if (!(data && typeof data == 'object' && !Array.isArray(data))) {
       validate86.errors = [
         {
           instancePath,
@@ -6285,22 +6224,20 @@ function validate86(
   validate86.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenBodyResponse = validate87;
+exports.validateUpdateIdentityResponse200Request = validate87;
 const schema72 = {
+  title: 'User',
   type: 'object',
   properties: {
-    username: { type: 'string', description: 'The username of the user.' },
-    claims: {
-      type: 'object',
-      description:
-        'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
-    },
+    username: { type: 'string' },
+    password: { type: 'string', writeOnly: true },
   },
+  required: ['username', 'password'],
   'x-standalone': false,
-  'x-name': 'createTokenBodyResponse',
+  'x-name': 'updateIdentityResponse200Request',
   'x-location':
-    '#/paths//token/post/requestBody/content/application/json/schema_response',
-  'x-schema-type': 'response',
+    '#/paths//identity/patch/responses/200/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate87(
   data,
@@ -6310,50 +6247,70 @@ function validate87(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.username !== undefined) {
-        let data0 = data.username;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate87.errors = [
-            {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema72.properties.username.type,
-              parentSchema: schema72.properties.username,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (
+        (data.username === undefined && (missing0 = 'username')) ||
+        (data.password === undefined && (missing0 = 'password'))
+      ) {
+        validate87.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema72.required,
+            parentSchema: schema72,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.claims !== undefined) {
-          let data1 = data.claims;
-          const _errs3 = errors;
-          if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
+        if (data.username !== undefined) {
+          let data0 = data.username;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
             validate87.errors = [
               {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/properties/claims/type',
+                instancePath: instancePath + '/username',
+                schemaPath: '#/properties/username/type',
                 keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema72.properties.claims.type,
-                parentSchema: schema72.properties.claims,
-                data: data1,
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema72.properties.username.type,
+                parentSchema: schema72.properties.username,
+                data: data0,
               },
             ];
             return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
+        }
+        if (valid0) {
+          if (data.password !== undefined) {
+            let data1 = data.password;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate87.errors = [
+                {
+                  instancePath: instancePath + '/password',
+                  schemaPath: '#/properties/password/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema72.properties.password.type,
+                  parentSchema: schema72.properties.password,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
         }
       }
     } else {
@@ -6375,14 +6332,21 @@ function validate87(
   validate87.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenResponse201Request = validate88;
+exports.validateUpdateIdentityResponse200Response = validate88;
 const schema73 = {
-  type: 'string',
+  title: 'User',
+  type: 'object',
+  properties: {
+    url: { type: 'string', format: 'uri', readOnly: true },
+    id: { type: 'string', readOnly: true },
+    username: { type: 'string' },
+  },
+  required: ['url', 'id', 'username'],
   'x-standalone': false,
-  'x-name': 'createTokenResponse201Request',
+  'x-name': 'updateIdentityResponse200Response',
   'x-location':
-    '#/paths//token/post/responses/201/content/application/json/schema_request',
-  'x-schema-type': 'request',
+    '#/paths//identity/patch/responses/200/content/application/json/schema_response',
+  'x-schema-type': 'response',
 };
 function validate88(
   data,
@@ -6390,32 +6354,176 @@ function validate88(
 ) {
   let vErrors = null;
   let errors = 0;
-  if (typeof data !== 'string') {
-    validate88.errors = [
-      {
-        instancePath,
-        schemaPath: '#/type',
-        keyword: 'type',
-        params: { type: 'string' },
-        message: 'must be string',
-        schema: schema73.type,
-        parentSchema: schema73,
-        data,
-      },
-    ];
-    return false;
+  if (errors === 0) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (
+        (data.url === undefined && (missing0 = 'url')) ||
+        (data.id === undefined && (missing0 = 'id')) ||
+        (data.username === undefined && (missing0 = 'username'))
+      ) {
+        validate88.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema73.required,
+            parentSchema: schema73,
+            data,
+          },
+        ];
+        return false;
+      } else {
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (errors === _errs1) {
+            if (errors === _errs1) {
+              if (typeof data0 === 'string') {
+                if (!formats0(data0)) {
+                  validate88.errors = [
+                    {
+                      instancePath: instancePath + '/url',
+                      schemaPath: '#/properties/url/format',
+                      keyword: 'format',
+                      params: { format: 'uri' },
+                      message: 'must match format "' + 'uri' + '"',
+                      schema: 'uri',
+                      parentSchema: schema73.properties.url,
+                      data: data0,
+                    },
+                  ];
+                  return false;
+                }
+              } else {
+                validate88.errors = [
+                  {
+                    instancePath: instancePath + '/url',
+                    schemaPath: '#/properties/url/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema73.properties.url.type,
+                    parentSchema: schema73.properties.url,
+                    data: data0,
+                  },
+                ];
+                return false;
+              }
+            }
+          }
+          var valid0 = _errs1 === errors;
+        } else {
+          var valid0 = true;
+        }
+        if (valid0) {
+          if (data.id !== undefined) {
+            let data1 = data.id;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate88.errors = [
+                {
+                  instancePath: instancePath + '/id',
+                  schemaPath: '#/properties/id/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema73.properties.id.type,
+                  parentSchema: schema73.properties.id,
+                  data: data1,
+                },
+              ];
+              return false;
+            }
+            var valid0 = _errs3 === errors;
+          } else {
+            var valid0 = true;
+          }
+          if (valid0) {
+            if (data.username !== undefined) {
+              let data2 = data.username;
+              const _errs5 = errors;
+              if (typeof data2 !== 'string') {
+                validate88.errors = [
+                  {
+                    instancePath: instancePath + '/username',
+                    schemaPath: '#/properties/username/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema73.properties.username.type,
+                    parentSchema: schema73.properties.username,
+                    data: data2,
+                  },
+                ];
+                return false;
+              }
+              var valid0 = _errs5 === errors;
+            } else {
+              var valid0 = true;
+            }
+          }
+        }
+      }
+    } else {
+      validate88.errors = [
+        {
+          instancePath,
+          schemaPath: '#/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema73.type,
+          parentSchema: schema73,
+          data,
+        },
+      ];
+      return false;
+    }
   }
   validate88.errors = vErrors;
   return errors === 0;
 }
-exports.validateCreateTokenResponse201Response = validate89;
+exports.validateCreateTokenBodyRequest = validate89;
 const schema74 = {
-  type: 'string',
+  oneOf: [
+    {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['user'],
+    },
+    {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['username'],
+    },
+  ],
   'x-standalone': false,
-  'x-name': 'createTokenResponse201Response',
-  'x-location':
-    '#/paths//token/post/responses/201/content/application/json/schema_response',
-  'x-schema-type': 'response',
+  'x-name': 'createTokenBodyRequest',
+  'x-location': '#/paths//token/post/requestBody/content/application/json/schema_request',
+  'x-schema-type': 'request',
 };
 function validate89(
   data,
@@ -6423,21 +6531,591 @@ function validate89(
 ) {
   let vErrors = null;
   let errors = 0;
+  const _errs0 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs1 = errors;
+  if (errors === _errs1) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (data.user === undefined && (missing0 = 'user')) {
+        const err0 = {
+          instancePath,
+          schemaPath: '#/oneOf/0/required',
+          keyword: 'required',
+          params: { missingProperty: missing0 },
+          message: "must have required property '" + missing0 + "'",
+          schema: schema74.oneOf[0].required,
+          parentSchema: schema74.oneOf[0],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+        errors++;
+      } else {
+        if (data.user !== undefined) {
+          let data0 = data.user;
+          const _errs3 = errors;
+          if (typeof data0 !== 'string') {
+            const err1 = {
+              instancePath: instancePath + '/user',
+              schemaPath: '#/oneOf/0/properties/user/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema74.oneOf[0].properties.user.type,
+              parentSchema: schema74.oneOf[0].properties.user,
+              data: data0,
+            };
+            if (vErrors === null) {
+              vErrors = [err1];
+            } else {
+              vErrors.push(err1);
+            }
+            errors++;
+          }
+          var valid1 = _errs3 === errors;
+        } else {
+          var valid1 = true;
+        }
+        if (valid1) {
+          if (data.claims !== undefined) {
+            let data1 = data.claims;
+            const _errs5 = errors;
+            if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
+              const err2 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/0/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema74.oneOf[0].properties.claims.type,
+                parentSchema: schema74.oneOf[0].properties.claims,
+                data: data1,
+              };
+              if (vErrors === null) {
+                vErrors = [err2];
+              } else {
+                vErrors.push(err2);
+              }
+              errors++;
+            }
+            var valid1 = _errs5 === errors;
+          } else {
+            var valid1 = true;
+          }
+        }
+      }
+    } else {
+      const err3 = {
+        instancePath,
+        schemaPath: '#/oneOf/0/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema74.oneOf[0].type,
+        parentSchema: schema74.oneOf[0],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err3];
+      } else {
+        vErrors.push(err3);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs1 === errors;
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+  const _errs7 = errors;
+  if (errors === _errs7) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing1;
+      if (data.username === undefined && (missing1 = 'username')) {
+        const err4 = {
+          instancePath,
+          schemaPath: '#/oneOf/1/required',
+          keyword: 'required',
+          params: { missingProperty: missing1 },
+          message: "must have required property '" + missing1 + "'",
+          schema: schema74.oneOf[1].required,
+          parentSchema: schema74.oneOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err4];
+        } else {
+          vErrors.push(err4);
+        }
+        errors++;
+      } else {
+        if (data.username !== undefined) {
+          let data2 = data.username;
+          const _errs9 = errors;
+          if (typeof data2 !== 'string') {
+            const err5 = {
+              instancePath: instancePath + '/username',
+              schemaPath: '#/oneOf/1/properties/username/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema74.oneOf[1].properties.username.type,
+              parentSchema: schema74.oneOf[1].properties.username,
+              data: data2,
+            };
+            if (vErrors === null) {
+              vErrors = [err5];
+            } else {
+              vErrors.push(err5);
+            }
+            errors++;
+          }
+          var valid2 = _errs9 === errors;
+        } else {
+          var valid2 = true;
+        }
+        if (valid2) {
+          if (data.claims !== undefined) {
+            let data3 = data.claims;
+            const _errs11 = errors;
+            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+              const err6 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/1/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema74.oneOf[1].properties.claims.type,
+                parentSchema: schema74.oneOf[1].properties.claims,
+                data: data3,
+              };
+              if (vErrors === null) {
+                vErrors = [err6];
+              } else {
+                vErrors.push(err6);
+              }
+              errors++;
+            }
+            var valid2 = _errs11 === errors;
+          } else {
+            var valid2 = true;
+          }
+        }
+      }
+    } else {
+      const err7 = {
+        instancePath,
+        schemaPath: '#/oneOf/1/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema74.oneOf[1].type,
+        parentSchema: schema74.oneOf[1],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err7];
+      } else {
+        vErrors.push(err7);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs7 === errors;
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+  if (!valid0) {
+    const err8 = {
+      instancePath,
+      schemaPath: '#/oneOf',
+      keyword: 'oneOf',
+      params: { passingSchemas: passing0 },
+      message: 'must match exactly one schema in oneOf',
+      schema: schema74.oneOf,
+      parentSchema: schema74,
+      data,
+    };
+    if (vErrors === null) {
+      vErrors = [err8];
+    } else {
+      vErrors.push(err8);
+    }
+    errors++;
+    validate89.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs0;
+    if (vErrors !== null) {
+      if (_errs0) {
+        vErrors.length = _errs0;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+  validate89.errors = vErrors;
+  return errors === 0;
+}
+exports.validateCreateTokenBodyResponse = validate90;
+const schema75 = {
+  oneOf: [
+    {
+      type: 'object',
+      properties: {
+        user: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['user'],
+    },
+    {
+      type: 'object',
+      properties: {
+        username: {
+          type: 'string',
+          description: 'Url or uuid of the user that will be used to create the token.',
+        },
+        claims: {
+          type: 'object',
+          description:
+            'The claims that will be added to the token. If left empty, the token will have the full scope of the user.\n',
+        },
+      },
+      required: ['username'],
+    },
+  ],
+  'x-standalone': false,
+  'x-name': 'createTokenBodyResponse',
+  'x-location':
+    '#/paths//token/post/requestBody/content/application/json/schema_response',
+  'x-schema-type': 'response',
+};
+function validate90(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  const _errs0 = errors;
+  let valid0 = false;
+  let passing0 = null;
+  const _errs1 = errors;
+  if (errors === _errs1) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing0;
+      if (data.user === undefined && (missing0 = 'user')) {
+        const err0 = {
+          instancePath,
+          schemaPath: '#/oneOf/0/required',
+          keyword: 'required',
+          params: { missingProperty: missing0 },
+          message: "must have required property '" + missing0 + "'",
+          schema: schema75.oneOf[0].required,
+          parentSchema: schema75.oneOf[0],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err0];
+        } else {
+          vErrors.push(err0);
+        }
+        errors++;
+      } else {
+        if (data.user !== undefined) {
+          let data0 = data.user;
+          const _errs3 = errors;
+          if (typeof data0 !== 'string') {
+            const err1 = {
+              instancePath: instancePath + '/user',
+              schemaPath: '#/oneOf/0/properties/user/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema75.oneOf[0].properties.user.type,
+              parentSchema: schema75.oneOf[0].properties.user,
+              data: data0,
+            };
+            if (vErrors === null) {
+              vErrors = [err1];
+            } else {
+              vErrors.push(err1);
+            }
+            errors++;
+          }
+          var valid1 = _errs3 === errors;
+        } else {
+          var valid1 = true;
+        }
+        if (valid1) {
+          if (data.claims !== undefined) {
+            let data1 = data.claims;
+            const _errs5 = errors;
+            if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
+              const err2 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/0/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema75.oneOf[0].properties.claims.type,
+                parentSchema: schema75.oneOf[0].properties.claims,
+                data: data1,
+              };
+              if (vErrors === null) {
+                vErrors = [err2];
+              } else {
+                vErrors.push(err2);
+              }
+              errors++;
+            }
+            var valid1 = _errs5 === errors;
+          } else {
+            var valid1 = true;
+          }
+        }
+      }
+    } else {
+      const err3 = {
+        instancePath,
+        schemaPath: '#/oneOf/0/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema75.oneOf[0].type,
+        parentSchema: schema75.oneOf[0],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err3];
+      } else {
+        vErrors.push(err3);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs1 === errors;
+  if (_valid0) {
+    valid0 = true;
+    passing0 = 0;
+  }
+  const _errs7 = errors;
+  if (errors === _errs7) {
+    if (data && typeof data == 'object' && !Array.isArray(data)) {
+      let missing1;
+      if (data.username === undefined && (missing1 = 'username')) {
+        const err4 = {
+          instancePath,
+          schemaPath: '#/oneOf/1/required',
+          keyword: 'required',
+          params: { missingProperty: missing1 },
+          message: "must have required property '" + missing1 + "'",
+          schema: schema75.oneOf[1].required,
+          parentSchema: schema75.oneOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err4];
+        } else {
+          vErrors.push(err4);
+        }
+        errors++;
+      } else {
+        if (data.username !== undefined) {
+          let data2 = data.username;
+          const _errs9 = errors;
+          if (typeof data2 !== 'string') {
+            const err5 = {
+              instancePath: instancePath + '/username',
+              schemaPath: '#/oneOf/1/properties/username/type',
+              keyword: 'type',
+              params: { type: 'string' },
+              message: 'must be string',
+              schema: schema75.oneOf[1].properties.username.type,
+              parentSchema: schema75.oneOf[1].properties.username,
+              data: data2,
+            };
+            if (vErrors === null) {
+              vErrors = [err5];
+            } else {
+              vErrors.push(err5);
+            }
+            errors++;
+          }
+          var valid2 = _errs9 === errors;
+        } else {
+          var valid2 = true;
+        }
+        if (valid2) {
+          if (data.claims !== undefined) {
+            let data3 = data.claims;
+            const _errs11 = errors;
+            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+              const err6 = {
+                instancePath: instancePath + '/claims',
+                schemaPath: '#/oneOf/1/properties/claims/type',
+                keyword: 'type',
+                params: { type: 'object' },
+                message: 'must be object',
+                schema: schema75.oneOf[1].properties.claims.type,
+                parentSchema: schema75.oneOf[1].properties.claims,
+                data: data3,
+              };
+              if (vErrors === null) {
+                vErrors = [err6];
+              } else {
+                vErrors.push(err6);
+              }
+              errors++;
+            }
+            var valid2 = _errs11 === errors;
+          } else {
+            var valid2 = true;
+          }
+        }
+      }
+    } else {
+      const err7 = {
+        instancePath,
+        schemaPath: '#/oneOf/1/type',
+        keyword: 'type',
+        params: { type: 'object' },
+        message: 'must be object',
+        schema: schema75.oneOf[1].type,
+        parentSchema: schema75.oneOf[1],
+        data,
+      };
+      if (vErrors === null) {
+        vErrors = [err7];
+      } else {
+        vErrors.push(err7);
+      }
+      errors++;
+    }
+  }
+  var _valid0 = _errs7 === errors;
+  if (_valid0 && valid0) {
+    valid0 = false;
+    passing0 = [passing0, 1];
+  } else {
+    if (_valid0) {
+      valid0 = true;
+      passing0 = 1;
+    }
+  }
+  if (!valid0) {
+    const err8 = {
+      instancePath,
+      schemaPath: '#/oneOf',
+      keyword: 'oneOf',
+      params: { passingSchemas: passing0 },
+      message: 'must match exactly one schema in oneOf',
+      schema: schema75.oneOf,
+      parentSchema: schema75,
+      data,
+    };
+    if (vErrors === null) {
+      vErrors = [err8];
+    } else {
+      vErrors.push(err8);
+    }
+    errors++;
+    validate90.errors = vErrors;
+    return false;
+  } else {
+    errors = _errs0;
+    if (vErrors !== null) {
+      if (_errs0) {
+        vErrors.length = _errs0;
+      } else {
+        vErrors = null;
+      }
+    }
+  }
+  validate90.errors = vErrors;
+  return errors === 0;
+}
+exports.validateCreateTokenResponse201Request = validate91;
+const schema76 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'createTokenResponse201Request',
+  'x-location':
+    '#/paths//token/post/responses/201/content/application/json/schema_request',
+  'x-schema-type': 'request',
+};
+function validate91(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
   if (typeof data !== 'string') {
-    validate89.errors = [
+    validate91.errors = [
       {
         instancePath,
         schemaPath: '#/type',
         keyword: 'type',
         params: { type: 'string' },
         message: 'must be string',
-        schema: schema74.type,
-        parentSchema: schema74,
+        schema: schema76.type,
+        parentSchema: schema76,
         data,
       },
     ];
     return false;
   }
-  validate89.errors = vErrors;
+  validate91.errors = vErrors;
+  return errors === 0;
+}
+exports.validateCreateTokenResponse201Response = validate92;
+const schema77 = {
+  type: 'string',
+  'x-standalone': false,
+  'x-name': 'createTokenResponse201Response',
+  'x-location':
+    '#/paths//token/post/responses/201/content/application/json/schema_response',
+  'x-schema-type': 'response',
+};
+function validate92(
+  data,
+  { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
+) {
+  let vErrors = null;
+  let errors = 0;
+  if (typeof data !== 'string') {
+    validate92.errors = [
+      {
+        instancePath,
+        schemaPath: '#/type',
+        keyword: 'type',
+        params: { type: 'string' },
+        message: 'must be string',
+        schema: schema77.type,
+        parentSchema: schema77,
+        data,
+      },
+    ];
+    return false;
+  }
+  validate92.errors = vErrors;
   return errors === 0;
 }

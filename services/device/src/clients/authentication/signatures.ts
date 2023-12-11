@@ -326,6 +326,14 @@ export interface LogoutResponse500 extends Types.ErrorResponse {
 }
 
 /**
+ * Typing for the parameters of the request made by listUsers()
+ * @category listUsers()
+ */
+export type ListUsersParameters = {
+  username?: string;
+};
+
+/**
  * Typing for all possible responses to the request made by listUsers()
  * @category listUsers()
  */
@@ -1038,20 +1046,35 @@ export interface UpdateIdentityResponse500 extends Types.ErrorResponse {
  * Typing for the body of the request made by createToken()
  * @category createToken()
  */
-export type CreateTokenBody = {
-  /**
-   * The username of the user.
-   */
-  username?: string;
-  /**
-   * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
-   *
-   */
-  claims?: {
-    [k: string]: unknown;
-  };
-  [k: string]: unknown;
-};
+export type CreateTokenBody =
+  | {
+      /**
+       * Url or uuid of the user that will be used to create the token.
+       */
+      user: string;
+      /**
+       * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+       *
+       */
+      claims?: {
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    }
+  | {
+      /**
+       * Url or uuid of the user that will be used to create the token.
+       */
+      username: string;
+      /**
+       * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+       *
+       */
+      claims?: {
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
 
 /**
  * Typing for all possible responses to the request made by createToken()

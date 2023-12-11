@@ -221,7 +221,23 @@ export function validateLogoutOutput(
 /**
  * This function validates the inputs to listUsers()
  */
-export function validateListUsersInput() {
+export function validateListUsersInput(parameters: Signatures.ListUsersParameters) {
+  if (parameters) {
+    if (
+      !BasicValidation.validateUsernameRequest(parameters['username']) &&
+      parameters['username'] !== undefined
+    ) {
+      (validateListUsersInput as FunctionWithErrors).errors = (
+        BasicValidation.validateUsernameRequest as FunctionWithErrors
+      ).errors;
+      return false;
+    }
+  } else {
+    if (parameters !== undefined) {
+      return false;
+    }
+  }
+
   return true;
 }
 

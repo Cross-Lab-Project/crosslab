@@ -26,6 +26,10 @@ export declare function validateXForwardedProto<T extends 'request' | 'response'
   object: unknown,
 ): XForwardedProto<T>;
 
+export declare function validateUsername<T extends 'request' | 'response' | 'all'>(
+  object: unknown,
+): Username<T>;
+
 export declare function validateUserId<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): UserId<T>;
@@ -145,6 +149,14 @@ export declare function validateXForwardedProtoRequest<
 export declare function validateXForwardedProtoResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): XForwardedProtoResponse<T>;
+
+export declare function validateUsernameRequest<T extends 'request' | 'response' | 'all'>(
+  object: unknown,
+): UsernameRequest<T>;
+
+export declare function validateUsernameResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): UsernameResponse<T>;
 
 export declare function validateUserIdRequest<T extends 'request' | 'response' | 'all'>(
   object: unknown,
