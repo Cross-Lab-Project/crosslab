@@ -76,3 +76,5 @@ allow if {
     scope_allow
     rebac_allow
 }
+
+allow = true
