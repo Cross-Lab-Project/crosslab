@@ -1,3 +1,5 @@
+import { fetch } from '../fetch.js';
+
 export type AuthorizationActionTuple = {
   subject: string;
   action: string;

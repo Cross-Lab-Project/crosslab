@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "@crosslab/service-common",
   "types": "./lib/types/index.d.ts",
   "main": "./lib/cjs/index.js",
@@ -39,6 +38,7 @@
   "dependencies": {
     "express": "^4.18.1",
     "express-winston": "^4.2.0",
+    "fetch-retry": "^5.0.6",
     "jose": "^4.14.6",
     "mysql": "^2.18.1",
     "sqlite3": "^5.1.6",
