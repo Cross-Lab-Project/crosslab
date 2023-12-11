@@ -55,10 +55,12 @@ export class GPIOInterface
   private driverStates = new Map<string, GPIOState>();
   private driverState: GPIOState = GPIOState.Unknown;
   private driver?: string;
+  readonly signal: string;
 
   constructor(configuration: GPIOConfiguration) {
     super();
     this.configuration = configuration;
+    this.signal = configuration.signals.gpio;
     const dir = configuration.direction ?? 'inout';
     if (dir != 'in') {
       this.driver = configuration.driver ?? 'default';
