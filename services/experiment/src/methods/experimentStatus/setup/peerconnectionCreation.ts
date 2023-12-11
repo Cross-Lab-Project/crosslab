@@ -49,6 +49,7 @@ export async function createPeerconnectionsExperiment(
           clearInterval(connectionInterval);
         } else if (i === 6) {
           reject('Devices did not connect in time');
+          clearInterval(connectionInterval);
         } else {
           i++;
         }
