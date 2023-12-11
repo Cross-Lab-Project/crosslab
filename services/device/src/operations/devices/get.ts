@@ -1,8 +1,8 @@
 import { logger } from '@crosslab/service-common';
-import { base64url } from 'jose';
+//import { base64url } from 'jose';
 
-import * as clients from '../../clients/index.js';
-import { config } from '../../config.js';
+//import * as clients from '../../clients/index.js';
+//import { config } from '../../config.js';
 import { repositories } from '../../database/dataSource.js';
 import { getDevicesSignature } from '../../generated/signatures.js';
 import { deviceUrlFromId } from '../../methods/urlFromId.js';
@@ -19,7 +19,8 @@ export const getDevices: getDevicesSignature = async req => {
 
   const deviceModels = await repositories.device.find();
 
-  const institutions = await clients.federation.listInstitutions();
+  // Federated Device Discovery did not work - should fail gracefully when federation service is not available?
+  /*const institutions = await clients.federation.listInstitutions();
 
   const federatedDevices = (
     await Promise.all(
@@ -47,7 +48,7 @@ export const getDevices: getDevicesSignature = async req => {
             ? ''
             : '/' + 'devices/federated-' + base64url.encode(device.url),
       };
-    });
+    });*/
 
   logger.log('info', 'getDevices succeeded');
 
@@ -66,7 +67,7 @@ export const getDevices: getDevicesSignature = async req => {
     status: 200,
     body: [
       ...(await Promise.all(visibleDevices.map(repositories.deviceOverview.format))),
-      ...federatedDevices,
+      //...federatedDevices,
     ],
   };
 };
