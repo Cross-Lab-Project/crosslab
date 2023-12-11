@@ -1,12 +1,19 @@
 {
   "name": "crosslab-cli",
+  "license": "UNLICENSED",
+  "author": "Johannes Nau",
+  "bin": {
+    "crosslab": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "format": "prettier . --write",
     "lint": "eslint ."
   },
-  "author": "Johannes Nau",
-  "license": "UNLICENSED",
   "devDependencies": {
     "@types/node": "^20.5.9",
     "prettier": "^3.0.3",

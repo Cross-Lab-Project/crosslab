@@ -2,10 +2,11 @@
 import { APIClient } from '@cross-lab-project/api-client';
 import { Option, program } from 'commander';
 
-import { device } from './commands/device';
-import { experiment } from './commands/experiment';
-import { login } from './commands/login';
-import { user } from './commands/user';
+import { device } from './commands/device.js';
+import { experiment } from './commands/experiment.js';
+import { login } from './commands/login.js';
+import { user } from './commands/user.js';
+import { template } from './commands/template.js';
 
 program
   .description('CLI to interact with CrossLab')
@@ -24,6 +25,7 @@ login(program, getClient);
 device(program, getClient);
 experiment(program, getClient);
 user(program, getClient);
+template(program, getClient);
 
 program.parse();
 

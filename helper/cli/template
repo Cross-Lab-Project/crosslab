@@ -1,0 +1,372 @@
+{
+    "name": "3-Axis-Portal ECP",
+    "description": "A template for controlling the 3-Axis-Portal with a ECP.",
+    "configuration": {
+        "devices": [
+            {
+                "device": "https://api.johannes.goldi-labs.de/devices/b9491a96-b90b-4883-ad6e-71d4de39e17a",
+                "role": "ecp"
+            },
+            {
+                "device": "https://api.johannes.goldi-labs.de/devices/f2e37228-64ba-4809-a3b2-37f17b113fe1",
+                "role": "mole"
+            }
+        ],
+        "roles": [
+            {
+                "name": "ecp",
+                "configuration":{
+                    "input_variables": 2,
+                    "function_index": [5,3]
+                }
+            },
+            {
+                "name": "mole"
+            }
+        ],
+        "serviceConfigurations": [
+            {
+                "serviceType": "http://api.goldi-labs.de/serviceTypes/electrical",
+                "configuration": {},
+                "participants": [
+                    {
+                        "role": "ecp",
+                        "serviceId": "signals",
+                        "config": {
+                            "interfaces": [
+                                {
+                                    "interfaceId": "1",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x0"
+                                    },
+                                    "busId": "x0",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "2",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x1"
+                                    },
+                                    "busId": "x1",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "3",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x2"
+                                    },
+                                    "busId": "x2",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "4",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x3"
+                                    },
+                                    "busId": "x3",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "5",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x4"
+                                    },
+                                    "busId": "x4",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "6",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x5"
+                                    },
+                                    "busId": "x5",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "7",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x6"
+                                    },
+                                    "busId": "x6",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "8",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "x7"
+                                    },
+                                    "busId": "x7",
+                                    "direction": "out",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "9",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y0"
+                                    },
+                                    "busId": "y0",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "10",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y1"
+                                    },
+                                    "busId": "y1",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "11",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y2"
+                                    },
+                                    "busId": "y2",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "12",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y3"
+                                    },
+                                    "busId": "y3",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "13",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y4"
+                                    },
+                                    "busId": "y4",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "14",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y5"
+                                    },
+                                    "busId": "y5",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "15",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y6"
+                                    },
+                                    "busId": "y6",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                },
+                                {
+                                    "interfaceId": "16",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "y7"
+                                    },
+                                    "busId": "y7",
+                                    "direction": "in",
+                                    "driver": "ecp"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "role": "mole",
+                        "serviceId": "signals",
+                        "config": {
+                            "interfaces": [
+                                {
+                                    "interfaceId": "17",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D24"
+                                    },
+                                    "busId": "x0",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "18",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D25"
+                                    },
+                                    "busId": "x1",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "19",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D26"
+                                    },
+                                    "busId": "x2",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "20",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D27"
+                                    },
+                                    "busId": "x3",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "21",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D28"
+                                    },
+                                    "busId": "x4",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "22",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D29"
+                                    },
+                                    "busId": "x5",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "23",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D30"
+                                    },
+                                    "busId": "x6",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "24",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D31"
+                                    },
+                                    "busId": "x7",
+                                    "direction": "in",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "25",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D32"
+                                    },
+                                    "busId": "y0",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "26",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D33"
+                                    },
+                                    "busId": "y1",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "27",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D34"
+                                    },
+                                    "busId": "y2",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "28",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D35"
+                                    },
+                                    "busId": "y3",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "29",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D36"
+                                    },
+                                    "busId": "y4",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "30",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D37"
+                                    },
+                                    "busId": "y5",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "31",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D38"
+                                    },
+                                    "busId": "y6",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                },
+                                {
+                                    "interfaceId": "32",
+                                    "interfaceType": "gpio",
+                                    "signals": {
+                                        "gpio": "D39"
+                                    },
+                                    "busId": "y7",
+                                    "direction": "out",
+                                    "driver": "mole"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -2,7 +2,7 @@ import { APIClient, DeviceServiceTypes } from '@cross-lab-project/api-client';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
-import { prompt } from './prompt';
+import { prompt } from './prompt.js';
 
 function shortDeviceList(
   devices: DeviceServiceTypes.DeviceOverview[],
@@ -79,11 +79,12 @@ export function device(program: Command, getClient: () => APIClient) {
     });
   });
 
-  /*device.command('token').argument('[device url]').action(async (url?: string) => {
+  device.command('token').argument('[device url]').action(async (url?: string) => {
         const client = getClient();
         if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
         if (url == undefined) throw new Error("No device selected");
-        const token = await client.createDeviceAuthenticationToken(url);
+        const identity = await client.getIdentity();
+        const token = await client.createToken({user: identity.id, claims: { device_token: true}});
         console.log(token);
-    })*/
+  })
 }

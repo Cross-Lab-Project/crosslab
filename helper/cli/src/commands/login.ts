@@ -1,7 +1,7 @@
 import { APIClient } from '@cross-lab-project/api-client';
 import { Command } from 'commander';
 
-import { prompt } from './prompt';
+import { prompt } from './prompt.js';
 
 export function login(program: Command, getClient: () => APIClient) {
   program
