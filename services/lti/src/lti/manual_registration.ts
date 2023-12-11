@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { config } from '../config.js';
 import { ApplicationDataSource } from '../database/datasource.js';
-import { PlatformModel } from '../database/model.js';
+import { PlatformModel, PlatformProvisionModel } from '../database/model.js';
 import { tool_configuration } from './tool_configuration.js';
 
 export async function handle_manual_registration(_req: Request, res: Response) {
@@ -40,7 +40,8 @@ export async function handle_manual_registration(_req: Request, res: Response) {
       '<html>' +
       '<body>' +
       '<h2>LTI 1.3 Tool Registration</h2>' +
-      '<p>To integrate CrossLab into your Learning Managment System, please enter the following tool configuration in you Learning Mangement system:</p>' +
+      '<p>To integrate CrossLab into your Learning Managment System, please enter' +
+      ' the following tool configuration in you Learning Mangement system:</p>' +
       '<table>' +
       '  <tr align="left">' +
       '    <th>Property</th>' +
@@ -53,7 +54,10 @@ export async function handle_manual_registration(_req: Request, res: Response) {
         )
         .join('\n') +
       '</table>' +
-      '<p>After you have entered the above configuration to your Learning Management System, please enter the following Informations to complete the registration process:</p>' +
+      '<p>After you have entered the above configuration to your Learning Management System,' +
+      ' please enter the following Informations to complete the registration process:</p>' +
+      '<p>You can leave out any Information you dont have. The tool then will try to match ' +
+      'the next request made to the tool and query missing informations if possible.</p>' +
       '<form action="/register" method="post">' +
       '  <label for="iss">Platform ID</label><br>' +
       '  <input type="text" id="iss" name="iss" value=""><br>' +
@@ -69,7 +73,8 @@ export async function handle_manual_registration(_req: Request, res: Response) {
       '  <input type="text" id="authentication_request_url" name="authentication_request_url" value=""><br>' +
       '  <button type="submit">Submit</button>' +
       '</form>' +
-      '<p>Alternatively, if your Learning Management Platform supports Dynamic Registration, you may use this url to start the registration process from your Learning Mangement System:</p>' +
+      '<p>Alternatively, if your Learning Management Platform supports Dynamic Registration,' +
+      ' you may use this url to start the registration process from your Learning Mangement System:</p>' +
       '<code>' +
       config.BASE_URL +
       '</code>' +
@@ -86,22 +91,48 @@ export async function complete_manual_registration(req: Request, res: Response) 
   const access_token_url = req.body.access_token_url as string;
   const authentication_request_url = req.body.authentication_request_url as string;
 
-  const platform = ApplicationDataSource.manager.create(PlatformModel, {
-    iss,
-    client_id,
-    authentication_request_url,
-    access_token_url,
-    jwks_url,
-  });
-  await ApplicationDataSource.manager.save(platform);
+  const provisioned =
+    !iss || !client_id || !jwks_url || !access_token_url || !authentication_request_url;
 
-  res.send(
-    '<!DOCTYPE html>' +
-      '<html>' +
-      '<body>' +
-      '  <h2>Registration completed</h2>' +
-      '  <p>Registration completed successfully. You may now close this window.</p>' +
-      '</body>' +
-      '</html>',
-  );
+  if (provisioned) {
+    const platform = ApplicationDataSource.manager.create(PlatformProvisionModel, {
+      iss: iss ? iss : undefined,
+      client_id: client_id ? client_id : undefined,
+      authentication_request_url: authentication_request_url
+        ? authentication_request_url
+        : undefined,
+      access_token_url: access_token_url ? access_token_url : undefined,
+      jwks_url: jwks_url ? jwks_url : undefined,
+    });
+    await ApplicationDataSource.manager.save(platform);
+
+    res.send(
+      '<!DOCTYPE html>' +
+        '<html>' +
+        '<body>' +
+        '  <h2>Platform is set to be provisioned on the next request.</h2>' +
+        '  <p>Registration will be completet once the request was made. You may now close this window.</p>' +
+        '</body>' +
+        '</html>',
+    );
+  } else {
+    const platform = ApplicationDataSource.manager.create(PlatformModel, {
+      iss,
+      client_id,
+      authentication_request_url,
+      access_token_url,
+      jwks_url,
+    });
+    await ApplicationDataSource.manager.save(platform);
+
+    res.send(
+      '<!DOCTYPE html>' +
+        '<html>' +
+        '<body>' +
+        '  <h2>Registration completed</h2>' +
+        '  <p>Registration completed successfully. You may now close this window.</p>' +
+        '</body>' +
+        '</html>',
+    );
+  }
 }

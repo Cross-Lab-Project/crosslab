@@ -1,10 +1,12 @@
 import { config } from '../config.js';
 
 const host = (url: string) => new URL(url).host;
+// eslint-disable-next-line @typescript-eslint/no-shadow
 const path = (base_url: string, path: string) => new URL(path, base_url).toString();
 
 export const tool_configuration = {
   client_name: 'Crosslab',
+  issuer: path(config.BASE_URL, ''),
   initiate_login_uri: path(config.BASE_URL, ''),
   redirect_uris: [path(config.BASE_URL, '')],
   jwks_uri: path(config.BASE_URL, '.well-known/jwks.json'),

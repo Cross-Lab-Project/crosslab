@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class PlatformModel {
@@ -14,4 +14,20 @@ export class PlatformModel {
   jwks_url!: string;
 }
 
-export const Entities = [PlatformModel];
+@Entity()
+export class PlatformProvisionModel {
+  @PrimaryGeneratedColumn()
+  id!: number;
+  @Column({nullable: true})
+  iss?: string;
+  @Column({nullable: true})
+  client_id?: string;
+  @Column({nullable: true})
+  authentication_request_url?: string;
+  @Column({nullable: true})
+  access_token_url?: string;
+  @Column({nullable: true})
+  jwks_url?: string;
+}
+
+export const Entities = [PlatformModel, PlatformProvisionModel];

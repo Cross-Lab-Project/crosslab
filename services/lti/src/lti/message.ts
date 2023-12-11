@@ -1,95 +1,15 @@
-import { logging } from '@crosslab/service-common';
-import { randomBytes } from 'crypto';
-import { Request, Response } from 'express';
-import { JWTPayload, SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
+import { CookieOptions, Request, Response } from 'express';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
+import fetch from 'node-fetch';
 
-import { authentication, experiment } from '../clients/index.js';
+import '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
-import { PlatformModel } from '../database/model.js';
+import { PlatformModel, PlatformProvisionModel } from '../database/model.js';
 import * as generators from '../helper/generators.js';
-import { post_form_message } from '../helper/html_responses.js';
 import { nonce_store } from '../helper/nonce.js';
-import { kid, privateKey } from '../key_management.js';
+import { handle_deep_linking_request } from './deep_link.js';
+import { handle_resource_link_request } from './resource_link.js';
 import { tool_configuration } from './tool_configuration.js';
-
-function post_form(url: string, message: object): string {
-  return `<form action="${url}" method="post">${Object.entries(message)
-    .map(([key, value]) => `<input type="hidden" name="${key}" value="${value}">`)
-    .join('')}<button type="submit">Select</button></form>`;
-}
-
-async function handle_deep_linking_request(
-  _req: Request,
-  res: Response,
-  payload: JWTPayload,
-) {
-  const templates = await experiment.listTemplate();
-
-  const deep_linking_settings =
-    (payload['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] as {
-      data: unknown;
-      deep_link_return_url: string;
-    }) ?? {};
-  const jwt_fields = {
-    aud: payload.iss as string,
-    iss: payload.aud as string,
-    nonce: randomBytes(32).toString('base64url'),
-    'https://purl.imsglobal.org/spec/lti/claim/message_type': 'LtiDeepLinkingResponse',
-    'https://purl.imsglobal.org/spec/lti/claim/version': '1.3.0',
-    'https://purl.imsglobal.org/spec/lti/claim/deployment_id':
-      payload['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
-    'https://purl.imsglobal.org/spec/lti-dl/claim/data': deep_linking_settings.data,
-  };
-  logging.logger.log('trace', 'response_fields', { response_fields: jwt_fields });
-  const return_url = deep_linking_settings.deep_link_return_url;
-
-  const template_jwts = await Promise.all(
-    templates.map(template => {
-      return new SignJWT({
-        ...jwt_fields,
-        'https://purl.imsglobal.org/spec/lti-dl/claim/content_items': [
-          {
-            type: 'ltiResourceLink',
-            url: tool_configuration.redirect_uris[0],
-            custom: { experiment: template.url },
-          },
-        ],
-      })
-        .setProtectedHeader({ alg: 'ES256', kid: kid })
-        .setIssuedAt()
-        .setExpirationTime('5m')
-        .sign(privateKey);
-    }),
-  );
-
-  res.send(
-    '<!DOCTYPE html>' +
-      '<html>' +
-      '<body>' +
-      '<h2>Experiment Selection</h2>' +
-      '<p>If you want to add a new Experiment Template, please visit the main homepage.</p>' +
-      '<table>' +
-      '  <tr align="left">' +
-      '    <th>Name</th>' +
-      '    <th>Description</th>' +
-      '    <th>Selection</th>' +
-      '  </tr>' +
-      templates
-        .map(
-          (template, idx) =>
-            '  <tr>' +
-            `    <td>${template.name}</td>` +
-            `    <td>${template.description}</td>` +
-            `    <td>${post_form(return_url, {
-              JWT: template_jwts[idx],
-            })}</td>`,
-        )
-        .join('\n') +
-      '</table>' +
-      '</body>' +
-      '</html>',
-  );
-}
 
 async function handle_authentication_response(req: Request, res: Response) {
   res.clearCookie('state', { httpOnly: true, sameSite: 'none', secure: true });
@@ -98,7 +18,14 @@ async function handle_authentication_response(req: Request, res: Response) {
   if (req.body.state !== req.signedCookies.state) {
     throw new Error('state does not match');
   }
-  const jwks_url = decodeURIComponent(req.body.state.split(':')[1]);
+  const [_, encoded_iss, encoded_client_id] = req.body.state.split(':');
+  const iss = decodeURIComponent(encoded_iss);
+  const client_id = decodeURIComponent(encoded_client_id);
+  const platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
+    iss: iss,
+    client_id: client_id,
+  });
+  const jwks_url = platform.jwks_url;
   const jwt = req.body.id_token;
   const jwks = createRemoteJWKSet(new URL(jwks_url));
   const { payload } = await jwtVerify(jwt, jwks);
@@ -109,69 +36,107 @@ async function handle_authentication_response(req: Request, res: Response) {
     throw new Error('nonce has already been used');
   }
 
-  if (
-    payload['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
-    'LtiResourceLinkRequest'
-  ) {
-    const custom = payload['https://purl.imsglobal.org/spec/lti/claim/custom'];
-    const template_url =
-      typeof custom === 'object' &&
-      custom !== null &&
-      'experiment' in custom &&
-      typeof custom['experiment'] === 'string'
-        ? custom.experiment
-        : '';
-    const token = await authentication.createToken({ username: 'jona3814' });
-    logging.logger.log('trace', 'received access token for LTI-Access', { token });
-    const url = new URL('https://www.dev.goldi-labs.de/en/experiment');
-    url.searchParams.append('token', token);
-    url.searchParams.append('template', template_url);
-    url.searchParams.append('display', 'iframe');
-    res.send(post_form_message(url.toString(), {}));
-    return;
+  const message_type = payload['https://purl.imsglobal.org/spec/lti/claim/message_type'];
+
+  switch (message_type) {
+    case 'LtiResourceLinkRequest':
+      await handle_resource_link_request(req, res, payload, platform);
+      break;
+    case 'LtiDeepLinkingRequest':
+      await handle_deep_linking_request(req, res, payload, platform);
+      break;
+    default:
+      res.send(payload);
   }
-  if (
-    payload['https://purl.imsglobal.org/spec/lti/claim/message_type'] ===
-    'LtiDeepLinkingRequest'
-  ) {
-    await handle_deep_linking_request(req, res, payload);
-    return;
-  }
-  res.send(payload);
 }
 
 export async function handle_login_request(req: Request, res: Response) {
   if (req.body.id_token) {
-    return handle_authentication_response(req, res);
+    return await handle_authentication_response(req, res);
   }
   if (
     req.body.target_link_uri !==
     tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration']
       .target_link_uri
   ) {
-    throw new Error('target_link_uri does not match');
+    throw new Error(
+      `target_link_uri does not match: ` +
+        `expected ${tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration'].target_link_uri}, got ${req.body.target_link_uri}`,
+    );
   }
 
-  let platform: PlatformModel;
-  if (req.body.client_id) {
+  let platform: PlatformModel | undefined = undefined;
+  try {
     platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
       iss: req.body.iss,
       client_id: req.body.client_id,
     });
-  } else {
-    platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
-      iss: req.body.iss,
-    });
+  } catch (e) {
+    const _platform = await ApplicationDataSource.manager
+      .getRepository(PlatformProvisionModel)
+      .createQueryBuilder()
+      .where(
+        '(PlatformProvisionModel.iss = :iss OR PlatformProvisionModel.iss IS NULL) ' +
+          'AND (PlatformProvisionModel.client_id = :client_id OR PlatformProvisionModel.client_id IS NULL)',
+        {
+          iss: req.body.iss,
+          client_id: req.body.client_id,
+        },
+      )
+      .getOneOrFail();
+    console.log(_platform);
+    await ApplicationDataSource.manager.delete(PlatformProvisionModel, _platform.id);
+
+    // check possilbe urls:
+    const possible_urls = [
+      {
+        authentication_request_url: req.body.iss + '/mod/lti/auth.php',
+        access_token_url: req.body.iss + '/mod/lti/token.php',
+        jwks_url: req.body.iss + '/mod/lti/certs.php',
+      },
+    ];
+
+    for (const urls of possible_urls) {
+      const auth_result = await fetch(urls.authentication_request_url);
+      const token_result = await fetch(urls.access_token_url);
+      const jwks_result = await fetch(urls.jwks_url);
+
+      if (
+        [200, 400].includes(auth_result.status) &&
+        [200, 400].includes(token_result.status) &&
+        [200].includes(jwks_result.status)
+      ) {
+        platform = ApplicationDataSource.manager.create(PlatformModel, {
+          iss: _platform.iss ?? req.body.iss,
+          client_id: _platform.client_id ?? req.body.client_id,
+          authentication_request_url:
+            _platform.authentication_request_url ?? urls.authentication_request_url,
+          access_token_url: _platform.access_token_url ?? urls.access_token_url,
+          jwks_url: _platform.jwks_url ?? urls.jwks_url,
+        });
+        await ApplicationDataSource.manager.save(platform);
+      }
+    }
+
+    if (platform === undefined) {
+      throw new Error('platform not found');
+    }
   }
 
-  const stateParam = generators.random() + ':' + encodeURIComponent(platform.jwks_url);
+  const stateParam =
+    generators.random() +
+    ':' +
+    encodeURIComponent(platform.iss) +
+    ':' +
+    encodeURIComponent(platform.client_id ?? '');
   res.cookie('state', stateParam, {
     httpOnly: true,
     signed: true,
     maxAge: 5 * 60 * 1000,
     sameSite: 'none',
     secure: true,
-  });
+    partitioned: true,
+  } as CookieOptions);
   const nonceParam = nonce_store.get();
   res.cookie('nonce', nonceParam, {
     httpOnly: true,
@@ -179,7 +144,8 @@ export async function handle_login_request(req: Request, res: Response) {
     maxAge: 5 * 60 * 1000,
     sameSite: 'none',
     secure: true,
-  });
+    partitioned: true,
+  } as CookieOptions);
 
   const queryParams = {
     scope: 'openid',
