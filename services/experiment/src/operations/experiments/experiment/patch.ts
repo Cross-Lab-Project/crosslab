@@ -43,6 +43,22 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
       return { status: 200, body: await repositories.experiment.format(experimentModel) };
     }
 
+    // NOTE: temporary solution for changing lti-grade without any mutux mess
+    if (body && Object.keys(body).every((key) => ['lti_grade', 'lti_graded'].includes(key))) {
+      const experimentModel = await repositories.experiment.findOneOrFail({
+        where: { uuid: parameters.experiment_id },
+      });
+      await repositories.experiment.write(experimentModel, body);
+      await repositories.experiment.save(experimentModel);
+
+      logger.log(
+        'info',
+        `Successfully handled PATCH request on endpoint /experiments/${parameters.experiment_id}`,
+      );
+
+      return { status: 200, body: await repositories.experiment.format(experimentModel) };
+    }
+
     const release = await mutexManager.acquire(parameters.experiment_id);
     const createPeerconnectionsRelease = await mutexManager.acquire(
       `create-peerconnections:${parameters.experiment_id}`,
