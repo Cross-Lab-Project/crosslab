@@ -65,7 +65,7 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
   logger.log('info', 'postDevicesByDeviceId succeeded');
 
   const deviceToken = await clients.authentication.createToken({
-    user: req.authorization.user,
+    username: req.authorization.user,
     claims: { device_token: true },
   });
 
