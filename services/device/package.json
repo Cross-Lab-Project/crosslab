@@ -24,7 +24,7 @@
     "build:add-shebang": "bash scripts/add-shebang.sh",
     "build": "npm-run-all build:*",
     "start": "node app/index.js",
-    "dev": "tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9002 ./app/index.js'",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9001 ./app/index.js'",
     "test": "npm run build:generate && rm -rf coverage && rm -rf .nyc_output && npm-run-all -c test:*",
     "test:index": "nyc --temp-dir .nyc_output/index --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/index.spec.ts",
     "test:config": "nyc --temp-dir .nyc_output/config --silent --reporter=html env-cmd -e development ts-mocha --require @babel/register test/config.spec.ts",

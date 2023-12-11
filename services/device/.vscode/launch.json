@@ -8,7 +8,7 @@
       "type": "node",
       "request": "attach",
       "name": "Attach to Device Service",
-      "port": 9002,
+      "port": 9001,
       "restart": true
     }
   ]
