@@ -133,7 +133,7 @@ class DeviceHandler(AsyncIOEventEmitter):
             elif msg["messageType"] == "configuration":
                 await self._on_configuration_message(msg)
             else:
-                raise Exception("Unknown message type")
+                pass  # Do not raise any Exception here, so we are forward compatible for new message types
 
     async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
         assert msg["connectionUrl"] not in self._connections

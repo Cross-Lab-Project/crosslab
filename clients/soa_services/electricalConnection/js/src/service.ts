@@ -37,7 +37,7 @@ function checkConfig(
   }
 }
 
-interface NewInterfaceEvent {
+export interface NewInterfaceEvent {
   connectionInterface: ConnectionInterface;
 }
 
@@ -134,8 +134,13 @@ export class ElectricalConnectionService
             console.error(error);
           }
         });
+
         await channel.ready();
-        this.queue.start();
+        try{
+          this.queue.start();
+        }catch(error){
+          //ignorw
+        }
       });
 
       // find the bus set or create a new one
