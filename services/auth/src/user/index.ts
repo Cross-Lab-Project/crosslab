@@ -2,7 +2,7 @@ import { HttpError } from '@crosslab/service-common';
 import { utils } from '@crosslab/service-common';
 import bcrypt from 'bcrypt';
 import express from 'express';
-import { QueryFailedError } from 'typeorm';
+import { FindManyOptions, QueryFailedError } from 'typeorm';
 
 import { config } from '../config.js';
 import { ApplicationDataSource } from '../database/datasource.js';
@@ -16,6 +16,7 @@ import {
   patchUsersByUserIdPath,
   postUsersPath,
 } from '../generated/operations.js';
+import { User } from '../generated/types.js';
 import {
   validateDeleteUsersByUserId,
   validateGetIdentity,
@@ -25,6 +26,7 @@ import {
   validatePostUsers,
 } from '../generated/validation.js';
 import { createUser } from './helper.js';
+import { logger } from '@crosslab/service-common/logging';
 
 /**
  * This function builds the url of a user using its id.
@@ -33,6 +35,18 @@ import { createUser } from './helper.js';
  */
 export function userUrlFromId(id: string): string {
   return config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + 'users/' + id;
+}
+
+/**
+ * Extracts the user ID from a given URL.
+ * @param url - The URL containing the user ID.
+ * @returns The extracted user ID.
+ * @throws {HttpError} If the URL is invalid and does not contain a user ID.
+ */
+export function userIdFromUrl(url: string): string {
+  const match = url.match(/\/users\/([^/]+)/);
+  if (match === null) throw new HttpError(400, 'Invalid user url');
+  return match[1];
 }
 
 export const router = express.Router();
@@ -74,7 +88,17 @@ router.get(
   validateGetUsers(async (req, res) => {
     await req.authorization.check_authorization_or_fail('view', 'user');
 
-    let users = await ApplicationDataSource.manager.find(UserModel);
+    let findOptions: FindManyOptions<UserModel> = {};
+    if (req.query.username) {
+      findOptions = {
+        where: {
+          username: req.query.username as string,
+        },
+      };
+    }
+
+    logger.debug('findOptions', findOptions);
+    let users = await ApplicationDataSource.manager.find(UserModel, findOptions);
     users = await req.authorization.filter(users, 'view', u => `user:${u.uuid}`);
 
     type user = getUsersResponseBodyType[number];

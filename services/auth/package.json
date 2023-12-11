@@ -23,7 +23,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@cross-lab-project/api-client": "file:../../clients/api/js",
     "@crosslab/service-common": "file:../common",
     "ajv-formats": "^2.1.1",
     "bcrypt": "^5.1.0",

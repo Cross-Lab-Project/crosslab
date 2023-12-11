@@ -7,25 +7,32 @@ import { UserModel } from '../database/model.js';
 import { postTokenPath } from '../generated/operations.js';
 import { validatePostToken } from '../generated/validation.js';
 import { createNewToken } from '../token/helper.js';
+import { userIdFromUrl } from '../user/index.js';
 
 export const router = express.Router();
 
 router.post(
   postTokenPath,
   validatePostToken(async (req, res) => {
-    const { username, claims } = req.body;
+    const { user: user_url, username, claims } = req.body;
 
-    console.log('username', username);
-    if (!username) throw new HttpError(400, 'User not found');
-    assert(username !== undefined, 'username is undefined');
-    let user = await ApplicationDataSource.manager.findOneBy(UserModel, {
-      username: username,
-    });
-    if (user === null){
-      user = await ApplicationDataSource.manager.findOneBy(UserModel, {
-        uuid: username,
+    let userId: string | undefined;
+    if (username) {
+      const user = await ApplicationDataSource.manager.findOneBy(UserModel, {
+        username: username as string,
       });
+      if (user === null) throw new HttpError(400, 'User not found');
+      userId = user.uuid;
+    } else {
+      if (!user_url) throw new HttpError(400, 'Missing user url');
+      userId = (user_url as string).startsWith('http')
+        ? userIdFromUrl(user_url as string)
+        : user_url as string;
     }
+
+    const user = await ApplicationDataSource.manager.findOneBy(UserModel, {
+      uuid: userId,
+    });
     if (user === null) throw new HttpError(400, 'User not found');
 
     const token = await createNewToken(user, claims);

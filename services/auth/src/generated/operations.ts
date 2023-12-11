@@ -82,7 +82,9 @@ import {
         }
         
     export type getUsersQueryParametersType = {
-        }
+        
+                "username"?: string
+            }
         
         export type getUsersRequestBodyType = never
     
@@ -205,9 +207,22 @@ import {
         
         export type postTokenRequestBodyType = {
 	/**
-	 * The username of the user.
+	 * Url or uuid of the user that will be used to create the token.
 	 */
-	username?: string
+	user: string
+	/**
+	 * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+	 * 
+	 */
+	claims?: {
+		[k: string]: unknown
+	}
+	[k: string]: unknown
+} | {
+	/**
+	 * Url or uuid of the user that will be used to create the token.
+	 */
+	username: string
 	/**
 	 * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
 	 * 

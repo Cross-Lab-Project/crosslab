@@ -109,6 +109,15 @@ export function validateGetUsers(
 ) {
     return async (req: Request, res: Response, next: any) => {
         try{
+            const parameters = {
+                    "username": req.query["username"]
+                }
+                
+                        if(parameters["username"] !== undefined) {if (!type_validation.validateUsernameRequest(parameters["username"])) {
+                        const errors = (type_validation.validateUsernameRequest as any).errors
+                        throw new ValidationError('Validation Error', errors, 400);
+                    }
+                        }
             return await handler(req as any, res, next);
         } catch (err) {
             next(err);

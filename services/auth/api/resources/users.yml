@@ -8,6 +8,8 @@ get:
     - JWT:
         - users
         - users:read
+  parameters:
+    - $ref: '../parameters/user_search_username.yml'
   responses:
     200:
       description: The JSON representation of the users.
