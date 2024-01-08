@@ -1,14 +1,19 @@
+import { InvalidValueError, MalformedBodyError } from '@crosslab/service-common';
 import { Mutex } from 'async-mutex';
 
 import {
   DeviceChangedEventCallback,
   PeerconnectionClosedEventCallback,
   PeerconnectionStatusChangedEventCallback,
-} from '../../../clients/device/types.js';
-import { clients } from '../../../clients/index.js';
-import { repositories } from '../../../database/dataSource.js';
-import { finishExperiment } from '../../../methods/experimentStatus/finish.js';
-import { mutexManager } from '../../../methods/mutexManager.js';
+  isDeviceChangedEventCallback,
+  isPeerconnectionClosedEventCallback,
+  isPeerconnectionStatusChangedEventCallback,
+} from '../../clients/device/types.js';
+import { clients } from '../../clients/index.js';
+import { repositories } from '../../database/dataSource.js';
+import { EventCallback } from '../../generated/types.js';
+import { finishExperiment } from '../../methods/experimentStatus/finish.js';
+import { mutexManager } from '../../methods/mutexManager.js';
 
 class CallbackHandler {
   private deviceListeners: Map<string, string[]> = new Map();
@@ -16,12 +21,7 @@ class CallbackHandler {
   private deviceMutex: Mutex = new Mutex();
   private peerconnectionMutex: Mutex = new Mutex();
 
-  public async handleCallback(
-    callback:
-      | DeviceChangedEventCallback
-      | PeerconnectionClosedEventCallback
-      | PeerconnectionStatusChangedEventCallback,
-  ): Promise<200 | 410> {
+  public async handleCallback(callback: EventCallback): Promise<200 | 410> {
     const release =
       callback.eventType === 'device-changed'
         ? await this.deviceMutex.acquire()
@@ -30,11 +30,31 @@ class CallbackHandler {
     try {
       switch (callback.eventType) {
         case 'device-changed':
+          if (!isDeviceChangedEventCallback(callback))
+            throw new MalformedBodyError(
+              'Body of request is not a valid device-changed event callback',
+              400,
+            );
           return await this.handleDeviceChangedCallback(callback);
         case 'peerconnection-closed':
+          if (!isPeerconnectionClosedEventCallback(callback))
+            throw new MalformedBodyError(
+              'Body of request is not a valid peerconnection-closed event callback',
+              400,
+            );
           return await this.handlePeerconnectionClosedCallback(callback);
         case 'peerconnection-status-changed':
+          if (!isPeerconnectionStatusChangedEventCallback(callback))
+            throw new MalformedBodyError(
+              'Body of request is not a valid peerconnection-status-changed event callback',
+              400,
+            );
           return await this.handlePeerconnectionStatusChangedCallback(callback);
+        default:
+          throw new InvalidValueError(
+            `Event-callbacks of type "${callback.eventType}" are not supported`,
+            400,
+          );
       }
     } finally {
       release();
@@ -87,7 +107,6 @@ class CallbackHandler {
     callback: DeviceChangedEventCallback,
   ): Promise<200 | 410> {
     const listeners = this.deviceListeners.get(callback.device.url) ?? [];
-    const newListeners = [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -117,15 +136,13 @@ class CallbackHandler {
         ) {
           await finishExperiment(experimentModel, clients);
         }
-
-        newListeners.push(listener);
       } finally {
         release();
       }
     }
 
+    const newListeners = this.deviceListeners.get(callback.device.url) ?? [];
     if (newListeners.length > 0) {
-      this.deviceListeners.set(callback.device.url, newListeners);
       return 200;
     } else {
       this.deviceListeners.delete(callback.device.url);
@@ -137,7 +154,6 @@ class CallbackHandler {
     callback: PeerconnectionClosedEventCallback,
   ): Promise<200 | 410> {
     const listeners = this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
-    const newListeners = [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -158,15 +174,14 @@ class CallbackHandler {
 
         if (experimentModel.status !== 'finished')
           await finishExperiment(experimentModel, clients);
-
-        newListeners.push(listener);
       } finally {
         release();
       }
     }
 
+    const newListeners =
+      this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
     if (newListeners.length > 0) {
-      this.peerconnectionListeners.set(callback.peerconnection.url, newListeners);
       return 200;
     } else {
       this.peerconnectionListeners.delete(callback.peerconnection.url);
@@ -178,7 +193,6 @@ class CallbackHandler {
     callback: PeerconnectionStatusChangedEventCallback,
   ): Promise<200 | 410> {
     const listeners = this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
-    const newListeners = [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -216,20 +230,18 @@ class CallbackHandler {
           }
 
           if (experimentModel.status === 'peerconnections-created' && connected) {
-            console.log('setting experiment to status running');
             experimentModel.status = 'running';
             await repositories.experiment.save(experimentModel);
           }
         }
-
-        newListeners.push(listener);
       } finally {
         release();
       }
     }
 
+    const newListeners =
+      this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
     if (newListeners.length > 0) {
-      this.peerconnectionListeners.set(callback.peerconnection.url, newListeners);
       return 200;
     } else {
       this.peerconnectionListeners.delete(callback.peerconnection.url);

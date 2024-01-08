@@ -3,7 +3,7 @@ import { logger } from '@crosslab/service-common';
 import * as express from 'express';
 
 import { config } from '../../config.js';
-import { handleEventCallback } from './event/index.js';
+import { callbackHandler } from './callbackHandler.js';
 
 export const callbackUrl: string =
   config.BASE_URL + (config.BASE_URL.endsWith('/') ? '' : '/') + `callbacks/experiment`;
@@ -23,7 +23,7 @@ export function callbackHandling(app: express.Application) {
 
       switch (callback.callbackType) {
         case 'event':
-          return res.status(await handleEventCallback(callback)).send();
+          return res.status(await callbackHandler.handleCallback(callback)).send();
         default:
           throw new InvalidValueError(
             `Callbacks of type "${callback.callbackType}" are not supported`,

@@ -3,11 +3,7 @@ import { logger } from '@crosslab/service-common';
 import { repositories } from '../../../database/dataSource.js';
 import { patchExperimentsByExperimentIdSignature } from '../../../generated/signatures.js';
 import { changedCallbacks } from '../../../methods/callbacks.js';
-import {
-  bookExperiment,
-  finishExperiment,
-  runExperiment,
-} from '../../../methods/experimentStatus/index.js';
+import { transitionExperiment } from '../../../methods/experimentStatus/index.js';
 import { mutexManager } from '../../../methods/mutexManager.js';
 import { experimentUrlFromId } from '../../../methods/url.js';
 
@@ -44,7 +40,10 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
     }
 
     // NOTE: temporary solution for changing lti-grade without any mutux mess
-    if (body && Object.keys(body).every((key) => ['lti_grade', 'lti_graded'].includes(key))) {
+    if (
+      body &&
+      Object.keys(body).every(key => ['lti_grade', 'lti_graded'].includes(key))
+    ) {
       const experimentModel = await repositories.experiment.findOneOrFail({
         where: { uuid: parameters.experiment_id },
       });
@@ -87,12 +86,8 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
 
       if (body) await repositories.experiment.write(experimentModel, body);
 
-      const desiredStatus = body?.status ?? experimentModel.status;
+      await transitionExperiment(experimentModel, body?.status, req.clients);
 
-      if (desiredStatus === 'booked') await bookExperiment(experimentModel);
-      if (desiredStatus === 'running') await runExperiment(experimentModel, req.clients);
-      if (desiredStatus === 'finished')
-        await finishExperiment(experimentModel, req.clients);
       await repositories.experiment.save(experimentModel);
 
       if (parameters.changedURL) {

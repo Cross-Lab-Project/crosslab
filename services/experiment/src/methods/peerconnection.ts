@@ -1,7 +1,7 @@
 import { Clients } from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
 import { ExperimentModel } from '../database/model.js';
-import { callbackHandler } from '../operations/callbacks/event/callbackHandler.js';
+import { callbackHandler } from '../operations/callbacks/callbackHandler.js';
 import {
   callbackUrl,
   peerconnectionClosedCallbacks,

@@ -4,7 +4,7 @@ import { EntityManager, FindOptionsRelations } from 'typeorm';
 import { Experiment, ExperimentOverview } from '../../generated/types.js';
 import { sendChangedCallback } from '../../methods/callbacks.js';
 import { experimentUrlFromId } from '../../methods/url.js';
-import { callbackHandler } from '../../operations/callbacks/event/callbackHandler.js';
+import { callbackHandler } from '../../operations/callbacks/callbackHandler.js';
 import { Instance } from '../../types/types.js';
 import { ExperimentModel } from '../model.js';
 import { DeviceRepository } from './device.js';
@@ -125,7 +125,7 @@ export class ExperimentRepository extends AbstractRepository<
 
   async save(model: ExperimentModel): Promise<ExperimentModel> {
     const savedModel = await super.save(model);
-    await sendChangedCallback(savedModel);
+    sendChangedCallback(savedModel);
     return savedModel;
   }
 

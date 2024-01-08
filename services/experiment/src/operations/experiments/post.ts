@@ -3,11 +3,7 @@ import { logger } from '@crosslab/service-common';
 import { repositories } from '../../database/dataSource.js';
 import { postExperimentsSignature } from '../../generated/signatures.js';
 import { changedCallbacks } from '../../methods/callbacks.js';
-import {
-  bookExperiment,
-  finishExperiment,
-  runExperiment,
-} from '../../methods/experimentStatus/index.js';
+import { transitionExperiment } from '../../methods/experimentStatus/index.js';
 import { experimentUrlFromId } from '../../methods/url.js';
 
 /**
@@ -23,17 +19,12 @@ export const postExperiments: postExperimentsSignature = async (
 ) => {
   logger.log('info', 'Handling POST request on endpoint /experiments');
 
-  // NOTE: create action currently does not exist
   await req.authorization.check_authorization_or_fail('create', 'experiment');
 
   const experimentModel = await repositories.experiment.create(body);
-  const requestedStatus = body.status;
   await repositories.experiment.save(experimentModel);
 
-  if (requestedStatus === 'booked') await bookExperiment(experimentModel);
-  if (requestedStatus === 'running') await runExperiment(experimentModel, req.clients);
-  if (requestedStatus === 'finished')
-    await finishExperiment(experimentModel, req.clients);
+  await transitionExperiment(experimentModel, body.status, req.clients);
 
   await req.authorization.relate(
     req.authorization.user,
@@ -61,8 +52,6 @@ export const postExperiments: postExperimentsSignature = async (
       experiment: experimentUrlFromId(experimentModel.uuid),
     },
   });
-
-  console.log(experimentModel);
 
   return {
     status: 201,

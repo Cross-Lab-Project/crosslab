@@ -1,5 +1,5 @@
 import { logger } from '@crosslab/service-common';
-import { base64url } from 'jose';
+import base64url from 'base64-url';
 
 import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
@@ -20,9 +20,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
   logger.log('info', 'getDevicesByDeviceId called');
 
   if (parameters.device_id.startsWith('federated-')) {
-    const url = new TextDecoder().decode(
-      base64url.decode(parameters.device_id.replace('federated-', '')),
-    );
+    const url = base64url.decode(parameters.device_id.replace('federated-', ''));
 
     const federatedDevice = await clients.device.getDevice(url);
     return {
@@ -40,10 +38,24 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     where: { uuid: parameters.device_id },
   });
 
+  const body = await repositories.device.format(deviceModel);
+
+  if (deviceModel.type === 'group') {
+    const visibility = await Promise.all(
+      deviceModel.devices.map(
+        async device =>
+          (await req.authorization.check_authorization('view', `device:${device.url}`))
+            .result,
+      ),
+    );
+
+    body.devices = deviceModel.devices.filter((_device, index) => visibility[index]);
+  }
+
   logger.log('info', 'getDevicesByDeviceId succeeded');
 
   return {
     status: 200,
-    body: await repositories.device.format(deviceModel),
+    body,
   };
 };

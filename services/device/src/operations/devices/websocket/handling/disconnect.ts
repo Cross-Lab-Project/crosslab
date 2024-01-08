@@ -19,7 +19,11 @@ export function addDisconnectTimeout(deviceId: string) {
 
       for (const peerconnection of peerconnections) {
         peerconnection.status = 'closed';
-        signalingQueueManager.closeSignalingQueues(peerconnection.uuid);
+        try {
+          signalingQueueManager.closeSignalingQueues(peerconnection.uuid);
+        } catch {
+          // empty
+        }
         await repositories.peerconnection.save(peerconnection);
         sendStatusChangedCallback(peerconnection);
       }
