@@ -17,9 +17,6 @@ export class InstitutionModel {
   @Column()
   homepage?: string;
 
-  @Column()
-  federatedApi?: string;
-
   @DeleteDateColumn()
   deletedAt?: Date;
 }

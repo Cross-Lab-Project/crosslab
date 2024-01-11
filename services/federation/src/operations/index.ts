@@ -1,4 +1,4 @@
-import * as operationsInstitutions from './institutions.js';
+import * as operationsInstitutions from './institutions/index.js';
 import * as operationsProxy from './proxy.js';
 
 export default {
