@@ -11,12 +11,13 @@ const schema6 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': true,
   'x-name': 'Institution',
   'x-location': '#/components/schemas/institution',
@@ -31,132 +32,85 @@ function validate21(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate21.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema6.properties.name.type,
-              parentSchema: schema6.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate21.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema6.required,
+            parentSchema: schema6,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate21.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema6.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate21.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema6.properties.homepage.type,
-                    parentSchema: schema6.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate21.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema6.properties.url.type,
+                parentSchema: schema6.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate21.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema6.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate21.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema6.properties.api.type,
-                      parentSchema: schema6.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate21.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema6.properties.name.type,
+                  parentSchema: schema6.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate21.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema6.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema6.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -164,46 +118,90 @@ function validate21(
                   } else {
                     validate21.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema6.properties.federatedApi.type,
-                        parentSchema: schema6.properties.federatedApi,
-                        data: data3,
+                        schema: schema6.properties.homepage.type,
+                        parentSchema: schema6.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate21.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema6.properties.apiToken.type,
-                      parentSchema: schema6.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate21.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema6.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate21.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema6.properties.api.type,
+                          parentSchema: schema6.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate21.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema6.properties.apiToken.type,
+                        parentSchema: schema6.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -237,7 +235,7 @@ const schema7 = {
   'x-location': '#/components/parameters/institution_id/schema',
   'x-schema-type': 'all',
 };
-const formats6 = /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+const formats4 = /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
 function validate22(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
@@ -247,7 +245,7 @@ function validate22(
   if (errors === 0) {
     if (errors === 0) {
       if (typeof data === 'string') {
-        if (!formats6.test(data)) {
+        if (!formats4.test(data)) {
           validate22.errors = [
             {
               instancePath,
@@ -342,12 +340,13 @@ const schema9 = {
     title: 'Institution',
     type: 'object',
     properties: {
+      url: { type: 'string', readOnly: true },
       name: { type: 'string' },
       homepage: { type: 'string', format: 'uri' },
       api: { type: 'string', format: 'uri' },
-      federatedApi: { type: 'string', format: 'uri' },
       apiToken: { type: 'string', writeOnly: true },
     },
+    required: ['url'],
   },
   'x-standalone': false,
   'x-name': 'listInstitutionsResponse200',
@@ -369,132 +368,85 @@ function validate24(
         const _errs1 = errors;
         if (errors === _errs1) {
           if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-            if (data0.name !== undefined) {
-              let data1 = data0.name;
-              const _errs3 = errors;
-              if (typeof data1 !== 'string') {
-                validate24.errors = [
-                  {
-                    instancePath: instancePath + '/' + i0 + '/name',
-                    schemaPath: '#/items/properties/name/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema9.items.properties.name.type,
-                    parentSchema: schema9.items.properties.name,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-              var valid1 = _errs3 === errors;
+            let missing0;
+            if (data0.url === undefined && (missing0 = 'url')) {
+              validate24.errors = [
+                {
+                  instancePath: instancePath + '/' + i0,
+                  schemaPath: '#/items/required',
+                  keyword: 'required',
+                  params: { missingProperty: missing0 },
+                  message: "must have required property '" + missing0 + "'",
+                  schema: schema9.items.required,
+                  parentSchema: schema9.items,
+                  data: data0,
+                },
+              ];
+              return false;
             } else {
-              var valid1 = true;
-            }
-            if (valid1) {
-              if (data0.homepage !== undefined) {
-                let data2 = data0.homepage;
-                const _errs5 = errors;
-                if (errors === _errs5) {
-                  if (errors === _errs5) {
-                    if (typeof data2 === 'string') {
-                      if (!formats0(data2)) {
-                        validate24.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/homepage',
-                            schemaPath: '#/items/properties/homepage/format',
-                            keyword: 'format',
-                            params: { format: 'uri' },
-                            message: 'must match format "' + 'uri' + '"',
-                            schema: 'uri',
-                            parentSchema: schema9.items.properties.homepage,
-                            data: data2,
-                          },
-                        ];
-                        return false;
-                      }
-                    } else {
-                      validate24.errors = [
-                        {
-                          instancePath: instancePath + '/' + i0 + '/homepage',
-                          schemaPath: '#/items/properties/homepage/type',
-                          keyword: 'type',
-                          params: { type: 'string' },
-                          message: 'must be string',
-                          schema: schema9.items.properties.homepage.type,
-                          parentSchema: schema9.items.properties.homepage,
-                          data: data2,
-                        },
-                      ];
-                      return false;
-                    }
-                  }
+              if (data0.url !== undefined) {
+                let data1 = data0.url;
+                const _errs3 = errors;
+                if (typeof data1 !== 'string') {
+                  validate24.errors = [
+                    {
+                      instancePath: instancePath + '/' + i0 + '/url',
+                      schemaPath: '#/items/properties/url/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema9.items.properties.url.type,
+                      parentSchema: schema9.items.properties.url,
+                      data: data1,
+                    },
+                  ];
+                  return false;
                 }
-                var valid1 = _errs5 === errors;
+                var valid1 = _errs3 === errors;
               } else {
                 var valid1 = true;
               }
               if (valid1) {
-                if (data0.api !== undefined) {
-                  let data3 = data0.api;
-                  const _errs7 = errors;
-                  if (errors === _errs7) {
-                    if (errors === _errs7) {
-                      if (typeof data3 === 'string') {
-                        if (!formats0(data3)) {
-                          validate24.errors = [
-                            {
-                              instancePath: instancePath + '/' + i0 + '/api',
-                              schemaPath: '#/items/properties/api/format',
-                              keyword: 'format',
-                              params: { format: 'uri' },
-                              message: 'must match format "' + 'uri' + '"',
-                              schema: 'uri',
-                              parentSchema: schema9.items.properties.api,
-                              data: data3,
-                            },
-                          ];
-                          return false;
-                        }
-                      } else {
-                        validate24.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/api',
-                            schemaPath: '#/items/properties/api/type',
-                            keyword: 'type',
-                            params: { type: 'string' },
-                            message: 'must be string',
-                            schema: schema9.items.properties.api.type,
-                            parentSchema: schema9.items.properties.api,
-                            data: data3,
-                          },
-                        ];
-                        return false;
-                      }
-                    }
+                if (data0.name !== undefined) {
+                  let data2 = data0.name;
+                  const _errs5 = errors;
+                  if (typeof data2 !== 'string') {
+                    validate24.errors = [
+                      {
+                        instancePath: instancePath + '/' + i0 + '/name',
+                        schemaPath: '#/items/properties/name/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema9.items.properties.name.type,
+                        parentSchema: schema9.items.properties.name,
+                        data: data2,
+                      },
+                    ];
+                    return false;
                   }
-                  var valid1 = _errs7 === errors;
+                  var valid1 = _errs5 === errors;
                 } else {
                   var valid1 = true;
                 }
                 if (valid1) {
-                  if (data0.federatedApi !== undefined) {
-                    let data4 = data0.federatedApi;
-                    const _errs9 = errors;
-                    if (errors === _errs9) {
-                      if (errors === _errs9) {
-                        if (typeof data4 === 'string') {
-                          if (!formats0(data4)) {
+                  if (data0.homepage !== undefined) {
+                    let data3 = data0.homepage;
+                    const _errs7 = errors;
+                    if (errors === _errs7) {
+                      if (errors === _errs7) {
+                        if (typeof data3 === 'string') {
+                          if (!formats0(data3)) {
                             validate24.errors = [
                               {
-                                instancePath: instancePath + '/' + i0 + '/federatedApi',
-                                schemaPath: '#/items/properties/federatedApi/format',
+                                instancePath: instancePath + '/' + i0 + '/homepage',
+                                schemaPath: '#/items/properties/homepage/format',
                                 keyword: 'format',
                                 params: { format: 'uri' },
                                 message: 'must match format "' + 'uri' + '"',
                                 schema: 'uri',
-                                parentSchema: schema9.items.properties.federatedApi,
-                                data: data4,
+                                parentSchema: schema9.items.properties.homepage,
+                                data: data3,
                               },
                             ];
                             return false;
@@ -502,46 +454,90 @@ function validate24(
                         } else {
                           validate24.errors = [
                             {
-                              instancePath: instancePath + '/' + i0 + '/federatedApi',
-                              schemaPath: '#/items/properties/federatedApi/type',
+                              instancePath: instancePath + '/' + i0 + '/homepage',
+                              schemaPath: '#/items/properties/homepage/type',
                               keyword: 'type',
                               params: { type: 'string' },
                               message: 'must be string',
-                              schema: schema9.items.properties.federatedApi.type,
-                              parentSchema: schema9.items.properties.federatedApi,
-                              data: data4,
+                              schema: schema9.items.properties.homepage.type,
+                              parentSchema: schema9.items.properties.homepage,
+                              data: data3,
                             },
                           ];
                           return false;
                         }
                       }
                     }
-                    var valid1 = _errs9 === errors;
+                    var valid1 = _errs7 === errors;
                   } else {
                     var valid1 = true;
                   }
                   if (valid1) {
-                    if (data0.apiToken !== undefined) {
-                      let data5 = data0.apiToken;
-                      const _errs11 = errors;
-                      if (typeof data5 !== 'string') {
-                        validate24.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/apiToken',
-                            schemaPath: '#/items/properties/apiToken/type',
-                            keyword: 'type',
-                            params: { type: 'string' },
-                            message: 'must be string',
-                            schema: schema9.items.properties.apiToken.type,
-                            parentSchema: schema9.items.properties.apiToken,
-                            data: data5,
-                          },
-                        ];
-                        return false;
+                    if (data0.api !== undefined) {
+                      let data4 = data0.api;
+                      const _errs9 = errors;
+                      if (errors === _errs9) {
+                        if (errors === _errs9) {
+                          if (typeof data4 === 'string') {
+                            if (!formats0(data4)) {
+                              validate24.errors = [
+                                {
+                                  instancePath: instancePath + '/' + i0 + '/api',
+                                  schemaPath: '#/items/properties/api/format',
+                                  keyword: 'format',
+                                  params: { format: 'uri' },
+                                  message: 'must match format "' + 'uri' + '"',
+                                  schema: 'uri',
+                                  parentSchema: schema9.items.properties.api,
+                                  data: data4,
+                                },
+                              ];
+                              return false;
+                            }
+                          } else {
+                            validate24.errors = [
+                              {
+                                instancePath: instancePath + '/' + i0 + '/api',
+                                schemaPath: '#/items/properties/api/type',
+                                keyword: 'type',
+                                params: { type: 'string' },
+                                message: 'must be string',
+                                schema: schema9.items.properties.api.type,
+                                parentSchema: schema9.items.properties.api,
+                                data: data4,
+                              },
+                            ];
+                            return false;
+                          }
+                        }
                       }
-                      var valid1 = _errs11 === errors;
+                      var valid1 = _errs9 === errors;
                     } else {
                       var valid1 = true;
+                    }
+                    if (valid1) {
+                      if (data0.apiToken !== undefined) {
+                        let data5 = data0.apiToken;
+                        const _errs11 = errors;
+                        if (typeof data5 !== 'string') {
+                          validate24.errors = [
+                            {
+                              instancePath: instancePath + '/' + i0 + '/apiToken',
+                              schemaPath: '#/items/properties/apiToken/type',
+                              keyword: 'type',
+                              params: { type: 'string' },
+                              message: 'must be string',
+                              schema: schema9.items.properties.apiToken.type,
+                              parentSchema: schema9.items.properties.apiToken,
+                              data: data5,
+                            },
+                          ];
+                          return false;
+                        }
+                        var valid1 = _errs11 === errors;
+                      } else {
+                        var valid1 = true;
+                      }
                     }
                   }
                 }
@@ -592,12 +588,13 @@ const schema10 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'createInstitutionBody',
   'x-location': '#/paths//institutions/post/requestBody/content/application/json/schema',
@@ -611,132 +608,85 @@ function validate25(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate25.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema10.properties.name.type,
-              parentSchema: schema10.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate25.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema10.required,
+            parentSchema: schema10,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate25.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema10.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate25.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema10.properties.homepage.type,
-                    parentSchema: schema10.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate25.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema10.properties.url.type,
+                parentSchema: schema10.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate25.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema10.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate25.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema10.properties.api.type,
-                      parentSchema: schema10.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate25.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema10.properties.name.type,
+                  parentSchema: schema10.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate25.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema10.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema10.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -744,46 +694,90 @@ function validate25(
                   } else {
                     validate25.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema10.properties.federatedApi.type,
-                        parentSchema: schema10.properties.federatedApi,
-                        data: data3,
+                        schema: schema10.properties.homepage.type,
+                        parentSchema: schema10.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate25.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema10.properties.apiToken.type,
-                      parentSchema: schema10.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate25.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema10.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate25.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema10.properties.api.type,
+                          parentSchema: schema10.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate25.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema10.properties.apiToken.type,
+                        parentSchema: schema10.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -813,12 +807,13 @@ const schema11 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'createInstitutionResponse201',
   'x-location':
@@ -833,132 +828,85 @@ function validate26(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate26.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema11.properties.name.type,
-              parentSchema: schema11.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate26.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema11.required,
+            parentSchema: schema11,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate26.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema11.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate26.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema11.properties.homepage.type,
-                    parentSchema: schema11.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate26.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema11.properties.url.type,
+                parentSchema: schema11.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate26.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema11.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate26.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema11.properties.api.type,
-                      parentSchema: schema11.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate26.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema11.properties.name.type,
+                  parentSchema: schema11.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate26.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema11.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema11.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -966,46 +914,90 @@ function validate26(
                   } else {
                     validate26.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema11.properties.federatedApi.type,
-                        parentSchema: schema11.properties.federatedApi,
-                        data: data3,
+                        schema: schema11.properties.homepage.type,
+                        parentSchema: schema11.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate26.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema11.properties.apiToken.type,
-                      parentSchema: schema11.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate26.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema11.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate26.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema11.properties.api.type,
+                          parentSchema: schema11.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate26.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema11.properties.apiToken.type,
+                        parentSchema: schema11.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -1035,12 +1027,13 @@ const schema12 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'getInstitutionResponse200',
   'x-location':
@@ -1055,132 +1048,85 @@ function validate27(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate27.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema12.properties.name.type,
-              parentSchema: schema12.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate27.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema12.required,
+            parentSchema: schema12,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate27.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema12.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate27.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema12.properties.homepage.type,
-                    parentSchema: schema12.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate27.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema12.properties.url.type,
+                parentSchema: schema12.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate27.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema12.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate27.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema12.properties.api.type,
-                      parentSchema: schema12.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate27.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema12.properties.name.type,
+                  parentSchema: schema12.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate27.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema12.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema12.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -1188,46 +1134,90 @@ function validate27(
                   } else {
                     validate27.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema12.properties.federatedApi.type,
-                        parentSchema: schema12.properties.federatedApi,
-                        data: data3,
+                        schema: schema12.properties.homepage.type,
+                        parentSchema: schema12.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate27.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema12.properties.apiToken.type,
-                      parentSchema: schema12.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate27.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema12.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate27.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema12.properties.api.type,
+                          parentSchema: schema12.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate27.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema12.properties.apiToken.type,
+                        parentSchema: schema12.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -1257,12 +1247,13 @@ const schema13 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'updateInstitutionBody',
   'x-location':
@@ -1277,132 +1268,85 @@ function validate28(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate28.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema13.properties.name.type,
-              parentSchema: schema13.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate28.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema13.required,
+            parentSchema: schema13,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate28.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema13.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate28.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema13.properties.homepage.type,
-                    parentSchema: schema13.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate28.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema13.properties.url.type,
+                parentSchema: schema13.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate28.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema13.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate28.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema13.properties.api.type,
-                      parentSchema: schema13.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate28.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema13.properties.name.type,
+                  parentSchema: schema13.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate28.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema13.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema13.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -1410,46 +1354,90 @@ function validate28(
                   } else {
                     validate28.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema13.properties.federatedApi.type,
-                        parentSchema: schema13.properties.federatedApi,
-                        data: data3,
+                        schema: schema13.properties.homepage.type,
+                        parentSchema: schema13.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate28.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema13.properties.apiToken.type,
-                      parentSchema: schema13.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate28.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema13.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate28.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema13.properties.api.type,
+                          parentSchema: schema13.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate28.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema13.properties.apiToken.type,
+                        parentSchema: schema13.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -1479,12 +1467,13 @@ const schema14 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'updateInstitutionResponse200',
   'x-location':
@@ -1499,132 +1488,85 @@ function validate29(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate29.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema14.properties.name.type,
-              parentSchema: schema14.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate29.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema14.required,
+            parentSchema: schema14,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate29.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema14.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate29.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema14.properties.homepage.type,
-                    parentSchema: schema14.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate29.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema14.properties.url.type,
+                parentSchema: schema14.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate29.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema14.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate29.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema14.properties.api.type,
-                      parentSchema: schema14.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate29.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema14.properties.name.type,
+                  parentSchema: schema14.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate29.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema14.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema14.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -1632,46 +1574,90 @@ function validate29(
                   } else {
                     validate29.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema14.properties.federatedApi.type,
-                        parentSchema: schema14.properties.federatedApi,
-                        data: data3,
+                        schema: schema14.properties.homepage.type,
+                        parentSchema: schema14.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
             }
             if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate29.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema14.properties.apiToken.type,
-                      parentSchema: schema14.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate29.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema14.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate29.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema14.properties.api.type,
+                          parentSchema: schema14.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
                 }
-                var valid0 = _errs9 === errors;
+                var valid0 = _errs7 === errors;
               } else {
                 var valid0 = true;
+              }
+              if (valid0) {
+                if (data.apiToken !== undefined) {
+                  let data4 = data.apiToken;
+                  const _errs9 = errors;
+                  if (typeof data4 !== 'string') {
+                    validate29.errors = [
+                      {
+                        instancePath: instancePath + '/apiToken',
+                        schemaPath: '#/properties/apiToken/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema14.properties.apiToken.type,
+                        parentSchema: schema14.properties.apiToken,
+                        data: data4,
+                      },
+                    ];
+                    return false;
+                  }
+                  var valid0 = _errs9 === errors;
+                } else {
+                  var valid0 = true;
+                }
               }
             }
           }
@@ -1704,9 +1690,9 @@ const schema15 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': true,
   'x-name': 'InstitutionRequest',
   'x-location': '#/components/schemas/institution_request',
@@ -1829,71 +1815,27 @@ function validate30(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate30.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema15.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate30.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema15.properties.federatedApi.type,
-                        parentSchema: schema15.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate30.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema15.properties.apiToken.type,
+                    parentSchema: schema15.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate30.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema15.properties.apiToken.type,
-                      parentSchema: schema15.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -1922,11 +1864,12 @@ const schema16 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': true,
   'x-name': 'InstitutionResponse',
   'x-location': '#/components/schemas/institution_response',
@@ -1940,132 +1883,85 @@ function validate31(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate31.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema16.properties.name.type,
-              parentSchema: schema16.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate31.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema16.required,
+            parentSchema: schema16,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate31.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema16.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate31.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema16.properties.homepage.type,
-                    parentSchema: schema16.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate31.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema16.properties.url.type,
+                parentSchema: schema16.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate31.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema16.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate31.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema16.properties.api.type,
-                      parentSchema: schema16.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate31.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema16.properties.name.type,
+                  parentSchema: schema16.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate31.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema16.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema16.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -2073,23 +1969,67 @@ function validate31(
                   } else {
                     validate31.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema16.properties.federatedApi.type,
-                        parentSchema: schema16.properties.federatedApi,
-                        data: data3,
+                        schema: schema16.properties.homepage.type,
+                        parentSchema: schema16.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate31.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema16.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate31.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema16.properties.api.type,
+                          parentSchema: schema16.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }
@@ -2131,7 +2071,7 @@ function validate32(
   if (errors === 0) {
     if (errors === 0) {
       if (typeof data === 'string') {
-        if (!formats6.test(data)) {
+        if (!formats4.test(data)) {
           validate32.errors = [
             {
               instancePath,
@@ -2184,7 +2124,7 @@ function validate33(
   if (errors === 0) {
     if (errors === 0) {
       if (typeof data === 'string') {
-        if (!formats6.test(data)) {
+        if (!formats4.test(data)) {
           validate33.errors = [
             {
               instancePath,
@@ -2335,9 +2275,9 @@ const schema21 = {
       name: { type: 'string' },
       homepage: { type: 'string', format: 'uri' },
       api: { type: 'string', format: 'uri' },
-      federatedApi: { type: 'string', format: 'uri' },
       apiToken: { type: 'string', writeOnly: true },
     },
+    required: [],
   },
   'x-standalone': false,
   'x-name': 'listInstitutionsResponse200Request',
@@ -2469,71 +2409,27 @@ function validate36(
                   var valid1 = true;
                 }
                 if (valid1) {
-                  if (data0.federatedApi !== undefined) {
-                    let data4 = data0.federatedApi;
+                  if (data0.apiToken !== undefined) {
+                    let data4 = data0.apiToken;
                     const _errs9 = errors;
-                    if (errors === _errs9) {
-                      if (errors === _errs9) {
-                        if (typeof data4 === 'string') {
-                          if (!formats0(data4)) {
-                            validate36.errors = [
-                              {
-                                instancePath: instancePath + '/' + i0 + '/federatedApi',
-                                schemaPath: '#/items/properties/federatedApi/format',
-                                keyword: 'format',
-                                params: { format: 'uri' },
-                                message: 'must match format "' + 'uri' + '"',
-                                schema: 'uri',
-                                parentSchema: schema21.items.properties.federatedApi,
-                                data: data4,
-                              },
-                            ];
-                            return false;
-                          }
-                        } else {
-                          validate36.errors = [
-                            {
-                              instancePath: instancePath + '/' + i0 + '/federatedApi',
-                              schemaPath: '#/items/properties/federatedApi/type',
-                              keyword: 'type',
-                              params: { type: 'string' },
-                              message: 'must be string',
-                              schema: schema21.items.properties.federatedApi.type,
-                              parentSchema: schema21.items.properties.federatedApi,
-                              data: data4,
-                            },
-                          ];
-                          return false;
-                        }
-                      }
+                    if (typeof data4 !== 'string') {
+                      validate36.errors = [
+                        {
+                          instancePath: instancePath + '/' + i0 + '/apiToken',
+                          schemaPath: '#/items/properties/apiToken/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema21.items.properties.apiToken.type,
+                          parentSchema: schema21.items.properties.apiToken,
+                          data: data4,
+                        },
+                      ];
+                      return false;
                     }
                     var valid1 = _errs9 === errors;
                   } else {
                     var valid1 = true;
-                  }
-                  if (valid1) {
-                    if (data0.apiToken !== undefined) {
-                      let data5 = data0.apiToken;
-                      const _errs11 = errors;
-                      if (typeof data5 !== 'string') {
-                        validate36.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/apiToken',
-                            schemaPath: '#/items/properties/apiToken/type',
-                            keyword: 'type',
-                            params: { type: 'string' },
-                            message: 'must be string',
-                            schema: schema21.items.properties.apiToken.type,
-                            parentSchema: schema21.items.properties.apiToken,
-                            data: data5,
-                          },
-                        ];
-                        return false;
-                      }
-                      var valid1 = _errs11 === errors;
-                    } else {
-                      var valid1 = true;
-                    }
                   }
                 }
               }
@@ -2585,11 +2481,12 @@ const schema22 = {
     title: 'Institution',
     type: 'object',
     properties: {
+      url: { type: 'string', readOnly: true },
       name: { type: 'string' },
       homepage: { type: 'string', format: 'uri' },
       api: { type: 'string', format: 'uri' },
-      federatedApi: { type: 'string', format: 'uri' },
     },
+    required: ['url'],
   },
   'x-standalone': false,
   'x-name': 'listInstitutionsResponse200Response',
@@ -2612,132 +2509,85 @@ function validate37(
         const _errs1 = errors;
         if (errors === _errs1) {
           if (data0 && typeof data0 == 'object' && !Array.isArray(data0)) {
-            if (data0.name !== undefined) {
-              let data1 = data0.name;
-              const _errs3 = errors;
-              if (typeof data1 !== 'string') {
-                validate37.errors = [
-                  {
-                    instancePath: instancePath + '/' + i0 + '/name',
-                    schemaPath: '#/items/properties/name/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema22.items.properties.name.type,
-                    parentSchema: schema22.items.properties.name,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-              var valid1 = _errs3 === errors;
+            let missing0;
+            if (data0.url === undefined && (missing0 = 'url')) {
+              validate37.errors = [
+                {
+                  instancePath: instancePath + '/' + i0,
+                  schemaPath: '#/items/required',
+                  keyword: 'required',
+                  params: { missingProperty: missing0 },
+                  message: "must have required property '" + missing0 + "'",
+                  schema: schema22.items.required,
+                  parentSchema: schema22.items,
+                  data: data0,
+                },
+              ];
+              return false;
             } else {
-              var valid1 = true;
-            }
-            if (valid1) {
-              if (data0.homepage !== undefined) {
-                let data2 = data0.homepage;
-                const _errs5 = errors;
-                if (errors === _errs5) {
-                  if (errors === _errs5) {
-                    if (typeof data2 === 'string') {
-                      if (!formats0(data2)) {
-                        validate37.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/homepage',
-                            schemaPath: '#/items/properties/homepage/format',
-                            keyword: 'format',
-                            params: { format: 'uri' },
-                            message: 'must match format "' + 'uri' + '"',
-                            schema: 'uri',
-                            parentSchema: schema22.items.properties.homepage,
-                            data: data2,
-                          },
-                        ];
-                        return false;
-                      }
-                    } else {
-                      validate37.errors = [
-                        {
-                          instancePath: instancePath + '/' + i0 + '/homepage',
-                          schemaPath: '#/items/properties/homepage/type',
-                          keyword: 'type',
-                          params: { type: 'string' },
-                          message: 'must be string',
-                          schema: schema22.items.properties.homepage.type,
-                          parentSchema: schema22.items.properties.homepage,
-                          data: data2,
-                        },
-                      ];
-                      return false;
-                    }
-                  }
+              if (data0.url !== undefined) {
+                let data1 = data0.url;
+                const _errs3 = errors;
+                if (typeof data1 !== 'string') {
+                  validate37.errors = [
+                    {
+                      instancePath: instancePath + '/' + i0 + '/url',
+                      schemaPath: '#/items/properties/url/type',
+                      keyword: 'type',
+                      params: { type: 'string' },
+                      message: 'must be string',
+                      schema: schema22.items.properties.url.type,
+                      parentSchema: schema22.items.properties.url,
+                      data: data1,
+                    },
+                  ];
+                  return false;
                 }
-                var valid1 = _errs5 === errors;
+                var valid1 = _errs3 === errors;
               } else {
                 var valid1 = true;
               }
               if (valid1) {
-                if (data0.api !== undefined) {
-                  let data3 = data0.api;
-                  const _errs7 = errors;
-                  if (errors === _errs7) {
-                    if (errors === _errs7) {
-                      if (typeof data3 === 'string') {
-                        if (!formats0(data3)) {
-                          validate37.errors = [
-                            {
-                              instancePath: instancePath + '/' + i0 + '/api',
-                              schemaPath: '#/items/properties/api/format',
-                              keyword: 'format',
-                              params: { format: 'uri' },
-                              message: 'must match format "' + 'uri' + '"',
-                              schema: 'uri',
-                              parentSchema: schema22.items.properties.api,
-                              data: data3,
-                            },
-                          ];
-                          return false;
-                        }
-                      } else {
-                        validate37.errors = [
-                          {
-                            instancePath: instancePath + '/' + i0 + '/api',
-                            schemaPath: '#/items/properties/api/type',
-                            keyword: 'type',
-                            params: { type: 'string' },
-                            message: 'must be string',
-                            schema: schema22.items.properties.api.type,
-                            parentSchema: schema22.items.properties.api,
-                            data: data3,
-                          },
-                        ];
-                        return false;
-                      }
-                    }
+                if (data0.name !== undefined) {
+                  let data2 = data0.name;
+                  const _errs5 = errors;
+                  if (typeof data2 !== 'string') {
+                    validate37.errors = [
+                      {
+                        instancePath: instancePath + '/' + i0 + '/name',
+                        schemaPath: '#/items/properties/name/type',
+                        keyword: 'type',
+                        params: { type: 'string' },
+                        message: 'must be string',
+                        schema: schema22.items.properties.name.type,
+                        parentSchema: schema22.items.properties.name,
+                        data: data2,
+                      },
+                    ];
+                    return false;
                   }
-                  var valid1 = _errs7 === errors;
+                  var valid1 = _errs5 === errors;
                 } else {
                   var valid1 = true;
                 }
                 if (valid1) {
-                  if (data0.federatedApi !== undefined) {
-                    let data4 = data0.federatedApi;
-                    const _errs9 = errors;
-                    if (errors === _errs9) {
-                      if (errors === _errs9) {
-                        if (typeof data4 === 'string') {
-                          if (!formats0(data4)) {
+                  if (data0.homepage !== undefined) {
+                    let data3 = data0.homepage;
+                    const _errs7 = errors;
+                    if (errors === _errs7) {
+                      if (errors === _errs7) {
+                        if (typeof data3 === 'string') {
+                          if (!formats0(data3)) {
                             validate37.errors = [
                               {
-                                instancePath: instancePath + '/' + i0 + '/federatedApi',
-                                schemaPath: '#/items/properties/federatedApi/format',
+                                instancePath: instancePath + '/' + i0 + '/homepage',
+                                schemaPath: '#/items/properties/homepage/format',
                                 keyword: 'format',
                                 params: { format: 'uri' },
                                 message: 'must match format "' + 'uri' + '"',
                                 schema: 'uri',
-                                parentSchema: schema22.items.properties.federatedApi,
-                                data: data4,
+                                parentSchema: schema22.items.properties.homepage,
+                                data: data3,
                               },
                             ];
                             return false;
@@ -2745,23 +2595,67 @@ function validate37(
                         } else {
                           validate37.errors = [
                             {
-                              instancePath: instancePath + '/' + i0 + '/federatedApi',
-                              schemaPath: '#/items/properties/federatedApi/type',
+                              instancePath: instancePath + '/' + i0 + '/homepage',
+                              schemaPath: '#/items/properties/homepage/type',
                               keyword: 'type',
                               params: { type: 'string' },
                               message: 'must be string',
-                              schema: schema22.items.properties.federatedApi.type,
-                              parentSchema: schema22.items.properties.federatedApi,
-                              data: data4,
+                              schema: schema22.items.properties.homepage.type,
+                              parentSchema: schema22.items.properties.homepage,
+                              data: data3,
                             },
                           ];
                           return false;
                         }
                       }
                     }
-                    var valid1 = _errs9 === errors;
+                    var valid1 = _errs7 === errors;
                   } else {
                     var valid1 = true;
+                  }
+                  if (valid1) {
+                    if (data0.api !== undefined) {
+                      let data4 = data0.api;
+                      const _errs9 = errors;
+                      if (errors === _errs9) {
+                        if (errors === _errs9) {
+                          if (typeof data4 === 'string') {
+                            if (!formats0(data4)) {
+                              validate37.errors = [
+                                {
+                                  instancePath: instancePath + '/' + i0 + '/api',
+                                  schemaPath: '#/items/properties/api/format',
+                                  keyword: 'format',
+                                  params: { format: 'uri' },
+                                  message: 'must match format "' + 'uri' + '"',
+                                  schema: 'uri',
+                                  parentSchema: schema22.items.properties.api,
+                                  data: data4,
+                                },
+                              ];
+                              return false;
+                            }
+                          } else {
+                            validate37.errors = [
+                              {
+                                instancePath: instancePath + '/' + i0 + '/api',
+                                schemaPath: '#/items/properties/api/type',
+                                keyword: 'type',
+                                params: { type: 'string' },
+                                message: 'must be string',
+                                schema: schema22.items.properties.api.type,
+                                parentSchema: schema22.items.properties.api,
+                                data: data4,
+                              },
+                            ];
+                            return false;
+                          }
+                        }
+                      }
+                      var valid1 = _errs9 === errors;
+                    } else {
+                      var valid1 = true;
+                    }
                   }
                 }
               }
@@ -2814,9 +2708,9 @@ const schema23 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': false,
   'x-name': 'createInstitutionBodyRequest',
   'x-location':
@@ -2940,71 +2834,27 @@ function validate38(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate38.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema23.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate38.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema23.properties.federatedApi.type,
-                        parentSchema: schema23.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate38.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema23.properties.apiToken.type,
+                    parentSchema: schema23.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate38.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema23.properties.apiToken.type,
-                      parentSchema: schema23.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -3033,11 +2883,12 @@ const schema24 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'createInstitutionBodyResponse',
   'x-location':
@@ -3052,132 +2903,85 @@ function validate39(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate39.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema24.properties.name.type,
-              parentSchema: schema24.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate39.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema24.required,
+            parentSchema: schema24,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate39.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema24.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate39.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema24.properties.homepage.type,
-                    parentSchema: schema24.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate39.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema24.properties.url.type,
+                parentSchema: schema24.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate39.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema24.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate39.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema24.properties.api.type,
-                      parentSchema: schema24.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate39.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema24.properties.name.type,
+                  parentSchema: schema24.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate39.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema24.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema24.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -3185,23 +2989,67 @@ function validate39(
                   } else {
                     validate39.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema24.properties.federatedApi.type,
-                        parentSchema: schema24.properties.federatedApi,
-                        data: data3,
+                        schema: schema24.properties.homepage.type,
+                        parentSchema: schema24.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate39.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema24.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate39.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema24.properties.api.type,
+                          parentSchema: schema24.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }
@@ -3233,9 +3081,9 @@ const schema25 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': false,
   'x-name': 'createInstitutionResponse201Request',
   'x-location':
@@ -3359,71 +3207,27 @@ function validate40(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate40.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema25.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate40.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema25.properties.federatedApi.type,
-                        parentSchema: schema25.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate40.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema25.properties.apiToken.type,
+                    parentSchema: schema25.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate40.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema25.properties.apiToken.type,
-                      parentSchema: schema25.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -3452,11 +3256,12 @@ const schema26 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'createInstitutionResponse201Response',
   'x-location':
@@ -3471,132 +3276,85 @@ function validate41(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate41.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema26.properties.name.type,
-              parentSchema: schema26.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate41.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema26.required,
+            parentSchema: schema26,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate41.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema26.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate41.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema26.properties.homepage.type,
-                    parentSchema: schema26.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate41.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema26.properties.url.type,
+                parentSchema: schema26.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate41.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema26.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate41.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema26.properties.api.type,
-                      parentSchema: schema26.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate41.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema26.properties.name.type,
+                  parentSchema: schema26.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate41.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema26.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema26.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -3604,23 +3362,67 @@ function validate41(
                   } else {
                     validate41.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema26.properties.federatedApi.type,
-                        parentSchema: schema26.properties.federatedApi,
-                        data: data3,
+                        schema: schema26.properties.homepage.type,
+                        parentSchema: schema26.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate41.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema26.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate41.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema26.properties.api.type,
+                          parentSchema: schema26.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }
@@ -3652,9 +3454,9 @@ const schema27 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': false,
   'x-name': 'getInstitutionResponse200Request',
   'x-location':
@@ -3778,71 +3580,27 @@ function validate42(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate42.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema27.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate42.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema27.properties.federatedApi.type,
-                        parentSchema: schema27.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate42.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema27.properties.apiToken.type,
+                    parentSchema: schema27.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate42.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema27.properties.apiToken.type,
-                      parentSchema: schema27.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -3871,11 +3629,12 @@ const schema28 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'getInstitutionResponse200Response',
   'x-location':
@@ -3890,132 +3649,85 @@ function validate43(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate43.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema28.properties.name.type,
-              parentSchema: schema28.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate43.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema28.required,
+            parentSchema: schema28,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate43.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema28.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate43.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema28.properties.homepage.type,
-                    parentSchema: schema28.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate43.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema28.properties.url.type,
+                parentSchema: schema28.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate43.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema28.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate43.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema28.properties.api.type,
-                      parentSchema: schema28.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate43.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema28.properties.name.type,
+                  parentSchema: schema28.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate43.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema28.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema28.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -4023,23 +3735,67 @@ function validate43(
                   } else {
                     validate43.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema28.properties.federatedApi.type,
-                        parentSchema: schema28.properties.federatedApi,
-                        data: data3,
+                        schema: schema28.properties.homepage.type,
+                        parentSchema: schema28.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate43.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema28.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate43.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema28.properties.api.type,
+                          parentSchema: schema28.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }
@@ -4071,9 +3827,9 @@ const schema29 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': false,
   'x-name': 'updateInstitutionBodyRequest',
   'x-location':
@@ -4197,71 +3953,27 @@ function validate44(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate44.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema29.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate44.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema29.properties.federatedApi.type,
-                        parentSchema: schema29.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate44.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema29.properties.apiToken.type,
+                    parentSchema: schema29.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate44.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema29.properties.apiToken.type,
-                      parentSchema: schema29.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -4290,11 +4002,12 @@ const schema30 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'updateInstitutionBodyResponse',
   'x-location':
@@ -4309,132 +4022,85 @@ function validate45(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate45.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema30.properties.name.type,
-              parentSchema: schema30.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate45.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema30.required,
+            parentSchema: schema30,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate45.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema30.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate45.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema30.properties.homepage.type,
-                    parentSchema: schema30.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate45.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema30.properties.url.type,
+                parentSchema: schema30.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate45.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema30.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate45.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema30.properties.api.type,
-                      parentSchema: schema30.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate45.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema30.properties.name.type,
+                  parentSchema: schema30.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate45.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema30.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema30.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -4442,23 +4108,67 @@ function validate45(
                   } else {
                     validate45.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema30.properties.federatedApi.type,
-                        parentSchema: schema30.properties.federatedApi,
-                        data: data3,
+                        schema: schema30.properties.homepage.type,
+                        parentSchema: schema30.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate45.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema30.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate45.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema30.properties.api.type,
+                          parentSchema: schema30.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }
@@ -4490,9 +4200,9 @@ const schema31 = {
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
     apiToken: { type: 'string', writeOnly: true },
   },
+  required: [],
   'x-standalone': false,
   'x-name': 'updateInstitutionResponse200Request',
   'x-location':
@@ -4616,71 +4326,27 @@ function validate46(
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
+            if (data.apiToken !== undefined) {
+              let data3 = data.apiToken;
               const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
-                      validate46.errors = [
-                        {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
-                          keyword: 'format',
-                          params: { format: 'uri' },
-                          message: 'must match format "' + 'uri' + '"',
-                          schema: 'uri',
-                          parentSchema: schema31.properties.federatedApi,
-                          data: data3,
-                        },
-                      ];
-                      return false;
-                    }
-                  } else {
-                    validate46.errors = [
-                      {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
-                        keyword: 'type',
-                        params: { type: 'string' },
-                        message: 'must be string',
-                        schema: schema31.properties.federatedApi.type,
-                        parentSchema: schema31.properties.federatedApi,
-                        data: data3,
-                      },
-                    ];
-                    return false;
-                  }
-                }
+              if (typeof data3 !== 'string') {
+                validate46.errors = [
+                  {
+                    instancePath: instancePath + '/apiToken',
+                    schemaPath: '#/properties/apiToken/type',
+                    keyword: 'type',
+                    params: { type: 'string' },
+                    message: 'must be string',
+                    schema: schema31.properties.apiToken.type,
+                    parentSchema: schema31.properties.apiToken,
+                    data: data3,
+                  },
+                ];
+                return false;
               }
               var valid0 = _errs7 === errors;
             } else {
               var valid0 = true;
-            }
-            if (valid0) {
-              if (data.apiToken !== undefined) {
-                let data4 = data.apiToken;
-                const _errs9 = errors;
-                if (typeof data4 !== 'string') {
-                  validate46.errors = [
-                    {
-                      instancePath: instancePath + '/apiToken',
-                      schemaPath: '#/properties/apiToken/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema31.properties.apiToken.type,
-                      parentSchema: schema31.properties.apiToken,
-                      data: data4,
-                    },
-                  ];
-                  return false;
-                }
-                var valid0 = _errs9 === errors;
-              } else {
-                var valid0 = true;
-              }
             }
           }
         }
@@ -4709,11 +4375,12 @@ const schema32 = {
   title: 'Institution',
   type: 'object',
   properties: {
+    url: { type: 'string', readOnly: true },
     name: { type: 'string' },
     homepage: { type: 'string', format: 'uri' },
     api: { type: 'string', format: 'uri' },
-    federatedApi: { type: 'string', format: 'uri' },
   },
+  required: ['url'],
   'x-standalone': false,
   'x-name': 'updateInstitutionResponse200Response',
   'x-location':
@@ -4728,132 +4395,85 @@ function validate47(
   let errors = 0;
   if (errors === 0) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
-      if (data.name !== undefined) {
-        let data0 = data.name;
-        const _errs1 = errors;
-        if (typeof data0 !== 'string') {
-          validate47.errors = [
-            {
-              instancePath: instancePath + '/name',
-              schemaPath: '#/properties/name/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema32.properties.name.type,
-              parentSchema: schema32.properties.name,
-              data: data0,
-            },
-          ];
-          return false;
-        }
-        var valid0 = _errs1 === errors;
+      let missing0;
+      if (data.url === undefined && (missing0 = 'url')) {
+        validate47.errors = [
+          {
+            instancePath,
+            schemaPath: '#/required',
+            keyword: 'required',
+            params: { missingProperty: missing0 },
+            message: "must have required property '" + missing0 + "'",
+            schema: schema32.required,
+            parentSchema: schema32,
+            data,
+          },
+        ];
+        return false;
       } else {
-        var valid0 = true;
-      }
-      if (valid0) {
-        if (data.homepage !== undefined) {
-          let data1 = data.homepage;
-          const _errs3 = errors;
-          if (errors === _errs3) {
-            if (errors === _errs3) {
-              if (typeof data1 === 'string') {
-                if (!formats0(data1)) {
-                  validate47.errors = [
-                    {
-                      instancePath: instancePath + '/homepage',
-                      schemaPath: '#/properties/homepage/format',
-                      keyword: 'format',
-                      params: { format: 'uri' },
-                      message: 'must match format "' + 'uri' + '"',
-                      schema: 'uri',
-                      parentSchema: schema32.properties.homepage,
-                      data: data1,
-                    },
-                  ];
-                  return false;
-                }
-              } else {
-                validate47.errors = [
-                  {
-                    instancePath: instancePath + '/homepage',
-                    schemaPath: '#/properties/homepage/type',
-                    keyword: 'type',
-                    params: { type: 'string' },
-                    message: 'must be string',
-                    schema: schema32.properties.homepage.type,
-                    parentSchema: schema32.properties.homepage,
-                    data: data1,
-                  },
-                ];
-                return false;
-              }
-            }
+        if (data.url !== undefined) {
+          let data0 = data.url;
+          const _errs1 = errors;
+          if (typeof data0 !== 'string') {
+            validate47.errors = [
+              {
+                instancePath: instancePath + '/url',
+                schemaPath: '#/properties/url/type',
+                keyword: 'type',
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema32.properties.url.type,
+                parentSchema: schema32.properties.url,
+                data: data0,
+              },
+            ];
+            return false;
           }
-          var valid0 = _errs3 === errors;
+          var valid0 = _errs1 === errors;
         } else {
           var valid0 = true;
         }
         if (valid0) {
-          if (data.api !== undefined) {
-            let data2 = data.api;
-            const _errs5 = errors;
-            if (errors === _errs5) {
-              if (errors === _errs5) {
-                if (typeof data2 === 'string') {
-                  if (!formats0(data2)) {
-                    validate47.errors = [
-                      {
-                        instancePath: instancePath + '/api',
-                        schemaPath: '#/properties/api/format',
-                        keyword: 'format',
-                        params: { format: 'uri' },
-                        message: 'must match format "' + 'uri' + '"',
-                        schema: 'uri',
-                        parentSchema: schema32.properties.api,
-                        data: data2,
-                      },
-                    ];
-                    return false;
-                  }
-                } else {
-                  validate47.errors = [
-                    {
-                      instancePath: instancePath + '/api',
-                      schemaPath: '#/properties/api/type',
-                      keyword: 'type',
-                      params: { type: 'string' },
-                      message: 'must be string',
-                      schema: schema32.properties.api.type,
-                      parentSchema: schema32.properties.api,
-                      data: data2,
-                    },
-                  ];
-                  return false;
-                }
-              }
+          if (data.name !== undefined) {
+            let data1 = data.name;
+            const _errs3 = errors;
+            if (typeof data1 !== 'string') {
+              validate47.errors = [
+                {
+                  instancePath: instancePath + '/name',
+                  schemaPath: '#/properties/name/type',
+                  keyword: 'type',
+                  params: { type: 'string' },
+                  message: 'must be string',
+                  schema: schema32.properties.name.type,
+                  parentSchema: schema32.properties.name,
+                  data: data1,
+                },
+              ];
+              return false;
             }
-            var valid0 = _errs5 === errors;
+            var valid0 = _errs3 === errors;
           } else {
             var valid0 = true;
           }
           if (valid0) {
-            if (data.federatedApi !== undefined) {
-              let data3 = data.federatedApi;
-              const _errs7 = errors;
-              if (errors === _errs7) {
-                if (errors === _errs7) {
-                  if (typeof data3 === 'string') {
-                    if (!formats0(data3)) {
+            if (data.homepage !== undefined) {
+              let data2 = data.homepage;
+              const _errs5 = errors;
+              if (errors === _errs5) {
+                if (errors === _errs5) {
+                  if (typeof data2 === 'string') {
+                    if (!formats0(data2)) {
                       validate47.errors = [
                         {
-                          instancePath: instancePath + '/federatedApi',
-                          schemaPath: '#/properties/federatedApi/format',
+                          instancePath: instancePath + '/homepage',
+                          schemaPath: '#/properties/homepage/format',
                           keyword: 'format',
                           params: { format: 'uri' },
                           message: 'must match format "' + 'uri' + '"',
                           schema: 'uri',
-                          parentSchema: schema32.properties.federatedApi,
-                          data: data3,
+                          parentSchema: schema32.properties.homepage,
+                          data: data2,
                         },
                       ];
                       return false;
@@ -4861,23 +4481,67 @@ function validate47(
                   } else {
                     validate47.errors = [
                       {
-                        instancePath: instancePath + '/federatedApi',
-                        schemaPath: '#/properties/federatedApi/type',
+                        instancePath: instancePath + '/homepage',
+                        schemaPath: '#/properties/homepage/type',
                         keyword: 'type',
                         params: { type: 'string' },
                         message: 'must be string',
-                        schema: schema32.properties.federatedApi.type,
-                        parentSchema: schema32.properties.federatedApi,
-                        data: data3,
+                        schema: schema32.properties.homepage.type,
+                        parentSchema: schema32.properties.homepage,
+                        data: data2,
                       },
                     ];
                     return false;
                   }
                 }
               }
-              var valid0 = _errs7 === errors;
+              var valid0 = _errs5 === errors;
             } else {
               var valid0 = true;
+            }
+            if (valid0) {
+              if (data.api !== undefined) {
+                let data3 = data.api;
+                const _errs7 = errors;
+                if (errors === _errs7) {
+                  if (errors === _errs7) {
+                    if (typeof data3 === 'string') {
+                      if (!formats0(data3)) {
+                        validate47.errors = [
+                          {
+                            instancePath: instancePath + '/api',
+                            schemaPath: '#/properties/api/format',
+                            keyword: 'format',
+                            params: { format: 'uri' },
+                            message: 'must match format "' + 'uri' + '"',
+                            schema: 'uri',
+                            parentSchema: schema32.properties.api,
+                            data: data3,
+                          },
+                        ];
+                        return false;
+                      }
+                    } else {
+                      validate47.errors = [
+                        {
+                          instancePath: instancePath + '/api',
+                          schemaPath: '#/properties/api/type',
+                          keyword: 'type',
+                          params: { type: 'string' },
+                          message: 'must be string',
+                          schema: schema32.properties.api.type,
+                          parentSchema: schema32.properties.api,
+                          data: data3,
+                        },
+                      ];
+                      return false;
+                    }
+                  }
+                }
+                var valid0 = _errs7 === errors;
+              } else {
+                var valid0 = true;
+              }
             }
           }
         }

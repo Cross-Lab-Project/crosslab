@@ -140,10 +140,10 @@ type NumericRangeTuple<
 export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
     ? {
+        url: string;
         name?: string;
         homepage?: string;
         api?: string;
-        federatedApi?: string;
         apiToken?: string;
         [k: string]: unknown;
       }
@@ -152,16 +152,15 @@ export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
         name?: string;
         homepage?: string;
         api?: string;
-        federatedApi?: string;
         apiToken?: string;
         [k: string]: unknown;
       }
     : T extends 'response'
     ? {
+        url: string;
         name?: string;
         homepage?: string;
         api?: string;
-        federatedApi?: string;
         [k: string]: unknown;
       }
     : never;
