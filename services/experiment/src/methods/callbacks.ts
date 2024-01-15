@@ -13,6 +13,18 @@ export const callbackUrl: string = (config.BASE_URL + '/callbacks/experiment').r
 );
 export const changedCallbacks = new Map<string, string[] | undefined>();
 
+export function registerChangedCallback(experimentUuid: string, changedUrl: string) {
+  logger.log(
+    'info',
+    `registering changed-callback for experiment '${experimentUrlFromId(
+      experimentUuid,
+    )}' to '${changedUrl}'`,
+  );
+  const changedCallbackURLs = changedCallbacks.get(experimentUuid) ?? [];
+  changedCallbackURLs.push(changedUrl);
+  changedCallbacks.set(experimentUuid, changedCallbackURLs);
+}
+
 /**
  * This function sends an 'experiment-changed' callback.
  * @param experiment The experiment for which to send the callback.

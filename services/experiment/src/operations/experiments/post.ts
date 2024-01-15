@@ -2,7 +2,7 @@ import { logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { postExperimentsSignature } from '../../generated/signatures.js';
-import { changedCallbacks } from '../../methods/callbacks.js';
+import { registerChangedCallback } from '../../methods/callbacks.js';
 import { transitionExperiment } from '../../methods/experimentStatus/index.js';
 import { experimentUrlFromId } from '../../methods/url.js';
 
@@ -34,17 +34,8 @@ export const postExperiments: postExperimentsSignature = async (
 
   await repositories.experiment.save(experimentModel); // NOTE: truly needed?
 
-  if (parameters.changedURL) {
-    logger.log(
-      'info',
-      `registering changed-callback for experiment '${experimentUrlFromId(
-        experimentModel.uuid,
-      )}' to '${parameters.changedURL}'`,
-    );
-    const changedCallbackURLs = changedCallbacks.get(experimentModel.uuid) ?? [];
-    changedCallbackURLs.push(parameters.changedURL);
-    changedCallbacks.set(experimentModel.uuid, changedCallbackURLs);
-  }
+  if (parameters.changedURL)
+    registerChangedCallback(experimentModel.uuid, parameters.changedURL);
 
   logger.log('info', 'Successfully handled POST request on endpoint /experiments', {
     data: {
