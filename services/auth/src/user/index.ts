@@ -1,5 +1,6 @@
 import { HttpError } from '@crosslab/service-common';
 import { utils } from '@crosslab/service-common';
+import { logger } from '@crosslab/service-common/logging';
 import bcrypt from 'bcrypt';
 import express from 'express';
 import { FindManyOptions, QueryFailedError } from 'typeorm';
@@ -16,7 +17,6 @@ import {
   patchUsersByUserIdPath,
   postUsersPath,
 } from '../generated/operations.js';
-import { User } from '../generated/types.js';
 import {
   validateDeleteUsersByUserId,
   validateGetIdentity,
@@ -26,7 +26,6 @@ import {
   validatePostUsers,
 } from '../generated/validation.js';
 import { createUser } from './helper.js';
-import { logger } from '@crosslab/service-common/logging';
 
 /**
  * This function builds the url of a user using its id.

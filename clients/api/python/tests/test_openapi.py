@@ -1334,7 +1334,7 @@ async def test_createToken(aioresponses: aioresponses):
     url_variant = r'token'
     full_url = BASE_URL+r'/token'
 
-    request = json.loads(r'{"user":"deserunt sit voluptate officia","claims":{"ad4":"sunt Lorem id in","cupidatate3":-9476452.79204902,"quie":true}}')
+    request = json.loads(r'{"username":"anim officia pariatur","claims":{}}')
 
     parameter_list = [{}, ]
 
@@ -4911,28 +4911,28 @@ async def test_list_institutions(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"apiToken":"in","homepage":"http://AD.srkrwnE","federatedApi":"https://biGcjlhbXIfU.fobmMh5kJdzqTQTq,+,5NFaaHwy","name":"laboris quis laborum nostrud","api":"https://lmwVKpUfU.qmZ5NXKtqrvyDDhPi6J,,vVOl2-hR+Kf694QBp.CZ"},{"apiToken":"voluptate enim mollit dolore reprehenderit","name":"ut qui quis","federatedApi":"http://dDsLV.zalLjx-X7AMbA0k,LJFvo4lCNtMopJ0hh5DJspMxmoLkHl5a","api":"https://FTkfIDuZXcsKUwVx.ceNT3kiETNdewalDCrYwNRv5loWq2","homepage":"http://aaNvNuixGVmKFHADrqIGBlguqQIu.annhUqRD"},{"name":"aliquip","homepage":"https://vQoOZjOxsUkLpmtBvSh.nusbvrXkK"}]')
+        response_200_dict = json.loads(r'[{"url":"velit ullamco","api":"https://OspHTToGIfAMsZZtpkYjoblfmZijZr.fvnzaLN9XLJ.l1g0uBjLN3g-+P8qUpSS2szVKv37SUuYc4mxJcKKTj.1DWBrTonGhQ","name":"velit","apiToken":"veniam consectetur dolor"},{"url":"aliquip labore laboris culpa"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_institutions(**parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"apiToken":"in","homepage":"http://AD.srkrwnE","federatedApi":"https://biGcjlhbXIfU.fobmMh5kJdzqTQTq,+,5NFaaHwy","name":"laboris quis laborum nostrud","api":"https://lmwVKpUfU.qmZ5NXKtqrvyDDhPi6J,,vVOl2-hR+Kf694QBp.CZ"},{"apiToken":"voluptate enim mollit dolore reprehenderit","name":"ut qui quis","federatedApi":"http://dDsLV.zalLjx-X7AMbA0k,LJFvo4lCNtMopJ0hh5DJspMxmoLkHl5a","api":"https://FTkfIDuZXcsKUwVx.ceNT3kiETNdewalDCrYwNRv5loWq2","homepage":"http://aaNvNuixGVmKFHADrqIGBlguqQIu.annhUqRD"},{"name":"aliquip","homepage":"https://vQoOZjOxsUkLpmtBvSh.nusbvrXkK"}]')
+        response_200_dict = json.loads(r'[{"url":"velit ullamco","api":"https://OspHTToGIfAMsZZtpkYjoblfmZijZr.fvnzaLN9XLJ.l1g0uBjLN3g-+P8qUpSS2szVKv37SUuYc4mxJcKKTj.1DWBrTonGhQ","name":"velit","apiToken":"veniam consectetur dolor"},{"url":"aliquip labore laboris culpa"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_institutions(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"apiToken":"in","homepage":"http://AD.srkrwnE","federatedApi":"https://biGcjlhbXIfU.fobmMh5kJdzqTQTq,+,5NFaaHwy","name":"laboris quis laborum nostrud","api":"https://lmwVKpUfU.qmZ5NXKtqrvyDDhPi6J,,vVOl2-hR+Kf694QBp.CZ"},{"apiToken":"voluptate enim mollit dolore reprehenderit","name":"ut qui quis","federatedApi":"http://dDsLV.zalLjx-X7AMbA0k,LJFvo4lCNtMopJ0hh5DJspMxmoLkHl5a","api":"https://FTkfIDuZXcsKUwVx.ceNT3kiETNdewalDCrYwNRv5loWq2","homepage":"http://aaNvNuixGVmKFHADrqIGBlguqQIu.annhUqRD"},{"name":"aliquip","homepage":"https://vQoOZjOxsUkLpmtBvSh.nusbvrXkK"}]')
+        response_200_dict = json.loads(r'[{"url":"velit ullamco","api":"https://OspHTToGIfAMsZZtpkYjoblfmZijZr.fvnzaLN9XLJ.l1g0uBjLN3g-+P8qUpSS2szVKv37SUuYc4mxJcKKTj.1DWBrTonGhQ","name":"velit","apiToken":"veniam consectetur dolor"},{"url":"aliquip labore laboris culpa"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_institutions(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"apiToken":"in","homepage":"http://AD.srkrwnE","federatedApi":"https://biGcjlhbXIfU.fobmMh5kJdzqTQTq,+,5NFaaHwy","name":"laboris quis laborum nostrud","api":"https://lmwVKpUfU.qmZ5NXKtqrvyDDhPi6J,,vVOl2-hR+Kf694QBp.CZ"},{"apiToken":"voluptate enim mollit dolore reprehenderit","name":"ut qui quis","federatedApi":"http://dDsLV.zalLjx-X7AMbA0k,LJFvo4lCNtMopJ0hh5DJspMxmoLkHl5a","api":"https://FTkfIDuZXcsKUwVx.ceNT3kiETNdewalDCrYwNRv5loWq2","homepage":"http://aaNvNuixGVmKFHADrqIGBlguqQIu.annhUqRD"},{"name":"aliquip","homepage":"https://vQoOZjOxsUkLpmtBvSh.nusbvrXkK"}]')
+        response_200_dict = json.loads(r'[{"url":"velit ullamco","api":"https://OspHTToGIfAMsZZtpkYjoblfmZijZr.fvnzaLN9XLJ.l1g0uBjLN3g-+P8qUpSS2szVKv37SUuYc4mxJcKKTj.1DWBrTonGhQ","name":"velit","apiToken":"veniam consectetur dolor"},{"url":"aliquip labore laboris culpa"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_institutions(url=full_url, **parameters)
@@ -5065,33 +5065,33 @@ async def test_create_institution(aioresponses: aioresponses):
     url_variant = r'institutions'
     full_url = BASE_URL+r'/institutions'
 
-    request = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+    request = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_201_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_institution(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_201_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_institution(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_201_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_institution(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_201_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_institution(url=full_url, body=request, **parameters)
@@ -5227,21 +5227,21 @@ async def test_get_institution(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_institution(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_institution(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_institution(url=full_url, **parameters)
@@ -5344,26 +5344,26 @@ async def test_update_institution(aioresponses: aioresponses):
     url_variant = r'institutions/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/institutions/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+    request = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_institution(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_institution(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"apiToken":"magna","homepage":"http://dnHzghTNxuBrmqAWZv.fwhbkLyXjhTbPAPq,q.G2UiIeLAil4SFtxYpK","federatedApi":"http://OctPepLeLlhbGXRDmOjZUiaXvkFfg.tugbAFLU.k4TvtlGrpw","api":"http://h.tefFdL9KZgYjwLl,9RGFYTdC88cnq6EKQCGH4ZyYkM6b","name":"eu dolor"}')
+        response_200_dict = json.loads(r'{"url":"velit laborum veniam esse","name":"sit aute deserunt dolor laborum","homepage":"https://rLUUzVntQAYYuxFKofW.nsoW.sUJQUrn,eKn-An+bYSGB","api":"http://LTfWiqREaPgqMPvYgWDPM.nrtf+nU1HeZ,Oim7BUybJkQS.68OdFKFrFsscg,NXwpqHlYvGCbc,J7khIH16p2vB49epr8pAJQtzhj8j4nbH5k2","apiToken":"in"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_institution(url=full_url, body=request, **parameters)

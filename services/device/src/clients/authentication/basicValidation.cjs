@@ -2357,7 +2357,7 @@ function validate42(
 }
 exports.validateCreateTokenBody = validate43;
 const schema28 = {
-  oneOf: [
+  anyOf: [
     {
       type: 'object',
       properties: {
@@ -2402,7 +2402,6 @@ function validate43(
   let errors = 0;
   const _errs0 = errors;
   let valid0 = false;
-  let passing0 = null;
   const _errs1 = errors;
   if (errors === _errs1) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
@@ -2410,12 +2409,12 @@ function validate43(
       if (data.user === undefined && (missing0 = 'user')) {
         const err0 = {
           instancePath,
-          schemaPath: '#/oneOf/0/required',
+          schemaPath: '#/anyOf/0/required',
           keyword: 'required',
           params: { missingProperty: missing0 },
           message: "must have required property '" + missing0 + "'",
-          schema: schema28.oneOf[0].required,
-          parentSchema: schema28.oneOf[0],
+          schema: schema28.anyOf[0].required,
+          parentSchema: schema28.anyOf[0],
           data,
         };
         if (vErrors === null) {
@@ -2431,12 +2430,12 @@ function validate43(
           if (typeof data0 !== 'string') {
             const err1 = {
               instancePath: instancePath + '/user',
-              schemaPath: '#/oneOf/0/properties/user/type',
+              schemaPath: '#/anyOf/0/properties/user/type',
               keyword: 'type',
               params: { type: 'string' },
               message: 'must be string',
-              schema: schema28.oneOf[0].properties.user.type,
-              parentSchema: schema28.oneOf[0].properties.user,
+              schema: schema28.anyOf[0].properties.user.type,
+              parentSchema: schema28.anyOf[0].properties.user,
               data: data0,
             };
             if (vErrors === null) {
@@ -2457,12 +2456,12 @@ function validate43(
             if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
               const err2 = {
                 instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/0/properties/claims/type',
+                schemaPath: '#/anyOf/0/properties/claims/type',
                 keyword: 'type',
                 params: { type: 'object' },
                 message: 'must be object',
-                schema: schema28.oneOf[0].properties.claims.type,
-                parentSchema: schema28.oneOf[0].properties.claims,
+                schema: schema28.anyOf[0].properties.claims.type,
+                parentSchema: schema28.anyOf[0].properties.claims,
                 data: data1,
               };
               if (vErrors === null) {
@@ -2481,12 +2480,12 @@ function validate43(
     } else {
       const err3 = {
         instancePath,
-        schemaPath: '#/oneOf/0/type',
+        schemaPath: '#/anyOf/0/type',
         keyword: 'type',
         params: { type: 'object' },
         message: 'must be object',
-        schema: schema28.oneOf[0].type,
-        parentSchema: schema28.oneOf[0],
+        schema: schema28.anyOf[0].type,
+        parentSchema: schema28.anyOf[0],
         data,
       };
       if (vErrors === null) {
@@ -2498,122 +2497,113 @@ function validate43(
     }
   }
   var _valid0 = _errs1 === errors;
-  if (_valid0) {
-    valid0 = true;
-    passing0 = 0;
-  }
-  const _errs7 = errors;
-  if (errors === _errs7) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing1;
-      if (data.username === undefined && (missing1 = 'username')) {
-        const err4 = {
-          instancePath,
-          schemaPath: '#/oneOf/1/required',
-          keyword: 'required',
-          params: { missingProperty: missing1 },
-          message: "must have required property '" + missing1 + "'",
-          schema: schema28.oneOf[1].required,
-          parentSchema: schema28.oneOf[1],
-          data,
-        };
-        if (vErrors === null) {
-          vErrors = [err4];
-        } else {
-          vErrors.push(err4);
-        }
-        errors++;
-      } else {
-        if (data.username !== undefined) {
-          let data2 = data.username;
-          const _errs9 = errors;
-          if (typeof data2 !== 'string') {
-            const err5 = {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/oneOf/1/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema28.oneOf[1].properties.username.type,
-              parentSchema: schema28.oneOf[1].properties.username,
-              data: data2,
-            };
-            if (vErrors === null) {
-              vErrors = [err5];
-            } else {
-              vErrors.push(err5);
-            }
-            errors++;
+  valid0 = valid0 || _valid0;
+  if (!valid0) {
+    const _errs7 = errors;
+    if (errors === _errs7) {
+      if (data && typeof data == 'object' && !Array.isArray(data)) {
+        let missing1;
+        if (data.username === undefined && (missing1 = 'username')) {
+          const err4 = {
+            instancePath,
+            schemaPath: '#/anyOf/1/required',
+            keyword: 'required',
+            params: { missingProperty: missing1 },
+            message: "must have required property '" + missing1 + "'",
+            schema: schema28.anyOf[1].required,
+            parentSchema: schema28.anyOf[1],
+            data,
+          };
+          if (vErrors === null) {
+            vErrors = [err4];
+          } else {
+            vErrors.push(err4);
           }
-          var valid2 = _errs9 === errors;
+          errors++;
         } else {
-          var valid2 = true;
-        }
-        if (valid2) {
-          if (data.claims !== undefined) {
-            let data3 = data.claims;
-            const _errs11 = errors;
-            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
-              const err6 = {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/1/properties/claims/type',
+          if (data.username !== undefined) {
+            let data2 = data.username;
+            const _errs9 = errors;
+            if (typeof data2 !== 'string') {
+              const err5 = {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/anyOf/1/properties/username/type',
                 keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema28.oneOf[1].properties.claims.type,
-                parentSchema: schema28.oneOf[1].properties.claims,
-                data: data3,
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema28.anyOf[1].properties.username.type,
+                parentSchema: schema28.anyOf[1].properties.username,
+                data: data2,
               };
               if (vErrors === null) {
-                vErrors = [err6];
+                vErrors = [err5];
               } else {
-                vErrors.push(err6);
+                vErrors.push(err5);
               }
               errors++;
             }
-            var valid2 = _errs11 === errors;
+            var valid2 = _errs9 === errors;
           } else {
             var valid2 = true;
           }
+          if (valid2) {
+            if (data.claims !== undefined) {
+              let data3 = data.claims;
+              const _errs11 = errors;
+              if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+                const err6 = {
+                  instancePath: instancePath + '/claims',
+                  schemaPath: '#/anyOf/1/properties/claims/type',
+                  keyword: 'type',
+                  params: { type: 'object' },
+                  message: 'must be object',
+                  schema: schema28.anyOf[1].properties.claims.type,
+                  parentSchema: schema28.anyOf[1].properties.claims,
+                  data: data3,
+                };
+                if (vErrors === null) {
+                  vErrors = [err6];
+                } else {
+                  vErrors.push(err6);
+                }
+                errors++;
+              }
+              var valid2 = _errs11 === errors;
+            } else {
+              var valid2 = true;
+            }
+          }
         }
-      }
-    } else {
-      const err7 = {
-        instancePath,
-        schemaPath: '#/oneOf/1/type',
-        keyword: 'type',
-        params: { type: 'object' },
-        message: 'must be object',
-        schema: schema28.oneOf[1].type,
-        parentSchema: schema28.oneOf[1],
-        data,
-      };
-      if (vErrors === null) {
-        vErrors = [err7];
       } else {
-        vErrors.push(err7);
+        const err7 = {
+          instancePath,
+          schemaPath: '#/anyOf/1/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema28.anyOf[1].type,
+          parentSchema: schema28.anyOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err7];
+        } else {
+          vErrors.push(err7);
+        }
+        errors++;
       }
-      errors++;
     }
-  }
-  var _valid0 = _errs7 === errors;
-  if (_valid0 && valid0) {
-    valid0 = false;
-    passing0 = [passing0, 1];
-  } else {
-    if (_valid0) {
-      valid0 = true;
-      passing0 = 1;
-    }
+    var _valid0 = _errs7 === errors;
+    valid0 = valid0 || _valid0;
   }
   if (!valid0) {
     const err8 = {
       instancePath,
-      schemaPath: '#/oneOf',
-      keyword: 'oneOf',
-      params: { passingSchemas: passing0 },
-      message: 'must match exactly one schema in oneOf',
-      schema: schema28.oneOf,
+      schemaPath: '#/anyOf',
+      keyword: 'anyOf',
+      params: {},
+      message: 'must match a schema in anyOf',
+      schema: schema28.anyOf,
       parentSchema: schema28,
       data,
     };
@@ -6488,7 +6478,7 @@ function validate88(
 }
 exports.validateCreateTokenBodyRequest = validate89;
 const schema74 = {
-  oneOf: [
+  anyOf: [
     {
       type: 'object',
       properties: {
@@ -6533,7 +6523,6 @@ function validate89(
   let errors = 0;
   const _errs0 = errors;
   let valid0 = false;
-  let passing0 = null;
   const _errs1 = errors;
   if (errors === _errs1) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
@@ -6541,12 +6530,12 @@ function validate89(
       if (data.user === undefined && (missing0 = 'user')) {
         const err0 = {
           instancePath,
-          schemaPath: '#/oneOf/0/required',
+          schemaPath: '#/anyOf/0/required',
           keyword: 'required',
           params: { missingProperty: missing0 },
           message: "must have required property '" + missing0 + "'",
-          schema: schema74.oneOf[0].required,
-          parentSchema: schema74.oneOf[0],
+          schema: schema74.anyOf[0].required,
+          parentSchema: schema74.anyOf[0],
           data,
         };
         if (vErrors === null) {
@@ -6562,12 +6551,12 @@ function validate89(
           if (typeof data0 !== 'string') {
             const err1 = {
               instancePath: instancePath + '/user',
-              schemaPath: '#/oneOf/0/properties/user/type',
+              schemaPath: '#/anyOf/0/properties/user/type',
               keyword: 'type',
               params: { type: 'string' },
               message: 'must be string',
-              schema: schema74.oneOf[0].properties.user.type,
-              parentSchema: schema74.oneOf[0].properties.user,
+              schema: schema74.anyOf[0].properties.user.type,
+              parentSchema: schema74.anyOf[0].properties.user,
               data: data0,
             };
             if (vErrors === null) {
@@ -6588,12 +6577,12 @@ function validate89(
             if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
               const err2 = {
                 instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/0/properties/claims/type',
+                schemaPath: '#/anyOf/0/properties/claims/type',
                 keyword: 'type',
                 params: { type: 'object' },
                 message: 'must be object',
-                schema: schema74.oneOf[0].properties.claims.type,
-                parentSchema: schema74.oneOf[0].properties.claims,
+                schema: schema74.anyOf[0].properties.claims.type,
+                parentSchema: schema74.anyOf[0].properties.claims,
                 data: data1,
               };
               if (vErrors === null) {
@@ -6612,12 +6601,12 @@ function validate89(
     } else {
       const err3 = {
         instancePath,
-        schemaPath: '#/oneOf/0/type',
+        schemaPath: '#/anyOf/0/type',
         keyword: 'type',
         params: { type: 'object' },
         message: 'must be object',
-        schema: schema74.oneOf[0].type,
-        parentSchema: schema74.oneOf[0],
+        schema: schema74.anyOf[0].type,
+        parentSchema: schema74.anyOf[0],
         data,
       };
       if (vErrors === null) {
@@ -6629,122 +6618,113 @@ function validate89(
     }
   }
   var _valid0 = _errs1 === errors;
-  if (_valid0) {
-    valid0 = true;
-    passing0 = 0;
-  }
-  const _errs7 = errors;
-  if (errors === _errs7) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing1;
-      if (data.username === undefined && (missing1 = 'username')) {
-        const err4 = {
-          instancePath,
-          schemaPath: '#/oneOf/1/required',
-          keyword: 'required',
-          params: { missingProperty: missing1 },
-          message: "must have required property '" + missing1 + "'",
-          schema: schema74.oneOf[1].required,
-          parentSchema: schema74.oneOf[1],
-          data,
-        };
-        if (vErrors === null) {
-          vErrors = [err4];
-        } else {
-          vErrors.push(err4);
-        }
-        errors++;
-      } else {
-        if (data.username !== undefined) {
-          let data2 = data.username;
-          const _errs9 = errors;
-          if (typeof data2 !== 'string') {
-            const err5 = {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/oneOf/1/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema74.oneOf[1].properties.username.type,
-              parentSchema: schema74.oneOf[1].properties.username,
-              data: data2,
-            };
-            if (vErrors === null) {
-              vErrors = [err5];
-            } else {
-              vErrors.push(err5);
-            }
-            errors++;
+  valid0 = valid0 || _valid0;
+  if (!valid0) {
+    const _errs7 = errors;
+    if (errors === _errs7) {
+      if (data && typeof data == 'object' && !Array.isArray(data)) {
+        let missing1;
+        if (data.username === undefined && (missing1 = 'username')) {
+          const err4 = {
+            instancePath,
+            schemaPath: '#/anyOf/1/required',
+            keyword: 'required',
+            params: { missingProperty: missing1 },
+            message: "must have required property '" + missing1 + "'",
+            schema: schema74.anyOf[1].required,
+            parentSchema: schema74.anyOf[1],
+            data,
+          };
+          if (vErrors === null) {
+            vErrors = [err4];
+          } else {
+            vErrors.push(err4);
           }
-          var valid2 = _errs9 === errors;
+          errors++;
         } else {
-          var valid2 = true;
-        }
-        if (valid2) {
-          if (data.claims !== undefined) {
-            let data3 = data.claims;
-            const _errs11 = errors;
-            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
-              const err6 = {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/1/properties/claims/type',
+          if (data.username !== undefined) {
+            let data2 = data.username;
+            const _errs9 = errors;
+            if (typeof data2 !== 'string') {
+              const err5 = {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/anyOf/1/properties/username/type',
                 keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema74.oneOf[1].properties.claims.type,
-                parentSchema: schema74.oneOf[1].properties.claims,
-                data: data3,
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema74.anyOf[1].properties.username.type,
+                parentSchema: schema74.anyOf[1].properties.username,
+                data: data2,
               };
               if (vErrors === null) {
-                vErrors = [err6];
+                vErrors = [err5];
               } else {
-                vErrors.push(err6);
+                vErrors.push(err5);
               }
               errors++;
             }
-            var valid2 = _errs11 === errors;
+            var valid2 = _errs9 === errors;
           } else {
             var valid2 = true;
           }
+          if (valid2) {
+            if (data.claims !== undefined) {
+              let data3 = data.claims;
+              const _errs11 = errors;
+              if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+                const err6 = {
+                  instancePath: instancePath + '/claims',
+                  schemaPath: '#/anyOf/1/properties/claims/type',
+                  keyword: 'type',
+                  params: { type: 'object' },
+                  message: 'must be object',
+                  schema: schema74.anyOf[1].properties.claims.type,
+                  parentSchema: schema74.anyOf[1].properties.claims,
+                  data: data3,
+                };
+                if (vErrors === null) {
+                  vErrors = [err6];
+                } else {
+                  vErrors.push(err6);
+                }
+                errors++;
+              }
+              var valid2 = _errs11 === errors;
+            } else {
+              var valid2 = true;
+            }
+          }
         }
-      }
-    } else {
-      const err7 = {
-        instancePath,
-        schemaPath: '#/oneOf/1/type',
-        keyword: 'type',
-        params: { type: 'object' },
-        message: 'must be object',
-        schema: schema74.oneOf[1].type,
-        parentSchema: schema74.oneOf[1],
-        data,
-      };
-      if (vErrors === null) {
-        vErrors = [err7];
       } else {
-        vErrors.push(err7);
+        const err7 = {
+          instancePath,
+          schemaPath: '#/anyOf/1/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema74.anyOf[1].type,
+          parentSchema: schema74.anyOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err7];
+        } else {
+          vErrors.push(err7);
+        }
+        errors++;
       }
-      errors++;
     }
-  }
-  var _valid0 = _errs7 === errors;
-  if (_valid0 && valid0) {
-    valid0 = false;
-    passing0 = [passing0, 1];
-  } else {
-    if (_valid0) {
-      valid0 = true;
-      passing0 = 1;
-    }
+    var _valid0 = _errs7 === errors;
+    valid0 = valid0 || _valid0;
   }
   if (!valid0) {
     const err8 = {
       instancePath,
-      schemaPath: '#/oneOf',
-      keyword: 'oneOf',
-      params: { passingSchemas: passing0 },
-      message: 'must match exactly one schema in oneOf',
-      schema: schema74.oneOf,
+      schemaPath: '#/anyOf',
+      keyword: 'anyOf',
+      params: {},
+      message: 'must match a schema in anyOf',
+      schema: schema74.anyOf,
       parentSchema: schema74,
       data,
     };
@@ -6771,7 +6751,7 @@ function validate89(
 }
 exports.validateCreateTokenBodyResponse = validate90;
 const schema75 = {
-  oneOf: [
+  anyOf: [
     {
       type: 'object',
       properties: {
@@ -6817,7 +6797,6 @@ function validate90(
   let errors = 0;
   const _errs0 = errors;
   let valid0 = false;
-  let passing0 = null;
   const _errs1 = errors;
   if (errors === _errs1) {
     if (data && typeof data == 'object' && !Array.isArray(data)) {
@@ -6825,12 +6804,12 @@ function validate90(
       if (data.user === undefined && (missing0 = 'user')) {
         const err0 = {
           instancePath,
-          schemaPath: '#/oneOf/0/required',
+          schemaPath: '#/anyOf/0/required',
           keyword: 'required',
           params: { missingProperty: missing0 },
           message: "must have required property '" + missing0 + "'",
-          schema: schema75.oneOf[0].required,
-          parentSchema: schema75.oneOf[0],
+          schema: schema75.anyOf[0].required,
+          parentSchema: schema75.anyOf[0],
           data,
         };
         if (vErrors === null) {
@@ -6846,12 +6825,12 @@ function validate90(
           if (typeof data0 !== 'string') {
             const err1 = {
               instancePath: instancePath + '/user',
-              schemaPath: '#/oneOf/0/properties/user/type',
+              schemaPath: '#/anyOf/0/properties/user/type',
               keyword: 'type',
               params: { type: 'string' },
               message: 'must be string',
-              schema: schema75.oneOf[0].properties.user.type,
-              parentSchema: schema75.oneOf[0].properties.user,
+              schema: schema75.anyOf[0].properties.user.type,
+              parentSchema: schema75.anyOf[0].properties.user,
               data: data0,
             };
             if (vErrors === null) {
@@ -6872,12 +6851,12 @@ function validate90(
             if (!(data1 && typeof data1 == 'object' && !Array.isArray(data1))) {
               const err2 = {
                 instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/0/properties/claims/type',
+                schemaPath: '#/anyOf/0/properties/claims/type',
                 keyword: 'type',
                 params: { type: 'object' },
                 message: 'must be object',
-                schema: schema75.oneOf[0].properties.claims.type,
-                parentSchema: schema75.oneOf[0].properties.claims,
+                schema: schema75.anyOf[0].properties.claims.type,
+                parentSchema: schema75.anyOf[0].properties.claims,
                 data: data1,
               };
               if (vErrors === null) {
@@ -6896,12 +6875,12 @@ function validate90(
     } else {
       const err3 = {
         instancePath,
-        schemaPath: '#/oneOf/0/type',
+        schemaPath: '#/anyOf/0/type',
         keyword: 'type',
         params: { type: 'object' },
         message: 'must be object',
-        schema: schema75.oneOf[0].type,
-        parentSchema: schema75.oneOf[0],
+        schema: schema75.anyOf[0].type,
+        parentSchema: schema75.anyOf[0],
         data,
       };
       if (vErrors === null) {
@@ -6913,122 +6892,113 @@ function validate90(
     }
   }
   var _valid0 = _errs1 === errors;
-  if (_valid0) {
-    valid0 = true;
-    passing0 = 0;
-  }
-  const _errs7 = errors;
-  if (errors === _errs7) {
-    if (data && typeof data == 'object' && !Array.isArray(data)) {
-      let missing1;
-      if (data.username === undefined && (missing1 = 'username')) {
-        const err4 = {
-          instancePath,
-          schemaPath: '#/oneOf/1/required',
-          keyword: 'required',
-          params: { missingProperty: missing1 },
-          message: "must have required property '" + missing1 + "'",
-          schema: schema75.oneOf[1].required,
-          parentSchema: schema75.oneOf[1],
-          data,
-        };
-        if (vErrors === null) {
-          vErrors = [err4];
-        } else {
-          vErrors.push(err4);
-        }
-        errors++;
-      } else {
-        if (data.username !== undefined) {
-          let data2 = data.username;
-          const _errs9 = errors;
-          if (typeof data2 !== 'string') {
-            const err5 = {
-              instancePath: instancePath + '/username',
-              schemaPath: '#/oneOf/1/properties/username/type',
-              keyword: 'type',
-              params: { type: 'string' },
-              message: 'must be string',
-              schema: schema75.oneOf[1].properties.username.type,
-              parentSchema: schema75.oneOf[1].properties.username,
-              data: data2,
-            };
-            if (vErrors === null) {
-              vErrors = [err5];
-            } else {
-              vErrors.push(err5);
-            }
-            errors++;
+  valid0 = valid0 || _valid0;
+  if (!valid0) {
+    const _errs7 = errors;
+    if (errors === _errs7) {
+      if (data && typeof data == 'object' && !Array.isArray(data)) {
+        let missing1;
+        if (data.username === undefined && (missing1 = 'username')) {
+          const err4 = {
+            instancePath,
+            schemaPath: '#/anyOf/1/required',
+            keyword: 'required',
+            params: { missingProperty: missing1 },
+            message: "must have required property '" + missing1 + "'",
+            schema: schema75.anyOf[1].required,
+            parentSchema: schema75.anyOf[1],
+            data,
+          };
+          if (vErrors === null) {
+            vErrors = [err4];
+          } else {
+            vErrors.push(err4);
           }
-          var valid2 = _errs9 === errors;
+          errors++;
         } else {
-          var valid2 = true;
-        }
-        if (valid2) {
-          if (data.claims !== undefined) {
-            let data3 = data.claims;
-            const _errs11 = errors;
-            if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
-              const err6 = {
-                instancePath: instancePath + '/claims',
-                schemaPath: '#/oneOf/1/properties/claims/type',
+          if (data.username !== undefined) {
+            let data2 = data.username;
+            const _errs9 = errors;
+            if (typeof data2 !== 'string') {
+              const err5 = {
+                instancePath: instancePath + '/username',
+                schemaPath: '#/anyOf/1/properties/username/type',
                 keyword: 'type',
-                params: { type: 'object' },
-                message: 'must be object',
-                schema: schema75.oneOf[1].properties.claims.type,
-                parentSchema: schema75.oneOf[1].properties.claims,
-                data: data3,
+                params: { type: 'string' },
+                message: 'must be string',
+                schema: schema75.anyOf[1].properties.username.type,
+                parentSchema: schema75.anyOf[1].properties.username,
+                data: data2,
               };
               if (vErrors === null) {
-                vErrors = [err6];
+                vErrors = [err5];
               } else {
-                vErrors.push(err6);
+                vErrors.push(err5);
               }
               errors++;
             }
-            var valid2 = _errs11 === errors;
+            var valid2 = _errs9 === errors;
           } else {
             var valid2 = true;
           }
+          if (valid2) {
+            if (data.claims !== undefined) {
+              let data3 = data.claims;
+              const _errs11 = errors;
+              if (!(data3 && typeof data3 == 'object' && !Array.isArray(data3))) {
+                const err6 = {
+                  instancePath: instancePath + '/claims',
+                  schemaPath: '#/anyOf/1/properties/claims/type',
+                  keyword: 'type',
+                  params: { type: 'object' },
+                  message: 'must be object',
+                  schema: schema75.anyOf[1].properties.claims.type,
+                  parentSchema: schema75.anyOf[1].properties.claims,
+                  data: data3,
+                };
+                if (vErrors === null) {
+                  vErrors = [err6];
+                } else {
+                  vErrors.push(err6);
+                }
+                errors++;
+              }
+              var valid2 = _errs11 === errors;
+            } else {
+              var valid2 = true;
+            }
+          }
         }
-      }
-    } else {
-      const err7 = {
-        instancePath,
-        schemaPath: '#/oneOf/1/type',
-        keyword: 'type',
-        params: { type: 'object' },
-        message: 'must be object',
-        schema: schema75.oneOf[1].type,
-        parentSchema: schema75.oneOf[1],
-        data,
-      };
-      if (vErrors === null) {
-        vErrors = [err7];
       } else {
-        vErrors.push(err7);
+        const err7 = {
+          instancePath,
+          schemaPath: '#/anyOf/1/type',
+          keyword: 'type',
+          params: { type: 'object' },
+          message: 'must be object',
+          schema: schema75.anyOf[1].type,
+          parentSchema: schema75.anyOf[1],
+          data,
+        };
+        if (vErrors === null) {
+          vErrors = [err7];
+        } else {
+          vErrors.push(err7);
+        }
+        errors++;
       }
-      errors++;
     }
-  }
-  var _valid0 = _errs7 === errors;
-  if (_valid0 && valid0) {
-    valid0 = false;
-    passing0 = [passing0, 1];
-  } else {
-    if (_valid0) {
-      valid0 = true;
-      passing0 = 1;
-    }
+    var _valid0 = _errs7 === errors;
+    valid0 = valid0 || _valid0;
   }
   if (!valid0) {
     const err8 = {
       instancePath,
-      schemaPath: '#/oneOf',
-      keyword: 'oneOf',
-      params: { passingSchemas: passing0 },
-      message: 'must match exactly one schema in oneOf',
-      schema: schema75.oneOf,
+      schemaPath: '#/anyOf',
+      keyword: 'anyOf',
+      params: {},
+      message: 'must match a schema in anyOf',
+      schema: schema75.anyOf,
       parentSchema: schema75,
       data,
     };

@@ -170,7 +170,43 @@ class UpdateIdentityResponse200(TypedDict):
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
 
 
-CreateTokenRequest: TypeAlias = 
+class CreateTokenRequestAlt1Claims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequestAlt1(TypedDict):
+    """
+    Properties:
+    - user: Url or uuid of the user that will be used to create the token.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
+    """
+    user: str
+    claims: NotRequired[CreateTokenRequestAlt1Claims]
+
+
+class CreateTokenRequestAlt2Claims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequestAlt2(TypedDict):
+    """
+    Properties:
+    - username: Url or uuid of the user that will be used to create the token.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
+    """
+    username: str
+    claims: NotRequired[CreateTokenRequestAlt2Claims]
+
+
+CreateTokenRequest = Union[CreateTokenRequestAlt1, CreateTokenRequestAlt2]
 
 
 CreateTokenResponse201: TypeAlias = str
@@ -3000,16 +3036,16 @@ DeleteTemplateResponse: TypeAlias = None
 class ListInstitutionsResponse200Items(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -3022,32 +3058,32 @@ ListInstitutionsResponse: TypeAlias = ListInstitutionsResponse200
 class CreateInstitutionRequest(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
 class CreateInstitutionResponse201(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -3057,16 +3093,16 @@ CreateInstitutionResponse: TypeAlias = CreateInstitutionResponse201
 class GetInstitutionResponse200(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -3076,32 +3112,32 @@ GetInstitutionResponse: TypeAlias = GetInstitutionResponse200
 class UpdateInstitutionRequest(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
 class UpdateInstitutionResponse200(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 

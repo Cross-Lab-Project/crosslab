@@ -1,5 +1,4 @@
 import { HttpError } from '@crosslab/service-common';
-import assert from 'assert';
 import express from 'express';
 
 import { ApplicationDataSource } from '../database/datasource.js';
@@ -27,7 +26,7 @@ router.post(
       if (!user_url) throw new HttpError(400, 'Missing user url');
       userId = (user_url as string).startsWith('http')
         ? userIdFromUrl(user_url as string)
-        : user_url as string;
+        : (user_url as string);
     }
 
     const user = await ApplicationDataSource.manager.findOneBy(UserModel, {
