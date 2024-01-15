@@ -5,7 +5,8 @@ import fetch from 'node-fetch';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
 import { kid, privateKey } from '../key_management.js';
-import { tool_configuration } from './tool_configuration.js';
+
+// import { tool_configuration } from './tool_configuration.js';
 
 export async function grading({
   iss,

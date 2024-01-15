@@ -1,4 +1,7 @@
-import { HttpError, logging } from '@crosslab/service-common';
+import {
+  HttpError,
+  /*logging*/
+} from '@crosslab/service-common';
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { JWTPayload } from 'jose';
@@ -7,7 +10,8 @@ import { Client as ExperimentClient } from '../clients/experiment/client.js';
 import { authentication, experiment } from '../clients/index.js';
 import { config } from '../config.js';
 import { PlatformModel } from '../database/model.js';
-import { post_form_message } from '../helper/html_responses.js';
+
+// import { post_form_message } from '../helper/html_responses.js';
 
 export async function handle_resource_link_request(
   _req: Request,
