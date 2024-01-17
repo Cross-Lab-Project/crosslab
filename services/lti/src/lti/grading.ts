@@ -6,8 +6,6 @@ import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
 import { kid, privateKey } from '../key_management.js';
 
-// import { tool_configuration } from './tool_configuration.js';
-
 export async function grading({
   iss,
   client_id,
