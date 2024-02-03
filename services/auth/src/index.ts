@@ -4,7 +4,7 @@ import { logging } from '@crosslab/service-common';
 import { init_app } from './app.js';
 import { config } from './config.js';
 import { init_database } from './database/datasource.js';
-import { init_users } from './user/index.js';
+import { init_users } from './user/helper.js';
 
 async function initialize() {
   logging.init();

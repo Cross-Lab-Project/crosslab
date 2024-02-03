@@ -3,7 +3,13 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as Types from './types.js';
+// @ts-ignore
+import { type Require } from './types.js';
 
 /**
  * Typing for all possible responses to the request made by listDevices()

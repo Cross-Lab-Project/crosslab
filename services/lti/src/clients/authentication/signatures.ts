@@ -3,7 +3,13 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import * as Types from "./types.js"
+// @ts-ignore
+import { type Require } from "./types.js"
 
 /**
  * Typing for the parameters of the request made by auth()
@@ -345,7 +351,7 @@ export interface ListUsersResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.User<"response">[]
+    body: Require<Types.User<"response">, "url" | "id" | "username">[]
 }
 
 /**
@@ -412,7 +418,7 @@ export interface ListUsersResponse500 extends Types.ErrorResponse {
  * Typing for the body of the request made by createUser()
  * @category createUser()
  */
-export type CreateUserBody = Types.User<"request">
+export type CreateUserBody = Require<Types.User<"request">, "username" | "password">
 
 /**
  * Typing for all possible responses to the request made by createUser()
@@ -441,7 +447,7 @@ export interface CreateUserResponse201 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.User<"response">
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -539,7 +545,7 @@ export interface GetUserResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.User<"response">
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -614,7 +620,7 @@ export type UpdateUserParameters = {
  * Typing for the body of the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserBody = Types.UserUpdate<"request">
+export type UpdateUserBody = Types.User<"request">
 
 /**
  * Typing for all possible responses to the request made by updateUser()
@@ -643,7 +649,7 @@ export interface UpdateUserResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.User<"response">
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -898,7 +904,7 @@ export interface GetIdentityResponse500 extends Types.ErrorResponse {
  * Typing for the body of the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentityBody = Types.UserUpdate<"request"> | undefined
+export type UpdateIdentityBody = Types.User<"request"> | undefined
 
 /**
  * Typing for all possible responses to the request made by updateIdentity()

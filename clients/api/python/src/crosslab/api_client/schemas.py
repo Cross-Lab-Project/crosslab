@@ -39,11 +39,13 @@ class ListUsersResponse200Items(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 ListUsersResponse200: TypeAlias = List[ListUsersResponse200Items]
@@ -59,11 +61,13 @@ class CreateUserRequest(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
+    url: NotRequired[str]
+    id: NotRequired[str]
     username: str
     password: str
+    admin: NotRequired[bool]
 
 
 class CreateUserResponse201(TypedDict):
@@ -73,11 +77,13 @@ class CreateUserResponse201(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 CreateUserResponse: TypeAlias = CreateUserResponse201
@@ -90,11 +96,13 @@ class GetUserResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 GetUserResponse: TypeAlias = GetUserResponse200
@@ -103,9 +111,17 @@ GetUserResponse: TypeAlias = GetUserResponse200
 class UpdateUserRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
+    - username
     - password
+    - admin
     """
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 class UpdateUserResponse200(TypedDict):
@@ -115,11 +131,13 @@ class UpdateUserResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 UpdateUserResponse: TypeAlias = UpdateUserResponse200
@@ -135,11 +153,13 @@ class GetIdentityResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
-    username: str
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 GetIdentityResponse: TypeAlias = GetIdentityResponse200
@@ -148,9 +168,17 @@ GetIdentityResponse: TypeAlias = GetIdentityResponse200
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
+    - username
     - password
+    - admin
     """
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 class UpdateIdentityResponse200(TypedDict):
@@ -160,11 +188,13 @@ class UpdateIdentityResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
-    username: str
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200

@@ -349,28 +349,28 @@ async def test_list_users(aioresponses: aioresponses):
     parameter_list = [{"username": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"http://SyrjwTQktCePOwvKc.blfpSOA","id":"amet in irure ullamco","username":"proident occaecat","password":"do"},{"url":"https://FZTzXTceuBxxrAqTMCqKPQwFuhRlTkh.ozV,iY4Cq5F6ByZLCcSu8yqfCD","id":"dolor mollit in","username":"do in dolor aliquip anim","password":"adipisicing"},{"url":"http://ShyjZbZHQpYRrA.yqwHM27xmpypXQe.OAYKAUMLLLKDlgGO2MpdZKOinzOJ4Iz.QZxUUB4WRkvFk6O5kNaDA","id":"minim adipisicing consequat nostrud","username":"id ut officia aute","password":"ullamco irure nulla magna"}]')
+        response_200_dict = json.loads(r'[{"url":"http://zWMOXgkjDbKqNjpGVxMGZ.wzlvGNiwyChx5sMhtqJchK.grmkrlQzDYhZtWwA","id":"cillum id occaecat dolor eiusmod","username":"exercitation","password":"qui","admin":true},{"url":"http://VElOeizKh.smDn1jUVXsAO,gEK9KXQQt2C2SKYKOsjVQEn,AjiYAXlkpSUN5lquEnCrMjIo98jl5","id":"laboris","username":"ad reprehenderit Duis","password":"ipsum commodo aliqua magna","admin":true}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(**parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"http://SyrjwTQktCePOwvKc.blfpSOA","id":"amet in irure ullamco","username":"proident occaecat","password":"do"},{"url":"https://FZTzXTceuBxxrAqTMCqKPQwFuhRlTkh.ozV,iY4Cq5F6ByZLCcSu8yqfCD","id":"dolor mollit in","username":"do in dolor aliquip anim","password":"adipisicing"},{"url":"http://ShyjZbZHQpYRrA.yqwHM27xmpypXQe.OAYKAUMLLLKDlgGO2MpdZKOinzOJ4Iz.QZxUUB4WRkvFk6O5kNaDA","id":"minim adipisicing consequat nostrud","username":"id ut officia aute","password":"ullamco irure nulla magna"}]')
+        response_200_dict = json.loads(r'[{"url":"http://zWMOXgkjDbKqNjpGVxMGZ.wzlvGNiwyChx5sMhtqJchK.grmkrlQzDYhZtWwA","id":"cillum id occaecat dolor eiusmod","username":"exercitation","password":"qui","admin":true},{"url":"http://VElOeizKh.smDn1jUVXsAO,gEK9KXQQt2C2SKYKOsjVQEn,AjiYAXlkpSUN5lquEnCrMjIo98jl5","id":"laboris","username":"ad reprehenderit Duis","password":"ipsum commodo aliqua magna","admin":true}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"http://SyrjwTQktCePOwvKc.blfpSOA","id":"amet in irure ullamco","username":"proident occaecat","password":"do"},{"url":"https://FZTzXTceuBxxrAqTMCqKPQwFuhRlTkh.ozV,iY4Cq5F6ByZLCcSu8yqfCD","id":"dolor mollit in","username":"do in dolor aliquip anim","password":"adipisicing"},{"url":"http://ShyjZbZHQpYRrA.yqwHM27xmpypXQe.OAYKAUMLLLKDlgGO2MpdZKOinzOJ4Iz.QZxUUB4WRkvFk6O5kNaDA","id":"minim adipisicing consequat nostrud","username":"id ut officia aute","password":"ullamco irure nulla magna"}]')
+        response_200_dict = json.loads(r'[{"url":"http://zWMOXgkjDbKqNjpGVxMGZ.wzlvGNiwyChx5sMhtqJchK.grmkrlQzDYhZtWwA","id":"cillum id occaecat dolor eiusmod","username":"exercitation","password":"qui","admin":true},{"url":"http://VElOeizKh.smDn1jUVXsAO,gEK9KXQQt2C2SKYKOsjVQEn,AjiYAXlkpSUN5lquEnCrMjIo98jl5","id":"laboris","username":"ad reprehenderit Duis","password":"ipsum commodo aliqua magna","admin":true}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"url":"http://SyrjwTQktCePOwvKc.blfpSOA","id":"amet in irure ullamco","username":"proident occaecat","password":"do"},{"url":"https://FZTzXTceuBxxrAqTMCqKPQwFuhRlTkh.ozV,iY4Cq5F6ByZLCcSu8yqfCD","id":"dolor mollit in","username":"do in dolor aliquip anim","password":"adipisicing"},{"url":"http://ShyjZbZHQpYRrA.yqwHM27xmpypXQe.OAYKAUMLLLKDlgGO2MpdZKOinzOJ4Iz.QZxUUB4WRkvFk6O5kNaDA","id":"minim adipisicing consequat nostrud","username":"id ut officia aute","password":"ullamco irure nulla magna"}]')
+        response_200_dict = json.loads(r'[{"url":"http://zWMOXgkjDbKqNjpGVxMGZ.wzlvGNiwyChx5sMhtqJchK.grmkrlQzDYhZtWwA","id":"cillum id occaecat dolor eiusmod","username":"exercitation","password":"qui","admin":true},{"url":"http://VElOeizKh.smDn1jUVXsAO,gEK9KXQQt2C2SKYKOsjVQEn,AjiYAXlkpSUN5lquEnCrMjIo98jl5","id":"laboris","username":"ad reprehenderit Duis","password":"ipsum commodo aliqua magna","admin":true}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_users(url=full_url, **parameters)
@@ -503,33 +503,33 @@ async def test_create_user(aioresponses: aioresponses):
     url_variant = r'users'
     full_url = BASE_URL+r'/users'
 
-    request = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+    request = json.loads(r'{"username":"aliqua sed incididunt sunt commodo","password":"adipisicing do","url":"http://zsXIBxLDr.ibyuN-3rJg0lAl,URuuTFladoiSiKNCul0jlYKMIfHr5rMkAj+9LpncwP","admin":true}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_201_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_201_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_201_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_201_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_user(url=full_url, body=request, **parameters)
@@ -665,21 +665,21 @@ async def test_get_user(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_user(url=full_url, **parameters)
@@ -782,26 +782,26 @@ async def test_update_user(aioresponses: aioresponses):
     url_variant = r'users/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/users/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request = json.loads(r'{"password":"cupidatat veniam"}')
+    request = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"https://JwfYVEAuDygPFenlYLClYhbX.owvw8dTHZOiXDeXGXNkks.LWXcN99DoxbLRcMGgse9A7BXP49CC","id":"Ut ullamco in cupidatat","username":"Lorem ut in enim","password":"nostrud voluptate tempor officia ea","admin":true}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_user(url=full_url, body=request, **parameters)
@@ -1021,28 +1021,28 @@ async def test_get_identity(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(**parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_identity(url=full_url, **parameters)
@@ -1175,33 +1175,33 @@ async def test_update_identity(aioresponses: aioresponses):
     url_variant = r'identity'
     full_url = BASE_URL+r'/identity'
 
-    request = json.loads(r'{"password":"cupidatat veniam"}')
+    request = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"url":"https://FBpFkjeMvxKCcBpxVjYLeOQ.jmhVgh-F,O,iQ6yI+,lfJZ9fx7cG5,1eX.UCVrA.QH+YJ","id":"adipisicing labore Duis aliquip consectetur","username":"irure ullamco reprehenderit cillum et","password":"ea eiusmod consequat commodo"}')
+        response_200_dict = json.loads(r'{"url":"http://eBQqxvZ.pel+0u05frVrKdYMhBVkL+.tCAfDWlsCUAIHjn81yOVMNp.uxLNKPi","id":"occaecat aliquip aliqua velit","username":"irure","admin":true,"password":"reprehenderit Duis"}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_identity(url=full_url, body=request, **parameters)

@@ -14,8 +14,5 @@ properties:
   password:
     type: string
     writeOnly: true
-required:
-  - url
-  - id
-  - username
-  - password
+  admin:
+    type: boolean

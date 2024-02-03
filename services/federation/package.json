@@ -19,8 +19,7 @@
     "build:add-shebang": "bash scripts/add-shebang.sh",
     "build": "npm-run-all build:*",
     "start": "node app/index.js",
-    "predev": "bash scripts/init-db.sh federation_service service service",
-    "dev": "env-cmd -e development npx tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9000 ./app/index.js'",
+    "dev": "npx tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9000 ./app/index.js'",
     "format": "prettier . --write",
     "lint": "eslint ."
   },

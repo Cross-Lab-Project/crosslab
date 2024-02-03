@@ -15,7 +15,14 @@ get:
       description: The JSON representation of the users.
       content:
         application/json:
-          $ref: '../content/user_list.yml'
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/user.yml'
+              required:
+                - url
+                - id
+                - username
     400:
       description: Bad Request.
     401:
@@ -41,13 +48,22 @@ post:
     description: User to be created.
     content:
       application/json:
-        $ref: '../content/user.yml'
+        schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - username
+              - password
   responses:
     201:
       description: The JSON representation of the created user.
       content:
         application/json:
-          $ref: '../content/user.yml'
+          schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - url
+              - id
+              - username
     400:
       description: Bad Request.
     401:

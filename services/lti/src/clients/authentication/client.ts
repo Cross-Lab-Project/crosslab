@@ -3,11 +3,17 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 import * as RequestValidation from './requestValidation.js';
 import * as Signatures from './signatures.js';
 import * as Types from './types.js';
+// @ts-ignore
+import { type Require } from "./types.js"
 
 /**
  * This error class should be used if an error occurs during validation of a request/response.
@@ -432,7 +438,7 @@ export class Client {
      * @returns
 	 * The JSON representation of the created user.
      */
-    public async createUser(user: Types.User<"request">,
+    public async createUser(user: Require<Types.User<"request">, "username" | "password">,
             options?: {
                 headers?: [string, string][],url?: string}): Promise<Signatures.CreateUserSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/users")
@@ -549,7 +555,7 @@ export class Client {
 	 * 
 	 * @param url
 	 * Url of the resource to be accessed.
-	 * @param userUpdate
+	 * @param user
 	 * Updated user
      *
      * @throws {@link FetchError | FetchError } 
@@ -564,14 +570,14 @@ export class Client {
      * @returns
 	 * The JSON representation of the updated user.
      */
-    public async updateUser(url: string,userUpdate: Types.UserUpdate<"request">,
+    public async updateUser(url: string,user: Types.User<"request">,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.UpdateUserSuccessResponse["body"]> {
                 const urlSuffix = '/users/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
                 const [user_id,] = validateUrl(url, this.baseUrl, '/users/{}')
 
-        const body = userUpdate
+        const body = user
 
         
         const parameters = {
@@ -741,7 +747,7 @@ export class Client {
     /**
      * Update identity 
 	 * 
-	 * @param userUpdate
+	 * @param user
 	 * Updated identity.
      *
      * @throws {@link FetchError | FetchError } 
@@ -756,12 +762,12 @@ export class Client {
      * @returns
 	 * The JSON representation of the updated user.
      */
-    public async updateIdentity(userUpdate: Types.UserUpdate<"request">,
+    public async updateIdentity(user: Types.User<"request">,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.UpdateIdentitySuccessResponse["body"]> {
             const url = appendToUrl(this.baseUrl, "/identity")
 
-        const body = userUpdate
+        const body = user
 
         
 

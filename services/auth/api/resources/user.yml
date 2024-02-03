@@ -15,7 +15,12 @@ get:
       description: The JSON respresentation of the user.
       content:
         application/json:
-          $ref: '../content/user.yml'
+          schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - url
+              - id
+              - username
     400:
       description: Bad Request.
     401:
@@ -42,13 +47,19 @@ patch:
     required: true
     content:
       application/json:
-        $ref: '../content/user_update.yml'
+        schema:
+          $ref: '../schemas/user.yml'
   responses:
     200:
       description: The JSON representation of the updated user.
       content:
         application/json:
-          $ref: '../content/user.yml'
+          schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - url
+              - id
+              - username
     400:
       description: Bad Request.
     401:
