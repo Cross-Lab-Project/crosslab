@@ -1,7 +1,7 @@
 {%- macro generateIndex() -%}
 {%- set schemas = (api | resolveSchemas) -%}
 {%- set operations = (api | resolveOperations) -%}
-{%- set typeDependencies = ["FetchFunction", "isErrorResponse", "ResponseData"] -%}
+{%- set typeDependencies = ["FetchFunction", "isErrorResponse", "ResponseData", "type Require"] -%}
 {%- set signatureDependencies = [] -%}
 {%- set validationDependencies = [] -%}
 
@@ -28,6 +28,10 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import {
     {{ typeDependencies | unique | join(",\n\t") }}
 } from "./types.js"

@@ -110,7 +110,7 @@ export default function router(): express.Router {
                 }
             }
 
-            return res.status(result.status).send(result.body)
+            return res.status(result.status).json(result.body)
         } catch(error) {
             next(error)
             return

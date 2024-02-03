@@ -29,7 +29,7 @@ import {
   upperCamelCase_filter,
 } from './filter';
 
-export { Addon, Preset, FilterCollection, Filter, Global } from './addon';
+export { Addon, Filter, FilterCollection, Global, Preset } from './addon';
 
 let inputData: InputData;
 const schema_mapping: string[] = [];
@@ -169,6 +169,7 @@ async function main() {
       api = openApi;
       inputData = extractSchemasFromOpenAPI(inputData, api);
     } catch (e) {
+      console.warn(e);
       // parse input as normal yaml file
       const schema = JSON.parse(loadAndDeref(input));
       addJsonSchema(schema.title ?? input, schema, inputData);

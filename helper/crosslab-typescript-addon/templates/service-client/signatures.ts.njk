@@ -1,6 +1,6 @@
 {%- macro generateSignatures() -%}
 {%- set schemas = (api | resolveSchemas(false)) -%}
-{%- set typeDependencies = ["SuccessResponse", "ErrorResponse"] -%}
+{%- set typeDependencies = [] -%}
 {%- set operations = (api | resolveOperations) -%}
 
 /**
@@ -8,7 +8,14 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import * as Types from "./types.js"
+// @ts-ignore
+import { type Require } from "./types.js"
+
 
 {%- for operation in operations %}
 {%- set low_name = operation.operationId | formatName(false) %}
@@ -111,11 +118,5 @@ export interface {{ cap_name }}Response{{ response.status }} extends {{ "Types.S
 {%- endmacro -%}
 
 {%- set content = generateSignatures() -%}
-{%- if content | includes("Require<") -%}
-    {%- set content = content | replace('import {', 'import {\n\tRequire,') -%}
-{%- endif -%}
-{%- if content | includes("SizedTuple<") -%}
-    {%- set content = content | replace('import {', 'import {\n\tSizedTuple,') -%}
-{%- endif -%}
 
 {{ content }}
