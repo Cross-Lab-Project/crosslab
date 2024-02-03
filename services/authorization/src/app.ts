@@ -78,7 +78,7 @@ app.post(
 app.post(
   '/relations/query',
   asyncHandler(async (req, res) => {
-    res.send(await query_relations(req.body.subject, req.body.relation, req.body.object));
+    res.json(await query_relations(req.body.subject, req.body.relation, req.body.object));
   }),
 );
 

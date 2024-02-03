@@ -134,7 +134,7 @@ export function authorization_functions(config: AuthorizationConfig) {
       body: JSON.stringify({ subject, relation, object }),
     });
     if (response.status === 200) {
-      return (await response.json()).result ?? [];
+      return (await response.json()) ?? [];
     } else {
       throw new Error(await response.text());
     }
