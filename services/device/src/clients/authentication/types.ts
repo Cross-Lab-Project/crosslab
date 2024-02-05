@@ -189,39 +189,26 @@ export type AuthMethod<T extends 'request' | 'response' | 'all' = 'all'> = T ext
 
 export type User<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
   ? {
-      url: string;
-      id: string;
-      username: string;
-      password: string;
+      url?: string;
+      id?: string;
+      username?: string;
+      password?: string;
+      admin?: boolean;
       [k: string]: unknown;
     }
   : T extends 'request'
   ? {
-      username: string;
-      password: string;
+      username?: string;
+      password?: string;
+      admin?: boolean;
       [k: string]: unknown;
     }
   : T extends 'response'
   ? {
-      url: string;
-      id: string;
-      username: string;
-      [k: string]: unknown;
-    }
-  : never;
-
-export type UserUpdate<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
-  ? {
-      password: string;
-      [k: string]: unknown;
-    }
-  : T extends 'request'
-  ? {
-      password: string;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
+      url?: string;
+      id?: string;
+      username?: string;
+      admin?: boolean;
       [k: string]: unknown;
     }
   : never;

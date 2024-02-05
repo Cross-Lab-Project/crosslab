@@ -10,10 +10,6 @@ export declare function validateUser<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): User<T>;
 
-export declare function validateUserUpdate<T extends 'request' | 'response' | 'all'>(
-  object: unknown,
-): UserUpdate<T>;
-
 export declare function validateAuthorization<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): Authorization<T>;
@@ -117,14 +113,6 @@ export declare function validateUserRequest<T extends 'request' | 'response' | '
 export declare function validateUserResponse<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): UserResponse<T>;
-
-export declare function validateUserUpdateRequest<
-  T extends 'request' | 'response' | 'all',
->(object: unknown): UserUpdateRequest<T>;
-
-export declare function validateUserUpdateResponse<
-  T extends 'request' | 'response' | 'all',
->(object: unknown): UserUpdateResponse<T>;
 
 export declare function validateAuthorizationRequest<
   T extends 'request' | 'response' | 'all',

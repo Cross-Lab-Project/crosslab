@@ -37,7 +37,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 
   const { owner, viewer } = await getViewerOwner(
     req.authorization,
-    deviceUrlFromId(parameters.device_id),
+    `device:${deviceUrlFromId(parameters.device_id)}`,
   );
 
   const deviceModel = await repositories.device.findOneOrFail({
