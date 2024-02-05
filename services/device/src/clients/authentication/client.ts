@@ -437,7 +437,7 @@ export class Client {
    * The JSON representation of the created user.
    */
   public async createUser(
-    user: Types.User<'request'>,
+    user: Require<Types.User<'request'>, 'username' | 'password'>,
     options?: {
       headers?: [string, string][];
       url?: string;
@@ -551,7 +551,7 @@ export class Client {
    *
    * @param url
    * Url of the resource to be accessed.
-   * @param userUpdate
+   * @param user
    * Updated user
    *
    * @throws {@link FetchError | FetchError }
@@ -568,7 +568,7 @@ export class Client {
    */
   public async updateUser(
     url: string,
-    userUpdate: Types.UserUpdate<'request'>,
+    user: Types.User<'request'>,
     options?: {
       headers?: [string, string][];
     },
@@ -577,7 +577,7 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [user_id] = validateUrl(url, this.baseUrl, '/users/{}');
 
-    const body = userUpdate;
+    const body = user;
 
     const parameters = {
       user_id: user_id,
@@ -736,7 +736,7 @@ export class Client {
   /**
    * Update identity
    *
-   * @param userUpdate
+   * @param user
    * Updated identity.
    *
    * @throws {@link FetchError | FetchError }
@@ -752,14 +752,14 @@ export class Client {
    * The JSON representation of the updated user.
    */
   public async updateIdentity(
-    userUpdate: Types.UserUpdate<'request'>,
+    user: Types.User<'request'>,
     options?: {
       headers?: [string, string][];
     },
   ): Promise<Signatures.UpdateIdentitySuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/identity');
 
-    const body = userUpdate;
+    const body = user;
 
     if (!RequestValidation.validateUpdateIdentityInput(body))
       throw new ValidationError(

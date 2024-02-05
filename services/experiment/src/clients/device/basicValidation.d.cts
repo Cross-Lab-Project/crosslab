@@ -6,6 +6,10 @@ export declare function validateConnectionStateChangedMessage<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStateChangedMessage<T>;
 
+export declare function validateUserReference<T extends 'request' | 'response' | 'all'>(
+  object: unknown,
+): UserReference<T>;
+
 export declare function validateDeviceOverview<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): DeviceOverview<T>;
@@ -265,6 +269,14 @@ export declare function validateConnectionStateChangedMessageRequest<
 export declare function validateConnectionStateChangedMessageResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStateChangedMessageResponse<T>;
+
+export declare function validateUserReferenceRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): UserReferenceRequest<T>;
+
+export declare function validateUserReferenceResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): UserReferenceResponse<T>;
 
 export declare function validateDeviceOverviewRequest<
   T extends 'request' | 'response' | 'all',

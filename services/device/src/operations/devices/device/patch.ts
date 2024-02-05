@@ -39,7 +39,7 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
     req.authorization,
     body?.viewer?.map(v => v.url),
     body?.owner?.map(o => o.url),
-    deviceUrlFromId(deviceModel.uuid),
+    `device:${deviceUrlFromId(parameters.device_id)}`,
   );
 
   sendChangedCallback(deviceModel);
