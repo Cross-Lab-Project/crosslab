@@ -3050,6 +3050,40 @@ export type ConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all
       }
     : never;
 
+export type ExperimentStatusChangedMessage<
+  T extends 'request' | 'response' | 'all' = 'all',
+> = T extends 'all'
+  ? {
+      messageType: string;
+      [k: string]: unknown;
+    } & {
+      messageType: 'experiment-status-changed';
+      status: string;
+      message?: string;
+      [k: string]: unknown;
+    }
+  : T extends 'request'
+  ? {
+      messageType: string;
+      [k: string]: unknown;
+    } & {
+      messageType: 'experiment-status-changed';
+      status: string;
+      message?: string;
+      [k: string]: unknown;
+    }
+  : T extends 'response'
+  ? {
+      messageType: string;
+      [k: string]: unknown;
+    } & {
+      messageType: 'experiment-status-changed';
+      status: string;
+      message?: string;
+      [k: string]: unknown;
+    }
+  : never;
+
 /**
  * The status of the peerconnection.
  */
@@ -3667,6 +3701,22 @@ export function isConfigurationMessage<T extends 'request' | 'response' | 'all' 
       return BasicValidation.validateConfigurationMessageResponse(obj);
     default:
       return BasicValidation.validateConfigurationMessage(obj);
+  }
+}
+
+export function isExperimentStatusChangedMessage<
+  T extends 'request' | 'response' | 'all' = 'all',
+>(
+  obj: unknown,
+  type: 'request' | 'response' | 'all' | T = 'all',
+): obj is ExperimentStatusChangedMessage<T> {
+  switch (type) {
+    case 'request':
+      return BasicValidation.validateExperimentStatusChangedMessageRequest(obj);
+    case 'response':
+      return BasicValidation.validateExperimentStatusChangedMessageResponse(obj);
+    default:
+      return BasicValidation.validateExperimentStatusChangedMessage(obj);
   }
 }
 

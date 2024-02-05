@@ -6,11 +6,13 @@ import {
   ConfigurationMessage,
   ConnectionStateChangedMessage,
   CreatePeerConnectionMessage,
+  ExperimentStatusChangedMessage,
   SignalingMessage,
   isClosePeerConnectionMessage,
   isCommandMessage,
   isConfigurationMessage,
   isCreatePeerConnectionMessage,
+  isExperimentStatusChangedMessage,
   isSignalingMessage,
 } from './deviceMessages';
 import { PeerConnection } from './peer/connection';
@@ -20,6 +22,7 @@ import { Service } from './service';
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
   configuration(configuration: { [k: string]: unknown }): void;
+  experimentStatusChanged(status: { status: string; message?: string }): void;
 }
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
@@ -81,6 +84,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       if (isConfigurationMessage(message)) {
         this.handleConfigurationMessage(message);
       }
+      if (isExperimentStatusChangedMessage(message)) {
+        this.handleExperimentStatusChangedMessage(message);
+      }
     };
   }
 
@@ -93,11 +99,12 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       throw Error('Can not create a connection. Connection Id is already present');
     }
     console.log('creating connection', message);
-    const connection = new WebRTCPeerConnection(
-      {
-        iceServers: [{ urls: 'stun:stun.goldi-labs.de:3478' }, { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' }],
-      },
-    );
+    const connection = new WebRTCPeerConnection({
+      iceServers: [
+        { urls: 'stun:stun.goldi-labs.de:3478' },
+        { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' },
+      ],
+    });
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
@@ -150,6 +157,13 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
   private handleConfigurationMessage(message: ConfigurationMessage) {
     this.emit('configuration', message.configuration);
+  }
+
+  private handleExperimentStatusChangedMessage(message: ExperimentStatusChangedMessage) {
+    this.emit('experimentStatusChanged', {
+      status: message.status,
+      message: message.message,
+    });
   }
 
   getServiceMeta() {

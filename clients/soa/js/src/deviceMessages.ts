@@ -83,3 +83,19 @@ export function isConfigurationMessage(
     message.configuration !== null
   );
 }
+
+export interface ExperimentStatusChangedMessage extends Message {
+  messageType: 'experiment-status-changed';
+  status: string;
+  message?: string;
+}
+
+export function isExperimentStatusChangedMessage(
+  message: Message,
+): message is ExperimentStatusChangedMessage {
+  return (
+    message.messageType === 'experiment-status-changed' &&
+    typeof message.status === 'string' &&
+    (message.message === undefined || typeof message.message === 'string')
+  );
+}

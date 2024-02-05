@@ -6,6 +6,7 @@ import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { validateExperimentStatus } from '../../types/typeguards.js';
+import { sendStatusUpdateMessages } from '../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
@@ -83,6 +84,10 @@ export async function finishExperiment(
 
   experimentModel.status = 'finished';
   await repositories.experiment.save(experimentModel);
+  sendStatusUpdateMessages(
+    experimentModel,
+    'The experiment has been finished successfully.',
+  );
   logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
 }
 

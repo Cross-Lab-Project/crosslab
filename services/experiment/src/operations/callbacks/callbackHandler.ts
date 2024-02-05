@@ -14,6 +14,7 @@ import { repositories } from '../../database/dataSource.js';
 import { EventCallback } from '../../generated/types.js';
 import { finishExperiment } from '../../methods/experimentStatus/finish.js';
 import { mutexManager } from '../../methods/mutexManager.js';
+import { sendStatusUpdateMessages } from '../../methods/statusUpdateMessage.js';
 
 class CallbackHandler {
   private deviceListeners: Map<string, string[]> = new Map();
@@ -215,8 +216,22 @@ class CallbackHandler {
           (callback.peerconnection.status === 'failed' ||
             callback.peerconnection.status === 'closed') &&
           experimentModel.status !== 'finished'
-        )
+        ) {
+          sendStatusUpdateMessages(
+            experimentModel,
+            // prettier-ignore
+            `Finishing experiment because peerconnection "${
+              callback.peerconnection.url
+            }" between the devices "${
+              callback.peerconnection.devices[0].url
+            }" and "${
+              callback.peerconnection.devices[1].url
+            }" has status "${
+              callback.peerconnection.status
+            }"!`,
+          );
           await finishExperiment(experimentModel, clients);
+        }
 
         if (callback.peerconnection.status === 'connected') {
           let connected = true;
@@ -232,6 +247,7 @@ class CallbackHandler {
           if (experimentModel.status === 'peerconnections-created' && connected) {
             experimentModel.status = 'running';
             await repositories.experiment.save(experimentModel);
+            sendStatusUpdateMessages(experimentModel);
           }
         }
       } finally {

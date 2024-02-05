@@ -6,6 +6,7 @@ import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
+import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../../url.js';
 
 async function checkDevices(
@@ -49,6 +50,15 @@ export async function createPeerconnectionsExperiment(
           clearInterval(connectionInterval);
         } else if (i === 6) {
           reject('Devices did not connect in time');
+          sendStatusUpdateMessages(
+            experimentModel,
+            `The following devices did not connect in time: "` +
+              Array.from(connectedMap.entries())
+                .filter(entry => !entry[1])
+                .map(entry => entry[0])
+                .join('", "') +
+              '"',
+          );
           clearInterval(connectionInterval);
         } else {
           i++;
@@ -77,6 +87,7 @@ export async function createPeerconnectionsExperiment(
   if (experimentModel.status !== 'booking-updated')
     throw new InvalidStateError(
       `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'booking-updated'))
