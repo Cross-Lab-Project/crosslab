@@ -4,6 +4,7 @@ import { repositories } from '../../../database/dataSource.js';
 import { patchDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { changedCallbacks, sendChangedCallback } from '../../../methods/callbacks.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { setViewerOwner } from '../../../methods/visibility.js';
 
 /**
  * This function implements the functionality for handling PATCH requests on
@@ -33,6 +34,13 @@ export const patchDevicesByDeviceId: patchDevicesByDeviceIdSignature = async (
 
   await repositories.device.write(deviceModel, body ?? { type: deviceModel.type });
   await repositories.device.save(deviceModel);
+
+  await setViewerOwner(
+    req.authorization,
+    body?.viewer?.map(v => v.url),
+    body?.owner?.map(o => o.url),
+    deviceUrlFromId(deviceModel.uuid),
+  );
 
   sendChangedCallback(deviceModel);
 

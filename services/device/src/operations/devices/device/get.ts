@@ -5,6 +5,7 @@ import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { getDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { getViewerOwner } from '../../../methods/visibility.js';
 
 /**
  * This function implements the functionality for handling GET requests on
@@ -34,6 +35,11 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
     `device:${deviceUrlFromId(parameters.device_id)}`,
   );
 
+  const { owner, viewer } = await getViewerOwner(
+    req.authorization,
+    deviceUrlFromId(parameters.device_id),
+  );
+
   const deviceModel = await repositories.device.findOneOrFail({
     where: { uuid: parameters.device_id },
   });
@@ -56,6 +62,14 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 
   return {
     status: 200,
-    body,
+    body: {
+      ...body,
+      owner: owner.map(ownerUrl => {
+        return { url: ownerUrl };
+      }),
+      viewer: viewer.map(viewerUrl => {
+        return { url: viewerUrl };
+      }),
+    },
   };
 };
