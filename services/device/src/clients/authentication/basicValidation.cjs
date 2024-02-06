@@ -174,6 +174,7 @@ const schema8 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': true,
   'x-name': 'User',
   'x-location': '#/components/schemas/user',
@@ -865,6 +866,7 @@ const schema18 = {
       password: { type: 'string', writeOnly: true },
       admin: { type: 'boolean' },
     },
+    'x-typeguard': true,
   },
   'x-standalone': false,
   'x-name': 'listUsersResponse200',
@@ -1097,6 +1099,7 @@ const schema19 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserBody',
   'x-location': '#/paths//users/post/requestBody/content/application/json/schema',
@@ -1299,6 +1302,7 @@ const schema20 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserResponse201',
   'x-location': '#/paths//users/post/responses/201/content/application/json/schema',
@@ -1502,6 +1506,7 @@ const schema21 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getUserResponse200',
   'x-location':
@@ -1705,6 +1710,7 @@ const schema22 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserBody',
   'x-location':
@@ -1888,6 +1894,7 @@ const schema23 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserResponse200',
   'x-location':
@@ -2091,6 +2098,7 @@ const schema24 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getIdentityResponse200',
   'x-location': '#/paths//identity/get/responses/200/content/application/json/schema',
@@ -2272,6 +2280,7 @@ const schema25 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityBody',
   'x-location': '#/paths//identity/patch/requestBody/content/application/json/schema',
@@ -2453,6 +2462,7 @@ const schema26 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityResponse200',
   'x-location': '#/paths//identity/patch/responses/200/content/application/json/schema',
@@ -3251,6 +3261,7 @@ const schema33 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': true,
   'x-name': 'UserRequest',
   'x-location': '#/components/schemas/user_request',
@@ -3363,6 +3374,7 @@ const schema34 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': true,
   'x-name': 'UserResponse',
   'x-location': '#/components/schemas/user_response',
@@ -4534,6 +4546,7 @@ const schema53 = {
       password: { type: 'string', writeOnly: true },
       admin: { type: 'boolean' },
     },
+    'x-typeguard': true,
   },
   'x-standalone': false,
   'x-name': 'listUsersResponse200Request',
@@ -4696,6 +4709,7 @@ const schema54 = {
       username: { type: 'string' },
       admin: { type: 'boolean' },
     },
+    'x-typeguard': true,
   },
   'x-standalone': false,
   'x-name': 'listUsersResponse200Response',
@@ -4903,6 +4917,7 @@ const schema55 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserBodyRequest',
   'x-location': '#/paths//users/post/requestBody/content/application/json/schema_request',
@@ -5036,6 +5051,7 @@ const schema56 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserBodyResponse',
   'x-location':
@@ -5210,6 +5226,7 @@ const schema57 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserResponse201Request',
   'x-location':
@@ -5341,6 +5358,7 @@ const schema58 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'createUserResponse201Response',
   'x-location':
@@ -5519,6 +5537,7 @@ const schema59 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getUserResponse200Request',
   'x-location':
@@ -5650,6 +5669,7 @@ const schema60 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getUserResponse200Response',
   'x-location':
@@ -5827,6 +5847,7 @@ const schema61 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserBodyRequest',
   'x-location':
@@ -5940,6 +5961,7 @@ const schema62 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserBodyResponse',
   'x-location':
@@ -6097,6 +6119,7 @@ const schema63 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserResponse200Request',
   'x-location':
@@ -6228,6 +6251,7 @@ const schema64 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateUserResponse200Response',
   'x-location':
@@ -6405,6 +6429,7 @@ const schema65 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getIdentityResponse200Request',
   'x-location':
@@ -6518,6 +6543,7 @@ const schema66 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'getIdentityResponse200Response',
   'x-location':
@@ -6674,6 +6700,7 @@ const schema67 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityBodyRequest',
   'x-location':
@@ -6787,6 +6814,7 @@ const schema68 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityBodyResponse',
   'x-location':
@@ -6943,6 +6971,7 @@ const schema69 = {
     password: { type: 'string', writeOnly: true },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityResponse200Request',
   'x-location':
@@ -7056,6 +7085,7 @@ const schema70 = {
     username: { type: 'string' },
     admin: { type: 'boolean' },
   },
+  'x-typeguard': true,
   'x-standalone': false,
   'x-name': 'updateIdentityResponse200Response',
   'x-location':

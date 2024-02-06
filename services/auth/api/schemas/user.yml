@@ -16,3 +16,4 @@ properties:
     writeOnly: true
   admin:
     type: boolean
+x-typeguard: true
