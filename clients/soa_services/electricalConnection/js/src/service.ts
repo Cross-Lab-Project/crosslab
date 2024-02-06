@@ -1,6 +1,10 @@
-import { Prosumer, Service, ServiceConfiguration } from '@cross-lab-project/soa-client';
-import { DataChannel } from '@cross-lab-project/soa-client';
-import { PeerConnection } from '@cross-lab-project/soa-client';
+import {
+  DataChannel,
+  PeerConnection,
+  Prosumer,
+  Service,
+  ServiceConfiguration,
+} from '@cross-lab-project/soa-client';
 import Queue from 'queue';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
@@ -136,9 +140,9 @@ export class ElectricalConnectionService
         });
 
         await channel.ready();
-        try{
+        try {
           this.queue.start();
-        }catch(error){
+        } catch (error) {
           //ignorw
         }
       });
@@ -170,7 +174,7 @@ export class ElectricalConnectionService
       const message: ElectricalServiceMessage = JSON.parse(data);
       const electricalInterfaceIds = this.interfacesByBusId.get(message.busId);
       if (electricalInterfaceIds === undefined) {
-        throw Error('BusId not found');
+        return; // gracefully ignore - possibly the result of other services connected to the same connection
       }
       for (const electricalInterfaceId of electricalInterfaceIds) {
         const electricalInterface = this.interfaces.get(electricalInterfaceId);
