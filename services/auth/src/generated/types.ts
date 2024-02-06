@@ -8,8 +8,11 @@ import { Application, Request, ErrorRequestHandler } from "express"
 
 import {
     validateUserType,
+	validateUser,
 	validateUserTypeRequest,
-	validateUserTypeResponse
+	validateUserTypeResponse,
+	validateUserRequest,
+	validateUserResponse
 } from "./basicValidation.cjs"
 export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
@@ -255,5 +258,16 @@ export function isUserType<T extends "request"|"response"|"all" = "all">(obj: un
             return validateUserTypeResponse(obj)
         default:
             return validateUserType(obj)
+    }
+}
+
+export function isUser<T extends "request"|"response"|"all" = "all">(obj: unknown, type: "request" | "response" | "all" | T = "all"): obj is User<T> {
+    switch (type) {
+        case "request":
+            return validateUserRequest(obj)
+        case "response":
+            return validateUserResponse(obj)
+        default:
+            return validateUser(obj)
     }
 }
