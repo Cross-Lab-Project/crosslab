@@ -46,6 +46,20 @@ export async function opa_init() {
     opaProcess.kill('SIGQUIT');
     process.exit(0);
   });
+
+  // wait for opa to be ready
+  await new Promise<void>(resolve => {
+    const interval = setInterval(() => {
+      fetch('http://localhost:3011/')
+        .then(() => {
+          clearInterval(interval);
+          resolve();
+        })
+        .catch(() => {
+          // do nothing
+        });
+    }, 500);
+  });
 }
 
 export function opa_deinit() {
