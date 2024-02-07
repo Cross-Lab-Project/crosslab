@@ -4,3 +4,5 @@ docs/Gem*
 **/badge_*.svg
 **/coverage.txt
 **/node_modules
+*.env
+*.env-cmdrc
