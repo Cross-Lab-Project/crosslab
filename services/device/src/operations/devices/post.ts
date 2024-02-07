@@ -4,6 +4,7 @@ import { repositories } from '../../database/dataSource.js';
 import { postDevicesSignature } from '../../generated/signatures.js';
 import { changedCallbacks } from '../../methods/callbacks.js';
 import { deviceUrlFromId } from '../../methods/urlFromId.js';
+import { getViewerOwner, setViewerOwner } from '../../methods/visibility.js';
 
 /**
  * This function implements the functionality for handling POST requests on
@@ -26,6 +27,13 @@ export const postDevices: postDevicesSignature = async (req, parameters, body) =
 
   const deviceModel = await repositories.device.create(body);
 
+  await setViewerOwner(
+    req.authorization,
+    body?.viewer?.map(v => v.url),
+    body?.owner?.map(o => o.url),
+    `device:${deviceUrlFromId(deviceModel.uuid)}`,
+  );
+
   await req.authorization.relate(
     req.authorization.user,
     'owner',
@@ -44,10 +52,23 @@ export const postDevices: postDevicesSignature = async (req, parameters, body) =
     changedCallbacks.set(deviceModel.uuid, [parameters.changedUrl]);
   }
 
+  const { owner, viewer } = await getViewerOwner(
+    req.authorization,
+    `device:${deviceUrlFromId(deviceModel.uuid)}`,
+  );
+
   logger.log('info', 'postDevices succeeded');
 
   return {
     status: 201,
-    body: await repositories.device.format(deviceModel),
+    body: {
+      ...(await repositories.device.format(deviceModel)),
+      owner: owner.map(ownerUrl => {
+        return { url: ownerUrl };
+      }),
+      viewer: viewer.map(viewerUrl => {
+        return { url: viewerUrl };
+      }),
+    },
   };
 };
