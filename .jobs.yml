@@ -465,6 +465,7 @@ integration-test:
     dependencies:
       - services/common:build
       - services/auth:build
+      - services/authorization:build
 #      - services/booking:build
       - services/device:build
       - services/experiment:build
