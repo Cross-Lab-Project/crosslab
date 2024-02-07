@@ -83,12 +83,14 @@ rebac_allow if {
 rebac_allow if {
 	object_type in ["device"]
 	input.action in ["instantiate", "message"]
-	openfga.check_relation(subject, "owner", input.object)
+
+	#openfga.check_relation(subject, "booker", input.object)
+	openfga.check_relation(subject, "viewer", input.object)
 }
 
 # Allow everyone to create an experiment
 rebac_allow if {
-	object in ["experiment:~~~TYPE~~~"]
+	object in ["experiment:~~~TYPE~~~", "peerconnection:~~~TYPE~~~"]
 	input.action in ["create"]
 	not subject in ["user:anonymous"]
 }

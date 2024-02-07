@@ -13,11 +13,11 @@ import {
   patchUsersByUserIdSignature,
   postUsersSignature,
 } from '../generated/signatures.js';
-import { createUser, userUrlFromId } from '../user/helper.js';
+import { createUser, userIdFromUrl, userUrlFromId } from '../user/helper.js';
 
 export const getIdentity: getIdentitySignature = async req => {
   const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {
-    uuid: req.authorization.user,
+    uuid: userIdFromUrl(req.authorization.user),
   });
   return {
     status: 200,
@@ -36,7 +36,7 @@ export const patchIdentity: patchIdentitySignature = async req => {
     `user:${req.authorization.user}`,
   );
   const user = await ApplicationDataSource.manager.findOneByOrFail(UserModel, {
-    uuid: req.authorization.user,
+    uuid: userIdFromUrl(req.authorization.user),
   });
   if (req.body.password !== undefined) {
     user.password = await bcrypt.hash(req.body.password!, 10);

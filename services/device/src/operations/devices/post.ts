@@ -25,7 +25,8 @@ export const postDevices: postDevicesSignature = async (req, parameters, body) =
       400,
     );
 
-  const deviceModel = await repositories.device.create(body);
+  let deviceModel = await repositories.device.create(body);
+  deviceModel = await repositories.device.save(deviceModel);
 
   await setViewerOwner(
     req.authorization,
@@ -35,12 +36,10 @@ export const postDevices: postDevicesSignature = async (req, parameters, body) =
   );
 
   await req.authorization.relate(
-    req.authorization.user,
+    `user:${req.authorization.user}`,
     'owner',
     `device:${deviceUrlFromId(deviceModel.uuid)}`,
   );
-
-  await repositories.device.save(deviceModel);
 
   if (parameters.changedUrl) {
     logger.log(
