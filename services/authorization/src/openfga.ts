@@ -5,10 +5,10 @@ import { spawn } from 'child_process';
 import { readFileSync } from 'fs';
 import readline from 'readline';
 
-import { ApplicationDataSource } from './database/datasource';
-import { RelationModel } from './database/model';
-import { decode_object, encode_object } from './encoding';
-import { Tuple } from './types';
+import { ApplicationDataSource } from './database/datasource.js';
+import { RelationModel } from './database/model.js';
+import { decode_object, encode_object } from './encoding.js';
+import { Tuple } from './types.js';
 
 let fgaClient: OpenFgaClient;
 

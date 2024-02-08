@@ -2,8 +2,8 @@ import { logger } from '@crosslab/service-common';
 import { spawn } from 'child_process';
 import readline from 'readline';
 
-import { fix_object_without_colon, openfgaOpaData } from './openfga';
-import { CheckTuple } from './types';
+import { fix_object_without_colon, openfgaOpaData } from './openfga.js';
+import { CheckTuple } from './types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let opaProcess: any;
