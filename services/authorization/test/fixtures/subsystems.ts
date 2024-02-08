@@ -1,8 +1,10 @@
 import { logger } from '@crosslab/service-common';
 
-import { ApplicationDataSource } from '../../src/database/datasource';
-import { opa_deinit, opa_init, opa_set_jwt_secret } from '../../src/opa';
-import { openfga_deinit, openfga_init } from '../../src/openfga';
+import { checkConfig, config } from '../../src/config.js';
+import { ApplicationDataSource } from '../../src/database/datasource.js';
+import { opa_deinit, opa_init, opa_set_jwt_secret } from '../../src/opa.js';
+import { openfga_deinit, openfga_init } from '../../src/openfga.js';
+
 
 export async function mochaGlobalSetup() {
   logger.transports.forEach(t => (t.level = 'error'));
@@ -17,5 +19,6 @@ export async function mochaGlobalTeardown() {
   openfga_deinit();
 }
 
-process.env['AUTHORIZATION_PSK'] = 'TestPSK';
-process.env['JWT_SECRET'] = 'secret';
+config.PSK = 'TestPSK';
+config.JWT_SECRET = 'secret';
+checkConfig();
