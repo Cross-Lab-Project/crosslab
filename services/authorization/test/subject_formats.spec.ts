@@ -1,6 +1,6 @@
 import * as jose from 'jose';
 
-import { check, relate } from './helper';
+import { check, relate } from './helper.js';
 
 const secret = new TextEncoder().encode('secret');
 const jwt = new jose.SignJWT({

@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 
-import app from '../src/app';
+import app from '../src/app.js';
 
 // Configure chai
 chai.use(chaiHttp);

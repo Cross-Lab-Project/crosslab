@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import { logger } from '@crosslab/service-common';
 
-import app from './app';
-import { config } from './config';
-import { ApplicationDataSource } from './database/datasource';
-import { opa_init, opa_set_jwt_secret } from './opa';
-import { openfga_init } from './openfga';
+import app from './app.js';
+import { checkConfig, config } from './config.js';
+import { ApplicationDataSource } from './database/datasource.js';
+import { opa_init, opa_set_jwt_secret } from './opa.js';
+import { openfga_init } from './openfga.js';
 
 async function initialize() {
+  checkConfig();
   await ApplicationDataSource.initialize();
   await opa_init();
   await openfga_init();
