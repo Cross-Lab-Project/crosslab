@@ -48,7 +48,7 @@ export async function createUser(
   username: string,
   password: string,
   type: 'local' | 'tui' = 'local',
-  isAdmin: boolean = true,
+  isAdmin: boolean = false,
 ) {
   const user = ApplicationDataSource.manager.create(UserModel, {
     type,
