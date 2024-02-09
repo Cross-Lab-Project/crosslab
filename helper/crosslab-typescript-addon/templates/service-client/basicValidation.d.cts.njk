@@ -1,0 +1,8 @@
+{%- set schemas = (api | resolveSchemas(false)) -%}
+
+{% for schema in schemas -%}
+export declare function validate{{ schema["x-name"] | cap }}<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): {{ schema["x-name"] }}<T>
+
+{% endfor %}

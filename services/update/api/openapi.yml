@@ -19,8 +19,6 @@ components:
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 paths:
   /updates:
-    $ref: "./resources/updates.yml"
+    $ref: './resources/updates.yml'
   /updates/{device_id}:
-    $ref: "./resources/update.yml"          
-
-      
+    $ref: './resources/update.yml'

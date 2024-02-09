@@ -4,6 +4,7 @@
 -e ./
 tox
 pytest
+pytest-asyncio
 build
 coverage
 mypy

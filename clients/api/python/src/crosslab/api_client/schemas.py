@@ -32,12 +32,6 @@ class LogoutRequest(TypedDict):
 LogoutResponse: TypeAlias = None
 
 
-CreateDeviceAuthenticationTokenResponse201: TypeAlias = str
-
-
-CreateDeviceAuthenticationTokenResponse: TypeAlias = CreateDeviceAuthenticationTokenResponse201
-
-
 class ListUsersResponse200Items(TypedDict):
     """
     Properties:
@@ -45,11 +39,13 @@ class ListUsersResponse200Items(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 ListUsersResponse200: TypeAlias = List[ListUsersResponse200Items]
@@ -65,11 +61,13 @@ class CreateUserRequest(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
+    url: NotRequired[str]
+    id: NotRequired[str]
     username: str
     password: str
+    admin: NotRequired[bool]
 
 
 class CreateUserResponse201(TypedDict):
@@ -79,11 +77,13 @@ class CreateUserResponse201(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 CreateUserResponse: TypeAlias = CreateUserResponse201
@@ -96,11 +96,13 @@ class GetUserResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 GetUserResponse: TypeAlias = GetUserResponse200
@@ -109,11 +111,17 @@ GetUserResponse: TypeAlias = GetUserResponse200
 class UpdateUserRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
     - username
     - password
+    - admin
     """
+    url: NotRequired[str]
+    id: NotRequired[str]
     username: NotRequired[str]
     password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 class UpdateUserResponse200(TypedDict):
@@ -123,183 +131,19 @@ class UpdateUserResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
     url: str
     id: str
     username: str
-    password: str
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 UpdateUserResponse: TypeAlias = UpdateUserResponse200
 
 
 DeleteUserResponse: TypeAlias = None
-
-
-class GetRolesOfUserResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRolesOfUserResponse200: TypeAlias = List[GetRolesOfUserResponse200Items]
-
-
-GetRolesOfUserResponse: TypeAlias = GetRolesOfUserResponse200
-
-
-AddRolesToUserRequest: TypeAlias = List[str]
-
-
-AddRolesToUserResponse: TypeAlias = None
-
-
-RemoveRolesFromUserRequest: TypeAlias = List[str]
-
-
-RemoveRolesFromUserResponse: TypeAlias = None
-
-
-class ListRolesResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-ListRolesResponse200: TypeAlias = List[ListRolesResponse200Items]
-
-
-ListRolesResponse: TypeAlias = ListRolesResponse200
-
-
-class CreateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class CreateRoleResponse201(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-CreateRoleResponse: TypeAlias = CreateRoleResponse201
-
-
-class GetRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-GetRoleResponse: TypeAlias = GetRoleResponse200
-
-
-class UpdateRoleRequest(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-class UpdateRoleResponse200(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - name
-    - scopes
-    """
-    url: str
-    id: str
-    name: str
-    scopes: List[str]
-
-
-UpdateRoleResponse: TypeAlias = UpdateRoleResponse200
-
-
-DeleteRoleResponse: TypeAlias = None
-
-
-class GetUsersWithRoleResponse200Items(TypedDict):
-    """
-    Properties:
-    - url
-    - id
-    - username
-    - password
-    """
-    url: str
-    id: str
-    username: str
-    password: str
-
-
-GetUsersWithRoleResponse200: TypeAlias = List[GetUsersWithRoleResponse200Items]
-
-
-GetUsersWithRoleResponse: TypeAlias = GetUsersWithRoleResponse200
-
-
-AddUsersToRoleRequest: TypeAlias = List[str]
-
-
-AddUsersToRoleResponse: TypeAlias = None
-
-
-RemoveUsersFromRoleRequest: TypeAlias = List[str]
-
-
-RemoveUsersFromRoleResponse: TypeAlias = None
 
 
 class GetIdentityResponse200(TypedDict):
@@ -309,11 +153,13 @@ class GetIdentityResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
-    username: str
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 GetIdentityResponse: TypeAlias = GetIdentityResponse200
@@ -322,11 +168,17 @@ GetIdentityResponse: TypeAlias = GetIdentityResponse200
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
+    - url
+    - id
     - username
     - password
+    - admin
     """
+    url: NotRequired[str]
+    id: NotRequired[str]
     username: NotRequired[str]
     password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 class UpdateIdentityResponse200(TypedDict):
@@ -336,308 +188,77 @@ class UpdateIdentityResponse200(TypedDict):
     - id
     - username
     - password
+    - admin
     """
-    url: str
-    id: str
-    username: str
-    password: str
+    url: NotRequired[str]
+    id: NotRequired[str]
+    username: NotRequired[str]
+    password: NotRequired[str]
+    admin: NotRequired[bool]
 
 
 UpdateIdentityResponse: TypeAlias = UpdateIdentityResponse200
 
 
-class RegisterRequest(TypedDict):
+class CreateTokenRequestAlt1Claims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequestAlt1(TypedDict):
     """
     Properties:
-    - username: Username of the user.
-    - password: Password of the user.
+    - user: Url or uuid of the user that will be used to create the token.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
+    """
+    user: str
+    claims: NotRequired[CreateTokenRequestAlt1Claims]
+
+
+class CreateTokenRequestAlt2Claims(TypedDict):
+    """
+    The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    Properties:
+    """
+
+
+class CreateTokenRequestAlt2(TypedDict):
+    """
+    Properties:
+    - username: Url or uuid of the user that will be used to create the token.
+    - claims: The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+
     """
     username: str
-    password: str
+    claims: NotRequired[CreateTokenRequestAlt2Claims]
 
 
-class RegisterResponse201(TypedDict):
+CreateTokenRequest = Union[CreateTokenRequestAlt1, CreateTokenRequestAlt2]
+
+
+CreateTokenResponse201: TypeAlias = str
+
+
+CreateTokenResponse: TypeAlias = CreateTokenResponse201
+
+
+class ListDevicesResponse200ItemsViewerItems(TypedDict):
     """
     Properties:
-    - url
-    - id
-    - username
-    - password
+    - url: URL of the user
     """
     url: str
-    id: str
-    username: str
-    password: str
 
 
-RegisterResponse: TypeAlias = RegisterResponse201
-
-
-class ScheduleRequestExperimentDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class ScheduleRequestExperiment(TypedDict):
-    """
-    An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
-    - Devices: List of devices used in experiment.
-    - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-    """
-    Devices: List[ScheduleRequestExperimentDevicesItems]
-    Description: NotRequired[str]
-
-
-class ScheduleRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleRequest(TypedDict):
+class ListDevicesResponse200ItemsOwnerItems(TypedDict):
     """
     Properties:
-    - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
-    - Time: A time slot represents a slice of time used for bookings.
-    - Combined: If true, show only one timetable per device instead of one for all available physical devices.
-    - onlyOwn: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+    - url: URL of the user
     """
-    Experiment: ScheduleRequestExperiment
-    Time: ScheduleRequestTime
-    Combined: NotRequired[bool]
-    onlyOwn: NotRequired[bool]
-
-
-class ScheduleResponse200ItemsBookedItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200ItemsFreeItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200Items(TypedDict):
-    """
-    Properties:
-    - Device: ID of the device (or * if combined).
-    - Booked: Array of booked times.
-    - Free: Array of free times.
-    """
-    Device: str
-    Booked: List[ScheduleResponse200ItemsBookedItems]
-    Free: List[ScheduleResponse200ItemsFreeItems]
-
-
-ScheduleResponse200: TypeAlias = List[ScheduleResponse200Items]
-
-
-ScheduleResponse404: TypeAlias = str
-
-
-ScheduleResponse422: TypeAlias = str
-
-
-ScheduleResponse500: TypeAlias = str
-
-
-ScheduleResponse: TypeAlias = Union[ScheduleResponse200, ScheduleResponse404, ScheduleResponse422, ScheduleResponse500]
-
-
-class NewBookingRequestDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class NewBookingRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class NewBookingRequest(TypedDict):
-    """
-    Properties:
-    - Devices: List of devices which should be added.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-    """
-    Devices: List[NewBookingRequestDevicesItems]
-    Time: NewBookingRequestTime
-    Type: NotRequired[Literal["normal"]]
-
-
-class NewBookingResponse200(TypedDict):
-    """
-    Properties:
-    - BookingID: ID at which the booking can be managed.
-    """
-    BookingID: str
-
-
-NewBookingResponse500: TypeAlias = str
-
-
-NewBookingResponse: TypeAlias = Union[NewBookingResponse200, NewBookingResponse500]
-
-
-class UpdateBookingRequestAlt1DevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class UpdateBookingRequestAlt1(TypedDict):
-    """
-    Use this request for adding devices.Properties:
-    - Locked: Expresses whether the devices should be locked. Must match current status of booking.
-    - Devices: List of devices which should be added.
-    """
-    Locked: NotRequired[bool]
-    Devices: NotRequired[List[UpdateBookingRequestAlt1DevicesItems]]
-
-
-class UpdateBookingRequestAlt2(TypedDict):
-    """
-    Use this request for adding callbacks.Properties:
-    - Callback: Callback which should be called at changes.
-    """
-    Callback: NotRequired[str]
-
-
-UpdateBookingRequest = Union[UpdateBookingRequestAlt1, UpdateBookingRequestAlt2]
-
-
-class UpdateBookingResponse200(TypedDict):
-    """
-    Properties:
-    - BookingID
-    """
-    BookingID: str
-
-
-UpdateBookingResponse500: TypeAlias = str
-
-
-UpdateBookingResponse: TypeAlias = Union[UpdateBookingResponse200, UpdateBookingResponse500]
-
-
-DeleteBookingResponse500: TypeAlias = str
-
-
-DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
-
-
-class GetBookingResponse200BookingTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class GetBookingResponse200Booking(TypedDict):
-    """
-    A booking in the booking system.Properties:
-    - ID: Unique ID of the booking.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Devices
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-    - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
-    - You: If true, this booking was done by you.
-    - External: Shows whether the booking was done by an external institution.
-    - Message: User readable notes about the status of the booking (e.g. if devices are unknown).
-    """
-    ID: str
-    Time: GetBookingResponse200BookingTime
-    Devices: List[str]
-    Type: NotRequired[Literal["normal"]]
-    Status: Literal["pending", "booked", "rejected", "cancelled", "active", "active-pending", "active-rejected"]
-    You: bool
-    External: bool
-    Message: NotRequired[str]
-
-
-class GetBookingResponse200(TypedDict):
-    """
-    Properties:
-    - Booking: A booking in the booking system.
-    - Locked: Shows if the booking is in a locked status.
-    """
-    Booking: GetBookingResponse200Booking
-    Locked: bool
-
-
-GetBookingResponse500: TypeAlias = str
-
-
-GetBookingResponse: TypeAlias = Union[GetBookingResponse200, GetBookingResponse500]
-
-
-DestroyBookingResponse500: TypeAlias = str
-
-
-DestroyBookingResponse: TypeAlias = DestroyBookingResponse500
-
-
-class LockBookingResponse200Items(TypedDict):
-    """
-    Properties:
-    - Requested
-    - Selected
-    """
-    Requested: str
-    Selected: str
-
-
-LockBookingResponse200: TypeAlias = List[LockBookingResponse200Items]
-
-
-LockBookingResponse500: TypeAlias = str
-
-
-LockBookingResponse: TypeAlias = Union[LockBookingResponse200, LockBookingResponse500]
-
-
-UnlockBookingResponse500: TypeAlias = str
-
-
-UnlockBookingResponse: TypeAlias = UnlockBookingResponse500
-
-
-BookingCallbackResponse500: TypeAlias = str
-
-
-BookingCallbackResponse: TypeAlias = BookingCallbackResponse500
+    url: str
 
 
 class ListDevicesResponse200Items(TypedDict):
@@ -647,21 +268,39 @@ class ListDevicesResponse200Items(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[ListDevicesResponse200ItemsViewerItems]]
+    owner: NotRequired[List[ListDevicesResponse200ItemsOwnerItems]]
 
 
 ListDevicesResponse200: TypeAlias = List[ListDevicesResponse200Items]
 
 
 ListDevicesResponse: TypeAlias = ListDevicesResponse200
+
+
+class CreateDeviceRequestAlt1ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceRequestAlt1OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceRequestAlt1ServicesItems(TypedDict):
@@ -683,8 +322,9 @@ class CreateDeviceRequestAlt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - instantiateUrl
     - services
     """
@@ -692,10 +332,27 @@ class CreateDeviceRequestAlt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceRequestAlt1ViewerItems]]
+    owner: NotRequired[List[CreateDeviceRequestAlt1OwnerItems]]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt1ServicesItems]]
+
+
+class CreateDeviceRequestAlt2ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceRequestAlt2OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceRequestAlt2AnnouncedavailabilityItems(TypedDict):
@@ -727,8 +384,9 @@ class CreateDeviceRequestAlt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -740,12 +398,29 @@ class CreateDeviceRequestAlt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceRequestAlt2ViewerItems]]
+    owner: NotRequired[List[CreateDeviceRequestAlt2OwnerItems]]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt2ServicesItems]]
+
+
+class CreateDeviceRequestAlt3ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceRequestAlt3OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceRequestAlt3ServicesItems(TypedDict):
@@ -767,8 +442,9 @@ class CreateDeviceRequestAlt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - codeUrl
     - services
     """
@@ -776,10 +452,27 @@ class CreateDeviceRequestAlt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceRequestAlt3ViewerItems]]
+    owner: NotRequired[List[CreateDeviceRequestAlt3OwnerItems]]
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt3ServicesItems]]
+
+
+class CreateDeviceRequestAlt4ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceRequestAlt4OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceRequestAlt4DevicesItems(TypedDict):
@@ -797,20 +490,38 @@ class CreateDeviceRequestAlt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceRequestAlt4ViewerItems]]
+    owner: NotRequired[List[CreateDeviceRequestAlt4OwnerItems]]
     devices: List[CreateDeviceRequestAlt4DevicesItems]
 
 
 CreateDeviceRequest = Union[CreateDeviceRequestAlt1, CreateDeviceRequestAlt2, CreateDeviceRequestAlt3, CreateDeviceRequestAlt4]
+
+
+class CreateDeviceResponse201Alt1ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceResponse201Alt1OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceResponse201Alt1ServicesItems(TypedDict):
@@ -832,8 +543,9 @@ class CreateDeviceResponse201Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - instantiateUrl
     - services
     """
@@ -841,10 +553,27 @@ class CreateDeviceResponse201Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceResponse201Alt1ViewerItems]]
+    owner: NotRequired[List[CreateDeviceResponse201Alt1OwnerItems]]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt1ServicesItems]]
+
+
+class CreateDeviceResponse201Alt2ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceResponse201Alt2OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceResponse201Alt2AnnouncedavailabilityItems(TypedDict):
@@ -876,8 +605,9 @@ class CreateDeviceResponse201Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -889,12 +619,29 @@ class CreateDeviceResponse201Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceResponse201Alt2ViewerItems]]
+    owner: NotRequired[List[CreateDeviceResponse201Alt2OwnerItems]]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt2ServicesItems]]
+
+
+class CreateDeviceResponse201Alt3ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceResponse201Alt3OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceResponse201Alt3ServicesItems(TypedDict):
@@ -916,8 +663,9 @@ class CreateDeviceResponse201Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - codeUrl
     - services
     """
@@ -925,10 +673,27 @@ class CreateDeviceResponse201Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceResponse201Alt3ViewerItems]]
+    owner: NotRequired[List[CreateDeviceResponse201Alt3OwnerItems]]
     codeUrl: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt3ServicesItems]]
+
+
+class CreateDeviceResponse201Alt4ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class CreateDeviceResponse201Alt4OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class CreateDeviceResponse201Alt4DevicesItems(TypedDict):
@@ -946,16 +711,18 @@ class CreateDeviceResponse201Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[CreateDeviceResponse201Alt4ViewerItems]]
+    owner: NotRequired[List[CreateDeviceResponse201Alt4OwnerItems]]
     devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
 
@@ -963,6 +730,22 @@ CreateDeviceResponse201 = Union[CreateDeviceResponse201Alt1, CreateDeviceRespons
 
 
 CreateDeviceResponse: TypeAlias = CreateDeviceResponse201
+
+
+class GetDeviceResponse200Alt1ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class GetDeviceResponse200Alt1OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class GetDeviceResponse200Alt1ServicesItems(TypedDict):
@@ -984,8 +767,9 @@ class GetDeviceResponse200Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - instantiateUrl
     - services
     """
@@ -993,10 +777,27 @@ class GetDeviceResponse200Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[GetDeviceResponse200Alt1ViewerItems]]
+    owner: NotRequired[List[GetDeviceResponse200Alt1OwnerItems]]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt1ServicesItems]]
+
+
+class GetDeviceResponse200Alt2ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class GetDeviceResponse200Alt2OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class GetDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
@@ -1028,8 +829,9 @@ class GetDeviceResponse200Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1041,12 +843,29 @@ class GetDeviceResponse200Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[GetDeviceResponse200Alt2ViewerItems]]
+    owner: NotRequired[List[GetDeviceResponse200Alt2OwnerItems]]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt2ServicesItems]]
+
+
+class GetDeviceResponse200Alt3ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class GetDeviceResponse200Alt3OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class GetDeviceResponse200Alt3ServicesItems(TypedDict):
@@ -1068,8 +887,9 @@ class GetDeviceResponse200Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - codeUrl
     - services
     """
@@ -1077,10 +897,27 @@ class GetDeviceResponse200Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[GetDeviceResponse200Alt3ViewerItems]]
+    owner: NotRequired[List[GetDeviceResponse200Alt3OwnerItems]]
     codeUrl: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt3ServicesItems]]
+
+
+class GetDeviceResponse200Alt4ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class GetDeviceResponse200Alt4OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class GetDeviceResponse200Alt4DevicesItems(TypedDict):
@@ -1098,16 +935,18 @@ class GetDeviceResponse200Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[GetDeviceResponse200Alt4ViewerItems]]
+    owner: NotRequired[List[GetDeviceResponse200Alt4OwnerItems]]
     devices: List[GetDeviceResponse200Alt4DevicesItems]
 
 
@@ -1115,6 +954,22 @@ GetDeviceResponse200 = Union[GetDeviceResponse200Alt1, GetDeviceResponse200Alt2,
 
 
 GetDeviceResponse: TypeAlias = GetDeviceResponse200
+
+
+class UpdateDeviceRequestAlt1ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceRequestAlt1OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceRequestAlt1ServicesItems(TypedDict):
@@ -1136,6 +991,8 @@ class UpdateDeviceRequestAlt1(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - instantiateUrl
     - services
     """
@@ -1143,8 +1000,26 @@ class UpdateDeviceRequestAlt1(TypedDict):
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
     isPublic: NotRequired[bool]
+    viewer: NotRequired[List[UpdateDeviceRequestAlt1ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceRequestAlt1OwnerItems]]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt1ServicesItems]]
+
+
+class UpdateDeviceRequestAlt2ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceRequestAlt2OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceRequestAlt2ServicesItems(TypedDict):
@@ -1166,6 +1041,8 @@ class UpdateDeviceRequestAlt2(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - experiment
     - services
     """
@@ -1173,8 +1050,26 @@ class UpdateDeviceRequestAlt2(TypedDict):
     description: NotRequired[str]
     type: Literal["device"]
     isPublic: NotRequired[bool]
+    viewer: NotRequired[List[UpdateDeviceRequestAlt2ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceRequestAlt2OwnerItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt2ServicesItems]]
+
+
+class UpdateDeviceRequestAlt3ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceRequestAlt3OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceRequestAlt3ServicesItems(TypedDict):
@@ -1196,6 +1091,8 @@ class UpdateDeviceRequestAlt3(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - codeUrl
     - services
     """
@@ -1203,8 +1100,26 @@ class UpdateDeviceRequestAlt3(TypedDict):
     description: NotRequired[str]
     type: Literal["edge instantiable"]
     isPublic: NotRequired[bool]
+    viewer: NotRequired[List[UpdateDeviceRequestAlt3ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceRequestAlt3OwnerItems]]
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt3ServicesItems]]
+
+
+class UpdateDeviceRequestAlt4ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceRequestAlt4OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceRequestAlt4DevicesItems(TypedDict):
@@ -1222,16 +1137,36 @@ class UpdateDeviceRequestAlt4(TypedDict):
     - description: Extended description of the device, features, etc.
     - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - devices
     """
     name: NotRequired[str]
     description: NotRequired[str]
     type: Literal["group"]
     isPublic: NotRequired[bool]
+    viewer: NotRequired[List[UpdateDeviceRequestAlt4ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceRequestAlt4OwnerItems]]
     devices: NotRequired[List[UpdateDeviceRequestAlt4DevicesItems]]
 
 
 UpdateDeviceRequest = Union[UpdateDeviceRequestAlt1, UpdateDeviceRequestAlt2, UpdateDeviceRequestAlt3, UpdateDeviceRequestAlt4]
+
+
+class UpdateDeviceResponse200Alt1ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceResponse200Alt1OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceResponse200Alt1ServicesItems(TypedDict):
@@ -1253,8 +1188,9 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - instantiateUrl
     - services
     """
@@ -1262,10 +1198,27 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["cloud instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[UpdateDeviceResponse200Alt1ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceResponse200Alt1OwnerItems]]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt1ServicesItems]]
+
+
+class UpdateDeviceResponse200Alt2ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceResponse200Alt2OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
@@ -1297,8 +1250,9 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1310,12 +1264,29 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[UpdateDeviceResponse200Alt2ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceResponse200Alt2OwnerItems]]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt2ServicesItems]]
+
+
+class UpdateDeviceResponse200Alt3ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceResponse200Alt3OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceResponse200Alt3ServicesItems(TypedDict):
@@ -1337,8 +1308,9 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - codeUrl
     - services
     """
@@ -1346,10 +1318,27 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["edge instantiable"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[UpdateDeviceResponse200Alt3ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceResponse200Alt3OwnerItems]]
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt3ServicesItems]]
+
+
+class UpdateDeviceResponse200Alt4ViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class UpdateDeviceResponse200Alt4OwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class UpdateDeviceResponse200Alt4DevicesItems(TypedDict):
@@ -1367,16 +1356,18 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
     type: Literal["group"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[UpdateDeviceResponse200Alt4ViewerItems]]
+    owner: NotRequired[List[UpdateDeviceResponse200Alt4OwnerItems]]
     devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
 
@@ -1387,6 +1378,22 @@ UpdateDeviceResponse: TypeAlias = UpdateDeviceResponse200
 
 
 DeleteDeviceResponse: TypeAlias = None
+
+
+class InstantiateDeviceResponse201InstanceViewerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
+
+
+class InstantiateDeviceResponse201InstanceOwnerItems(TypedDict):
+    """
+    Properties:
+    - url: URL of the user
+    """
+    url: str
 
 
 class InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems(TypedDict):
@@ -1418,8 +1425,9 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     - name: Name of the device
     - description: Extended description of the device, features, etc.
     - type: Type of the device
-    - owner
     - isPublic: If true, the device may be seen and used by every user.
+    - viewer: List of users who can view the device
+    - owner: List of users who own the device
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1431,8 +1439,9 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     name: str
     description: NotRequired[str]
     type: Literal["device"]
-    owner: str
     isPublic: bool
+    viewer: NotRequired[List[InstantiateDeviceResponse201InstanceViewerItems]]
+    owner: NotRequired[List[InstantiateDeviceResponse201InstanceOwnerItems]]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1572,7 +1581,23 @@ class SendSignalingMessageRequestAlt3(TypedDict):
     content: SendSignalingMessageRequestAlt3Content
 
 
-SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3]
+class SendSignalingMessageRequestAlt4Configuration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class SendSignalingMessageRequestAlt4(TypedDict):
+    """
+    Properties:
+    - messageType
+    - configuration
+    """
+    messageType: Literal["configuration"]
+    configuration: SendSignalingMessageRequestAlt4Configuration
+
+
+SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4]
 
 
 SendSignalingMessageResponse: TypeAlias = None
@@ -1596,7 +1621,7 @@ class ListPeerconnectionsResponse200Items(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
     devices: List[ListPeerconnectionsResponse200ItemsDevicesItems]
 
 
@@ -1646,7 +1671,7 @@ class CreatePeerconnectionRequest(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionRequestDevicesItems]
 
 
@@ -1690,7 +1715,7 @@ class CreatePeerconnectionResponse201(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionResponse201DevicesItems]
 
 
@@ -1734,7 +1759,7 @@ class CreatePeerconnectionResponse202(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionResponse202DevicesItems]
 
 
@@ -1781,7 +1806,7 @@ class GetPeerconnectionResponse200(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: NotRequired[Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]]
+    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
     devices: List[GetPeerconnectionResponse200DevicesItems]
 
 
@@ -1817,8 +1842,8 @@ class ListExperimentsResponse200Items(TypedDict):
     - url: URL of the experiment
     - status
     """
-    url: NotRequired[str]
-    status: NotRequired[ListExperimentsResponse200ItemsStatus]
+    url: str
+    status: ListExperimentsResponse200ItemsStatus
 
 
 ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
@@ -1852,8 +1877,14 @@ class CreateExperimentRequestDevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class CreateExperimentRequestRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class CreateExperimentRequestRolesItems(TypedDict):
@@ -1861,9 +1892,11 @@ class CreateExperimentRequestRolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentRequestRolesItemsConfiguration]
 
 
 class CreateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
@@ -1917,10 +1950,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentRequestInstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -1938,14 +1973,14 @@ class CreateExperimentRequest(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentRequestStatus]
+    url: str
+    status: CreateExperimentRequestStatus
     bookingTime: NotRequired[CreateExperimentRequestBookingtime]
-    devices: NotRequired[List[CreateExperimentRequestDevicesItems]]
-    roles: NotRequired[List[CreateExperimentRequestRolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentRequestServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentRequestInstantiateddevicesItems]]
+    devices: List[CreateExperimentRequestDevicesItems]
+    roles: List[CreateExperimentRequestRolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentRequestServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentRequestInstantiateddevicesItems]
 
 
 CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -1973,8 +2008,14 @@ class CreateExperimentResponse201DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class CreateExperimentResponse201RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class CreateExperimentResponse201RolesItems(TypedDict):
@@ -1982,9 +2023,11 @@ class CreateExperimentResponse201RolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentResponse201RolesItemsConfiguration]
 
 
 class CreateExperimentResponse201ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2038,10 +2081,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse201InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2059,14 +2104,14 @@ class CreateExperimentResponse201(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentResponse201Status]
+    url: str
+    status: CreateExperimentResponse201Status
     bookingTime: NotRequired[CreateExperimentResponse201Bookingtime]
-    devices: NotRequired[List[CreateExperimentResponse201DevicesItems]]
-    roles: NotRequired[List[CreateExperimentResponse201RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentResponse201ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentResponse201InstantiateddevicesItems]]
+    devices: List[CreateExperimentResponse201DevicesItems]
+    roles: List[CreateExperimentResponse201RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentResponse201ServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentResponse201InstantiateddevicesItems]
 
 
 CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2094,8 +2139,14 @@ class CreateExperimentResponse202DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class CreateExperimentResponse202RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class CreateExperimentResponse202RolesItems(TypedDict):
@@ -2103,9 +2154,11 @@ class CreateExperimentResponse202RolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[CreateExperimentResponse202RolesItemsConfiguration]
 
 
 class CreateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2159,10 +2212,12 @@ This configuration object will be merged with the participant configuration to b
 class CreateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2180,14 +2235,14 @@ class CreateExperimentResponse202(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[CreateExperimentResponse202Status]
+    url: str
+    status: CreateExperimentResponse202Status
     bookingTime: NotRequired[CreateExperimentResponse202Bookingtime]
-    devices: NotRequired[List[CreateExperimentResponse202DevicesItems]]
-    roles: NotRequired[List[CreateExperimentResponse202RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[CreateExperimentResponse202ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[CreateExperimentResponse202InstantiateddevicesItems]]
+    devices: List[CreateExperimentResponse202DevicesItems]
+    roles: List[CreateExperimentResponse202RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[CreateExperimentResponse202ServiceconfigurationsItems]
+    instantiatedDevices: List[CreateExperimentResponse202InstantiateddevicesItems]
 
 
 CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
@@ -2218,8 +2273,14 @@ class GetExperimentResponse200DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class GetExperimentResponse200RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class GetExperimentResponse200RolesItems(TypedDict):
@@ -2227,9 +2288,11 @@ class GetExperimentResponse200RolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[GetExperimentResponse200RolesItemsConfiguration]
 
 
 class GetExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2283,10 +2346,12 @@ This configuration object will be merged with the participant configuration to b
 class GetExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2304,14 +2369,14 @@ class GetExperimentResponse200(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[GetExperimentResponse200Status]
+    url: str
+    status: GetExperimentResponse200Status
     bookingTime: NotRequired[GetExperimentResponse200Bookingtime]
-    devices: NotRequired[List[GetExperimentResponse200DevicesItems]]
-    roles: NotRequired[List[GetExperimentResponse200RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[GetExperimentResponse200ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[GetExperimentResponse200InstantiateddevicesItems]]
+    devices: List[GetExperimentResponse200DevicesItems]
+    roles: List[GetExperimentResponse200RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[GetExperimentResponse200ServiceconfigurationsItems]
+    instantiatedDevices: List[GetExperimentResponse200InstantiateddevicesItems]
 
 
 GetExperimentResponse: TypeAlias = GetExperimentResponse200
@@ -2342,8 +2407,14 @@ class UpdateExperimentRequestDevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class UpdateExperimentRequestRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class UpdateExperimentRequestRolesItems(TypedDict):
@@ -2351,9 +2422,11 @@ class UpdateExperimentRequestRolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentRequestRolesItemsConfiguration]
 
 
 class UpdateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2404,38 +2477,20 @@ This configuration object will be merged with the participant configuration to b
     participants: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItemsParticipantsItems]]
 
 
-class UpdateExperimentRequestInstantiateddevicesItems(TypedDict):
-    """
-    Properties:
-    - url
-    - token
-    - instanceOf
-    """
-    url: str
-    token: str
-    instanceOf: str
-
-
 class UpdateExperimentRequest(TypedDict):
     """
     Properties:
-    - url: URL of the experiment
     - status
     - bookingTime
     - devices: Devices associated with the experiment
     - roles: Roles that are used in this experiment
-    - connections: Connections associated with the experiment
     - serviceConfigurations: Services associated with the experiment
-    - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
     status: NotRequired[UpdateExperimentRequestStatus]
     bookingTime: NotRequired[UpdateExperimentRequestBookingtime]
     devices: NotRequired[List[UpdateExperimentRequestDevicesItems]]
     roles: NotRequired[List[UpdateExperimentRequestRolesItems]]
-    connections: NotRequired[List[str]]
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentRequestInstantiateddevicesItems]]
 
 
 UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2463,8 +2518,14 @@ class UpdateExperimentResponse200DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class UpdateExperimentResponse200RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class UpdateExperimentResponse200RolesItems(TypedDict):
@@ -2472,9 +2533,11 @@ class UpdateExperimentResponse200RolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentResponse200RolesItemsConfiguration]
 
 
 class UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2528,10 +2591,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse200InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2549,14 +2614,14 @@ class UpdateExperimentResponse200(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[UpdateExperimentResponse200Status]
+    url: str
+    status: UpdateExperimentResponse200Status
     bookingTime: NotRequired[UpdateExperimentResponse200Bookingtime]
-    devices: NotRequired[List[UpdateExperimentResponse200DevicesItems]]
-    roles: NotRequired[List[UpdateExperimentResponse200RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[UpdateExperimentResponse200ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentResponse200InstantiateddevicesItems]]
+    devices: List[UpdateExperimentResponse200DevicesItems]
+    roles: List[UpdateExperimentResponse200RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[UpdateExperimentResponse200ServiceconfigurationsItems]
+    instantiatedDevices: List[UpdateExperimentResponse200InstantiateddevicesItems]
 
 
 UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
@@ -2584,8 +2649,14 @@ class UpdateExperimentResponse202DevicesItems(TypedDict):
     - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
     - role: The name of the device's role.
     """
-    device: NotRequired[str]
-    role: NotRequired[str]
+    device: str
+    role: str
+
+
+class UpdateExperimentResponse202RolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
 
 
 class UpdateExperimentResponse202RolesItems(TypedDict):
@@ -2593,9 +2664,11 @@ class UpdateExperimentResponse202RolesItems(TypedDict):
     Properties:
     - name: Name for an experiment role.
     - description
+    - configuration: Configuration for all devices with this role.
     """
-    name: NotRequired[str]
+    name: str
     description: NotRequired[str]
+    configuration: NotRequired[UpdateExperimentResponse202RolesItemsConfiguration]
 
 
 class UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
@@ -2649,10 +2722,12 @@ This configuration object will be merged with the participant configuration to b
 class UpdateExperimentResponse202InstantiateddevicesItems(TypedDict):
     """
     Properties:
+    - codeUrl
     - url
     - token
     - instanceOf
     """
+    codeUrl: str
     url: str
     token: str
     instanceOf: str
@@ -2670,14 +2745,14 @@ class UpdateExperimentResponse202(TypedDict):
     - serviceConfigurations: Services associated with the experiment
     - instantiatedDevices: Instantiated devices that need to be started by the user.
     """
-    url: NotRequired[str]
-    status: NotRequired[UpdateExperimentResponse202Status]
+    url: str
+    status: UpdateExperimentResponse202Status
     bookingTime: NotRequired[UpdateExperimentResponse202Bookingtime]
-    devices: NotRequired[List[UpdateExperimentResponse202DevicesItems]]
-    roles: NotRequired[List[UpdateExperimentResponse202RolesItems]]
-    connections: NotRequired[List[str]]
-    serviceConfigurations: NotRequired[List[UpdateExperimentResponse202ServiceconfigurationsItems]]
-    instantiatedDevices: NotRequired[List[UpdateExperimentResponse202InstantiateddevicesItems]]
+    devices: List[UpdateExperimentResponse202DevicesItems]
+    roles: List[UpdateExperimentResponse202RolesItems]
+    connections: List[str]
+    serviceConfigurations: List[UpdateExperimentResponse202ServiceconfigurationsItems]
+    instantiatedDevices: List[UpdateExperimentResponse202InstantiateddevicesItems]
 
 
 UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateExperimentResponse202]
@@ -2686,19 +2761,761 @@ UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateE
 DeleteExperimentResponse: TypeAlias = None
 
 
+class ListTemplateResponse200Items(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+
+
+ListTemplateResponse200: TypeAlias = List[ListTemplateResponse200Items]
+
+
+ListTemplateResponse: TypeAlias = ListTemplateResponse200
+
+
+class CreateTemplateRequestConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateRequestConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class CreateTemplateRequestConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateRequestConfigurationRolesItemsConfiguration]
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateRequestConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateRequestConfiguration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateRequestConfigurationDevicesItems]
+    roles: List[CreateTemplateRequestConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateRequestConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateRequest(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateRequestConfiguration
+
+
+class CreateTemplateResponse201ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateResponse201ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class CreateTemplateResponse201ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse201ConfigurationRolesItemsConfiguration]
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateResponse201ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateResponse201Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateResponse201ConfigurationDevicesItems]
+    roles: List[CreateTemplateResponse201ConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateResponse201ConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateResponse201(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateResponse201Configuration
+
+
+class CreateTemplateResponse202ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class CreateTemplateResponse202ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class CreateTemplateResponse202ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse202ConfigurationRolesItemsConfiguration]
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class CreateTemplateResponse202ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class CreateTemplateResponse202Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[CreateTemplateResponse202ConfigurationDevicesItems]
+    roles: List[CreateTemplateResponse202ConfigurationRolesItems]
+    serviceConfigurations: List[CreateTemplateResponse202ConfigurationServiceconfigurationsItems]
+
+
+class CreateTemplateResponse202(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: CreateTemplateResponse202Configuration
+
+
+CreateTemplateResponse: TypeAlias = Union[CreateTemplateResponse201, CreateTemplateResponse202]
+
+
+class GetTemplateResponse200ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class GetTemplateResponse200ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class GetTemplateResponse200ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[GetTemplateResponse200ConfigurationRolesItemsConfiguration]
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class GetTemplateResponse200ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class GetTemplateResponse200Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[GetTemplateResponse200ConfigurationDevicesItems]
+    roles: List[GetTemplateResponse200ConfigurationRolesItems]
+    serviceConfigurations: List[GetTemplateResponse200ConfigurationServiceconfigurationsItems]
+
+
+class GetTemplateResponse200(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: GetTemplateResponse200Configuration
+
+
+GetTemplateResponse: TypeAlias = GetTemplateResponse200
+
+
+class UpdateTemplateRequestConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateRequestConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class UpdateTemplateRequestConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfigurationRolesItemsConfiguration]
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateRequestConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateRequestConfiguration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: NotRequired[List[UpdateTemplateRequestConfigurationDevicesItems]]
+    roles: NotRequired[List[UpdateTemplateRequestConfigurationRolesItems]]
+    serviceConfigurations: NotRequired[List[UpdateTemplateRequestConfigurationServiceconfigurationsItems]]
+
+
+class UpdateTemplateRequest(TypedDict):
+    """
+    Properties:
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    name: NotRequired[str]
+    description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateRequestConfiguration]
+
+
+class UpdateTemplateResponse200ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateResponse200ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class UpdateTemplateResponse200ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse200ConfigurationRolesItemsConfiguration]
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateResponse200ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateResponse200Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[UpdateTemplateResponse200ConfigurationDevicesItems]
+    roles: List[UpdateTemplateResponse200ConfigurationRolesItems]
+    serviceConfigurations: List[UpdateTemplateResponse200ConfigurationServiceconfigurationsItems]
+
+
+class UpdateTemplateResponse200(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: UpdateTemplateResponse200Configuration
+
+
+class UpdateTemplateResponse202ConfigurationDevicesItems(TypedDict):
+    """
+    Properties:
+    - device: URL to the [device](https://cross-lab-project.github.io/crosslab/api/device.html#get-/devices/-device_id-).
+    - role: The name of the device's role.
+    """
+    device: str
+    role: str
+
+
+class UpdateTemplateResponse202ConfigurationRolesItemsConfiguration(TypedDict):
+    """
+    Configuration for all devices with this role.Properties:
+    """
+
+
+class UpdateTemplateResponse202ConfigurationRolesItems(TypedDict):
+    """
+    Properties:
+    - name: Name for an experiment role.
+    - description
+    - configuration: Configuration for all devices with this role.
+    """
+    name: str
+    description: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse202ConfigurationRolesItemsConfiguration]
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
+    """
+    Configuration of the service
+    
+    This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
+    """
+    Service configuration of the participant.
+    
+    This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+    Properties:
+    """
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems(TypedDict):
+    """
+    Properties:
+    - role: The name of the participant's role.
+    - serviceId
+    - config: Service configuration of the participant.
+
+This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    """
+    role: NotRequired[str]
+    serviceId: NotRequired[str]
+    config: NotRequired[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig]
+
+
+class UpdateTemplateResponse202ConfigurationServiceconfigurationsItems(TypedDict):
+    """
+    Properties:
+    - serviceType: Type of the service
+    - configuration: Configuration of the service
+
+This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
+
+    - participants: List of participants for the service
+    """
+    serviceType: NotRequired[str]
+    configuration: NotRequired[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration]
+    participants: NotRequired[List[UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItems]]
+
+
+class UpdateTemplateResponse202Configuration(TypedDict):
+    """
+    Configuration of the templated experimentProperties:
+    - devices: Devices associated with the templated experiment
+    - roles: Roles that are used in this templated experiment
+    - serviceConfigurations: Services associated with the templated experiment
+    """
+    devices: List[UpdateTemplateResponse202ConfigurationDevicesItems]
+    roles: List[UpdateTemplateResponse202ConfigurationRolesItems]
+    serviceConfigurations: List[UpdateTemplateResponse202ConfigurationServiceconfigurationsItems]
+
+
+class UpdateTemplateResponse202(TypedDict):
+    """
+    Properties:
+    - url: URL of the template
+    - name: Name of the template
+    - description: Description of the template
+    - configuration: Configuration of the templated experiment
+    """
+    url: str
+    name: str
+    description: NotRequired[str]
+    configuration: UpdateTemplateResponse202Configuration
+
+
+UpdateTemplateResponse: TypeAlias = Union[UpdateTemplateResponse200, UpdateTemplateResponse202]
+
+
+DeleteTemplateResponse: TypeAlias = None
+
+
 class ListInstitutionsResponse200Items(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -2711,32 +3528,32 @@ ListInstitutionsResponse: TypeAlias = ListInstitutionsResponse200
 class CreateInstitutionRequest(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
 class CreateInstitutionResponse201(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -2746,16 +3563,16 @@ CreateInstitutionResponse: TypeAlias = CreateInstitutionResponse201
 class GetInstitutionResponse200(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -2765,32 +3582,32 @@ GetInstitutionResponse: TypeAlias = GetInstitutionResponse200
 class UpdateInstitutionRequest(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
 class UpdateInstitutionResponse200(TypedDict):
     """
     Properties:
+    - url
     - name
     - homepage
     - api
-    - federatedApi
     - apiToken
     """
+    url: str
     name: NotRequired[str]
     homepage: NotRequired[str]
     api: NotRequired[str]
-    federatedApi: NotRequired[str]
     apiToken: NotRequired[str]
 
 
@@ -2798,91 +3615,3 @@ UpdateInstitutionResponse: TypeAlias = UpdateInstitutionResponse200
 
 
 DeleteInstitutionResponse: TypeAlias = None
-
-
-class ListUpdatesResponse200Items(TypedDict):
-    """
-    Information regarding an update. Contains the id of the device,
-    the name of the latest version and a link to it.
-    Properties:
-    - device_id
-    - latest_version
-    - latest_version_link
-    """
-    device_id: str
-    latest_version: str
-    latest_version_link: str
-
-
-ListUpdatesResponse200: TypeAlias = List[ListUpdatesResponse200Items]
-
-
-ListUpdatesResponse: TypeAlias = ListUpdatesResponse200
-
-
-class CreateUpdateRequest(TypedDict):
-    """
-    Information regarding an update. Contains the id of the device,
-    the name of the latest version and a link to it.
-    Properties:
-    - device_id
-    - latest_version
-    - latest_version_link
-    """
-    device_id: str
-    latest_version: str
-    latest_version_link: str
-
-
-class CreateUpdateResponse201(TypedDict):
-    """
-    Information regarding an update. Contains the id of the device,
-    the name of the latest version and a link to it.
-    Properties:
-    - device_id
-    - latest_version
-    - latest_version_link
-    """
-    device_id: str
-    latest_version: str
-    latest_version_link: str
-
-
-CreateUpdateResponse: TypeAlias = CreateUpdateResponse201
-
-
-GetUpdateResponse: TypeAlias = None
-
-
-class PatchUpdateRequest(TypedDict):
-    """
-    Information regarding an update. Contains the id of the device,
-    the name of the latest version and a link to it.
-    Properties:
-    - device_id
-    - latest_version
-    - latest_version_link
-    """
-    device_id: str
-    latest_version: str
-    latest_version_link: str
-
-
-class PatchUpdateResponse200(TypedDict):
-    """
-    Information regarding an update. Contains the id of the device,
-    the name of the latest version and a link to it.
-    Properties:
-    - device_id
-    - latest_version
-    - latest_version_link
-    """
-    device_id: str
-    latest_version: str
-    latest_version_link: str
-
-
-PatchUpdateResponse: TypeAlias = PatchUpdateResponse200
-
-
-DeleteUpdateResponse: TypeAlias = None

@@ -1,7 +1,14 @@
-import {EntityManager, FindManyOptions, FindOneOptions, FindOptionsRelations, ObjectLiteral, Repository} from 'typeorm';
+import {
+  EntityManager,
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsRelations,
+  ObjectLiteral,
+  Repository,
+} from 'typeorm';
 
-import {MissingEntityError, UninitializedRepositoryError} from '../errors';
-import {NonNullableProperties} from '../types';
+import { MissingEntityError, UninitializedRepositoryError } from '../errors.js';
+import { NonNullableProperties } from '../types.js';
 
 /**
  * An abstract class for a repository.
@@ -9,7 +16,12 @@ import {NonNullableProperties} from '../types';
  * @typeParam RQ - Type of possible request.
  * @typeParam RSP - Type of possible response.
  */
-export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP, D extends Record<string, object> = Record<string, never>> {
+export abstract class AbstractRepository<
+  M extends ObjectLiteral,
+  RQ,
+  RSP,
+  D extends Record<string, object> = Record<string, never>,
+> {
   public name: string;
   protected repository?: Repository<M>;
   protected abstract dependencies: Partial<D>;
@@ -31,7 +43,9 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP, D ext
   }
 
   protected throwUninitializedRepositoryError(): never {
-    throw new UninitializedRepositoryError(`${this.name} Repository has not been initialized!`);
+    throw new UninitializedRepositoryError(
+      `${this.name} Repository has not been initialized!`,
+    );
   }
 
   abstract initialize(entityManager: EntityManager): void;
@@ -78,7 +92,10 @@ export abstract class AbstractRepository<M extends ObjectLiteral, RQ, RSP, D ext
     const model = await this.repository.findOne(findOptions);
 
     if (!model) {
-      throw new MissingEntityError(`The requested ${this.name} does not exist in the database`, 404);
+      throw new MissingEntityError(
+        `The requested ${this.name} does not exist in the database`,
+        404,
+      );
     }
 
     return model;

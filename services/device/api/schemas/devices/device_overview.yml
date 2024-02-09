@@ -21,17 +21,22 @@ properties:
       - group
       - edge instantiable
       - cloud instantiable
-  owner:
-    type: string
-    format: uri
-    readOnly: true
   isPublic:
     type: boolean
     description: If true, the device may be seen and used by every user.
+  viewer:
+    type: array
+    description: List of users who can view the device
+    items:
+      $ref: ./references/user_reference.yml
+  owner:
+    type: array
+    description: List of users who own the device
+    items:
+      $ref: ./references/user_reference.yml
 required:
   - url
   - type
   - name
-  - owner
   - isPublic
 x-typeguard: true

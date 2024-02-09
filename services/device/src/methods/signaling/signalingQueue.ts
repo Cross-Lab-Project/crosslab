@@ -1,136 +1,116 @@
+import { logger } from '@crosslab/service-common';
+import Queue from 'queue';
+
 import {
-    CreatePeerconnectionMessage,
-    ClosePeerconnectionMessage,
-    SignalingMessage,
-} from '../../generated/types'
-import { apiClient } from '../../globals'
-import { logger } from '@crosslab/service-common'
-import Queue from 'queue'
+  ClosePeerconnectionMessage,
+  CreatePeerconnectionMessage,
+  SignalingMessage,
+} from '../../generated/types.js';
+import { sendSignalingMessage } from '../signaling.js';
 
 export class SignalingQueue {
-    private queue: Queue
-    private deviceUrl: string
-    private peerconnectionUrl: string
-    private _state:
-        | 'new'
-        | 'started'
-        | 'peerconnection-created'
-        | 'peerconnection-closed' = 'new'
-    private _isStopped = false
-    public _onClose: () => void
+  public readonly deviceUrl: string;
+  public readonly peerconnectionUrl: string;
+  private queue: Queue;
+  private _state: 'new' | 'started' | 'stopped' | 'closed' = 'new';
+  private readonly closedPromise: Promise<void>;
+  private readonly onClose: () => void;
 
-    constructor(peerconnectionUrl: string, deviceUrl: string) {
-        this.deviceUrl = deviceUrl
-        this.peerconnectionUrl = peerconnectionUrl
-        this.queue = new Queue({
-            concurrency: 1,
-        })
-        this._onClose = () => {
-            this.queue.end()
+  constructor(peerconnectionUrl: string, deviceUrl: string) {
+    this.deviceUrl = deviceUrl;
+    this.peerconnectionUrl = peerconnectionUrl;
+    this.queue = new Queue({
+      concurrency: 1,
+    });
+    let closedPromiseResolve: (value: void | PromiseLike<void>) => void;
+    this.closedPromise = new Promise<void>(resolve => {
+      closedPromiseResolve = resolve;
+    });
+    this.onClose = () => {
+      this.queue.end();
+      closedPromiseResolve();
+    };
+  }
+
+  public get state() {
+    return this._state;
+  }
+
+  public add(
+    signalingMessage:
+      | CreatePeerconnectionMessage
+      | ClosePeerconnectionMessage
+      | SignalingMessage,
+  ) {
+    this.queue.push(async () => {
+      await this.sendSignalingMessage(signalingMessage);
+
+      if (signalingMessage.messageType === 'command') {
+        switch (signalingMessage.command) {
+          case 'closePeerconnection':
+            this._state = 'closed';
+            this.onClose();
+            break;
         }
+      }
+    });
+
+    if (this.state === 'started') this.start();
+  }
+
+  private async sendSignalingMessage(
+    signalingMessage:
+      | CreatePeerconnectionMessage
+      | ClosePeerconnectionMessage
+      | SignalingMessage,
+  ) {
+    try {
+      await sendSignalingMessage(
+        this.deviceUrl,
+        signalingMessage,
+        this.peerconnectionUrl,
+      );
+    } catch (error) {
+      logger.log('error', 'An error occurred while trying to send a signaling message', {
+        data: {
+          error,
+          errorMessage: error instanceof Error ? error.message : undefined,
+          message: signalingMessage,
+          targetDevice: this.deviceUrl,
+          peerconnection: this.peerconnectionUrl,
+        },
+      });
     }
+  }
 
-    public get state() {
-        return this._state
-    }
+  public start() {
+    this.queue.start(error => {
+      if (error)
+        logger.log('error', 'An error occurred while processing a signaling message', {
+          data: {
+            error,
+            targetDevice: this.deviceUrl,
+            peerconnection: this.peerconnectionUrl,
+          },
+        });
+    });
+    if (this._state != 'closed') this._state = 'started';
+  }
 
-    public get isStopped() {
-        return this._isStopped
-    }
+  public stop() {
+    this.queue.stop();
+    if (this._state != 'closed') this._state = 'stopped';
+  }
 
-    public get onClose(): (() => void) | undefined {
-        return this._onClose
-    }
+  public async close() {
+    if (this.state !== 'new' && this.state !== 'closed')
+      this.add({
+        messageType: 'command',
+        command: 'closePeerconnection',
+        connectionUrl: this.peerconnectionUrl,
+      });
+    else if (this.state === 'new') this.onClose();
 
-    public set onClose(onClose: (() => void) | undefined) {
-        this._onClose = () => {
-            this.queue.end()
-            if (onClose) onClose()
-        }
-    }
-
-    public add(
-        signalingMessage:
-            | CreatePeerconnectionMessage
-            | ClosePeerconnectionMessage
-            | SignalingMessage
-    ) {
-        this.queue.push(async () => {
-            await this.sendSignalingMessage(signalingMessage)
-
-            if (signalingMessage.messageType === 'command') {
-                switch (signalingMessage.command) {
-                    case 'createPeerconnection':
-                        this._state = 'peerconnection-created'
-                        break
-                    case 'closePeerconnection':
-                        this._state = 'peerconnection-closed'
-                        this._onClose()
-                        break
-                }
-            }
-        })
-
-        if (
-            (this.state === 'peerconnection-created' || this.state === 'started') &&
-            !this._isStopped
-        )
-            this.start()
-    }
-
-    private async sendSignalingMessage(
-        signalingMessage:
-            | CreatePeerconnectionMessage
-            | ClosePeerconnectionMessage
-            | SignalingMessage
-    ) {
-        try {
-            await apiClient.sendSignalingMessage(
-                this.deviceUrl,
-                signalingMessage,
-                this.peerconnectionUrl
-            )
-        } catch (error) {
-            logger.log(
-                'error',
-                'An error occurred while trying to send a signaling message',
-                {
-                    data: {
-                        error,
-                        message: signalingMessage,
-                        targetDevice: this.deviceUrl,
-                        peerconnection: this.peerconnectionUrl,
-                    },
-                }
-            )
-        }
-    }
-
-    public start() {
-        this.queue.start((error) => {
-            if (error)
-                logger.log(
-                    'error',
-                    'An error occurred while processing a signaling message',
-                    {
-                        data: {
-                            error,
-                            targetDevice: this.deviceUrl,
-                            peerconnection: this.peerconnectionUrl,
-                        },
-                    }
-                )
-        })
-        this._isStopped = false
-        if (this._state === 'new') this._state = 'started'
-    }
-
-    public stop() {
-        this.queue.stop()
-        this._isStopped = true
-    }
-
-    public isEmpty(): boolean {
-        return this.queue.length === 0
-    }
+    return this.closedPromise;
+  }
 }

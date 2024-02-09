@@ -25,28 +25,20 @@ components:
         As this is the API description of the internal Authentication API, the only supported security schema is the JWT bearer token.
         This token will be populated by the API Gateway.
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+
 paths:
   /auth:
-    $ref: "./resources/auth.yml"
+    $ref: './resources/auth.yml'
   /login:
-    $ref: "./resources/login.yml"
+    $ref: './resources/login.yml'
   /logout:
-    $ref: "./resources/logout.yml"
-  /device_authentication_token:
-    $ref: "./resources/device_authentication_token.yml"
+    $ref: './resources/logout.yml'
   /users:
-    $ref: "./resources/users.yml"
+    $ref: './resources/users.yml'
   /users/{user_id}:
-    $ref: "./resources/user.yml"
-  /users/{user_id}/roles:
-    $ref: "./resources/user_roles.yml"
-  /roles:
-    $ref: "./resources/roles.yml"
-  /roles/{role_id}:
-    $ref: "./resources/role.yml"
-  /roles/{role_id}/users:
-    $ref: "./resources/role_users.yml"
+    $ref: './resources/user.yml'
   /identity:
-    $ref: "./resources/identity.yml"
-  /register:
-    $ref: "./resources/register.yml"
+    $ref: './resources/identity.yml'
+
+  /token:
+    $ref: './resources/token.yml#/components/paths/token'

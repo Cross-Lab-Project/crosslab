@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from crosslab.soa_services.electrical import (
     ConstructableSignalInterface,
@@ -86,11 +86,12 @@ class GPIOInterface(SignalInterface):
 class ConstractableGPIOInterface(ConstructableSignalInterface):
     interfaceType = "gpio"
 
-    def __init__(self, gpios: List[str]):
+    def __init__(self, gpios: List[str], direction: Literal["in", "out", "inout"] = "inout"):
         self.gpios = gpios
+        self.direction = direction
 
     def getDescription(self):
-        return {"availableSignals": {"gpio": self.gpios}}
+        return {"availableSignals": {"gpio": self.gpios}, "direction": self.direction}
 
     def create(self, interfaceConfig):
         return GPIOInterface(interfaceConfig)

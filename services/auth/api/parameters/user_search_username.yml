@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+in: query
+name: username
+description: filter for users with a specific username
+required: false
+schema:
+  type: string

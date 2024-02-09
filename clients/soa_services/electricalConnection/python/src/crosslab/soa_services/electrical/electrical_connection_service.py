@@ -30,7 +30,7 @@ class ConnectionMeta:
 
 
 class ElectricalConnectionService(Service, AsyncIOEventEmitter):
-    service_type = "goldi/electrical"
+    service_type = "http://api.goldi-labs.de/serviceTypes/electrical"
     service_id: str
     _interfaces: Dict[str, SignalInterface]
     _interfaces_constructors: Dict[str, ConstructableSignalInterface]

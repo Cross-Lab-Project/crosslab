@@ -1,7 +1,7 @@
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-import {SignalingMessage} from '../deviceMessages';
-import {Channel} from './channel';
+import { SignalingMessage } from '../deviceMessages';
+import { Channel } from './channel';
 
 export type ServiceConfig = {
   serviceType: string;

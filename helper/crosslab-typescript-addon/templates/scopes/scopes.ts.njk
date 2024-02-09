@@ -28,4 +28,4 @@ export type Scope<T extends '{{ schemes | unique | join("' | '") }}'> =
     never
 {%- endmacro -%}
 
-{{ generateScopes() | prettier }}
+{{ generateScopes() }}

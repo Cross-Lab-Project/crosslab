@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * This function defines a filter that checks if a given string ends with the
@@ -8,10 +8,10 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @returns True if the given string ends with the search string, else false.
  */
 function endsWith(string: string, searchString: string) {
-    return string.endsWith(searchString as string)
+  return string.endsWith(searchString as string);
 }
 
 export const endsWithFilter: Filter = {
-    name: 'endsWith',
-    function: endsWith,
-}
+  name: 'endsWith',
+  function: endsWith,
+};

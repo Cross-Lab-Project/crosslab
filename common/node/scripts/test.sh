@@ -1,6 +1,7 @@
 #!/bin/sh
 
-rm -rf venv
+mkdir -p dist
+
 rm -rf db
 
 npm ci

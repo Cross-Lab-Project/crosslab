@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Service Configuration
 type: object
-properties: 
+properties:
   serviceType:
     type: string
     format: uri
@@ -16,5 +16,5 @@ properties:
   participants:
     type: array
     description: List of participants for the service
-    items: 
-      $ref: "./participant.yml"
+    items:
+      $ref: './participant.yml'

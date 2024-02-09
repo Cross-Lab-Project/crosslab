@@ -2,7 +2,6 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 stages:
-  - build-environment
   - build
 
 default:
@@ -23,15 +22,9 @@ workflow:
 #       BRANCH: CI_COMMIT_TAG
 #       RELEASE: '--release'
 
-build-environment:
-  image: crosslab/devcontainer:latest
-  stage: build-environment
-  script:
-    - ./scripts/ci.sh --tag environment --no-upload --branch $BRANCH
-    - cat ./helper/development-container/dist/crosslab-devcontainer.tar | docker load
-
 build:
-  image: crosslab-devcontainer:build
+  image: crosslab/devcontainer:latest
   stage: build
   script:
+    - /usr/local/share/docker-init.sh
     - ./scripts/ci.sh --upload --branch $BRANCH $RELEASE

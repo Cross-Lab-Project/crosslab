@@ -1,0 +1,29 @@
+@startuml signaling
+
+participant "Device A" as DA
+participant "Device Service" as DS
+participant "Device B" as DB
+
+DS -> DA : send create-peerconnection message (tiebreaker: true)
+DA -> DA : create peerconnection
+
+DS -> DB : send create-peerconnection message (tiebreaker: false)
+DB -> DB : create peerconnection
+
+DA -> DA : create offer
+DA -> DS : send offer
+DS -> DB : forward offer
+
+DB -> DB : create answer
+DB -> DS : send answer
+DS -> DA : forward answer
+
+...
+
+DA -> DS : send signaling message
+DS -> DB : forward signaling message from Device A
+
+DB -> DS : send signaling message
+DS -> DA : forward signaling message from Device B
+
+@enduml

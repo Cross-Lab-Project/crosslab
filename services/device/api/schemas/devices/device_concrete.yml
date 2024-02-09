@@ -12,7 +12,7 @@ allOf:
         type: boolean
         readOnly: true
       announcedAvailability:
-        $ref: "./availability/availability.yml"
+        $ref: './availability/availability.yml'
         readOnly: true
       experiment:
         type: string

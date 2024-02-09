@@ -1,80 +1,88 @@
-import { repositories } from '../../../database/dataSource'
-import { postDevicesByDeviceIdSignature } from '../../../generated/signatures'
-import { apiClient } from '../../../globals'
-import { changedCallbacks } from '../../../methods/callbacks'
-import { checkPermission } from '../../../methods/permission'
-import { deviceUrlFromId } from '../../../methods/urlFromId'
-import {
-    DeviceOwnershipError,
-    ImpossibleOperationError,
-    logger,
-} from '@crosslab/service-common'
+import { ImpossibleOperationError, logger } from '@crosslab/service-common';
+
+import * as clients from '../../../clients/index.js';
+import { repositories } from '../../../database/dataSource.js';
+import { ConcreteDeviceModel } from '../../../database/model.js';
+import { postDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
+import { changedCallbacks } from '../../../methods/callbacks.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 
 /**
- * This function implements the functionality for handling POST requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  * @throws {ImpossibleOperationError} Thrown if device is not instantiable.
  */
 export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
-    parameters,
-    user
+  req,
+  parameters,
 ) => {
-    logger.log('info', 'postDevicesByDeviceId called')
+  logger.log('info', 'postDevicesByDeviceId called');
 
-    const instantiableDeviceModel = await repositories.device.findOneOrFail({
-        where: { uuid: parameters.device_id },
-    })
+  await req.authorization.check_authorization_or_fail(
+    'instantiate',
+    `device:${deviceUrlFromId(parameters.device_id)}`,
+  );
 
-    if (!checkPermission('instantiate', instantiableDeviceModel, user.JWT))
-        throw new DeviceOwnershipError()
+  const instantiableDeviceModel = await repositories.device.findOneOrFail({
+    where: { uuid: parameters.device_id },
+  });
 
-    if (
-        instantiableDeviceModel.type !== 'cloud instantiable' &&
-        instantiableDeviceModel.type !== 'edge instantiable'
-    )
-        throw new ImpossibleOperationError(
-            `Cannot create new instance of device '${deviceUrlFromId(
-                instantiableDeviceModel.uuid
-            )}' since it has type '${instantiableDeviceModel.type}'`,
-            400
-        )
+  if (
+    instantiableDeviceModel.type !== 'cloud instantiable' &&
+    instantiableDeviceModel.type !== 'edge instantiable'
+  )
+    throw new ImpossibleOperationError(
+      `Cannot create new instance of device '${deviceUrlFromId(
+        instantiableDeviceModel.uuid,
+      )}' since it has type '${instantiableDeviceModel.type}'`,
+      400,
+    );
 
-    const concreteDeviceModel = await repositories.concreteDevice.create({
-        ...(await repositories.device.format(instantiableDeviceModel)),
-        type: 'device',
-    })
-    concreteDeviceModel.owner = user.JWT?.url
+  let concreteDeviceModel = await repositories.concreteDevice.create({
+    ...(await repositories.device.format(instantiableDeviceModel)),
+    type: 'device',
+  });
 
-    await repositories.device.save(concreteDeviceModel)
+  concreteDeviceModel = (await repositories.device.save(
+    concreteDeviceModel,
+  )) as ConcreteDeviceModel;
 
-    if (parameters.changedUrl) {
-        logger.log(
-            'info',
-            `registering changed-callback for device '${deviceUrlFromId(
-                concreteDeviceModel.uuid
-            )}' to '${parameters.changedUrl}'`
-        )
-        const changedCallbackURLs = changedCallbacks.get(concreteDeviceModel.uuid) ?? []
-        changedCallbackURLs.push(parameters.changedUrl)
-        changedCallbacks.set(concreteDeviceModel.uuid, changedCallbackURLs)
-    }
-    const instance = await repositories.concreteDevice.format(concreteDeviceModel)
+  await req.authorization.relate(
+    `user:${req.authorization.user}`,
+    'owner',
+    `device:${deviceUrlFromId(concreteDeviceModel.uuid)}`,
+  );
 
-    const deviceToken = await apiClient.createDeviceAuthenticationToken(instance.url) // TODO: error handling
-    instantiableDeviceModel.instances ??= []
-    instantiableDeviceModel.instances.push(concreteDeviceModel)
+  if (parameters.changedUrl) {
+    logger.log(
+      'info',
+      `registering changed-callback for device '${deviceUrlFromId(
+        concreteDeviceModel.uuid,
+      )}' to '${parameters.changedUrl}'`,
+    );
+    const changedCallbackURLs = changedCallbacks.get(concreteDeviceModel.uuid) ?? [];
+    changedCallbackURLs.push(parameters.changedUrl);
+    changedCallbacks.set(concreteDeviceModel.uuid, changedCallbackURLs);
+  }
+  const instance = await repositories.concreteDevice.format(concreteDeviceModel);
 
-    await repositories.device.save(instantiableDeviceModel)
+  await repositories.device.save(instantiableDeviceModel);
 
-    logger.log('info', 'postDevicesByDeviceId succeeded')
+  logger.log('info', 'postDevicesByDeviceId succeeded');
 
-    return {
-        status: 201,
-        body: {
-            deviceToken,
-            instance: instance,
-        },
-    }
-}
+  const deviceToken = await clients.authentication.createToken({
+    user: req.authorization.user,
+    claims: { device_token: true },
+  });
+
+  return {
+    status: 201,
+    body: {
+      deviceToken: deviceToken,
+      instance: instance,
+    },
+  };
+};

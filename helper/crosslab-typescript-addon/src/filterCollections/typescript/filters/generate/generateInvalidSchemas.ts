@@ -1,7 +1,8 @@
-import { generateInvalidSchemas } from '../../schema-generation/invalidSchemas'
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
+
+import { generateInvalidSchemas } from '../../schema-generation/invalidSchemas';
 
 export const generateInvalidSchemasFilter: Filter = {
-    name: 'generateInvalidSchemas',
-    function: generateInvalidSchemas,
-}
+  name: 'generateInvalidSchemas',
+  function: generateInvalidSchemas,
+};

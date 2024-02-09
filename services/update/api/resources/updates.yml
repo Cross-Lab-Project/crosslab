@@ -5,15 +5,15 @@ get:
     - update
   security:
     - JWT:
-      - update
-      - update:read
+        - update
+        - update:read
   summary: Get update information for all devices
   responses:
     200:
       description: JSON representation of all update information
       content:
         application/json:
-          $ref: "../content/update_information_list.yml"
+          $ref: '../content/update_information_list.yml'
     400:
       description: Bad Request.
     401:
@@ -31,21 +31,21 @@ post:
     - update
   security:
     - JWT:
-      - update
-      - update:create
+        - update
+        - update:create
   summary: Create new update information
   requestBody:
     description: The update to be created.
     required: true
     content:
       application/json:
-        $ref: "../content/update_information.yml"
+        $ref: '../content/update_information.yml'
   responses:
     201:
       description: JSON representation of the new update
       content:
         application/json:
-          $ref: "../content/update_information.yml"
+          $ref: '../content/update_information.yml'
     400:
       description: Bad Request.
     401:

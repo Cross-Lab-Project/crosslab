@@ -10,7 +10,7 @@
 
 {%- if operation.responses -%}
     {%- for response in operation.responses -%}
-        {%- if response.status | int < 400 -%}
+        {%- if response.status | string | replace("XX", "00") | int < 400 -%}
             {%- set success_responses = (success_responses.push(operation.name + response.status + "ResponseType"), success_responses) -%}
         {%- else -%}
             {%- set error_responses = (error_responses.push(operation.name + response.status + "ResponseType"), error_responses) -%}
@@ -22,29 +22,13 @@
  * Function signature for handling a {{ operation.method | upper }} request on {{ operation.path }}
  */
 export type {{ operation.name }}Signature = (
+        req: express.Request,
         {%- if operation.parameters | length > 0 -%}
             parameters: {{ operation.name }}ParametersType
         {%- endif -%}
-        {{- ", " if (operation.parameters | length > 0 and operation.requestBody) or (operation.parameters | length > 0 and operation.security) -}}
+        {{- ", " if (operation.parameters | length > 0 and (operation.requestBody or operation.isProxyRequest)) -}}
         {%- if operation.requestBody or operation.isProxyRequest -%}
             body: {{ operation.name }}RequestBodyType
-        {%- endif -%}
-        {{- ", " if (operation.requestBody or operation.isProxyRequest) and operation.security -}}
-        {%- if operation.security and (operation.security | length) > 0 -%}
-            {%- if operation.security | length > 0 -%}
-                {%- set userDataTypes = [] -%}
-                {%- for securityRequirement in operation.security -%}
-                    {%- set temp = [] -%}
-                    {%- for securityMethod, scopes in securityRequirement -%}
-                        {%- set temp = (temp.push(securityMethod | formatName), temp) -%}
-                    {%- endfor -%}
-                    {%- set userDataTypes = (userDataTypes.push("UserData<" + (temp | toStrings | join("|")) + ">"), userDataTypes) -%}
-                {%- endfor -%}
-            {%- else -%}
-                {%- set userDataTypes = ["undefined"] -%}
-            {%- endif -%}
-
-            userData: {{ userDataTypes | join(" | ") }}
         {%- endif -%}
     ) => 
     {%- if operation.responses | length > 0 -%}
@@ -118,8 +102,8 @@ export type {{ operation.name }}ErrorResponseType = {{ error_responses | join(" 
 /**
  * Typing for a response with status {{ response.status }} to a {{ operation.method | upper }} request on {{ operation.path }}
  */
-export interface {{ operation.name }}{{ response.status }}ResponseType extends {{ "SuccessResponse" if response.status | int < 400 else "ErrorResponse" }} {
-    status: {{ ("NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 100) + ">") if (response.status | endsWith("XX")) else response.status }}
+export interface {{ operation.name }}{{ response.status }}ResponseType extends {{ "SuccessResponse" if response.status | string | replace("XX", "00") | int < 400 else "ErrorResponse" }} {
+    status: {{ ("NumericRange<" + (response.status | replace("XX", "00")) + "," + (response.status | replace("XX", "00") | int + 99) + ">") if (response.status | endsWith("XX")) else response.status }}
     headers{{ "?" if not response.headers }}: {
         {% for header in response.headers -%}
         "{{ header.name }}"{{ "?" if not header.required}}: {{ header.schema | typeDeclaration(schemas, { "schemaType": "response" }) | indent(8) if header.schema else "undefined" }},
@@ -133,7 +117,7 @@ export interface {{ operation.name }}{{ response.status }}ResponseType extends {
 {%- endfor %}
 {%- endmacro -%}
 
-{%- set typeDependencies = ["SuccessResponse", "ErrorResponse", "UserData"] -%}
+{%- set typeDependencies = ["SuccessResponse", "ErrorResponse"] -%}
 {%- for operation in operations -%}
 
     {%- if operation.parameters -%}
@@ -173,6 +157,7 @@ import {
     {{- "\n\tRequire," if signatures | includes("Require<") }}
     {{- "\n\tNumericRange," if signatures | includes("NumericRange<") }}
     {{ typeDependencies | flatten | unique | join(",\n\t") }}
-} from "./types"
+} from "./types.js"
+import express from "express"
 
-{{ signatures | prettier }}
+{{ signatures }}

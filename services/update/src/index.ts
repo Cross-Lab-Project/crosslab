@@ -1,40 +1,17 @@
 #!/usr/bin/env node
-import { config } from './config'
-import { AppDataSource } from './data_source'
-import { app } from './generated/index'
-import { isUserTypeJWT } from './generated/types'
-import {
-    JWTVerify,
-    errorHandler,
-    logHandling,
-    logger,
-    missingRouteHandling,
-    requestIdHandling,
-    parseJwtFromAuthorizationHeader,
-} from '@crosslab/service-common'
+import { logger } from '@crosslab/service-common';
+
+import { initApp } from './app';
+import { AppDataSource } from './database/dataSource';
 
 async function startUpdateService() {
-    await AppDataSource.initialize()
+  await AppDataSource.initialize();
+  initApp();
 
-    app.get('/update/status', (_req, res) => {
-        res.send({ status: 'ok' })
-    })
-
-    app.initService({
-        security: {
-            JWT: JWTVerify(config, isUserTypeJWT, parseJwtFromAuthorizationHeader),
-        },
-        preHandlers: [requestIdHandling, logHandling],
-        postHandlers: [missingRouteHandling],
-        errorHandler: errorHandler,
-    })
-
-    app.listen(config.PORT)
-
-    logger.log('info', 'Update Service started successfully')
+  logger.log('info', 'Update Service started successfully');
 }
 
 /* istanbul ignore if */
 if (require.main === module) {
-    startUpdateService()
+  startUpdateService();
 }

@@ -1,22 +1,25 @@
 import WebSocket from 'isomorphic-ws';
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 import {
   ClosePeerConnectionMessage,
+  ConfigurationMessage,
   ConnectionStateChangedMessage,
   CreatePeerConnectionMessage,
   SignalingMessage,
   isClosePeerConnectionMessage,
   isCommandMessage,
+  isConfigurationMessage,
   isCreatePeerConnectionMessage,
   isSignalingMessage,
 } from './deviceMessages';
-import {PeerConnection} from './peer/connection';
-import {WebRTCPeerConnection} from './peer/webrtc-connection';
-import {Service} from './service';
+import { PeerConnection } from './peer/connection';
+import { WebRTCPeerConnection } from './peer/webrtc-connection';
+import { Service } from './service';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
+  configuration(configuration: { [k: string]: unknown }): void;
 }
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
@@ -24,7 +27,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
 
-  async connect(connectOptions: {endpoint: string; id: string; token: string}) {
+  async connect(connectOptions: { endpoint: string; id: string; token: string }) {
     this.ws = new WebSocket(connectOptions.endpoint);
 
     this.ws.onopen = () => {
@@ -45,7 +48,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
             resolve();
           } else reject('Authentication failed');
         } else {
-          reject(`Expected message with messageType 'authenticate', received ${authenticationMessage.messageType}`);
+          reject(
+            `Expected message with messageType 'authenticate', received ${authenticationMessage.messageType}`,
+          );
         }
       };
     });
@@ -73,6 +78,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       if (isSignalingMessage(message)) {
         this.handleSignalingMessage(message);
       }
+      if (isConfigurationMessage(message)) {
+        this.handleConfigurationMessage(message);
+      }
     };
   }
 
@@ -86,9 +94,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     }
     console.log('creating connection', message);
     const connection = new WebRTCPeerConnection(
-      {} /*{
-      iceServers: [{urls: 'stun:stun.goldi-labs.de:3478'}, {urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi'}],
-    }*/,
+      {
+        iceServers: [{ urls: 'stun:stun.goldi-labs.de:3478' }, { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' }],
+      },
     );
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
@@ -138,6 +146,10 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     console.log('closing connection', message);
     connection.teardown();
     this.connections.delete(message.connectionUrl);
+  }
+
+  private handleConfigurationMessage(message: ConfigurationMessage) {
+    this.emit('configuration', message.configuration);
   }
 
   getServiceMeta() {

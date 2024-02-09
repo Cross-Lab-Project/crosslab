@@ -1,20 +1,21 @@
-import { AppDataSource } from '../../src/database/dataSource'
-import availabilitySpec from './availability.spec'
-import callbacksSpec from './callbacks.spec'
-// import signalingSpec from './signaling.spec'
-import urlFromIdSpec from './urlFromId.spec'
-import { logger } from '@crosslab/service-common'
+import { logger } from '@crosslab/service-common';
+
+import { initTestDatabase } from '../database/repositories/index.spec';
+import availabilitySpec from './availability.spec.js';
+import callbacksSpec from './callbacks.spec.js';
+// import signalingSpec from './signaling.spec.js'
+import urlFromIdSpec from './urlFromId.spec.js';
 
 // const tests = [availabilitySpec, callbacksSpec, signalingSpec, urlFromIdSpec]
-const tests = [availabilitySpec, callbacksSpec, urlFromIdSpec]
+const tests = [availabilitySpec, callbacksSpec, urlFromIdSpec];
 
 describe('Methods', function () {
-    this.beforeAll(async function () {
-        await AppDataSource.initialize()
-        logger.transports.forEach((transport) => (transport.silent = true))
-    })
+  this.beforeAll(async function () {
+    await initTestDatabase();
+    logger.transports.forEach(transport => (transport.silent = true));
+  });
 
-    for (const test of tests) {
-        test()
-    }
-})
+  for (const test of tests) {
+    test();
+  }
+});

@@ -35,16 +35,22 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     def __init__(self):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
-        # config = RTCConfiguration(
-        #     [
-        #         RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-        #         RTCIceServer(urls="turn:turn.goldi-labs.de:3478"),
-        #     ]
-        # ) # // see issue #5
-        config = RTCConfiguration([])
+        config = RTCConfiguration(
+            []
+            # [
+            #    RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
+            #    RTCIceServer(
+            #        urls="turn:turn.goldi-labs.de:3478",
+            #        username="goldi",
+            #        credential="goldi",
+            #    ),
+            # ]
+        )  # // see issue #5
         self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
+            if not self.pc:
+                return  # Fix: Do not access self.pc after close
             print(
                 "connectionstatechanged",
                 self.pc.connectionState,
@@ -133,9 +139,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             datachannel = self.pc.createDataChannel(label)
 
             async def upstreamData(data):
-                datachannel.send(data)
-                await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
-                await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
+                try:
+                    datachannel.send(data)
+                    await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
+                    await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
+                except Exception:
+                    pass
 
             def message(data):
                 dchannel.downstreamData(data)
@@ -194,6 +203,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         print("makeAnswer")
         await self.pc.setRemoteDescription(offer)
         self._matchMediaChannels()
+        await self.pc.setRemoteDescription(offer)
         answer = await self.pc.createAnswer()
         assert answer is not None  # TODO: handle this
         await self.pc.setLocalDescription(answer)
@@ -251,6 +261,11 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             if channel.track:
                 direction = "sendonly"
                 transeiver.sender.replaceTrack(channel.track)
+                videoPreference = filter(
+                    lambda x: x.name == "H264",
+                    RTCRtpSender.getCapabilities("video").codecs,
+                )
+                transeiver.setCodecPreferences(list(videoPreference))
 
             if channel.emit("track", transeiver.receiver.track):
                 direction = "sendrecv" if direction == "sendonly" else "recvonly"

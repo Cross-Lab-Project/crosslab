@@ -1,0 +1,10 @@
+{
+    "id": "crosslabFeature",
+    "version": "0.0.1",
+    "name": "Crosslab Features",
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/docker-in-docker",
+        "ghcr.io/devcontainers/features/node",
+        "ghcr.io/devcontainers/features/python"
+    ]
+}

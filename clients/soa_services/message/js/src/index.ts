@@ -1,1 +1,1 @@
-export * from "./message_service";
+export * from './message_service';

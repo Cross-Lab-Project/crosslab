@@ -1,42 +1,73 @@
-import { repositories } from '../../database/dataSource'
-import { postDevicesSignature } from '../../generated/signatures'
-import { changedCallbacks } from '../../methods/callbacks'
-import { deviceUrlFromId } from '../../methods/urlFromId'
-import { MalformedBodyError, logger } from '@crosslab/service-common'
+import { MalformedBodyError, logger } from '@crosslab/service-common';
+
+import { repositories } from '../../database/dataSource.js';
+import { postDevicesSignature } from '../../generated/signatures.js';
+import { changedCallbacks } from '../../methods/callbacks.js';
+import { deviceUrlFromId } from '../../methods/urlFromId.js';
+import { getViewerOwner, setViewerOwner } from '../../methods/visibility.js';
 
 /**
- * This function implements the functionality for handling POST requests on /devices endpoint.
+ * This function implements the functionality for handling POST requests on
+ * /devices endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
  * @param body The body of the request.
- * @param user The user submitting the request.
  */
-export const postDevices: postDevicesSignature = async (parameters, body, user) => {
-    logger.log('info', 'postDevices called')
+export const postDevices: postDevicesSignature = async (req, parameters, body) => {
+  logger.log('info', 'postDevices called');
 
-    if (!body.name)
-        throw new MalformedBodyError(
-            "Property 'name' is required and must not be empty",
-            400
-        )
+  // NOTE: create action currently does not exist
+  await req.authorization.check_authorization_or_fail('create', 'device');
 
-    const deviceModel = await repositories.device.create(body)
-    deviceModel.owner = user.JWT.url
-    await repositories.device.save(deviceModel)
+  if (!body.name)
+    throw new MalformedBodyError(
+      "Property 'name' is required and must not be empty",
+      400,
+    );
 
-    if (parameters.changedUrl) {
-        logger.log(
-            'info',
-            `registering changed-callback for device '${deviceUrlFromId(
-                deviceModel.uuid
-            )}' to '${parameters.changedUrl}'`
-        )
-        changedCallbacks.set(deviceModel.uuid, [parameters.changedUrl])
-    }
+  let deviceModel = await repositories.device.create(body);
+  deviceModel = await repositories.device.save(deviceModel);
 
-    logger.log('info', 'postDevices succeeded')
+  await setViewerOwner(
+    req.authorization,
+    body?.viewer?.map(v => v.url),
+    body?.owner?.map(o => o.url),
+    `device:${deviceUrlFromId(deviceModel.uuid)}`,
+  );
 
-    return {
-        status: 201,
-        body: await repositories.device.format(deviceModel),
-    }
-}
+  await req.authorization.relate(
+    `user:${req.authorization.user}`,
+    'owner',
+    `device:${deviceUrlFromId(deviceModel.uuid)}`,
+  );
+
+  if (parameters.changedUrl) {
+    logger.log(
+      'info',
+      `registering changed-callback for device '${deviceUrlFromId(
+        deviceModel.uuid,
+      )}' to '${parameters.changedUrl}'`,
+    );
+    changedCallbacks.set(deviceModel.uuid, [parameters.changedUrl]);
+  }
+
+  const { owner, viewer } = await getViewerOwner(
+    req.authorization,
+    `device:${deviceUrlFromId(deviceModel.uuid)}`,
+  );
+
+  logger.log('info', 'postDevices succeeded');
+
+  return {
+    status: 201,
+    body: {
+      ...(await repositories.device.format(deviceModel)),
+      owner: owner.map(ownerUrl => {
+        return { url: ownerUrl };
+      }),
+      viewer: viewer.map(viewerUrl => {
+        return { url: viewerUrl };
+      }),
+    },
+  };
+};

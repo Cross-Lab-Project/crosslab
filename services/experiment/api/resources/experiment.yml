@@ -5,7 +5,7 @@ get:
   tags:
     - experiment
   parameters:
-    - $ref: "../parameters/experiment_id.yml"
+    - $ref: '../parameters/experiment_id.yml'
   security:
     - JWT:
         - experiment
@@ -16,7 +16,7 @@ get:
       description: The JSON Representation of the experiment
       content:
         application/json:
-          $ref: "../content/experiment.yml"
+          $ref: '../content/experiment.yml'
     400:
       description: Bad Request.
     401:
@@ -42,24 +42,24 @@ patch:
         - experiment:write
         - experiment:write:owned
   parameters:
-    - $ref: "../parameters/experiment_id.yml"
-    - $ref: "../parameters/experiment_changed_url.yml"
+    - $ref: '../parameters/experiment_id.yml'
+    - $ref: '../parameters/experiment_changed_url.yml'
   requestBody:
     description: Update the experiment
     content:
       application/json:
-        $ref: "../content/experiment.yml"
+        $ref: '../content/experiment_update.yml'
   responses:
     200:
       description: The JSON Representation of the changed experiment
       content:
         application/json:
-          $ref: "../content/experiment.yml"
+          $ref: '../content/experiment.yml'
     202:
       description: The JSON Representation of the changed experiment, that will be set to running eventually
       content:
         application/json:
-          $ref: "../content/experiment.yml"
+          $ref: '../content/experiment.yml'
     400:
       description: Bad Request.
     401:
@@ -72,19 +72,19 @@ patch:
       description: Server Error.
   callbacks:
     changed:
-      "{$request.query.changedUrl}":
+      '{$request.query.changedUrl}':
         post:
           security:
             - JWT:
-              - experiment
-              - experiment:create
-              - experiment:write
+                - experiment
+                - experiment:create
+                - experiment:write
           summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
             content:
               application/json:
-                $ref: "../content/experiment_event.yml"
+                $ref: '../content/experiment_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.
@@ -101,7 +101,7 @@ delete:
         - experiment:delete
         - experiment:delete:owned
   parameters:
-    - $ref: "../parameters/experiment_id.yml"
+    - $ref: '../parameters/experiment_id.yml'
   responses:
     204:
       description: The experiment was deleted.

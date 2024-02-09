@@ -1,14 +1,15 @@
-import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection'
-import example_peerconnection from './example_peerconnection.spec'
-import { EntityData } from '@crosslab/service-common/test-helper'
+import { EntityData } from '@crosslab/service-common/test-helper';
 
-export const peerconnectionNames = ['example peerconnection'] as const
-export type PeerconnectionName = (typeof peerconnectionNames)[number]
+import { PeerconnectionRepository } from '../../../src/database/repositories/peerconnection';
+import example_peerconnection from './example_peerconnection.spec.js';
+
+export const peerconnectionNames = ['example peerconnection'] as const;
+export type PeerconnectionName = (typeof peerconnectionNames)[number];
 export type PeerconnectionData = Record<
-    PeerconnectionName,
-    EntityData<PeerconnectionRepository>
->
+  PeerconnectionName,
+  EntityData<PeerconnectionRepository>
+>;
 
 export const peerconnectionData: PeerconnectionData = {
-    'example peerconnection': example_peerconnection,
-}
+  'example peerconnection': example_peerconnection,
+};

@@ -1,1 +1,1 @@
-export * from "./file_service";
+export * from './file_service';

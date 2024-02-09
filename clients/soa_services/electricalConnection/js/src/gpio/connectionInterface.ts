@@ -1,4 +1,4 @@
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
 import {
   ConnectionInterface,
@@ -12,7 +12,7 @@ type InterfaceType = 'gpio';
 const InterfaceType: InterfaceType = 'gpio';
 
 export interface GPIOConfiguration extends ConnectionInterfaceConfiguration {
-  signals: {gpio: string};
+  signals: { gpio: string };
   driver: string;
   direction?: 'in' | 'out' | 'inout';
 }
@@ -42,7 +42,10 @@ export interface GPIOInterfaceEvents extends ConnectionInterfaceEvents {
   signalChange(event: SignalChangeEvent): void;
 }
 
-export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements ConnectionInterface {
+export class GPIOInterface
+  extends TypedEmitter<GPIOInterfaceEvents>
+  implements ConnectionInterface
+{
   interfaceType = InterfaceType;
 
   //readonly signal: string;
@@ -52,10 +55,12 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
   private driverStates = new Map<string, GPIOState>();
   private driverState: GPIOState = GPIOState.Unknown;
   private driver?: string;
+  readonly signal: string;
 
   constructor(configuration: GPIOConfiguration) {
     super();
     this.configuration = configuration;
+    this.signal = configuration.signals.gpio;
     const dir = configuration.direction ?? 'inout';
     if (dir != 'in') {
       this.driver = configuration.driver ?? 'default';
@@ -66,7 +71,7 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
   changeDriver(state: GPIOState) {
     if (this.driver) {
       this.driverState = state;
-      const data: GPIOInterfaceData = {driver: this.driver, state: state};
+      const data: GPIOInterfaceData = { driver: this.driver, state: state };
       this.emit('upstreamData', data);
       this.downstreamData(data); // use the same mechanismn as any other driver data from external devices
     }
@@ -74,7 +79,10 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
 
   retransmit() {
     if (this.driver) {
-      const data: GPIOInterfaceData = {driver: this.driver, state: this.driverState};
+      const data: GPIOInterfaceData = {
+        driver: this.driver,
+        state: this.driverState,
+      };
       this.emit('upstreamData', data);
     }
   }
@@ -110,7 +118,7 @@ export class GPIOInterface extends TypedEmitter<GPIOInterfaceEvents> implements 
     }
 
     if (newState !== this.signalState) {
-      const event = {oldState: this.signalState, state: newState};
+      const event = { oldState: this.signalState, state: newState };
       this.signalState = newState;
       this.emit('signalChange', event);
     }
@@ -128,7 +136,7 @@ export class ConstructableGPIOInterface implements ConstructableConnectionInterf
 
   getDescription(): ConnectionInterfaceDescription {
     return {
-      availableSignals: {gpio: this.gpios},
+      availableSignals: { gpio: this.gpios },
     };
   }
 

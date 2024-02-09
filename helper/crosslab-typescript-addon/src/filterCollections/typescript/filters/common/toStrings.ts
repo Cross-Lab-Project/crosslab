@@ -1,4 +1,4 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 /**
  * This function defines a filter which adds quotation marks to the elements of a
@@ -7,10 +7,10 @@ import { Filter } from '@cross-lab-project/openapi-codegen'
  * @returns The string array with quotation marks around its elements.
  */
 function toStrings(array: string[]): string[] {
-    return array.map((s) => `"${s}"`)
+  return array.map(s => `"${s}"`);
 }
 
 export const toStringsFilter: Filter = {
-    name: 'toStrings',
-    function: toStrings,
-}
+  name: 'toStrings',
+  function: toStrings,
+};

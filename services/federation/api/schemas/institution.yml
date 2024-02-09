@@ -2,6 +2,9 @@
 title: Institution
 type: object
 properties:
+  url:
+    type: string
+    readOnly: true
   name:
     type: string
   homepage:
@@ -10,9 +13,8 @@ properties:
   api:
     type: string
     format: uri
-  federatedApi:
-    type: string
-    format: uri
   apiToken:
     type: string
     writeOnly: true
+required:
+  - url

@@ -1,0 +1,128 @@
+version: "3"
+
+# docker plugin install grafana/loki-docker-driver:2.8.2 --alias loki --grant-all-permissions
+
+x-loki: &loki-logging
+  driver: loki
+  options:
+    loki-url: http://localhost:3100/loki/api/v1/push
+    loki-external-labels: project=crosslab
+    loki-pipeline-stages: |
+      - regex:
+          expression: '"(level)":"(?P<level>\w+)"'
+      - labels:
+          level:
+    loki-relabel-config: |
+      - action: labelmap
+        regex: compose_(service)
+      - action: labelkeep
+        regex: (service|project)
+    labels: level,service
+
+x-config: &common-config
+  AUTHORIZATION_SERVER: "http://127.0.0.1:3010"
+  AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:-please change me}"
+  LOGGING: "${LOGGING:-info}"
+  BASE_URL: https://api.${DOMAIN}
+  AUTH_SERVICE_DOMAIN: "127.0.0.1:3000"
+  AUTHORIZATION_SERVICE_DOMAIN: "127.0.0.1:3010"
+  DEVICE_SERVICE_DOMAIN: "127.0.0.1:3001"
+  EXPERIMENT_SERVICE_DOMAIN: "127.0.0.1:3002"
+  FEDERATION_SERVICE_DOMAIN: "127.0.0.1:3003"
+  AUTH_SERVICE_URL: "127.0.0.1:3000"
+  DEVICE_SERVICE_URL: "127.0.0.1:3001"
+  EXPERIMENT_SERVICE_URL: "127.0.0.1:3002"
+  FEDERATION_SERVICE_URL: "127.0.0.1:3003"
+
+services:
+  # Logging
+  loki:
+    image: grafana/loki:2.8.3
+    command: -config.file=/loki.yaml
+    volumes:
+      - ./config/loki/loki.yaml:/loki.yaml
+    network_mode: "host"
+  grafana:
+    environment:
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_SERVER_HTTP_PORT: 3101
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/dashboard.json
+      GF_USERS_DEFAULT_THEME: light
+    volumes:
+      - ./config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/ds.yaml
+      - ./config/grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+    image: grafana/grafana:latest
+    network_mode: "host"
+  # Services
+  gateway:
+    build: ../../../services/gateway
+    environment:
+      <<: *common-config
+    network_mode: "host"
+    logging: *loki-logging
+  authentication:
+    build: ../../../services/auth
+    environment:
+      <<: *common-config
+      ADMIN_USERNAME: 'admin'
+      ADMIN_PASSWORD: 'admin'
+      JWT_SECRET: "${JWT_SECRET:-please change me}"
+    volumes:
+      - ./data:/app/db
+    network_mode: "host"
+    logging: *loki-logging
+  authorization:
+    build: ../../../services/authorization
+    environment:
+      <<: *common-config
+      JWT_SECRET: "${JWT_SECRET:-please change me}"
+    network_mode: "host"
+    logging: *loki-logging
+  device:
+    build: ../../../services/device
+    environment:
+      <<: *common-config
+    volumes:
+      - ./data:/app/db
+    network_mode: "host"
+    logging: *loki-logging
+  experiment:
+    build: ../../../services/experiment
+    environment:
+      <<: *common-config
+    volumes:
+      - ./data:/app/db
+    network_mode: "host"
+    logging: *loki-logging
+  federation:
+    build: ../../../services/federation
+    environment:
+      <<: *common-config
+      SECURITY_ISSUER: https://${DOMAIN}
+      SECURITY_AUDIENCE: https://${DOMAIN}
+      JWKS_URL: https://api.${DOMAIN}/.well-known/jwks.json
+      API_TOKEN: ${FEDERATION_API_KEY}
+    network_mode: "host"
+    logging: *loki-logging
+  #lti:
+  #  image: lti-service:latest
+  #  environment:
+  #    <<: *common-config
+  #    DB_USERNAME: lti
+  #    DB_NAME: lti
+  #    SECURITY_ISSUER: https://${DOMAIN}
+  #    SECURITY_AUDIENCE: https://${DOMAIN}
+  #    JWKS_URL: https://api.${DOMAIN}/.well-known/jwks.json
+  #    API_TOKEN: ${FEDERATION_API_KEY}
+  #    BASE_URL: https://lti.${DOMAIN}
+  #    VIRTUAL_HOST: lti.${DOMAIN}
+  #    VIRTUAL_PORT: 8080
+  #    VIRTUAL_PATH: /
+  #    LETSENCRYPT_HOST: lti.${DOMAIN}
+  #    COOKIE_SECRET: ${COOKIE_SECRET}
+  #  network_mode: "host"
+  #  logging: *loki-logging
+  #  restart: on-failure

@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+
+read -p "Migration Name: " NAME
+
+# Generate mariadb migration
+docker run --detach -p 3306:3306 --name migration-db \
+    --env MARIADB_DATABASE=migration \
+    --env MARIADB_USER=migration \
+    --env MARIADB_PASSWORD=migration \
+    --env MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes\
+     mariadb:latest
+
+# Wait for mariadb to start
+sleep 5
+DB_USERNAME=migration DB_PASSWORD=migration DB_DATABASE=migration DB_TYPE=mariadb npx typeorm-ts-node-esm migration:run -d ./src/database/datasource.ts
+DB_USERNAME=migration DB_PASSWORD=migration DB_DATABASE=migration DB_TYPE=mariadb npx typeorm-ts-node-esm migration:generate -d src/database/datasource.ts src/database/migrations/mariadb/${NAME}
+
+docker rm -f migration-db
+
+# Generate sqlite migration
+DB_TYPE=sqlite DB_DATABASE=migration.db npx typeorm-ts-node-esm migration:run -d ./src/database/datasource.ts
+DB_TYPE=sqlite DB_DATABASE=migration.db npx typeorm-ts-node-esm migration:generate -d src/database/datasource.ts src/database/migrations/sqlite/${NAME}
+rm -f migration.db

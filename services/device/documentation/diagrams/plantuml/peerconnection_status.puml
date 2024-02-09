@@ -1,0 +1,32 @@
+@startuml peerconnection_status
+
+state active {
+    [*] --> new
+
+    state new :          The peerconnection has been created
+    state connecting :   The peerconnection has started signaling
+    state connected :    The peerconnection has been established successfully
+    state disconnected : The peerconnection has been disconnected
+    state failed :       The peerconnection has failed unrecoverably
+}
+state closed : The peerconnection has been closed
+
+new --> connecting
+
+connecting -> connected
+
+connecting --> disconnected
+connecting --> failed
+
+connected --> disconnected
+connected --> failed
+
+disconnected --> connecting
+disconnected --> connected
+disconnected --> failed
+
+active -> closed
+
+closed -> [*]
+
+@enduml

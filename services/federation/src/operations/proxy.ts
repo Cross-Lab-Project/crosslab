@@ -1,99 +1,149 @@
-import { AppDataSource } from '../data_source'
+import { HttpError, MissingParameterError, logger } from '@crosslab/service-common';
+import fetch, { HeadersInit } from 'node-fetch';
+
+import { repositories } from '../database/dataSource.js';
 import {
-    getProxySignature,
-    postProxySignature,
-    patchProxySignature,
-    deleteProxySignature,
-    optionsProxySignature,
-    headProxySignature,
-    traceProxySignature,
-    putProxySignature,
-} from '../generated/signatures'
-import { InstitutionModel } from '../model'
-import {
-    MissingParameterError,
-    InvalidValueError,
-    logger,
-} from '@crosslab/service-common'
-import fetch, { HeadersInit } from 'node-fetch'
+  deleteProxySignature,
+  getProxySignature,
+  headProxySignature,
+  optionsProxySignature,
+  patchProxySignature,
+  postProxySignature,
+  putProxySignature,
+  traceProxySignature,
+} from '../generated/signatures.js';
 
 type HttpMethod =
-    | 'get'
-    | 'post'
-    | 'patch'
-    | 'delete'
-    | 'options'
-    | 'head'
-    | 'trace'
-    | 'put'
+  | 'get'
+  | 'post'
+  | 'patch'
+  | 'delete'
+  | 'options'
+  | 'head'
+  | 'trace'
+  | 'put';
 type proxySignature =
-    | getProxySignature
-    | postProxySignature
-    | patchProxySignature
-    | deleteProxySignature
-    | optionsProxySignature
-    | headProxySignature
-    | traceProxySignature
-    | putProxySignature
+  | getProxySignature
+  | postProxySignature
+  | patchProxySignature
+  | deleteProxySignature
+  | optionsProxySignature
+  | headProxySignature
+  | traceProxySignature
+  | putProxySignature;
 
 /**
- * This function implements the functionality for handling $method requests on /proxy endpoint.
+ * This function is used to generate the functions for handling requests on the /proxy endpoint.
  * @param method The http method to be used.
  */
 const proxy: (method: HttpMethod) => proxySignature =
-    (method: HttpMethod) => async (parameters, body, _user) => {
-        if (!parameters.URL) throw new MissingParameterError(`Missing URL Parameter`, 400)
+  (method: HttpMethod) => async (_req, parameters, body) => {
+    if (!parameters.URL) throw new MissingParameterError(`Missing URL Parameter`, 400);
 
-        const basePathMatch = parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm)
+    const basePathMatch = parameters.URL.match(/.*?:\/\/.*?(?=\/|$)/gm);
 
-        let headers: HeadersInit = { 'Content-Type': 'application/json' }
-        if (basePathMatch) {
-            const basePath = basePathMatch[0]
-            const InstitutionRepository = AppDataSource.getRepository(InstitutionModel)
-            const institution = await InstitutionRepository.findOneBy({ api: basePath })
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (basePathMatch) {
+      const basePath = basePathMatch[0];
 
-            if (institution) {
-                headers['Authorization'] = 'Bearer ' + institution.apiToken
-            }
-        }
+      const institution = await repositories.institution.findOneOrFail({
+        where: { api: basePath },
+      });
 
-        const response = await fetch(parameters.URL, {
-            headers,
-            method: method,
-            body: Object.keys(body).length > 0 ? body : undefined,
-        })
-
-        if (response.status < 100 || response.status >= 600) {
-            throw new InvalidValueError(
-                `Response has invalid status of ${response.status}`,
-                500
-            ) // TODO: maybe find better error
-        }
-
-        try {
-            const text = await response.text()
-
-            return {
-                status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
-                body: text,
-            }
-        } catch (error) {
-            logger.log('error', 'An error occurred while trying to parse the response', {
-                data: { error },
-            })
-
-            return {
-                status: response.status as any, // cast to any to resolve type error, check is done by if-clause above TODO: cleaner solution
-                body: undefined,
-            }
-        }
+      if (institution) {
+        headers['Authorization'] = 'Bearer ' + institution.apiToken;
+      }
     }
 
-export const getProxy = proxy('get')
-export const postProxy = proxy('post')
-export const patchProxy = proxy('patch')
-export const deleteProxy = proxy('delete')
-export const optionsProxy = proxy('options')
-export const headProxy = proxy('head')
-export const traceProxy = proxy('trace')
-export const putProxy = proxy('put')
+    const response = await fetch(parameters.URL, {
+      headers,
+      method: method,
+      body: Object.keys(body).length > 0 ? body : undefined,
+    });
+
+    if (response.status < 100 || response.status >= 600) {
+      throw new HttpError(500, `Response has invalid status of ${response.status}`);
+    }
+
+    try {
+      const json = await response.json();
+
+      return {
+        status: response.status,
+        body: json,
+      } as ReturnType<proxySignature>;
+    } catch (error) {
+      logger.log('error', 'An error occurred while trying to parse the response', {
+        data: { error },
+      });
+
+      return {
+        status: 500,
+        body: undefined,
+      };
+    }
+  };
+
+/**
+ * This function implements the functionality for handling GET requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const getProxy = proxy('get');
+
+/**
+ * This function implements the functionality for handling POST requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const postProxy = proxy('post');
+
+/**
+ * This function implements the functionality for handling PATCH requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const patchProxy = proxy('patch');
+
+/**
+ * This function implements the functionality for handling DELETE requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const deleteProxy = proxy('delete');
+
+/**
+ * This function implements the functionality for handling OPTIONS requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const optionsProxy = proxy('options');
+
+/**
+ * This function implements the functionality for handling HEAD requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const headProxy = proxy('head');
+
+/**
+ * This function implements the functionality for handling TRACE requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const traceProxy = proxy('trace');
+
+/**
+ * This function implements the functionality for handling PUT requests on the /proxy endpoint.
+ * @param req The incoming request.
+ * @param parameters The parameters of the request.
+ * @param body The body of the request.
+ */
+export const putProxy = proxy('put');

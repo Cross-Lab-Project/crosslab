@@ -1,32 +1,39 @@
-import {JWTPayload, createRemoteJWKSet, jwtVerify} from 'jose';
-import {URL} from 'url';
-
-import {JWTVerificationError} from './errors';
-
-export * from './errors';
-export * from './logger';
-export * from './handlers';
-export * from './types';
-export * from './database/abstractRepository';
-export * from './database/abstractDataSource';
 import express from 'express';
+import { JWTPayload, createRemoteJWKSet, jwtVerify } from 'jose';
+import { URL } from 'url';
 
-export function parseJwtFromAuthorizationHeader(req: express.Request): string {
-  const authorization_header = req.header('Authorization');
-  if (authorization_header === undefined) {
+import { JWTVerificationError } from './errors.js';
+
+export * from './errors.js';
+export * from './logger.js';
+export * from './handlers/index.js';
+export * from './types.js';
+export * from './database/abstractRepository.js';
+export * from './database/abstractDataSource.js';
+
+export * as config from './config.js';
+export * as utils from './utils.js';
+export * as authorization from './authorization/index.js';
+export * as logging from './logging/index.js';
+export * as error from './error_middleware.js';
+
+/**
+ * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.
+ */
+export function parseJwtFromRequestAuthenticationHeader(req: express.Request): string {
+  const jwt = req.header('X-Request-Authentication');
+  if (jwt === undefined) {
     throw new JWTVerificationError('Authorization header is not set', 401);
   }
-  const bearerTokenResult = /^Bearer (.*)$/.exec(authorization_header);
-  if (bearerTokenResult === null || bearerTokenResult.length != 2) {
-    throw new JWTVerificationError('Authorization header is malformed', 401);
-  }
-  const jwt = bearerTokenResult[1];
   if (!jwt) throw new JWTVerificationError('No JWT provided', 401);
   return jwt;
 }
 
-export function JWTVerify<T, R extends {scopes: string[]}>(
-  options: {JWKS_URL: string; SECURITY_ISSUER: string; SECURITY_AUDIENCE: string},
+/**
+ * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.
+ */
+export function JWTVerify<T, R extends { scopes: string[] }>(
+  options: { JWKS_URL: string; SECURITY_ISSUER: string; SECURITY_AUDIENCE: string },
   validatePayload: (output: JWTPayload) => output is R,
   parseJwt: (input: T) => string,
 ): (input: T, scopes: string[]) => Promise<R> {
@@ -43,17 +50,20 @@ export function JWTVerify<T, R extends {scopes: string[]}>(
     });
     const user = jwtVerifyResult.payload;
     user.jwt = jwt;
-    if (!validatePayload(user)) throw new JWTVerificationError('Payload is malformed', 401);
+    if (!validatePayload(user))
+      throw new JWTVerificationError('Payload is malformed', 401);
 
     let scopeFound = false;
     for (const scope of scopes) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((user.scopes as Array<any>).includes(scope)) {
         scopeFound = true;
         break;
       }
     }
 
-    if (!scopeFound) throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403);
+    if (!scopeFound)
+      throw new JWTVerificationError('Missing Scope: one of ' + scopes, 403);
 
     return user;
   };

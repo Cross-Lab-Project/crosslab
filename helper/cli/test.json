@@ -1,0 +1,272 @@
+{
+  "status": "running",
+  "roles": [
+    {
+      "name": "3-Axis-Portal V1",
+      "template_device": "https://api.goldi-labs.de/devices/40f25599-b62c-4580-82dc-3889c641bf77",
+      "x-esc-position": {
+        "x": 800,
+        "y": 300
+      }
+    },
+    {
+      "name": "IO-Board",
+      "template_device": "https://api.goldi-labs.de/devices/c1359733-ccbd-46e2-9e99-6d9b1e12fe7b",
+      "x-esc-position": {
+        "x": 800,
+        "y": 600
+      }
+    }
+  ],
+  "devices": [
+    {
+      "device": "https://api.goldi-labs.de/devices/b397908f-60ac-450d-a350-ee058341760e",
+      "role": "3-Axis-Portal V1"
+    },
+    {
+      "device": "https://api.goldi-labs.de/devices/b634ca99-518a-40ad-8db9-62e8d2ed7efc",
+      "role": "IO-Board"
+    }
+  ],
+  "serviceConfigurations": [
+    {
+      "serviceType": "http://api.goldi-labs.de/serviceTypes/electrical",
+      "configuration": {},
+      "participants": [
+        {
+          "serviceId": "sensors",
+          "role": "3-Axis-Portal V1",
+          "config": {
+            "interfaces": [
+              {
+                "interfaceId": "1",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitXLeft"
+                },
+                "busId": "LimitXLeft"
+              },
+              {
+                "interfaceId": "2",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitXRight"
+                },
+                "busId": "LimitXRight"
+              },
+              {
+                "interfaceId": "3",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitYBack"
+                },
+                "busId": "LimitYBack"
+              },
+              {
+                "interfaceId": "4",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitYFront"
+                },
+                "busId": "LimitYFront"
+              },
+              {
+                "interfaceId": "5",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitZBottom"
+                },
+                "busId": "LimitZBottom"
+              },
+              {
+                "interfaceId": "6",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "LimitZTop"
+                },
+                "busId": "LimitZTop"
+              },
+              {
+                "interfaceId": "7",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "Proximity"
+                },
+                "busId": "Proximity"
+              }
+            ]
+          }
+        },
+        {
+          "serviceId": "actuators",
+          "role": "3-Axis-Portal V1",
+          "config": {
+            "interfaces": [
+              {
+                "interfaceId": "8",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "XMotorLeft"
+                },
+                "busId": "XMotorLeft"
+              },
+              {
+                "interfaceId": "9",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "XMotorRight"
+                },
+                "busId": "XMotorRight"
+              },
+              {
+                "interfaceId": "10",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "YMotorBack"
+                },
+                "busId": "YMotorBack"
+              },
+              {
+                "interfaceId": "11",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "YMotorFront"
+                },
+                "busId": "YMotorFront"
+              },
+              {
+                "interfaceId": "12",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "ZMotorBottom"
+                },
+                "busId": "ZMotorBottom"
+              },
+              {
+                "interfaceId": "13",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "ZMotorTop"
+                },
+                "busId": "ZMotorTop"
+              }
+            ]
+          }
+        },
+        {
+          "serviceId": "pins",
+          "role": "IO-Board",
+          "config": {
+            "interfaces": [
+              {
+                "interfaceId": "1",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A1"
+                },
+                "busId": "LimitXLeft"
+              },
+              {
+                "interfaceId": "2",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A2"
+                },
+                "busId": "LimitXRight"
+              },
+              {
+                "interfaceId": "3",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A3"
+                },
+                "busId": "LimitYBack"
+              },
+              {
+                "interfaceId": "4",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A4"
+                },
+                "busId": "LimitYFront"
+              },
+              {
+                "interfaceId": "5",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A5"
+                },
+                "busId": "LimitZBottom"
+              },
+              {
+                "interfaceId": "6",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A6"
+                },
+                "busId": "LimitZTop"
+              },
+              {
+                "interfaceId": "7",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "A7"
+                },
+                "busId": "Proximity"
+              },
+              {
+                "interfaceId": "8",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B1"
+                },
+                "busId": "XMotorLeft"
+              },
+              {
+                "interfaceId": "9",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B2"
+                },
+                "busId": "XMotorRight"
+              },
+              {
+                "interfaceId": "10",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B3"
+                },
+                "busId": "YMotorBack"
+              },
+              {
+                "interfaceId": "11",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B4"
+                },
+                "busId": "YMotorFront"
+              },
+              {
+                "interfaceId": "12",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B5"
+                },
+                "busId": "ZMotorBottom"
+              },
+              {
+                "interfaceId": "13",
+                "interfaceType": "gpio",
+                "signals": {
+                  "gpio": "B6"
+                },
+                "busId": "ZMotorTop"
+              }
+            ]
+          }
+        }
+      ],
+      "id": "d1b922d7-40d8-4718-a90c-dca2ad9fc3b6"
+    }
+  ]
+}

@@ -28,7 +28,9 @@ export interface CreatePeerConnectionMessage extends CommandMessage {
   services: ServiceConfiguration[];
   tiebreaker: boolean;
 }
-export function isCreatePeerConnectionMessage(message: CommandMessage): message is CreatePeerConnectionMessage {
+export function isCreatePeerConnectionMessage(
+  message: CommandMessage,
+): message is CreatePeerConnectionMessage {
   return message.command === 'createPeerconnection';
 }
 
@@ -55,7 +57,9 @@ export interface ClosePeerConnectionMessage extends CommandMessage {
   command: 'closePeerconnection';
   connectionUrl: string;
 }
-export function isClosePeerConnectionMessage(message: CommandMessage): message is ClosePeerConnectionMessage {
+export function isClosePeerConnectionMessage(
+  message: CommandMessage,
+): message is ClosePeerConnectionMessage {
   return message.command === 'closePeerconnection';
 }
 
@@ -63,4 +67,19 @@ export interface ConnectionStateChangedMessage extends Message {
   messageType: 'connection-state-changed';
   connectionUrl: string;
   status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+}
+
+export interface ConfigurationMessage extends Message {
+  messageType: 'configuration';
+  configuration: { [k: string]: unknown };
+}
+
+export function isConfigurationMessage(
+  message: Message,
+): message is ConfigurationMessage {
+  return (
+    message.messageType === 'configuration' &&
+    typeof message.configuration === 'object' &&
+    message.configuration !== null
+  );
 }

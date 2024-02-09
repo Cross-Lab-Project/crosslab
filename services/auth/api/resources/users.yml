@@ -6,14 +6,23 @@ get:
     - user
   security:
     - JWT:
-      - users
-      - users:read
+        - users
+        - users:read
+  parameters:
+    - $ref: '../parameters/user_search_username.yml'
   responses:
     200:
       description: The JSON representation of the users.
       content:
         application/json:
-          $ref: "../content/user_list.yml"
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/user.yml'
+              required:
+                - url
+                - id
+                - username
     400:
       description: Bad Request.
     401:
@@ -32,20 +41,29 @@ post:
     - user
   security:
     - JWT:
-      - users
-      - users:create
+        - users
+        - users:create
   requestBody:
     required: true
     description: User to be created.
     content:
       application/json:
-        $ref: "../content/user.yml"
+        schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - username
+              - password
   responses:
     201:
       description: The JSON representation of the created user.
       content:
         application/json:
-          $ref: "../content/user.yml"
+          schema:
+            $ref: '../schemas/user.yml'
+            required:
+              - url
+              - id
+              - username
     400:
       description: Bad Request.
     401:

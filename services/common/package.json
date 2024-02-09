@@ -3,8 +3,9 @@
   "types": "./lib/types/index.d.ts",
   "main": "./lib/cjs/index.js",
   "scripts": {
-    "build-compile": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "build": "npm run build-compile",
+    "build": "rm -rf ./lib/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && echo '{\"type\": \"module\"}' > ./lib/esm/package.json && echo '{\"type\": \"commonjs\"}' > ./lib/cjs/package.json",
+    "watch": "npx --yes chokidar-cli 'src/**/*.ts' -c 'npm run build'",
+    "format": "prettier . --write",
     "lint": "eslint ."
   },
   "files": [
@@ -16,6 +17,16 @@
       "require": "./lib/cjs/index.js",
       "types": "./lib/types/index.d.ts"
     },
+    "./authorization": {
+      "import": "./lib/esm/authorization/index.js",
+      "require": "./lib/cjs/authorization/index.js",
+      "types": "./lib/types/authorization/index.d.ts"
+    },
+    "./logging": {
+      "import": "./lib/esm/logging/index.js",
+      "require": "./lib/cjs/logging/index.js",
+      "types": "./lib/types/logging/index.d.ts"
+    },
     "./test-helper": {
       "import": "./lib/esm/test-helper.js",
       "require": "./lib/cjs/test-helper.js",
@@ -25,22 +36,28 @@
   "author": "Johannes Nau",
   "license": "UNLICENSED",
   "dependencies": {
-    "jose": "^4.11.1",
-    "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.15",
     "express": "^4.18.1",
     "express-winston": "^4.2.0",
-    "winston": "^3.8.2"
+    "fetch-retry": "^5.0.6",
+    "jose": "^4.14.6",
+    "mysql": "^2.18.1",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.17",
+    "uuid": "^9.0.0",
+    "winston": "^3.10.0",
+    "winston-loki": "^6.0.7"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/express": "^4.17.13",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^18.11.18",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "eslint": "^8.34.0",
+    "@types/node": "^20.5.9",
+    "@types/uuid": "^9.0.3",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "eslint": "^8.48.0",
     "mocha": "^10.2.0",
-    "typescript": "^4.9.4",
-    "@types/express": "^4.17.13"
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
   }
 }

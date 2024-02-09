@@ -1,5 +1,4 @@
-dist/*
-!dist/openapi.json
+dist
 src/generated
 node_modules
 .npmrc

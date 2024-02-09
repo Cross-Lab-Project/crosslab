@@ -2,4 +2,4 @@
 schema:
   type: array
   items:
-    $ref: "../schemas/experiment_overview.yml"
+    $ref: '../schemas/experiment_overview.yml'

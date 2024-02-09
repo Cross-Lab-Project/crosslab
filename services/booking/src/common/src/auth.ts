@@ -1,10 +1,10 @@
-import { baseConfig } from "./config";
+import { baseConfig } from './config';
 
 let institutePrefixURL: URL[];
 
 export function CheckAuth(token: string): [URL, boolean] {
-  throw new Error("TODO");
-  return [new URL(""), false];
+  throw new Error('TODO');
+  return [new URL(''), false];
 }
 
 function convertInstitutionPrefix(): void {
@@ -16,8 +16,8 @@ function convertInstitutionPrefix(): void {
         institutePrefixURL.push(url);
       } catch (e) {
         console.error(
-          "Skipping" + baseConfig.InstitutePrefix[i] + "for belonging check:",
-          e
+          'Skipping' + baseConfig.InstitutePrefix[i] + 'for belonging check:',
+          e,
         );
       }
     }

@@ -1,2 +1,2 @@
-export * from "./service";
-export * as GPIO from "./gpio";
+export * from './service';
+export * as GPIO from './gpio';

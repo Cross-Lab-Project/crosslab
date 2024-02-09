@@ -1,16 +1,21 @@
 import Mocha from 'mocha';
 
-import {AbstractApplicationDataSource} from '../abstractDataSource';
-import {AbstractRepository} from '../abstractRepository';
-import {testSuiteCreate} from './create.spec';
-import {testSuiteFind} from './find.spec';
-import {testSuiteFindOne} from './findOne.spec';
-import {testSuiteFindOneOrFail} from './findOneOrFail.spec';
-import {testSuiteFormat} from './format.spec';
-import {testSuiteRemove} from './remove.spec';
-import {testSuiteSave} from './save.spec';
-import {CustomRecord, PartialTestData, RepositoryTestData, SuiteName} from './types.spec';
-import {testSuiteWrite} from './write.spec';
+import { AbstractApplicationDataSource } from '../abstractDataSource.js';
+import { AbstractRepository } from '../abstractRepository.js';
+import { testSuiteCreate } from './create.spec.js';
+import { testSuiteFind } from './find.spec.js';
+import { testSuiteFindOne } from './findOne.spec.js';
+import { testSuiteFindOneOrFail } from './findOneOrFail.spec.js';
+import { testSuiteFormat } from './format.spec.js';
+import { testSuiteRemove } from './remove.spec.js';
+import { testSuiteSave } from './save.spec.js';
+import {
+  CustomRecord,
+  PartialTestData,
+  RepositoryTestData,
+  SuiteName,
+} from './types.spec.js';
+import { testSuiteWrite } from './write.spec.js';
 
 /**
  * An abstract class for a repository.
@@ -29,14 +34,16 @@ export abstract class AbstractRepositoryTestSuite<
   >;
 
   constructor(
-    AppDataSource: AbstractApplicationDataSource<Record<string, AbstractRepository<object, unknown, unknown, Record<string, object>>>>,
+    AppDataSource: AbstractApplicationDataSource<
+      Record<string, AbstractRepository<object, unknown, unknown, Record<string, object>>>
+    >,
   ) {
     this.AppDataSource = AppDataSource;
   }
 
   protected abstract repository: R;
   protected abstract getEntityData: () => Promise<PartialTestData<K, R>>;
-  protected abstract RepositoryClass: {new (): R};
+  protected abstract RepositoryClass: { new (): R };
 
   public async initialize() {
     this.entityData = await this.getEntityData();
@@ -69,23 +76,36 @@ export abstract class AbstractRepositoryTestSuite<
     };
   }
 
-  public addTestToSuite(suiteName: SuiteName, test: (data: RepositoryTestData<K, R>) => Mocha.Test) {
-    if (!this.testSuites || !this.repositoryTestData) throw new Error('Test suite has not been initialized');
+  public addTestToSuite(
+    suiteName: SuiteName,
+    test: (data: RepositoryTestData<K, R>) => Mocha.Test,
+  ) {
+    if (!this.testSuites || !this.repositoryTestData)
+      throw new Error('Test suite has not been initialized');
     this.testSuites[suiteName].addTest(test(this.repositoryTestData));
   }
 
-  public addSuiteToSuite(suiteName: SuiteName, suite: (data: RepositoryTestData<K, R>) => Mocha.Suite) {
-    if (!this.testSuites || !this.repositoryTestData) throw new Error('Test suite has not been initialized');
+  public addSuiteToSuite(
+    suiteName: SuiteName,
+    suite: (data: RepositoryTestData<K, R>) => Mocha.Suite,
+  ) {
+    if (!this.testSuites || !this.repositoryTestData)
+      throw new Error('Test suite has not been initialized');
     this.testSuites[suiteName].addSuite(suite(this.repositoryTestData));
   }
 
-  public addSuite(suiteName: string, suite: (data: RepositoryTestData<K, R>) => Mocha.Suite) {
-    if (!this.testSuites || !this.repositoryTestData) throw new Error('Test suite has not been initialized');
+  public addSuite(
+    suiteName: string,
+    suite: (data: RepositoryTestData<K, R>) => Mocha.Suite,
+  ) {
+    if (!this.testSuites || !this.repositoryTestData)
+      throw new Error('Test suite has not been initialized');
     this.testSuites[suiteName] = suite(this.repositoryTestData);
   }
 
   public removeSuite(suiteName: SuiteName) {
-    if (!this.testSuites || !this.repositoryTestData) throw new Error('Test suite has not been initialized');
+    if (!this.testSuites || !this.repositoryTestData)
+      throw new Error('Test suite has not been initialized');
     delete this.testSuites[suiteName];
   }
 
@@ -96,6 +116,7 @@ export abstract class AbstractRepositoryTestSuite<
     const newEntityData = await this.getEntityData();
 
     for (const key in newEntityData) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this.entityData as any)[key] = (newEntityData as any)[key];
     }
   }
@@ -113,11 +134,21 @@ export abstract class AbstractRepositoryTestSuite<
     return testSuite;
   }
 
-  abstract validateCreate(...args: Parameters<RepositoryTestData<K, R>['validateCreate']>): boolean;
-  abstract validateWrite(...args: Parameters<RepositoryTestData<K, R>['validateWrite']>): boolean;
-  abstract validateFormat(...args: Parameters<RepositoryTestData<K, R>['validateFormat']>): boolean;
-  abstract compareModels(...args: Parameters<RepositoryTestData<K, R>['compareModels']>): boolean;
-  abstract compareFormatted(...args: Parameters<RepositoryTestData<K, R>['compareFormatted']>): boolean;
+  abstract validateCreate(
+    ...args: Parameters<RepositoryTestData<K, R>['validateCreate']>
+  ): boolean;
+  abstract validateWrite(
+    ...args: Parameters<RepositoryTestData<K, R>['validateWrite']>
+  ): boolean;
+  abstract validateFormat(
+    ...args: Parameters<RepositoryTestData<K, R>['validateFormat']>
+  ): boolean;
+  abstract compareModels(
+    ...args: Parameters<RepositoryTestData<K, R>['compareModels']>
+  ): boolean;
+  abstract compareFormatted(
+    ...args: Parameters<RepositoryTestData<K, R>['compareFormatted']>
+  ): boolean;
   abstract getFindOptionsWhere(
     ...args: Parameters<RepositoryTestData<K, R>['getFindOptionsWhere']>
   ): ReturnType<RepositoryTestData<K, R>['getFindOptionsWhere']>;

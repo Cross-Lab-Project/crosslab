@@ -1,0 +1,8 @@
+dist
+node_modules
+*.db
+package.resolved.json
+.packages
+app
+.nyc_output
+coverage

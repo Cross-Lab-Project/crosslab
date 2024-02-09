@@ -1,57 +1,79 @@
-import { ExperimentModel } from '../../../database/model'
-import { lockBookingExperiment } from './bookingLocking'
-import { updateBookingExperiment } from './bookingUpdate'
-import { instantiateDevicesExperiment } from './deviceInstantiation'
-import { createPeerconnectionsExperiment } from './peerconnectionCreation'
-import { ResolvedDevice } from '../../../types/types'
-import { repositories } from '../../../database/dataSource'
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors'
-import { validateExperimentStatus } from '../../../types/typeguards'
-import { logger } from '@crosslab/service-common'
-import { experimentUrlFromId } from '../../url'
+import { logger } from '@crosslab/service-common';
+
+import { Clients } from '../../../clients/index.js';
+import { repositories } from '../../../database/dataSource.js';
+import { ExperimentModel } from '../../../database/model.js';
+import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { ResolvedDevice } from '../../../types/types.js';
+import { mutexManager } from '../../mutexManager.js';
+import { experimentUrlFromId } from '../../url.js';
+import { lockBookingExperiment } from './bookingLocking.js';
+import { updateBookingExperiment } from './bookingUpdate.js';
+import { Instantiable, instantiateDevicesExperiment } from './deviceInstantiation.js';
+import { createPeerconnectionsExperiment } from './peerconnectionCreation.js';
 
 export async function setupExperiment(
-    experimentModel: ExperimentModel,
-    resolvedDevices: ResolvedDevice[]
+  experimentModel: ExperimentModel,
+  resolvedDevices: ResolvedDevice[],
+  clients: Clients,
 ) {
-    const experimentUrl = experimentUrlFromId(experimentModel.uuid)
-    logger.log('info', 'Setting up experiment', { data: { experimentUrl } })
+  const experimentUrl = experimentUrlFromId(experimentModel.uuid);
+  logger.log('info', 'Setting up experiment', { data: { experimentUrl } });
 
-    if (experimentModel.status !== 'booked')
-        throw new InvalidStateError(
-            `Expected experiment to have status 'booked', instead has status '${experimentModel.status}'`
-        )
+  if (experimentModel.status !== 'booked')
+    throw new InvalidStateError(
+      `Expected experiment to have status 'booked', instead has status '${experimentModel.status}'`,
+    );
 
-    if (!validateExperimentStatus(experimentModel, 'booked'))
-        throw new MalformedExperimentError(
-            `Experiment is in status 'booked', but does not satisfy the requirements for this status`,
-            500
-        )
+  if (!validateExperimentStatus(experimentModel, 'booked'))
+    throw new MalformedExperimentError(
+      `Experiment is in status 'booked', but does not satisfy the requirements for this status`,
+      500,
+    );
 
-    const uninstantiatedDevices = resolvedDevices.filter(
-        (device) =>
-            (device.type === 'cloud instantiable' ||
-                device.type === 'edge instantiable') &&
-            (!device.instanceUrl || !device.instanceToken)
-    )
+  const uninstantiatedDevices: Instantiable[] = [];
 
-    await lockBookingExperiment(experimentModel)
-
-    if (uninstantiatedDevices) {
-        const instances = await instantiateDevicesExperiment(
-            experimentModel,
-            uninstantiatedDevices.map((uninstantiatedDevice) => uninstantiatedDevice.url)
-        )
-        await updateBookingExperiment(
-            experimentModel,
-            instances.map((instance) => instance.url)
-        )
-    } else {
-        experimentModel.status = 'booking-updated'
-        await repositories.experiment.save(experimentModel)
+  for (const resolvedDevice of resolvedDevices) {
+    if (
+      (resolvedDevice.type === 'cloud instantiable' ||
+        resolvedDevice.type === 'edge instantiable') &&
+      (!resolvedDevice.instanceUrl || !resolvedDevice.instanceToken)
+    ) {
+      uninstantiatedDevices.push(resolvedDevice);
     }
+  }
 
-    await createPeerconnectionsExperiment(experimentModel)
+  await lockBookingExperiment(experimentModel, resolvedDevices);
 
-    logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } })
+  if (uninstantiatedDevices) {
+    const instances = await instantiateDevicesExperiment(
+      experimentModel,
+      uninstantiatedDevices,
+      clients,
+    );
+    await updateBookingExperiment(
+      experimentModel,
+      instances.map(instance => instance.url),
+    );
+  } else {
+    experimentModel.status = 'booking-updated';
+    await repositories.experiment.save(experimentModel);
+  }
+
+  const release = await mutexManager.acquire(
+    `create-peerconnections:${experimentModel.uuid}`,
+  );
+
+  createPeerconnectionsExperiment(experimentModel, clients)
+    .catch(error => {
+      logger.log(
+        'error',
+        'Something went wrong while trying to create the peerconnections',
+        { data: { error } },
+      );
+    })
+    .finally(() => release());
+
+  logger.log('info', 'Successfully set up experiment', { data: { experimentUrl } });
 }

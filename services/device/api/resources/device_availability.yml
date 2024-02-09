@@ -10,15 +10,15 @@ get:
         - device:read
         - device:read:owned
   parameters:
-    - $ref: "../parameters/device_id.yml"
-    - $ref: "../parameters/start_time.yml"
-    - $ref: "../parameters/end_time.yml"
+    - $ref: '../parameters/device_id.yml'
+    - $ref: '../parameters/start_time.yml'
+    - $ref: '../parameters/end_time.yml'
   responses:
     200:
       description: The JSON Representation of the availability of the device.
       content:
         application/json:
-          $ref: "../content/availability.yml"
+          $ref: '../content/availability.yml'
     400:
       description: Bad Request.
     401:
@@ -40,7 +40,7 @@ delete:
         - device:write
         - device:write:owned
   parameters:
-    - $ref: "../parameters/device_id.yml"
+    - $ref: '../parameters/device_id.yml'
   responses:
     204:
       description: The availability rules of the device were deleted successfully.
@@ -65,18 +65,18 @@ post:
         - device:write
         - device:write:owned
   parameters:
-    - $ref: "../parameters/device_id.yml"
+    - $ref: '../parameters/device_id.yml'
   requestBody:
     description: The availability rules to be applied.
     content:
       application/json:
-        $ref: "../content/availability_request.yml"
+        $ref: '../content/availability_request.yml'
   responses:
     200:
       description: The JSON Representation of the changed availability.
       content:
         application/json:
-          $ref: "../content/availability.yml"
+          $ref: '../content/availability.yml'
     400:
       description: Bad Request.
     401:

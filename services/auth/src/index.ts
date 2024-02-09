@@ -1,78 +1,22 @@
-import { config, dataSourceConfig } from './config'
-import { AppDataSource, initializeDataSource, repositories } from './database/dataSource'
-import { app } from './generated'
-import { isUserTypeJWT } from './generated/types'
-import { parseAllowlist, resolveAllowlist } from './methods/allowlist'
-import { apiClient } from './methods/api'
-import { generateNewKey, jwk } from './methods/key'
-import { AppConfiguration } from './types/types'
-import {
-    JWTVerify,
-    errorHandler,
-    logHandling,
-    logger,
-    missingRouteHandling,
-    parseJwtFromAuthorizationHeader,
-    requestIdHandling,
-} from '@crosslab/service-common'
-import { DataSourceOptions } from 'typeorm'
+#!/usr/bin/env node
+import { logging } from '@crosslab/service-common';
 
-async function startAuthenticationService(
-    appConfig: AppConfiguration,
-    options: DataSourceOptions
-) {
-    await AppDataSource.initialize(options)
-    await initializeDataSource()
+import { init_app } from './app.js';
+import { config } from './config.js';
+import { init_database } from './database/datasource.js';
+import { init_users } from './user/helper.js';
 
-    apiClient.accessToken = appConfig.API_TOKEN
-    const allowlist = appConfig.ALLOWLIST ? parseAllowlist(appConfig.ALLOWLIST) : []
-
-    // Resolve Allowlist
-    await resolveAllowlist(allowlist)
-    setInterval(resolveAllowlist, 600000, allowlist)
-
-    // Create new active key
-    const activeSigKey = await repositories.activeKey.findOne({
-        where: {
-            use: 'sig',
-        },
-    })
-    const key = activeSigKey?.key ?? (await generateNewKey())
-    const jwks = JSON.stringify({ keys: [jwk(key)] })
-
-    if (!activeSigKey) {
-        const activeKeyModel = await repositories.activeKey.create({
-            use: key.use,
-            key: key.uuid,
-        })
-        await repositories.activeKey.save(activeKeyModel)
-    }
-
-    app.get('/.well-known/jwks.json', (_req, res) => {
-        res.send(jwks)
-    })
-    app.get('/.well-known/openid-configuration', (_req, res) => {
-        res.send({ jwks_uri: '/.well-known/jwks.json' })
-    })
-
-    app.get('/auth/status', (_req, res) => {
-        res.send({ status: 'ok' })
-    })
-
-    app.initService({
-        security: {
-            JWT: JWTVerify(appConfig, isUserTypeJWT, parseJwtFromAuthorizationHeader),
-        },
-        preHandlers: [requestIdHandling, logHandling],
-        postHandlers: [missingRouteHandling],
-        errorHandler: errorHandler,
-    })
-
-    app.listen(appConfig.PORT)
-    logger.log('info', 'Authentication Service started successfully')
+async function initialize() {
+  logging.init();
+  try {
+    await init_database();
+    await init_users();
+    const app = init_app();
+    app.listen(config.PORT);
+    logging.logger.log('info', 'Authentication Service started successfully');
+  } catch (e) {
+    logging.logger.log('error', 'Authentication Service failed to start', e);
+  }
 }
 
-/* istanbul ignore if */
-if (require.main === module) {
-    startAuthenticationService(config, dataSourceConfig)
-}
+initialize();

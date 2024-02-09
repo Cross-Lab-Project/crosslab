@@ -1,7 +1,10 @@
 {
-  "$schema": "http://json.schemastore.org/eslintrc",
   "root": true,
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/eslint-recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "ignorePatterns": [
@@ -15,29 +18,26 @@
     "http-dist/**/*",
     "/*.js"
   ],
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "rules": {
-        "@typescript-eslint/no-shadow": ["error"],
-        "no-shadow": "off",
-        "no-undef": "off",
-        "max-len": [
-          "error",
-          {
-            "code": 150
-          }
-        ],
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": [
-          "warn", // or "error"
-          {
-            "argsIgnorePattern": "^_",
-            "varsIgnorePattern": "^_",
-            "caughtErrorsIgnorePattern": "^_"
-          }
-        ]
+
+  "rules": {
+    "@typescript-eslint/no-shadow": ["error"],
+    "no-shadow": "off",
+    "no-undef": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 150
       }
-    }
-  ]
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn", // or "error"
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/no-var-requires": "off"
+  }
 }

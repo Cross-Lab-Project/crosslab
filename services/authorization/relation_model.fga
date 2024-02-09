@@ -1,0 +1,31 @@
+model
+  schema 1.1
+type user
+  relations
+    define viewer: [user]
+type device
+  relations
+    define viewer: [user] or owner or viewer from parent
+    define owner: [user]
+    define parent: [device]
+    define active_booking: [booking]
+    define booker: member from active_booking
+type experiment
+  relations
+    define viewer: [user] or owner
+    define owner: [user]
+    define member: [user]
+type peerconnection
+  relations
+    define viewer: [user] or owner
+    define owner: [user]
+type booking
+  relations
+    define viewer: [user] or owner
+    define owner: [user]
+    define experiment: [experiment]
+    define member: [user] or member from experiment
+type federation
+  relations
+    define viewer: [user] or owner
+    define owner: [user]

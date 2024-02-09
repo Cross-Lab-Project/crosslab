@@ -1,24 +1,32 @@
-import { repositories } from '../../../database/dataSource'
-import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures'
-import { logger } from '@crosslab/service-common'
+import { logger } from '@crosslab/service-common';
+
+import { repositories } from '../../../database/dataSource.js';
+import { getPeerconnectionsByPeerconnectionIdSignature } from '../../../generated/signatures.js';
+import { peerconnectionUrlFromId } from '../../../methods/urlFromId.js';
 
 /**
- * This function implements the functionality for handling GET requests on /peerconnections/{peerconnection_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /peerconnections/{peerconnection_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param _user The user submitting the request.
  */
 export const getPeerconnectionsByPeerconnectionId: getPeerconnectionsByPeerconnectionIdSignature =
-    async (parameters, _user) => {
-        logger.log('info', 'getPeerconnectionsByPeerconnectionId called')
+  async (req, parameters) => {
+    logger.log('info', 'getPeerconnectionsByPeerconnectionId called');
 
-        const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
-            where: { uuid: parameters.peerconnection_id },
-        })
+    await req.authorization.check_authorization_or_fail(
+      'view',
+      `peerconnection:${peerconnectionUrlFromId(parameters.peerconnection_id)}`,
+    );
 
-        logger.log('info', 'getPeerconnectionsByPeerconnectionId succeeded')
+    const peerconnectionModel = await repositories.peerconnection.findOneOrFail({
+      where: { uuid: parameters.peerconnection_id },
+    });
 
-        return {
-            status: 200,
-            body: await repositories.peerconnection.format(peerconnectionModel),
-        }
-    }
+    logger.log('info', 'getPeerconnectionsByPeerconnectionId succeeded');
+
+    return {
+      status: 200,
+      body: await repositories.peerconnection.format(peerconnectionModel),
+    };
+  };

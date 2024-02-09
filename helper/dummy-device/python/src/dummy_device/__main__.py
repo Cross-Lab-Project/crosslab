@@ -128,7 +128,7 @@ async def main_async():
     deviceHandler = DeviceHandler()
 
     signal_service = ElectricalConnectionService("electrical")
-    signal_interface = ConstractableGPIOInterface(signal_names)
+    signal_interface = ConstractableGPIOInterface(signal_names, "inout")
     signal_service.addInterface(signal_interface)
     signal_service.on("newInterface", newInterface)
     deviceHandler.add_service(signal_service)
@@ -151,6 +151,10 @@ async def main_async():
             ),
             flush=True,
         ),
+    )
+    deviceHandler.on(
+        "configuration",
+        lambda configuration: print("[configuration] " + json.dumps(configuration)),
     )
 
     async with APIClient(url) as client:

@@ -6,9 +6,9 @@ get:
     - experiment
   security:
     - JWT:
-      - experiment
-      - experiment:read
-      - experiment:read:owned
+        - experiment
+        - experiment:read
+        - experiment:read:owned
   responses:
     200:
       description: The list of all experiments.
@@ -33,8 +33,10 @@ post:
     - experiment
   security:
     - JWT:
-      - experiment
-      - experiment:create
+        - experiment
+        - experiment:create
+  parameters:
+    - $ref: '../parameters/experiment_changed_url.yml'
   requestBody:
     description: The experiment to be created.
     required: true
@@ -51,7 +53,7 @@ post:
       description: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
       content:
         application/json:
-          $ref: "../content/experiment.yml"
+          $ref: '../content/experiment.yml'
     400:
       description: Bad Request.
     401:
@@ -64,19 +66,19 @@ post:
       description: Server Error.
   callbacks:
     changed:
-      "{$request.query.changedUrl}":
+      '{$request.query.changedUrl}':
         post:
           security:
             - JWT:
-              - experiment
-              - experiment:create
-              - experiment:write
+                - experiment
+                - experiment:create
+                - experiment:write
           summary: Callback for the "experiment-changed" event
           requestBody:
             required: true
             content:
               application/json:
-                $ref: "../content/experiment_event.yml"
+                $ref: '../content/experiment_changed_event.yml'
           responses:
             2XX:
               description: The event was successfully processed.

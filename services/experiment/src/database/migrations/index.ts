@@ -1,7 +1,15 @@
-import { SetupMigration1684154140619 } from './1684154140619-SetupMigration'
-import { ExperimentStatusAndInstances1688732725993 } from './1688732725993-ExperimentStatusAndInstances'
+import { DataSourceOptions } from 'typeorm';
 
-export const Migrations = [
-    SetupMigration1684154140619,
-    ExperimentStatusAndInstances1688732725993,
-]
+import * as mariadb from './mariadb/index.js';
+import * as sqlite from './sqlite/index.js';
+
+export const Migrations = (type: DataSourceOptions['type']) => {
+  switch (type) {
+    case 'sqlite':
+      return sqlite.Migrations;
+    case 'mariadb':
+      return mariadb.Migrations;
+    default:
+      return [];
+  }
+};

@@ -11,9 +11,10 @@ from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.messages import (
     AuthenticationMessage,
     ClosePeerConnectionMessage,
+    ConfigurationMessage,
+    ConnectionStateChangedMessage,
     CreatePeerConnectionMessage,
     SignalingMessage,
-    ConnectionStateChangedMessage
 )
 from crosslab.soa_client.service import Service
 
@@ -82,28 +83,38 @@ class DeviceHandler(AsyncIOEventEmitter):
         )
 
         if client is None:
-            client = APIClient(base_url)
+            self.client = APIClient(base_url)
+        else:
+            self.client = client
 
-        async with client:
-            async with aiohttp.ClientSession() as session:
-                token = await client.create_websocket_token(token_endpoint)
+        async with self.client:
+            async with aiohttp.ClientSession() as self.session:
+                await self.client.update_device(
+                    device_url, {"type": "device", "services": self.get_service_meta()}
+                )
+                token = await self.client.create_websocket_token(token_endpoint)
                 self.emit("websocketToken", token)
-                self.ws = await session.ws_connect(ws_endpoint)
+                self.ws = await self.session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
                 self.emit("websocketConnected")
 
                 await self._message_loop()
-                await session.close()
+
+    def get_service_meta(self):
+        return [service.getMeta() for service in self._services.values()]
 
     async def _message_loop(self):
         while True:
             msg = await receiveMessage(self.ws)
             if isinstance(msg, aiohttp.WSMessage):
                 if msg.type == aiohttp.WSMsgType.CLOSED:
+                    print("closed")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSING:
+                    print("closing")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSE:
+                    print("close")
                     await self.ws.close()
                     break
                 break
@@ -119,8 +130,10 @@ class DeviceHandler(AsyncIOEventEmitter):
                 await self._on_close_peerconnection(msg)
             elif msg["messageType"] == "signaling":
                 await self._on_signaling_message(msg)
+            elif msg["messageType"] == "configuration":
+                await self._on_configuration_message(msg)
             else:
-                raise Exception("Unknown message type")
+                pass  # Do not raise any Exception here, so we are forward compatible for new message types
 
     async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
         assert msg["connectionUrl"] not in self._connections
@@ -151,7 +164,7 @@ class DeviceHandler(AsyncIOEventEmitter):
             connectionChangedMessage: ConnectionStateChangedMessage = {
                 "connectionUrl": msg["connectionUrl"],
                 "messageType": "connection-state-changed",
-                "status": connection.state
+                "status": connection.state,
             }
             await self.ws.send_json(connectionChangedMessage)
             self.emit("connectionsChanged")
@@ -164,7 +177,8 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_close_peerconnection(self, msg: ClosePeerConnectionMessage):
         connection = self._connections.get(msg["connectionUrl"], None)
-        assert connection is not None  # TODO: Error handling
+        if connection is None:
+            return
         await connection.close()
         del self._connections[msg["connectionUrl"]]
 
@@ -172,3 +186,6 @@ class DeviceHandler(AsyncIOEventEmitter):
         connection = self._connections.get(msg["connectionUrl"], None)
         assert connection is not None  # TODO: Error handling
         await connection.handleSignalingMessage(msg)
+
+    async def _on_configuration_message(self, msg: ConfigurationMessage):
+        self.emit("configuration", msg["configuration"])

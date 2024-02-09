@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: User
 type: object
-properties: 
+properties:
   url:
     type: string
     format: uri
@@ -14,8 +14,6 @@ properties:
   password:
     type: string
     writeOnly: true
-required:
-  - url
-  - id
-  - username
-  - password
+  admin:
+    type: boolean
+x-typeguard: true

@@ -2,9 +2,9 @@
 title: Availability Rule
 type: object
 allOf:
-  - $ref: "./time_slot.yml"
+  - $ref: './time_slot.yml'
   - type: object
-    properties: 
+    properties:
       available:
         type: boolean
       repeat:
@@ -25,4 +25,4 @@ allOf:
             description: How often the time slot will be repeated
             type: integer
         required:
-        - frequency
+          - frequency

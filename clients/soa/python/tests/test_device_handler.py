@@ -14,6 +14,7 @@ from crosslab.soa_client.test_helper.service_stub import ServiceStub
 
 @pytest.mark.asyncio
 async def test_connect_and_authenticate(mock_server):
+    mock_server.patch("/devices/123")
     mock_server.get("/devices/123/websocket", payload="token")
     ws = mock_server.ws("/devices/123/ws")
     ws.expect(
@@ -29,6 +30,7 @@ async def test_connect_and_authenticate(mock_server):
 
 @pytest.mark.asyncio
 async def test_create_peerconnection(mock_server):
+    mock_server.patch("/devices/123")
     mock_server.get("/devices/123/websocket", payload="token")
 
     ws = mock_server.ws("/devices/123/ws")

@@ -1,16 +1,17 @@
-import { TypedEmitter } from "tiny-typed-emitter";
+import { TypedEmitter } from 'tiny-typed-emitter';
+
 import {
-  ConnectionInterfaceConfiguration,
   ConnectionInterface,
-  ConstructableConnectionInterface,
+  ConnectionInterfaceConfiguration,
   ConnectionInterfaceDescription,
   ConnectionInterfaceEvents,
-} from "../connectionInterface";
+  ConstructableConnectionInterface,
+} from '../connectionInterface';
 
-type InterfaceType = "spi" | "spiSlave" | "spiMaster";
-const InterfaceType: InterfaceType = "spi";
-const InterfaceTypeSlave: InterfaceType = "spiSlave";
-const InterfaceTypeMaster: InterfaceType = "spiMaster";
+type InterfaceType = 'spi' | 'spiSlave' | 'spiMaster';
+const InterfaceType: InterfaceType = 'spi';
+const InterfaceTypeSlave: InterfaceType = 'spiSlave';
+const InterfaceTypeMaster: InterfaceType = 'spiMaster';
 
 export enum Phase {
   SampleLeadingEdge,
@@ -44,7 +45,7 @@ export interface SPIMasterInterfaceEvents extends ConnectionInterfaceEvents {
   slaveSelectChanged(event: ReceiveByteEvent): void;
 }
 
-type SPIInterfaceDataType = "SendByte" | "PrepareByte" | "SetSlaveSelect";
+type SPIInterfaceDataType = 'SendByte' | 'PrepareByte' | 'SetSlaveSelect';
 
 interface SPIInterfaceData {
   type: SPIInterfaceDataType;
@@ -63,9 +64,9 @@ export class SPISlaveInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -74,14 +75,14 @@ export class SPISlaveInterface
   }
 
   sendByte(byte: number): void {
-    const data: SPIInterfaceData = { type: "SendByte", byte: byte };
-    this.emit("upstreamData", data);
+    const data: SPIInterfaceData = { type: 'SendByte', byte: byte };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 
   setSlaveSelect(value: boolean): void {
-    const data: SPIInterfaceData = { type: "SetSlaveSelect", value: value };
-    this.emit("upstreamData", data);
+    const data: SPIInterfaceData = { type: 'SetSlaveSelect', value: value };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 }
@@ -97,9 +98,9 @@ export class SPIMasterInterface
     super();
     this.configuration = configuration;
   }
-  
+
   retransmit(): void {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   // TODO: add real implementation
@@ -108,8 +109,8 @@ export class SPIMasterInterface
   }
 
   prepareByte(byte: number): void {
-    const data: SPIInterfaceData = { type: "PrepareByte", byte: byte };
-    this.emit("upstreamData", data);
+    const data: SPIInterfaceData = { type: 'PrepareByte', byte: byte };
+    this.emit('upstreamData', data);
     this.downstreamData(data);
   }
 }

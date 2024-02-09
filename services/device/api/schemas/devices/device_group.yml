@@ -11,5 +11,5 @@ allOf:
         items:
           $ref: ./references/device_reference.yml
     required:
-    - devices
+      - devices
 x-typeguard: true

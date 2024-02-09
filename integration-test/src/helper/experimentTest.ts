@@ -1,8 +1,17 @@
-import {APIClient, DeviceServiceTypes, ExperimentServiceTypes} from '@cross-lab-project/api-client';
+import {
+  APIClient,
+  DeviceServiceTypes,
+  ExperimentServiceTypes,
+} from '@cross-lab-project/api-client';
 import assert from 'assert';
-import {TypedEmitter} from 'tiny-typed-emitter';
+import { TypedEmitter } from 'tiny-typed-emitter';
 
-import {ClientType, DeviceType, DummyDevice, DummyDeviceEvents} from '../fixtures/dummyDevice';
+import {
+  ClientType,
+  DeviceType,
+  DummyDevice,
+  DummyDeviceEvents,
+} from '../fixtures/dummyDevice';
 
 function createDummyDevice(type: ClientType, index: number, context: Mocha.Context) {
   switch (type) {
@@ -16,19 +25,15 @@ function createDummyDevice(type: ClientType, index: number, context: Mocha.Conte
         context,
       );
     case 'python':
-      return new DummyDevice(type, context.debug?.pythonDevice?.[index]?.debug_port, undefined, `test-python-device${index}.log`, context);
+      return new DummyDevice(
+        type,
+        context.debug?.pythonDevice?.[index]?.debug_port,
+        undefined,
+        `test-python-device${index}.log`,
+        context,
+      );
   }
 }
-
-type DeviceMeta = {
-  type: DeviceType;
-  name: string;
-  description: string;
-  isPublic: boolean;
-  instantiateUrl?: string;
-  codeUrl?: string;
-  announcedAvailability?: DeviceServiceTypes.AvailabilityRule[];
-};
 
 enum State {
   None = 0,
@@ -44,9 +49,9 @@ type MessageEvents = {
 
 export class ExperimentTest extends TypedEmitter<MessageEvents> {
   devices: DummyDevice[] = [];
-  deviceMetas: DeviceMeta[] = [];
-  apiDevices: (DeviceServiceTypes.ConcreteDevice<'response'> & {url: string})[] = [];
-  events: {gpio: Parameters<DummyDeviceEvents['gpio']>[0][]}[] = [];
+  deviceMetas: DeviceServiceTypes.Device<'request'>[] = [];
+  apiDevices: (DeviceServiceTypes.Device<'response'> & { url: string })[] = [];
+  events: { gpio: Parameters<DummyDeviceEvents['gpio']>[0][] }[] = [];
   experimentUrl?: string;
 
   _state: State = State.None;
@@ -69,13 +74,21 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
   async createAPIDevices(client: APIClient) {
     for (const deviceMeta of this.deviceMetas) {
-      const apiDevice = (await client.createDevice({
+      if (deviceMeta.type === 'group') {
+        const device = await client.createDevice({
+          type: 'device',
+          name: 'Internal Test Device',
+          isPublic: true,
+        });
+        deviceMeta.devices.push(device);
+      }
+      const apiDevice = await client.createDevice({
         ...deviceMeta,
-      })) as DeviceServiceTypes.ConcreteDevice<'response'>;
+      });
 
       assert(apiDevice.url, 'Device URL is not defined');
 
-      this.apiDevices.push({...apiDevice});
+      this.apiDevices.push({ ...apiDevice });
     }
 
     this._state = State.Created;
@@ -86,18 +99,23 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
     const promiseList = [];
     for (const [idx, device] of this.devices.entries()) {
-      if (this.apiDevices[idx].type === 'device')
-        promiseList.push(new Promise<void>(resolve => device.once('websocketConnected', resolve)));
-      this.events.push({gpio: []});
+      if (this.apiDevices[idx].type === 'device' || this.apiDevices[idx].type === 'group')
+        promiseList.push(
+          new Promise<void>(resolve => device.once('websocketConnected', resolve)),
+        );
+      this.events.push({ gpio: [] });
       device.on('gpio', event => {
         this.events[idx].gpio.push(event) && this.emit('eventsChanged');
       });
-      if (this.apiDevices[idx].type === 'device') device.start(client, this.apiDevices[idx].url);
+      const apiDevice = this.apiDevices[idx];
+      if (apiDevice.type === 'device') device.start(client, apiDevice.url);
+      if (apiDevice.type === 'group') device.start(client, apiDevice.devices[0].url);
     }
     await Promise.all(promiseList);
 
     for (const device of this.apiDevices) {
-      if (device.type === 'device') assert((await client.getDevice(device.url)).connected, 'Device is not connected');
+      if (device.type === 'device')
+        assert((await client.getDevice(device.url)).connected, 'Device is not connected');
     }
 
     this._state = State.Connected;
@@ -109,15 +127,32 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     const promiseListConnections = this.devices.map(
       device =>
         new Promise<void>(resolve =>
-          device.on('connectionsChanged', connections => connections.every(c => c.state === 'connected') && resolve()),
+          device.on(
+            'connectionsChanged',
+            connections => connections.every(c => c.state === 'connected') && resolve(),
+          ),
+        ),
+    );
+
+    const promiseListConfiguration = this.devices.map(
+      device =>
+        new Promise<{ [k: string]: unknown }>(resolve =>
+          device.on('configuration', configuration => resolve(configuration)),
         ),
     );
 
     experiment = {
       status: 'running',
-      roles: this.deviceMetas.map((m, idx) => ({name: 'device' + (idx + 1), description: m.description})),
-      devices: this.apiDevices.map((d, idx) => ({role: 'device' + (idx + 1), device: d.url})),
-      ...experiment,
+      roles: this.deviceMetas.map((m, idx) => ({
+        name: 'device' + (idx + 1),
+        description: m.description,
+      })),
+      devices: this.apiDevices.map((d, idx) => ({
+        role: 'device' + (idx + 1),
+        device: d.url,
+      })),
+      serviceConfigurations: [],
+      ...(experiment as object),
     };
 
     const apiExperiment = await client.createExperiment(experiment);
@@ -126,9 +161,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
     const promiseList = [];
     for (const [idx, apiDevice] of this.apiDevices.entries()) {
-      if (apiDevice.type === 'device') continue;
+      if (apiDevice.type === 'device' || apiDevice.type === 'group') continue;
 
-      const instanceData = apiExperiment.instantiatedDevices?.find(device => device.instanceOf === apiDevice.url);
+      const instanceData = apiExperiment.instantiatedDevices?.find(
+        device => device.instanceOf === apiDevice.url,
+      );
 
       assert(instanceData);
 
@@ -136,14 +173,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       const deviceToken = instanceData.token;
       apiDevice.instanceUrl = instanceData.url;
 
-      const originalAccessToken = client.accessToken;
-      client.accessToken = deviceToken;
-
-      promiseList.push(new Promise<void>(resolve => this.devices[idx].once('websocketConnected', resolve)));
-      this.events.push({gpio: []});
-      this.devices[idx].start(client, instanceUrl);
-
-      client.accessToken = originalAccessToken;
+      promiseList.push(
+        new Promise<void>(resolve =>
+          this.devices[idx].once('websocketConnected', resolve),
+        ),
+      );
+      this.events.push({ gpio: [] });
+      this.devices[idx].start(new APIClient(client.url, deviceToken), instanceUrl);
     }
 
     await Promise.all(promiseList);
@@ -152,46 +188,77 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       assert((await client.getDevice(device.url)).connected, 'Device is not connected');
     }
 
-    // await client.updateExperiment(apiExperiment.url!, {
-    //   status: 'running',
-    //   devices: this.apiDevices.map((d, idx) => ({
-    //     role: 'device' + (idx + 1),
-    //     device: d.type === 'device' ? d.url : (d.instanceUrl as any),
-    //   })),
-    // });
-
     await Promise.all(promiseListConnections);
+    const configurations = await Promise.all(promiseListConfiguration);
+
+    for (const configuration of configurations) {
+      assert.strictEqual(configuration.experimentUrl, this.experimentUrl);
+    }
 
     this._state = State.Running;
   }
 
-  addDevice(context: Mocha.Context, clientType: ClientType, deviceType: DeviceType = 'device', name?: string, description?: string) {
+  addDevice(
+    context: Mocha.Context,
+    clientType: ClientType,
+    deviceType: DeviceType = 'device',
+    name?: string,
+    description?: string,
+  ) {
     this.devices.push(createDummyDevice(clientType, this.devices.length + 1, context));
-    const deviceTypeName = {js: 'JS', python: 'Python'}[clientType];
+    const deviceTypeName = { js: 'JS', python: 'Python' }[clientType];
     this.deviceMetas.push({
       type: deviceType,
       name: name ?? `${deviceTypeName} Device ${this.devices.length}`,
       description: description ?? `A ${deviceTypeName} test device`,
       isPublic: true,
-      instantiateUrl: deviceType === 'cloud instantiable' ? 'http://localhost/edge_instantiable_device' : undefined,
-      codeUrl: deviceType === 'edge instantiable' ? 'http://localhost/cloud_instantiable_device' : undefined,
-      announcedAvailability: deviceType === 'device' ? [{available: true}] : undefined,
+      instantiateUrl: 'http://localhost/edge_instantiable_device',
+      codeUrl: 'http://localhost/cloud_instantiable_device',
+      announcedAvailability: [{ available: true }],
+      devices: [],
     });
   }
 
-  async stop(client: APIClient) {
+  async stop(client: APIClient, timeout = 5000) {
     const closedPromises = this.devices.map(
       device =>
         new Promise<void>(resolve =>
-          device.on('connectionsChanged', connections => connections.every(c => c.state === 'closed') && resolve()),
+          device.on(
+            'connectionsChanged',
+            connections => connections.every(c => c.state === 'closed') && resolve(),
+          ),
         ),
     );
-    if (this.experimentUrl) await client.deleteExperiment(this.experimentUrl);
-    await Promise.all(closedPromises);
-    for (const device of this.devices) {
-      device.stop();
+
+    let running = false;
+
+    for (let i = 0; i < 20; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      if (this.experimentUrl) {
+        const experiment = await client.getExperiment(this.experimentUrl);
+        running = experiment.status === 'running';
+        if (running) {
+          await client.deleteExperiment(this.experimentUrl);
+          break;
+        }
+      }
     }
 
-    this._state = State.Stopped;
+    assert(running, 'experiment was not set to running!');
+
+    try {
+      await new Promise((resolve, reject) => {
+        if (timeout) {
+          setTimeout(() => reject('Timeout'), timeout);
+        }
+        Promise.all(closedPromises).then(resolve).catch(reject);
+      });
+    } finally {
+      for (const device of this.devices) {
+        device.stop();
+      }
+
+      this._state = State.Stopped;
+    }
   }
 }

@@ -1,10 +1,10 @@
-import { Filter } from '@cross-lab-project/openapi-codegen'
+import { Filter } from '@cross-lab-project/openapi-codegen';
 
 function includes(string: string, searchString: string) {
-    return string.includes(searchString)
+  return string.includes(searchString);
 }
 
 export const includesFilter: Filter = {
-    name: 'includes',
-    function: includes,
-}
+  name: 'includes',
+  function: includes,
+};

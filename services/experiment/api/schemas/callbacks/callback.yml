@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Callback
+type: object
+properties:
+  callbackType:
+    type: string
+required:
+  - callbackType
+x-typeguard: true

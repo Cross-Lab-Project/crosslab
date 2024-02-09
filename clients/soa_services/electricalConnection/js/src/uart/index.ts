@@ -1,1 +1,1 @@
-export { ConstructableUARTInterface } from "./connectionInterface";
+export { ConstructableUARTInterface } from './connectionInterface';

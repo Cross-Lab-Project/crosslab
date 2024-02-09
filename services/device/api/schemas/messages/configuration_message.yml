@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Configuration Message
+allOf:
+  - $ref: './message.yml'
+  - type: object
+    properties:
+      messageType:
+        const: configuration
+      configuration:
+        type: object
+        additionalProperties: true
+    required:
+      - messageType
+      - configuration
+x-typeguard: true

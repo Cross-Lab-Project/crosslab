@@ -9,3 +9,6 @@ properties:
   role:
     type: string
     description: The name of the device's role.
+required:
+  - device
+  - role

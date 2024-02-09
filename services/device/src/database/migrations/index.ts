@@ -1,4 +1,15 @@
-import { SetupMigration1684337213423 } from './1684337213423-SetupMigration'
-import { DeviceVisibility1687441347129 } from './1687441347129-DeviceVisibility'
+import { DataSourceOptions } from 'typeorm';
 
-export const Migrations = [SetupMigration1684337213423, DeviceVisibility1687441347129]
+import * as mariadb from './mariadb/index.js';
+import * as sqlite from './sqlite/index.js';
+
+export const Migrations = (type: DataSourceOptions['type']) => {
+  switch (type) {
+    case 'sqlite':
+      return sqlite.Migrations;
+    case 'mariadb':
+      return mariadb.Migrations;
+    default:
+      return [];
+  }
+};

@@ -1,0 +1,138 @@
+{%- macro lowerCamelCase(value) -%}
+{{ value | lowerCamelCase }}
+{%- endmacro -%}
+
+import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
+import * as schemas from "./schemas.js";
+
+function escapeRegex(string: string) {
+    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
+/**
+ * This function attempts to parse a Response as ResponseData.
+ */
+async function parseResponse(response: Response) {
+    let text = null;
+    try {
+        text = await response.text();
+        const json = JSON.parse(text);
+        return { status: response.status, body: json };
+    } catch {
+        return { status: response.status, body: text };
+    }
+}
+
+export class Client {
+    private BASE_URL: string;
+    private SERVICE_URL: string;
+
+    constructor(BASE_URL: string, SERVICE_URL?: string) {
+        this.BASE_URL = BASE_URL;
+        this.SERVICE_URL = SERVICE_URL || BASE_URL;
+    }
+
+    private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
+        let raw_response;
+        init.headers = init.headers || {"Content-Type": "application/json"};
+        try {
+            raw_response = await fetch(url, init);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(error.message);
+            } else if (typeof error === 'string') {
+                throw new Error(error);
+            } else {
+                throw new Error(
+                    'Something went wrong while trying to fetch the request'
+                );
+            }
+        }
+        return await parseResponse(raw_response);
+    };
+
+    {%- for path, methods in paths -%}
+    {%- for method, details in methods -%}
+
+        {%- set params = [] %}
+        {%- set optionalParams = [] %}
+        {%- set query_params = [] %}
+        {%- if details | hasPathParameter -%}
+            {%- set params = (params.push('url: string'), params) %}
+        {%- endif -%}
+        {%- if details.requestBody -%}
+            {%- if details.requestBody.required -%}
+                {%- set params = (params.push('body: schemas.' + details.operationId | upperCamelCase + "Request" ), params) %}
+            {%- else -%}
+                {%- set optionalParams = (optionalParams.push('body?: schemas.' + details.operationId | upperCamelCase + "Request"), optionalParams) %}
+            {%- endif -%}
+            
+        {%- endif -%}
+        {%- for param in details.parameters -%}
+            {%- if param.in != 'path' -%}
+                {%- set paramName = lowerCamelCase(param.name) -%}
+                {%- set paramType = 'UNKNOWN' %}
+                {%- if param.schema.type == 'string' -%}
+                    {%- set paramType = 'string' %}
+                {%- elif param.schema.type == 'boolean' -%}
+                    {%- set paramType = 'boolean' %}
+                {%- endif -%}
+                {%- if param.required -%}
+                    {%- set params = (params.push(paramName+': '+paramType), params) %}
+                {%- else -%}
+                    {%- set optionalParams = (optionalParams.push(paramName+'?: '+paramType), optionalParams) %}
+                {%- endif -%}
+                {%- set query_params = (query_params.push(param.name), query_params) %}
+            {%- endif -%}
+        {%- endfor -%}
+        {%- if not details | hasPathParameter -%}
+            {%- set params = (params.push('url: string = "'+path+'"'), params) %}
+        {%- endif -%}
+        {%- for param in optionalParams -%}
+            {%- set params = (params.push(param), params) %}
+        {%- endfor %}
+
+    /*
+    {{details.summary}}
+    {% if details.description %}
+    {{details.description | indent(4)}}
+    {%- endif %}
+    */
+    public async {{ details.operationId | lowerCamelCase }}({{ params | join(', ') }}): Promise<schemas.{{ details.operationId | upperCamelCase + "Response" }}> {
+        // match path to url schema
+        const m = new RegExp('^('+escapeRegex(this.BASE_URL)+')?\/?{{ path
+                                                        | replaceRegEx('^/', '')
+                                                        | replaceRegEx('^(.*?)([^{}]*)$', '($1)($2)?')
+                                                        | replaceRegEx('\{.*?\}', '[^\?]*?')
+                                                        | replaceRegEx('\/', '\\\/')
+                                                      }}$').exec(url)
+        if (!m) throw new Error("Invalid url")
+        let valid_url = '/'+m[2]+'{{path | replaceRegEx('^(.*?)([^{}]*)$', '$2')}}'
+        if (valid_url.startsWith('//')) valid_url = valid_url.slice(1)
+
+        const url_with_query_params = new URL(this.SERVICE_URL+valid_url, this.BASE_URL)
+        {%- if query_params | length > 0 %}
+
+        // build query params
+        {% for param in query_params -%}
+        if ({{param | lowerCamelCase}}){
+            url_with_query_params.searchParams.set('{{param}}', {{param | lowerCamelCase}})
+        }
+        {% endfor -%}
+        {%- endif %}
+        // make http call
+        const response = await this.fetch(url_with_query_params, {method: "{{method}}"{% if details.requestBody -%} , body: JSON.stringify(body){% endif %}});
+           
+        // transform response
+        {%- for status, response in details.responses -%}
+            {%- if status >= 200 and status <300 or status == 303 %}
+        if (response.status === {{status}}){
+            return response.body
+        }
+            {%- endif -%}
+        {%- endfor %}
+        throw new Error("Unexpected status code: "+response.status)
+    }
+    {%- endfor -%}
+{%- endfor %}
+}

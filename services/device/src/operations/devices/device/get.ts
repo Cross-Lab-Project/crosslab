@@ -1,48 +1,75 @@
-import { repositories } from '../../../database/dataSource'
-import { getDevicesByDeviceIdSignature } from '../../../generated/signatures'
-import { DeviceOwnershipError, JWTVerify, logger } from '@crosslab/service-common'
-import { checkPermission } from '../../../methods/permission'
-import { config } from '../../../config'
-import { UserType, isUserType } from '../../../generated/types'
+import { logger } from '@crosslab/service-common';
+import base64url from 'base64-url';
 
-function validatePayload(output: unknown): output is UserType<'JWT'> {
-    return isUserType(output, 'JWT')
-}
-
-const validateExecuteFor = JWTVerify(config, validatePayload, (input: string) => input)
+import * as clients from '../../../clients/index.js';
+import { repositories } from '../../../database/dataSource.js';
+import { getDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
+import { getViewerOwner } from '../../../methods/visibility.js';
 
 /**
- * This function implements the functionality for handling GET requests on /devices/{device_id} endpoint.
+ * This function implements the functionality for handling GET requests on
+ * /devices/{device_id} endpoint.
+ * @param authorization The authorization helper object for the request.
  * @param parameters The parameters of the request.
- * @param user The user submitting the request.
  * @throws {MissingEntityError} Thrown if device is not found in the database.
  */
 export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
-    parameters,
-    user
+  req,
+  parameters,
 ) => {
-    logger.log('info', 'getDevicesByDeviceId called')
+  logger.log('info', 'getDevicesByDeviceId called');
 
-    const executeForUser = parameters.execute_for
-        ? await validateExecuteFor(parameters.execute_for, [])
-        : undefined
+  if (parameters.device_id.startsWith('federated-')) {
+    const url = base64url.decode(parameters.device_id.replace('federated-', ''));
 
-    const deviceModel = await repositories.device.findOneOrFail({
-        where: { uuid: parameters.device_id },
-    })
-
-    if (!checkPermission('read', deviceModel, user.JWT)) throw new DeviceOwnershipError()
-    if (executeForUser)
-        if (!checkPermission('read', deviceModel, executeForUser))
-            throw new DeviceOwnershipError()
-
-    logger.log('info', 'getDevicesByDeviceId succeeded')
-
+    const federatedDevice = await clients.device.getDevice(url);
     return {
-        status: 200,
-        body: await repositories.device.format(deviceModel, {
-            flat_group: parameters.flat_group,
-            execute_for: parameters.execute_for ?? user.JWT.jwt,
-        }),
-    }
-}
+      status: 200,
+      body: federatedDevice,
+    };
+  }
+
+  await req.authorization.check_authorization_or_fail(
+    'view',
+    `device:${deviceUrlFromId(parameters.device_id)}`,
+  );
+
+  const { owner, viewer } = await getViewerOwner(
+    req.authorization,
+    `device:${deviceUrlFromId(parameters.device_id)}`,
+  );
+
+  const deviceModel = await repositories.device.findOneOrFail({
+    where: { uuid: parameters.device_id },
+  });
+
+  const body = await repositories.device.format(deviceModel);
+
+  if (deviceModel.type === 'group') {
+    const visibility = await Promise.all(
+      deviceModel.devices.map(
+        async device =>
+          (await req.authorization.check_authorization('view', `device:${device.url}`))
+            .result,
+      ),
+    );
+
+    body.devices = deviceModel.devices.filter((_device, index) => visibility[index]);
+  }
+
+  logger.log('info', 'getDevicesByDeviceId succeeded');
+
+  return {
+    status: 200,
+    body: {
+      ...body,
+      owner: owner.map(ownerUrl => {
+        return { url: ownerUrl };
+      }),
+      viewer: viewer.map(viewerUrl => {
+        return { url: viewerUrl };
+      }),
+    },
+  };
+};
