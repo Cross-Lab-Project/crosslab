@@ -82,7 +82,7 @@ export const getUsers: getUsersSignature = async req => {
 export const postUsers: postUsersSignature = async req => {
   await req.authorization.check_authorization_or_fail('create', 'user');
   try {
-    const user = await createUser(req.body.username, req.body.password);
+    const user = await createUser(req.body.username, req.body.password, 'local');
     return {
       status: 201,
       body: {
