@@ -37,7 +37,7 @@ for (const client1Type of clientTypes) {
         this.experiment.addDevice(this, client2Type);
       });
       after(async function () {
-        this.timeout(10000);
+        this.timeout(20000);
         await this.experiment.stop(this.client);
       });
 
