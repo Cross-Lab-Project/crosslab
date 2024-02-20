@@ -13,7 +13,7 @@ describe('Authentication', () => {
 
   before(async function () {
     await resetDatabase();
-    user = await createUser('user', 'password');
+    user = await createUser('user', 'password', 'local');
     valid_token = await createNewToken(user);
   });
 

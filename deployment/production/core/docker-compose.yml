@@ -1,0 +1,128 @@
+# This docker compose file is used to deploy the "core"-services of a Crosslab instance.
+# This includes all services to provide the crosslab API. Any additional software like frontend,
+# virtual laboratory devices etc. must be deployed on top of this.
+#
+# All necessary confifguration Options are set via environment variables in the accompanying .env file.
+#
+version: "3"
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  db:
+# If you want to use a local volume for the database, uncomment the following lines
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: ./data
+
+x-config: &common-config
+  AUTHORIZATION_SERVER: "http://authorization:3010"
+  AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:?}"
+  LOGGING: "${LOGGING_LEVEL:-warn}"
+  BASE_URL: https://${API_BASE_URL}
+  DB_TYPE: mariadb
+  DB_HOST: db
+  DB_PORT: 3306
+  AUTH_SERVICE_URL: "http://authentication:3000"
+  DEVICE_SERVICE_URL: "http://device:3001"
+  EXPERIMENT_SERVICE_URL: "http://experiment:3002"
+  FEDERATION_SERVICE_URL: "http://federation:3003"
+  AUTH_SERVICE_DOMAIN: "authentication:3000"
+  DEVICE_SERVICE_DOMAIN: "device:3001"
+  EXPERIMENT_SERVICE_DOMAIN: "experiment:3002"
+  FEDERATION_SERVICE_DOMAIN: "federation:3003"
+  AUTHORIZATION_SERVICE_DOMAIN: "authorization:3010"
+
+services:
+  # Database
+  db:
+    image: mariadb:11.2.3
+    networks:
+      backend:
+    volumes:
+      - "./config/mariadb:/docker-entrypoint-initdb.d"
+      - "db:/var/lib/mysql"
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--su=mysql", "--connect", "--innodb_initialized"]
+    restart: on-failure
+  gateway:
+    image: crosslab/gateway-service:latest
+    ports:
+      - "${API_PORT}:80"
+    environment:
+      <<: *common-config
+    networks:
+      frontend:
+      backend:
+    restart: on-failure
+  # Services
+  authentication:
+    image: crosslab/auth-service:latest
+    environment:
+      <<: *common-config
+      DB_USERNAME: authentication
+      DB_DATABASE: authentication
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?}
+      JWT_SECRET: ${JWT_SECRET:?}
+    networks:
+      backend:
+    restart: on-failure
+  authorization:
+    image: crosslab/authorization-service:latest
+    environment:
+      <<: *common-config
+      DB_USERNAME: authorization
+      DB_DATABASE: authorization
+      JWT_SECRET: ${JWT_SECRET:?}
+    networks:
+      backend:
+    restart: on-failure
+  device:
+    image: crosslab/device-service:latest
+    environment:
+      <<: *common-config
+      DB_USERNAME: device
+      DB_DATABASE: device
+    networks:
+      backend:
+    restart: on-failure
+  experiment:
+    image: crosslab/experiment-service:latest
+    environment:
+      <<: *common-config
+      DB_USERNAME: experiment
+      DB_DATABASE: experiment
+    networks:
+      backend:
+    restart: on-failure
+  federation:
+    image: crosslab/federation-service:latest
+    environment:
+      <<: *common-config
+      DB_USERNAME: federation
+      DB_DATABASE: federation
+    networks:
+      backend:
+    restart: on-failure
+  lti:
+    image: crosslab/lti:latest
+    ports:
+      - "${LTI_PORT}:8080"
+    environment:
+      <<: *common-config
+      DB_USERNAME: lti
+      DB_DATABASE: lti
+      COOKIE_SECRET: ${COOKIE_SECRET:?}
+      API_BASE_URL: ${API_BASE_URL}
+      BASE_URL: ${LTI_BASE_URL}
+    networks:
+      frontend:
+      backend:
+    restart: on-failure

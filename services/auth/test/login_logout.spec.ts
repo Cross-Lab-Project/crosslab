@@ -9,7 +9,7 @@ import { resetDatabase } from './helper.ts';
 describe('Login', () => {
   before(async function () {
     await resetDatabase();
-    await createUser('user', 'password');
+    await createUser('user', 'password', 'local');
   });
 
   it('should allow a valid user to login', async function () {
@@ -33,7 +33,7 @@ describe('Login', () => {
 
   it.skip('should allow a logged in user to log out', async function () {
     await resetDatabase();
-    const user = await createUser('user', 'password');
+    const user = await createUser('user', 'password', 'local');
     const token = await createNewToken(user);
     console.log(token);
   });
