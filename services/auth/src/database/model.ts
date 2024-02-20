@@ -19,7 +19,7 @@ export class UserModel {
   username!: string;
 
   @Column()
-  type!: 'local' | 'tui';
+  type!: string;
 
   @Column()
   isAdmin!: boolean;
