@@ -22,7 +22,7 @@ volumes:
 x-config: &common-config
   AUTHORIZATION_SERVER: "http://authorization:3010"
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:?}"
-  LOGGING: "${LOGGING:-warn}"
+  LOGGING: "${LOGGING_LEVEL:-warn}"
   BASE_URL: https://${API_BASE_URL}
   DB_TYPE: mariadb
   DB_HOST: db
@@ -68,6 +68,8 @@ services:
       <<: *common-config
       DB_USERNAME: authentication
       DB_DATABASE: authentication
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?}
       JWT_SECRET: ${JWT_SECRET:?}
     networks:
       backend:
@@ -117,6 +119,7 @@ services:
       <<: *common-config
       DB_USERNAME: lti
       DB_DATABASE: lti
+      COOKIE_SECRET: ${COOKIE_SECRET:?}
       API_BASE_URL: ${API_BASE_URL}
       BASE_URL: ${LTI_BASE_URL}
     networks:
