@@ -1,5 +1,5 @@
-import { openfga_deinit, openfga_init } from '../src/openfga';
-import { check, relate, unrelate } from './helper';
+import { openfga_deinit, openfga_init } from '../src/openfga.js';
+import { check, relate, unrelate } from './helper.js';
 
 describe('authorization', function () {
   it('should persist data', async function () {

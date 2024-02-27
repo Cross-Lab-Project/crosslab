@@ -11,9 +11,9 @@ describe('User', () => {
   before(async function () {
     await resetDatabase();
     users = await Promise.all([
-      await createUser('user1', 'password1'),
-      await createUser('user2', 'password2'),
-      await createUser('user3', 'password3'),
+      await createUser('user1', 'password1', 'local'),
+      await createUser('user2', 'password2', 'local'),
+      await createUser('user3', 'password3', 'local'),
     ]);
   });
 

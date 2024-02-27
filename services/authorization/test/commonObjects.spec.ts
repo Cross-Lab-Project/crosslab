@@ -1,7 +1,7 @@
 // Import the dependencies for testing
 // import chai from 'chai';
 // import app from '../src/app';
-import { check, relate } from './helper';
+import { check, relate } from './helper.js';
 
 //describe('authorization', function () {
 //    it('should default to false', async function () {

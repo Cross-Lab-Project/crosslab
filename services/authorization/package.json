@@ -9,13 +9,14 @@
   "files": [
     "app"
   ],
+  "type": "module",
   "scripts": {
     "openapi-lint": "npx --yes @redocly/cli lint ./api/openapi.yml",
     "openapi-bundle": "npx --yes @redocly/cli bundle ./api/openapi.yml --output dist/openapi.json",
     "watch-openapi": "npx --yes chokidar-cli 'api/**/*.yml' -c 'npm run openapi-bundle'",
     "watch-rapidoc": "npx --yes browser-sync start --server --startPath 'api/rapidoc.html' --files 'dist/openapi.json'",
     "database:generate-migration": "typeorm-ts-node-commonjs migration:generate -d src/database/datasource.ts src/database/migrations/migration",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.json",
     "dev": "AUTHORIZATION_PSK=secret JWT_SECRET=secret npx nodemon --signal SIGTERM -e ts,rego src/index.ts",
     "dev-test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts --watch --watch-files test/*.ts -R list test/**/*.spec.ts",
     "test": "mocha --require ts-node/register --require test/fixtures/subsystems.ts test/**/*.spec.ts",
@@ -30,6 +31,7 @@
     "@typescript-eslint/parser": "^6.6.0",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
+    "mysql": "^2.18.1",
     "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.6",
     "typeorm": "^0.3.17",
@@ -48,7 +50,7 @@
     "mocha": "^10.2.0",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
-    "winston": "^3.10.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "winston": "^3.10.0"
   }
 }

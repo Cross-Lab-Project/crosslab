@@ -51,12 +51,12 @@ export function device(program: Command, getClient: () => APIClient) {
   device
     .command('list')
     .option('--json', 'Output the JSON response')
-    .action(async (options) => {
+    .action(async options => {
       const client = getClient();
       const devices = await client.listDevices();
-      if (options.json){
+      if (options.json) {
         console.log(JSON.stringify(devices, null, 2));
-      }else{
+      } else {
         console.log(shortDeviceList(devices));
       }
     });
@@ -70,9 +70,9 @@ export function device(program: Command, getClient: () => APIClient) {
       if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
       if (url == undefined) throw new Error('No device selected');
       const device = await client.getDevice(url);
-      if (options.json){
+      if (options.json) {
         console.log(JSON.stringify(device, null, 2));
-      }else{
+      } else {
         console.log(device);
       }
     });
@@ -91,32 +91,44 @@ export function device(program: Command, getClient: () => APIClient) {
     });
   });
 
-  device.command('update').argument('[device url]').action(async (url?: string) => {
-    const client = getClient();
+  device
+    .command('update')
+    .argument('[device url]')
+    .action(async (url?: string) => {
+      const client = getClient();
 
-    let device = '';
-    for await (const chunk of process.stdin) device += chunk;
+      let device = '';
+      for await (const chunk of process.stdin) device += chunk;
 
-    if (url == undefined) throw new Error('No device selected');
+      if (url == undefined) throw new Error('No device selected');
 
-    const dev = JSON.parse(device);
+      const dev = JSON.parse(device);
 
-    client.updateDevice(url, dev);
-  });
+      client.updateDevice(url, dev);
+    });
 
-  device.command('delete').argument('[device url]').action(async (url?: string) => {
-    const client = getClient();
-    if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
-    if (url == undefined) throw new Error('No device selected');
-    await client.deleteDevice(url);
-  });
+  device
+    .command('delete')
+    .argument('[device url]')
+    .action(async (url?: string) => {
+      const client = getClient();
+      if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
+      if (url == undefined) throw new Error('No device selected');
+      await client.deleteDevice(url);
+    });
 
-  device.command('token').argument('[device url]').action(async (url?: string) => {
-    const client = getClient();
-    if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
-    if (url == undefined) throw new Error("No device selected");
-    const identity = await client.getIdentity();
-    const token = await client.createToken({ user: identity.id, claims: { device_token: true } });
-    console.log(token);
-  })
+  device
+    .command('token')
+    .argument('[device url]')
+    .action(async (url?: string) => {
+      const client = getClient();
+      if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
+      if (url == undefined) throw new Error('No device selected');
+      const identity = await client.getIdentity();
+      const token = await (client as any).createToken({
+        user: identity.id,
+        claims: { device_token: true },
+      });
+      console.log(token);
+    });
 }

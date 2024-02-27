@@ -3,7 +3,7 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source OpenAPI file,
  * and run openapi-codegeneration to regenerate this file.
  */
-import * as _BasicValidation from "./basicValidation.cjs"
+import * as BasicValidation from "./basicValidation.cjs"
 
 /**
  * @internal
@@ -215,3 +215,16 @@ export type AuthMethod<T extends "request"|"response"|"all" = "all"> = T extends
 }
                     : never
                 
+
+export function isUser<T extends "request"|"response"|"all" = "all">(
+    obj: unknown, type: "request" | "response" | "all" | T = "all"
+): obj is User<T> {
+    switch (type) {
+        case "request":
+            return BasicValidation.validateUserRequest(obj)
+        case "response":
+            return BasicValidation.validateUserResponse(obj)
+        default:
+            return BasicValidation.validateUser(obj)
+    }
+}

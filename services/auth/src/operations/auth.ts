@@ -6,6 +6,7 @@ import { config } from '../config.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { TokenModel } from '../database/model.js';
 import { getAuthSignature } from '../generated/signatures.js';
+import { userUrlFromId } from '../user/helper.js';
 
 export const getAuth: getAuthSignature = async req => {
   const tokenId =
@@ -19,7 +20,7 @@ export const getAuth: getAuthSignature = async req => {
       relations: { user: true },
     });
     const jwt = await new SignJWT({
-      sub: token.user.uuid,
+      sub: userUrlFromId(token.user.uuid),
       edgeToken: token.token,
       ipa: req.header('X-Original-Query'),
       admin: token.user.isAdmin,

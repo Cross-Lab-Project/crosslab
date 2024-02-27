@@ -9,3 +9,5 @@ export class RelationModel {
   @PrimaryColumn()
   object!: string;
 }
+
+export const Entities = [RelationModel];

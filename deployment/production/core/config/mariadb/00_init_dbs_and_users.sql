@@ -1,0 +1,22 @@
+CREATE DATABASE IF NOT EXISTS authentication DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS authorization DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS device DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS experiment DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS federation DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS lti DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS authentication@'%';
+CREATE USER IF NOT EXISTS authorization@'%';
+CREATE USER IF NOT EXISTS device@'%';
+CREATE USER IF NOT EXISTS experiment@'%';
+CREATE USER IF NOT EXISTS federation@'%';
+CREATE USER IF NOT EXISTS lti@'%';
+
+GRANT ALL PRIVILEGES ON authentication.* to authentication@'%';
+GRANT ALL PRIVILEGES ON authorization.* to authorization@'%';
+GRANT ALL PRIVILEGES ON device.* to device@'%';
+GRANT ALL PRIVILEGES ON experiment.* to experiment@'%';
+GRANT ALL PRIVILEGES ON federation.* to federation@'%';
+GRANT ALL PRIVILEGES ON lti.* to lti@'%';
+
+FLUSH PRIVILEGES;

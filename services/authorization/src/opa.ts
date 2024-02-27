@@ -2,8 +2,8 @@ import { logger } from '@crosslab/service-common';
 import { spawn } from 'child_process';
 import readline from 'readline';
 
-import { fix_object_without_colon, openfgaOpaData } from './openfga';
-import { CheckTuple } from './types';
+import { fix_object_without_colon, openfgaOpaData } from './openfga.js';
+import { CheckTuple } from './types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let opaProcess: any;
@@ -45,6 +45,20 @@ export async function opa_init() {
   process.on('SIGQUIT', () => {
     opaProcess.kill('SIGQUIT');
     process.exit(0);
+  });
+
+  // wait for opa to be ready
+  await new Promise<void>(resolve => {
+    const interval = setInterval(() => {
+      fetch('http://localhost:3011/')
+        .then(() => {
+          clearInterval(interval);
+          resolve();
+        })
+        .catch(() => {
+          // do nothing
+        });
+    }, 500);
   });
 }
 

@@ -19,7 +19,7 @@ export class UserModel {
   username!: string;
 
   @Column()
-  type!: 'local' | 'tui';
+  type!: string;
 
   @Column()
   isAdmin!: boolean;
@@ -33,9 +33,7 @@ export class UserModel {
   @Column('datetime', { nullable: true })
   lastLogin?: string;
 
-  @OneToMany(() => TokenModel, token => token.user, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => TokenModel, token => token.user)
   tokens!: Promise<TokenModel[]>;
 }
 
@@ -50,7 +48,9 @@ export class TokenModel {
   @Column('simple-json', { nullable: true })
   claims?: object;
 
-  @ManyToOne(() => UserModel, user => user.tokens)
+  @ManyToOne(() => UserModel, user => user.tokens, {
+    onDelete: 'CASCADE',
+  })
   user!: UserModel;
 }
 

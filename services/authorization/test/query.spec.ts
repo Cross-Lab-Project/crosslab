@@ -1,4 +1,4 @@
-import { query, relate } from './helper';
+import { query, relate } from './helper.js';
 
 describe('relations', function () {
   this.beforeAll(async function () {

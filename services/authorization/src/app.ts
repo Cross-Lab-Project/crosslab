@@ -3,10 +3,10 @@ import { errorHandler, logHandling } from '@crosslab/service-common';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 
-import { config } from './config';
-import { opa_check } from './opa';
-import { query_relations, update_relations } from './openfga';
-import { CheckTuple } from './types';
+import { config } from './config.js';
+import { opa_check } from './opa.js';
+import { query_relations, update_relations } from './openfga.js';
+import { CheckTuple } from './types.js';
 
 const app = express();
 logHandling(app);

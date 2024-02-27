@@ -2,6 +2,7 @@ import { ImpossibleOperationError, logger } from '@crosslab/service-common';
 
 import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
+import { ConcreteDeviceModel } from '../../../database/model.js';
 import { postDevicesByDeviceIdSignature } from '../../../generated/signatures.js';
 import { changedCallbacks } from '../../../methods/callbacks.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
@@ -40,12 +41,20 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
       400,
     );
 
-  const concreteDeviceModel = await repositories.concreteDevice.create({
+  let concreteDeviceModel = await repositories.concreteDevice.create({
     ...(await repositories.device.format(instantiableDeviceModel)),
     type: 'device',
   });
 
-  await repositories.device.save(concreteDeviceModel);
+  concreteDeviceModel = (await repositories.device.save(
+    concreteDeviceModel,
+  )) as ConcreteDeviceModel;
+
+  await req.authorization.relate(
+    `user:${req.authorization.user}`,
+    'owner',
+    `device:${deviceUrlFromId(concreteDeviceModel.uuid)}`,
+  );
 
   if (parameters.changedUrl) {
     logger.log(

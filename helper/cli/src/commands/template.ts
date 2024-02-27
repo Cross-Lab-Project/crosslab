@@ -1,6 +1,7 @@
 import { APIClient, ExperimentServiceTypes } from '@cross-lab-project/api-client';
 import chalk from 'chalk';
 import { Command } from 'commander';
+
 import { prompt } from './prompt.js';
 
 function shortTemplateList(
@@ -31,29 +32,42 @@ async function selecteTemplate(templates: ExperimentServiceTypes.TemplateOvervie
 export function template(program: Command, getClient: () => APIClient) {
   const template = program.command('template');
 
-  template.command('list').alias('ls').action(async () => {
-    const client = getClient();
-    const templates = await client.listTemplate();
-    console.log(templates);
-  });
+  template
+    .command('list')
+    .alias('ls')
+    .action(async () => {
+      const client = getClient();
+      const templates = await client.listTemplate();
+      console.log(templates);
+    });
 
   template
-  .command('inspect')
-  .argument('[template url]')
-  .action(async (url?: string) => {
-    const client = getClient();
-    if (url == undefined) url = (await selecteTemplate(await client.listTemplate())).url;
-    if (url == undefined) throw new Error('No template selected');
-    const template = await client.getTemplate(url);
-    console.log(template);
-  });
+    .command('inspect')
+    .argument('[template url]')
+    .option('--json', 'Output the JSON response')
+    .action(async (url: string, options) => {
+      const client = getClient();
+      if (url == undefined)
+        url = (await selecteTemplate(await client.listTemplate())).url;
+      if (url == undefined) throw new Error('No template selected');
+      const template = await client.getTemplate(url);
+      if (options.json) {
+        console.log(JSON.stringify(template, null, 2));
+      } else {
+        console.log(template);
+      }
+    });
 
-  template.command('delete').argument('[template url]').action(async (url?: string) => {
-    const client = getClient();
-    if (url == undefined) url = (await selecteTemplate(await client.listTemplate())).url;
-    if (url == undefined) throw new Error('No template selected');
-    await client.deleteTemplate(url);
-  });
+  template
+    .command('delete')
+    .argument('[template url]')
+    .action(async (url?: string) => {
+      const client = getClient();
+      if (url == undefined)
+        url = (await selecteTemplate(await client.listTemplate())).url;
+      if (url == undefined) throw new Error('No template selected');
+      await client.deleteTemplate(url);
+    });
 
   template.command('create').action(async () => {
     const client = getClient();
@@ -65,16 +79,19 @@ export function template(program: Command, getClient: () => APIClient) {
     client.createTemplate(exp);
   });
 
-  template.command('update').argument('[template url]').action(async (url?: string) => {
-    const client = getClient();
+  template
+    .command('update')
+    .argument('[template url]')
+    .action(async (url?: string) => {
+      const client = getClient();
 
-    let template = '';
-    for await (const chunk of process.stdin) template += chunk;
+      let template = '';
+      for await (const chunk of process.stdin) template += chunk;
 
-    if (url == undefined) throw new Error('No template selected');
+      if (url == undefined) throw new Error('No template selected');
 
-    const exp = JSON.parse(template);
+      const exp = JSON.parse(template);
 
-    client.updateTemplate(url, exp);
-  });
+      client.updateTemplate(url, exp);
+    });
 }

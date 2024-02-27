@@ -47,8 +47,8 @@ export async function init_users() {
 export async function createUser(
   username: string,
   password: string,
-  type: 'local' | 'tui' = 'local',
-  isAdmin: boolean = true,
+  type: string,
+  isAdmin: boolean = false,
 ) {
   const user = ApplicationDataSource.manager.create(UserModel, {
     type,
