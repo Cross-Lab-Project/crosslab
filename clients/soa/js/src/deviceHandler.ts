@@ -22,7 +22,10 @@ import { Service } from './service';
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
   configuration(configuration: { [k: string]: unknown }): void;
-  experimentStatusChanged(status: { status: string; message?: string }): void;
+  experimentStatusChanged(status: {
+    status: 'created' | 'booked' | 'setup' | 'running' | 'failed' | 'closed';
+    message?: string;
+  }): void;
 }
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {

@@ -86,7 +86,7 @@ export function isConfigurationMessage(
 
 export interface ExperimentStatusChangedMessage extends Message {
   messageType: 'experiment-status-changed';
-  status: string;
+  status: 'created' | 'booked' | 'setup' | 'running' | 'failed' | 'closed';
   message?: string;
 }
 
