@@ -74,6 +74,10 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
     sendEvent('configuration', configuration);
   });
 
+  deviceHandler.on('experimentStatusChanged', status => {
+    sendEvent('experimentStatusChanged', status);
+  });
+
   await deviceHandler.connect({
     endpoint: options.baseUrl.replace('http', 'ws') + '/devices/websocket',
     id: options.deviceUrl,

@@ -31,7 +31,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
     logger.log('info', 'postDevicesByDeviceIdSignaling called');
 
     await req.authorization.check_authorization_or_fail(
-      'signal',
+      'message',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );
 

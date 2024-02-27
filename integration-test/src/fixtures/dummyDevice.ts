@@ -13,6 +13,7 @@ export interface DummyDeviceEvents {
   websocketConnected(): void;
   gpio(event: { signal: string; value: string }): void;
   configuration(configuration: { [k: string]: unknown }): void;
+  experimentStatusChanged(status: { status: string; message: string }): void;
 }
 
 function createPythonEnvironment() {
@@ -139,6 +140,9 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
           }
           if (event == `[configuration]`) {
             this.emit('configuration', JSON.parse(param));
+          }
+          if (event == `[experimentStatusChanged]`) {
+            this.emit('experimentStatusChanged', JSON.parse(param));
           }
           if (event == `[ready]`) {
             this.ready = true;

@@ -102,6 +102,11 @@ export async function createPeerconnectionsExperiment(
 
   await repositories.experiment.save(experimentModel);
 
+  sendStatusUpdateMessages(
+    experimentModel,
+    'The peerconnections for the experiment have been created.',
+  );
+
   logger.log('info', 'Successfully created peerconnections for experiment', {
     data: { experimentUrl },
   });
