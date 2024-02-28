@@ -1,17 +1,16 @@
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
+import { config } from '../config';
 import {
   deleteBookingByIDLockSignature,
   postBookingCallbackByIDSignature,
   putBookingByIDLock200ResponseType,
   putBookingByIDLockSignature,
-} from './generated/signatures';
-import { dispatchCallback, handleCallback } from './internal';
+} from '../generated/signatures';
+import { dispatchCallback, handleCallback } from '../internal';
 
-export const putBookingByIDLock: putBookingByIDLockSignature = async (
+export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
 
@@ -97,9 +96,8 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
   }
 };
 
-export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
+export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
 
@@ -155,9 +153,8 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
   }
 };
 
-export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
+export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (request,
   parameters,
-  user,
 ) => {
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();

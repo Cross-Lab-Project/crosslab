@@ -63,7 +63,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                                 throw Error("Booking must be local for device update");
                             }
 
-                            let device = await api.getDevice(rows[0].bookeddevice, {execute_for: bookingRow[0].user});
+                            let device = await api.getDevice(rows[0].bookeddevice); // TODO: execute_for
                             if (device.type == "group") {
                                 throw Error("Booked device " + rows[0].bookeddevice + " is group");
                             }
@@ -89,7 +89,7 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                                 throw Error("Booking must be remote for device update");
                             }
 
-                            let getReturn = await api.getBooking(rows[0].remotereference, {execute_for: bookingRow[0].user});
+                            let getReturn = await api.getBooking(rows[0].remotereference); // TODO: execute_for
                             if (getReturn.Booking.Status == "cancelled" || getReturn.Booking.Status == "rejected") {
                                 available = false;
                             }
