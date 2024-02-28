@@ -4,7 +4,7 @@
   "description": "Part of booking service. Responsible for low level device reservation.",
   "main": "app/index.js",
   "scripts": {
-    "test": "npm run build && npx nyc --include=\"app/mainLoop.js\" --include=\"app/messageDefinition.js\" mocha --require mocha-suppress-logs --exit app/*_test.js",
+    "test": "npm run build && npx c8 --include=\"app/mainLoop.js\" --include=\"app/messageDefinition.js\" mocha --require mocha-suppress-logs --exit app/*_test.js",
     "build": "npx tsc",
     "start": "npm run build && node app/index.js",
     "format": "prettier . --write",
@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",
+    "c8": "^9.1.0",
     "mocha": "^10.0.0",
     "mocha-suppress-logs": "^0.3.1",
-    "nyc": "^15.1.0",
     "prettier": "^3.0.3"
   }
 }
