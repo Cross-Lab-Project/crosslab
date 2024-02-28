@@ -29,6 +29,7 @@ export async function instantiateDevicesExperiment(
   if (experimentModel.status !== 'booking-locked')
     throw new InvalidStateError(
       `Expected experiment to have status 'booking-locked', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'booking-locked'))

@@ -7,7 +7,10 @@ import {
 
 import { repositories } from '../../../../database/dataSource.js';
 import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures.js';
-import { isConfigurationMessage } from '../../../../generated/types.js';
+import {
+  isConfigurationMessage,
+  isExperimentStatusChangedMessage,
+} from '../../../../generated/types.js';
 import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { connectedDevices } from '../../websocket/handling/index.js';
@@ -28,7 +31,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
     logger.log('info', 'postDevicesByDeviceIdSignaling called');
 
     await req.authorization.check_authorization_or_fail(
-      'signal',
+      'message',
       `device:${deviceUrlFromId(parameters.device_id)}`,
     );
 
@@ -45,7 +48,7 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
       );
 
     // Retrieve peerconnection and make sure the device is taking part in it
-    if (!isConfigurationMessage(body)) {
+    if (!isConfigurationMessage(body) && !isExperimentStatusChangedMessage(body)) {
       const peerconnection = await getPeerconnection({
         url: body.connectionUrl,
       });

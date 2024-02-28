@@ -21,6 +21,7 @@ export async function lockBookingExperiment(
   if (experimentModel.status !== 'booked')
     throw new InvalidStateError(
       `Expected experiment to have status 'booked', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'booked'))

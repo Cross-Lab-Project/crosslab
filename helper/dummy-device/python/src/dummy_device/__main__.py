@@ -154,7 +154,15 @@ async def main_async():
     )
     deviceHandler.on(
         "configuration",
-        lambda configuration: print("[configuration] " + json.dumps(configuration)),
+        lambda configuration: print(
+            "[configuration] " + json.dumps(configuration), flush=True
+        ),
+    )
+    deviceHandler.on(
+        "experimentStatusChanged",
+        lambda status: print(
+            "[experimentStatusChanged] " + json.dumps(status), flush=True
+        ),
     )
 
     async with APIClient(url) as client:

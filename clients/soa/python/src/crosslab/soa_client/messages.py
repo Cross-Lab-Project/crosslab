@@ -1,4 +1,4 @@
-from typing import List, Literal, TypedDict
+from typing import List, Literal, TypedDict, Optional
 
 
 class Message(TypedDict):
@@ -57,3 +57,9 @@ class ConnectionStateChangedMessage(TypedDict):
 class ConfigurationMessage(TypedDict):
     messageType: Literal["configuration"]
     configuration: dict
+
+
+class ExperimentStatusChangedMessage(TypedDict):
+    messageType: Literal["experiment-status-changed"]
+    status: Literal["created", "booked", "setup", "running", "failed", "closed"]
+    message: Optional[str]

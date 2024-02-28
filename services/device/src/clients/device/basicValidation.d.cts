@@ -118,6 +118,10 @@ export declare function validateConfigurationMessage<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConfigurationMessage<T>;
 
+export declare function validateExperimentStatusChangedMessage<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ExperimentStatusChangedMessage<T>;
+
 export declare function validateConnectionStatus<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStatus<T>;
@@ -493,6 +497,14 @@ export declare function validateConfigurationMessageRequest<
 export declare function validateConfigurationMessageResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConfigurationMessageResponse<T>;
+
+export declare function validateExperimentStatusChangedMessageRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ExperimentStatusChangedMessageRequest<T>;
+
+export declare function validateExperimentStatusChangedMessageResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): ExperimentStatusChangedMessageResponse<T>;
 
 export declare function validateConnectionStatusRequest<
   T extends 'request' | 'response' | 'all',

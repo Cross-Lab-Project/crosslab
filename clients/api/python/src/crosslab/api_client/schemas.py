@@ -1597,7 +1597,19 @@ class SendSignalingMessageRequestAlt4(TypedDict):
     configuration: SendSignalingMessageRequestAlt4Configuration
 
 
-SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4]
+class SendSignalingMessageRequestAlt5(TypedDict):
+    """
+    Properties:
+    - messageType
+    - status
+    - message
+    """
+    messageType: Literal["experiment-status-changed"]
+    status: str
+    message: NotRequired[str]
+
+
+SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4, SendSignalingMessageRequestAlt5]
 
 
 SendSignalingMessageResponse: TypeAlias = None
