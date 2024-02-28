@@ -4,7 +4,7 @@
   "description": "Part of booking service. Shows schedule of devices - horizontal scaleable.",
   "main": "app/index.js",
   "scripts": {
-    "test": "npm run build && env-cmd -e development nyc --include=\"app/operations/index.js\" --include=\"app/timetable.js\" mocha app/*_test.js app/operations/*_test.js",
+    "test": "npm run build && env-cmd -e development c8 --include=\"app/operations/index.js\" --include=\"app/timetable.js\" mocha app/*_test.js app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:compile": "tsc",
     "build": "npm run build:generate && npm run build:compile",
@@ -33,9 +33,9 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",
+    "c8": "^9.1.0",
     "env-cmd": "^10.1.0",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
     "prettier": "^3.0.3"
   }
 }
