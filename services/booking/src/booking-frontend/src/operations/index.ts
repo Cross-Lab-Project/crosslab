@@ -3,7 +3,7 @@ import {
     Timeslot,
     Booking,
     Device
-} from "./generated/types"
+} from "../generated/types"
 import {
     postBookingSignature,
     getBookingByIDSignature,
@@ -12,7 +12,7 @@ import {
     deleteBookingByIDDestroySignature,
     postBookingRequestBodyType,
     getBookingByID200ResponseType
-} from "./generated/signatures"
+} from "../generated/signatures"
 
 import * as mysql from 'mysql2/promise';
 import * as amqplib from 'amqplib';
@@ -20,15 +20,9 @@ import dayjs from "dayjs";
 
 import { BelongsToUs } from "@crosslab/booking-service-common"
 import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
-import { config } from "./config"
+import { config } from "../config"
 
-export const postBooking: postBookingSignature = async (body, user) => {
-    if (user.JWT === undefined) {
-        return {
-            status: 401,
-        }
-    }
-
+export const postBooking: postBookingSignature = async (request, body) => {
     let connection = await amqplib.connect(config.AmqpUrl);
     let channel = await connection.createChannel();
 
@@ -47,7 +41,7 @@ export const postBooking: postBookingSignature = async (body, user) => {
 
     try {
         // Create booking
-        let [rows, fields]: [any, any] = await db.execute("INSERT INTO booking (`start`, `end`, `type`, `status`, `user`) VALUES (?,?,?,?,?)", [new Date(body.Time.Start), new Date(body.Time.End), body.Time, "pending", user]);
+        let [rows, fields]: [any, any] = await db.execute("INSERT INTO booking (`start`, `end`, `type`, `status`, `user`) VALUES (?,?,?,?,?)", [new Date(body.Time.Start), new Date(body.Time.End), body.Time, "pending", request.authorization.user]);
         let bookingID: bigint = BigInt(rows.insertId);
 
         for (let i = 0; i < body.Devices.length; i++) {
@@ -90,7 +84,7 @@ export const postBooking: postBookingSignature = async (body, user) => {
     }
 }
 
-export const getBookingByID: getBookingByIDSignature = async (parameters, user) => {
+export const getBookingByID: getBookingByIDSignature = async (request, parameters) => {
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
     await db.beginTransaction();
@@ -112,7 +106,7 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
         body.Booking.Time.End = rows[0].end;
         body.Booking.Type = rows[0].type;
         body.Booking.Status = rows[0].status;
-        body.Booking.You = rows[0].user == user;
+        body.Booking.You = rows[0].user == request.authorization.user;
         body.Message = rows[0].message;
         if (body.Booking.Status === "active" || body.Booking.Status === "active-pending" || body.Booking.Status == "active-rejected") {
             body.Locked = true;
@@ -147,7 +141,7 @@ export const getBookingByID: getBookingByIDSignature = async (parameters, user) 
     }
 }
 
-export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, user) => {
+export const deleteBookingByID: deleteBookingByIDSignature = async (request, parameters) => {
     let requestID: bigint = BigInt(parameters.ID);
     let success: boolean = false;
 
@@ -186,7 +180,7 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, 
                 break;
         }
 
-        if (user.JWT === undefined || rows[0].user != user.JWT.username) {
+        if (rows[0].user != request.authorization.user) {
             return {
                 status: 401,
             }
@@ -235,7 +229,7 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (parameters, 
     }
 }
 
-export const patchBookingByID: patchBookingByIDSignature = async (parameters, body, user) => {
+export const patchBookingByID: patchBookingByIDSignature = async (request, parameters, body) => {
     let requestID: bigint = BigInt(parameters.ID);
     let success: boolean = false;
 
@@ -257,7 +251,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (parameters, bo
         } else if (typeof(body.Devices) !== undefined) {
             // TODO: Check for scopes 'booking' and 'booking:use'
             let Devices: Device[] = body.Devices as Device[];
-            if (user.JWT === undefined || rows[0].user != user.JWT.username) {
+            if (request.authorization.user === undefined || rows[0].user != request.authorization.user) {
                 return {
                     status: 401,
                 }
@@ -357,10 +351,10 @@ export const patchBookingByID: patchBookingByIDSignature = async (parameters, bo
     }
 }
 
-export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (parameters, user) => {
+export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (request, parameters) => {
     // add your implementation here
-    if(user.JWT !== undefined && user.JWT.scopes.includes("booking:destroy") && BelongsToUs(new URL(user.JWT.url))) {
-
+    if(true) { // TODO: Check Permission
+        // TODO
     } else {
         return {
             status: 401, // TODO: Use 403
