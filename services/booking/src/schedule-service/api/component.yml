@@ -25,10 +25,6 @@
                 Combined:
                   type: boolean
                   description: If true, show only one timetable per device instead of one for all available physical devices.
-                Execute_for:
-                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
-                  type: string
-                  format: url
                 onlyOwn:
                   type: boolean
                   description: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.

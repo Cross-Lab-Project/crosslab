@@ -30,10 +30,6 @@
                   type: string
                   enum:
                    - normal
-                Execute_for:
-                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
-                  type: string
-                  format: url
       responses:
         '200':
           description: The booking was accepted. The booking status will display whether the booking of all devices was successful.
@@ -96,10 +92,6 @@
                      description: List of devices which should be added.
                      items:
                       $ref: '#/components/schemas/Device'
-                    Execute_for:
-                      description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
-                      type: string
-                      format: url
               - type: object
                 description: Use this request for adding callbacks.
                 properties:
@@ -159,17 +151,6 @@
       tags:
         - booking-frontend
       summary: Cancels a booking, as long as the booking was originally done by you.
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Execute_for:
-                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
-                  type: string
-                  format: url
       responses:
         '200':
           description: >-
@@ -213,17 +194,6 @@
       - booking-frontend
       summary: >-
         Returns whether a list of devices is currently booked for a user.
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                Execute_for:
-                  description: Do the booking for the user in this field instead of the caller. For this to be accepted, caller must have the scope 'internal:execute_for'.
-                  type: string
-                  format: url
       responses:
         '200':
           description: Returns the current booking.

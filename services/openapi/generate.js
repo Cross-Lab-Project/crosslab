@@ -5,6 +5,7 @@ const api_documents = [
   '../device/dist/openapi.json',
   '../experiment/dist/openapi.json',
   '../federation/dist/openapi.json',
+  '../booking/dist/openapi.json',
 ];
 
 // Make sure the ./gen directory exists

@@ -112,22 +112,22 @@
           description: ID of Booking
       tags:
       - booking-backend
-    summary: >-
-      Callback used for updating device info / booking info.
-    responses:
-      '200':
-        description: Update was processed.
-      '404':
-        description: Callback is no longer needed.
-      '500':
-        description: >-
-          Request could not be answered. An error string containing the reason
-          will be returned.
-        content:
-          application/json:
-            schema:
-              type: string
-              description: Error description.
-      '503':
-        description: >-
-          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+      summary: >-
+        Callback used for updating device info / booking info.
+      responses:
+        '200':
+          description: Update was processed.
+        '404':
+          description: Callback is no longer needed.
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
