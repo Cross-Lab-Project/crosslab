@@ -9,10 +9,17 @@ export function user(program: Command, getClient: () => APIClient) {
   user
     .command('list')
     .alias('ls')
-    .action(async () => {
+    .option('--json', 'Output the JSON response')
+    .action(async options => {
       const client = getClient();
 
-      console.log(await client.listUsers());
+      const users = await client.listUsers();
+
+      if (options.json) {
+        console.log(JSON.stringify(users, null, 2));
+      } else {
+        console.log(users);
+      }
     });
 
   user
@@ -29,16 +36,20 @@ export function user(program: Command, getClient: () => APIClient) {
       console.log(await client.getUser(url));
     });
 
-  user.command('create').action(async options => {
-    const client = getClient();
-    let username: string = options.username;
-    let password: string = options.password;
+  user
+    .command('create')
+    .option('-u, --username <username>', 'Username to use for authentication')
+    .option('-p, --password <password>', 'Password to use for authentication')
+    .action(async options => {
+      const client = getClient();
+      let username: string = options.username;
+      let password: string = options.password;
 
-    if (username == undefined) username = await prompt('Username: ');
-    if (password == undefined) password = await prompt('Password: ', true);
+      if (username == undefined) username = await prompt('Username: ');
+      if (password == undefined) password = await prompt('Password: ', true);
 
-    client.createUser({ username, password, roles: [{ name: 'user' }] });
-  });
+      client.createUser({ username, password });
+    });
 
   user
     .command('delete')
