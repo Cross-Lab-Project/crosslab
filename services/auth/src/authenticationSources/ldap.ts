@@ -16,7 +16,7 @@ export class LdapAuthenticationSource implements AuthenticationSource {
   ): Promise<
     { success: true; needsProvisioning: boolean; user: UserModel } | { success: false }
   > {
-    const canBind = this.ldap_bind(username, password);
+    const canBind = await this.ldap_bind(username, password);
     if (!canBind) {
       return { success: false };
     }
