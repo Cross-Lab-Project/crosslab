@@ -51,7 +51,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   devices: DummyDevice[] = [];
   deviceMetas: DeviceServiceTypes.Device<'request'>[] = [];
   apiDevices: (DeviceServiceTypes.Device<'response'> & { url: string })[] = [];
-  events: { gpio: Parameters<DummyDeviceEvents['gpio']>[0][] }[] = [];
+  events: {
+    gpio: Parameters<DummyDeviceEvents['gpio']>[0][];
+    file: Parameters<DummyDeviceEvents['file']>[0][];
+  }[] = [];
   experimentUrl?: string;
 
   _state: State = State.None;
@@ -59,12 +62,16 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
   async eventCount(eventCount: number) {
     await new Promise<void>(resolve => {
       const callback = () => {
-        if (this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount) {
+        if (
+          this.events.reduce((p, e) => p + e.gpio.length + e.file.length, 0) >= eventCount
+        ) {
           resolve();
           this.off('eventsChanged', callback);
         }
       };
-      if (this.events.reduce((p, e) => p + e.gpio.length, 0) >= eventCount) {
+      if (
+        this.events.reduce((p, e) => p + e.gpio.length + e.file.length, 0) >= eventCount
+      ) {
         resolve();
       } else {
         this.on('eventsChanged', callback);
@@ -103,9 +110,12 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         promiseList.push(
           new Promise<void>(resolve => device.once('websocketConnected', resolve)),
         );
-      this.events.push({ gpio: [] });
+      this.events.push({ gpio: [], file: [] });
       device.on('gpio', event => {
         this.events[idx].gpio.push(event) && this.emit('eventsChanged');
+      });
+      device.on('file', event => {
+        this.events[idx].file.push(event) && this.emit('eventsChanged');
       });
       const apiDevice = this.apiDevices[idx];
       if (apiDevice.type === 'device') device.start(client, apiDevice.url);
@@ -178,7 +188,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           this.devices[idx].once('websocketConnected', resolve),
         ),
       );
-      this.events.push({ gpio: [] });
+      this.events.push({ gpio: [], file: [] });
       this.devices[idx].start(new APIClient(client.url, deviceToken), instanceUrl);
     }
 

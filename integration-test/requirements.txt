@@ -1,5 +1,6 @@
 -e ../clients/api/python
 -e ../clients/soa/python
 -e ../clients/soa_services/electricalConnection/python
+-e ../clients/soa_services/file/python
 -e ../helper/dummy-device/python
 debugpy

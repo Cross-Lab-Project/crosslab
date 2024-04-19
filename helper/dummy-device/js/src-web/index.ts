@@ -4,6 +4,10 @@ import {
   ElectricalConnectionService,
   GPIO,
 } from '@cross-lab-project/soa-service-electrical';
+import {
+  FileService__Consumer,
+  FileService__Producer,
+} from '@cross-lab-project/soa-service-file';
 
 const sendEvent = (eventName: string, data?: unknown) => {
   if (data === undefined) {
@@ -15,6 +19,14 @@ const sendEvent = (eventName: string, data?: unknown) => {
 
 const gpios = new Map<string, GPIO.GPIOInterface>();
 const default_signal_state = new Map<string, GPIO.GPIOState>();
+
+let file_consumer: FileService__Consumer;
+let file_producer: FileService__Producer;
+
+const dummyFile = new Uint8Array(262140);
+for (let i = 0; i < 262140; i++) {
+  dummyFile[i] = i % 256;
+}
 
 async function app(options: { baseUrl: string; authToken: string; deviceUrl: string }) {
   const client = new APIClient(options.baseUrl);
@@ -59,6 +71,23 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
   });
   electrical.addInterface(gpio);
   deviceHandler.addService(electrical);
+
+  file_producer = new FileService__Producer('file_producer');
+  deviceHandler.addService(file_producer);
+
+  file_consumer = new FileService__Consumer('file_consumer');
+  file_consumer.on('file', e => {
+    if (e.file.length !== dummyFile.length) {
+      throw new Error('File length is unexpected');
+    }
+    for (let i = 0; i < e.file.length; i++) {
+      if (e.file[i] !== dummyFile[i]) {
+        throw new Error('File content does not match');
+      }
+    }
+    sendEvent('file');
+  });
+  deviceHandler.addService(file_consumer);
 
   deviceHandler.on('connectionsChanged', () => {
     sendEvent(
@@ -110,6 +139,9 @@ function event(eventName: string, data?: any) {
     } else {
       default_signal_state.set(data.signal, state);
     }
+  }
+  if (eventName === 'file') {
+    file_producer.sendFile('dummyfile', dummyFile);
   }
 }
 

@@ -97,6 +97,12 @@ async function main() {
   Runtime.consoleAPICalled(result => {
     console.log(...result.args.map(arg => arg.value ?? previewTransform(arg.preview)));
   });
+  Runtime.exceptionThrown(async event => {
+    console.log(event.exceptionDetails);
+    await protocol.close();
+    chromium.kill('SIGKILL');
+    process.exit();
+  });
 
   await new Promise(resolve => setTimeout(resolve, 500));
   debugging && (await Debugger.pause());
