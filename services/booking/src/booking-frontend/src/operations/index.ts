@@ -93,7 +93,6 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
 
     try {
         let body: getBookingByID200ResponseType["body"] = { Booking: { ID: parameters.ID, Time: { Start: "", End: "" }, Devices: [], Type: "normal", You: false, External: false, Status: "pending", Message: "" }, Locked: false }
-        // TODO Remove External
 
         // Read basic information
         let [rows, fields]: [any, any] = await db.execute("SELECT `start`, `end`, `type`, `status`, `user`, `message` FROM booking WHERE id=?", [requestID]);
@@ -249,7 +248,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
             // this is adding a callback
             await db.execute("INSERT INTO bookingcallbacks (`booking`, `url`) VALUES (?,?)", [requestID, body.Callback]);
         } else if (typeof(body.Devices) !== undefined) {
-            // TODO: Check for scopes 'booking' and 'booking:use'
+            // TODO: auth Check for scopes 'booking' and 'booking:use'
             let Devices: Device[] = body.Devices as Device[];
             if (request.authorization.user === undefined || rows[0].user != request.authorization.user) {
                 return {
