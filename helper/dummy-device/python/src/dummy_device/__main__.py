@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import logging
 import os
 import sys
 from functools import partial
@@ -18,10 +19,13 @@ from crosslab.soa_services.electrical.signal_interfaces.gpio import (
     GPIOInterface,
     GPIOSignalChangeEventData,
 )
-from crosslab.soa_services.file import (  # FileService__Producer,
+from crosslab.soa_services.file import (
     FileService__Consumer,
+    FileService__Producer,
     FileServiceEvent,
 )
+
+logging.basicConfig(level=logging.DEBUG)
 
 dummyFile = bytes([i % 256 for i in range(262140)])
 
@@ -38,7 +42,7 @@ signal_names = [
 
 interfaces: Dict[str, GPIOInterface] = dict()
 default_signal_state: Dict[str, State] = dict()
-# file_producer: FileService__Producer
+file_producer: FileService__Producer
 
 
 def signal_changed(name: str, data: GPIOSignalChangeEventData):
@@ -104,8 +108,8 @@ async def stdin_reader():
                     interfaces[data["signal"]].changeDriver("unknown")
             else:
                 default_signal_state[data["signal"]] = data["value"]
-        # elif line.startswith("[file]"):
-        #     await file_producer.sendFile("dummyFile", dummyFile)
+        elif line.startswith("[file]"):
+            await file_producer.sendFile("dummyFile", dummyFile)
         print("line", line)
 
 
@@ -156,8 +160,8 @@ async def main_async():
     signal_service.on("newInterface", newInterface)
     deviceHandler.add_service(signal_service)
 
-    # file_producer = FileService__Producer("file_producer")
-    # deviceHandler.add_service(file_producer)
+    file_producer = FileService__Producer("file_producer")
+    deviceHandler.add_service(file_producer)
 
     file_consumer = FileService__Consumer("file_consumer")
     file_consumer.on("file", file)

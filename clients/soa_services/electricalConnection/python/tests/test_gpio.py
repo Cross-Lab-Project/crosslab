@@ -1,3 +1,4 @@
+from asyncio import sleep
 from typing import Any
 
 import pytest
@@ -14,7 +15,10 @@ from crosslab.soa_services.electrical.signal_interfaces.gpio import (
 
 def test_gpio_meta():
     gci = ConstractableGPIOInterface(["S1", "S2"])
-    assert gci.getDescription() == {"availableSignals": {"gpio": ["S1", "S2"]}, "direction": "inout"}
+    assert gci.getDescription() == {
+        "availableSignals": {"gpio": ["S1", "S2"]},
+        "direction": "inout",
+    }
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
@@ -38,7 +42,8 @@ def test_gpio_interface_creation(tiebreaker):
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
-def test_gpio_changeDriver(tiebreaker):
+@pytest.mark.asyncio
+async def test_gpio_changeDriver(tiebreaker):
     con = ConnectionStub(tiebreaker)
     ecs = ElectricalConnectionService("test")
     gci = ConstractableGPIOInterface(["S1", "S2"])
@@ -56,6 +61,8 @@ def test_gpio_changeDriver(tiebreaker):
 
     assert isinstance(interface, GPIOInterface)
     interface.changeDriver("highZ")
+
+    await sleep(0.01)
 
     assert con.messages == {
         "data": [

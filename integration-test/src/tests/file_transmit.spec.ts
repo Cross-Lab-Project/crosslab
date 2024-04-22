@@ -29,7 +29,7 @@ const gpioExperimentConfiguration: Omit<
   ],
 };
 
-for (const client1Type of ['js']) {
+for (const client1Type of clientTypes) {
   for (const client2Type of clientTypes) {
     describe(`${client1Type} Client to ${client2Type} Client File tests `, async function () {
       beforeEach(function () {

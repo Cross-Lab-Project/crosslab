@@ -4,5 +4,6 @@
 -e ./
 tox
 pytest
+pytest-asyncio
 coverage
 mypy

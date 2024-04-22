@@ -45,7 +45,7 @@ async function main() {
       '--disable-gpu',
       '--disable-dev-shm-usage',
       '--enable-logging=stderr',
-      '--v=0',
+      '--vmodule=*/webrtc/*=2',
       '--remote-debugging-port=' + chromePort,
       entrypoint,
     ],

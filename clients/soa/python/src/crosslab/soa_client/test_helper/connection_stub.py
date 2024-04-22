@@ -17,6 +17,7 @@ class ConnectionStub(Connection):
         self.channels[id] = channel
         if isinstance(channel, DataChannel):
             channel.on("upstreamData", lambda data: self.messages[id].append(data))
+            channel._ready = True
             channel.emit("open")
 
     def receive(self, serviceConfig, id: str, channel):
@@ -25,6 +26,7 @@ class ConnectionStub(Connection):
         self.channels[id] = channel
         if isinstance(channel, DataChannel):
             channel.on("upstreamData", lambda data: self.messages[id].append(data))
+            channel._ready = True
             channel.emit("open")
 
     def handleSignalingMessage(self, message):
