@@ -17,8 +17,12 @@ async function checkDevices(
   await Promise.all(
     experimentModel.devices.map(async device => {
       const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
-      const resolvedDevice = await clients.device.getDevice(deviceUrl);
-      connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
+      try {
+        const resolvedDevice = await clients.device.getDevice(deviceUrl);
+        connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
+      } catch {
+        connectedMap.set(deviceUrl, false);
+      }
     }),
   );
 
