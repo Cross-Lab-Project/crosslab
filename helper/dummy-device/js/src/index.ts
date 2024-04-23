@@ -45,7 +45,7 @@ async function main() {
       '--disable-gpu',
       '--disable-dev-shm-usage',
       '--enable-logging=stderr',
-      '--v=0',
+      '--vmodule=*/webrtc/*=2',
       '--remote-debugging-port=' + chromePort,
       entrypoint,
     ],
@@ -96,6 +96,12 @@ async function main() {
 
   Runtime.consoleAPICalled(result => {
     console.log(...result.args.map(arg => arg.value ?? previewTransform(arg.preview)));
+  });
+  Runtime.exceptionThrown(async event => {
+    console.log(event.exceptionDetails);
+    await protocol.close();
+    chromium.kill('SIGKILL');
+    process.exit();
   });
 
   await new Promise(resolve => setTimeout(resolve, 500));

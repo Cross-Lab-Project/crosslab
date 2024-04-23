@@ -1,3 +1,5 @@
+import asyncio
+from asyncio import sleep
 from typing import Any
 
 import pytest
@@ -10,15 +12,20 @@ from crosslab.soa_services.electrical.signal_interfaces.gpio import (
     ConstractableGPIOInterface,
     GPIOInterface,
 )
+from tests.helper import running_tasks
 
 
 def test_gpio_meta():
     gci = ConstractableGPIOInterface(["S1", "S2"])
-    assert gci.getDescription() == {"availableSignals": {"gpio": ["S1", "S2"]}, "direction": "inout"}
+    assert gci.getDescription() == {
+        "availableSignals": {"gpio": ["S1", "S2"]},
+        "direction": "inout",
+    }
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
-def test_gpio_interface_creation(tiebreaker):
+@pytest.mark.asyncio
+async def test_gpio_interface_creation(tiebreaker):
     con = ConnectionStub(tiebreaker)
     ecs = ElectricalConnectionService("test")
     gci = ConstractableGPIOInterface(["S1", "S2"])
@@ -35,10 +42,12 @@ def test_gpio_interface_creation(tiebreaker):
     ecs.on("newInterface", newInterface)
 
     ecs.setupConnection(con, serviceConfig)
+    await asyncio.wait(running_tasks())
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
-def test_gpio_changeDriver(tiebreaker):
+@pytest.mark.asyncio
+async def test_gpio_changeDriver(tiebreaker):
     con = ConnectionStub(tiebreaker)
     ecs = ElectricalConnectionService("test")
     gci = ConstractableGPIOInterface(["S1", "S2"])
@@ -57,6 +66,8 @@ def test_gpio_changeDriver(tiebreaker):
     assert isinstance(interface, GPIOInterface)
     interface.changeDriver("highZ")
 
+    await asyncio.wait(running_tasks())
+
     assert con.messages == {
         "data": [
             '{"busId": "0", "data": {"driver": "default", "state": "unknown"}}',
@@ -66,7 +77,8 @@ def test_gpio_changeDriver(tiebreaker):
 
 
 @pytest.mark.parametrize("tiebreaker", [True, False])
-def test_gpio_signalChange(tiebreaker):
+@pytest.mark.asyncio
+async def test_gpio_signalChange(tiebreaker):
     con = ConnectionStub(tiebreaker)
     ecs = ElectricalConnectionService("test")
     gci = ConstractableGPIOInterface(["S1", "S2"])
@@ -84,6 +96,7 @@ def test_gpio_signalChange(tiebreaker):
         "data", '{"busId": "0", "data": {"driver": "default", "state": "weakH"}}'
     )
     assert signalChanges == ["weakH"]
+    await asyncio.wait(running_tasks())
 
 
 def test_gpip_signal_evaluation():
@@ -132,4 +145,3 @@ def test_gpip_signal_evaluation():
     gpio.driverStates = {"S1": "weakH", "S2": "unknown"}
     gpio.evaluateSignalState()
     assert gpio.signalState == "unknown"
-    pass

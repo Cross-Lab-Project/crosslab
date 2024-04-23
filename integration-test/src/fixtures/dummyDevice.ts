@@ -14,6 +14,7 @@ export interface DummyDeviceEvents {
   gpio(event: { signal: string; value: string }): void;
   configuration(configuration: { [k: string]: unknown }): void;
   experimentStatusChanged(status: { status: string; message: string }): void;
+  file(event: Record<string, never>): void;
 }
 
 function createPythonEnvironment() {
@@ -40,6 +41,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
   private debugPrint?: string;
   private process: ChildProcessWithoutNullStreams | undefined;
   private ready = false;
+  private exitWithoutError = false;
 
   public url = '';
   log_file: string;
@@ -111,6 +113,12 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
       console.log(this.debugPrint);
     }
 
+    this.process.on('exit', code => {
+      if (!this.exitWithoutError) {
+        throw Error(`Device exited with code ${code}`);
+      }
+    });
+
     this.process.stderr.on('data', data => {
       this.context.log(this.log_file, data.toString(), 'err');
     });
@@ -138,6 +146,9 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
           if (event == `[gpio]`) {
             this.emit('gpio', JSON.parse(param));
           }
+          if (event == `[file]`) {
+            this.emit('file', {});
+          }
           if (event == `[configuration]`) {
             this.emit('configuration', JSON.parse(param));
           }
@@ -158,6 +169,7 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
 
   public async stop() {
     assert(this.process !== undefined, 'Device not started');
+    this.exitWithoutError = true;
     this.process.kill('SIGINT');
   }
 

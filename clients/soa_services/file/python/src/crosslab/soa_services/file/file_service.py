@@ -3,9 +3,8 @@ from typing import Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from pyee.asyncio import AsyncIOEventEmitter
-
 from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
+from pyee.asyncio import AsyncIOEventEmitter
 
 
 class FileService__Producer(Service):
@@ -34,8 +33,14 @@ class FileService__Producer(Service):
         pass
 
     async def sendFile(self, file_type: str, content: bytes):
+        await self.channel.ready()
         self.channel.send(json.dumps({"fileType": file_type, "length": len(content)}))
-        self.channel.send(content)
+        # fragment to 8kb chunks
+        chunkSize = 8192
+        for i in range(0, len(content), chunkSize):
+            chunk = bytes(content[i : i + chunkSize])
+            print(len(chunk))
+            self.channel.send(chunk)
 
 
 class FileService__Consumer(Service, AsyncIOEventEmitter):
@@ -69,6 +74,16 @@ class FileService__Consumer(Service, AsyncIOEventEmitter):
         if isinstance(data, str):
             header = json.loads(data)
             self.file_type = header["fileType"]
+            self.file_length = header["length"]
+            self.dataRead = 0
+            self.dataBuffer = b""
         elif self.file_type is not None:
-            event: FileServiceEvent = {"file_type": self.file_type, "content": data}
-            self.emit("file", event)
+            self.dataBuffer += data
+            self.dataRead += len(data)
+            if self.dataRead == self.file_length:
+                event: FileServiceEvent = {
+                    "file_type": self.file_type,
+                    "content": self.dataBuffer,
+                }
+                self.emit("file", event)
+                self.file_type = None

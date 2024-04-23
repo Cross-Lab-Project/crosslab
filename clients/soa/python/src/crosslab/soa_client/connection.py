@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Literal, Optional, Union
 
@@ -30,6 +31,7 @@ class MediaChannel(Channel, AsyncIOEventEmitter):
 
 class DataChannel(Channel, AsyncIOEventEmitter):
     channel_type = "DataChannel"
+    _ready = False
 
     def send(self, data: Union[bytes, str]):
         self.emit("upstreamData", data)
@@ -37,7 +39,15 @@ class DataChannel(Channel, AsyncIOEventEmitter):
     def downstreamData(self, data: Union[bytes, str]):
         self.emit("data", data)
 
+    async def ready(self):
+        if self._ready:
+            return
+        _future = asyncio.get_running_loop().create_future()
+        self.once("open", lambda: _future.set_result(None))
+        await _future
+
     async def opened(self):
+        self._ready = True
         self.emit("open")
 
     def close(self):

@@ -4,8 +4,6 @@ from typing import Callable, Dict, Set
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from pyee.asyncio import AsyncIOEventEmitter
-
 from crosslab.soa_services.electrical import (
     ConstructableSignalInterface,
     SignalInterface,
@@ -14,6 +12,7 @@ from crosslab.soa_services.electrical.messages import (
     ElectricalServiceConfig,
     SignalInterfaceConfig,
 )
+from pyee.asyncio import AsyncIOEventEmitter
 
 
 @dataclass
@@ -107,7 +106,8 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
             connection_meta.interface_meta[interface] = interface_meta
             self._interface_id_ref_counter[id] += 1
 
-            def upstreamDataFun(data, busId=busId):
+            async def upstreamDataFun(data, busId=busId):
+                await channel.ready()
                 channel.send(json.dumps({"busId": busId, "data": data}))
 
             interface.on("upstreamData", upstreamDataFun)
