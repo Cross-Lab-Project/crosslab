@@ -1,4 +1,4 @@
-import { logger } from './logger.js';
+import { logger } from "./logging/index.js";
 
 export function die(reason: string): string {
   logger.log('error', reason);

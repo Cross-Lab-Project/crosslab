@@ -11,12 +11,13 @@ export type LogLevel = keyof typeof logLevelMapping;
 export type LoggingLokiTransportConfig = { transport: 'loki'; host: string };
 export type LoggingFileTransportConfig = { transport: 'file'; filename: string };
 export type LoggingStdoutTransportConfig = { transport: 'stdout' | 'stderr' };
-export type LoggingTransortConfig =
+export type LoggingTransportConfig =
   | LoggingLokiTransportConfig
   | LoggingFileTransportConfig
   | LoggingStdoutTransportConfig;
 
 export type LoggingConfig = {
   LOGGING?: string | LogLevel;
-  LOGGING_TRANSPORT?: string | LoggingTransortConfig | LoggingTransortConfig[];
+  LOGGING_TRANSPORT?: string | LoggingTransportConfig | LoggingTransportConfig[];
+  LOGGING_LABELS?: string | Record<string,string>
 };

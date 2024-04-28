@@ -5,7 +5,7 @@ import { die } from '../utils.js';
 import {
   LogLevel,
   LoggingConfig,
-  LoggingTransortConfig,
+  LoggingTransportConfig,
   logLevelMapping,
 } from './config.js';
 import { parseConfig } from './helper.js';
@@ -18,6 +18,7 @@ export function init(config?: LoggingConfig) {
     config = {
       LOGGING: process.env.LOGGING,
       LOGGING_TRANSPORT: process.env.LOGGING_TRANSPORT,
+      LOGGING_LABELS: process.env.LOGGING_LABELS
     };
   }
 
@@ -35,18 +36,20 @@ export function init(config?: LoggingConfig) {
   logger.info('Logging initialized', {
     log_level: parsed_config.LOGGING,
     transports: parsed_config.LOGGING_TRANSPORT.map(t => t.transport).join(','),
+    labels: parsed_config.LOGGING_LABELS
   });
 }
 
 function initTransports(config: {
   LOGGING: LogLevel;
-  LOGGING_TRANSPORT: LoggingTransortConfig[];
+  LOGGING_TRANSPORT: LoggingTransportConfig[];
+  LOGGING_LABELS?: Record<string, string>
 }) {
   return config.LOGGING_TRANSPORT.map(transport => {
     if (transport.transport === 'loki') {
       return new LokiTransport({
         host: transport.host,
-        labels: { service: 'Auth' },
+        labels: config.LOGGING_LABELS,
         format: winston.format.json(),
         batching: true,
         interval: 5,

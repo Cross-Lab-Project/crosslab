@@ -1,4 +1,4 @@
-import { logger } from '@crosslab/service-common';
+import { logger, logging } from '@crosslab/service-common';
 
 import { checkConfig, config } from '../../src/config.js';
 import { ApplicationDataSource } from '../../src/database/datasource.js';
@@ -7,6 +7,7 @@ import { openfga_deinit, openfga_init } from '../../src/openfga.js';
 
 
 export async function mochaGlobalSetup() {
+  logging.init();
   logger.transports.forEach(t => (t.level = 'error'));
   await ApplicationDataSource.initialize();
   await opa_init();
