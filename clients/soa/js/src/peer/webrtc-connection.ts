@@ -82,6 +82,14 @@ export class WebRTCPeerConnection
     if (event.candidate && trickleIce) {
       this.sendIceCandidate(event.candidate);
     } else if (!event.candidate && !trickleIce) {
+      log.log('IceGatheringComplete');
+      this.iceCandidateResolver && this.iceCandidateResolver();
+    }
+  }
+
+  private onicegatheringstatechange() {
+    if (this.pc.iceGatheringState === 'complete') {
+      log.log('IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -92,6 +100,7 @@ export class WebRTCPeerConnection
     this.state = 'connecting';
     this.pc = new RTCPeerConnection(configuration);
     this.pc.onicecandidate = event => this.onicecandidate(event);
+    this.pc.onicegatheringstatechange = _ => this.onicegatheringstatechange();
     this.pc.onnegotiationneeded = () => this.onnegotiationneeded;
     this.pc.ondatachannel = event => {
       console.log(event);
@@ -114,7 +123,7 @@ export class WebRTCPeerConnection
     };
 
     this.pc.onconnectionstatechange = () => {
-      log.debug('WebRTCPeerConnection connectionStateChanged', {
+      log.log('WebRTCPeerConnection connectionStateChanged', {
         state: this.pc.connectionState,
       });
       this.state = this.pc.connectionState;
@@ -262,7 +271,7 @@ export class WebRTCPeerConnection
     if (trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
-    await iceCandidatePromise;
+    this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
     const _offer = this.pc.localDescription;
     if (!_offer) {
       console.log('WebRTCPeerConnection.makeOffer failed to create offer');
@@ -290,10 +299,13 @@ export class WebRTCPeerConnection
     let answer = await this.pc.createAnswer();
     log.trace('WebRTCPeerConnection.makeAnswer created answer', { answer });
     await this.pc.setLocalDescription(answer); // TODO: gst-webrtc seems to not resolve the promise correctly.
+    setTimeout(() => {
+      this.iceCandidateResolver && this.iceCandidateResolver();
+    }, 5000);
     if (trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
-    await iceCandidatePromise;
+    this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
     const _answer = this.pc.localDescription;
     if (!_answer) {
       throw new Error('WebRTCPeerConnection.makeAnswer failed to create answer');

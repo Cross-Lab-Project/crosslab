@@ -1,17 +1,18 @@
 import json
+import logging
 from enum import Enum
 from typing import Any, Dict, List, Literal, cast
 
-from aiortc import (  # type: ignore
+from aiortc import RTCPeerConnection  # type: ignore
+from aiortc import (
     RTCConfiguration,
-    RTCPeerConnection,
+    RTCIceCandidate,
+    RTCIceServer,
     RTCSessionDescription,
 )
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
-from aiortc.sdp import SessionDescription  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
+from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
 from crosslab.soa_client.connection import (
     Channel,
     Connection,
@@ -19,6 +20,9 @@ from crosslab.soa_client.connection import (
     MediaChannel,
 )
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
+
+logger = logging.getLogger(__name__)
 
 
 class WebRTCRole(Enum):
@@ -36,16 +40,15 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
         config = RTCConfiguration(
-            []
-            # [
-            #    RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-            #    RTCIceServer(
-            #        urls="turn:turn.goldi-labs.de:3478",
-            #        username="goldi",
-            #        credential="goldi",
-            #    ),
-            # ]
-        )  # // see issue #5
+            [
+                RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
+                RTCIceServer(
+                    urls="turn:turn.goldi-labs.de:3478",
+                    username="goldi",
+                    credential="goldi",
+                ),
+            ]
+        )
         self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
@@ -143,7 +146,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                     datachannel.send(data)
                     await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
                     await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
-                except Exception:
+                except Exception as e:
+                    logger.error(e)
                     pass
 
             def message(data):
@@ -183,8 +187,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         if message["signalingType"] == "offer":
             await self._handleOffer(message)
         if message["signalingType"] == "candidate":
-            raise NotImplementedError()
-            # await self._handleIceCandidate(message)
+            await self._handleIceCandidate(message)
 
     async def _makeOffer(self):
         print("makeOffer")
@@ -220,6 +223,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         print("acceptAnswer")
         await self.pc.setRemoteDescription(answer)
 
+    async def _acceptIceCandiate(self, iceCanditate: RTCIceCandidate):
+        print("acceptIceCandidate")
+        await self.pc.addIceCandidate(iceCanditate)
+
     async def _handleOffer(self, message: SignalingMessage):
         print("handleOffer")
         offer = RTCSessionDescription(
@@ -233,6 +240,13 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             type=message["content"]["type"], sdp=message["content"]["sdp"]
         )
         await self._acceptAnswer(answer)
+
+    async def _handleIceCandidate(self, message: SignalingMessage):
+        print("handleIceCandidate")
+        candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
+        candidate.sdpMid = message["content"]["sdpMid"]
+        candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
+        await self._acceptIceCandiate(candidate)
 
     async def _createMediaChannels(self):
         for label, channel in self._mediaChannelMap.items():
@@ -254,9 +268,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             self._transeiverMap[transeiver] = label
             channel = self._mediaChannelMap.get(label)
             assert channel is not None  # TODO: handle this
-            direction: Literal[
-                "inactive", "sendonly", "recvonly", "sendrecv"
-            ] = "inactive"
+            direction: Literal["inactive", "sendonly", "recvonly", "sendrecv"] = (
+                "inactive"
+            )
 
             if channel.track:
                 direction = "sendonly"
