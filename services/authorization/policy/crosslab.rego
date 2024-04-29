@@ -95,6 +95,13 @@ rebac_allow if {
 	not subject in ["user:anonymous"]
 }
 
+# Allow everyone to create an experiment
+rebac_allow if {
+	object in ["device:~~~TYPE~~~"]
+	input.action in ["view"]
+	not subject in ["user:anonymous"]
+}
+
 # Final decision
 allow if {
 	scope_allow
