@@ -1576,7 +1576,7 @@ class SendSignalingMessageRequestAlt3(TypedDict):
     - content
     """
     messageType: Literal["signaling"]
-    signalingType: Literal["offer", "answer", "candidate"]
+    signalingType: str
     connectionUrl: str
     content: SendSignalingMessageRequestAlt3Content
 

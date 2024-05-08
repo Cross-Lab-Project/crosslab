@@ -2979,7 +2979,7 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       } & {
         messageType: 'signaling';
-        signalingType: 'offer' | 'answer' | 'candidate';
+        signalingType: string;
         connectionUrl: string;
         content: {
           [k: string]: unknown;
@@ -2992,7 +2992,7 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       } & {
         messageType: 'signaling';
-        signalingType: 'offer' | 'answer' | 'candidate';
+        signalingType: string;
         connectionUrl: string;
         content: {
           [k: string]: unknown;
@@ -3005,7 +3005,7 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       } & {
         messageType: 'signaling';
-        signalingType: 'offer' | 'answer' | 'candidate';
+        signalingType: string;
         connectionUrl: string;
         content: {
           [k: string]: unknown;
