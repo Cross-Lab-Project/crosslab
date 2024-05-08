@@ -32,10 +32,18 @@ interface RTCSignalingAnswerMessage extends SignalingMessage {
   content: RTCSessionDescriptionInit;
 }
 
+interface RTCSignalingOptionsMessage extends SignalingMessage {
+  signalingType: 'options';
+  content: {
+    canTrickle: boolean;
+  };
+}
+
 export type RTCSignalingMessage =
   | RTCSignalingCandidateMessage
   | RTCSignalingOfferMessage
-  | RTCSignalingAnswerMessage;
+  | RTCSignalingAnswerMessage
+  | RTCSignalingOptionsMessage;
 
 enum WebRTCRole {
   Callee,
@@ -50,8 +58,6 @@ enum ConnectionState {
   ICE,
 }
 
-const trickleIce = false;
-
 export class WebRTCPeerConnection
   extends TypedEmitter<PeerConnectionEvents>
   implements PeerConnection
@@ -64,11 +70,14 @@ export class WebRTCPeerConnection
   private receivingChannels = new Map<string, Channel>();
   private transeiverMap = new Map<RTCRtpTransceiver, string>();
   private mediaChannelMap = new Map<string, MediaChannel>();
+  private trickleIce = false;
   tiebreaker!: boolean;
   pc: RTCPeerConnection;
   state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
 
   private iceCandidateResolver?: () => void;
+  private optionsReceived?: Promise<void>;
+  private optionsReceivedResolver?: () => void;
 
   private onnegotiationneeded() {
     if (this._state !== ConnectionState.Calling) {
@@ -79,9 +88,9 @@ export class WebRTCPeerConnection
   }
 
   private onicecandidate(event: RTCPeerConnectionIceEvent) {
-    if (event.candidate && trickleIce) {
+    if (event.candidate && this.trickleIce) {
       this.sendIceCandidate(event.candidate);
-    } else if (!event.candidate && !trickleIce) {
+    } else if (!event.candidate && !this.trickleIce) {
       log.log('IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
@@ -129,6 +138,14 @@ export class WebRTCPeerConnection
       this.state = this.pc.connectionState;
       this.emit('connectionChanged');
     };
+
+    this.optionsReceived = new Promise<void>(resolve => {
+      this.optionsReceivedResolver = resolve;
+    });
+
+    setTimeout(() => {
+      this.optionsReceivedResolver && this.optionsReceivedResolver();
+    }, 2000);
   }
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void {
@@ -181,8 +198,9 @@ export class WebRTCPeerConnection
     }
   }
 
-  async handleSignalingMessage(msg: SignalingMessage) {
-    this.signalingQueue.push(msg as RTCSignalingMessage);
+  async handleSignalingMessage(msg: RTCSignalingMessage) {
+    if (msg.signalingType === 'options') this.handleOptions(msg);
+    this.signalingQueue.push(msg);
     this.executeQueue();
   }
 
@@ -212,6 +230,13 @@ export class WebRTCPeerConnection
   // Received Signaling and Control handling *************************************************************************
   async connect() {
     console.log('webrtc connect');
+    this.emit('signalingMessage', {
+      signalingType: 'options',
+      content: {
+        canTrickle: true,
+      },
+    });
+    await this.optionsReceived;
     assert(this._state === ConnectionState.Unitintialized);
     this.isProcessing = false;
     this.role = this.tiebreaker ? WebRTCRole.Caller : WebRTCRole.Callee;
@@ -223,6 +248,7 @@ export class WebRTCPeerConnection
       return;
     } else if (this.role === WebRTCRole.Callee) {
       this._state = ConnectionState.WaitingForCall;
+      await this.executeQueue();
       return;
     } else {
       assert(false); // unreachable
@@ -250,6 +276,13 @@ export class WebRTCPeerConnection
     }
   }
 
+  private async handleOptions(msg: RTCSignalingOptionsMessage) {
+    if (msg.content.canTrickle) {
+      this.trickleIce = true;
+    }
+    this.optionsReceivedResolver && this.optionsReceivedResolver();
+  }
+
   teardown(): void {
     this.pc.close();
     if (this.state != 'closed') {
@@ -268,9 +301,12 @@ export class WebRTCPeerConnection
     let offer = await this.pc.createOffer();
     log.trace('WebRTCPeerConnection.makeOffer created offer', { offer });
     await this.pc.setLocalDescription(offer);
-    if (trickleIce) {
+    if (this.trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
+    setTimeout(() => {
+      this.iceCandidateResolver && this.iceCandidateResolver();
+    }, 5000);
     this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
     const _offer = this.pc.localDescription;
     if (!_offer) {
@@ -302,7 +338,7 @@ export class WebRTCPeerConnection
     setTimeout(() => {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }, 5000);
-    if (trickleIce) {
+    if (this.trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
     this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);

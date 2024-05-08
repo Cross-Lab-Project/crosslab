@@ -8,10 +8,6 @@ allOf:
         const: signaling
       signalingType:
         type: string
-        enum:
-          - offer
-          - answer
-          - candidate
       connectionUrl:
         type: string
         format: uri
