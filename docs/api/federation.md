@@ -5,7 +5,7 @@ parent: Internal APIs
 <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
 <rapi-doc id="rapidoc"
   show-header	= "false"
-  spec-url="https://raw.githubusercontent.com/Cross-Lab-Project/crosslab/main/services/federation/dist/openapi.json"
+  spec-url="https://ci.goldi-labs.de/crosslab/main/services/federation/dist/openapi.json"
   render-style="view"
   schema-description-expanded="true"
   default-schema-tab="schema"
