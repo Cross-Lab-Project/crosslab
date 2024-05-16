@@ -141,90 +141,19 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
 }
 
 export const deleteBookingByID: deleteBookingByIDSignature = async (request, parameters) => {
-    let requestID: bigint = BigInt(parameters.ID);
-    let success: boolean = false;
+    let [code, err] = await commonRemoveBooking(BigInt(parameters.ID))
 
-    let db = await mysql.createConnection(config.BookingDSN);
-    await db.connect();
-    await db.beginTransaction();
-
-    try {
-        let [rows, fields]: [any, any] = await db.execute("SELECT `status`, `user` FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
-        if (rows.length === 0) {
-            return {
-                status: 404,
-            }
-        }
-
-        switch (rows[0].status) {
-            case "pending":
-            case "booked":
-                // Everything ok
-                break;
-            case "active-pending":
-            case "active":
-            case "active-rejected":
-                return {
-                    status: 423,
-                }
-
-            case "rejected":
-            case "cancelled":
-                return {
-                    status: 200,
-                }
-
-            default:
-                throw Error("BUG: unknown status " + rows[0].status);
-                break;
-        }
-
-        if (rows[0].user != request.authorization.user) {
-            return {
-                status: 401,
-            }
-        }
-
-        // delete booking
-        let connection = await amqplib.connect(config.AmqpUrl);
-        let channel = await connection.createChannel();
-
-        try {
-            await channel.assertQueue("device-freeing", {
-                durable: true
-            });
-
-            let [devicesRows, devicesFields]: [any, any] = await db.execute("SELECT `id` FROM bookeddevices WHERE `booking`=? FOR UPDATE", [requestID]);
-            for (let i = 0; i < devicesRows.length; i++) {
-                if (!channel.sendToQueue("device-freeing", Buffer.from(devicesRows[i].id.toString()), { persistent: true })) {
-                    throw new Error("amqp queue full");
-                }
-            }
-        } finally {
-            channel.close();
-            connection.close();
-        }
-
-        await db.execute("UPDATE booking SET `status`=?, `message`=? WHERE id=?", ["cancelled", "Cancelled by user", requestID]);
-
-        success = true;
-    } catch (err) {
+    // Typescript seems to have problems to infer body correctly with case 500.
+    // Therefore, the solution here is more complicated
+    if(code === 500) { 
         return {
-            status: 500,
-            body: err.toString(),
+            status: code,
+            body: err ?? "No error",
         }
-    } finally {
-        if (success) {
-            db.commit();
-        } else {
-            db.rollback();
-        }
-        db.end();
     }
 
-
     return {
-        status: 200,
+        status: code,
     }
 }
 
@@ -351,19 +280,89 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
 }
 
 export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (request, parameters) => {
-    // add your implementation here
-    if(true) { // TODO: Check Permission
-        // TODO
-    } else {
+    let [code, err] = await commonRemoveBooking(BigInt(parameters.ID))
+    // Typescript seems to have problems to infer body correctly with case 500.
+    // Therefore, the solution here is more complicated
+    if(code === 500) { 
         return {
-            status: 401, // TODO: Use 403
+            status: code,
+            body: err ?? "No error",
         }
     }
 
     return {
-        status: 500,
-        body: "TODO: Method not implemented",
+        status: code,
     }
 }
 
 export default {postBooking, getBookingByID, deleteBookingByID, patchBookingByID, deleteBookingByIDDestroy}
+
+async function commonRemoveBooking(requestID: bigint) : Promise<[404|200|423|500, string|null]> {
+    let success: boolean = false;
+
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await db.beginTransaction();
+
+    try {
+        let [rows, fields]: [any, any] = await db.execute("SELECT `status`, FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
+        if (rows.length === 0) {
+            return [404, null];
+        }
+
+        switch (rows[0].status) {
+            case "pending":
+            case "booked":
+                // Everything ok
+                break;
+            case "active-pending":
+            case "active":
+            case "active-rejected":
+                return [423, null];
+
+            case "rejected":
+            case "cancelled":
+                return [200, null];
+
+            default:
+                throw Error("BUG: unknown status " + rows[0].status);
+                break;
+        }
+
+        // delete booking
+        let connection = await amqplib.connect(config.AmqpUrl);
+        let channel = await connection.createChannel();
+
+        try {
+            await channel.assertQueue("device-freeing", {
+                durable: true
+            });
+
+            let [devicesRows, devicesFields]: [any, any] = await db.execute("SELECT `id` FROM bookeddevices WHERE `booking`=? FOR UPDATE", [requestID]);
+            for (let i = 0; i < devicesRows.length; i++) {
+                if (!channel.sendToQueue("device-freeing", Buffer.from(devicesRows[i].id.toString()), { persistent: true })) {
+                    throw new Error("amqp queue full");
+                }
+            }
+        } finally {
+            channel.close();
+            connection.close();
+        }
+
+        await db.execute("UPDATE booking SET `status`=?, `message`=? WHERE id=?", ["cancelled", "Cancelled by user", requestID]);
+
+        success = true;
+    } catch (err) {
+        return [500, err.toString()];
+    } finally {
+        if (success) {
+            db.commit();
+        } else {
+            db.rollback();
+        }
+        db.end();
+    }
+
+
+    return [200, null];
+} 
