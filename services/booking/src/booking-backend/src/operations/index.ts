@@ -14,6 +14,8 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
 
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
+
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
   await db.beginTransaction();
@@ -101,6 +103,8 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
 
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
+
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
 
@@ -156,13 +160,17 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
 export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (request,
   parameters,
 ) => {
+  let parameterID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${parameterID}`);
+
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
 
   try {
     let [rows, fields]: [any, any] = await db.execute(
       'SELECT `type`, `targetbooking`, `parameters` FROM callback WHERE `id`=?',
-      [parameters.ID],
+      [parameterID],
     );
     if (rows.length === 0) {
       return {

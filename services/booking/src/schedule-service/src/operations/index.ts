@@ -16,6 +16,9 @@ import { timetableAnd, timetableNot } from '../timetable';
 
 // TODO: Missing availability since it is not yet well defined
 export const postSchedule: postScheduleSignature = async (request, body) => {
+
+  await request.authorization.check_authorization_or_fail('create', `booking`);
+
   let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
 
   const laterReq = new Map<string, [number[], number[], postScheduleRequestBodyType]>(); // Device in request, device list, request

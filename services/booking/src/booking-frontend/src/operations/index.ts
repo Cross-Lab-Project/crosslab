@@ -23,6 +23,9 @@ import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
 import { config } from "../config"
 
 export const postBooking: postBookingSignature = async (request, body) => {
+
+    await request.authorization.check_authorization_or_fail('create', `booking`);
+
     let connection = await amqplib.connect(config.AmqpUrl);
     let channel = await connection.createChannel();
 
@@ -48,6 +51,8 @@ export const postBooking: postBookingSignature = async (request, body) => {
             await db.execute("INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)", [bookingID, body.Devices[i].ID, i]);
         };
         await db.commit();
+
+        await request.authorization.relate(`user:${request.authorization.user}`, 'owner', `booking:${bookingID}`);
 
         // Send devices to backend
         for (let i = 0; i < body.Devices.length; i++) {
@@ -85,11 +90,13 @@ export const postBooking: postBookingSignature = async (request, body) => {
 }
 
 export const getBookingByID: getBookingByIDSignature = async (request, parameters) => {
+    let requestID: bigint = BigInt(parameters.ID)
+
+    await request.authorization.check_authorization_or_fail('view', `booking:${requestID}`);
+
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
     await db.beginTransaction();
-
-    let requestID: bigint = BigInt(parameters.ID)
 
     try {
         let body: getBookingByID200ResponseType["body"] = { Booking: { ID: parameters.ID, Time: { Start: "", End: "" }, Devices: [], Type: "normal", You: false, External: false, Status: "pending", Message: "" }, Locked: false }
@@ -141,7 +148,11 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
 }
 
 export const deleteBookingByID: deleteBookingByIDSignature = async (request, parameters) => {
-    let [code, err] = await commonRemoveBooking(BigInt(parameters.ID))
+    let requestID:bigint = BigInt(parameters.ID);
+
+    await request.authorization.check_authorization_or_fail('delete', `booking:${requestID}`);
+
+    let [code, err] = await commonRemoveBooking(requestID);
 
     // Typescript seems to have problems to infer body correctly with case 500.
     // Therefore, the solution here is more complicated
@@ -152,6 +163,9 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (request, par
         }
     }
 
+    // Since we keep the booking in the database, there is no need to unrelate the booking here.
+    // Students might check it later if someone else deleted it.
+
     return {
         status: code,
     }
@@ -159,6 +173,9 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (request, par
 
 export const patchBookingByID: patchBookingByIDSignature = async (request, parameters, body) => {
     let requestID: bigint = BigInt(parameters.ID);
+
+    await request.authorization.check_authorization_or_fail('edit', `booking:${requestID}`);
+
     let success: boolean = false;
 
     let db = await mysql.createConnection(config.BookingDSN);
@@ -280,7 +297,11 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
 }
 
 export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (request, parameters) => {
-    let [code, err] = await commonRemoveBooking(BigInt(parameters.ID))
+    let requestID:bigint = BigInt(parameters.ID);
+
+    await request.authorization.check_authorization_or_fail('delete', `booking:${requestID}`);
+
+    let [code, err] = await commonRemoveBooking(requestID)
     // Typescript seems to have problems to infer body correctly with case 500.
     // Therefore, the solution here is more complicated
     if(code === 500) { 
@@ -289,6 +310,9 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
             body: err ?? "No error",
         }
     }
+
+    // Since we keep the booking in the database, there is no need to unrelate the booking here.
+    // Students might check it later if someone else deleted it.
 
     return {
         status: code,
