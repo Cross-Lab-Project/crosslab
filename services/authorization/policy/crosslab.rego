@@ -95,6 +95,13 @@ rebac_allow if {
 	not subject in ["user:anonymous"]
 }
 
+# Allow everyone to create a booking
+rebac_allow if {
+	object in ["booking:~~~TYPE~~~"]
+	input.action in ["create"]
+	not subject in ["user:anonymous"]
+}
+
 # Final decision
 allow if {
 	scope_allow
