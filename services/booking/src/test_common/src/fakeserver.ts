@@ -75,8 +75,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -99,8 +99,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -123,8 +123,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -159,8 +159,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -195,8 +195,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
