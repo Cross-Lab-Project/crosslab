@@ -2,6 +2,7 @@ import * as nodeMocksHttp from "node-mocks-http"
 
 type FakeRequestOptions = {
     user: string
+    isAuthorized: boolean
 };
 
 export function getFakeRequest(options?: FakeRequestOptions) {
@@ -11,11 +12,26 @@ export function getFakeRequest(options?: FakeRequestOptions) {
     let request = nodeMocksHttp.createRequest();
     request.authorization = {};
     request.authorization.user = options.user;
+    
+    request.authorization.check_authorization_or_fail = async function(action:string, id:string) : Promise<void> {
+        if(!options.isAuthorized) {
+            throw Error();
+        } 
+    } 
+
+    request.authorization.relate = async function(user: string, action:string, id:string) : Promise<boolean> {
+        return true;
+    } 
+
+    request.authorization.unrelate = async function(user: string, action:string, id:string) : Promise<boolean> {
+        return true;
+    } 
     return request;
 } 
 
 export function fakeRequestDefaultConfig() : FakeRequestOptions {
     return{
         user: "testuser",
+        isAuthorized: true,
     };
 } 
