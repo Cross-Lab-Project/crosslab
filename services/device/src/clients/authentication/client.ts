@@ -127,23 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -349,8 +336,10 @@ export class Client {
    *
    * @param options.username
    * filter for users with a specific username
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -367,9 +356,10 @@ export class Client {
   public async listUsers(options?: {
     headers?: [string, string][];
     username?: string;
+    baseUrl?: string;
     url?: string;
   }): Promise<Signatures.ListUsersSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/users');
+    const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/users');
 
     const parameters = {
       username: options?.username,
@@ -421,8 +411,10 @@ export class Client {
    *
    * @param user
    * User to be created.
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -440,10 +432,11 @@ export class Client {
     user: Require<Types.User<'request'>, 'username' | 'password'>,
     options?: {
       headers?: [string, string][];
+      baseUrl?: string;
       url?: string;
     },
   ): Promise<Signatures.CreateUserSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/users');
+    const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/users');
 
     const body = user;
 
@@ -507,7 +500,7 @@ export class Client {
   ): Promise<Signatures.GetUserSuccessResponse['body']> {
     const urlSuffix = '/users/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [user_id] = validateUrl(url, this.baseUrl, '/users/{}');
+    const [user_id] = validateUrl(url, '/users/{}');
 
     const parameters = {
       user_id: user_id,
@@ -575,7 +568,7 @@ export class Client {
   ): Promise<Signatures.UpdateUserSuccessResponse['body']> {
     const urlSuffix = '/users/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [user_id] = validateUrl(url, this.baseUrl, '/users/{}');
+    const [user_id] = validateUrl(url, '/users/{}');
 
     const body = user;
 
@@ -643,7 +636,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/users/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [user_id] = validateUrl(url, this.baseUrl, '/users/{}');
+    const [user_id] = validateUrl(url, '/users/{}');
 
     const parameters = {
       user_id: user_id,

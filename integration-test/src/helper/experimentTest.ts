@@ -12,6 +12,7 @@ import {
   DummyDevice,
   DummyDeviceEvents,
 } from '../fixtures/dummyDevice';
+import { config } from '../config';
 
 function createDummyDevice(type: ClientType, index: number, context: Mocha.Context) {
   switch (type) {
@@ -86,6 +87,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           type: 'device',
           name: 'Internal Test Device',
           isPublic: true,
+          bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
         });
         deviceMeta.devices.push(device);
       }
@@ -226,6 +228,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       codeUrl: 'http://localhost/cloud_instantiable_device',
       announcedAvailability: [{ available: true }],
       devices: [],
+      bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
     });
   }
 

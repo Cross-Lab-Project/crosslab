@@ -4,6 +4,7 @@ import { EntityManager } from 'typeorm';
 import { DeviceOverview, DeviceOverviewUpdate } from '../../../generated/types.js';
 import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 import { DeviceOverviewModel } from '../../model.js';
+import { config } from '../../../config.js';
 
 export class DeviceOverviewRepository extends AbstractRepository<
   DeviceOverviewModel,
@@ -40,6 +41,7 @@ export class DeviceOverviewRepository extends AbstractRepository<
       name: model.name,
       description: model.description ?? undefined,
       isPublic: model.isPublic,
+      bookingEndpoint: (config.BASE_URL + "/booking").replace("//booking", "/booking")
     };
   }
 }

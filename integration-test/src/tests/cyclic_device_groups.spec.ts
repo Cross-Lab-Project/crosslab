@@ -1,5 +1,6 @@
 import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import { assert } from 'chai';
+import { config } from '../config';
 
 function validateDevices(
   deviceGroup: DeviceServiceTypes.DeviceGroup,
@@ -30,6 +31,7 @@ describe('Cyclic Device Groups', function () {
         type: 'device',
         name: `Test Device ${i + 1}`,
         isPublic: true,
+        bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
       });
       devices.push(device);
     }
@@ -39,6 +41,7 @@ describe('Cyclic Device Groups', function () {
       name: 'Test Device Group 1',
       devices: [devices[0], devices[1], devices[2]],
       isPublic: true,
+      bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
     });
 
     deviceGroup2 = await this.client.createDevice({
@@ -46,6 +49,7 @@ describe('Cyclic Device Groups', function () {
       name: 'Test Device Group 2',
       devices: [devices[3], devices[4], devices[5], devices[6]],
       isPublic: true,
+      bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
     });
 
     deviceGroup3 = await this.client.createDevice({
@@ -53,6 +57,7 @@ describe('Cyclic Device Groups', function () {
       name: 'Test Device Group 3',
       devices: [devices[7], devices[8], devices[9]],
       isPublic: true,
+      bookingEndpoint: (config.API_URL + "/booking").replace("//booking","/booking")
     });
 
     assert(deviceGroup1.type === 'group');

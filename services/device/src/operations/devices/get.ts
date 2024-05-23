@@ -32,7 +32,7 @@ export const getDevices: getDevicesSignature = async req => {
     await Promise.all(
       institutions.map(async institution => {
         try {
-          return await clients.device.listDevices({ url: institution.api });
+          return await clients.device.listDevices({ baseUrl: institution.api });
         } catch (error) {
           logger.log(
             'error',
