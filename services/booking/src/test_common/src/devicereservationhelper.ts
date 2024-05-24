@@ -15,6 +15,11 @@ export async function startDeviceReservation() {
   let connection: amqplib.Connection = await amqplib.connect(baseConfig.AmqpUrl);
   let channel: amqplib.Channel = await connection.createChannel();
 
+  // Ensure queue exists
+  await channel.assertQueue('device-reservation', {
+    durable: true,
+ });
+
   // Drain queue for tests
   while (await channel.get('device-reservation', { noAck: true })) {}
 
@@ -42,10 +47,14 @@ export async function stopDeviceReservation() {
 
   let m = new ReservationMessage(ReservationRequest.Stop, 'TEST_ANSWER_STOP_SERVER');
   channel.sendToQueue('device-reservation', Buffer.from(JSON.stringify(m)));
-  await sleep(1000);
+ await sleep(1000);
 
   while (await channel.get('TEST_ANSWER_STOP_SERVER', { noAck: true })) {}
   await channel.deleteQueue('TEST_ANSWER_STOP_SERVER');
+
+  // Drain queue
+  while (await channel.get('device-reservation', { noAck: true })) {}
+
   await channel.deleteQueue('device-reservation');
 
   await channel.close();

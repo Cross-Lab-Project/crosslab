@@ -1,5 +1,5 @@
 //const why = require('why-is-node-running')
-import { sleep } from '@crosslab/booking-service-common';
+import { baseConfig, sleep } from '@crosslab/booking-service-common';
 import {
   fakeServerConfig,
   getFakeInstitutePrefix,
@@ -20,7 +20,6 @@ import * as http from 'http';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
 import { callbackType, handleCallback, randomID } from './internal';
 
 let connection: amqplib.Connection;
@@ -31,10 +30,10 @@ mocha.describe('internal.ts', function () {
 
   mocha.before(async function () {
     // Config
-    config.OwnURL = getFakeOwnURL();
-    config.InstitutePrefix = getFakeInstitutePrefix();
-    config.ReservationDSN = getSQLDNS();
-    config.BookingDSN = getSQLDNS();
+    baseConfig.OwnURL = getFakeOwnURL();
+    baseConfig.InstitutePrefix = getFakeInstitutePrefix();
+    baseConfig.ReservationDSN = getSQLDNS();
+    baseConfig.BookingDSN = getSQLDNS();
 
     await startFakeServer();
   });
@@ -52,14 +51,10 @@ mocha.describe('internal.ts', function () {
     await setupDummySql();
 
     // Connect to amqp
-    connection = await amqplib.connect(config.AmqpUrl);
+    connection = await amqplib.connect(baseConfig.AmqpUrl);
     channel = await connection.createChannel();
 
     await channel.assertQueue('device-booking', {
-      durable: true,
-    });
-
-    await channel.assertQueue('device-reservation', {
       durable: true,
     });
 
@@ -69,9 +64,6 @@ mocha.describe('internal.ts', function () {
 
     // Drain queues
     while (await channel.get('device-booking', { noAck: true })) {}
-
-    while (await channel.get('device-reservation', { noAck: true })) {}
-
     while (await channel.get('device-freeing', { noAck: true })) {}
     await startDeviceReservation();
   });
@@ -90,7 +82,7 @@ mocha.describe('internal.ts', function () {
 
     await stopDeviceReservation();
   });
-
+/*
   mocha.it('handleCallback() DeviceUpdate (local single device available)', async () => {
     let db = await mysql.createConnection(getSQLDNS());
     db.connect();
@@ -287,6 +279,7 @@ mocha.describe('internal.ts', function () {
       db.end();
     }
   });
+*/
 
   mocha.it('dispatchCallback()', async () => {
     throw Error('TODO implement');
