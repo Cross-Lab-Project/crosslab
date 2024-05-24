@@ -1,3 +1,4 @@
+import { baseConfig } from '@crosslab/booking-service-common';
 import {
     fakeServerConfig,
     getFakeInstitutePrefix,
@@ -12,7 +13,6 @@ import {
   } from '@crosslab/booking-service-test-common';
 import * as mocha from 'mocha';
 
-import { config } from '../config';
 import { } from './index';
 
 mocha.describe('operations.ts', function () {
@@ -20,9 +20,9 @@ mocha.describe('operations.ts', function () {
 
     mocha.before(function () {
         // Config
-        config.OwnURL = getFakeOwnURL();
-        config.InstitutePrefix = getFakeInstitutePrefix();
-        config.ReservationDSN = getSQLDNS();
+        baseConfig.OwnURL = getFakeOwnURL();
+        baseConfig.InstitutePrefix = getFakeInstitutePrefix();
+        baseConfig.ReservationDSN = getSQLDNS();
     
         startFakeServer();
       });
