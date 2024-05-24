@@ -4,7 +4,7 @@
   "description": "Part of booking service. Main service with which a user interacts.",
   "main": "app/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && env-cmd -e development c8 --include=\"app/operations/index.js\" mocha app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:compile": "tsc",
     "build": "npm run build:generate && npm run build:compile",
@@ -19,6 +19,7 @@
     "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration",
     "@cross-lab-project/service-common": "file:../../../common",
     "@crosslab/booking-service-common": "file:../common",
+    "@crosslab/booking-service-test-common": "file:../test_common",
     "@crosslab/service-booking-backend": "file:../booking-backend",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/amqplib": "^0.10.1",
@@ -26,12 +27,15 @@
     "ajv-formats": "^2.1.1",
     "amqplib": "^0.10.2",
     "dayjs": "^1.11.7",
-    "env-cmd": "^10.1.0",
     "express": "^4.18.1",
     "mysql2": "^3.6.0",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "c8": "^9.1.0",
+    "env-cmd": "^10.1.0",
+    "mocha": "^10.4.0",
     "prettier": "^3.0.3"
   }
 }
