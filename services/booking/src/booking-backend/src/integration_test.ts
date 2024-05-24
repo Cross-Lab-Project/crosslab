@@ -21,6 +21,7 @@ import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
 import { callbackType, handleCallback, randomID } from './internal';
+import {config} from './config' 
 
 let connection: amqplib.Connection;
 let channel: amqplib.Channel;
@@ -29,11 +30,16 @@ mocha.describe('internal.ts', function () {
   this.timeout(10000);
 
   mocha.before(async function () {
-    // Config
+    // Config - use both global config and local config to ensure different application parts work with same config
     baseConfig.OwnURL = getFakeOwnURL();
     baseConfig.InstitutePrefix = getFakeInstitutePrefix();
     baseConfig.ReservationDSN = getSQLDNS();
     baseConfig.BookingDSN = getSQLDNS();
+
+    config.OwnURL = getFakeOwnURL();
+    config.InstitutePrefix = getFakeInstitutePrefix();
+    config.ReservationDSN = getSQLDNS();
+    config.BookingDSN = getSQLDNS();
 
     await startFakeServer();
   });
@@ -82,7 +88,7 @@ mocha.describe('internal.ts', function () {
 
     await stopDeviceReservation();
   });
-/*
+
   mocha.it('handleCallback() DeviceUpdate (local single device available)', async () => {
     let db = await mysql.createConnection(getSQLDNS());
     db.connect();
@@ -279,7 +285,7 @@ mocha.describe('internal.ts', function () {
       db.end();
     }
   });
-*/
+
 
   mocha.it('dispatchCallback()', async () => {
     throw Error('TODO implement');

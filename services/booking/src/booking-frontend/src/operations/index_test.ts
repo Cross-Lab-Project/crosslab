@@ -14,15 +14,20 @@ import {
 import * as mocha from 'mocha';
 
 import { } from './index';
+import {config} from '../config' 
 
 mocha.describe('operations.ts', function () {
     this.timeout(10000);
 
     mocha.before(function () {
-        // Config
+        // Config - use both global config and local config to ensure different application parts work with same config
         baseConfig.OwnURL = getFakeOwnURL();
         baseConfig.InstitutePrefix = getFakeInstitutePrefix();
         baseConfig.ReservationDSN = getSQLDNS();
+
+        config.OwnURL = getFakeOwnURL();
+        config.InstitutePrefix = getFakeInstitutePrefix();
+        config.ReservationDSN = getSQLDNS();
     
         startFakeServer();
       });
