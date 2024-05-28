@@ -20,7 +20,7 @@ import * as http from 'http';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
-import { callbackType, handleCallback, randomID } from './internal';
+import { callbackType, dispatchCallback, handleCallback, randomID } from './internal';
 import {config} from './config' 
 
 let connection: amqplib.Connection;
@@ -230,7 +230,67 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('dispatchCallback()', async () => {
-    throw Error('TODO implement');
+    resetFakeServerVars();
+
+    await dispatchCallback(BigInt(1));
+    await sleep(100);
+    let serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if(serverConfig.callback_test_local_single_was_called === false){
+      throw new Error("http://localhost:10801/test_callbacks/test-local-single was not called");
+    }
+    if(serverConfig.callback_test_local_two_first_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_two_second_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_group_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_remote_single_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    resetFakeServerVars();
+
+    await dispatchCallback(BigInt(2));
+    await sleep(100);
+    serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if(serverConfig.callback_test_local_single_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_two_first_was_called === false){
+      throw new Error("http://localhost:10801/test_callbacks/test-local-single was not called");
+    }
+    if(serverConfig.callback_test_local_two_second_was_called === false){
+      throw new Error("http://localhost:10801/test_callbacks/test-local-single was not called");
+    }
+    if(serverConfig.callback_test_local_group_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_remote_single_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    resetFakeServerVars();
+
+    await dispatchCallback(BigInt(3));
+    await sleep(100);
+    serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if(serverConfig.callback_test_local_single_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_two_first_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_two_second_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    if(serverConfig.callback_test_local_group_was_called === false){
+      throw new Error("http://localhost:10801/test_callbacks/test-local-group was not called");
+    }
+    if(serverConfig.callback_test_remote_single_was_called === true){
+      throw new Error("wrong callback called");
+    }
+    resetFakeServerVars();
   });
 
   mocha.it('reservateDevice() - local single device', async () => {
