@@ -23,6 +23,7 @@ export var fakeServerConfig = {
   callback_test_local_two_second_was_called: false,
   callback_test_local_group_was_called: false,
   callback_test_remote_single_was_called: false,
+  device_patch_list: [], 
   booking_status: 'booked',
 };
 
@@ -388,6 +389,11 @@ export async function startFakeServer() {
     }
   });
 
+  app.patch('/devices/*', (req, res) => {
+    fakeServerConfig.device_patch_list.push([req.path, req.query.changedUrl]);
+    res.status(200).send();
+  });
+
   app.all('*', (req, res) => {
     console.log('Fake server got unknown request:', req.path, req.method);
     res
@@ -425,6 +431,7 @@ export function resetFakeServerVars() {
   fakeServerConfig.callback_test_local_two_second_was_called = false;
   fakeServerConfig.callback_test_local_group_was_called = false;
   fakeServerConfig.callback_test_remote_single_was_called = false;
+  fakeServerConfig.device_patch_list = []; 
   fakeServerConfig.booking_status = 'booked';
 }
 

@@ -67,6 +67,8 @@ export async function setupDummySql() {
       'CREATE TABLE callback (`id` VARCHAR(600), `type` INTEGER, `targetbooking` BIGINT UNSIGNED NOT NULL, `parameters` JSON NOT NULL DEFAULT "{}", PRIMARY KEY(`id`))',
     );
 
+    // Booking already booked
+
     // // Fake booking local single device
     await db.execute(
       'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
@@ -275,6 +277,118 @@ export async function setupDummySql() {
       'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
       [BigInt(5), callbackType.BookingUpdate, BigInt(4), JSON.stringify({ Position: 0 })],
     );
+
+    // Booking new
+    // // Fake booking local single device (5)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(5),
+        dayjs('1999-01-10T08:00:00Z').toDate(),
+        dayjs('1999-01-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(6),
+        BigInt(5),
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(6), callbackType.DeviceUpdate, BigInt(5), JSON.stringify({ Position: 0 })],
+    );
+
+    // // Fake booking local two devices (6)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(6),
+        dayjs('1999-02-10T08:00:00Z').toDate(),
+        dayjs('1999-02-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(7),
+        BigInt(6),
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(8),
+        BigInt(6),
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+        1,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(7), callbackType.DeviceUpdate, BigInt(6), JSON.stringify({ Position: 0 })],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(8), callbackType.DeviceUpdate, BigInt(6), JSON.stringify({ Position: 1 })],
+    );
+
+    // // Fake booking group (7)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(7),
+        dayjs('1999-03-10T08:00:00Z').toDate(),
+        dayjs('1999-03-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(9),
+        BigInt(7),
+        'http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(9), callbackType.DeviceUpdate, BigInt(7), JSON.stringify({ Position: 0 })],
+    );
+
 
     // finish
     await db.commit();
