@@ -366,11 +366,234 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('reservateDevice() - local two devices', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      // Test booking 1st half
+
+      await reservateDevice(new DeviceBookingRequest(BigInt(6), new URL("http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"), 0, dayjs("1999-02-10T08:00:00Z"), dayjs("1999-02-10T09:00:00Z")));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(6)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "pending") { // not yet complete
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // Test other device
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [6, 1]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== null) {
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [6, 0]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+
+      if (rows[0].remotereference !== null) {
+        throw new Error("wrong remote reference " + rows[0].remotereference);
+      }
+
+      if (rows[0].local != true) { // Unfortunate, type conversion
+        throw new Error("wrong local " + rows[0].local);
+      }
+
+      if (rows[0].reservation < 0 || rows[0].reservation === undefined || rows[0].reservation === null) {
+        throw new Error("bad reservation " + rows[0].reservation);
+      }
+
+      let bookingID = rows[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute("SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?", [bookingID]);
+
+      if (rows.length === 0) {
+        throw new Error("reservation not found");
+      }
+
+      if (rows[0].device !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device " + rows[0].device);
+      }
+
+      if (!dayjs(rows[0].start).isSame(dayjs("1999-02-10T08:00:00Z"))) {
+        throw new Error("wrong start " + rows[0].start);
+      }
+
+      if (!dayjs(rows[0].end).isSame(dayjs("1999-02-10T09:00:00Z"))) {
+        throw new Error("wrong end " + rows[0].end);
+      }
+
+      // Test booking 2nd half
+      await reservateDevice(new DeviceBookingRequest(BigInt(6), new URL("http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"), 1, dayjs("1999-02-10T08:00:00Z"), dayjs("1999-02-10T09:00:00Z")));
+      await sleep(1000);
+
+      [rows, fields] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(6)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "booked") { // complete
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // Test other device
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [6, 0]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [6, 1]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+
+      if (rows[0].remotereference !== null) {
+        throw new Error("wrong remote reference " + rows[0].remotereference);
+      }
+
+      if (rows[0].local != true) { // Unfortunate, type conversion
+        throw new Error("wrong local " + rows[0].local);
+      }
+
+      if (rows[0].reservation < 0 || rows[0].reservation === undefined || rows[0].reservation === null) {
+        throw new Error("bad reservation " + rows[0].reservation);
+      }
+
+      bookingID = rows[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute("SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?", [bookingID]);
+
+      if (rows.length === 0) {
+        throw new Error("reservation not found");
+      }
+
+      if (rows[0].device !== "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device " + rows[0].device);
+      }
+
+      if (!dayjs(rows[0].start).isSame(dayjs("1999-02-10T08:00:00Z"))) {
+        throw new Error("wrong start " + rows[0].start);
+      }
+
+      if (!dayjs(rows[0].end).isSame(dayjs("1999-02-10T09:00:00Z"))) {
+        throw new Error("wrong end " + rows[0].end);
+      }
+
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local group', async () => {
-    throw Error('TODO implement');
+    await reservateDevice(new DeviceBookingRequest(BigInt(7), new URL("http://localhost:10801/devices/00000000-0000-0000-0000-000000000010"), 0, dayjs("1999-03-10T08:00:00Z"), dayjs("1999-03-10T09:00:00Z")));
+    await sleep(1000);
+
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(7)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [7, 0]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000" && rows[0].bookeddevice !== "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") { // Group: one of those, selection is not deterministic
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+      let selected = rows[0].bookeddevice
+
+      if (rows[0].remotereference !== null) {
+        throw new Error("wrong remote reference " + rows[0].remotereference);
+      }
+
+      if (rows[0].local != true) { // Unfortunate, type conversion
+        throw new Error("wrong local " + rows[0].local);
+      }
+
+      if (rows[0].reservation < 0 || rows[0].reservation === undefined || rows[0].reservation === null) {
+        throw new Error("bad reservation " + rows[0].reservation);
+      }
+
+      let bookingID = rows[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute("SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?", [bookingID]);
+
+      if (rows.length === 0) {
+        throw new Error("reservation not found");
+      }
+
+      if (rows[0].device !== selected) {
+        throw new Error("wrong device " + rows[0].device);
+      }
+
+      if (!dayjs(rows[0].start).isSame(dayjs("1999-03-10T08:00:00Z"))) {
+        throw new Error("wrong start " + rows[0].start);
+      }
+
+      if (!dayjs(rows[0].end).isSame(dayjs("1999-03-10T09:00:00Z"))) {
+        throw new Error("wrong end " + rows[0].end);
+      }
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local single device not available', async () => {

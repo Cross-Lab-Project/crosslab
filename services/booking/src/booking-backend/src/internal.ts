@@ -233,7 +233,7 @@ async function reservationCheckStatus(bookingID: bigint) {
             return;
         }
 
-        [rows, fields] = await db.execute("SELECT count(*) AS n FROM bookeddevices WHERE booking=? AND bookeddevice=?", [bookingID, null]);
+        [rows, fields] = await db.execute("SELECT count(*) AS n FROM bookeddevices WHERE booking=? AND bookeddevice IS NULL", [bookingID]);
 
         if (rows[0].n == 0) {
             // Every device is booked
@@ -380,7 +380,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
 
                     let a: amqplib.GetMessage = aUnknown as amqplib.GetMessage;
                     let data = ReservationAnswer.fromString(a.content.toString());
-                    if (data.Type === ReservationRequest.New && data.Device.toString() === possibleDevices[i] && data.Start.isSame(r.Start) && data.End.isSame(r.End) && data.Successful) {
+                    if (data.Type === ReservationRequest.New && data.Successful && data.Device.toString() === possibleDevices[i] && data.Start.isSame(r.Start) && data.End.isSame(r.End)) {
                         await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `reservation`=?, `local`=? WHERE `booking`=? AND `originalposition`=?", [data.Device.toString(), data.ReservationID.toString(), true, r.BookingID, r.Position])
                         addDeviceCallback(data.Device, r.BookingID, { "Position": r.Position });
                         await reservationCheckStatus(r.BookingID);
