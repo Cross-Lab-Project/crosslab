@@ -353,11 +353,11 @@ mocha.describe('internal.ts', function () {
         throw new Error("wrong device " + rows[0].device);
       }
 
-      if (dayjs(rows[0].start).isSame(dayjs("1999-03-10T08:00:00Z"))) {
+      if (!dayjs(rows[0].start).isSame(dayjs("1999-01-10T08:00:00Z"))) {
         throw new Error("wrong start " + rows[0].start);
       }
 
-      if (dayjs(rows[0].end).isSame(dayjs("1999-03-10T09:00:00Z"))) {
+      if (!dayjs(rows[0].end).isSame(dayjs("1999-01-10T09:00:00Z"))) {
         throw new Error("wrong end " + rows[0].end);
       }
     } finally {
