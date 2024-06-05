@@ -69,7 +69,7 @@ export class GPIOInterface
 
   // changes the driver of this device
   changeDriver(state: GPIOState) {
-    if (this.driver) {
+    if (this.driver && this.driverState !== state) {
       this.driverState = state;
       const data: GPIOInterfaceData = { driver: this.driver, state: state };
       this.emit('upstreamData', data);
