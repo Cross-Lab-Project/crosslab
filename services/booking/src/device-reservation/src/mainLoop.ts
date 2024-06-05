@@ -67,7 +67,7 @@ export async function mainLoop(): Promise<void> {
               case ReservationRequest.Stop:
                 // This should never be called by any service, we still need it to stop main loop for testing...
                 channel.ack(msg);
-                sleep(250);
+                await sleep(250);
                 channel.close();
                 connection.close();
                 return;
