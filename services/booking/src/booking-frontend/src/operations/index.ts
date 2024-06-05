@@ -18,7 +18,7 @@ import * as mysql from 'mysql2/promise';
 import * as amqplib from 'amqplib';
 import dayjs from "dayjs";
 
-import { BelongsToUs } from "@crosslab/booking-service-common"
+import { BelongsToUs, sleep } from "@crosslab/booking-service-common"
 import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
 import { config } from "../config"
 
@@ -78,8 +78,9 @@ export const postBooking: postBookingSignature = async (request, body) => {
             body: err.toString(),
         }
     } finally {
-        channel.close();
-        connection.close();
+        await channel.close();
+        await sleep(250);
+        await connection.close();
         db.end();
     };
 
@@ -259,8 +260,9 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
                 }
 
             } finally {
-                channel.close();
-                connection.close();
+                await channel.close();
+                await await sleep(250);
+                await connection.close();
             }
         } else {
             throw Error("Unknown request type")
@@ -369,8 +371,9 @@ async function commonRemoveBooking(requestID: bigint) : Promise<[404|200|423|500
                 }
             }
         } finally {
-            channel.close();
-            connection.close();
+            await channel.close();
+            await sleep(250);
+            await connection.close();
         }
 
         await db.execute("UPDATE booking SET `status`=?, `message`=? WHERE id=?", ["cancelled", "Cancelled by user", requestID]);

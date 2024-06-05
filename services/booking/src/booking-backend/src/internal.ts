@@ -119,8 +119,9 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                                 throw new Error("amqp queue full");
                             }
                         } finally {
-                            channel.close();
-                            connection.close();
+                            await channel.close();
+                            await sleep(250);
+                            await connection.close();
                         }
                     }
 
@@ -393,6 +394,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 } finally {
                     if (channel !== undefined) {
                         await channel.close();
+                        await sleep(250);
                     }
                     if (connection !== undefined) {
                         await connection.close();
@@ -521,6 +523,7 @@ export async function freeDevice(internalreference: bigint) {
                         await channel.deleteQueue(returnChannel);
                     }
                     await channel.close();
+                    await sleep(250);
                 }
                 if (connection !== undefined) {
                     await connection.close();
@@ -602,7 +605,7 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
             case "rejected":
                 // Success
                 await db.execute("UPDATE booking SET `status`=? WHERE id=?", [targetStatus, bookingID]);
-                [rows, fields] = await db.execute("SELECT `id` FROM bookeddevices WHERE booking=?");
+                [rows, fields] = await db.execute("SELECT `id` FROM bookeddevices WHERE booking=?", [bookingID]);
                 let connection = await amqplib.connect(config.AmqpUrl);
                 let channel = await connection.createChannel();
                 try {
@@ -616,10 +619,11 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
                     }
                 } catch (err) {
                     // Don't jump out here, since some devices might already be freed
-                    console.error("Got error while cancelling booking, devices might not be freed: " + err.toString());
+                    console.log("Got error while cancelling booking, devices might not be freed: " + err.toString());
                 } finally {
-                    channel.close();
-                    connection.close();
+                    await channel.close();
+                    await sleep(250);
+                    await connection.close();
                 }
                 break;
             case "cancelled":
@@ -640,8 +644,8 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
             }
             await db.execute("UPDATE booking SET `message`=? WHERE id=?", [targetMessage, bookingID]);
         }
-        dispatchCallback(bookingID);
         await db.commit();
+        dispatchCallback(bookingID);
     } catch (err) {
         await db.rollback();
         throw err;

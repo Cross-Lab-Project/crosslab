@@ -20,7 +20,8 @@ import * as http from 'http';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
-import { callbackType, dispatchCallback, handleCallback, randomID, reservateDevice } from './internal';
+import { MapToString, TestAMQPresults, ResetAMQPDeviceCount, StartAMQPTestFree, StopAMQPTestFree } from './integrationtest_helper_amqp'
+import { DeleteBooking, callbackType, dispatchCallback, handleCallback, randomID, reservateDevice } from './internal';
 import { config } from './config'
 import { DeviceBookingRequest } from './messageDefinition';
 
@@ -71,7 +72,7 @@ mocha.describe('internal.ts', function () {
 
     // Drain queues
     while (await channel.get('device-booking', { noAck: true })) { }
-    while (await channel.get('device-freeing', { noAck: true })) { }
+    //while (await channel.get('device-freeing', { noAck: true })) { }
     await startDeviceReservation();
   });
 
@@ -82,6 +83,7 @@ mocha.describe('internal.ts', function () {
     await channel.deleteQueue('device-freeing');
 
     await channel.close();
+    await sleep(250);
     await connection.close();
 
     channel = undefined;
@@ -597,15 +599,74 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('reservateDevice() - local single device not available', async () => {
-    throw Error('TODO implement');
+    throw new Error("test DeleteBooking first!");
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-01-10T08:00:00Z').toDate(),
+          dayjs('1999-01-10T09:00:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(new DeviceBookingRequest(BigInt(5), new URL("http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"), 0, dayjs("1999-01-10T08:00:00Z"), dayjs("1999-01-10T09:00:00Z")));
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(5)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [5, 0]);
+      if (rows.length === 0) {
+        throw new Error("booked device not found");
+      }
+
+      if (rows[0].originaldevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong original device " + rows[0].originaldevice);
+      }
+
+      if (rows[0].bookeddevice !== null) {
+        throw new Error("wrong booked device " + rows[0].bookeddevice);
+      }
+
+      if (rows[0].remotereference !== null) {
+        throw new Error("wrong remote reference " + rows[0].remotereference);
+      }
+
+      if (rows[0].local != true) { // Unfortunate, type conversion
+        throw new Error("wrong local " + rows[0].local);
+      }
+
+      if (rows[0].reservation != null) {
+        throw new Error("bad reservation " + rows[0].reservation);
+      }
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local two devices not available', async () => {
-    throw Error('TODO implement');
+    throw new Error("test DeleteBooking first!");
   });
 
   mocha.it('reservateDevice() - local group not available', async () => {
-    throw Error('TODO implement');
+    throw new Error("test DeleteBooking first!");
   });
 
   mocha.it('reservateDevice() - booking not existing', async () => {
@@ -626,18 +687,6 @@ mocha.describe('internal.ts', function () {
     }
   });
 
-  mocha.it('freeDevice() - local single device', async () => {
-    throw Error('TODO implement');
-  });
-
-  mocha.it('freeDevice() - local multiple devices', async () => {
-    throw Error('TODO implement');
-  });
-
-  mocha.it('freeDevice() - local group', async () => {
-    throw Error('TODO implement');
-  });
-
   mocha.it('randomID()', async () => {
     let ids: string[] = [];
     for (let i = 0; i < 10000; i++) {
@@ -652,7 +701,42 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('DeleteBooking() local single device', async () => {
-    throw Error('TODO implement');
+    await StartAMQPTestFree();
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await DeleteBooking(BigInt(1));
+
+      sleep(1000);
+
+      // Check booking
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "cancelled") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error("wrong number of free devices " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(1n)) {
+        throw new Error("wrong devices freed " + MapToString(TestAMQPresults));
+      }
+
+      if (TestAMQPresults.get(1n) != 1) {
+        throw new Error("wrong number of devices freed " + MapToString(TestAMQPresults));
+      }
+
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
   mocha.it('DeleteBooking() local multiple devices', async () => {
@@ -664,6 +748,18 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('DeleteBooking() non-existing', async () => {
+    throw Error('TODO implement');
+  });
+
+  mocha.it('freeDevice() - local single device', async () => {
+    throw Error('TODO implement');
+  });
+
+  mocha.it('freeDevice() - local multiple devices', async () => {
+    throw Error('TODO implement');
+  });
+
+  mocha.it('freeDevice() - local group', async () => {
     throw Error('TODO implement');
   });
 }); 

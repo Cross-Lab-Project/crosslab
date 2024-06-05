@@ -104,6 +104,7 @@ mocha.describe('mainLoop.ts', function () {
     await channel.deleteQueue(receiveQueue);
 
     await channel.close();
+    await sleep(250);
     await connection.close();
   });
 

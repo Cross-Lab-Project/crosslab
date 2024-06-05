@@ -7,6 +7,7 @@ import { DeviceBookingRequest } from './messageDefinition';
 
 export async function handleFreeDeviceRequest(): Promise<void> {
   // freeDevice
+  console.log("handleFreeDeviceRequest started")
   while (true) {
     try {
       let connection = await amqplib.connect(config.AmqpUrl);

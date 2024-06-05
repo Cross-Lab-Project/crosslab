@@ -24,6 +24,7 @@ export async function startDeviceReservation() {
   while (await channel.get('device-reservation', { noAck: true })) {}
 
   await channel.close();
+  await sleep(250);
   await connection.close();
 
   mainLoop();
@@ -58,6 +59,7 @@ export async function stopDeviceReservation() {
   await channel.deleteQueue('device-reservation');
 
   await channel.close();
+  await sleep(250);
   await connection.close();
 
   running = false;
