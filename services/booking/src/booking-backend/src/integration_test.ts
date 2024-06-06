@@ -21,7 +21,7 @@ import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
 import { MapToString, TestAMQPresults, ResetAMQPDeviceCount, StartAMQPTestFree, StopAMQPTestFree } from './integrationtest_helper_amqp'
-import { DeleteBooking, callbackType, dispatchCallback, handleCallback, randomID, reservateDevice } from './internal';
+import { DeleteBooking, callbackType, dispatchCallback, freeDevice, handleCallback, randomID, reservateDevice } from './internal';
 import { config } from './config'
 import { DeviceBookingRequest } from './messageDefinition';
 
@@ -831,38 +831,79 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('DeleteBooking() non-existing', async () => {
-      await StartAMQPTestFree();
+    await StartAMQPTestFree();
+    try {
+      let error_thrown = false
       try {
-        let error_thrown = false
-        try {
-          await DeleteBooking(BigInt(1111));
-        } catch (err) {
-          if (err.message != "Booking 1111 does not exist") {
-            throw new Error("unknown error" + err);
-          }
-          error_thrown = true;
+        await DeleteBooking(BigInt(1111));
+      } catch (err) {
+        if (err.message != "Booking 1111 does not exist") {
+          throw new Error("unknown error" + err);
         }
-        sleep(100);
-
-        if (!error_thrown) {
-          throw new Error("No error thrown");
-        }
-
-      } finally {
-        await StopAMQPTestFree();
-        ResetAMQPDeviceCount();
+        error_thrown = true;
       }
-    });
+      sleep(100);
 
-    mocha.it('freeDevice() - local single device', async () => {
-      throw Error('TODO implement');
-    });
+      if (!error_thrown) {
+        throw new Error("No error thrown");
+      }
 
-    mocha.it('freeDevice() - local multiple devices', async () => {
-      throw Error('TODO implement');
-    });
+    } finally {
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
+  });
 
-    mocha.it('freeDevice() - local group', async () => {
-      throw Error('TODO implement');
-    });
-  }); 
+  mocha.it('freeDevice() - local single device', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await freeDevice(BigInt(1));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute("SELECT * FROM reservation WHERE `id`=?", [BigInt(4)]);
+      if (rows.length !== 0) {
+        throw new Error("reservation 4 still exists");
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it('freeDevice() - local multiple devices', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      freeDevice(BigInt(2));
+      freeDevice(BigInt(3));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute("SELECT * FROM reservation WHERE `id`=?", [BigInt(5)]);
+      if (rows.length !== 0) {
+        throw new Error("reservation 5 still exists");
+      }
+      [rows, fields] = await db.execute("SELECT * FROM reservation WHERE `id`=?", [BigInt(6)]);
+      if (rows.length !== 0) {
+        throw new Error("reservation 6 still exists");
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it(' - local group', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await freeDevice(BigInt(4));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute("SELECT * FROM reservation WHERE `id`=?", [BigInt(7)]);
+      if (rows.length !== 0) {
+        throw new Error("reservation 7 still exists");
+      }
+    } finally {
+      db.end();
+    }
+  });
+}); 
