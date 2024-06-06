@@ -637,7 +637,7 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
         if (message !== undefined && message !== "") {
             let [rows, fields] = await db.execute("SELECT `message` FROM booking WHERE id=?", [bookingID]);
             let targetMessage: string = "";
-            if (rows[0].message === undefined || rows[0].message === null) {
+            if (rows[0].message === undefined || rows[0].message === null|| rows[0].message == "" ) {
                 targetMessage = message;
             } else {
                 targetMessage = rows[0].message + "\n" + message;
