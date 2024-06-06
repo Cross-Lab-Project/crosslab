@@ -449,7 +449,6 @@ export async function reservateDevice(r: DeviceBookingRequest) {
                 }
             }
         }
-
         // Ok, we were not able to book a device...
         DeleteBooking(r.BookingID, "rejected", "Can not book " + r.Device.toString());
     } finally {

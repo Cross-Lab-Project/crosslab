@@ -599,9 +599,9 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('reservateDevice() - local single device not available', async () => {
-    throw new Error("test DeleteBooking first!");
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
+    await StartAMQPTestFree();
 
     try {
       // Create fake reservation
@@ -630,43 +630,145 @@ mocha.describe('internal.ts', function () {
         throw new Error("wrong status " + rows[0].status);
       }
 
-
-      // Test bookeddevice
-      [rows, fields] = await db.execute("SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?", [5, 0]);
-      if (rows.length === 0) {
-        throw new Error("booked device not found");
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error("wrong number of free devices " + MapToString(TestAMQPresults));
       }
 
-      if (rows[0].originaldevice !== "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
-        throw new Error("wrong original device " + rows[0].originaldevice);
-      }
-
-      if (rows[0].bookeddevice !== null) {
-        throw new Error("wrong booked device " + rows[0].bookeddevice);
-      }
-
-      if (rows[0].remotereference !== null) {
-        throw new Error("wrong remote reference " + rows[0].remotereference);
-      }
-
-      if (rows[0].local != true) { // Unfortunate, type conversion
-        throw new Error("wrong local " + rows[0].local);
-      }
-
-      if (rows[0].reservation != null) {
-        throw new Error("bad reservation " + rows[0].reservation);
+      if (!TestAMQPresults.has(6n)) {
+        throw new Error("wrong devices freed " + MapToString(TestAMQPresults));
       }
     } finally {
+      ResetAMQPDeviceCount()
+      await StopAMQPTestFree();
       await db.end();
     }
   });
 
   mocha.it('reservateDevice() - local two devices not available', async () => {
-    throw new Error("test DeleteBooking first!");
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await StartAMQPTestFree();
+
+    try {
+      // Create successful reservation
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(99),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-02-10T08:00:00Z').toDate(),
+          dayjs('1999-02-10T09:00:00Z').toDate(),
+          'successful reservation',
+        ],
+      );
+
+      await db.execute('UPDATE bookeddevices SET bookeddevice=?, reservation=? WHERE id=?', ['http://localhost:10801/devices/10000000-0000-0000-0000-000000000000', BigInt(99), BigInt(7)])
+
+
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+          dayjs('1999-02-10T08:15:00Z').toDate(),
+          dayjs('1999-02-10T08:30:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(new DeviceBookingRequest(BigInt(6), new URL("http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"), 1, dayjs("1999-02-10T08:00:00Z"), dayjs("1999-02-10T09:00:00Z")));
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(6)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 2) {
+        throw new Error("wrong number of free devices " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(7n)) {
+        throw new Error("wrong devices freed " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(8n)) {
+        throw new Error("wrong devices freed " + MapToString(TestAMQPresults));
+      }
+    } finally {
+      ResetAMQPDeviceCount()
+      await StopAMQPTestFree();
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local group not available', async () => {
-    throw new Error("test DeleteBooking first!");
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await StartAMQPTestFree();
+
+    try {
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-03-10T08:10:00Z').toDate(),
+          dayjs('1999-03-10T09:20:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(101),
+          'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+          dayjs('1999-03-10T08:40:00Z').toDate(),
+          dayjs('1999-03-10T09:50:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(new DeviceBookingRequest(BigInt(7), new URL("http://localhost:10801/devices/00000000-0000-0000-0000-000000000010"), 0, dayjs("1999-03-10T08:00:00Z"), dayjs("1999-03-10T09:00:00Z")));
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(7)]);
+      if (rows.length === 0) {
+        throw new Error("booking not found");
+      }
+
+      if (rows[0].status !== "rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error("wrong number of free devices " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(9n)) {
+        throw new Error("wrong devices freed " + MapToString(TestAMQPresults));
+      }
+    } finally {
+      ResetAMQPDeviceCount()
+      await StopAMQPTestFree();
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - booking not existing', async () => {
@@ -891,7 +993,7 @@ mocha.describe('internal.ts', function () {
     }
   });
 
-  mocha.it(' - local group', async () => {
+  mocha.it('freeDevice() - local group', async () => {
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
     try {
