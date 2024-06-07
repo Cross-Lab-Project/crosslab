@@ -122,12 +122,19 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
     switch (rows[0].status) {
       case 'active-rejected':
       case 'active':
-      case 'active-pending':
         await db.execute("UPDATE booking SET `status`='booked' WHERE `id`=?", [
           bookingID,
         ]);
         dispatchCallback(bookingID);
         break;
+
+      case 'active-pending':
+          await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [
+            bookingID,
+          ]);
+          dispatchCallback(bookingID);
+          break;
+  
 
       case 'pending':
       case 'rejected':

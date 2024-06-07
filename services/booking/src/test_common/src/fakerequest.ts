@@ -15,7 +15,7 @@ export function getFakeRequest(options?: FakeRequestOptions) {
     
     request.authorization.check_authorization_or_fail = async function(action:string, id:string) : Promise<void> {
         if(!options.isAuthorized) {
-            throw Error();
+            throw Error("test authorization failed");
         } 
     } 
 
