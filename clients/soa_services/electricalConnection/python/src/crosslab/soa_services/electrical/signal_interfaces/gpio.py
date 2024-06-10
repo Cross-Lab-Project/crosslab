@@ -36,7 +36,7 @@ class GPIOInterface(SignalInterface):
             self._driver = configuration.get("driver", "default")
 
     def changeDriver(self, state: State):
-        if self._driver:
+        if self._driver and self._driverState != state:
             self._driverState = state
             data = GPIOInterfaceData(driver=self._driver, state=state)
             self.emit("upstreamData", data)
@@ -86,7 +86,9 @@ class GPIOInterface(SignalInterface):
 class ConstractableGPIOInterface(ConstructableSignalInterface):
     interfaceType = "gpio"
 
-    def __init__(self, gpios: List[str], direction: Literal["in", "out", "inout"] = "inout"):
+    def __init__(
+        self, gpios: List[str], direction: Literal["in", "out", "inout"] = "inout"
+    ):
         self.gpios = gpios
         self.direction = direction
 
