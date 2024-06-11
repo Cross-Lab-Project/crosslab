@@ -1,6 +1,7 @@
 import * as amqplib from 'amqplib';
-import { config } from './config'
+import { config } from '../config'
 import { sleep } from '@crosslab/booking-service-common';
+import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
 
 
 let connection: amqplib.Connection;
@@ -8,19 +9,19 @@ let channel: amqplib.Channel;
 
 let amqpTestStarted = false;
 
-export let TestAMQPresults = new Map();
+export let TestAMQPresultsBooking = new Map();
 
 export function MapToString(map: Map<any, any>): string {
     return JSON.stringify(Object.fromEntries(map));
 } 
 
-export function ResetAMQPDeviceCount(): void {
-    TestAMQPresults = new Map();
+export function ResetAMQPBookingDeviceCount(): void {
+    TestAMQPresultsBooking = new Map();
 };
 
 async function helperLoop(): Promise<void> {
     while (true) {
-        let msg = await channel.get('device-freeing', { noAck: false });
+        let msg = await channel.get('device-booking', { noAck: false });
 
         if (typeof msg === 'boolean') {
             await sleep(20);
@@ -30,11 +31,18 @@ async function helperLoop(): Promise<void> {
         if (msg === null) {
             continue;
         }
-
+        let data: string;
+        let message : DeviceBookingRequest;
         // Parse data
-        let data: bigint;
         try {
-            data = BigInt(msg.content.toString());
+            data = msg.content.toString();
+
+            if(data === "end amqp test"){
+                amqpTestStarted = false;
+                return;
+            }
+
+            message = DeviceBookingRequest.fromString(data);
         } catch (error) {
             console.log('Can not parse message:', error);
             try {
@@ -45,14 +53,11 @@ async function helperLoop(): Promise<void> {
             continue;
         }
         try {
-            if(data === -9999n){
-                amqpTestStarted = false;
-                return;
-            }
-            if(TestAMQPresults.has(data)) {
-                TestAMQPresults.set(data, TestAMQPresults.get(data)+1);
+            let key = "" + message.BookingID + "-" + message.Position + "-" + message.Device;
+            if(TestAMQPresultsBooking.has(key)) {
+                TestAMQPresultsBooking.set(key, TestAMQPresultsBooking.get(key)+1);
             } 
-            TestAMQPresults.set(data, 1);
+            TestAMQPresultsBooking.set(key, 1);
             channel.ack(msg);
         } catch (err) {
             console.log("Error at helperLoop: " + err);
@@ -60,7 +65,7 @@ async function helperLoop(): Promise<void> {
     }
 };
 
-export async function StartAMQPTestFree(): Promise<void> {
+export async function StartAMQPTestBooking(): Promise<void> {
     if (amqpTestStarted) {
         throw new Error("amqp mockup alreay started");
     }
@@ -68,11 +73,11 @@ export async function StartAMQPTestFree(): Promise<void> {
     connection = await amqplib.connect(config.AmqpUrl);
     channel = await connection.createChannel();
 
-    await channel.assertQueue("device-freeing", {
+    await channel.assertQueue("device-booking", {
         durable: true
     });
 
-    while (await channel.get('device-freeing', { noAck: true })) { }
+    while (await channel.get('device-booking', { noAck: true })) { }
 
     helperLoop();
     amqpTestStarted = true;
@@ -80,12 +85,12 @@ export async function StartAMQPTestFree(): Promise<void> {
     return;
 };
 
-export async function StopAMQPTestFree(): Promise<void> {
+export async function StopAMQPTestBooking(): Promise<void> {
     if (!amqpTestStarted) {
         throw new Error("amqp mockup alreay stopped");
     }
 
-    if (!channel.sendToQueue("device-freeing", Buffer.from((-9999n).toString()), { persistent: true })) {
+    if (!channel.sendToQueue("device-booking", Buffer.from("end amqp test"), { persistent: true })) {
         throw new Error("amqp queue full");
     }
 

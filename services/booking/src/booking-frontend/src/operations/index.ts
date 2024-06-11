@@ -335,7 +335,7 @@ async function commonRemoveBooking(requestID: bigint) : Promise<[404|200|423|500
     await db.beginTransaction();
 
     try {
-        let [rows, fields]: [any, any] = await db.execute("SELECT `status`, FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
+        let [rows, fields]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=? FOR UPDATE", [requestID]);
         if (rows.length === 0) {
             return [404, null];
         }

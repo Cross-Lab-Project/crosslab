@@ -1,7 +1,6 @@
 import * as amqplib from 'amqplib';
 import { config } from '../config'
 import { sleep } from '@crosslab/booking-service-common';
-import { DeviceBookingRequest } from "@crosslab/service-booking-backend";
 
 
 let connection: amqplib.Connection;
@@ -21,7 +20,7 @@ export function ResetAMQPDeviceCount(): void {
 
 async function helperLoop(): Promise<void> {
     while (true) {
-        let msg = await channel.get('device-booking', { noAck: false });
+        let msg = await channel.get('device-freeing', { noAck: false });
 
         if (typeof msg === 'boolean') {
             await sleep(20);
@@ -31,18 +30,11 @@ async function helperLoop(): Promise<void> {
         if (msg === null) {
             continue;
         }
-        let data: string;
-        let message : DeviceBookingRequest;
+
         // Parse data
+        let data: bigint;
         try {
-            data = msg.content.toString();
-
-            if(data === "end amqp test"){
-                amqpTestStarted = false;
-                return;
-            }
-
-            message = DeviceBookingRequest.fromString(data);
+            data = BigInt(msg.content.toString());
         } catch (error) {
             console.log('Can not parse message:', error);
             try {
@@ -53,11 +45,14 @@ async function helperLoop(): Promise<void> {
             continue;
         }
         try {
-            let key = "" + message.BookingID + "-" + message.Position + "-" + message.Device;
-            if(TestAMQPresults.has(key)) {
-                TestAMQPresults.set(key, TestAMQPresults.get(key)+1);
+            if(data === -9999n){
+                amqpTestStarted = false;
+                return;
+            }
+            if(TestAMQPresults.has(data)) {
+                TestAMQPresults.set(data, TestAMQPresults.get(data)+1);
             } 
-            TestAMQPresults.set(key, 1);
+            TestAMQPresults.set(data, 1);
             channel.ack(msg);
         } catch (err) {
             console.log("Error at helperLoop: " + err);
@@ -73,11 +68,11 @@ export async function StartAMQPTestFree(): Promise<void> {
     connection = await amqplib.connect(config.AmqpUrl);
     channel = await connection.createChannel();
 
-    await channel.assertQueue("device-booking", {
+    await channel.assertQueue("device-freeing", {
         durable: true
     });
 
-    while (await channel.get('device-booking', { noAck: true })) { }
+    while (await channel.get('device-freeing', { noAck: true })) { }
 
     helperLoop();
     amqpTestStarted = true;
@@ -90,7 +85,7 @@ export async function StopAMQPTestFree(): Promise<void> {
         throw new Error("amqp mockup alreay stopped");
     }
 
-    if (!channel.sendToQueue("device-booking", Buffer.from("end amqp test"), { persistent: true })) {
+    if (!channel.sendToQueue("device-freeing", Buffer.from((-9999n).toString()), { persistent: true })) {
         throw new Error("amqp queue full");
     }
 
