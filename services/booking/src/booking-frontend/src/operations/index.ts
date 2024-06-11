@@ -44,7 +44,7 @@ export const postBooking: postBookingSignature = async (request, body) => {
 
     try {
         // Create booking
-        let [rows, fields]: [any, any] = await db.execute("INSERT INTO booking (`start`, `end`, `type`, `status`, `user`) VALUES (?,?,?,?,?)", [new Date(body.Time.Start), new Date(body.Time.End), body.Time, "pending", request.authorization.user]);
+        let [rows, fields]: [any, any] = await db.execute("INSERT INTO booking (`start`, `end`, `type`, `status`, `user`) VALUES (?,?,?,?,?)", [dayjs(body.Time.Start).toDate(), dayjs(body.Time.End).toDate(), body.Type, "pending", request.authorization.user]);
         let bookingID: bigint = BigInt(rows.insertId);
 
         for (let i = 0; i < body.Devices.length; i++) {
@@ -243,6 +243,10 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
 
             let connection = await amqplib.connect(config.AmqpUrl);
             let channel = await connection.createChannel();
+
+            await channel.assertQueue("device-booking", {
+                durable: true
+            });        
 
             try {
                 for (let i = 0; i < Devices.length; i++) {

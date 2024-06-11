@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run build && env-cmd -e development c8 --include=\"app/operations/index.js\" mocha app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
-    "build:compile": "tsc",
+    "build:compile": "tsc && cp src/generated/basicValidation.cjs app/generated/basicValidation.cjs",
     "build": "npm run build:generate && npm run build:compile",
     "start": "npm run build && env-cmd -e development node app/index.js",
     "format": "prettier . --write",
