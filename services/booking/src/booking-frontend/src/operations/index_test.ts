@@ -19,7 +19,7 @@ import * as amqplib from 'amqplib';
 import { MapToString, ResetAMQPBookingDeviceCount, StartAMQPTestBooking, StopAMQPTestBooking, TestAMQPresultsBooking } from './indextest_helper_amqp_booking'
 import { ResetAMQPDeviceCount, StartAMQPTestFree, StopAMQPTestFree, TestAMQPresults } from './indextest_helper_amqp_free'
 
-import { postBooking, getBookingByID, deleteBookingByID } from './index';
+import { postBooking, getBookingByID, deleteBookingByID, deleteBookingByIDDestroy } from './index';
 import { config } from '../config'
 
 let connection: amqplib.Connection;
@@ -858,14 +858,187 @@ mocha.describe('operations.ts', function () {
 
 
   mocha.it('deleteBookingByIDDestroy authorization failed', async function () {
-    throw Error("Not implemented");
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestFree();
+    try {
+      let isError: boolean = false
+
+      let req = getFakeRequest({ user: "badactor", isAuthorized: false });
+
+      try {
+        await deleteBookingByIDDestroy(req, { ID: "1" });
+      } catch (err) {
+        if (err.message == "test authorization failed") {
+          isError = true;
+        } else {
+          console.log(err.message);
+          throw err;
+        }
+      }
+      await sleep(250);
+
+      if (!isError) {
+        throw new Error("no access violation detected");
+      }
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("booking was deleted (status=" + rows[0].status + ")");
+      }
+
+      if (TestAMQPresults.size != 0) {
+        throw new Error("freed devices found " + MapToString(TestAMQPresults));
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
-  mocha.it('deleteBookingByIDDestroy success', async function () {
-    throw Error("Not implemented");
+  mocha.it('deleteBookingByIDDestroy success single', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestFree();
+    try {
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await deleteBookingByIDDestroy(req, { ID: "1" });
+      await sleep(250);
+
+      if (res.status != 200) {
+        if (res.status == 500) {
+          throw new Error(res.body);
+        }
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "cancelled") {
+        throw new Error("booking was not deleted (status=" + rows[0].status + ")");
+      }
+
+      if (TestAMQPresults.size != 1) {
+        throw new Error("wrong number of freed devices found " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(BigInt(1))) {
+        throw new Error("device not freed " + MapToString(TestAMQPresults))
+      }
+
+      if (Number(TestAMQPresults.get(BigInt(1))) != 1) {
+        throw new Error("wrong number of free messages " + MapToString(TestAMQPresults))
+      }
+
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
+  });
+
+  mocha.it('deleteBookingByIDDestroy success multiple', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestFree();
+    try {
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await deleteBookingByIDDestroy(req, { ID: "2" });
+      await sleep(250);
+
+      if (res.status != 200) {
+        if (res.status == 500) {
+          throw new Error(res.body);
+        }
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(2)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "cancelled") {
+        throw new Error("booking was not deleted (status=" + rows[0].status + ")");
+      }
+
+      if (TestAMQPresults.size != 2) {
+        throw new Error("wrong number of freed devices found " + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(BigInt(2))) {
+        throw new Error("device not freed " + MapToString(TestAMQPresults))
+      }
+
+      if (Number(TestAMQPresults.get(BigInt(2))) != 1) {
+        throw new Error("wrong number of free messages " + MapToString(TestAMQPresults))
+      }
+
+      if (!TestAMQPresults.has(BigInt(3))) {
+        throw new Error("device not freed " + MapToString(TestAMQPresults))
+      }
+
+      if (Number(TestAMQPresults.get(BigInt(3))) != 1) {
+        throw new Error("wrong number of free messages " + MapToString(TestAMQPresults))
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
   mocha.it('deleteBookingByIDDestroy booking not available', async function () {
-    throw Error("Not implemented");
+    let req = getFakeRequest({ user: "test", isAuthorized: true });
+    let b = await deleteBookingByIDDestroy(req, { ID: "99999999" });
+
+    if (b.status !== 404) {
+      throw new Error("bad status code" + b.status);
+    }
+  });
+
+
+  mocha.it('deleteBookingByIDDestroy wrong status', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestFree();
+    try {
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?",["active", BigInt(1)] );
+
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+       let res =  await deleteBookingByIDDestroy(req, { ID: "1" });
+      await sleep(250);
+
+      if(res.status != 423){
+        throw new Error("wrong status " + res.status);
+      } 
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active") {
+        throw new Error("booking was deleted (status=" + rows[0].status + ")");
+      }
+
+      if (TestAMQPresults.size != 0) {
+        throw new Error("freed devices found " + MapToString(TestAMQPresults));
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 });
