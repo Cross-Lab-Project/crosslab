@@ -18,7 +18,7 @@ import * as amqplib from 'amqplib';
 
 import { MapToString, ResetAMQPDeviceCount, StartAMQPTestFree, StopAMQPTestFree, TestAMQPresults } from './indextest_helper_amqp'
 
-import { postBooking } from './index';
+import { postBooking, getBookingByID } from './index';
 import { config } from '../config'
 
 let connection: amqplib.Connection;
@@ -376,16 +376,268 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+
+
   mocha.it('getBookingByID authorization failed', async function () {
-    throw Error("Not implemented");
+    try {
+      let isError: boolean = false
+
+      let req = getFakeRequest({ user: "badactor", isAuthorized: false });
+
+      try {
+        await getBookingByID(req, { ID: "1" });
+      } catch (err) {
+        if (err.message == "test authorization failed") {
+          isError = true;
+        } else {
+          console.log(err.message);
+          throw err;
+        }
+      }
+      await sleep(250);
+
+      if (!isError) {
+        throw new Error("no access violation detected");
+      }
+    } finally {
+    }
   });
 
-  mocha.it('getBookingByID success', async function () {
-    throw Error("Not implemented");
+  mocha.it('getBookingByID success single (creator)', async function () {
+    try {
+      let req = getFakeRequest({ user: "test", isAuthorized: true });
+      let b = await getBookingByID(req, { ID: "1" });
+
+      if (b.status !== 200) {
+        throw new Error("bad status code" + b.status);
+      }
+
+      if (b.body.Locked) {
+        throw new Error("booking is locked");
+      }
+
+      if (b.body.Booking.ID != "1") {
+        throw new Error("bad id" + b.body.Booking.ID);
+      }
+
+      if (!b.body.Booking.You) {
+        throw new Error("you is not set")
+      }
+
+      if (b.body.Booking.External) {
+        throw new Error("booking is external");
+      }
+
+      if (b.body.Booking.Status != "booked") {
+        throw new Error("wrong status" + b.body.Booking.Status);
+      }
+
+      if (b.body.Booking.Devices.length != 1) {
+        throw new Error("wrong number of devices " + b.body.Booking.Devices.length);
+      }
+
+      if (b.body.Booking.Devices[0] != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device 0 " + b.body.Booking.Devices[0]);
+      }
+
+      if(!dayjs('1999-01-10T06:00:00Z').isSame(dayjs(b.body.Booking.Time.Start))){
+        throw new Error("wrong start " + b.body.Booking.Time.Start);
+      }
+      
+      if(dayjs(b.body.Booking.Time.Start).toISOString() != b.body.Booking.Time.Start){
+        throw new Error("start is no iso " + b.body.Booking.Time.Start);
+      } 
+
+      if(!dayjs('1999-01-10T07:00:00Z').isSame(dayjs(b.body.Booking.Time.End))){
+        throw new Error("wrong end " + b.body.Booking.Time.End);
+      }
+
+      if(dayjs(b.body.Booking.Time.End).toISOString() != b.body.Booking.Time.End){
+        throw new Error("end is no iso " + b.body.Booking.Time.End);
+      } 
+    } finally {
+    }
   });
 
+  mocha.it('getBookingByID success single (not creator)', async function () {
+    try {
+      let req = getFakeRequest({ user: "not_test", isAuthorized: true });
+      let b = await getBookingByID(req, { ID: "1" });
+
+      if (b.status !== 200) {
+        throw new Error("bad status code" + b.status);
+      }
+
+      if (b.body.Locked) {
+        throw new Error("booking is locked");
+      }
+
+      if (b.body.Booking.ID != "1") {
+        throw new Error("bad id" + b.body.Booking.ID);
+      }
+
+      if (b.body.Booking.You) {
+        throw new Error("you is set")
+      }
+
+      if (b.body.Booking.External) {
+        throw new Error("booking is external");
+      }
+
+      if (b.body.Booking.Status != "booked") {
+        throw new Error("wrong status" + b.body.Booking.Status);
+      }
+
+      if (b.body.Booking.Devices.length != 1) {
+        throw new Error("wrong number of devices " + b.body.Booking.Devices.length);
+      }
+
+      if (b.body.Booking.Devices[0] != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device 0 " + b.body.Booking.Devices[0]);
+      }
+
+      if(!dayjs('1999-01-10T06:00:00Z').isSame(dayjs(b.body.Booking.Time.Start))){
+        throw new Error("wrong start " + b.body.Booking.Time.Start);
+      }
+      
+      if(dayjs(b.body.Booking.Time.Start).toISOString() != b.body.Booking.Time.Start){
+        throw new Error("start is no iso " + b.body.Booking.Time.Start);
+      } 
+
+      if(!dayjs('1999-01-10T07:00:00Z').isSame(dayjs(b.body.Booking.Time.End))){
+        throw new Error("wrong end " + b.body.Booking.Time.End);
+      }
+
+      if(dayjs(b.body.Booking.Time.End).toISOString() != b.body.Booking.Time.End){
+        throw new Error("end is no iso " + b.body.Booking.Time.End);
+      } 
+    } finally {
+    }
+  });
+
+  mocha.it('getBookingByID success multiple (creator)', async function () {
+    try {
+      let req = getFakeRequest({ user: "test", isAuthorized: true });
+      let b = await getBookingByID(req, { ID: "2" });
+
+      if (b.status !== 200) {
+        throw new Error("bad status code" + b.status);
+      }
+
+      if (b.body.Locked) {
+        throw new Error("booking is locked");
+      }
+
+      if (b.body.Booking.ID != "2") {
+        throw new Error("bad id" + b.body.Booking.ID);
+      }
+
+      if (!b.body.Booking.You) {
+        throw new Error("you is not set")
+      }
+
+      if (b.body.Booking.External) {
+        throw new Error("booking is external");
+      }
+
+      if (b.body.Booking.Status != "booked") {
+        throw new Error("wrong status" + b.body.Booking.Status);
+      }
+
+      if (b.body.Booking.Devices.length != 2) {
+        throw new Error("wrong number of devices " + b.body.Booking.Devices.length);
+      }
+
+      if (b.body.Booking.Devices[0] != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device 0 " + b.body.Booking.Devices[0]);
+      }
+
+      if (b.body.Booking.Devices[1] != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device 1 " + b.body.Booking.Devices[1]);
+      }
+
+      if(!dayjs('1999-02-10T06:00:00Z').isSame(dayjs(b.body.Booking.Time.Start))){
+        throw new Error("wrong start " + b.body.Booking.Time.Start);
+      }
+      
+      if(dayjs(b.body.Booking.Time.Start).toISOString() != b.body.Booking.Time.Start){
+        throw new Error("start is no iso " + b.body.Booking.Time.Start);
+      } 
+
+      if(!dayjs('1999-02-10T07:00:00Z').isSame(dayjs(b.body.Booking.Time.End))){
+        throw new Error("wrong end " + b.body.Booking.Time.End);
+      }
+
+      if(dayjs(b.body.Booking.Time.End).toISOString() != b.body.Booking.Time.End){
+        throw new Error("end is no iso " + b.body.Booking.Time.End);
+      } 
+    } finally {
+    }
+  });
+
+    mocha.it('getBookingByID success group (creator)', async function () {
+    try {
+      let req = getFakeRequest({ user: "test", isAuthorized: true });
+      let b = await getBookingByID(req, { ID: "3" });
+
+      if (b.status !== 200) {
+        throw new Error("bad status code" + b.status);
+      }
+
+      if (b.body.Locked) {
+        throw new Error("booking is locked");
+      }
+
+      if (b.body.Booking.ID != "3") {
+        throw new Error("bad id" + b.body.Booking.ID);
+      }
+
+      if (!b.body.Booking.You) {
+        throw new Error("you is not set")
+      }
+
+      if (b.body.Booking.External) {
+        throw new Error("booking is external");
+      }
+
+      if (b.body.Booking.Status != "booked") {
+        throw new Error("wrong status" + b.body.Booking.Status);
+      }
+
+      if (b.body.Booking.Devices.length != 1) {
+        throw new Error("wrong number of devices " + b.body.Booking.Devices.length);
+      }
+
+      if (b.body.Booking.Devices[0] != "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010") {
+        throw new Error("wrong device 0 " + b.body.Booking.Devices[0]);
+      }
+
+      if(!dayjs('1999-03-10T06:00:00Z').isSame(dayjs(b.body.Booking.Time.Start))){
+        throw new Error("wrong start " + b.body.Booking.Time.Start);
+      }
+      
+      if(dayjs(b.body.Booking.Time.Start).toISOString() != b.body.Booking.Time.Start){
+        throw new Error("start is no iso " + b.body.Booking.Time.Start);
+      } 
+
+      if(!dayjs('1999-03-10T07:00:00Z').isSame(dayjs(b.body.Booking.Time.End))){
+        throw new Error("wrong end " + b.body.Booking.Time.End);
+      }
+
+      if(dayjs(b.body.Booking.Time.End).toISOString() != b.body.Booking.Time.End){
+        throw new Error("end is no iso " + b.body.Booking.Time.End);
+      } 
+    } finally {
+    }
+  });
+  
   mocha.it('getBookingByID booking not available', async function () {
-    throw Error("Not implemented");
+    let req = getFakeRequest({ user: "test", isAuthorized: true });
+    let b = await getBookingByID(req, { ID: "99999999" });
+
+    if (b.status !== 404) {
+      throw new Error("bad status code" + b.status);
+    }
   });
 
 

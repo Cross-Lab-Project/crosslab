@@ -109,8 +109,8 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
                 status: 404,
             };
         }
-        body.Booking.Time.Start = rows[0].start;
-        body.Booking.Time.End = rows[0].end;
+        body.Booking.Time.Start = dayjs(rows[0].start).toISOString();
+        body.Booking.Time.End = dayjs(rows[0].end).toISOString();
         body.Booking.Type = rows[0].type;
         body.Booking.Status = rows[0].status;
         body.Booking.You = rows[0].user == request.authorization.user;

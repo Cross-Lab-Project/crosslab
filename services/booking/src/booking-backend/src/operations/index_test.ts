@@ -99,6 +99,18 @@ mocha.describe('operations.ts', function () {
         throw new Error("wrong status " + result.status);
       }
 
+      if(result.body.length != 1){
+        throw new Error("number of devices wrong "+ result.body.length);
+      } 
+
+      if(result.body[0].Requested != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong requested devive 0 " + result.body[0].Requested);
+      }
+
+      if(result.body[0].Selected != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong selected devive 0 " + result.body[0].Selected);
+      } 
+
       let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
       if (rows.length == 0) {
         throw Error("booking not found")
@@ -108,6 +120,97 @@ mocha.describe('operations.ts', function () {
       }
 
       if (!fakeServerConfig.callback_test_local_single_was_called) {
+        throw new Error("callback not called");
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it('putBookingByIDLock lock success multiple', async function () {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      let result = await putBookingByIDLock(getFakeRequest(), { ID: "2" });
+      await sleep(250);
+
+      if (result.status != 200) {
+        throw new Error("wrong status " + result.status);
+      }
+
+      if(result.body.length != 2){
+        throw new Error("number of devices wrong "+ result.body.length);
+      } 
+
+      if(result.body[0].Requested != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong requested devive 0 " + result.body[0].Requested);
+      }
+
+      if(result.body[0].Selected != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong selected devive 0 " + result.body[0].Selected);
+      } 
+
+      if(result.body[1].Requested != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong requested devive 0 " + result.body[1].Requested);
+      }
+
+      if(result.body[1].Selected != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong selected devive 0 " + result.body[1].Selected);
+      } 
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(2)]);
+      if (rows.length == 0) {
+        throw Error("booking not found")
+      }
+      if (rows[0].status !== "active") {
+        throw new Error("Wrong status " + rows[0].status);
+      }
+
+      if (!fakeServerConfig.callback_test_local_two_first_was_called) {
+        throw new Error("callback not called");
+      }
+      if (!fakeServerConfig.callback_test_local_two_second_was_called) {
+        throw new Error("callback not called");
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it('putBookingByIDLock lock success group', async function () {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      let result = await putBookingByIDLock(getFakeRequest(), { ID: "3" });
+      await sleep(250);
+
+      if (result.status != 200) {
+        throw new Error("wrong status " + result.status);
+      }
+
+      if(result.body.length != 1){
+        throw new Error("number of devices wrong "+ result.body.length);
+      } 
+
+      if(result.body[0].Requested != "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010"){
+        throw new Error("wrong requested devive 0 " + result.body[0].Requested);
+      }
+
+      if(result.body[0].Selected != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong selected devive 0 " + result.body[0].Selected);
+      } 
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(3)]);
+      if (rows.length == 0) {
+        throw Error("booking not found")
+      }
+      if (rows[0].status !== "active") {
+        throw new Error("Wrong status " + rows[0].status);
+      }
+
+      if (!fakeServerConfig.callback_test_local_group_was_called) {
         throw new Error("callback not called");
       }
     } finally {
@@ -127,6 +230,18 @@ mocha.describe('operations.ts', function () {
       if (result.status != 200) {
         throw new Error("wrong status " + result.status);
       }
+
+      if(result.body.length != 1){
+        throw new Error("number of devices wrong "+ result.body.length);
+      } 
+
+      if(result.body[0].Requested != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong requested devive 0 " + result.body[0].Requested);
+      }
+
+      if(result.body[0].Selected != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"){
+        throw new Error("wrong selected devive 0 " + result.body[0].Selected);
+      } 
 
       let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
       if (rows.length == 0) {
