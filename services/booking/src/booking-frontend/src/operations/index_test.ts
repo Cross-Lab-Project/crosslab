@@ -19,7 +19,7 @@ import * as amqplib from 'amqplib';
 import { MapToString, ResetAMQPBookingDeviceCount, StartAMQPTestBooking, StopAMQPTestBooking, TestAMQPresultsBooking } from './indextest_helper_amqp_booking'
 import { ResetAMQPDeviceCount, StartAMQPTestFree, StopAMQPTestFree, TestAMQPresults } from './indextest_helper_amqp_free'
 
-import { postBooking, getBookingByID, deleteBookingByID, deleteBookingByIDDestroy } from './index';
+import { postBooking, getBookingByID, deleteBookingByID, deleteBookingByIDDestroy, patchBookingByID } from './index';
 import { config } from '../config'
 
 let connection: amqplib.Connection;
@@ -799,15 +799,15 @@ mocha.describe('operations.ts', function () {
     await db.connect();
     await StartAMQPTestFree();
     try {
-      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?",["active", BigInt(1)] );
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
 
       let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
-       let res =  await deleteBookingByID(req, { ID: "1" });
+      let res = await deleteBookingByID(req, { ID: "1" });
       await sleep(250);
 
-      if(res.status != 423){
+      if (res.status != 423) {
         throw new Error("wrong status " + res.status);
-      } 
+      }
 
       let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
       if (rows.length !== 1) {
@@ -831,28 +831,1034 @@ mocha.describe('operations.ts', function () {
 
 
 
-  mocha.it('patchBookingByID authorization failed', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID authorization failed callback', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let isError: boolean = false
+
+      let req = getFakeRequest({ user: "badactor", isAuthorized: false });
+
+      try {
+        await patchBookingByID(req, { ID: "1" }, { Callback: "http://localhost:10801/test_callbacks/callback-test-new" });
+      } catch (err) {
+        if (err.message == "test authorization failed") {
+          isError = true;
+        } else {
+          console.log(err.message);
+          throw err;
+        }
+      }
+      await sleep(250);
+
+      if (!isError) {
+        throw new Error("no access violation detected");
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
-  mocha.it('patchBookingByID success unlocked', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID success unlocked callback', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Callback: "http://localhost:10801/test_callbacks/callback-test-new" });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT `booking` FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length == 0) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows.length > 1) {
+        throw new Error("number of rows too many " + rows.length);
+      }
+
+      if (rows[0].booking != 1n) {
+        throw new Error("wrong booking id " + rows[0].bookingcallbacks);
+      }
+
+      // Check devices haven't changed
+      [rows, _] = await db.execute("SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?", [BigInt(1)]);
+      if (rows.length == 0) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n > 1) {
+        throw new Error("number of bookeddevices wrong " + rows[0].n);
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
-  mocha.it('patchBookingByID success locked', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID success locked callback', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Callback: "http://localhost:10801/test_callbacks/callback-test-new", Locked: true });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT `booking` FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length == 0) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows.length > 1) {
+        throw new Error("number of rows too many " + rows.length);
+      }
+
+      if (rows[0].booking != 1n) {
+        throw new Error("wrong booking id " + rows[0].bookingcallbacks);
+      }
+
+      // Check devices haven't changed
+      [rows, _] = await db.execute("SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?", [BigInt(1)]);
+      if (rows.length == 0) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n > 1) {
+        throw new Error("number of bookeddevices wrong " + rows[0].n);
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
-  mocha.it('patchBookingByID booking not available', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID booking not available callback', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "user.unittest.", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "999999999999" }, { Callback: "http://localhost:10801/test_callbacks/callback-test-new" });
+      await sleep(250);
+
+      if (res.status != 404) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
-  mocha.it('patchBookingByID wrong status unlocked', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID success unlocked devices', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }] });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 2) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 0]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 1]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      if (TestAMQPresultsBooking.size != 1) {
+        throw new Error("wrong number devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (!TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) {
+        throw new Error("wrong devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (Number(TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) != 1) {
+        throw new Error("wrong device number were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "pending") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // No new callbacks
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
-  mocha.it('patchBookingByID wrong status locked', async function () {
-    throw Error("Not implemented");
+  mocha.it('patchBookingByID success unlocked devices multiple', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }, { ID: "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010" }] });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 3) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 0]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 1]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 2]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      if (TestAMQPresultsBooking.size != 2) {
+        throw new Error("wrong number devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (!TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) {
+        throw new Error("wrong devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (Number(TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) != 1) {
+        throw new Error("wrong device number were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (!TestAMQPresultsBooking.has("1-2-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010")) {
+        throw new Error("wrong devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (Number(TestAMQPresultsBooking.has("1-2-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010")) != 1) {
+        throw new Error("wrong device number were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "pending") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+      // No new callbacks
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID unlocked devices set locked', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], Locked: true });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID success locked devices', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], Locked: true });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 2) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 0]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      [rows, _] = await db.execute("SELECT `originaldevice` FROM bookeddevices WHERE `booking` = ? AND `originalposition`=?", [BigInt(1), 1]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].originaldevice != "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong originaldevice " + rows[0].originaldevice);
+      }
+
+      if (TestAMQPresultsBooking.size != 1) {
+        throw new Error("wrong number devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (!TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) {
+        throw new Error("wrong devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      if (Number(TestAMQPresultsBooking.has("1-1-http://localhost:10801/devices/20000000-0000-0000-0000-000000000000")) != 1) {
+        throw new Error("wrong device number were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active-pending") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+
+      // No new callbacks
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID locked devices forgot locked', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], }); // no Locked here
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID booking not available devices', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "user.unittest.", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "999999999999" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }] });
+      await sleep(250);
+
+      if (res.status != 404) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID wrong status unlocked devices (cancelled)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["cancelled", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "cancelled") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID wrong status unlocked devices (rejected)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["rejected", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID wrong status unlocked devices (active-pending)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["active-pending", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active-pending") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+  mocha.it('patchBookingByID wrong status unlocked devices (active-rejected)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["active-rejected", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "active-rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID wrong status locked devices (cancelled)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["cancelled", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], Locked: true });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "cancelled") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID wrong status locked devices (rejected)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["rejected", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], Locked: true });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "rejected") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+
+  mocha.it('patchBookingByID wrong status locked devices (pending)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute("UPDATE `booking` SET `status`=? WHERE `id`=?", ["pending", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "user.unittest", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }], Locked: true });
+      await sleep(250);
+
+      if (res.status != 423) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM bookeddevices WHERE `booking`=?', [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find bookeddevices");
+      }
+
+      if (rows[0].n != 1) {
+        throw new Error("found " + rows[0].status + " bookeddevices");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "pending") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID both callback and devices', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      let req = getFakeRequest({ user: "user.unittest.", isAuthorized: true });
+
+      let res = await patchBookingByID(req, { ID: "1" }, { Callback: "http://localhost:10801/test_callbacks/callback-test-new", Devices: [{ ID: "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000" }] });
+      await sleep(250);
+
+      if (res.status != 400) {
+        throw new Error("bad status code " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM bookingcallbacks WHERE `url`=?', ["http://localhost:10801/test_callbacks/callback-test-new"]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].n != 0) {
+        throw new Error("found " + rows[0].status + " new callbacks");
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error("devices were requested " + MapToString(TestAMQPresultsBooking));
+      }
+
+      [rows, _] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "booked") {
+        throw new Error("wrong status " + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
   });
 
 
@@ -1013,15 +2019,15 @@ mocha.describe('operations.ts', function () {
     await db.connect();
     await StartAMQPTestFree();
     try {
-      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?",["active", BigInt(1)] );
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
 
       let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
-       let res =  await deleteBookingByIDDestroy(req, { ID: "1" });
+      let res = await deleteBookingByIDDestroy(req, { ID: "1" });
       await sleep(250);
 
-      if(res.status != 423){
+      if (res.status != 423) {
         throw new Error("wrong status " + res.status);
-      } 
+      }
 
       let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
       if (rows.length !== 1) {

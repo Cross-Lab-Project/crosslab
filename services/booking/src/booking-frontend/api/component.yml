@@ -86,7 +86,7 @@
                  properties:
                     Locked:
                       type: boolean
-                      description: Expresses whether the devices should be locked. Must match current status of booking.
+                      description: Expresses whether the devices should be locked. Must match current status of booking. Is assumed to be false if not set.
                     Devices:
                      type: array
                      description: List of devices which should be added.
@@ -113,6 +113,15 @@
                   BookingID:
                     type: string
                     format: uri
+        '400':
+          description: >-
+            The request was not build correctly (e.g. both Devices and Callback are requested).
+            See error returned for more details
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description
         '401':
           description: No authorisation header found.
         '403':

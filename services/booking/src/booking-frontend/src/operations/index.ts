@@ -149,7 +149,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
 }
 
 export const deleteBookingByID: deleteBookingByIDSignature = async (request, parameters) => {
-    let requestID:bigint = BigInt(parameters.ID);
+    let requestID: bigint = BigInt(parameters.ID);
 
     await request.authorization.check_authorization_or_fail('delete', `booking:${requestID}`);
 
@@ -157,7 +157,7 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (request, par
 
     // Typescript seems to have problems to infer body correctly with case 500.
     // Therefore, the solution here is more complicated
-    if(code === 500) { 
+    if (code === 500) {
         return {
             status: code,
             body: err ?? "No error",
@@ -191,17 +191,22 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
             }
         }
 
-        if (typeof(body.Callback) === "string") {
+        // if both are set, the request is invalid
+        if (typeof (body.Callback) === "string" && typeof (body.Devices) !== "undefined") {
+            return {
+                status: 400,
+                body: "can not add callback and devices in one request"
+            }
+        } else if (typeof (body.Callback) === "string") {
             // this is adding a callback
             await db.execute("INSERT INTO bookingcallbacks (`booking`, `url`) VALUES (?,?)", [requestID, body.Callback]);
-        } else if (typeof(body.Devices) !== undefined) {
-            // TODO: auth Check for scopes 'booking' and 'booking:use'
+        } else if (typeof (body.Devices) !== "undefined") {
             let Devices: Device[] = body.Devices as Device[];
-            if (request.authorization.user === undefined || rows[0].user != request.authorization.user) {
-                return {
-                    status: 401,
-                }
-            }
+
+            // Set locked to default if not given
+            if(body.Locked == undefined){
+                body.Locked = false;
+            } 
 
             switch (body.Locked) {
                 case true:
@@ -246,7 +251,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
 
             await channel.assertQueue("device-booking", {
                 durable: true
-            });        
+            });
 
             try {
                 for (let i = 0; i < Devices.length; i++) {
@@ -303,14 +308,14 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
 }
 
 export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async (request, parameters) => {
-    let requestID:bigint = BigInt(parameters.ID);
+    let requestID: bigint = BigInt(parameters.ID);
 
     await request.authorization.check_authorization_or_fail('delete', `booking:${requestID}`);
 
     let [code, err] = await commonRemoveBooking(requestID)
     // Typescript seems to have problems to infer body correctly with case 500.
     // Therefore, the solution here is more complicated
-    if(code === 500) { 
+    if (code === 500) {
         return {
             status: code,
             body: err ?? "No error",
@@ -325,9 +330,9 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
     }
 }
 
-export default {postBooking, getBookingByID, deleteBookingByID, patchBookingByID, deleteBookingByIDDestroy}
+export default { postBooking, getBookingByID, deleteBookingByID, patchBookingByID, deleteBookingByIDDestroy }
 
-async function commonRemoveBooking(requestID: bigint) : Promise<[404|200|423|500, string|null]> {
+async function commonRemoveBooking(requestID: bigint): Promise<[404 | 200 | 423 | 500, string | null]> {
     let success: boolean = false;
 
     let db = await mysql.createConnection(config.BookingDSN);
