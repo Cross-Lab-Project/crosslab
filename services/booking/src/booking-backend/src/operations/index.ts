@@ -41,7 +41,7 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -84,14 +84,12 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
         status: 200,
         body: deviceList,
       };
-    } catch (err) {
-      throw err;
     } finally {
       dispatchCallback(bookingID);
-      db.commit();
+      await db.commit();
     }
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
@@ -129,17 +127,17 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
         break;
 
       case 'active-pending':
-          await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [
-            bookingID,
-          ]);
-          dispatchCallback(bookingID);
-          break;
-  
+        await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [
+          bookingID,
+        ]);
+        dispatchCallback(bookingID);
+        break;
+
 
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -152,12 +150,12 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
         throw Error('BUG: Unknown booking status ' + rows[0].status);
     }
 
-    db.commit();
+    await db.commit();
     return {
       status: 200,
     };
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();

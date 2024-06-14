@@ -563,6 +563,7 @@ mocha.describe('mainLoop.ts', function () {
     }
   });
 
+
   mocha.it('mainLoop.ts get missing values', async () => {
     let m = new ReservationMessage(ReservationRequest.Get, receiveQueue);
 
@@ -581,6 +582,48 @@ mocha.describe('mainLoop.ts', function () {
       throw new Error("Reservation (4) was successful but shouldn't");
     }
   });
+
+  mocha.it('mainLoop.ts bad dates', async () => {
+    let m = new ReservationMessage(ReservationRequest.New, receiveQueue);
+    m.Device = new URL('http://localhost/device/superDevice');
+    m.End = dayjs('2022-06-27T02:15:00Z');
+    m.Start = dayjs('2022-06-27T03:45:00Z');
+
+    channel.sendToQueue(sendQueue, Buffer.from(JSON.stringify(m)));
+    await sleep(1000);
+
+    let a = await channel.get(receiveQueue, { noAck: true });
+
+    if (a == null || typeof a === 'boolean') {
+      throw new Error('Did not receive answer message');
+    }
+
+    let data = JSON.parse(a.content.toString());
+
+    if (data.Successful) {
+      throw new Error("Reservation (1) was successful but shouldn't");
+    }
+
+    m = new ReservationMessage(ReservationRequest.New, receiveQueue);
+    m.Device = new URL('http://localhost/device/superDevice');
+    m.End = dayjs('2022-06-27T02:15:00Z');
+    m.Start = dayjs('2022-06-27T02:15:00Z');
+
+    channel.sendToQueue(sendQueue, Buffer.from(JSON.stringify(m)));
+    await sleep(1000);
+
+    a = await channel.get(receiveQueue, { noAck: true });
+
+    if (a == null || typeof a === 'boolean') {
+      throw new Error('Did not receive answer message');
+    }
+
+    data = JSON.parse(a.content.toString());
+
+    if (data.Successful) {
+      throw new Error("Reservation (2) was successful but shouldn't");
+    }
+  }) ;
 
   mocha.it('mainLoop.ts delete missing values', async () => {
     let m = new ReservationMessage(ReservationRequest.Delete, receiveQueue);

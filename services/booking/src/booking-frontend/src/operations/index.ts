@@ -71,7 +71,7 @@ export const postBooking: postBookingSignature = async (request, body) => {
             }
         }
     } catch (err) {
-        db.rollback();
+        await db.rollback();
 
         return {
             status: 500,
@@ -115,6 +115,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
         body.Booking.Status = rows[0].status;
         body.Booking.You = rows[0].user == request.authorization.user;
         body.Message = rows[0].message;
+        body.Locked = false;
         if (body.Booking.Status === "active" || body.Booking.Status === "active-pending" || body.Booking.Status == "active-rejected") {
             body.Locked = true;
         }
@@ -130,7 +131,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
             body: body
         }
     } catch (err) {
-        db.rollback();
+        await db.rollback();
         db.end();
 
         return {
@@ -138,7 +139,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
             body: err.toString(),
         }
     } finally {
-        db.commit();
+        await db.commit();
         db.end();
     };
 
@@ -225,12 +226,6 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
                     }
                     await db.execute("UPDATE booking SET `status`=? WHERE id=?", ["pending", requestID]);
                     break;
-                case undefined:
-                    return {
-                        status: 500,
-                        body: "BUG: 'Locked' is missing",
-                    }
-                    break;
                 default:
                     throw Error("BUG: unknown status body.Locked: " + body.Locked);
                     break;
@@ -286,9 +281,9 @@ export const patchBookingByID: patchBookingByIDSignature = async (request, param
         }
     } finally {
         if (success) {
-            db.commit();
+            await db.commit();
         } else {
-            db.rollback();
+            await db.rollback();
         }
         db.end();
     }
@@ -392,9 +387,9 @@ async function commonRemoveBooking(requestID: bigint): Promise<[404 | 200 | 423 
         return [500, err.toString()];
     } finally {
         if (success) {
-            db.commit();
+            await db.commit();
         } else {
-            db.rollback();
+            await db.rollback();
         }
         db.end();
     }

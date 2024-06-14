@@ -280,6 +280,17 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+  mocha.it('putBookingByIDLock no booking', async function () {
+    try {
+        let res = await putBookingByIDLock(getFakeRequest({ user: "unittest.user", isAuthorized: true }), { ID: "999999999999999" });
+        await sleep(250);
+        if(res.status != 404){
+          throw new Error("wrong status " + res.status)
+        } 
+    } finally {
+    }
+  });
+
   mocha.it('deleteBookingByIDLock no authorization', async function () {
     let isError = false;
     try {
@@ -333,7 +344,7 @@ mocha.describe('operations.ts', function () {
     await db.connect();
 
     try {
-      let result = await putBookingByIDLock(getFakeRequest(), { ID: "1" });
+      let result = await deleteBookingByIDLock(getFakeRequest(), { ID: "1" });
       await sleep(250);
 
       if (result.status != 200) {
@@ -344,7 +355,7 @@ mocha.describe('operations.ts', function () {
       if (rows.length == 0) {
         throw Error("booking not found")
       }
-      if (rows[0].status !== "active") {
+      if (rows[0].status !== "booked") {
         throw new Error("Wrong status " + rows[0].status);
       }
     } finally {
@@ -402,6 +413,17 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+  mocha.it('deleteBookingByIDLock no booking', async function () {
+    try {
+        let res = await deleteBookingByIDLock(getFakeRequest({ user: "unittest.user", isAuthorized: true }), { ID: "999999999999999" });
+        await sleep(250);
+        if(res.status != 404){
+          throw new Error("wrong status " + res.status)
+        } 
+    } finally {
+    }
+  });
+
   mocha.it('postBookingCallbackByID no authorization', async function () {
     let isError = false;
     try {
@@ -424,5 +446,16 @@ mocha.describe('operations.ts', function () {
   mocha.it('postBookingCallbackByID success', async function () {
       await postBookingCallbackByID(getFakeRequest(), { ID: "1" });
       await sleep(250);
+  });
+
+  mocha.it('putBookingByIDLock no booking', async function () {
+    try {
+        let res = await postBookingCallbackByID(getFakeRequest({ user: "unittest.user", isAuthorized: true }), { ID: "999999999999999" });
+        await sleep(250);
+        if(res.status != 404){
+          throw new Error("wrong status " + res.status)
+        } 
+    } finally {
+    }
   });
 });

@@ -126,9 +126,9 @@ export async function handleCallback(type: callbackType, targetBooking: bigint, 
                     }
 
                     // In the end - commit
-                    db.commit();
+                    await db.commit();
                 } catch (err) {
-                    db.rollback();
+                    await db.rollback();
                     throw err;
                 }
 
@@ -558,9 +558,9 @@ export async function freeDevice(internalreference: bigint) {
         await db.execute("UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `id`=?", [null, null, null, internalreference]);
 
         // Commit
-        db.commit();
+        await db.commit();
     } catch (err) {
-        db.rollback();
+        await db.rollback();
         throw err;
     } finally {
         db.end();

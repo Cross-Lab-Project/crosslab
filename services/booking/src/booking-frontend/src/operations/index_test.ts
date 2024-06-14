@@ -632,6 +632,67 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+  mocha.it('getBookingByID success single locked (creator)', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    try {
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?", ["active", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "test", isAuthorized: true });
+      let b = await getBookingByID(req, { ID: "1" });
+
+      if (b.status !== 200) {
+        throw new Error("bad status code" + b.status);
+      }
+
+      if (!b.body.Locked) {
+        throw new Error("booking is not locked");
+      }
+
+      if (b.body.Booking.ID != "1") {
+        throw new Error("bad id" + b.body.Booking.ID);
+      }
+
+      if (!b.body.Booking.You) {
+        throw new Error("you is not set")
+      }
+
+      if (b.body.Booking.External) {
+        throw new Error("booking is external");
+      }
+
+      if (b.body.Booking.Status != "active") {
+        throw new Error("wrong status" + b.body.Booking.Status);
+      }
+
+      if (b.body.Booking.Devices.length != 1) {
+        throw new Error("wrong number of devices " + b.body.Booking.Devices.length);
+      }
+
+      if (b.body.Booking.Devices[0] != "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000") {
+        throw new Error("wrong device 0 " + b.body.Booking.Devices[0]);
+      }
+
+      if (!dayjs('1999-01-10T06:00:00Z').isSame(dayjs(b.body.Booking.Time.Start))) {
+        throw new Error("wrong start " + b.body.Booking.Time.Start);
+      }
+
+      if (dayjs(b.body.Booking.Time.Start).toISOString() != b.body.Booking.Time.Start) {
+        throw new Error("start is no iso " + b.body.Booking.Time.Start);
+      }
+
+      if (!dayjs('1999-01-10T07:00:00Z').isSame(dayjs(b.body.Booking.Time.End))) {
+        throw new Error("wrong end " + b.body.Booking.Time.End);
+      }
+
+      if (dayjs(b.body.Booking.Time.End).toISOString() != b.body.Booking.Time.End) {
+        throw new Error("end is no iso " + b.body.Booking.Time.End);
+      }
+    } finally {
+      db.end();
+    }
+  });
+
   mocha.it('getBookingByID booking not available', async function () {
     let req = getFakeRequest({ user: "test", isAuthorized: true });
     let b = await getBookingByID(req, { ID: "99999999" });
@@ -2045,6 +2106,33 @@ mocha.describe('operations.ts', function () {
       db.end();
       await StopAMQPTestFree();
       ResetAMQPDeviceCount();
+    }
+  });
+
+  mocha.it('deleteBookingByIDDestroy double delete does nothing', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    try {
+      await db.execute("UPDATE booking SET `status`=? WHERE `id`=?", ["cancelled", BigInt(1)]);
+
+      let req = getFakeRequest({ user: "unittest.user", isAuthorized: true });
+      let res = await deleteBookingByIDDestroy(req, { ID: "1" });
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error("wrong status " + res.status);
+      }
+
+      let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [BigInt(1)]);
+      if (rows.length !== 1) {
+        throw new Error("can not find booking");
+      }
+
+      if (rows[0].status != "cancelled") {
+        throw new Error("booking status was deleted (status=" + rows[0].status + ")");
+      }
+    } finally {
+      db.end();
     }
   });
 });
