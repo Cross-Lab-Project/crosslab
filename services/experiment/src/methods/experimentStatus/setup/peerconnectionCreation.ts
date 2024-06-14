@@ -6,6 +6,7 @@ import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
+import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../../url.js';
 
 async function checkDevices(
@@ -16,8 +17,12 @@ async function checkDevices(
   await Promise.all(
     experimentModel.devices.map(async device => {
       const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
-      const resolvedDevice = await clients.device.getDevice(deviceUrl);
-      connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
+      try {
+        const resolvedDevice = await clients.device.getDevice(deviceUrl);
+        connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
+      } catch {
+        connectedMap.set(deviceUrl, false);
+      }
     }),
   );
 
@@ -49,6 +54,15 @@ export async function createPeerconnectionsExperiment(
           clearInterval(connectionInterval);
         } else if (i === 6) {
           reject('Devices did not connect in time');
+          sendStatusUpdateMessages(
+            experimentModel,
+            `The following devices did not connect in time: "` +
+              Array.from(connectedMap.entries())
+                .filter(entry => !entry[1])
+                .map(entry => entry[0])
+                .join('", "') +
+              '"',
+          );
           clearInterval(connectionInterval);
         } else {
           i++;
@@ -77,6 +91,7 @@ export async function createPeerconnectionsExperiment(
   if (experimentModel.status !== 'booking-updated')
     throw new InvalidStateError(
       `Expected experiment to have status 'booking-updated', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'booking-updated'))
@@ -90,6 +105,11 @@ export async function createPeerconnectionsExperiment(
   experimentModel.status = 'peerconnections-created';
 
   await repositories.experiment.save(experimentModel);
+
+  sendStatusUpdateMessages(
+    experimentModel,
+    'The peerconnections for the experiment have been created.',
+  );
 
   logger.log('info', 'Successfully created peerconnections for experiment', {
     data: { experimentUrl },

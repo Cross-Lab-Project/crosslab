@@ -4,6 +4,7 @@ import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
+import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../../url.js';
 
 // import { apiClient } from '../../api.js'
@@ -20,6 +21,7 @@ export async function updateBookingExperiment(
   if (experimentModel.status !== 'devices-instantiated')
     throw new InvalidStateError(
       `Expected experiment to have status 'devices-instantiated', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'devices-instantiated'))
@@ -41,6 +43,8 @@ export async function updateBookingExperiment(
   experimentModel.status = 'booking-updated';
 
   await repositories.experiment.save(experimentModel);
+
+  sendStatusUpdateMessages(experimentModel, 'The booking has been updated successfully.');
 
   logger.log('info', 'Successfully updated booking for experiment', {
     data: { experimentUrl },

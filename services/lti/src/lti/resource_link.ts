@@ -102,6 +102,9 @@ export async function handle_resource_link_request(
         height: 100%;
         overflow: hidden;
       }
+      body {
+        display: flex;
+      }
     </style>
 </head>
 <body>

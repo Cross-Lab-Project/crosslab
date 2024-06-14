@@ -1096,7 +1096,8 @@ export type SendSignalingMessageBody =
   | Types.CreatePeerconnectionMessage<'request'>
   | Types.ClosePeerconnectionMessage<'request'>
   | Types.SignalingMessage<'request'>
-  | Types.ConfigurationMessage<'request'>;
+  | Types.ConfigurationMessage<'request'>
+  | Types.ExperimentStatusChangedMessage<'request'>;
 
 /**
  * Typing for all possible responses to the request made by sendSignalingMessage()

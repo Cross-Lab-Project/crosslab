@@ -37,7 +37,7 @@ enc := openfga.encode_object(subject)
 
 # override authorization for root
 allow if {
-	subject in ["user:root", "user:experiment-service"]
+	subject in ["user:root", "user:experiment-service", "user:device-service"]
 }
 
 # Check Scopes
@@ -99,6 +99,12 @@ rebac_allow if {
 rebac_allow if {
 	object in ["booking:~~~TYPE~~~"]
 	input.action in ["create"]
+}
+
+# Allow everyone to create an experiment
+rebac_allow if {
+	object in ["device:~~~TYPE~~~"]
+	input.action in ["view"]
 	not subject in ["user:anonymous"]
 }
 

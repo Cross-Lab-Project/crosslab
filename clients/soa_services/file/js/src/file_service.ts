@@ -1,11 +1,11 @@
 import {
   Consumer,
+  DataChannel,
+  PeerConnection,
   Producer,
   Service,
   ServiceConfiguration,
 } from '@cross-lab-project/soa-client';
-import { DataChannel } from '@cross-lab-project/soa-client';
-import { PeerConnection } from '@cross-lab-project/soa-client';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
 import { FileServiceEvent } from './messages';
@@ -57,7 +57,12 @@ export class FileService__Producer implements Service {
     if (this.channel !== undefined) {
       await this.channel.ready();
       this.channel.send(JSON.stringify({ fileType: fileType, length: content.length }));
-      this.channel.send(content);
+      // fragment to 8kb chunks
+      const chunkSize = 8192;
+      for (let i = 0; i < content.length; i += chunkSize) {
+        const chunk = content.slice(i, i + chunkSize);
+        await this.channel.send(chunk.buffer);
+      }
     }
   }
 }
@@ -100,12 +105,28 @@ export class FileService__Consumer
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private header: any;
+  private dataRead: number = 0;
+  private dataBuffer: Uint8Array | undefined;
   handleData(data: string | Blob | ArrayBuffer | ArrayBufferView) {
     if (typeof data === 'string') {
       this.header = JSON.parse(data);
+      this.dataRead = 0;
+      this.dataBuffer = new Uint8Array(this.header.length);
     } else if (typeof data === 'object' && data instanceof ArrayBuffer) {
-      const content = new Uint8Array(data);
-      this.emit('file', { file_type: this.header.fileType, file: content });
+      const chunk = new Uint8Array(data);
+      if (this.dataBuffer === undefined) {
+        return; //ignore
+      }
+      if (this.dataRead + chunk.length > this.header.length) {
+        //throw Error('Received more data than expected');
+        return; //ignore
+      }
+      this.dataBuffer.set(chunk, this.dataRead);
+      this.dataRead += chunk.length;
+      if (this.dataRead === this.header.length) {
+        this.emit('file', { file_type: this.header.fileType, file: this.dataBuffer });
+        this.dataBuffer = undefined;
+      }
     }
   }
 }

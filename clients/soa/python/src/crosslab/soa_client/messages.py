@@ -1,4 +1,4 @@
-from typing import List, Literal, TypedDict
+from typing import List, Literal, Optional, TypedDict
 
 
 class Message(TypedDict):
@@ -21,7 +21,7 @@ class AuthenticationMessage(AuthenticationMessageBase, total=False):
 
 class SignalingMessage(TypedDict):
     messageType: Literal["signaling"]
-    signalingType: Literal["offer", "answer", "candidate"]
+    signalingType: Literal["offer", "answer", "candidate", "options"]
     connectionUrl: str
     content: dict
 
@@ -51,9 +51,17 @@ class CreatePeerConnectionMessage(TypedDict):
 class ConnectionStateChangedMessage(TypedDict):
     messageType: Literal["connection-state-changed"]
     connectionUrl: str
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal[
+        "new", "connecting", "connected", "disconnected", "failed", "closed"
+    ]
 
 
 class ConfigurationMessage(TypedDict):
     messageType: Literal["configuration"]
     configuration: dict
+
+
+class ExperimentStatusChangedMessage(TypedDict):
+    messageType: Literal["experiment-status-changed"]
+    status: Literal["created", "booked", "setup", "running", "failed", "closed"]
+    message: Optional[str]

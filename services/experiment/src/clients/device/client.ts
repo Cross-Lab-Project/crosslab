@@ -1007,7 +1007,8 @@ export class Client {
       | Types.CreatePeerconnectionMessage<'request'>
       | Types.ClosePeerconnectionMessage<'request'>
       | Types.SignalingMessage<'request'>
-      | Types.ConfigurationMessage<'request'>,
+      | Types.ConfigurationMessage<'request'>
+      | Types.ExperimentStatusChangedMessage<'request'>,
     options?: {
       headers?: [string, string][];
     },

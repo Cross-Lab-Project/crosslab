@@ -143,9 +143,11 @@ fi
 if [ $CLEAN = true ]; then
   echo "Cleaning dist directories"
   if [ ! -z $INCLUDE ]; then
-    rm -rf $(fd -IL -E 'node_modules' -E "/$INCLUDE" -td -g 'dist')
+    rm -rf $(fd -IL -E "/$INCLUDE" -E 'build' -td -g 'node_modules')
+    rm -rf $(fd -IL -E 'node_modules' -E "/$INCLUDE" -E 'build' -td -g 'dist')
   else
-    rm -rf $(fd -IL -E 'node_modules' -td -g 'dist')
+    rm -rf $(fd -IL  -E 'build' -td -g 'node_modules')
+    rm -rf $(fd -IL -E 'node_modules'  -E 'build' -td -g 'dist')
   fi
 fi
 

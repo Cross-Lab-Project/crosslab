@@ -7,7 +7,9 @@ import { InvalidStateError, MalformedExperimentError } from '../../../types/erro
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
 import { mutexManager } from '../../mutexManager.js';
+import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../../url.js';
+import { finishExperiment } from '../finish.js';
 import { lockBookingExperiment } from './bookingLocking.js';
 import { updateBookingExperiment } from './bookingUpdate.js';
 import { Instantiable, instantiateDevicesExperiment } from './deviceInstantiation.js';
@@ -24,6 +26,7 @@ export async function setupExperiment(
   if (experimentModel.status !== 'booked')
     throw new InvalidStateError(
       `Expected experiment to have status 'booked', instead has status '${experimentModel.status}'`,
+      500,
     );
 
   if (!validateExperimentStatus(experimentModel, 'booked'))
@@ -66,12 +69,23 @@ export async function setupExperiment(
   );
 
   createPeerconnectionsExperiment(experimentModel, clients)
-    .catch(error => {
+    .catch(async error => {
       logger.log(
         'error',
         'Something went wrong while trying to create the peerconnections',
         { data: { error } },
       );
+      sendStatusUpdateMessages(
+        experimentModel,
+        `Finishing the experiment because peerconnection could not be established successfully!`,
+      );
+      try {
+        await finishExperiment(experimentModel, clients);
+      } catch (finishError) {
+        logger.log('error', 'Could not finish the experiment!', {
+          data: { error: finishError },
+        });
+      }
     })
     .finally(() => release());
 

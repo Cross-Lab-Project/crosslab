@@ -49,10 +49,10 @@ post:
     content:
       application/json:
         schema:
-            $ref: '../schemas/user.yml'
-            required:
-              - username
-              - password
+          $ref: '../schemas/user.yml'
+          required:
+            - username
+            - password
   responses:
     201:
       description: The JSON representation of the created user.

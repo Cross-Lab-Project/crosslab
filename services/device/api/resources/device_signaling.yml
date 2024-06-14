@@ -21,6 +21,7 @@ post:
             - $ref: '../schemas/messages/close_peerconnection_message.yml'
             - $ref: '../schemas/messages/signaling_message.yml'
             - $ref: '../schemas/messages/configuration_message.yml'
+            - $ref: '../schemas/messages/experiment_status_changed_message.yml'
     required: true
   responses:
     200:

@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Experiment Status Changed Message
+allOf:
+  - $ref: './message.yml'
+  - type: object
+    properties:
+      messageType:
+        const: experiment-status-changed
+      status:
+        type: string
+      message:
+        type: string
+    required:
+      - messageType
+      - status
+x-typeguard: true

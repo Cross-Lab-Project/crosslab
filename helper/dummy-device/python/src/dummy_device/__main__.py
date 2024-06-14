@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import logging
 import os
 import sys
 from functools import partial
@@ -18,6 +19,15 @@ from crosslab.soa_services.electrical.signal_interfaces.gpio import (
     GPIOInterface,
     GPIOSignalChangeEventData,
 )
+from crosslab.soa_services.file import (
+    FileService__Consumer,
+    FileService__Producer,
+    FileServiceEvent,
+)
+
+logging.basicConfig(level=logging.DEBUG)
+
+dummyFile = bytes([i % 256 for i in range(262140)])
 
 signal_names = [
     *["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8"],
@@ -32,6 +42,7 @@ signal_names = [
 
 interfaces: Dict[str, GPIOInterface] = dict()
 default_signal_state: Dict[str, State] = dict()
+file_producer: FileService__Producer
 
 
 def signal_changed(name: str, data: GPIOSignalChangeEventData):
@@ -54,6 +65,19 @@ def newInterface(interface):
         interfaces[name] = interface
         if name in default_signal_state:
             interface.changeDriver(default_signal_state[name])
+
+
+def file(event: FileServiceEvent):
+    print(len(event["content"]))
+    print(len(dummyFile))
+    if len(event["content"]) != len(dummyFile):
+        print("File length is unexpected")
+        raise Exception("File length is unexpected")
+    for i in range(len(event["content"])):
+        if event["content"][i] != dummyFile[i]:
+            print("File content does not match")
+            raise Exception("File content does not match")
+    print("[file] ", flush=True)
 
 
 async def stdin_reader():
@@ -84,10 +108,13 @@ async def stdin_reader():
                     interfaces[data["signal"]].changeDriver("unknown")
             else:
                 default_signal_state[data["signal"]] = data["value"]
+        elif line.startswith("[file]"):
+            await file_producer.sendFile("dummyFile", dummyFile)
         print("line", line)
 
 
 async def main_async():
+    global file_producer
     debugpy.breakpoint()
 
     parser = argparse.ArgumentParser(
@@ -132,6 +159,14 @@ async def main_async():
     signal_service.addInterface(signal_interface)
     signal_service.on("newInterface", newInterface)
     deviceHandler.add_service(signal_service)
+
+    file_producer = FileService__Producer("file_producer")
+    deviceHandler.add_service(file_producer)
+
+    file_consumer = FileService__Consumer("file_consumer")
+    file_consumer.on("file", file)
+    deviceHandler.add_service(file_consumer)
+
     deviceHandler.on(
         "websocketToken",
         lambda token: print("[websocketToken] " + json.dumps(token), flush=True),
@@ -154,7 +189,15 @@ async def main_async():
     )
     deviceHandler.on(
         "configuration",
-        lambda configuration: print("[configuration] " + json.dumps(configuration)),
+        lambda configuration: print(
+            "[configuration] " + json.dumps(configuration), flush=True
+        ),
+    )
+    deviceHandler.on(
+        "experimentStatusChanged",
+        lambda status: print(
+            "[experimentStatusChanged] " + json.dumps(status), flush=True
+        ),
     )
 
     async with APIClient(url) as client:

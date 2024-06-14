@@ -14,6 +14,7 @@ from crosslab.soa_client.messages import (
     ConfigurationMessage,
     ConnectionStateChangedMessage,
     CreatePeerConnectionMessage,
+    ExperimentStatusChangedMessage,
     SignalingMessage,
 )
 from crosslab.soa_client.service import Service
@@ -132,6 +133,8 @@ class DeviceHandler(AsyncIOEventEmitter):
                 await self._on_signaling_message(msg)
             elif msg["messageType"] == "configuration":
                 await self._on_configuration_message(msg)
+            elif msg["messageType"] == "experiment-status-changed":
+                await self._on_experiment_status_changed_message(msg)
             else:
                 pass  # Do not raise any Exception here, so we are forward compatible for new message types
 
@@ -189,3 +192,11 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_configuration_message(self, msg: ConfigurationMessage):
         self.emit("configuration", msg["configuration"])
+
+    async def _on_experiment_status_changed_message(
+        self, msg: ExperimentStatusChangedMessage
+    ):
+        self.emit(
+            "experimentStatusChanged",
+            {"status": msg["status"], "message": msg.get("message")},
+        )
