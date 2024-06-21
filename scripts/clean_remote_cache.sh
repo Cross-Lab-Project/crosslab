@@ -12,10 +12,17 @@ RPATH=${REPOSITORY/*:/}
 # List all active branches
 BRANCHES=$(git branch -r --list "origin/*" | sed -e 's/origin\///g' | grep -v HEAD | tr -d ' ')
 
+# List all Tags
+TAGS=$(git tag)
+
 # get the full commit hash of the last 3 commits of each branch
 refs=""
 for branch in $BRANCHES; do
     refs="$refs"$'\n'$(git log -n 3 --pretty=format:"%H" origin/$branch)
+done
+
+for branch in $TAGS; do
+    refs="$refs"$'\n'$(git log -n 1 --pretty=format:"%H" $branch)
 done
 
 # remove first line
@@ -29,6 +36,9 @@ for ref in $refs; do
     dirs=$(echo "$dirs" | grep -v $ref)
 done
 for branch in $BRANCHES; do
+    dirs=$(echo "$dirs" | grep -v $branch)
+done
+for branch in $TAGS; do
     dirs=$(echo "$dirs" | grep -v $branch)
 done
 dirs=$(echo "$dirs" | grep -v "jobs")
