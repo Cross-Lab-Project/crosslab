@@ -28,6 +28,7 @@ helper/python-test-helper:
   - script: test
     dependencies:
       - helper/python-test-helper:build
+      - helper/python-test-helper:lint
     tags:
       - test
 
@@ -97,6 +98,7 @@ services/auth:
   - script: test
     dependencies:
       - services/auth:build
+      - services/auth:lint
     tags:
       - test
 
@@ -114,6 +116,7 @@ services/authorization:
   - script: build
     dependencies:
       - services/common:build
+      - services/common:lint
   - script: build-docker
     dependencies:
       - services/authorization:build
@@ -125,6 +128,7 @@ services/authorization:
   - script: test
     dependencies:
       - services/authorization:build
+      - services/authorization:lint
     tags:
       - test
 
@@ -289,6 +293,7 @@ clients/api/python:
   - script: test
     dependencies:
       - clients/api/python:build
+      - clients/api/python:lint
     tags:
       - test
 
@@ -305,7 +310,9 @@ clients/soa/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
       - clients/soa/python:build
+      - clients/soa/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -333,7 +340,10 @@ clients/soa_services/electricalConnection/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/electricalConnection/python:build
+      - clients/soa_services/electricalConnection/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -360,7 +370,10 @@ clients/soa_services/webcam/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/webcam/python:build
+      - clients/soa_services/webcam/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -387,7 +400,10 @@ clients/soa_services/file/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/file/python:build
+      - clients/soa_services/file/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -414,7 +430,10 @@ clients/soa_services/message/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/message/python:build
+      - clients/soa_services/message/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -441,7 +460,10 @@ clients/soa_services/parameter/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/message/python:build
+      - clients/soa_services/message/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -471,6 +493,14 @@ integration-test:
       - services/experiment:build
       - services/federation:build
       - services/gateway:build
+      - services/auth:build-docker
+      - services/authorization:build-docker
+      - services/device:build-docker
+      - services/experiment:build-docker
+      - services/federation:build-docker
+      - services/gateway:build-docker
+      - services/auth:test
+      - services/authorization:test
       - clients/api/js:build
       - clients/soa/js:build
       - clients/soa_services/electricalConnection/js:build
