@@ -1,13 +1,18 @@
 import { RequestHandler } from 'express';
 
 import { config } from '../config.js';
+import { Client as BookingClient } from './booking/client.js';
 import { Client as DeviceClient } from './device/client.js';
 
 export const device = new DeviceClient(config.BASE_URL, {
   serviceUrl: config.DEVICE_SERVICE_URL,
   fixedHeaders: [['x-request-authentication', 'experiment-service']],
 });
-export const clients = { device };
+export const booking = new BookingClient(config.BASE_URL, {
+  serviceUrl: config.DEVICE_SERVICE_URL,
+  fixedHeaders: [['x-request-authentication', 'experiment-service']],
+});
+export const clients = { device, booking };
 export type Clients = typeof clients;
 
 declare global {
@@ -33,7 +38,13 @@ export const middleware: RequestHandler = (req, _res, next) => {
     serviceUrl: config.DEVICE_SERVICE_URL,
     fixedHeaders: fixed_headers,
   });
-  req.clients = { device: bound_device };
+
+  const bound_booking = new BookingClient(config.BASE_URL, {
+    serviceUrl: config.DEVICE_SERVICE_URL,
+    fixedHeaders: fixed_headers,
+  });
+
+  req.clients = { device: bound_device, booking: bound_booking };
 
   next();
 };

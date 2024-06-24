@@ -3627,3 +3627,273 @@ UpdateInstitutionResponse: TypeAlias = UpdateInstitutionResponse200
 
 
 DeleteInstitutionResponse: TypeAlias = None
+
+
+class ScheduleRequestExperimentDevicesItems(TypedDict):
+    """
+    A device might either be a physical/virtual device or a group of device.Properties:
+    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
+    """
+    ID: str
+
+
+class ScheduleRequestExperiment(TypedDict):
+    """
+    An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
+    - Devices: List of devices used in experiment.
+    - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+    """
+    Devices: List[ScheduleRequestExperimentDevicesItems]
+    Description: NotRequired[str]
+
+
+class ScheduleRequestTime(TypedDict):
+    """
+    A time slot represents a slice of time used for bookings.Properties:
+    - Start: Start time of the booking.
+    - End: End time of the booking.
+    """
+    Start: str
+    End: str
+
+
+class ScheduleRequest(TypedDict):
+    """
+    Properties:
+    - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
+    - Time: A time slot represents a slice of time used for bookings.
+    - Combined: If true, show only one timetable per device instead of one for all available physical devices.
+    - onlyOwn: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+    """
+    Experiment: ScheduleRequestExperiment
+    Time: ScheduleRequestTime
+    Combined: NotRequired[bool]
+    onlyOwn: NotRequired[bool]
+
+
+class ScheduleResponse200ItemsBookedItems(TypedDict):
+    """
+    A time slot represents a slice of time used for bookings.Properties:
+    - Start: Start time of the booking.
+    - End: End time of the booking.
+    """
+    Start: str
+    End: str
+
+
+class ScheduleResponse200ItemsFreeItems(TypedDict):
+    """
+    A time slot represents a slice of time used for bookings.Properties:
+    - Start: Start time of the booking.
+    - End: End time of the booking.
+    """
+    Start: str
+    End: str
+
+
+class ScheduleResponse200Items(TypedDict):
+    """
+    Properties:
+    - Device: ID of the device (or * if combined).
+    - Booked: Array of booked times.
+    - Free: Array of free times.
+    """
+    Device: str
+    Booked: List[ScheduleResponse200ItemsBookedItems]
+    Free: List[ScheduleResponse200ItemsFreeItems]
+
+
+ScheduleResponse200: TypeAlias = List[ScheduleResponse200Items]
+
+
+ScheduleResponse404: TypeAlias = str
+
+
+ScheduleResponse422: TypeAlias = str
+
+
+ScheduleResponse500: TypeAlias = str
+
+
+ScheduleResponse: TypeAlias = Union[ScheduleResponse200, ScheduleResponse404, ScheduleResponse422, ScheduleResponse500]
+
+
+class NewBookingRequestDevicesItems(TypedDict):
+    """
+    A device might either be a physical/virtual device or a group of device.Properties:
+    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
+    """
+    ID: str
+
+
+class NewBookingRequestTime(TypedDict):
+    """
+    A time slot represents a slice of time used for bookings.Properties:
+    - Start: Start time of the booking.
+    - End: End time of the booking.
+    """
+    Start: str
+    End: str
+
+
+class NewBookingRequest(TypedDict):
+    """
+    Properties:
+    - Devices: List of devices which should be added.
+    - Time: A time slot represents a slice of time used for bookings.
+    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+    """
+    Devices: List[NewBookingRequestDevicesItems]
+    Time: NewBookingRequestTime
+    Type: NotRequired[Literal["normal"]]
+
+
+class NewBookingResponse200(TypedDict):
+    """
+    Properties:
+    - BookingID: ID at which the booking can be managed.
+    """
+    BookingID: str
+
+
+NewBookingResponse500: TypeAlias = str
+
+
+NewBookingResponse: TypeAlias = Union[NewBookingResponse200, NewBookingResponse500]
+
+
+class UpdateBookingRequestAlt1DevicesItems(TypedDict):
+    """
+    A device might either be a physical/virtual device or a group of device.Properties:
+    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
+    """
+    ID: str
+
+
+class UpdateBookingRequestAlt1(TypedDict):
+    """
+    Use this request for adding devices.Properties:
+    - Locked: Expresses whether the devices should be locked. Must match current status of booking. Is assumed to be false if not set.
+    - Devices: List of devices which should be added.
+    """
+    Locked: NotRequired[bool]
+    Devices: NotRequired[List[UpdateBookingRequestAlt1DevicesItems]]
+
+
+class UpdateBookingRequestAlt2(TypedDict):
+    """
+    Use this request for adding callbacks.Properties:
+    - Callback: Callback which should be called at changes.
+    """
+    Callback: NotRequired[str]
+
+
+UpdateBookingRequest = Union[UpdateBookingRequestAlt1, UpdateBookingRequestAlt2]
+
+
+class UpdateBookingResponse200(TypedDict):
+    """
+    Properties:
+    - BookingID
+    """
+    BookingID: str
+
+
+UpdateBookingResponse400: TypeAlias = str
+
+
+UpdateBookingResponse500: TypeAlias = str
+
+
+UpdateBookingResponse: TypeAlias = Union[UpdateBookingResponse200, UpdateBookingResponse400, UpdateBookingResponse500]
+
+
+DeleteBookingResponse500: TypeAlias = str
+
+
+DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
+
+
+class GetBookingResponse200BookingTime(TypedDict):
+    """
+    A time slot represents a slice of time used for bookings.Properties:
+    - Start: Start time of the booking.
+    - End: End time of the booking.
+    """
+    Start: str
+    End: str
+
+
+class GetBookingResponse200Booking(TypedDict):
+    """
+    A booking in the booking system.Properties:
+    - ID: Unique ID of the booking.
+    - Time: A time slot represents a slice of time used for bookings.
+    - Devices
+    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+    - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+    - You: If true, this booking was done by you.
+    - External: Shows whether the booking was done by an external institution.
+    - Message: User readable notes about the status of the booking (e.g. if devices are unknown).
+    """
+    ID: str
+    Time: GetBookingResponse200BookingTime
+    Devices: List[str]
+    Type: NotRequired[Literal["normal"]]
+    Status: Literal["pending", "booked", "rejected", "cancelled", "active", "active-pending", "active-rejected"]
+    You: bool
+    External: bool
+    Message: NotRequired[str]
+
+
+class GetBookingResponse200(TypedDict):
+    """
+    Properties:
+    - Booking: A booking in the booking system.
+    - Locked: Shows if the booking is in a locked status.
+    """
+    Booking: GetBookingResponse200Booking
+    Locked: bool
+
+
+GetBookingResponse500: TypeAlias = str
+
+
+GetBookingResponse: TypeAlias = Union[GetBookingResponse200, GetBookingResponse500]
+
+
+DestroyBookingResponse500: TypeAlias = str
+
+
+DestroyBookingResponse: TypeAlias = DestroyBookingResponse500
+
+
+class LockBookingResponse200Items(TypedDict):
+    """
+    Properties:
+    - Requested
+    - Selected
+    """
+    Requested: str
+    Selected: str
+
+
+LockBookingResponse200: TypeAlias = List[LockBookingResponse200Items]
+
+
+LockBookingResponse500: TypeAlias = str
+
+
+LockBookingResponse: TypeAlias = Union[LockBookingResponse200, LockBookingResponse500]
+
+
+UnlockBookingResponse500: TypeAlias = str
+
+
+UnlockBookingResponse: TypeAlias = UnlockBookingResponse500
+
+
+BookingCallbackResponse500: TypeAlias = str
+
+
+BookingCallbackResponse: TypeAlias = BookingCallbackResponse500

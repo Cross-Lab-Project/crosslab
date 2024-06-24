@@ -1,5 +1,6 @@
 import { logger } from '@crosslab/service-common';
 
+import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
@@ -7,11 +8,9 @@ import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
 import { experimentUrlFromId } from '../../url.js';
 
-// import { apiClient } from '../../api.js'
-
 export async function updateBookingExperiment(
   experimentModel: ExperimentModel,
-  _newDeviceUrls: string[],
+  newDeviceUrls: string[],
 ) {
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to update booking for experiment', {
@@ -31,14 +30,14 @@ export async function updateBookingExperiment(
     );
 
   // TODO: error handling
-  // await apiClient.updateBooking(experimentModel.bookingID, {
-  //     Locked: true,
-  //     Devices: newDeviceUrls.map((newDeviceUrl) => {
-  //         return {
-  //             ID: newDeviceUrl,
-  //         }
-  //     }),
-  // })
+  await clients.booking.updateBooking(experimentModel.bookingID, {
+    Locked: true,
+    Devices: newDeviceUrls.map(newDeviceUrl => {
+      return {
+        ID: newDeviceUrl,
+      };
+    }),
+  });
 
   experimentModel.status = 'booking-updated';
 

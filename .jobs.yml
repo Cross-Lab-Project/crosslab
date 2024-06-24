@@ -129,24 +129,24 @@ services/authorization:
       - test
 
 services/booking:
-   - script: build-spec
-#   - script: lint-spec
-#     dependencies:
-#       - services/booking:build-spec
-#     tags:
-#       - test
-#   - script: build
-#     dependencies:
-#       - services/booking:build-spec
-#       - services/common:build
-#       - helper/crosslab-typescript-addon:build
-#       - helper/openapi-codegeneration:build
-#       - clients/api/js:build
-#   - script: test
-#     dependencies:
-#       - services/booking:build
-#     tags:
-#       - test
+  - script: build-spec
+  - script: lint-spec
+    dependencies:
+      - services/booking:build-spec
+    tags:
+      - test
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - clients/api/js:build
+  - script: test
+    dependencies:
+      - services/booking:build
+    tags:
+      - test
 
 services/device:
   - script: build-spec
