@@ -203,33 +203,33 @@ export async function startFakeServer() {
     }
   });
 
-  app.get('/test_callbacks/test-local-single', (req, res) => {
+  app.post('/test_callbacks/test-local-single', (req, res) => {
     fakeServerConfig.callback_test_local_single_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-two-first', (req, res) => {
+  app.post('/test_callbacks/test-local-two-first', (req, res) => {
     fakeServerConfig.callback_test_local_two_first_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-two-second', (req, res) => {
+  app.post('/test_callbacks/test-local-two-second', (req, res) => {
     fakeServerConfig.callback_test_local_two_second_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-group', (req, res) => {
+  app.post('/test_callbacks/test-local-group', (req, res) => {
     fakeServerConfig.callback_test_local_group_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-remote-single', (req, res) => {
+  app.post('/test_callbacks/test-remote-single', (req, res) => {
     fakeServerConfig.callback_test_remote_single_was_called = true;
     res.status(200).send();
   });
 
   // to add in tests: http://localhost:10801/test_callbacks/callback-test-new
-  app.get('/test_callbacks/callback-test-new', (req, res) => {
+  app.post('/test_callbacks/callback-test-new', (req, res) => {
     fakeServerConfig.callback_test_new_was_called = true;
     res.status(200).send();
   });
