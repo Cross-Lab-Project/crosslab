@@ -4,6 +4,8 @@ import { logger } from '@crosslab/service-common';
 import { clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
+import { callbackHandler } from '../../operations/callbacks/callbackHandler.js';
+import { callbackUrl } from '../../operations/callbacks/index.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
@@ -52,6 +54,12 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     },
     Type: 'normal',
   });
+
+  await clients.booking.updateBooking(BookingID, {
+    Callback: callbackUrl,
+  });
+
+  callbackHandler.addListener('booking', BookingID, experimentModel.uuid);
 
   experimentModel.bookingStart = startTime.toISOString();
   experimentModel.bookingEnd = endTime.toISOString();

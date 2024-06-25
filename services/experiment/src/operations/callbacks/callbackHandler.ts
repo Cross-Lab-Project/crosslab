@@ -15,18 +15,35 @@ import { EventCallback } from '../../generated/types.js';
 import { finishExperiment } from '../../methods/experimentStatus/finish.js';
 import { mutexManager } from '../../methods/mutexManager.js';
 import { sendStatusUpdateMessages } from '../../methods/statusUpdateMessage.js';
+import { BookingChangedCallback, isBookingChangedCallback } from './types.js';
 
 class CallbackHandler {
-  private deviceListeners: Map<string, string[]> = new Map();
-  private peerconnectionListeners: Map<string, string[]> = new Map();
-  private deviceMutex: Mutex = new Mutex();
-  private peerconnectionMutex: Mutex = new Mutex();
+  private callbackListeners: {
+    device: Map<string, string[]>;
+    peerconnection: Map<string, string[]>;
+    booking: Map<string, string[]>;
+  } = {
+    device: new Map(),
+    peerconnection: new Map(),
+    booking: new Map(),
+  };
+  private mutexes: {
+    device: Mutex;
+    peerconnection: Mutex;
+    booking: Mutex;
+  } = {
+    device: new Mutex(),
+    peerconnection: new Mutex(),
+    booking: new Mutex(),
+  };
 
-  public async handleCallback(callback: EventCallback): Promise<200 | 410> {
+  public async handleEventCallback(callback: EventCallback): Promise<200 | 410> {
     const release =
       callback.eventType === 'device-changed'
-        ? await this.deviceMutex.acquire()
-        : await this.peerconnectionMutex.acquire();
+        ? await this.mutexes.device.acquire()
+        : callback.eventType === 'booking-changed'
+        ? await this.mutexes.booking.acquire()
+        : await this.mutexes.peerconnection.acquire();
 
     try {
       switch (callback.eventType) {
@@ -51,6 +68,14 @@ class CallbackHandler {
               400,
             );
           return await this.handlePeerconnectionStatusChangedCallback(callback);
+        case 'booking-changed':
+          if (!isBookingChangedCallback(callback)) {
+            throw new MalformedBodyError(
+              'Body of request is not a valid booking-changed event callback',
+              400,
+            );
+          }
+          return await this.handleBookingChangedCallback(callback);
         default:
           throw new InvalidValueError(
             `Event-callbacks of type "${callback.eventType}" are not supported`,
@@ -63,51 +88,30 @@ class CallbackHandler {
   }
 
   public addListener(
-    type: 'device' | 'peerconnection',
+    type: 'device' | 'peerconnection' | 'booking',
     url: string,
     experimentUuid: string,
   ) {
-    switch (type) {
-      case 'device': {
-        const listeners = this.deviceListeners.get(url) ?? [];
-        if (!listeners.includes(experimentUuid)) listeners.push(experimentUuid);
-        this.deviceListeners.set(url, listeners);
-        break;
-      }
-      case 'peerconnection': {
-        const listeners = this.peerconnectionListeners.get(url) ?? [];
-        if (!listeners.includes(experimentUuid)) listeners.push(experimentUuid);
-        this.peerconnectionListeners.set(url, listeners);
-        break;
-      }
-    }
+    const listeners = this.callbackListeners[type].get(url) ?? [];
+    if (!listeners.includes(experimentUuid)) listeners.push(experimentUuid);
+    this.callbackListeners[type].set(url, listeners);
   }
 
   public removeListener(
-    type: 'device' | 'peerconnection',
+    type: 'device' | 'peerconnection' | 'booking',
     url: string,
     experimentUuid: string,
   ) {
-    switch (type) {
-      case 'device': {
-        const listeners = this.deviceListeners.get(url) ?? [];
-        const newListeners = listeners.filter(listener => listener !== experimentUuid);
-        this.deviceListeners.set(url, newListeners);
-        break;
-      }
-      case 'peerconnection': {
-        const listeners = this.peerconnectionListeners.get(url) ?? [];
-        const newListeners = listeners.filter(listener => listener !== experimentUuid);
-        this.deviceListeners.set(url, newListeners);
-        break;
-      }
-    }
+    const listeners = this.callbackListeners[type].get(url) ?? [];
+    const newListeners = listeners.filter(listener => listener !== experimentUuid);
+    if (newListeners.length > 0) this.callbackListeners[type].set(url, newListeners);
+    else this.callbackListeners[type].delete(url);
   }
 
   private async handleDeviceChangedCallback(
     callback: DeviceChangedEventCallback,
   ): Promise<200 | 410> {
-    const listeners = this.deviceListeners.get(callback.device.url) ?? [];
+    const listeners = this.callbackListeners.device.get(callback.device.url) ?? [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -142,11 +146,11 @@ class CallbackHandler {
       }
     }
 
-    const newListeners = this.deviceListeners.get(callback.device.url) ?? [];
+    const newListeners = this.callbackListeners.device.get(callback.device.url) ?? [];
     if (newListeners.length > 0) {
       return 200;
     } else {
-      this.deviceListeners.delete(callback.device.url);
+      this.callbackListeners.device.delete(callback.device.url);
       return 410;
     }
   }
@@ -154,7 +158,8 @@ class CallbackHandler {
   private async handlePeerconnectionClosedCallback(
     callback: PeerconnectionClosedEventCallback,
   ): Promise<200 | 410> {
-    const listeners = this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
+    const listeners =
+      this.callbackListeners.peerconnection.get(callback.peerconnection.url) ?? [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -181,11 +186,11 @@ class CallbackHandler {
     }
 
     const newListeners =
-      this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
+      this.callbackListeners.peerconnection.get(callback.peerconnection.url) ?? [];
     if (newListeners.length > 0) {
       return 200;
     } else {
-      this.peerconnectionListeners.delete(callback.peerconnection.url);
+      this.callbackListeners.peerconnection.delete(callback.peerconnection.url);
       return 410;
     }
   }
@@ -193,7 +198,8 @@ class CallbackHandler {
   private async handlePeerconnectionStatusChangedCallback(
     callback: PeerconnectionStatusChangedEventCallback,
   ): Promise<200 | 410> {
-    const listeners = this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
+    const listeners =
+      this.callbackListeners.peerconnection.get(callback.peerconnection.url) ?? [];
 
     for (const listener of listeners) {
       const release = await mutexManager.acquire(listener);
@@ -256,11 +262,47 @@ class CallbackHandler {
     }
 
     const newListeners =
-      this.peerconnectionListeners.get(callback.peerconnection.url) ?? [];
+      this.callbackListeners.peerconnection.get(callback.peerconnection.url) ?? [];
     if (newListeners.length > 0) {
       return 200;
     } else {
-      this.peerconnectionListeners.delete(callback.peerconnection.url);
+      this.callbackListeners.peerconnection.delete(callback.peerconnection.url);
+      return 410;
+    }
+  }
+
+  private async handleBookingChangedCallback(
+    callback: BookingChangedCallback,
+  ): Promise<200 | 410> {
+    const listeners = this.callbackListeners.booking.get(callback.url) ?? [];
+
+    for (const listener of listeners) {
+      const release = await mutexManager.acquire(listener);
+
+      try {
+        const experimentModel = await repositories.experiment.findOneOrFail({
+          where: { uuid: listener },
+        });
+
+        if (experimentModel.bookingID !== callback.url) {
+          this.removeListener('booking', callback.url, listener);
+          continue;
+        }
+
+        const booking = await clients.booking.getBooking(callback.url);
+
+        if (booking.Booking.Status === 'cancelled')
+          await finishExperiment(experimentModel, clients);
+      } finally {
+        release();
+      }
+    }
+
+    const newListeners = this.callbackListeners.booking.get(callback.url) ?? [];
+    if (newListeners.length > 0) {
+      return 200;
+    } else {
+      this.callbackListeners.booking.delete(callback.url);
       return 410;
     }
   }
