@@ -1,4 +1,4 @@
-import { MissingPropertyError } from '@crosslab/service-common';
+import { InvalidChangeError, MissingPropertyError } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
 import { clients } from '../../clients/index.js';
@@ -16,6 +16,24 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
 
   if (!experimentModel.devices || experimentModel.devices.length === 0)
     throw new MissingPropertyError(`Experiment ${experimentUrl} has no devices`, 400);
+
+  if (
+    experimentModel.bookingID &&
+    experimentModel.bookingStart &&
+    experimentModel.bookingEnd
+  ) {
+    const booking = await clients.booking.getBooking(experimentModel.bookingID);
+    if (
+      Date.parse(booking.Booking.Time.Start) !==
+        Date.parse(experimentModel.bookingStart) ||
+      Date.parse(booking.Booking.Time.End) !== Date.parse(experimentModel.bookingEnd)
+    ) {
+      throw new InvalidChangeError(
+        `The start and end of a booking cannot be changed!`,
+        400,
+      );
+    }
+  }
 
   const currentTime = new Date();
   const startTime = new Date(experimentModel.bookingStart ?? currentTime);

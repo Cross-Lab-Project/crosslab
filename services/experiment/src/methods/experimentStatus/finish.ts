@@ -1,7 +1,8 @@
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 
-import { UnsuccessfulRequestError } from '../../clients/device/client.js';
+import { UnsuccessfulRequestError as UnsuccessfulRequestErrorBooking } from '../../clients/booking/client.js';
+import { UnsuccessfulRequestError as UnsuccessfulRequestErrorDevice } from '../../clients/device/client.js';
 import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
@@ -27,23 +28,23 @@ export async function finishExperiment(
     case 'booked': {
       assert(validateExperimentStatus(experimentModel, 'booked'));
 
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await deleteBooking(experimentModel, clients);
 
       break;
     }
     case 'booking-locked': {
       assert(validateExperimentStatus(experimentModel, 'booking-locked'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
 
       break;
     }
     case 'devices-instantiated': {
       assert(validateExperimentStatus(experimentModel, 'devices-instantiated'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
       break;
@@ -51,8 +52,8 @@ export async function finishExperiment(
     case 'booking-updated': {
       assert(validateExperimentStatus(experimentModel, 'booking-updated'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
       break;
@@ -60,8 +61,8 @@ export async function finishExperiment(
     case 'peerconnections-created': {
       assert(validateExperimentStatus(experimentModel, 'peerconnections-created'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deletePeerconnections(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
@@ -70,8 +71,8 @@ export async function finishExperiment(
     case 'running': {
       assert(validateExperimentStatus(experimentModel, 'running'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deletePeerconnections(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
@@ -98,8 +99,11 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
         try {
           await clients.device.deleteDevice(device.instance.url);
         } catch (error) {
-          if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
-            break;
+          if (
+            error instanceof UnsuccessfulRequestErrorDevice &&
+            error.response.status === 404
+          )
+            continue;
           throw error;
         }
       }
@@ -113,10 +117,43 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
       try {
         await clients.device.deletePeerconnection(peerconnection.url);
       } catch (error) {
-        if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
-          break;
+        if (
+          error instanceof UnsuccessfulRequestErrorDevice &&
+          error.response.status === 404
+        )
+          continue;
         throw error;
       }
+    }
+  }
+}
+
+async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
+  if (experiment.bookingID) {
+    try {
+      await clients.booking.unlockBooking(experiment.bookingID);
+    } catch (error) {
+      if (
+        error instanceof UnsuccessfulRequestErrorBooking &&
+        error.response.status === 404
+      )
+        return;
+      throw error;
+    }
+  }
+}
+
+async function deleteBooking(experiment: ExperimentModel, clients: Clients) {
+  if (experiment.bookingID) {
+    try {
+      await clients.booking.deleteBooking(experiment.bookingID);
+    } catch (error) {
+      if (
+        error instanceof UnsuccessfulRequestErrorBooking &&
+        error.response.status === 404
+      )
+        return;
+      throw error;
     }
   }
 }
