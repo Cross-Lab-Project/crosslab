@@ -193,12 +193,17 @@ export async function dispatchCallback(bookingID: bigint) {
 
     let db = await mysql.createConnection(config.BookingDSN);
     await db.connect();
+    let [rows, _]: [any, any] = await db.execute("SELECT `status` FROM booking WHERE `id`=?", [bookingID]);
+    if (rows.length == 0) {
+        throw new Error("booking" + bookingID + " does not exist");
+    }
+    let status: string = rows[0].status;
 
     try {
-        let [rows, fields]: [any, any] = await db.execute("SELECT `id`, `url` FROM bookingcallbacks WHERE booking=? FOR UPDATE", [bookingID]);
+        [rows, _] = await db.execute("SELECT `id`, `url` FROM bookingcallbacks WHERE booking=? FOR UPDATE", [bookingID]);
         for (let i = 0; i < rows.length; i++) {
             try {
-                let response = await fetch(rows[i].url, { method: 'GET' });
+                let response = await fetch(rows[i].url, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ "Status": status }) });
                 if (response.status == 404 || response.status == 410) { // Code depends on service
                     // Callback no longer needed
                     await db.execute("DELETE FROM bookingcallbacks WHERE id=?", [rows[i].id]);
@@ -636,7 +641,7 @@ export async function DeleteBooking(bookingID: bigint, targetStatus = "cancelled
         if (message !== undefined && message !== "") {
             let [rows, fields] = await db.execute("SELECT `message` FROM booking WHERE id=?", [bookingID]);
             let targetMessage: string = "";
-            if (rows[0].message === undefined || rows[0].message === null|| rows[0].message == "" ) {
+            if (rows[0].message === undefined || rows[0].message === null || rows[0].message == "") {
                 targetMessage = message;
             } else {
                 targetMessage = rows[0].message + "\n" + message;
