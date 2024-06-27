@@ -3466,7 +3466,7 @@ async def test_list_experiments(aioresponses: aioresponses):
     url_variant = r'experiments'
     full_url = BASE_URL+r'/experiments'
 
-    parameter_list = [{}, ]
+    parameter_list = [{"experimentStatus": "test_string", }, {}, ]
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'[{"url":"http://NwclrXAIoAJHMVyKoIoS.xxfoad9OtNWxMyq2kGx5D4","status":"created"},{"url":"https://gpvQwLgrWBBvxozT.rdbpyyMAR8WSBkoXtkDeX7BysNkrZe.8SlFVwdKIGbmewpJjeU0ayCar6q74SqFK8vAvqSrmK1BfSqgJCQPcF","status":"created"}]')

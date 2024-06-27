@@ -15,7 +15,8 @@ import { EventCallback } from '../../generated/types.js';
 import { finishExperiment } from '../../methods/experimentStatus/finish.js';
 import { mutexManager } from '../../methods/mutexManager.js';
 import { sendStatusUpdateMessages } from '../../methods/statusUpdateMessage.js';
-import { BookingChangedCallback, isBookingChangedCallback } from './types.js';
+import { isBookingChangedCallback } from '../../types/typeguards.js';
+import { BookingChangedCallback } from '../../types/types.js';
 
 class CallbackHandler {
   private callbackListeners: {

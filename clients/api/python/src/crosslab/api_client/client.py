@@ -813,7 +813,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def list_experiments(self, url: str = "/experiments") -> ListExperimentsResponse:  # noqa: E501
+    async def list_experiments(self, url: str = "/experiments", experimentStatus: Optional[str] = None) -> ListExperimentsResponse:  # noqa: E501
         """
         List experiments
         """  # noqa: E501
@@ -827,8 +827,17 @@ class APIClient:
         valid_url = '/'+m.group(2)+'/experiments'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if experimentStatus:
+            if isinstance(experimentStatus, list):
+                query_params['experimentStatus'] = experimentStatus
+            else:
+                query_params['experimentStatus'] = str(experimentStatus)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="get")
+        status, resp = await self._fetch(valid_url, method="get", params=query_params)
            
         # transform response
         if status == 200:

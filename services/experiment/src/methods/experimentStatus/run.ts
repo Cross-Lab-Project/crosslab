@@ -1,10 +1,15 @@
-import { MissingEntityError, MissingPropertyError } from '@crosslab/service-common';
+import {
+  InvalidChangeError,
+  MissingEntityError,
+  MissingPropertyError,
+} from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
 
 import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
-import { InvalidStateError } from '../../types/errors.js';
+import { InvalidStateError, MalformedExperimentError } from '../../types/errors.js';
+import { validateExperimentStatus } from '../../types/typeguards.js';
 import { ResolvedDevice } from '../../types/types.js';
 import { experimentUrlFromId } from '../url.js';
 import { bookExperiment } from './book.js';
@@ -32,6 +37,26 @@ export async function runExperiment(experimentModel: ExperimentModel, clients: C
   // book experiment if status is "created"
   if (experimentModel.status === 'created') {
     await bookExperiment(experimentModel);
+  }
+
+  // check if booking times have changed and throw error because currently times may not be changed
+  if (experimentModel.status === 'booked') {
+    if (!validateExperimentStatus(experimentModel, 'booked'))
+      throw new MalformedExperimentError(
+        `Experiment is in status 'booked', but does not satisfy the requirements for this status`,
+        500,
+      );
+    const booking = await clients.booking.getBooking(experimentModel.bookingID);
+    if (
+      Date.parse(experimentModel.bookingStart) !==
+        Date.parse(booking.Booking.Time.Start) ||
+      Date.parse(experimentModel.bookingEnd) !== Date.parse(booking.Booking.Time.End)
+    ) {
+      throw new InvalidChangeError(
+        `The start and end of a booking cannot be changed!`,
+        400,
+      );
+    }
   }
 
   const resolvedDevices: ResolvedDevice[] = await Promise.all(
