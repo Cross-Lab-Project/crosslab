@@ -133,23 +133,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -276,6 +263,7 @@ export class Client {
                         {{ parameter.name }}?: {{ parameter.schema | typeDeclaration({ "prefixDirectlyResolved": "Types.", "inline": true }) }}
                     {%- endfor %}
                 {%- endif %}
+                {{- "baseUrl?: string," if optionalUrl -}}
                 {{- "url?: string" if optionalUrl -}}
             }
         {%- endset %}
@@ -334,8 +322,10 @@ export class Client {
 
             {#- Construct param tag for optional url #}
             {%- if optionalUrl -%}
-                {{- "\n\t *" }} @param options.url 
+                {{- "\n\t *" }} @param options.baseUrl 
                 {{- "\n\t *" }} Url of the {{ operation.serviceName }} to be used.
+                {{- "\n\t *" }} @param options.url 
+                {{- "\n\t *" }} Url of the to be used.
             {%- endif -%}
         {%- endset %}
 
@@ -367,6 +357,7 @@ export class Client {
                         {{- parameter.name + "?: " + (parameter.schema | typeDeclaration) -}},
                     {%- endfor -%}
                 {%- endif -%}
+                {{- "baseUrl?: string," if optionalUrl -}}
                 {{- "url?: string" if optionalUrl -}}
             }
         {%- endset %}
@@ -404,8 +395,10 @@ export class Client {
 
             {#- Construct param tag for optional url #}
             {%- if optionalUrl -%}
-                {{- "\n\t * " -}} @param options.url 
+                {{- "\n\t * " -}} @param options.baseUrl 
                 {{- "\n\t * " -}} Url of the {{ operation.serviceName }} to be used.
+                {{- "\n\t * " -}} @param options.url 
+                {{- "\n\t * " -}} Url to be used.
             {%- endif -%}
         {%- endset %}
 
@@ -475,15 +468,15 @@ export class Client {
                 const urlSuffix = '{{ operation.path | replace(r/{.*?}/g, "{}") }}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
                 const [{{ operation.path | replace(r/(.*?{(.*?)})(\/\w*)*/g, "$2,") }}] = 
-                {{- "" }} validateUrl(url, this.baseUrl, '{{ operation.path | replace(r/{.*?}/g, "{}") }}')
+                {{- "" }} validateUrl(url, '{{ operation.path | replace(r/{.*?}/g, "{}") }}')
             {%- else %}
                 const url = appendToUrl(
-                    {{ "options?.url ?? " if optionalUrl }}this.baseUrl, 
+                    {{ "options?.baseUrl ?? " if optionalUrl }}this.baseUrl, 
                     `{{ operation.path | replace(r/{(.*?)}/g, "\${$1}") }}`
                 )
             {%- endif %}
         {%- elif optionalUrl %}
-            const url = appendToUrl({{ "options?.url ?? " if optionalUrl }}this.baseUrl, "{{ operation.path }}")
+            const url = {{ "options?.url ?? " if optionalUrl }}appendToUrl({{ "options?.baseUrl ?? " if optionalUrl }}this.baseUrl, "{{ operation.path }}")
         {%- else %}
             const url = appendToUrl(this.baseUrl, "{{ operation.path }}")
         {%- endif %}

@@ -271,6 +271,10 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       }
     : T extends 'request'
@@ -299,6 +303,10 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       }
     : T extends 'response'
@@ -331,6 +339,10 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'response'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       }
     : never;
@@ -390,6 +402,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * List of users who own the device
          */
         owner?: UserReference[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'cloud instantiable';
@@ -423,6 +439,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'cloud instantiable';
@@ -460,6 +480,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * List of users who own the device
          */
         owner?: UserReference<'response'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'cloud instantiable';
@@ -533,6 +557,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'device';
@@ -576,6 +604,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'device';
@@ -613,6 +645,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'response'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'device';
@@ -663,6 +699,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * List of users who own the device
          */
         owner?: UserReference[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'edge instantiable';
@@ -696,6 +736,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'edge instantiable';
@@ -733,6 +777,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * List of users who own the device
          */
         owner?: UserReference<'response'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'edge instantiable';
@@ -800,6 +848,10 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'group';
@@ -832,6 +884,10 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'group';
@@ -868,6 +924,10 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference<'response'>[];
+        /**
+         * Endpoint where the device may be booked.
+         */
+        bookingEndpoint: string;
         [k: string]: unknown;
       } & {
         type?: 'group';
@@ -907,6 +967,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
@@ -943,6 +1007,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'device';
@@ -989,6 +1057,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
@@ -1025,6 +1097,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'group';
@@ -1058,6 +1134,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
@@ -1090,6 +1170,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'device';
@@ -1122,6 +1206,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
@@ -1154,6 +1242,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'group';
@@ -1191,6 +1283,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
@@ -1227,6 +1323,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'device';
@@ -1273,6 +1373,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
@@ -1309,6 +1413,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
+          /**
+           * Endpoint where the device may be booked.
+           */
+          bookingEndpoint: string;
           [k: string]: unknown;
         } & {
           type?: 'group';
@@ -1405,6 +1513,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
@@ -1441,6 +1553,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'device';
@@ -1487,6 +1603,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'edge instantiable';
@@ -1523,6 +1643,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'group';
@@ -1567,6 +1691,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
@@ -1599,6 +1727,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'device';
@@ -1631,6 +1763,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'edge instantiable';
@@ -1663,6 +1799,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'group';
@@ -1711,6 +1851,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
@@ -1747,6 +1891,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'device';
@@ -1793,6 +1941,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'edge instantiable';
@@ -1829,6 +1981,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
+              /**
+               * Endpoint where the device may be booked.
+               */
+              bookingEndpoint: string;
               [k: string]: unknown;
             } & {
               type?: 'group';

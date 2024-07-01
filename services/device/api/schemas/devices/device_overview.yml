@@ -34,9 +34,14 @@ properties:
     description: List of users who own the device
     items:
       $ref: ./references/user_reference.yml
+  bookingEndpoint:
+    type: string
+    description: Endpoint where the device may be booked.
+    format: uri
 required:
   - url
   - type
   - name
   - isPublic
+  - bookingEndpoint
 x-typeguard: true

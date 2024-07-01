@@ -129,23 +129,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -222,8 +209,10 @@ export class Client {
     /**
      * List experiments 
 	 * 
-	 * @param options.url
+	 * @param options.baseUrl
 	 * Url of the  to be used.
+	 * @param options.url
+	 * Url to be used.
      *
      * @throws {@link FetchError | FetchError } 
      * Thrown if fetch fails.
@@ -239,8 +228,8 @@ export class Client {
      */
     public async listExperiments(
             options?: {
-                headers?: [string, string][],url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
-            const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+                headers?: [string, string][],baseUrl?: string,url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
+            const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, "/experiments")
 
         
 
@@ -288,8 +277,10 @@ export class Client {
 	 * The experiment to be created.
 	 * @param options.changedURL
 	 * An URL that will be called when the experiment status changes.
-	 * @param options.url
+	 * @param options.baseUrl
 	 * Url of the  to be used.
+	 * @param options.url
+	 * Url to be used.
      *
      * @throws {@link FetchError | FetchError } 
      * Thrown if fetch fails.
@@ -306,8 +297,8 @@ export class Client {
      */
     public async createExperiment(experiment: Types.Experiment<"request">,
             options?: {
-                headers?: [string, string][],changedURL?: string,url?: string}): Promise<Signatures.CreateExperimentSuccessResponse["body"]> {
-            const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+                headers?: [string, string][],changedURL?: string,baseUrl?: string,url?: string}): Promise<Signatures.CreateExperimentSuccessResponse["body"]> {
+            const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, "/experiments")
 
         const body = experiment
 
@@ -380,7 +371,7 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.GetExperimentSuccessResponse["body"]> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(url, '/experiments/{}')
 
         
 
@@ -452,7 +443,7 @@ export class Client {
                 headers?: [string, string][],changedURL?: string,}): Promise<Signatures.UpdateExperimentSuccessResponse["body"]> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(url, '/experiments/{}')
 
         const body = experimentUpdate
 
@@ -526,7 +517,7 @@ export class Client {
                 headers?: [string, string][],}): Promise<void> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(url, '/experiments/{}')
 
         
 
@@ -571,8 +562,10 @@ export class Client {
     /**
      * List templates 
 	 * 
-	 * @param options.url
+	 * @param options.baseUrl
 	 * Url of the  to be used.
+	 * @param options.url
+	 * Url to be used.
      *
      * @throws {@link FetchError | FetchError } 
      * Thrown if fetch fails.
@@ -588,8 +581,8 @@ export class Client {
      */
     public async listTemplate(
             options?: {
-                headers?: [string, string][],url?: string}): Promise<Signatures.ListTemplateSuccessResponse["body"]> {
-            const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+                headers?: [string, string][],baseUrl?: string,url?: string}): Promise<Signatures.ListTemplateSuccessResponse["body"]> {
+            const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, "/templates")
 
         
 
@@ -635,8 +628,10 @@ export class Client {
 	 * 
 	 * @param template
 	 * The template to be created.
-	 * @param options.url
+	 * @param options.baseUrl
 	 * Url of the  to be used.
+	 * @param options.url
+	 * Url to be used.
      *
      * @throws {@link FetchError | FetchError } 
      * Thrown if fetch fails.
@@ -653,8 +648,8 @@ export class Client {
      */
     public async createTemplate(template: Types.Template<"request">,
             options?: {
-                headers?: [string, string][],url?: string}): Promise<Signatures.CreateTemplateSuccessResponse["body"]> {
-            const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+                headers?: [string, string][],baseUrl?: string,url?: string}): Promise<Signatures.CreateTemplateSuccessResponse["body"]> {
+            const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, "/templates")
 
         const body = template
 
@@ -719,7 +714,7 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.GetTemplateSuccessResponse["body"]> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(url, '/templates/{}')
 
         
 
@@ -789,7 +784,7 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.UpdateTemplateSuccessResponse["body"]> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(url, '/templates/{}')
 
         const body = templateUpdate
 
@@ -857,7 +852,7 @@ export class Client {
                 headers?: [string, string][],}): Promise<void> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(url, '/templates/{}')
 
         
 

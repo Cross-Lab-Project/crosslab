@@ -127,23 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -224,8 +211,10 @@ export class Client {
   /**
    * List institutions
    *
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -241,9 +230,11 @@ export class Client {
    */
   public async listInstitutions(options?: {
     headers?: [string, string][];
+    baseUrl?: string;
     url?: string;
   }): Promise<Signatures.ListInstitutionsSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/institutions');
+    const url =
+      options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/institutions');
 
     if (!RequestValidation.validateListInstitutionsInput())
       throw new ValidationError(
@@ -287,8 +278,10 @@ export class Client {
    *
    * @param institution
    * The institution to be created.
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -306,10 +299,12 @@ export class Client {
     institution: Types.Institution<'request'>,
     options?: {
       headers?: [string, string][];
+      baseUrl?: string;
       url?: string;
     },
   ): Promise<Signatures.CreateInstitutionSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/institutions');
+    const url =
+      options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/institutions');
 
     const body = institution;
 
@@ -377,7 +372,7 @@ export class Client {
   ): Promise<Signatures.GetInstitutionSuccessResponse['body']> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(url, this.baseUrl, '/institutions/{}');
+    const [institution_id] = validateUrl(url, '/institutions/{}');
 
     const parameters = {
       institution_id: institution_id,
@@ -449,7 +444,7 @@ export class Client {
   ): Promise<Signatures.UpdateInstitutionSuccessResponse['body']> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(url, this.baseUrl, '/institutions/{}');
+    const [institution_id] = validateUrl(url, '/institutions/{}');
 
     const body = institution;
 
@@ -521,7 +516,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(url, this.baseUrl, '/institutions/{}');
+    const [institution_id] = validateUrl(url, '/institutions/{}');
 
     const parameters = {
       institution_id: institution_id,

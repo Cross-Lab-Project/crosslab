@@ -127,23 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -224,8 +211,10 @@ export class Client {
   /**
    * List devices
    *
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -241,9 +230,10 @@ export class Client {
    */
   public async listDevices(options?: {
     headers?: [string, string][];
+    baseUrl?: string;
     url?: string;
   }): Promise<Signatures.ListDevicesSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
+    const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/devices');
 
     if (!RequestValidation.validateListDevicesInput())
       throw new ValidationError(
@@ -292,8 +282,10 @@ export class Client {
    * If the callback fails the url MIGHT not be called in the future.
    *
    * There can be multiple callbacks registered with the same device.
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -312,10 +304,11 @@ export class Client {
     options?: {
       headers?: [string, string][];
       changedUrl?: string;
+      baseUrl?: string;
       url?: string;
     },
   ): Promise<Signatures.CreateDeviceSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
+    const url = options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/devices');
 
     const body = device;
 
@@ -394,7 +387,7 @@ export class Client {
   ): Promise<Signatures.GetDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(url, '/devices/{}');
 
     const parameters = {
       device_id: device_id,
@@ -481,7 +474,7 @@ export class Client {
   ): Promise<Signatures.UpdateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(url, '/devices/{}');
 
     const body = deviceUpdate;
 
@@ -558,7 +551,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(url, '/devices/{}');
 
     const parameters = {
       device_id: device_id,
@@ -631,7 +624,7 @@ export class Client {
   ): Promise<Signatures.InstantiateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(url, '/devices/{}');
 
     const parameters = {
       device_id: device_id,
@@ -715,7 +708,7 @@ export class Client {
   ): Promise<Signatures.GetDeviceAvailabilitySuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(url, '/devices/{}/availability');
 
     const parameters = {
       device_id: device_id,
@@ -796,7 +789,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(url, '/devices/{}/availability');
 
     const parameters = {
       device_id: device_id,
@@ -866,7 +859,7 @@ export class Client {
   ): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(url, '/devices/{}/availability');
 
     const body = availabilityRules;
 
@@ -938,7 +931,7 @@ export class Client {
   ): Promise<Signatures.CreateWebsocketTokenSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/websocket'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/websocket');
+    const [device_id] = validateUrl(url, '/devices/{}/websocket');
 
     const parameters = {
       device_id: device_id,
@@ -1015,7 +1008,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/signaling'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/signaling');
+    const [device_id] = validateUrl(url, '/devices/{}/signaling');
 
     const body = sigMessage;
 
@@ -1062,8 +1055,10 @@ export class Client {
   /**
    * List Peer Connection
    *
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -1079,9 +1074,11 @@ export class Client {
    */
   public async listPeerconnections(options?: {
     headers?: [string, string][];
+    baseUrl?: string;
     url?: string;
   }): Promise<Signatures.ListPeerconnectionsSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
+    const url =
+      options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/peerconnections');
 
     if (!RequestValidation.validateListPeerconnectionsInput())
       throw new ValidationError(
@@ -1129,8 +1126,10 @@ export class Client {
    * An URL that will be called once the peer connection is closed.
    * @param options.statusChangedUrl
    * An URL that will be called if the status of the peerconnection changes.
-   * @param options.url
+   * @param options.baseUrl
    * Url of the  to be used.
+   * @param options.url
+   * Url to be used.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -1151,10 +1150,12 @@ export class Client {
       headers?: [string, string][];
       closedUrl?: string;
       statusChangedUrl?: string;
+      baseUrl?: string;
       url?: string;
     },
   ): Promise<Signatures.CreatePeerconnectionSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
+    const url =
+      options?.url ?? appendToUrl(options?.baseUrl ?? this.baseUrl, '/peerconnections');
 
     const body = peerconnection;
 
@@ -1238,7 +1239,7 @@ export class Client {
   ): Promise<Signatures.GetPeerconnectionSuccessResponse['body']> {
     const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
+    const [peerconnection_id] = validateUrl(url, '/peerconnections/{}');
 
     const parameters = {
       peerconnection_id: peerconnection_id,
@@ -1308,7 +1309,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
+    const [peerconnection_id] = validateUrl(url, '/peerconnections/{}');
 
     const parameters = {
       peerconnection_id: peerconnection_id,
@@ -1387,11 +1388,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/peerconnections/{}/device_status'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(
-      url,
-      this.baseUrl,
-      '/peerconnections/{}/device_status',
-    );
+    const [peerconnection_id] = validateUrl(url, '/peerconnections/{}/device_status');
 
     const parameters = {
       peerconnection_id: peerconnection_id,
