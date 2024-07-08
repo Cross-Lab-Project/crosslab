@@ -203,7 +203,7 @@ export async function dispatchCallback(bookingID: bigint) {
         [rows, _] = await db.execute("SELECT `id`, `url` FROM bookingcallbacks WHERE booking=? FOR UPDATE", [bookingID]);
         for (let i = 0; i < rows.length; i++) {
             try {
-                let response = await fetch(rows[i].url, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ "Status": status }) });
+                let response = await fetch(rows[i].url, { method: 'POST', headers: { "Content-Type": "application/json" }, body: JSON.stringify({ "status": status, "url": config.OwnURL + "/booking/" + bookingID.toString(), "id": bookingID.toString() }) });
                 if (response.status == 404 || response.status == 410) { // Code depends on service
                     // Callback no longer needed
                     await db.execute("DELETE FROM bookingcallbacks WHERE id=?", [rows[i].id]);
