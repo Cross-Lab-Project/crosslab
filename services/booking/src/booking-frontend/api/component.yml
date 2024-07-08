@@ -75,7 +75,9 @@
           description: ID of Booking
       tags:
         - booking-frontend
-      summary: Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
+      summary: >
+        Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks.
+        For adding devices, the scope 'booking:use' is required.
       requestBody:
         content:
           application/json:
