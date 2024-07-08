@@ -1,6 +1,6 @@
 import { baseConfig, die } from '@crosslab/booking-service-common';
 
-const PORT = parseInt(process.env.PORT ?? '3000');
+const PORT = parseInt(process.env.PORT ?? '3005');
 const DEFAULT_BASE_URL = 'http://localhost:' + PORT;
 
 export const config = {
@@ -16,4 +16,10 @@ export const config = {
     die('the environment variable SECURITY_AUDIENCE is not defined!'),
   API_TOKEN:
     process.env.API_TOKEN ?? die('the environment variable API_TOKEN is not defined!'),
+  BookingDSN: process.env.BOOKING_DSN ?? baseConfig.BookingDSN,
+  ReservationDSN: process.env.BOOKING_DSN ?? baseConfig.BookingDSN,
+  CallbackDSN: process.env.BOOKING_DSN ?? baseConfig.BookingDSN,
+  OwnURL: process.env.BASE_URL ?? DEFAULT_BASE_URL,
+  InstitutePrefix:[process.env.BASE_URL ?? DEFAULT_BASE_URL],
+  AmqpUrl:  process.env.AMQP_URL ?? baseConfig.AmqpUrl,
 };
