@@ -307,6 +307,7 @@ export async function mainLoop(): Promise<void> {
                 break;
             }
           } catch (error) {
+            console.log("Can not process request: " + error);
             // Do not jump out here, always send an answer to caller
             answer = {
               Type: data.Type,

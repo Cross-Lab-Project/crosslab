@@ -3,12 +3,17 @@ import {
   ReservationMessage,
   ReservationRequest,
   mainLoop,
+  config,
 } from '@crosslab/service-device-reservation';
+import {getSQLDNS} from './setup'; 
 import * as amqplib from 'amqplib';
 
 var running: boolean = false;
 
 export async function startDeviceReservation() {
+  config.BookingDSN = getSQLDNS();
+  config.ReservationDSN = getSQLDNS();
+  config.CallbackDSN = getSQLDNS();
   if (running) {
     throw Error('reservation already started');
   }

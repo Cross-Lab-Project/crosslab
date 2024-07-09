@@ -99,6 +99,7 @@ rebac_allow if {
 rebac_allow if {
 	object in ["booking:~~~TYPE~~~"]
 	input.action in ["create"]
+	not subject in ["user:anonymous"]
 }
 
 # Allow everyone to create an experiment
