@@ -5,17 +5,20 @@ import dayjs from 'dayjs';
 import { cloneDeep, map } from 'lodash';
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
+import { config } from '../config';
 import {
   postScheduleRequestBodyType,
   postScheduleSignature,
   postScheduleSuccessResponseType,
-} from './generated/signatures';
-import { Timeslot } from './generated/types';
-import { timetableAnd, timetableNot } from './timetable';
+} from '../generated/signatures';
+import { Timeslot } from '../generated/types';
+import { timetableAnd, timetableNot } from '../timetable';
 
 // TODO: Missing availability since it is not yet well defined
-export const postSchedule: postScheduleSignature = async (body, user) => {
+export const postSchedule: postScheduleSignature = async (request, body) => {
+
+  await request.authorization.check_authorization_or_fail('create', `booking`);
+
   let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
 
   const laterReq = new Map<string, [number[], number[], postScheduleRequestBodyType]>(); // Device in request, device list, request
@@ -86,7 +89,6 @@ export const postSchedule: postScheduleSignature = async (body, user) => {
     if (r.type === 'device') {
       realDevices[device].push(r.url);
     } else if (r.type === 'cloud instantiable' || r.type === 'edge instantiable') {
-      // TODO
       // For now, just add free time
       realDevices[device].push(r.url);
       timetables[device].push([]);

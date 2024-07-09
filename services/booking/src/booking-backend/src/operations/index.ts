@@ -1,19 +1,20 @@
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
+import { config } from '../config';
 import {
   deleteBookingByIDLockSignature,
   postBookingCallbackByIDSignature,
   putBookingByIDLock200ResponseType,
   putBookingByIDLockSignature,
-} from './generated/signatures';
-import { dispatchCallback, handleCallback } from './internal';
+} from '../generated/signatures';
+import { dispatchCallback, handleCallback } from '../internal';
 
-export const putBookingByIDLock: putBookingByIDLockSignature = async (
+export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
@@ -40,7 +41,7 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -83,25 +84,24 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
         status: 200,
         body: deviceList,
       };
-    } catch (err) {
-      throw err;
     } finally {
       dispatchCallback(bookingID);
-      db.commit();
+      await db.commit();
     }
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
   }
 };
 
-export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
+export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
@@ -120,17 +120,24 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
     switch (rows[0].status) {
       case 'active-rejected':
       case 'active':
-      case 'active-pending':
         await db.execute("UPDATE booking SET `status`='booked' WHERE `id`=?", [
           bookingID,
         ]);
         dispatchCallback(bookingID);
         break;
 
+      case 'active-pending':
+        await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [
+          bookingID,
+        ]);
+        dispatchCallback(bookingID);
+        break;
+
+
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -143,29 +150,32 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
         throw Error('BUG: Unknown booking status ' + rows[0].status);
     }
 
-    db.commit();
+    await db.commit();
     return {
       status: 200,
     };
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
   }
 };
 
-export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
+export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (request,
   parameters,
-  user,
 ) => {
+  let parameterID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${parameterID}`);
+
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
 
   try {
     let [rows, fields]: [any, any] = await db.execute(
       'SELECT `type`, `targetbooking`, `parameters` FROM callback WHERE `id`=?',
-      [parameters.ID],
+      [parameterID],
     );
     if (rows.length === 0) {
       return {

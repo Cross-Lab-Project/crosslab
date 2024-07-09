@@ -2,6 +2,7 @@ import { mainLoop } from './mainLoop';
 
 export * from './mainLoop';
 export * from './messageDefinition';
+export * from './config';
 
 console.log('Starting reservation service');
 

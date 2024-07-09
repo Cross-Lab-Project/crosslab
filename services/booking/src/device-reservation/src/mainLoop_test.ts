@@ -1,8 +1,9 @@
-import { baseConfig, sleep } from '@crosslab/booking-service-common';
+import { sleep } from '@crosslab/booking-service-common';
 import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
+import { config } from './config';
 
 import { mainLoop } from './mainLoop';
 import {
@@ -22,17 +23,17 @@ mocha.describe('mainLoop.ts', function () {
   this.timeout(10000);
 
   mocha.before(function () {
-    // baseConfig
-    baseConfig.OwnURL = 'http://localhost:10801';
-    baseConfig.InstitutePrefix = ['http://localhost:10801'];
-    baseConfig.ReservationDSN =
+    // config
+    config.OwnURL = 'http://localhost:10801';
+    config.InstitutePrefix = ['http://localhost:10801'];
+    config.ReservationDSN =
       'mysql://test:test@localhost/unittest?supportBigNumbers=true&bigNumberStrings=true';
   });
 
   mocha.beforeEach(async function () {
     // Setup database
     try {
-      let db = await mysql.createConnection(baseConfig.ReservationDSN);
+      let db = await mysql.createConnection(config.ReservationDSN);
       await db.connect();
       await db.execute(
         'CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`))',
@@ -71,7 +72,7 @@ mocha.describe('mainLoop.ts', function () {
     }
 
     // Connect to amqp
-    connection = await amqplib.connect(baseConfig.AmqpUrl);
+    connection = await amqplib.connect(config.AmqpUrl);
     channel = await connection.createChannel();
 
     await channel.assertQueue(receiveQueue, {
@@ -83,16 +84,16 @@ mocha.describe('mainLoop.ts', function () {
     });
 
     // Drain queues
-    while (await channel.get(receiveQueue, { noAck: true })) {}
+    while (await channel.get(receiveQueue, { noAck: true })) { }
 
-    while (await channel.get(sendQueue, { noAck: true })) {}
+    while (await channel.get(sendQueue, { noAck: true })) { }
 
     mainLoop();
     await sleep(1000);
   });
 
   mocha.afterEach(async function () {
-    let db = await mysql.createConnection(baseConfig.ReservationDSN);
+    let db = await mysql.createConnection(config.ReservationDSN);
     await db.connect();
     await db.execute('DROP TABLE reservation');
     db.end();
@@ -104,6 +105,7 @@ mocha.describe('mainLoop.ts', function () {
     await channel.deleteQueue(receiveQueue);
 
     await channel.close();
+    await sleep(250);
     await connection.close();
   });
 
@@ -562,6 +564,7 @@ mocha.describe('mainLoop.ts', function () {
     }
   });
 
+
   mocha.it('mainLoop.ts get missing values', async () => {
     let m = new ReservationMessage(ReservationRequest.Get, receiveQueue);
 
@@ -578,6 +581,48 @@ mocha.describe('mainLoop.ts', function () {
 
     if (data.Successful) {
       throw new Error("Reservation (4) was successful but shouldn't");
+    }
+  });
+
+  mocha.it('mainLoop.ts bad dates', async () => {
+    let m = new ReservationMessage(ReservationRequest.New, receiveQueue);
+    m.Device = new URL('http://localhost/device/superDevice');
+    m.End = dayjs('2022-06-27T02:15:00Z');
+    m.Start = dayjs('2022-06-27T03:45:00Z');
+
+    channel.sendToQueue(sendQueue, Buffer.from(JSON.stringify(m)));
+    await sleep(1000);
+
+    let a = await channel.get(receiveQueue, { noAck: true });
+
+    if (a == null || typeof a === 'boolean') {
+      throw new Error('Did not receive answer message');
+    }
+
+    let data = JSON.parse(a.content.toString());
+
+    if (data.Successful) {
+      throw new Error("Reservation (1) was successful but shouldn't");
+    }
+
+    m = new ReservationMessage(ReservationRequest.New, receiveQueue);
+    m.Device = new URL('http://localhost/device/superDevice');
+    m.End = dayjs('2022-06-27T02:15:00Z');
+    m.Start = dayjs('2022-06-27T02:15:00Z');
+
+    channel.sendToQueue(sendQueue, Buffer.from(JSON.stringify(m)));
+    await sleep(1000);
+
+    a = await channel.get(receiveQueue, { noAck: true });
+
+    if (a == null || typeof a === 'boolean') {
+      throw new Error('Did not receive answer message');
+    }
+
+    data = JSON.parse(a.content.toString());
+
+    if (data.Successful) {
+      throw new Error("Reservation (2) was successful but shouldn't");
     }
   });
 

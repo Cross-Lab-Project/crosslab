@@ -4,9 +4,9 @@
   "description": "Part of booking service. Does most of the actual work and is horizontal scaleable.",
   "main": "app/index.js",
   "scripts": {
-    "test": "npm run build && env-cmd -e development nyc --include=\"app/messageDefinition.js\" --include=\"app/amqpHandle.js\" --include=\"app/internal.js\" --include=\"app/operations.js\" mocha app/*_test.js",
+    "test": "npm run build && env-cmd -e development c8 --include=\"app/messageDefinition.js\" --include=\"app/amqpHandle.js\" --include=\"app/internal.js\" --include=\"app/operations/index.js\" mocha app/*_test.js app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
-    "build:compile": "tsc",
+    "build:compile": "tsc && cp src/generated/basicValidation.cjs app/generated/basicValidation.cjs",
     "build": "npm run build:generate && npm run build:compile",
     "start": "npm run build && env-cmd -e development node app/index.js",
     "format": "prettier . --write",
@@ -26,7 +26,7 @@
     "@types/amqplib": "^0.10.1",
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.14.198",
-    "ajv-formats": "^2.1.1",
+    "ajv-formats": "^3.0.1",
     "amqplib": "^0.10.2",
     "dayjs": "^1.11.5",
     "express": "^4.18.1",
@@ -36,10 +36,9 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.0",
-    "async-mutex": "^0.4.0",
+    "c8": "^10.1.2",
     "env-cmd": "^10.1.0",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
     "prettier": "^3.0.3",
     "why-is-node-running": "^2.2.2"
   }

@@ -2,7 +2,9 @@
 
 sudo service rabbitmq-server start
 sudo service mariadb start
+sudo mysql -e "DROP DATABASE IF EXISTS unittest;"
 sudo mysql -e "CREATE DATABASE unittest DEFAULT CHARSET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;"
+sudo mysql -e "DROP USER IF EXISTS 'test'@localhost;"
 sudo mysql -e "CREATE USER 'test'@localhost IDENTIFIED BY 'test';"
 sudo mysql -e "GRANT ALL PRIVILEGES ON unittest.* to 'test'@localhost;"
 sudo mysql -e "FLUSH PRIVILEGES;"
@@ -18,8 +20,12 @@ result=0
 cd "$current/src/schedule-service"
 npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
-# cd "$current/src/booking-backend"
-# npm test
+cd "$current/src/booking-backend"
+npm test
+result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
+cd "$current/src/booking-frontend"
+npm test
+result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/device-reservation"
 npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))

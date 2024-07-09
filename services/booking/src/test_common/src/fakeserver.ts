@@ -23,6 +23,8 @@ export var fakeServerConfig = {
   callback_test_local_two_second_was_called: false,
   callback_test_local_group_was_called: false,
   callback_test_remote_single_was_called: false,
+  callback_test_new_was_called: false,
+  device_patch_list: [], 
   booking_status: 'booked',
 };
 
@@ -57,12 +59,12 @@ export async function startFakeServer() {
       case 200:
         if (fakeServerConfig.device_wrong_device) {
           res.send(
-            '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-111111111110", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-111111111110", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
           );
           return;
         }
         res.send(
-          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
         );
       case 404:
         res.status(404).send();
@@ -75,8 +77,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -85,7 +87,7 @@ export async function startFakeServer() {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         res.send(
-          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000002", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
         );
         return;
       case 404:
@@ -99,8 +101,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -109,7 +111,7 @@ export async function startFakeServer() {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         res.send(
-          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010", "name": "Test Group Booking", "description": "Test group containing two local devices. Used in booking-backend/bookng-frontend tests.", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+          '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000010", "name": "Test Group Booking", "description": "Test group containing two local devices. Used in booking-backend/bookng-frontend tests.", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000"}], "isPublic": true}',
         );
         return;
       case 404:
@@ -123,8 +125,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -134,18 +136,18 @@ export async function startFakeServer() {
       case 200:
         if (fakeServerConfig.device_single_is_group) {
           res.send(
-            '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Group 2", "description": "Test group two for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
           );
           return;
         }
         if (fakeServerConfig.device_not_available) {
           res.send(
-            '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "connected": true, "announcedAvailability": [], "isPublic": true}',
           );
           return;
         }
         res.send(
-          '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [{"start":"1999-01-01T00:00:00Z", "end": "1999-12-31T23:59:59Z"},{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
+          '{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000", "name": "Test Device", "description": "Test device for unit tests", "type": "device", "connected": true, "announcedAvailability": [{"start":"1999-01-01T00:00:00Z", "end": "1999-12-31T23:59:59Z"},{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
         );
         return;
       case 404:
@@ -159,8 +161,8 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
@@ -170,18 +172,18 @@ export async function startFakeServer() {
       case 200:
         if (fakeServerConfig.device_single_is_group) {
           res.send(
-            '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Group 3", "description": "Test group two for unit tests", "type": "group", "owner": "http://localhost", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Group 3", "description": "Test group two for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
           );
           return;
         }
         if (fakeServerConfig.device_not_available) {
           res.send(
-            '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Device 2", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Device 2", "description": "Test device for unit tests", "type": "device", "connected": true, "announcedAvailability": [], "isPublic": true}',
           );
           return;
         }
         res.send(
-          '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Device 2", "description": "Test device for unit tests", "type": "device", "owner": "http://localhost", "connected": true, "announcedAvailability": [{"start":"1999-01-01T00:00:00Z", "end": "1999-12-31T23:59:59Z"},{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
+          '{"url": "http://localhost:10801/devices/20000000-0000-0000-0000-000000000000", "name": "Test Device 2", "description": "Test device for unit tests", "type": "device", "connected": true, "announcedAvailability": [{"start":"1999-01-01T00:00:00Z", "end": "1999-12-31T23:59:59Z"},{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
         );
         return;
       case 404:
@@ -195,34 +197,40 @@ export async function startFakeServer() {
         return;
       default:
         res
-          .status(fakeServerConfig.proxy_server_status)
-          .send('Undefined error' + fakeServerConfig.proxy_server_status);
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
         return;
     }
   });
 
-  app.get('/test_callbacks/test-local-single', (req, res) => {
+  app.post('/test_callbacks/test-local-single', (req, res) => {
     fakeServerConfig.callback_test_local_single_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-two-first', (req, res) => {
+  app.post('/test_callbacks/test-local-two-first', (req, res) => {
     fakeServerConfig.callback_test_local_two_first_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-two-second', (req, res) => {
+  app.post('/test_callbacks/test-local-two-second', (req, res) => {
     fakeServerConfig.callback_test_local_two_second_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-local-group', (req, res) => {
+  app.post('/test_callbacks/test-local-group', (req, res) => {
     fakeServerConfig.callback_test_local_group_was_called = true;
     res.status(200).send();
   });
 
-  app.get('/test_callbacks/test-remote-single', (req, res) => {
+  app.post('/test_callbacks/test-remote-single', (req, res) => {
     fakeServerConfig.callback_test_remote_single_was_called = true;
+    res.status(200).send();
+  });
+
+  // to add in tests: http://localhost:10801/test_callbacks/callback-test-new
+  app.post('/test_callbacks/callback-test-new', (req, res) => {
+    fakeServerConfig.callback_test_new_was_called = true;
     res.status(200).send();
   });
 
@@ -357,7 +365,7 @@ export async function startFakeServer() {
       switch (fakeServerConfig.proxy_device_service_status) {
         case 200:
           res.send(
-            '{"url": "http://localhost:10801/devices/a0000000-0000-0000-0000-000000000000", "name": "Remote Fake", "description": "Remote Fake test device for unit tests", "type": "device", "owner": "http://127.0.0.1:10802/", "connected": true, "announcedAvailability": [{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
+            '{"url": "http://localhost:10801/devices/a0000000-0000-0000-0000-000000000000", "name": "Remote Fake", "description": "Remote Fake test device for unit tests", "type": "device", "connected": true, "announcedAvailability": [{"start": "2022-06-20T00:00:00Z", "end": "2022-06-27T06:00:00Z"}, {"start": "2022-06-27T07:00:00Z", "end": "2022-07-01T23:59:59Z"}], "isPublic": true}',
           );
           return;
         case 404:
@@ -386,6 +394,11 @@ export async function startFakeServer() {
       console.log('unknown request to proxy (get):', req.query);
       res.status(999).send('');
     }
+  });
+
+  app.patch('/devices/*', (req, res) => {
+    fakeServerConfig.device_patch_list.push([req.path, req.query.changedUrl]);
+    res.status(200).send();
   });
 
   app.all('*', (req, res) => {
@@ -425,6 +438,8 @@ export function resetFakeServerVars() {
   fakeServerConfig.callback_test_local_two_second_was_called = false;
   fakeServerConfig.callback_test_local_group_was_called = false;
   fakeServerConfig.callback_test_remote_single_was_called = false;
+  fakeServerConfig.callback_test_new_was_called = false;
+  fakeServerConfig.device_patch_list = []; 
   fakeServerConfig.booking_status = 'booked';
 }
 
