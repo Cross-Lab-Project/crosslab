@@ -9,25 +9,22 @@ sudo mysql -e "CREATE USER 'test'@localhost IDENTIFIED BY 'test';"
 sudo mysql -e "GRANT ALL PRIVILEGES ON unittest.* to 'test'@localhost;"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
-rm -rf venv
-rm -rf db
-
 npm ci
 
 current=$(pwd)
 result=0
 
 cd "$current/src/schedule-service"
-npm test
+bash ./scripts/test.sh
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/booking-backend"
-npm test
+bash ./scripts/test.sh
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/booking-frontend"
-npm test
+bash ./scripts/test.sh
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/device-reservation"
-npm test
+bash ./scripts/test.sh
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 
 cd $current

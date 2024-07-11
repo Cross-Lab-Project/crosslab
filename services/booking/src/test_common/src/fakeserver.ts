@@ -1,8 +1,8 @@
 import express from 'express';
 import * as http from 'http';
 
-var device_server: http.Server;
-var proxy_warning_server: http.Server;
+var device_server: http.Server | undefined;
+var proxy_warning_server: http.Server | undefined;
 
 var running: boolean = false;
 
@@ -24,7 +24,7 @@ export var fakeServerConfig = {
   callback_test_local_group_was_called: false,
   callback_test_remote_single_was_called: false,
   callback_test_new_was_called: false,
-  device_patch_list: [], 
+  device_patch_list: [] as any[],
   booking_status: 'booked',
 };
 
@@ -38,12 +38,12 @@ export async function startFakeServer() {
   // Proxy warning
   let app: express.Application = express();
 
-  app.get('*', (req, res) => {
+  app.get('*', (_req, res) => {
     console.log('Proxy access wrong');
     res.status(405).send();
   });
 
-  app.post('*', (req, res) => {
+  app.post('*', (_req, res) => {
     console.log('Proxy access wrong');
     res.status(405).send();
   });
@@ -54,7 +54,7 @@ export async function startFakeServer() {
 
   app.use(express.json());
 
-  app.get('/devices/00000000-0000-0000-0000-000000000001', (req, res) => {
+  app.get('/devices/00000000-0000-0000-0000-000000000001', (_req, res) => {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         if (fakeServerConfig.device_wrong_device) {
@@ -66,6 +66,7 @@ export async function startFakeServer() {
         res.send(
           '{"url": "http://localhost:10801/devices/00000000-0000-0000-0000-000000000001", "name": "Test Group", "description": "Test group for unit tests", "type": "group", "devices": [{"url": "http://localhost:10801/devices/10000000-0000-0000-0000-000000000000"}, {"url": "http://127.0.0.1:10802/devices/a0000000-0000-0000-0000-000000000000"}], "isPublic": true}',
         );
+        return;
       case 404:
         res.status(404).send();
         return;
@@ -83,7 +84,7 @@ export async function startFakeServer() {
     }
   });
 
-  app.get('/devices/00000000-0000-0000-0000-000000000002', (req, res) => {
+  app.get('/devices/00000000-0000-0000-0000-000000000002', (_req, res) => {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         res.send(
@@ -107,7 +108,7 @@ export async function startFakeServer() {
     }
   });
 
-  app.get('/devices/00000000-0000-0000-0000-000000000010', (req, res) => {
+  app.get('/devices/00000000-0000-0000-0000-000000000010', (_req, res) => {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         res.send(
@@ -131,7 +132,7 @@ export async function startFakeServer() {
     }
   });
 
-  app.get('/devices/10000000-0000-0000-0000-000000000000', (req, res) => {
+  app.get('/devices/10000000-0000-0000-0000-000000000000', (_req, res) => {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         if (fakeServerConfig.device_single_is_group) {
@@ -167,7 +168,7 @@ export async function startFakeServer() {
     }
   });
 
-  app.get('/devices/20000000-0000-0000-0000-000000000000', (req, res) => {
+  app.get('/devices/20000000-0000-0000-0000-000000000000', (_req, res) => {
     switch (fakeServerConfig.device_service_status) {
       case 200:
         if (fakeServerConfig.device_single_is_group) {
@@ -203,33 +204,33 @@ export async function startFakeServer() {
     }
   });
 
-  app.post('/test_callbacks/test-local-single', (req, res) => {
+  app.post('/test_callbacks/test-local-single', (_req, res) => {
     fakeServerConfig.callback_test_local_single_was_called = true;
     res.status(200).send();
   });
 
-  app.post('/test_callbacks/test-local-two-first', (req, res) => {
+  app.post('/test_callbacks/test-local-two-first', (_req, res) => {
     fakeServerConfig.callback_test_local_two_first_was_called = true;
     res.status(200).send();
   });
 
-  app.post('/test_callbacks/test-local-two-second', (req, res) => {
+  app.post('/test_callbacks/test-local-two-second', (_req, res) => {
     fakeServerConfig.callback_test_local_two_second_was_called = true;
     res.status(200).send();
   });
 
-  app.post('/test_callbacks/test-local-group', (req, res) => {
+  app.post('/test_callbacks/test-local-group', (_req, res) => {
     fakeServerConfig.callback_test_local_group_was_called = true;
     res.status(200).send();
   });
 
-  app.post('/test_callbacks/test-remote-single', (req, res) => {
+  app.post('/test_callbacks/test-remote-single', (_req, res) => {
     fakeServerConfig.callback_test_remote_single_was_called = true;
     res.status(200).send();
   });
 
   // to add in tests: http://localhost:10801/test_callbacks/callback-test-new
-  app.post('/test_callbacks/callback-test-new', (req, res) => {
+  app.post('/test_callbacks/callback-test-new', (_req, res) => {
     fakeServerConfig.callback_test_new_was_called = true;
     res.status(200).send();
   });
@@ -257,8 +258,10 @@ export async function startFakeServer() {
         return;
       case 400:
         res.status(400).send();
+        return;
       case 401:
         res.status(401).send();
+        return;
       case 404:
         res.status(404).send('FAKE404');
         return;
@@ -414,9 +417,9 @@ export async function stopFakeServer() {
   if (!running) {
     throw Error('can not stop fakeserver that is not running.');
   }
-  device_server.close();
+  device_server?.close();
   device_server = undefined;
-  proxy_warning_server.close();
+  proxy_warning_server?.close();
   proxy_warning_server = undefined;
   running = false;
 }
@@ -439,7 +442,7 @@ export function resetFakeServerVars() {
   fakeServerConfig.callback_test_local_group_was_called = false;
   fakeServerConfig.callback_test_remote_single_was_called = false;
   fakeServerConfig.callback_test_new_was_called = false;
-  fakeServerConfig.device_patch_list = []; 
+  fakeServerConfig.device_patch_list = [];
   fakeServerConfig.booking_status = 'booked';
 }
 

@@ -37,7 +37,7 @@ enc := openfga.encode_object(subject)
 
 # override authorization for root
 allow if {
-	subject in ["user:root", "user:experiment-service", "user:device-service"]
+	subject in ["user:root", "user:experiment-service", "user:device-service", "user:booking-service"]
 }
 
 # Check Scopes

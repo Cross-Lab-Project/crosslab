@@ -23,7 +23,7 @@ x-config: &common-config
   AUTHORIZATION_SERVER: "http://authorization:3010"
   AUTHORIZATION_PSK: "${AUTHORIZATION_PSK:?}"
   LOGGING: "${LOGGING_LEVEL:-warn}"
-  BASE_URL: https://${API_BASE_URL}
+  BASE_URL: ${API_BASE_URL}
   DB_TYPE: mariadb
   DB_HOST: db
   DB_PORT: 3306
@@ -31,10 +31,16 @@ x-config: &common-config
   DEVICE_SERVICE_URL: "http://device:3001"
   EXPERIMENT_SERVICE_URL: "http://experiment:3002"
   FEDERATION_SERVICE_URL: "http://federation:3003"
+  BOOKING_FRONTEND_URL: "http://booking-frontend:3004"
+  BOOKING_BACKEND_URL: "http://booking-backend:3005"
+  SCHEDULE_SERVICE_URL: "http://schedule-service:3006"
   AUTH_SERVICE_DOMAIN: "authentication:3000"
   DEVICE_SERVICE_DOMAIN: "device:3001"
   EXPERIMENT_SERVICE_DOMAIN: "experiment:3002"
   FEDERATION_SERVICE_DOMAIN: "federation:3003"
+  BOOKING_FRONTEND_DOMAIN: "booking-frontend:3004"
+  BOOKING_BACKEND_DOMAIN: "booking-backend:3005"
+  SCHEDULE_SERVICE_DOMAIN: "schedule-service:3006"
   AUTHORIZATION_SERVICE_DOMAIN: "authorization:3010"
 
 services:
@@ -49,8 +55,25 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--su=mysql", "--connect", "--innodb_initialized"]
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su=mysql",
+          "--connect",
+          "--innodb_initialized",
+        ]
     restart: on-failure
+  rabbitmq:
+    image: rabbitmq:3.13.4
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?}
+    volumes:
+      - ~/.docker-conf/rabbitmq/data:/var/lib/rabbitmq
+      - ~/.docker-conf/rabbitmq/log:/var/log/rabbitmq
+    networks:
+      backend:
   gateway:
     image: crosslab/gateway-service:latest
     ports:
@@ -81,6 +104,41 @@ services:
       DB_USERNAME: authorization
       DB_DATABASE: authorization
       JWT_SECRET: ${JWT_SECRET:?}
+    networks:
+      backend:
+    restart: on-failure
+  booking-frontend:
+    image: crosslab/booking-frontend:latest
+    environment:
+      <<: *common-config
+      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
+    networks:
+      backend:
+    restart: on-failure
+  booking-backend:
+    image: crosslab/booking-backend:latest
+    environment:
+      <<: *common-config
+      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
+    networks:
+      backend:
+    restart: on-failure
+  schedule:
+    image: crosslab/schedule-service:latest
+    environment:
+      <<: *common-config
+      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+    networks:
+      backend:
+    restart: on-failure
+  device-reservation:
+    image: crosslab/device-reservation:latest
+    environment:
+      <<: *common-config
+      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
     networks:
       backend:
     restart: on-failure

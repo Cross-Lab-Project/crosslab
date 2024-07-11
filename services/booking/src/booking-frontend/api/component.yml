@@ -10,6 +10,7 @@
       summary: Books an experiment.
       x-optional-url: true
       requestBody:
+        required: true
         content:
           application/json:
             schema:

@@ -349,7 +349,8 @@ export class Client {
             {#- Add declaration of request body if defined #}
             {%- if operation.requestBody -%}
             {{- bodyName + ": " -}}
-            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixDirectlyResolved":  "Types.", "schemaType": "request" }) if operation.requestBody.schema else  "Signatures." + cap_name + "Body" -}},
+            {{- operation.requestBody.schema | typeDeclaration(schemas, { "prefixDirectlyResolved":  "Types.", "schemaType": "request" }) if operation.requestBody.schema else  "Signatures." + cap_name + "Body" -}}
+            {{- " | undefined" if not operation.requestBody.required -}},
             {%- endif -%}
 
             {#- Add declaration of required parameters #}

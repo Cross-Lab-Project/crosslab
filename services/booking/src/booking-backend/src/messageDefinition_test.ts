@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as mocha from 'mocha';
 
-import { DeviceBookingRequest } from './messageDefinition';
+import { DeviceBookingRequest } from './messageDefinition.js';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();

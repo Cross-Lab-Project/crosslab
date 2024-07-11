@@ -9,7 +9,7 @@ export enum callbackType {
 
 export async function setupDummySql() {
   let sqlDNS: string = getSQLDNS();
-  let db: mysql.Connection;
+  let db: mysql.Connection | undefined;
 
   try {
     db = await mysql.createConnection(sqlDNS);
@@ -389,20 +389,19 @@ export async function setupDummySql() {
       [BigInt(9), callbackType.DeviceUpdate, BigInt(7), JSON.stringify({ Position: 0 })],
     );
 
-
     // finish
     await db.commit();
     db.end();
   } catch (err) {
     console.log('error in test setup:', err);
-    await db.rollback();
-    db.end();
+    await db?.rollback();
+    db?.end();
     throw err;
   }
 }
 
 export async function tearDownDummySql() {
-  let db: mysql.Connection;
+  let db: mysql.Connection | undefined;
   try {
     db = await mysql.createConnection(getSQLDNS());
     await db.connect();
@@ -414,7 +413,7 @@ export async function tearDownDummySql() {
     db.end();
   } catch (err) {
     console.log('error in test tear down:', err);
-    db.end();
+    db?.end();
     throw err;
   }
 }

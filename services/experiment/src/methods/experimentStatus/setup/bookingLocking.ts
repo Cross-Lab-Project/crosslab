@@ -30,7 +30,9 @@ export async function lockBookingExperiment(
     );
 
   // TODO: error handling
-  const lockedDevices = await clients.booking.lockBooking(experimentModel.bookingID);
+  const lockedDevices = await clients.booking.backend.lockBooking(
+    experimentModel.bookingID,
+  );
 
   for (const [index, resolvedDevice] of resolvedDevices.entries()) {
     if (resolvedDevice.type !== 'group') continue;

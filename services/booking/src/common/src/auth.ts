@@ -1,4 +1,4 @@
-import { baseConfig } from './config';
+import { baseConfig } from './config.js';
 
 let institutePrefixURL: URL[];
 

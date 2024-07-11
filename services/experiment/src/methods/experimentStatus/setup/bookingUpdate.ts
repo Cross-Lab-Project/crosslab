@@ -30,7 +30,7 @@ export async function updateBookingExperiment(
     );
 
   // TODO: error handling
-  await clients.booking.updateBooking(experimentModel.bookingID, {
+  await clients.booking.frontend.updateBooking(experimentModel.bookingID, {
     Locked: true,
     Devices: newDeviceUrls.map(newDeviceUrl => {
       return {

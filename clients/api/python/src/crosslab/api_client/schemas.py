@@ -3642,6 +3642,7 @@ class ScheduleRequestExperiment(TypedDict):
     An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
     - Devices: List of devices used in experiment.
     - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+
     """
     Devices: List[ScheduleRequestExperimentDevicesItems]
     Description: NotRequired[str]
@@ -3832,6 +3833,7 @@ class GetBookingResponse200Booking(TypedDict):
     - Devices
     - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
     - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+
     - You: If true, this booking was done by you.
     - External: Shows whether the booking was done by an external institution.
     - Message: User readable notes about the status of the booking (e.g. if devices are unknown).

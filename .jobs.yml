@@ -149,6 +149,9 @@ services/booking:
   - script: test
     dependencies:
       - services/booking:build
+  - script: build-docker
+    dependencies:
+      - services/booking:build
     tags:
       - test
 
@@ -488,13 +491,14 @@ integration-test:
       - services/common:build
       - services/auth:build
       - services/authorization:build
-#      - services/booking:build
+      - services/booking:build
       - services/device:build
       - services/experiment:build
       - services/federation:build
       - services/gateway:build
       - services/auth:build-docker
       - services/authorization:build-docker
+      - services/booking:build-docker
       - services/device:build-docker
       - services/experiment:build-docker
       - services/federation:build-docker

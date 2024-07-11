@@ -3,15 +3,15 @@ import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
-import { config } from './config';
 
-import { mainLoop } from './mainLoop';
+import { config } from './config.js';
+import { mainLoop } from './mainLoop.js';
 import {
   ErrorTimeoutText,
   ReservationAnswer,
   ReservationMessage,
   ReservationRequest,
-} from './messageDefinition';
+} from './messageDefinition.js';
 
 let connection: amqplib.Connection;
 let channel: amqplib.Channel;
@@ -84,9 +84,9 @@ mocha.describe('mainLoop.ts', function () {
     });
 
     // Drain queues
-    while (await channel.get(receiveQueue, { noAck: true })) { }
+    while (await channel.get(receiveQueue, { noAck: true })) {}
 
-    while (await channel.get(sendQueue, { noAck: true })) { }
+    while (await channel.get(sendQueue, { noAck: true })) {}
 
     mainLoop();
     await sleep(1000);
@@ -563,7 +563,6 @@ mocha.describe('mainLoop.ts', function () {
       throw new Error("Reservation (4) was successful but shouldn't");
     }
   });
-
 
   mocha.it('mainLoop.ts get missing values', async () => {
     let m = new ReservationMessage(ReservationRequest.Get, receiveQueue);

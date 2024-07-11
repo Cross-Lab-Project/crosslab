@@ -1,13 +1,22 @@
 {
+  "type": "module",
   "name": "@crosslab/service-schedule-service",
   "version": "0.0.1",
   "description": "Part of booking service. Shows schedule of devices - horizontal scaleable.",
   "main": "app/index.js",
+  "dockerName": "schedule-service",
+  "bin": {
+    "crosslab-schedule-service": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
   "scripts": {
     "test": "npm run build && env-cmd -e development c8 --include=\"app/operations/index.js\" --include=\"app/timetable.js\" mocha app/*_test.js app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:compile": "tsc && cp src/generated/basicValidation.cjs app/generated/basicValidation.cjs",
-    "build": "npm run build:generate && npm run build:compile",
+    "build:add-shebang": "bash scripts/add-shebang.sh",
+    "build": "npm-run-all build:*",
     "start": "npm run build && env-cmd -e development node app/index.js",
     "format": "prettier . --write",
     "lint": "eslint ."
@@ -18,7 +27,7 @@
     "@cross-lab-project/api-client": "file:../../../../clients/api/js",
     "@cross-lab-project/codegen-typescript-addon": "file:../../../../helper/crosslab-typescript-addon",
     "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration",
-    "@cross-lab-project/service-common": "file:../../../common",
+    "@crosslab/service-common": "file:../../../common",
     "@crosslab/booking-service-common": "file:../common",
     "@crosslab/booking-service-test-common": "file:../test_common",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
@@ -36,6 +45,7 @@
     "c8": "^10.1.0",
     "env-cmd": "^10.1.0",
     "mocha": "^10.0.0",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "npm-run-all": "^4.1.5"
   }
 }

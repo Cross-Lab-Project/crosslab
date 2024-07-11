@@ -2,11 +2,12 @@ import { baseConfig, sleep } from '@crosslab/booking-service-common';
 import {
   ReservationMessage,
   ReservationRequest,
-  mainLoop,
   config,
+  mainLoop,
 } from '@crosslab/service-device-reservation';
-import {getSQLDNS} from './setup'; 
 import * as amqplib from 'amqplib';
+
+import { getSQLDNS } from './setup.js';
 
 var running: boolean = false;
 
@@ -23,7 +24,7 @@ export async function startDeviceReservation() {
   // Ensure queue exists
   await channel.assertQueue('device-reservation', {
     durable: true,
- });
+  });
 
   // Drain queue for tests
   while (await channel.get('device-reservation', { noAck: true })) {}
@@ -53,7 +54,7 @@ export async function stopDeviceReservation() {
 
   let m = new ReservationMessage(ReservationRequest.Stop, 'TEST_ANSWER_STOP_SERVER');
   channel.sendToQueue('device-reservation', Buffer.from(JSON.stringify(m)));
- await sleep(1000);
+  await sleep(1000);
 
   while (await channel.get('TEST_ANSWER_STOP_SERVER', { noAck: true })) {}
   await channel.deleteQueue('TEST_ANSWER_STOP_SERVER');

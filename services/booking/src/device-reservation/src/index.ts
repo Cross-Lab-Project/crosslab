@@ -1,9 +1,13 @@
-import { mainLoop } from './mainLoop';
+import { fileURLToPath } from 'url';
 
-export * from './mainLoop';
-export * from './messageDefinition';
-export * from './config';
+import { mainLoop } from './mainLoop.js';
 
-console.log('Starting reservation service');
+export * from './mainLoop.js';
+export * from './messageDefinition.js';
+export * from './config.js';
 
-if (require.main === module) mainLoop();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  console.log('Starting reservation service');
+
+  mainLoop();
+}

@@ -1,8 +1,7 @@
 import { logger } from '@crosslab/service-common';
 import assert from 'assert';
 
-import { UnsuccessfulRequestError as UnsuccessfulRequestErrorBooking } from '../../clients/booking/client.js';
-import { UnsuccessfulRequestError as UnsuccessfulRequestErrorDevice } from '../../clients/device/client.js';
+import { UnsuccessfulRequestError } from '../../clients/device/client.js';
 import { Clients } from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
@@ -99,10 +98,7 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
         try {
           await clients.device.deleteDevice(device.instance.url);
         } catch (error) {
-          if (
-            error instanceof UnsuccessfulRequestErrorDevice &&
-            error.response.status === 404
-          )
+          if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
             continue;
           throw error;
         }
@@ -117,10 +113,7 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
       try {
         await clients.device.deletePeerconnection(peerconnection.url);
       } catch (error) {
-        if (
-          error instanceof UnsuccessfulRequestErrorDevice &&
-          error.response.status === 404
-        )
+        if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
           continue;
         throw error;
       }
@@ -131,12 +124,9 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
 async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
   if (experiment.bookingID) {
     try {
-      await clients.booking.unlockBooking(experiment.bookingID);
+      await clients.booking.backend.unlockBooking(experiment.bookingID);
     } catch (error) {
-      if (
-        error instanceof UnsuccessfulRequestErrorBooking &&
-        error.response.status === 404
-      )
+      if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
         return;
       throw error;
     }
@@ -146,12 +136,9 @@ async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
 async function deleteBooking(experiment: ExperimentModel, clients: Clients) {
   if (experiment.bookingID) {
     try {
-      await clients.booking.deleteBooking(experiment.bookingID);
+      await clients.booking.frontend.deleteBooking(experiment.bookingID);
     } catch (error) {
-      if (
-        error instanceof UnsuccessfulRequestErrorBooking &&
-        error.response.status === 404
-      )
+      if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
         return;
       throw error;
     }

@@ -4,14 +4,13 @@ import { Mutex, withTimeout } from 'async-mutex';
 import * as crypto from 'crypto';
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
-
+import { config } from './config.js';
 import {
   ErrorTimeoutText,
   ReservationAnswer,
   ReservationMessage,
   ReservationRequest,
-} from './messageDefinition';
+} from './messageDefinition.js';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -307,7 +306,7 @@ export async function mainLoop(): Promise<void> {
                 break;
             }
           } catch (error) {
-            console.log("Can not process request: " + error);
+            console.log('Can not process request: ' + error);
             // Do not jump out here, always send an answer to caller
             answer = {
               Type: data.Type,
@@ -359,6 +358,7 @@ export async function mainLoop(): Promise<void> {
     } catch (err) {
       console.log(err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }

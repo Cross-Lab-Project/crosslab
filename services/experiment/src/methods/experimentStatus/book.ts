@@ -24,7 +24,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     experimentModel.bookingStart &&
     experimentModel.bookingEnd
   ) {
-    const booking = await clients.booking.getBooking(experimentModel.bookingID);
+    const booking = await clients.booking.frontend.getBooking(experimentModel.bookingID);
     if (
       Date.parse(booking.Booking.Time.Start) !==
         Date.parse(experimentModel.bookingStart) ||
@@ -44,7 +44,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   );
 
   // TODO: error handling
-  const { BookingID } = await clients.booking.newBooking({
+  const { BookingID } = await clients.booking.frontend.newBooking({
     Devices: experimentModel.devices.map(device => {
       return { ID: device.url };
     }),
@@ -55,7 +55,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     Type: 'normal',
   });
 
-  await clients.booking.updateBooking(BookingID, {
+  await clients.booking.frontend.updateBooking(BookingID, {
     Callback: callbackUrl,
   });
 

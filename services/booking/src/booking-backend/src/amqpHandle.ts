@@ -1,13 +1,13 @@
 import { sleep } from '@crosslab/booking-service-common';
 import * as amqplib from 'amqplib';
 
-import { config } from './config';
-import { freeDevice, reservateDevice } from './internal';
-import { DeviceBookingRequest } from './messageDefinition';
+import { config } from './config.js';
+import { freeDevice, reservateDevice } from './internal.js';
+import { DeviceBookingRequest } from './messageDefinition.js';
 
 export async function handleFreeDeviceRequest(): Promise<void> {
   // freeDevice
-  console.log("handleFreeDeviceRequest started")
+  console.log('handleFreeDeviceRequest started');
   while (true) {
     try {
       let connection = await amqplib.connect(config.AmqpUrl);
@@ -53,6 +53,7 @@ export async function handleFreeDeviceRequest(): Promise<void> {
     } catch (err) {
       console.log(err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }
@@ -104,6 +105,7 @@ export async function handleDeviceReservationRequest(): Promise<void> {
     } catch (err) {
       console.log(err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }

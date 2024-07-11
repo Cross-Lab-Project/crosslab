@@ -290,7 +290,7 @@ class CallbackHandler {
           continue;
         }
 
-        const booking = await clients.booking.getBooking(callback.url);
+        const booking = await clients.booking.frontend.getBooking(callback.url);
 
         if (booking.Booking.Status === 'cancelled')
           await finishExperiment(experimentModel, clients);

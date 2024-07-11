@@ -1233,6 +1233,7 @@ class APIClient:
     async def updateBooking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
         """
         Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
+
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -1320,7 +1321,7 @@ class APIClient:
 
     async def lockBooking(self, url: str) -> LockBookingResponse:  # noqa: E501
         """
-        Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
+        Locks the current booking so the devices can be used.  This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")

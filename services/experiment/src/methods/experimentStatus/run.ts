@@ -46,7 +46,7 @@ export async function runExperiment(experimentModel: ExperimentModel, clients: C
         `Experiment is in status 'booked', but does not satisfy the requirements for this status`,
         500,
       );
-    const booking = await clients.booking.getBooking(experimentModel.bookingID);
+    const booking = await clients.booking.frontend.getBooking(experimentModel.bookingID);
     if (
       Date.parse(experimentModel.bookingStart) !==
         Date.parse(booking.Booking.Time.Start) ||

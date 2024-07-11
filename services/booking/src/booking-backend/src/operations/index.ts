@@ -1,15 +1,16 @@
 import * as mysql from 'mysql2/promise';
 
-import { config } from '../config';
+import { config } from '../config.js';
 import {
   deleteBookingByIDLockSignature,
   postBookingCallbackByIDSignature,
   putBookingByIDLock200ResponseType,
   putBookingByIDLockSignature,
-} from '../generated/signatures';
-import { dispatchCallback, handleCallback } from '../internal';
+} from '../generated/signatures.js';
+import { dispatchCallback, handleCallback } from '../internal.js';
 
-export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
+export const putBookingByIDLock: putBookingByIDLockSignature = async (
+  request,
   parameters,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
@@ -96,7 +97,8 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (request,
   }
 };
 
-export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (request,
+export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
+  request,
   parameters,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
@@ -133,7 +135,6 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
         dispatchCallback(bookingID);
         break;
 
-
       case 'pending':
       case 'rejected':
       case 'cancelled':
@@ -162,12 +163,16 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (requ
   }
 };
 
-export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (request,
+export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
+  request,
   parameters,
 ) => {
   let parameterID: bigint = BigInt(parameters.ID);
 
-  await request.authorization.check_authorization_or_fail('edit', `booking:${parameterID}`);
+  await request.authorization.check_authorization_or_fail(
+    'edit',
+    `booking:${parameterID}`,
+  );
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();

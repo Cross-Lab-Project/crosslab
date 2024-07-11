@@ -9,6 +9,10 @@ export AUTHORIZATION_IMAGE=$(docker load -i ../services/authorization/dist/docke
 export DEVICE_IMAGE=$(docker load -i ../services/device/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export EXPERIMENT_IMAGE=$(docker load -i ../services/experiment/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export BOOKING_FRONTEND_IMAGE=$(docker load -i ../services/booking/src/booking-frontend/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export BOOKING_BACKEND_IMAGE=$(docker load -i ../services/booking/src/booking-backend/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export SCHEDULE_SERVICE_IMAGE=$(docker load -i ../services/booking/src/schedule-service/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export DEVICE_RESERVATION_IMAGE=$(docker load -i ../services/booking/src/device-reservation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
 COMPOSE_HTTP_TIMEOUT=600 docker-compose up --no-color > dist/server.log 2>&1 &
 end_time=$(($(date +%s) + 600))  # Set end time to 10 minutes from now
