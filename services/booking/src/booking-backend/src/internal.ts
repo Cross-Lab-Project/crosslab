@@ -282,6 +282,7 @@ export async function dispatchCallback(bookingID: bigint) {
         }
       } catch (err) {
         // Something went wrong here - just continue for now
+        console.log("error", "Unknown error in dispatchCallback: " + (err as Error).toString())
         continue;
       }
     }
@@ -422,6 +423,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           onlyOwn: true,
         });
       } catch (e) {
+        console.log("Error while getting schedule in reservateDevice (using next device): " + (e as Error).toString())
         continue;
       }
       if (schedule.length !== 1) {

@@ -41,7 +41,7 @@ const schema6 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
       type: 'string',
       enum: [
         'pending',
@@ -661,7 +661,7 @@ const schema8 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
     },
   },
   'x-standalone': true,
@@ -1069,7 +1069,7 @@ const schema11 = {
         Description: {
           type: 'string',
           description:
-            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
         },
       },
     },
@@ -2253,7 +2253,7 @@ const schema16 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
       type: 'string',
       enum: [
         'pending',
@@ -2774,7 +2774,7 @@ const schema17 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
       type: 'string',
       enum: [
         'pending',
@@ -3494,7 +3494,7 @@ const schema20 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
     },
   },
   'x-standalone': true,
@@ -3714,7 +3714,7 @@ const schema21 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
     },
   },
   'x-standalone': true,
@@ -4306,7 +4306,7 @@ const schema26 = {
         Description: {
           type: 'string',
           description:
-            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
         },
       },
     },
@@ -4816,7 +4816,7 @@ const schema27 = {
         Description: {
           type: 'string',
           description:
-            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
+            'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
         },
       },
     },

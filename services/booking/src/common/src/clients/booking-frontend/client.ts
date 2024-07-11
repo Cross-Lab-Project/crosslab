@@ -241,21 +241,23 @@ export class Client {
    * The booking was accepted. The booking status will display whether the booking of all devices was successful.
    */
   public async newBooking(
-    body: {
-      /**
-       * List of devices which should be added.
-       */
-      Devices: Types.Device<'request'>[];
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: Types.Timeslot<'request'>;
-      /**
-       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-       */
-      Type?: 'normal';
-      [k: string]: unknown;
-    },
+    body:
+      | {
+          /**
+           * List of devices which should be added.
+           */
+          Devices: Types.Device<'request'>[];
+          /**
+           * A time slot represents a slice of time used for bookings.
+           */
+          Time: Types.Timeslot<'request'>;
+          /**
+           * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+           */
+          Type?: 'normal';
+          [k: string]: unknown;
+        }
+      | undefined,
     options?: {
       headers?: [string, string][];
       url?: string;
@@ -298,25 +300,24 @@ export class Client {
   }
 
   /**
-     * Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
- 
-	 * 
-	 * @param url
-	 * Url of the resource to be accessed.
-	 * @param body
-     *
-     * @throws {@link FetchError | FetchError } 
-     * Thrown if fetch fails.
-     * @throws {@link ValidationError | ValidationError } 
-     * Thrown if the request/response validation fails.
-     * @throws {@link InvalidUrlError | InvalidUrlError } 
-     * Thrown if the provided url is not valid for this request.
-     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
-     * Thrown if response is validated but has status greater than or equal to 400.
-     * 
-     * @returns
-	 * The booking change was accepted. The booking status will display whether the booking of all devices was successful.
-     */
+   * Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
+   *
+   * @param url
+   * Url of the resource to be accessed.
+   * @param body
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The booking change was accepted. The booking status will display whether the booking of all devices was successful.
+   */
   public async updateBooking(
     url: string,
     body:
