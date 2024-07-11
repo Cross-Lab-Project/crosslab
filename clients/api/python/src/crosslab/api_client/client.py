@@ -1208,7 +1208,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def newBooking(self, url: str = "/booking", body: Optional[NewBookingRequest] = None) -> NewBookingResponse:  # noqa: E501
+    async def newBooking(self, body: NewBookingRequest, url: str = "/booking") -> NewBookingResponse:  # noqa: E501
         """
         Books an experiment.
         """  # noqa: E501

@@ -3,7 +3,7 @@
   "name": "@crosslab/service-device-reservation",
   "version": "0.1.0",
   "description": "Part of booking service. Responsible for low level device reservation.",
-  "main": "app/index.js",
+  "main": "app/lib.js",
   "dockerName": "device-reservation",
   "bin": {
     "crosslab-device-reservation": "./app/index.js"

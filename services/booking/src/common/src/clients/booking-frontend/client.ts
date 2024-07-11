@@ -241,23 +241,21 @@ export class Client {
    * The booking was accepted. The booking status will display whether the booking of all devices was successful.
    */
   public async newBooking(
-    body:
-      | {
-          /**
-           * List of devices which should be added.
-           */
-          Devices: Types.Device<'request'>[];
-          /**
-           * A time slot represents a slice of time used for bookings.
-           */
-          Time: Types.Timeslot<'request'>;
-          /**
-           * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-           */
-          Type?: 'normal';
-          [k: string]: unknown;
-        }
-      | undefined,
+    body: {
+      /**
+       * List of devices which should be added.
+       */
+      Devices: Types.Device<'request'>[];
+      /**
+       * A time slot represents a slice of time used for bookings.
+       */
+      Time: Types.Timeslot<'request'>;
+      /**
+       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+       */
+      Type?: 'normal';
+      [k: string]: unknown;
+    },
     options?: {
       headers?: [string, string][];
       url?: string;

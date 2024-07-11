@@ -134,6 +134,8 @@ services/authorization:
 
 services/booking:
   - script: build-spec
+    paths:
+    - ./api
   - script: lint-spec
     dependencies:
       - services/booking:build-spec

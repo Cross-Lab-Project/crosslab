@@ -241,25 +241,27 @@ export class Client {
    * Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.
    */
   public async schedule(
-    body: {
-      /**
-       * An experiment describes a set of devices and how they should be connected (potentially among other metadata).
-       */
-      Experiment: Types.Experiment<'request'>;
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: Types.Timeslot<'request'>;
-      /**
-       * If true, show only one timetable per device instead of one for all available physical devices.
-       */
-      Combined?: boolean;
-      /**
-       * (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
-       */
-      onlyOwn?: boolean;
-      [k: string]: unknown;
-    },
+    body:
+      | {
+          /**
+           * An experiment describes a set of devices and how they should be connected (potentially among other metadata).
+           */
+          Experiment: Types.Experiment<'request'>;
+          /**
+           * A time slot represents a slice of time used for bookings.
+           */
+          Time: Types.Timeslot<'request'>;
+          /**
+           * If true, show only one timetable per device instead of one for all available physical devices.
+           */
+          Combined?: boolean;
+          /**
+           * (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+           */
+          onlyOwn?: boolean;
+          [k: string]: unknown;
+        }
+      | undefined,
     options?: {
       headers?: [string, string][];
       url?: string;

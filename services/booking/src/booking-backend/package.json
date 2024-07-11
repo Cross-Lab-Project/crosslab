@@ -3,7 +3,7 @@
   "name": "@crosslab/service-booking-backend",
   "version": "0.0.1",
   "description": "Part of booking service. Does most of the actual work and is horizontal scaleable.",
-  "main": "app/index.js",
+  "main": "app/lib.js",
   "dockerName": "booking-backend",
   "bin": {
     "crosslab-booking-backend": "./app/index.js"

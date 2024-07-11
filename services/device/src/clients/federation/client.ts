@@ -442,7 +442,7 @@ export class Client {
    */
   public async updateInstitution(
     url: string,
-    institution: Types.Institution<'request'>,
+    institution: Types.Institution<'request'> | undefined,
     options?: {
       headers?: [string, string][];
     },

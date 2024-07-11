@@ -4,6 +4,7 @@ import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mysql from 'mysql2/promise';
 
+import { logger } from '../../../../../common/lib/types/logger.js';
 import { config } from '../config.js';
 import {
   deleteBookingByIDDestroySignature,
@@ -88,6 +89,8 @@ export const postBooking: postBookingSignature = async (request, body) => {
     };
   } catch (err) {
     await db.rollback();
+
+    logger.log('error', 'Error creating booking: ' + err.toString());
 
     return {
       status: 500,

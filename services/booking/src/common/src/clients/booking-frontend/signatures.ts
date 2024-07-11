@@ -15,23 +15,21 @@ import { type Require } from './types.js';
  * Typing for the body of the request made by newBooking()
  * @category newBooking()
  */
-export type NewBookingBody =
-  | {
-      /**
-       * List of devices which should be added.
-       */
-      Devices: Types.Device<'request'>[];
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: Types.Timeslot<'request'>;
-      /**
-       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-       */
-      Type?: 'normal';
-      [k: string]: unknown;
-    }
-  | undefined;
+export type NewBookingBody = {
+  /**
+   * List of devices which should be added.
+   */
+  Devices: Types.Device<'request'>[];
+  /**
+   * A time slot represents a slice of time used for bookings.
+   */
+  Time: Types.Timeslot<'request'>;
+  /**
+   * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+   */
+  Type?: 'normal';
+  [k: string]: unknown;
+};
 
 /**
  * Typing for all possible responses to the request made by newBooking()

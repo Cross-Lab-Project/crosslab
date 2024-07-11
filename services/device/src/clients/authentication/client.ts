@@ -752,7 +752,7 @@ export class Client {
    * The JSON representation of the updated user.
    */
   public async updateIdentity(
-    user: Types.User<'request'>,
+    user: Types.User<'request'> | undefined,
     options?: {
       headers?: [string, string][];
     },

@@ -473,7 +473,7 @@ export class Client {
    */
   public async updateDevice(
     url: string,
-    deviceUpdate: Types.DeviceUpdate<'request'>,
+    deviceUpdate: Types.DeviceUpdate<'request'> | undefined,
     options?: {
       headers?: [string, string][];
       changedUrl?: string;
@@ -859,7 +859,7 @@ export class Client {
    */
   public async addDeviceAvailabilityRules(
     url: string,
-    availabilityRules: Types.AvailabilityRule<'request'>[],
+    availabilityRules: Types.AvailabilityRule<'request'>[] | undefined,
     options?: {
       headers?: [string, string][];
     },
