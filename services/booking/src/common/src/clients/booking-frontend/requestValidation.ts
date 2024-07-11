@@ -11,6 +11,10 @@ import { FunctionWithErrors, ResponseData } from './types.js';
  * This function validates the inputs to newBooking()
  */
 export function validateNewBookingInput(body: Signatures.NewBookingBody) {
+  if (body === undefined) {
+    return true;
+  }
+
   if (!BasicValidation.validateNewBookingBodyRequest(body)) {
     (validateNewBookingInput as FunctionWithErrors).errors = (
       BasicValidation.validateNewBookingBodyRequest as FunctionWithErrors

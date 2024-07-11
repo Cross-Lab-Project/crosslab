@@ -222,7 +222,7 @@ export class Client {
   }
 
   /**
-   * Locks the current booking so the devices can be used.  This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
+   * Locks the current booking so the devices can be used. This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
    *
    * @param url
    * Url of the resource to be accessed.

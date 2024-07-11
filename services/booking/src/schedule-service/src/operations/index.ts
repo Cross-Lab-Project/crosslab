@@ -49,6 +49,7 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
         flat_group: true,
       });
     } catch (error) {
+      console.log("Error while getting device " + body.Experiment.Devices[device].ID +" :" + (error as Error).toString());
       const err = error as UnsuccessfulRequestError;
       // Bad status code
       if (err.response !== undefined && err.response.status !== undefined) {
@@ -167,6 +168,7 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
     try {
       req = await lr[3];
     } catch (error) {
+      console.log("Error while getting schedule for " + k + " :" + (error as Error).toString());
       const err = error as UnsuccessfulRequestError;
       if (err.response !== undefined && err.response.status !== undefined) {
         if (err.response.status == 503) {
@@ -234,6 +236,7 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       try {
         a = await availability[device][i];
       } catch (error) {
+        console.log("Error while availability for " + device + " " + i + " :" + (error as Error).toString());
         const err = error as UnsuccessfulRequestError;
         if (err.response !== undefined && err.response.status !== undefined) {
           // TODO: Remove later if errors are well specified
