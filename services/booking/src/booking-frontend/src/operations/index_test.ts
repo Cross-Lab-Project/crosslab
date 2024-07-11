@@ -37,6 +37,7 @@ import {
   StopAMQPTestFree,
   TestAMQPresults,
 } from './indextest_helper_amqp_free.js';
+import { logging } from '@crosslab/service-common';
 
 let connection: amqplib.Connection;
 let channel: amqplib.Channel;
@@ -58,6 +59,10 @@ mocha.describe('operations.ts', function () {
 
     startFakeServer();
   });
+
+  mocha.before(function(){
+    logging.init();
+  } )
 
   mocha.after(function () {
     stopFakeServer();

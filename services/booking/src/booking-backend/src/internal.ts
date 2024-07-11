@@ -19,6 +19,10 @@ import { DeviceBookingRequest } from './messageDefinition.js';
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export enum callbackType {
   DeviceUpdate,
   BookingUpdate,

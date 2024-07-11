@@ -5,6 +5,10 @@ import { config } from './config.js';
 import { freeDevice, reservateDevice } from './internal.js';
 import { DeviceBookingRequest } from './messageDefinition.js';
 
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export async function handleFreeDeviceRequest(): Promise<void> {
   // freeDevice
   console.log('handleFreeDeviceRequest started');

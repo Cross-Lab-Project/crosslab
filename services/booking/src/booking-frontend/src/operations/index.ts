@@ -4,7 +4,7 @@ import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mysql from 'mysql2/promise';
 
-import { logger } from '../../../../../common/lib/types/logger.js';
+import { logger } from '@crosslab/service-common/logging';
 import { config } from '../config.js';
 import {
   deleteBookingByIDDestroySignature,
@@ -15,6 +15,10 @@ import {
   postBookingSignature,
 } from '../generated/signatures.js';
 import { Booking, Device, Experiment, Timeslot } from '../generated/types.js';
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export const postBooking: postBookingSignature = async (request, body) => {
   await request.authorization.check_authorization_or_fail('create', `booking`);
@@ -65,6 +69,15 @@ export const postBooking: postBookingSignature = async (request, body) => {
 
     // Send devices to backend
     for (let i = 0; i < body.Devices.length; i++) {
+      logger.log("info", JSON.stringify(
+        new DeviceBookingRequest(
+          bookingID,
+          new URL(body.Devices[i].ID),
+          i,
+          dayjs(body.Time.Start),
+          dayjs(body.Time.End),
+        ),
+      ));
       let s = JSON.stringify(
         new DeviceBookingRequest(
           bookingID,

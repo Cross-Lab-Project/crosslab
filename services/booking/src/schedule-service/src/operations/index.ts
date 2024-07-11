@@ -16,6 +16,10 @@ import {
 import { Timeslot } from '../generated/types.js';
 import { timetableAnd, timetableNot } from '../timetable.js';
 
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 // TODO: Missing availability since it is not yet well defined
 export const postSchedule: postScheduleSignature = async (request, body) => {
   await request.authorization.check_authorization_or_fail('create', `booking`);

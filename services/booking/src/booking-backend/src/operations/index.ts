@@ -9,6 +9,10 @@ import {
 } from '../generated/signatures.js';
 import { dispatchCallback, handleCallback } from '../internal.js';
 
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 export const putBookingByIDLock: putBookingByIDLockSignature = async (
   request,
   parameters,
