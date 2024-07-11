@@ -90,7 +90,7 @@ export const postBooking: postBookingSignature = async (request, body) => {
   } catch (err) {
     await db.rollback();
 
-    logger.log('error', 'Error creating booking: ' + err.toString());
+    logger.log('error', 'Error creating booking: ' + (err as Error).toString());
 
     return {
       status: 500,
@@ -174,6 +174,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
   } catch (err) {
     await db.rollback();
     db.end();
+    logger.log('error', "Error getting Booking by ID: " + (err as Error).toString())
 
     return {
       status: 500,
@@ -202,6 +203,13 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (
   );
 
   let [code, err] = await commonRemoveBooking(requestID);
+
+  if (err != "") {
+    logger.log('error', "Error deleting booking by ID: " + err)
+  }
+  if (code != 200) {
+    logger.log('warn', "Delete booking by ID returned not 200: " + code)
+  }
 
   // Typescript seems to have problems to infer body correctly with case 500.
   // Therefore, the solution here is more complicated
@@ -356,6 +364,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (
 
     success = true;
   } catch (err) {
+    logger.log('error', "Error patching booking in DB: " + (err as Error).toString())
     return {
       status: 500,
       body: err.toString(),
@@ -395,6 +404,13 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
   );
 
   let [code, err] = await commonRemoveBooking(requestID);
+
+  if (err != "") {
+    logger.log('error', "Error deleting booking by ID destroying signature: " + err)
+  }
+  if (code != 200) {
+    logger.log('warn', "Delete booking by ID destroying signature returned not 200: " + code)
+  }
   // Typescript seems to have problems to infer body correctly with case 500.
   // Therefore, the solution here is more complicated
   if (code === 500) {
@@ -495,6 +511,7 @@ async function commonRemoveBooking(
 
     success = true;
   } catch (err) {
+    logger.log('error', "Error commonRemoveBooking: " + (err as Error).toString())
     return [500, err.toString()];
   } finally {
     if (success) {
