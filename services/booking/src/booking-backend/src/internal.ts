@@ -623,6 +623,13 @@ export async function freeDevice(internalreference: bigint) {
     }
 
     // Free now
+
+    // no device actually booked
+    if(typeof(rows[0].local) == null) {
+      return
+    } 
+
+    // device is booked
     if (rows[0].local) {
       // This is a local device
       let connection: amqplib.Connection | undefined;
