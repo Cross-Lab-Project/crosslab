@@ -51,7 +51,7 @@ export async function handleFreeDeviceRequest(): Promise<void> {
           channel.ack(msg);
         } catch (err) {
           console.log('Error freeing device:' + err);
-          channel.nack(msg);
+          channel.ack(msg);
         }
       }
     } catch (err) {
