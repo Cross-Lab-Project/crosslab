@@ -55,7 +55,7 @@ export async function setupDummySql() {
 
     // Booking
     await db.execute(
-      "CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`))",
+      "CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME(3) NOT NULL, `end` DATETIME(3) NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`))",
     );
     await db.execute(
       'CREATE TABLE bookeddevices (`id` BIGINT UNSIGNED AUTO_INCREMENT, `booking` BIGINT UNSIGNED NOT NULL, `originaldevice` TEXT NOT NULL, `originalposition` INT NOT NULL, `bookeddevice` TEXT, `remotereference` TEXT, `local` BOOLEAN, PRIMARY KEY (`id`), `reservation` BIGINT UNSIGNED, FOREIGN KEY(`booking`) REFERENCES booking (`id`) ON DELETE CASCADE ON UPDATE RESTRICT)',

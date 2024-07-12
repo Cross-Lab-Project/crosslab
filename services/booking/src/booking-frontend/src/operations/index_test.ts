@@ -328,6 +328,159 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+  mocha.it('postBooking single device with milliseconds', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      // Count number of bookings
+      let [rows, _]: [any, any] = await db.execute('SELECT count(*) AS n FROM booking');
+      if (rows.length !== 1) {
+        throw new Error('internal error: wrong number of rows' + rows.length);
+      }
+      let before: number = rows[0].n;
+
+      // Try booking
+      let req = getFakeRequest({ user: 'unittest.user', isAuthorized: true });
+      let result = await postBooking(req, {
+        Time: {
+          Start: dayjs('2000-01-01T07:00:00.444Z').toISOString(),
+          End: dayjs('2000-01-01T08:00:00.555Z').toISOString(),
+        },
+        Devices: [
+          { ID: 'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000' },
+        ],
+      });
+      await sleep(250);
+
+      if (result.status != 200) {
+        throw new Error(
+          'Booking failed with status ' + result.status + ' ' + result.body,
+        );
+      }
+
+      // Ensure number has increased by one
+      [rows, _] = await db.execute('SELECT count(*) AS n FROM booking');
+      if (rows.length !== 1) {
+        throw new Error('internal error: wrong number of rows' + rows.length);
+      }
+
+      if (Number(rows[0].n) != Number(before) + 1) {
+        throw new Error(
+          'number of bookings was changed from ' + before + ' to ' + rows[0].n,
+        );
+      }
+
+      let split = result.body.BookingID.split('/');
+      let bookingID: bigint = BigInt(split[split.length - 1]);
+
+      [rows, _] = await db.execute(
+        'SELECT `start`,`end`,`type`,`user` FROM booking WHERE `id`=?',
+        [bookingID],
+      );
+      if (rows.length !== 1) {
+        throw new Error('wrong number of rows: ' + rows.length);
+      }
+
+      if (!dayjs(rows[0].start).isSame(dayjs('2000-01-01T07:00:00.444Z'))) {
+        throw new Error('wrong start ' + rows[0].start);
+      }
+
+      if (!dayjs(rows[0].end).isSame(dayjs('2000-01-01T08:00:00.555Z'))) {
+        throw new Error('wrong end ' + rows[0].end);
+      }
+
+      if (rows[0].type != 'normal') {
+        throw new Error('wrong type ' + rows[0].type);
+      }
+
+      if (rows[0].user != 'unittest.user') {
+        throw new Error('wrong user ' + rows[0].user);
+      }
+
+      if ((req as any).related.length != 1) {
+        throw new Error('wrong number of related' + (req as any).related);
+      }
+
+      if ((req as any).related[0][0] != 'user:unittest.user') {
+        throw new Error('wrong related user ' + (req as any).related);
+      }
+
+      if ((req as any).related[0][1] != 'owner') {
+        throw new Error('wrong related relationship ' + (req as any).related);
+      }
+
+      if ((req as any).related[0][2] != `booking:${bookingID}`) {
+        throw new Error('wrong related user ' + (req as any).related);
+      }
+
+      if ((req as any).unrelated.length != 0) {
+        throw new Error('wrong number of related' + (req as any).unrelated);
+      }
+
+      // bookeddevices
+      [rows, _] = await db.execute(
+        'SELECT count(*) AS n FROM bookeddevices WHERE booking=?',
+        [bookingID],
+      );
+      if (rows.length !== 1) {
+        throw new Error('internal error: wrong number of rows' + rows.length);
+      }
+
+      if (Number(rows[0].n) != 1) {
+        throw new Error('number of booked devices is wrong: ' + rows[0].n);
+      }
+
+      [rows, _] = await db.execute(
+        'SELECT originaldevice FROM bookeddevices WHERE booking=? AND originalposition=?',
+        [bookingID, 0],
+      );
+      if (rows.length !== 1) {
+        throw new Error('found ' + rows.length + ' devices for position 0');
+      }
+
+      if (
+        rows[0].originaldevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + rows[0].originaldevice);
+      }
+
+      // AMQP
+      if (TestAMQPresultsBooking.size != 1) {
+        throw new Error(
+          'wrong number of device reservation messages found ' +
+            MapToString(TestAMQPresultsBooking),
+        );
+      }
+      if (
+        !TestAMQPresultsBooking.has(
+          bookingID.toString() +
+            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        )
+      ) {
+        throw new Error(
+          'wrong device reservation messages found' + MapToString(TestAMQPresultsBooking),
+        );
+      }
+      if (
+        TestAMQPresultsBooking.get(
+          bookingID.toString() +
+            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        ) !== 1
+      ) {
+        throw new Error(
+          'wrong device reservation message number found' +
+            MapToString(TestAMQPresultsBooking),
+        );
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
   mocha.it('postBooking multiple devices', async function () {
     let db = await mysql.createConnection(getSQLDNS());
     await db.connect();
