@@ -93,6 +93,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ...deviceMeta,
       });
 
+      if (apiDevice.type === 'device') {
+        await client.addDeviceAvailabilityRules(apiDevice.url, [{ available: true }]);
+      }
+
       assert(apiDevice.url, 'Device URL is not defined');
 
       this.apiDevices.push({ ...apiDevice });

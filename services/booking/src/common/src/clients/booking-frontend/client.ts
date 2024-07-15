@@ -129,9 +129,11 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  */
 function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError('Provided url is not a valid http url');
+    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
   if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
+    throw new InvalidUrlError(
+      `Provided url "${url}" does not start with the provided base url "${baseUrl}"`,
+    );
   const pathParameters = parsePathParameters(url, endpoint);
 
   let extendedBaseUrl = baseUrl + endpoint;
@@ -141,7 +143,9 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   });
 
   if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
+    throw new InvalidUrlError(
+      `Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`,
+    );
 
   return pathParameters;
 }
@@ -173,10 +177,11 @@ export class Client {
   private fixedHeaders: [string, string][];
   private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
     let raw_response;
+    const parsedUrl = new URL(url.toString());
     try {
       if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
+        parsedUrl.toString().startsWith(this.baseUrl) ||
+        parsedUrl.toString().startsWith(this.serviceUrl)
       ) {
         raw_response = await fetch(url, init);
       } else {
@@ -211,12 +216,8 @@ export class Client {
       fixedHeaders?: [string, string][];
     },
   ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
+    this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+    this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
     this.accessToken = options.accessToken ?? '';
     this.fixedHeaders = options.fixedHeaders ?? [];
   }
@@ -241,29 +242,28 @@ export class Client {
    * The booking was accepted. The booking status will display whether the booking of all devices was successful.
    */
   public async newBooking(
-    body:
-      | {
-          /**
-           * List of devices which should be added.
-           */
-          Devices: Types.Device<'request'>[];
-          /**
-           * A time slot represents a slice of time used for bookings.
-           */
-          Time: Types.Timeslot<'request'>;
-          /**
-           * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-           */
-          Type?: 'normal';
-          [k: string]: unknown;
-        }
-      | undefined,
+    body: {
+      /**
+       * List of devices which should be added.
+       */
+      Devices: Types.Device<'request'>[];
+      /**
+       * A time slot represents a slice of time used for bookings.
+       */
+      Time: Types.Timeslot<'request'>;
+      /**
+       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+       */
+      Type?: 'normal';
+      [k: string]: unknown;
+    },
     options?: {
       headers?: [string, string][];
       url?: string;
     },
   ): Promise<Signatures.NewBookingSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/booking');
+    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateNewBookingInput(body))
       throw new ValidationError(
@@ -273,16 +273,23 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateNewBookingOutput(response))
       throw new ValidationError(
@@ -300,24 +307,25 @@ export class Client {
   }
 
   /**
-   * Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param body
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The booking change was accepted. The booking status will display whether the booking of all devices was successful.
-   */
+     * Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
+ 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param body
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The booking change was accepted. The booking status will display whether the booking of all devices was successful.
+     */
   public async updateBooking(
     url: string,
     body:
@@ -345,7 +353,8 @@ export class Client {
   ): Promise<Signatures.UpdateBookingSuccessResponse['body']> {
     const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(url, this.baseUrl, '/booking/{}');
+    const [ID] = validateUrl(new URL(url).toString(), this.baseUrl, '/booking/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -359,16 +368,23 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'PATCH',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'PATCH',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateUpdateBookingOutput(response))
       throw new ValidationError(
@@ -413,7 +429,8 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(url, this.baseUrl, '/booking/{}');
+    const [ID] = validateUrl(new URL(url).toString(), this.baseUrl, '/booking/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -427,15 +444,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDeleteBookingOutput(response))
       throw new ValidationError(
@@ -478,7 +502,8 @@ export class Client {
   ): Promise<Signatures.GetBookingSuccessResponse['body']> {
     const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(url, this.baseUrl, '/booking/{}');
+    const [ID] = validateUrl(new URL(url).toString(), this.baseUrl, '/booking/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -492,15 +517,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateGetBookingOutput(response))
       throw new ValidationError(
@@ -543,7 +575,12 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/booking/{}/destroy'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(url, this.baseUrl, '/booking/{}/destroy');
+    const [ID] = validateUrl(
+      new URL(url).toString(),
+      this.baseUrl,
+      '/booking/{}/destroy',
+    );
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -559,15 +596,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDestroyBookingOutput(response))
       throw new ValidationError(

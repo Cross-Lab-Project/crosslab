@@ -41,7 +41,7 @@ const schema6 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
       type: 'string',
       enum: [
         'pending',
@@ -661,7 +661,7 @@ const schema8 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
     },
   },
   'x-standalone': true,
@@ -1352,7 +1352,7 @@ const schema15 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
       type: 'string',
       enum: [
         'pending',
@@ -1873,7 +1873,7 @@ const schema16 = {
     },
     Status: {
       description:
-        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.",
+        "Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.\n",
       type: 'string',
       enum: [
         'pending',
@@ -2593,7 +2593,7 @@ const schema19 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
     },
   },
   'x-standalone': true,
@@ -2813,7 +2813,7 @@ const schema20 = {
     Description: {
       type: 'string',
       description:
-        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.',
+        'User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.\n',
     },
   },
   'x-standalone': true,

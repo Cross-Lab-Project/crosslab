@@ -131,9 +131,9 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  */
 function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
+    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
+  if (!(url).startsWith(baseUrl))
+    throw new InvalidUrlError(`Provided url "${url}" does not start with the provided base url "${baseUrl}"`);
   const pathParameters = parsePathParameters(url, endpoint);
 
   let extendedBaseUrl = baseUrl + endpoint;
@@ -143,7 +143,7 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   });
 
   if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
+    throw new InvalidUrlError(`Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`);
 
   return pathParameters;
 }
@@ -175,10 +175,11 @@ export class Client {
     private fixedHeaders: [string, string][]
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
+        const parsedUrl = new URL(url.toString())
         try {
             if (
-                url.toString().startsWith(this.baseUrl) ||
-                url.toString().startsWith(this.serviceUrl)
+                parsedUrl.toString().startsWith(this.baseUrl) ||
+                parsedUrl.toString().startsWith(this.serviceUrl)
             ) {
                 raw_response = await fetch(url, init);
             } else {
@@ -209,12 +210,8 @@ export class Client {
         baseUrl: string,
         options: { serviceUrl?: string; accessToken?: string, fixedHeaders?: [string, string][] },
     ) {
-        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-        this.serviceUrl = options.serviceUrl
-        ? options.serviceUrl.endsWith('/')
-            ? options.serviceUrl.slice(0, -1)
-            : options.serviceUrl
-        : this.baseUrl;
+        this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+        this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
         this.accessToken = options.accessToken ?? '';
         this.fixedHeaders = options.fixedHeaders ?? [];
     }
@@ -248,6 +245,7 @@ export class Client {
                 headers?: [string, string][],
                     method?: "tui" | "local",}): Promise<void> {
             const url = appendToUrl(this.baseUrl, "/login")
+        console.log("trying to fetch url:", url);
 
         
             const body: Signatures.LoginBody =
@@ -265,7 +263,8 @@ export class Client {
                 (RequestValidation.validateLoginInput as Types.FunctionWithErrors).errors
             )
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -307,6 +306,7 @@ export class Client {
      */
     public async logout(options?: { headers?: [string, string][] }): Promise<void> {
             const url = appendToUrl(this.baseUrl, "/logout")
+        console.log("trying to fetch url:", url);
 
         const body: Signatures.LogoutBody = { token: this.accessToken }
 
@@ -320,7 +320,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -370,6 +371,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],username?: string,url?: string}): Promise<Signatures.ListUsersSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/users")
+        console.log("trying to fetch url:", url);
 
         
 
@@ -391,7 +393,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query));
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -442,6 +445,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],url?: string}): Promise<Signatures.CreateUserSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/users")
+        console.log("trying to fetch url:", url);
 
         const body = user
 
@@ -455,7 +459,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -506,7 +511,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.GetUserSuccessResponse["body"]> {
                 const urlSuffix = '/users/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [user_id,] = validateUrl(url, this.baseUrl, '/users/{}')
+                const [user_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/users/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -523,7 +529,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -575,7 +582,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.UpdateUserSuccessResponse["body"]> {
                 const urlSuffix = '/users/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [user_id,] = validateUrl(url, this.baseUrl, '/users/{}')
+                const [user_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/users/{}')
+        console.log("trying to fetch url:", url);
 
         const body = user
 
@@ -592,7 +600,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "PATCH", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -643,7 +652,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<void> {
                 const urlSuffix = '/users/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [user_id,] = validateUrl(url, this.baseUrl, '/users/{}')
+                const [user_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/users/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -660,7 +670,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "DELETE", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -704,6 +715,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.GetIdentitySuccessResponse["body"]> {
             const url = appendToUrl(this.baseUrl, "/identity")
+        console.log("trying to fetch url:", url);
 
         
 
@@ -717,7 +729,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -762,10 +775,11 @@ export class Client {
      * @returns
 	 * The JSON representation of the updated user.
      */
-    public async updateIdentity(user: Types.User<"request">,
+    public async updateIdentity(user: Types.User<"request"> | undefined,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.UpdateIdentitySuccessResponse["body"]> {
             const url = appendToUrl(this.baseUrl, "/identity")
+        console.log("trying to fetch url:", url);
 
         const body = user
 
@@ -779,7 +793,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "PATCH", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -854,6 +869,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.CreateTokenSuccessResponse["body"]> {
             const url = appendToUrl(this.baseUrl, "/token")
+        console.log("trying to fetch url:", url);
 
         
 
@@ -865,7 +881,8 @@ export class Client {
                 (RequestValidation.validateCreateTokenInput as Types.FunctionWithErrors).errors
             )
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],

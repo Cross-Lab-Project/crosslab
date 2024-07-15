@@ -1,10 +1,10 @@
 import { BelongsToUs, sleep } from '@crosslab/booking-service-common';
 import { DeviceBookingRequest } from '@crosslab/service-booking-backend';
+import { logger } from '@crosslab/service-common/logging';
 import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mysql from 'mysql2/promise';
 
-import { logger } from '@crosslab/service-common/logging';
 import { config } from '../config.js';
 import {
   deleteBookingByIDDestroySignature,
@@ -69,15 +69,18 @@ export const postBooking: postBookingSignature = async (request, body) => {
 
     // Send devices to backend
     for (let i = 0; i < body.Devices.length; i++) {
-      logger.log("info", JSON.stringify(
-        new DeviceBookingRequest(
-          bookingID,
-          new URL(body.Devices[i].ID),
-          i,
-          dayjs(body.Time.Start),
-          dayjs(body.Time.End),
+      logger.log(
+        'info',
+        JSON.stringify(
+          new DeviceBookingRequest(
+            bookingID,
+            new URL(body.Devices[i].ID),
+            i,
+            dayjs(body.Time.Start),
+            dayjs(body.Time.End),
+          ),
         ),
-      ));
+      );
       let s = JSON.stringify(
         new DeviceBookingRequest(
           bookingID,
@@ -134,7 +137,9 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
   try {
     let body: getBookingByID200ResponseType['body'] = {
       Booking: {
-        ID: parameters.ID,
+        ID: config.OwnURL.endsWith('/')
+          ? config.OwnURL + 'booking/' + requestID
+          : config.OwnURL + '/booking/' + requestID,
         Time: { Start: '', End: '' },
         Devices: [],
         Type: 'normal',
@@ -187,7 +192,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
   } catch (err) {
     await db.rollback();
     db.end();
-    logger.log('error', "Error getting Booking by ID: " + (err as Error).toString())
+    logger.log('error', 'Error getting Booking by ID: ' + (err as Error).toString());
 
     return {
       status: 500,
@@ -217,11 +222,11 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (
 
   let [code, err] = await commonRemoveBooking(requestID);
 
-  if (err != "") {
-    logger.log('error', "Error deleting booking by ID: " + err)
+  if (err != '') {
+    logger.log('error', 'Error deleting booking by ID: ' + err);
   }
   if (code != 200) {
-    logger.log('warn', "Delete booking by ID returned not 200: " + code)
+    logger.log('warn', 'Delete booking by ID returned not 200: ' + code);
   }
 
   // Typescript seems to have problems to infer body correctly with case 500.
@@ -377,7 +382,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (
 
     success = true;
   } catch (err) {
-    logger.log('error', "Error patching booking in DB: " + (err as Error).toString())
+    logger.log('error', 'Error patching booking in DB: ' + (err as Error).toString());
     return {
       status: 500,
       body: err.toString(),
@@ -418,11 +423,14 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
 
   let [code, err] = await commonRemoveBooking(requestID);
 
-  if (err != "") {
-    logger.log('error', "Error deleting booking by ID destroying signature: " + err)
+  if (err != '') {
+    logger.log('error', 'Error deleting booking by ID destroying signature: ' + err);
   }
   if (code != 200) {
-    logger.log('warn', "Delete booking by ID destroying signature returned not 200: " + code)
+    logger.log(
+      'warn',
+      'Delete booking by ID destroying signature returned not 200: ' + code,
+    );
   }
   // Typescript seems to have problems to infer body correctly with case 500.
   // Therefore, the solution here is more complicated
@@ -524,7 +532,7 @@ async function commonRemoveBooking(
 
     success = true;
   } catch (err) {
-    logger.log('error', "Error commonRemoveBooking: " + (err as Error).toString())
+    logger.log('error', 'Error commonRemoveBooking: ' + (err as Error).toString());
     return [500, err.toString()];
   } finally {
     if (success) {

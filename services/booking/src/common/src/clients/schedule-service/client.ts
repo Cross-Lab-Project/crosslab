@@ -129,9 +129,11 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  */
 function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError('Provided url is not a valid http url');
+    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
   if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
+    throw new InvalidUrlError(
+      `Provided url "${url}" does not start with the provided base url "${baseUrl}"`,
+    );
   const pathParameters = parsePathParameters(url, endpoint);
 
   let extendedBaseUrl = baseUrl + endpoint;
@@ -141,7 +143,9 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   });
 
   if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
+    throw new InvalidUrlError(
+      `Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`,
+    );
 
   return pathParameters;
 }
@@ -173,10 +177,11 @@ export class Client {
   private fixedHeaders: [string, string][];
   private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
     let raw_response;
+    const parsedUrl = new URL(url.toString());
     try {
       if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
+        parsedUrl.toString().startsWith(this.baseUrl) ||
+        parsedUrl.toString().startsWith(this.serviceUrl)
       ) {
         raw_response = await fetch(url, init);
       } else {
@@ -211,12 +216,8 @@ export class Client {
       fixedHeaders?: [string, string][];
     },
   ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
+    this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+    this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
     this.accessToken = options.accessToken ?? '';
     this.fixedHeaders = options.fixedHeaders ?? [];
   }
@@ -268,6 +269,7 @@ export class Client {
     },
   ): Promise<Signatures.ScheduleSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/schedule');
+    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateScheduleInput(body))
       throw new ValidationError(
@@ -277,16 +279,23 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateScheduleOutput(response))
       throw new ValidationError(

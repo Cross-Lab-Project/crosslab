@@ -25,8 +25,8 @@ GRANT ALL PRIVILEGES ON booking.* to booking@'%';
 FLUSH PRIVILEGES;
 
 USE booking;
-CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`));
+CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME(3) NOT NULL, `end` DATETIME(3) NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`));
 CREATE TABLE bookeddevices (`id` BIGINT UNSIGNED AUTO_INCREMENT, `booking` BIGINT UNSIGNED NOT NULL, `originaldevice` TEXT NOT NULL, `originalposition` INT NOT NULL, `bookeddevice` TEXT, `remotereference` TEXT, `local` BOOLEAN, PRIMARY KEY (`id`), `reservation` BIGINT UNSIGNED, FOREIGN KEY(`booking`) REFERENCES booking (`id`) ON DELETE CASCADE ON UPDATE RESTRICT);
 CREATE TABLE bookingcallbacks (`id` BIGINT UNSIGNED AUTO_INCREMENT, `booking` BIGINT UNSIGNED NOT NULL, `url` TEXT NOT NULL, PRIMARY KEY (`id`), FOREIGN KEY(`booking`) REFERENCES booking (`id`) ON DELETE CASCADE ON UPDATE RESTRICT);
 CREATE TABLE callback (`id` VARCHAR(600), `type` INTEGER, `targetbooking` BIGINT UNSIGNED NOT NULL, `parameters` JSON NOT NULL DEFAULT "{}", PRIMARY KEY(`id`));
-CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`));
+CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME(3) NOT NULL, `end` DATETIME(3) NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`));

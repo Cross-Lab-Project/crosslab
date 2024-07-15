@@ -167,6 +167,7 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
       Type?: 'normal';
       /**
        * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+       *
        */
       Status:
         | 'pending'
@@ -217,6 +218,7 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
         Type?: 'normal';
         /**
          * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+         *
          */
         Status:
           | 'pending'
@@ -267,6 +269,7 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
           Type?: 'normal';
           /**
            * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+           *
            */
           Status:
             | 'pending'
@@ -332,6 +335,7 @@ export type Experiment<T extends 'request' | 'response' | 'all' = 'all'> = T ext
       Devices: Device[];
       /**
        * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+       *
        */
       Description?: string;
       [k: string]: unknown;
@@ -344,6 +348,7 @@ export type Experiment<T extends 'request' | 'response' | 'all' = 'all'> = T ext
         Devices: Device<'request'>[];
         /**
          * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+         *
          */
         Description?: string;
         [k: string]: unknown;
@@ -356,6 +361,7 @@ export type Experiment<T extends 'request' | 'response' | 'all' = 'all'> = T ext
           Devices: Device<'response'>[];
           /**
            * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+           *
            */
           Description?: string;
           [k: string]: unknown;

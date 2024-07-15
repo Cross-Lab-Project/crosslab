@@ -286,7 +286,10 @@ export async function dispatchCallback(bookingID: bigint) {
         }
       } catch (err) {
         // Something went wrong here - just continue for now
-        console.log("error", "Unknown error in dispatchCallback: " + (err as Error).toString())
+        console.log(
+          'error',
+          'Unknown error in dispatchCallback: ' + (err as Error).toString(),
+        );
         continue;
       }
     }
@@ -427,7 +430,10 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           onlyOwn: true,
         });
       } catch (e) {
-        console.log("Error while getting schedule in reservateDevice (using next device): " + (e as Error).toString())
+        console.log(
+          'Error while getting schedule in reservateDevice (using next device): ' +
+            (e as Error).toString(),
+        );
         continue;
       }
       if (schedule.length !== 1) {
@@ -625,9 +631,9 @@ export async function freeDevice(internalreference: bigint) {
     // Free now
 
     // no device actually booked
-    if(typeof(rows[0].local) == null) {
-      return
-    } 
+    if (rows[0].local === null) {
+      return;
+    }
 
     // device is booked
     if (rows[0].local) {

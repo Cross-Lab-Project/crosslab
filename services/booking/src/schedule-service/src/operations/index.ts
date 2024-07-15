@@ -53,7 +53,12 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
         flat_group: true,
       });
     } catch (error) {
-      console.log("Error while getting device " + body.Experiment.Devices[device].ID +" :" + (error as Error).toString());
+      console.log(
+        'Error while getting device ' +
+          body.Experiment.Devices[device].ID +
+          ' :' +
+          (error as Error).toString(),
+      );
       const err = error as UnsuccessfulRequestError;
       // Bad status code
       if (err.response !== undefined && err.response.status !== undefined) {
@@ -113,6 +118,13 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
 
       // Get timetable
       let d: URL = new URL(realDevices[device][i]);
+      console.log(
+        'DEBUG:',
+        d.toString(),
+        body.Experiment.Devices[device].ID,
+        BelongsToUs(d),
+        JSON.stringify(config.InstitutePrefix),
+      );
       let t: Timeslot[] = [];
       if (!BelongsToUs(d)) {
         // This is not our device
@@ -172,7 +184,9 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
     try {
       req = await lr[3];
     } catch (error) {
-      console.log("Error while getting schedule for " + k + " :" + (error as Error).toString());
+      console.log(
+        'Error while getting schedule for ' + k + ' :' + (error as Error).toString(),
+      );
       const err = error as UnsuccessfulRequestError;
       if (err.response !== undefined && err.response.status !== undefined) {
         if (err.response.status == 503) {
@@ -240,7 +254,14 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       try {
         a = await availability[device][i];
       } catch (error) {
-        console.log("Error while availability for " + device + " " + i + " :" + (error as Error).toString());
+        console.log(
+          'Error while availability for ' +
+            device +
+            ' ' +
+            i +
+            ' :' +
+            (error as Error).toString(),
+        );
         const err = error as UnsuccessfulRequestError;
         if (err.response !== undefined && err.response.status !== undefined) {
           // TODO: Remove later if errors are well specified
@@ -276,8 +297,14 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       if (a.type == 'cloud instantiable' || a.type == 'edge instantiable') {
         available = [{ Start: body.Time.Start, End: body.Time.End }];
       } else {
+        const announcedAvailability = await clients.device.getDeviceAvailability(a.url, {
+          startTime: body.Time.Start,
+          endTime: body.Time.End,
+        });
+        console.log('DEBUG:', JSON.stringify(a.announcedAvailability));
+        console.log('DEBUG:', JSON.stringify(announcedAvailability));
         available = timetableAnd(
-          a.announcedAvailability!.map(e => {
+          announcedAvailability!.map(e => {
             return { Start: e.start!, End: e.end! };
           }),
         );
@@ -289,6 +316,11 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       );
       let notFree: Timeslot[] = timetableAnd(notAvailable, timetables[device][i]);
 
+      console.log(
+        JSON.stringify(
+          timetableNot(notFree, dayjs(body.Time.Start), dayjs(body.Time.End)),
+        ),
+      );
       // Now push free
       free.push(timetableNot(notFree, dayjs(body.Time.Start), dayjs(body.Time.End)));
     }

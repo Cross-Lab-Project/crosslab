@@ -131,9 +131,9 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  */
 function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
+    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
+  if (!(url).startsWith(baseUrl))
+    throw new InvalidUrlError(`Provided url "${url}" does not start with the provided base url "${baseUrl}"`);
   const pathParameters = parsePathParameters(url, endpoint);
 
   let extendedBaseUrl = baseUrl + endpoint;
@@ -143,7 +143,7 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
   });
 
   if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
+    throw new InvalidUrlError(`Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`);
 
   return pathParameters;
 }
@@ -175,10 +175,11 @@ export class Client {
     private fixedHeaders: [string, string][]
     private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
         let raw_response;
+        const parsedUrl = new URL(url.toString())
         try {
             if (
-                url.toString().startsWith(this.baseUrl) ||
-                url.toString().startsWith(this.serviceUrl)
+                parsedUrl.toString().startsWith(this.baseUrl) ||
+                parsedUrl.toString().startsWith(this.serviceUrl)
             ) {
                 raw_response = await fetch(url, init);
             } else {
@@ -209,12 +210,8 @@ export class Client {
         baseUrl: string,
         options: { serviceUrl?: string; accessToken?: string, fixedHeaders?: [string, string][] },
     ) {
-        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-        this.serviceUrl = options.serviceUrl
-        ? options.serviceUrl.endsWith('/')
-            ? options.serviceUrl.slice(0, -1)
-            : options.serviceUrl
-        : this.baseUrl;
+        this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+        this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
         this.accessToken = options.accessToken ?? '';
         this.fixedHeaders = options.fixedHeaders ?? [];
     }
@@ -243,6 +240,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],experimentStatus?: string,url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+        console.log("trying to fetch url:", url);
 
         
 
@@ -264,7 +262,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query));
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -318,6 +317,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],changedURL?: string,url?: string}): Promise<Signatures.CreateExperimentSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+        console.log("trying to fetch url:", url);
 
         const body = experiment
 
@@ -339,7 +339,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query));
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -390,7 +391,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.GetExperimentSuccessResponse["body"]> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/experiments/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -407,7 +409,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -457,12 +460,13 @@ export class Client {
 	 * 200: The JSON Representation of the changed experiment
 	 * 202: The JSON Representation of the changed experiment, that will be set to running eventually
      */
-    public async updateExperiment(url: string,experimentUpdate: Types.ExperimentUpdate<"request">,
+    public async updateExperiment(url: string,experimentUpdate: Types.ExperimentUpdate<"request"> | undefined,
             options?: {
                 headers?: [string, string][],changedURL?: string,}): Promise<Signatures.UpdateExperimentSuccessResponse["body"]> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/experiments/{}')
+        console.log("trying to fetch url:", url);
 
         const body = experimentUpdate
 
@@ -485,7 +489,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query));
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
             method: "PATCH", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -536,7 +541,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<void> {
                 const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+                const [experiment_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/experiments/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -553,7 +559,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "DELETE", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -600,6 +607,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],url?: string}): Promise<Signatures.ListTemplateSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+        console.log("trying to fetch url:", url);
 
         
 
@@ -613,7 +621,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -665,6 +674,7 @@ export class Client {
             options?: {
                 headers?: [string, string][],url?: string}): Promise<Signatures.CreateTemplateSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+        console.log("trying to fetch url:", url);
 
         const body = template
 
@@ -678,7 +688,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "POST", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -729,7 +740,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.GetTemplateSuccessResponse["body"]> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/templates/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -746,7 +758,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -799,7 +812,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<Signatures.UpdateTemplateSuccessResponse["body"]> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/templates/{}')
+        console.log("trying to fetch url:", url);
 
         const body = templateUpdate
 
@@ -816,7 +830,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "PATCH", 
             headers: [
                 ["Content-Type", "application/json"],
@@ -867,7 +882,8 @@ export class Client {
                 headers?: [string, string][],}): Promise<void> {
                 const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
-                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+                const [template_id,] = validateUrl(new URL(url).toString(), this.baseUrl, '/templates/{}')
+        console.log("trying to fetch url:", url);
 
         
 
@@ -884,7 +900,8 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) );
+        const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) , {
             method: "DELETE", 
             headers: [
                 ["Content-Type", "application/json"],

@@ -14,13 +14,15 @@ export BOOKING_BACKEND_IMAGE=$(docker load -i ../services/booking/src/booking-ba
 export SCHEDULE_SERVICE_IMAGE=$(docker load -i ../services/booking/src/schedule-service/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export DEVICE_RESERVATION_IMAGE=$(docker load -i ../services/booking/src/device-reservation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
-COMPOSE_HTTP_TIMEOUT=600 docker-compose up --no-color > dist/server.log 2>&1 &
+mkdir -p db
+rm -rf db/*
+
+COMPOSE_HTTP_TIMEOUT=600 docker-compose up --force-recreate --no-color > dist/server.log 2>&1 &
 end_time=$(($(date +%s) + 600))  # Set end time to 10 minutes from now
 
 #rm -rf venv
 virtualenv venv && venv/bin/pip install -r requirements.txt
 npm ci
-
 
 for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status" "http://localhost/federation/status" "http://localhost/experiment/status"; do
     while true; do
@@ -38,6 +40,7 @@ for url in "http://localhost/auth/status" "http://localhost/device/status" "http
     done
 done
 
+export HOST="http://host.docker.internal"
 export USERNAME="admin"
 export PASSWORD="admin"
 

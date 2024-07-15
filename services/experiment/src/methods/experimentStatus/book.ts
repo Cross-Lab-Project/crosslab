@@ -44,7 +44,7 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   );
 
   // TODO: error handling
-  const { BookingID } = await clients.booking.frontend.newBooking({
+  const booking = await clients.booking.frontend.newBooking({
     Devices: experimentModel.devices.map(device => {
       return { ID: device.url };
     }),
@@ -54,16 +54,33 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     },
     Type: 'normal',
   });
+  console.log(
+    'BOOKING DATA:',
+    startTime,
+    endTime,
+    JSON.stringify(await clients.booking.frontend.getBooking(booking.BookingID)),
+  );
 
-  await clients.booking.frontend.updateBooking(BookingID, {
+  await clients.booking.frontend.updateBooking(booking.BookingID, {
     Callback: callbackUrl,
   });
 
-  callbackHandler.addListener('booking', BookingID, experimentModel.uuid);
+  // TEMPORARY HOTFIX: wait for booking to have status "booked"
+  await new Promise<void>(async resolve => {
+    for (let i = 0; i < 10; i++) {
+      const updatedBooking = await clients.booking.frontend.getBooking(booking.BookingID);
+
+      if (updatedBooking.Booking.Status === 'booked') resolve();
+
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
+    }
+  });
+
+  callbackHandler.addListener('booking', booking.BookingID, experimentModel.uuid);
 
   experimentModel.bookingStart = startTime.toISOString();
   experimentModel.bookingEnd = endTime.toISOString();
-  experimentModel.bookingID = BookingID;
+  experimentModel.bookingID = booking.BookingID;
 
   experimentModel.status = 'booked';
   await repositories.experiment.save(experimentModel);

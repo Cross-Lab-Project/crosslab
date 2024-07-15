@@ -22,6 +22,13 @@ function convertInstitutionPrefix(): void {
 export function BelongsToUs(url: URL): boolean {
   convertInstitutionPrefix();
   for (let i = 0; i < institutePrefixURL.length; i++) {
+    console.log(
+      'DEBUG:',
+      url.toString(),
+      url.hostname,
+      institutePrefixURL[i].toString(),
+      institutePrefixURL[i].hostname,
+    );
     if (url.hostname == institutePrefixURL[i].hostname) {
       return true;
     }

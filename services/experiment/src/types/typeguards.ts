@@ -111,10 +111,10 @@ function validateExperimentStatusFinished(
   return true;
 }
 
-function hasBooking(_experimentModel: ExperimentModel) {
-  // if (!experimentModel.bookingID) return false
-  // if (!experimentModel.bookingStart) return false
-  // if (!experimentModel.bookingEnd) return false
+function hasBooking(experimentModel: ExperimentModel) {
+  if (!experimentModel.bookingID) return false;
+  if (!experimentModel.bookingStart) return false;
+  if (!experimentModel.bookingEnd) return false;
 
   return true;
 }

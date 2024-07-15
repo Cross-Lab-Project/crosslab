@@ -45,11 +45,14 @@ services:
       backend:
     volumes:
       - './config/mariadb:/docker-entrypoint-initdb.d:ro'
+      - 'db:/var/lib/mysql'
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--su=mysql', '--connect', '--innodb_initialized']
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   rabbitmq:
     image: rabbitmq:3.13.4
     volumes:
@@ -60,6 +63,8 @@ services:
       test: ['CMD', 'rabbitmqctl', 'status']
     networks:
       backend:
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   gateway:
     image: ${GATEWAY_IMAGE:?}
     ports:
@@ -73,6 +78,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   # Services
   authentication:
     image: ${AUTHENTICATION_IMAGE:?}
@@ -89,6 +96,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   authorization:
     image: ${AUTHORIZATION_IMAGE:?}
     environment:
@@ -102,6 +111,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   booking-frontend:
     image: ${BOOKING_FRONTEND_IMAGE:?}
     environment:
@@ -116,6 +127,8 @@ services:
       rabbitmq:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   booking-backend:
     image: ${BOOKING_BACKEND_IMAGE:?}
     environment:
@@ -130,6 +143,8 @@ services:
       rabbitmq:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   schedule-service:
     image: ${SCHEDULE_SERVICE_IMAGE:?}
     environment:
@@ -141,6 +156,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   device-reservation:
     image: ${DEVICE_RESERVATION_IMAGE:?}
     environment:
@@ -155,6 +172,8 @@ services:
       rabbitmq:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   device:
     image: ${DEVICE_IMAGE:?}
     environment:
@@ -167,6 +186,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   experiment:
     image: ${EXPERIMENT_IMAGE:?}
     environment:
@@ -179,6 +200,8 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
   federation:
     image: ${FEDERATION_IMAGE:?}
     environment:
@@ -191,3 +214,5 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+    extra_hosts:
+      - '${API_BASE_HOST}=host-gateway'
