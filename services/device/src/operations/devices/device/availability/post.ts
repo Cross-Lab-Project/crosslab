@@ -40,11 +40,6 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
 
     const start = Date.now();
     const end = start + WEEK;
-    deviceModel.announcedAvailability = calculateAvailability(
-      deviceModel.availabilityRules,
-      start,
-      end,
-    );
 
     await repositories.device.save(deviceModel);
     sendChangedCallback(deviceModel);
@@ -53,6 +48,6 @@ export const postDevicesByDeviceIdAvailability: postDevicesByDeviceIdAvailabilit
 
     return {
       status: 200,
-      body: deviceModel.announcedAvailability,
+      body: calculateAvailability(deviceModel.availabilityRules, start, end),
     };
   };

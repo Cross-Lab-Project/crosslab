@@ -69,9 +69,6 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
   connected!: boolean;
 
   @Column('simple-json')
-  announcedAvailability!: Required<TimeSlot>[];
-
-  @Column('simple-json')
   availabilityRules!: AvailabilityRule[];
 
   @Column()
