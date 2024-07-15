@@ -17,8 +17,17 @@ export DEVICE_RESERVATION_IMAGE=$(docker load -i ../services/booking/src/device-
 mkdir -p db
 rm -rf db/*
 
-COMPOSE_HTTP_TIMEOUT=600 docker-compose up --force-recreate --no-color > dist/server.log 2>&1 &
+COMPOSE_HTTP_TIMEOUT=600 docker compose up --force-recreate --no-color > dist/server.log 2>&1 &
 end_time=$(($(date +%s) + 600))  # Set end time to 10 minutes from now
+
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT
+
+ctrl_c () {
+    echo "Stopping containers and removing volumes!"
+    docker compose down --volumes > dist/server.log 2>&1
+    exit 1
+}
 
 #rm -rf venv
 virtualenv venv && venv/bin/pip install -r requirements.txt
@@ -40,10 +49,9 @@ for url in "http://localhost/auth/status" "http://localhost/device/status" "http
     done
 done
 
-export HOST="http://host.docker.internal"
 export USERNAME="admin"
 export PASSWORD="admin"
 
 npm run test
 
-docker-compose down
+docker compose down --volumes > dist/server.log 2>&1

@@ -6,53 +6,42 @@
 #
 version: '3'
 
-networks:
-  backend:
-  frontend:
-
-volumes:
-  db:
-
 x-config: &common-config
-  AUTHORIZATION_SERVER: 'http://authorization:3010'
+  AUTHORIZATION_SERVER: 'http://localhost:3010'
   AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:?}'
   LOGGING: '${LOGGING_LEVEL:-warn}'
   BASE_URL: ${API_BASE_URL}
   DB_TYPE: mariadb
-  DB_HOST: db
+  DB_HOST: localhost
   DB_PORT: 3306
-  AUTH_SERVICE_URL: 'http://authentication:3000'
-  DEVICE_SERVICE_URL: 'http://device:3001'
-  EXPERIMENT_SERVICE_URL: 'http://experiment:3002'
-  FEDERATION_SERVICE_URL: 'http://federation:3003'
-  BOOKING_FRONTEND_URL: 'http://booking-frontend:3004'
-  BOOKING_BACKEND_URL: 'http://booking-backend:3005'
-  SCHEDULE_SERVICE_URL: 'http://schedule-service:3006'
-  AUTH_SERVICE_DOMAIN: 'authentication:3000'
-  DEVICE_SERVICE_DOMAIN: 'device:3001'
-  EXPERIMENT_SERVICE_DOMAIN: 'experiment:3002'
-  FEDERATION_SERVICE_DOMAIN: 'federation:3003'
-  BOOKING_FRONTEND_DOMAIN: 'booking-frontend:3004'
-  BOOKING_BACKEND_DOMAIN: 'booking-backend:3005'
-  SCHEDULE_SERVICE_DOMAIN: 'schedule-service:3006'
-  AUTHORIZATION_SERVICE_DOMAIN: 'authorization:3010'
+  AUTH_SERVICE_URL: 'http://localhost:3000'
+  DEVICE_SERVICE_URL: 'http://localhost:3001'
+  EXPERIMENT_SERVICE_URL: 'http://localhost:3002'
+  FEDERATION_SERVICE_URL: 'http://localhost:3003'
+  BOOKING_FRONTEND_URL: 'http://localhost:3004'
+  BOOKING_BACKEND_URL: 'http://localhost:3005'
+  SCHEDULE_SERVICE_URL: 'http://localhost:3006'
+  AUTH_SERVICE_DOMAIN: 'localhost:3000'
+  DEVICE_SERVICE_DOMAIN: 'localhost:3001'
+  EXPERIMENT_SERVICE_DOMAIN: 'localhost:3002'
+  FEDERATION_SERVICE_DOMAIN: 'localhost:3003'
+  BOOKING_FRONTEND_DOMAIN: 'localhost:3004'
+  BOOKING_BACKEND_DOMAIN: 'localhost:3005'
+  SCHEDULE_SERVICE_DOMAIN: 'localhost:3006'
+  AUTHORIZATION_SERVICE_DOMAIN: 'localhost:3010'
 
 services:
   # Database
   db:
     image: mariadb:11.2.3
-    networks:
-      backend:
+    network_mode: 'host'
     volumes:
       - './config/mariadb:/docker-entrypoint-initdb.d:ro'
-      - 'db:/var/lib/mysql'
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--su=mysql', '--connect', '--innodb_initialized']
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   rabbitmq:
     image: rabbitmq:3.13.4
     volumes:
@@ -61,25 +50,18 @@ services:
       - ./config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     healthcheck:
       test: ['CMD', 'rabbitmqctl', 'status']
-    networks:
-      backend:
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
+    network_mode: 'host'
   gateway:
     image: ${GATEWAY_IMAGE:?}
     ports:
       - '${API_PORT}:80'
     environment:
       <<: *common-config
-    networks:
-      frontend:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   # Services
   authentication:
     image: ${AUTHENTICATION_IMAGE:?}
@@ -90,14 +72,11 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?}
       JWT_SECRET: ${JWT_SECRET:?}
-    networks:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   authorization:
     image: ${AUTHORIZATION_IMAGE:?}
     environment:
@@ -105,114 +84,90 @@ services:
       DB_USERNAME: authorization
       DB_DATABASE: authorization
       JWT_SECRET: ${JWT_SECRET:?}
-    networks:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   booking-frontend:
     image: ${BOOKING_FRONTEND_IMAGE:?}
     environment:
       <<: *common-config
-      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
-    networks:
-      backend:
+      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   booking-backend:
     image: ${BOOKING_BACKEND_IMAGE:?}
     environment:
       <<: *common-config
-      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
-    networks:
-      backend:
+      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   schedule-service:
     image: ${SCHEDULE_SERVICE_IMAGE:?}
     environment:
       <<: *common-config
-      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-    networks:
-      backend:
+      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   device-reservation:
     image: ${DEVICE_RESERVATION_IMAGE:?}
     environment:
       <<: *common-config
-      BOOKING_DSN: mysql://booking@db:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@rabbitmq:5672
-    networks:
-      backend:
+      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
+      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   device:
     image: ${DEVICE_IMAGE:?}
     environment:
       <<: *common-config
       DB_USERNAME: device
       DB_DATABASE: device
-    networks:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   experiment:
     image: ${EXPERIMENT_IMAGE:?}
     environment:
       <<: *common-config
       DB_USERNAME: experiment
       DB_DATABASE: experiment
-    networks:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
   federation:
     image: ${FEDERATION_IMAGE:?}
     environment:
       <<: *common-config
       DB_USERNAME: federation
       DB_DATABASE: federation
-    networks:
-      backend:
+    network_mode: 'host'
     depends_on:
       db:
         condition: service_healthy
     restart: on-failure
-    extra_hosts:
-      - '${API_BASE_HOST}=host-gateway'
