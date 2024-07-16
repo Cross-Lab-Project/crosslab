@@ -10,12 +10,10 @@ bundlePolicy: "max-compat", // transport every stream over a seperate connection
 import { TypedEmitter } from 'tiny-typed-emitter';
 
 import { SignalingMessage } from '../deviceMessages';
+import { logger } from '../logging';
 import { assert } from '../utils';
 import { Channel, MediaChannel } from './channel';
 import { PeerConnection, PeerConnectionEvents, ServiceConfig } from './connection';
-
-const log = console;
-log.trace = log.log;
 
 interface RTCSignalingCandidateMessage extends SignalingMessage {
   signalingType: 'candidate';
@@ -81,7 +79,7 @@ export class WebRTCPeerConnection
 
   private onnegotiationneeded() {
     if (this._state !== ConnectionState.Calling) {
-      log.error('onnegotiationneeded fired but state is not Calling', {
+      logger.error('onnegotiationneeded fired but state is not Calling', {
         state: this._state,
       });
     }
@@ -91,14 +89,14 @@ export class WebRTCPeerConnection
     if (event.candidate && this.trickleIce) {
       this.sendIceCandidate(event.candidate);
     } else if (!event.candidate && !this.trickleIce) {
-      log.log('IceGatheringComplete');
+      logger.info('IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
 
   private onicegatheringstatechange() {
     if (this.pc.iceGatheringState === 'complete') {
-      log.log('IceGatheringComplete');
+      logger.info('IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -112,7 +110,7 @@ export class WebRTCPeerConnection
     this.pc.onicegatheringstatechange = _ => this.onicegatheringstatechange();
     this.pc.onnegotiationneeded = () => this.onnegotiationneeded;
     this.pc.ondatachannel = event => {
-      console.log(event);
+      logger.info(event);
       const channel = this.receivingChannels.get(event.channel.label);
 
       if (channel !== undefined && channel.channel_type === 'DataChannel') {
@@ -126,13 +124,13 @@ export class WebRTCPeerConnection
         try {
           if (event.channel.readyState === 'open') channel._setReady();
         } catch (e) {
-          console.log(e);
+          logger.info(e);
         }
       }
     };
 
     this.pc.onconnectionstatechange = () => {
-      log.log('WebRTCPeerConnection connectionStateChanged', {
+      logger.info('WebRTCPeerConnection connectionStateChanged', {
         state: this.pc.connectionState,
       });
       this.state = this.pc.connectionState;
@@ -149,7 +147,7 @@ export class WebRTCPeerConnection
   }
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void {
-    log.trace('WebRTCPeerConnection.tranceive called', {
+    logger.log('trace', 'WebRTCPeerConnection.tranceive called', {
       serviceConfig,
       id,
       channel,
@@ -165,16 +163,20 @@ export class WebRTCPeerConnection
       try {
         if (webrtcChannel.readyState === 'open') channel._setReady();
       } catch (e) {
-        console.log(e);
+        logger.info(e);
       }
       webrtcChannel.onmessage = event => {
         if (channel.ondata) channel.ondata(event.data);
       };
     } else if (channel.channel_type === 'MediaChannel') {
-      log.trace('WebRTCPeerConnection.tranceive save channel for later consumption', {
-        channel,
-        label,
-      });
+      logger.log(
+        'trace',
+        'WebRTCPeerConnection.tranceive save channel for later consumption',
+        {
+          channel,
+          label,
+        },
+      );
       this.mediaChannelMap.set(label, channel);
     } else {
       assert(false); // unreachable
@@ -182,7 +184,7 @@ export class WebRTCPeerConnection
   }
 
   receive(serviceConfig: ServiceConfig, id: string, channel: Channel): void {
-    log.trace('WebRTCPeerConnection.receive called', {
+    logger.log('trace', 'WebRTCPeerConnection.receive called', {
       serviceConfig,
       id,
       channel,
@@ -190,10 +192,14 @@ export class WebRTCPeerConnection
     const label = this.create_label(serviceConfig, id);
     this.receivingChannels.set(label, channel);
     if (channel.channel_type === 'MediaChannel') {
-      log.trace('WebRTCPeerConnection.receive save channel for later consumption', {
-        channel,
-        label,
-      });
+      logger.log(
+        'trace',
+        'WebRTCPeerConnection.receive save channel for later consumption',
+        {
+          channel,
+          label,
+        },
+      );
       this.mediaChannelMap.set(label, channel);
     }
   }
@@ -229,7 +235,7 @@ export class WebRTCPeerConnection
 
   // Received Signaling and Control handling *************************************************************************
   async connect() {
-    console.log('webrtc connect');
+    logger.info('webrtc connect');
     this.emit('signalingMessage', {
       signalingType: 'options',
       content: {
@@ -297,9 +303,9 @@ export class WebRTCPeerConnection
     const iceCandidatePromise = new Promise<void>(resolve => {
       this.iceCandidateResolver = resolve;
     });
-    log.trace('WebRTCPeerConnection.makeOffer called');
+    logger.log('trace', 'WebRTCPeerConnection.makeOffer called');
     let offer = await this.pc.createOffer();
-    log.trace('WebRTCPeerConnection.makeOffer created offer', { offer });
+    logger.log('trace', 'WebRTCPeerConnection.makeOffer created offer', { offer });
     await this.pc.setLocalDescription(offer);
     if (this.trickleIce) {
       this.iceCandidateResolver && this.iceCandidateResolver();
@@ -310,7 +316,7 @@ export class WebRTCPeerConnection
     this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
     const _offer = this.pc.localDescription;
     if (!_offer) {
-      console.log('WebRTCPeerConnection.makeOffer failed to create offer');
+      logger.info('WebRTCPeerConnection.makeOffer failed to create offer');
       throw new Error('WebRTCPeerConnection.makeOffer failed to create offer');
     }
     offer = _offer;
@@ -318,7 +324,7 @@ export class WebRTCPeerConnection
       throw new Error('WebRTCPeerConnection.makeOffer offer.sdp is undefined');
     }
     offer = { type: offer.type, sdp: this.modifySDP(offer.sdp) }; // TODO: Check if sdp is really optional
-    log.trace('WebRTCPeerConnection.makeOffer updated offer', { offer });
+    logger.log('trace', 'WebRTCPeerConnection.makeOffer updated offer', { offer });
     this.emit('signalingMessage', {
       signalingType: 'offer',
       content: offer,
@@ -329,11 +335,11 @@ export class WebRTCPeerConnection
     const iceCandidatePromise = new Promise<void>(resolve => {
       this.iceCandidateResolver = resolve;
     });
-    log.trace('WebRTCPeerConnection.makeAnswer called', { offer });
+    logger.log('trace', 'WebRTCPeerConnection.makeAnswer called', { offer });
     await this.pc.setRemoteDescription(offer);
     this.matchMediaChannels();
     let answer = await this.pc.createAnswer();
-    log.trace('WebRTCPeerConnection.makeAnswer created answer', { answer });
+    logger.log('trace', 'WebRTCPeerConnection.makeAnswer created answer', { answer });
     await this.pc.setLocalDescription(answer); // TODO: gst-webrtc seems to not resolve the promise correctly.
     setTimeout(() => {
       this.iceCandidateResolver && this.iceCandidateResolver();
@@ -347,7 +353,7 @@ export class WebRTCPeerConnection
       throw new Error('WebRTCPeerConnection.makeAnswer failed to create answer');
     }
     answer = _answer;
-    log.trace('WebRTCPeerConnection.makeAnswer updated answer', { answer });
+    logger.log('trace', 'WebRTCPeerConnection.makeAnswer updated answer', { answer });
     if (answer.sdp === undefined) {
       throw new Error('WebRTCPeerConnection.makeAnswer answer.sdp is undefined');
     }
@@ -396,7 +402,7 @@ export class WebRTCPeerConnection
   }
 
   private modifySDP(sdpString: string): string {
-    log.trace('WebRTCPeerConnection.modifySDP called', { sdpString });
+    logger.log('trace', 'WebRTCPeerConnection.modifySDP called', { sdpString });
     const sections = sdpString.split('\r\nm=');
     const midRegex = /a=mid:(\S)/gm;
     const msidRegex = /(a=msid:- )\S*/gm;
@@ -404,7 +410,7 @@ export class WebRTCPeerConnection
     // Update the "a=msid" attribute from the video stream with the right label from the transeiverMap.
     for (const transeiver of this.transeiverMap.keys()) {
       const label = this.transeiverMap.get(transeiver);
-      log.trace('WebRTCPeerConnection.modifySDP setTrack id for transeiver', {
+      logger.log('trace', 'WebRTCPeerConnection.modifySDP setTrack id for transeiver', {
         transeiver,
         mid: transeiver.mid,
         label,
@@ -417,41 +423,45 @@ export class WebRTCPeerConnection
         const modifiedSection = sections[sectionIdx].replace(msidRegex, '$1' + label);
 
         if (modifiedSection === sections[sectionIdx]) {
-          log.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {
+          logger.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {
             transeiver,
           });
         } else {
           sections[sectionIdx] = modifiedSection;
         }
       } else {
-        log.error('WebRTCPeerConnection.modifySDP no media found for transeiver', {
+        logger.error('WebRTCPeerConnection.modifySDP no media found for transeiver', {
           transeiver,
         });
       }
     }
 
     sdpString = sections.join('\r\nm=');
-    log.trace('WebRTCPeerConnection.modifySDP returns', { sdpString });
+    logger.log('trace', 'WebRTCPeerConnection.modifySDP returns', { sdpString });
     return sdpString;
   }
 
   private matchMediaChannels() {
-    log.trace('WebRTCPeerConnection.matchMediaChannels called');
+    logger.log('trace', 'WebRTCPeerConnection.matchMediaChannels called');
     const transceivers = this.pc.getTransceivers() as RTCRtpTransceiver[];
-    log.trace('WebRTCPeerConnection.matchMediaChannels transeivers', {
+    logger.log('trace', 'WebRTCPeerConnection.matchMediaChannels transeivers', {
       transceivers,
     });
     for (const transceiver of transceivers) {
       const label = transceiver.receiver.track.label;
-      log.trace('WebRTCPeerConnection.matchMediaChannels matching tramceiver', {
+      logger.log('trace', 'WebRTCPeerConnection.matchMediaChannels matching tramceiver', {
         transceiver,
         label,
       });
       const channel = this.mediaChannelMap.get(label);
       if (channel === undefined) {
-        log.trace('WebRTCPeerConnection.matchMediaChannels no channel found for label', {
-          label,
-        });
+        logger.log(
+          'trace',
+          'WebRTCPeerConnection.matchMediaChannels no channel found for label',
+          {
+            label,
+          },
+        );
         continue;
       }
 
@@ -459,19 +469,21 @@ export class WebRTCPeerConnection
 
       if (channel.track) {
         direction = 'sendonly';
-        log.trace('WebRTCPeerConnection.matchMediaChannels replace track');
+        logger.log('trace', 'WebRTCPeerConnection.matchMediaChannels replace track');
         transceiver.sender.replaceTrack(channel.track as MediaStreamTrack);
       }
 
       if (channel.ontrack) {
         direction = direction === 'sendonly' ? 'sendrecv' : 'recvonly';
-        log.trace(
+        logger.log(
+          'trace',
           'WebRTCPeerConnection.matchMediaChannels call event listener for new track',
         );
         channel.ontrack({ track: transceiver.receiver.track });
       }
 
-      log.trace(
+      logger.log(
+        'trace',
         `WebRTCPeerConnection.matchMediaChannels set transeiver to ${direction} `,
       );
       transceiver.direction = direction;
@@ -479,11 +491,11 @@ export class WebRTCPeerConnection
   }
 
   private createMediaChannels() {
-    log.trace('WebRTCPeerConnection.createMediaChannels called');
+    logger.log('trace', 'WebRTCPeerConnection.createMediaChannels called');
     for (const label of this.mediaChannelMap.keys()) {
       const channel = this.mediaChannelMap.get(label);
       if (channel === undefined) {
-        log.error(
+        logger.error(
           'WebRTCPeerConnection.createMediaChannels no media channel found for label',
           {
             label,

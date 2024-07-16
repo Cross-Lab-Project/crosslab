@@ -122,6 +122,10 @@ export declare function validateExperimentStatusChangedMessage<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ExperimentStatusChangedMessage<T>;
 
+export declare function validateLoggingMessage<T extends 'request' | 'response' | 'all'>(
+  object: unknown,
+): LoggingMessage<T>;
+
 export declare function validateConnectionStatus<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ConnectionStatus<T>;
@@ -505,6 +509,14 @@ export declare function validateExperimentStatusChangedMessageRequest<
 export declare function validateExperimentStatusChangedMessageResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): ExperimentStatusChangedMessageResponse<T>;
+
+export declare function validateLoggingMessageRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): LoggingMessageRequest<T>;
+
+export declare function validateLoggingMessageResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): LoggingMessageResponse<T>;
 
 export declare function validateConnectionStatusRequest<
   T extends 'request' | 'response' | 'all',

@@ -39,6 +39,8 @@
   "dependencies": {
     "isomorphic-ws": "^5.0.0",
     "sdp-transform": "^2.14.1",
-    "tiny-typed-emitter": "^2.1.0"
+    "tiny-typed-emitter": "^2.1.0",
+    "winston": "^3.13.1",
+    "winston-transport": "^4.7.1"
   }
 }

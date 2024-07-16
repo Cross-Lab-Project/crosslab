@@ -3084,6 +3084,42 @@ export type ExperimentStatusChangedMessage<
     }
   : never;
 
+export type LoggingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'logging';
+        content: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : T extends 'request'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'logging';
+        content: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+    ? {
+        messageType: string;
+        [k: string]: unknown;
+      } & {
+        messageType: 'logging';
+        content: {
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      }
+    : never;
+
 /**
  * The status of the peerconnection.
  */
@@ -3717,6 +3753,20 @@ export function isExperimentStatusChangedMessage<
       return BasicValidation.validateExperimentStatusChangedMessageResponse(obj);
     default:
       return BasicValidation.validateExperimentStatusChangedMessage(obj);
+  }
+}
+
+export function isLoggingMessage<T extends 'request' | 'response' | 'all' = 'all'>(
+  obj: unknown,
+  type: 'request' | 'response' | 'all' | T = 'all',
+): obj is LoggingMessage<T> {
+  switch (type) {
+    case 'request':
+      return BasicValidation.validateLoggingMessageRequest(obj);
+    case 'response':
+      return BasicValidation.validateLoggingMessageResponse(obj);
+    default:
+      return BasicValidation.validateLoggingMessage(obj);
   }
 }
 

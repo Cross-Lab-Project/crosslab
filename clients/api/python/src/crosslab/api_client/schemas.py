@@ -1609,7 +1609,23 @@ class SendSignalingMessageRequestAlt5(TypedDict):
     message: NotRequired[str]
 
 
-SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4, SendSignalingMessageRequestAlt5]
+class SendSignalingMessageRequestAlt6Content(TypedDict):
+    """
+    Properties:
+    """
+
+
+class SendSignalingMessageRequestAlt6(TypedDict):
+    """
+    Properties:
+    - messageType
+    - content
+    """
+    messageType: Literal["logging"]
+    content: SendSignalingMessageRequestAlt6Content
+
+
+SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4, SendSignalingMessageRequestAlt5, SendSignalingMessageRequestAlt6]
 
 
 SendSignalingMessageResponse: TypeAlias = None
