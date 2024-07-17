@@ -79,7 +79,7 @@ export class WebRTCPeerConnection
 
   private onnegotiationneeded() {
     if (this._state !== ConnectionState.Calling) {
-      logger.error('onnegotiationneeded fired but state is not Calling', {
+      logger.log('error', 'onnegotiationneeded fired but state is not Calling', {
         state: this._state,
       });
     }
@@ -89,14 +89,14 @@ export class WebRTCPeerConnection
     if (event.candidate && this.trickleIce) {
       this.sendIceCandidate(event.candidate);
     } else if (!event.candidate && !this.trickleIce) {
-      logger.info('IceGatheringComplete');
+      logger.log('info', 'IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
 
   private onicegatheringstatechange() {
     if (this.pc.iceGatheringState === 'complete') {
-      logger.info('IceGatheringComplete');
+      logger.log('info', 'IceGatheringComplete');
       this.iceCandidateResolver && this.iceCandidateResolver();
     }
   }
@@ -110,7 +110,7 @@ export class WebRTCPeerConnection
     this.pc.onicegatheringstatechange = _ => this.onicegatheringstatechange();
     this.pc.onnegotiationneeded = () => this.onnegotiationneeded;
     this.pc.ondatachannel = event => {
-      logger.info(event);
+      logger.log('info', event);
       const channel = this.receivingChannels.get(event.channel.label);
 
       if (channel !== undefined && channel.channel_type === 'DataChannel') {
@@ -124,13 +124,13 @@ export class WebRTCPeerConnection
         try {
           if (event.channel.readyState === 'open') channel._setReady();
         } catch (e) {
-          logger.info(e);
+          logger.log('error', 'can not set channel ready', { error: e as Error });
         }
       }
     };
 
     this.pc.onconnectionstatechange = () => {
-      logger.info('WebRTCPeerConnection connectionStateChanged', {
+      logger.log('info', 'WebRTCPeerConnection connectionStateChanged', {
         state: this.pc.connectionState,
       });
       this.state = this.pc.connectionState;
@@ -163,7 +163,7 @@ export class WebRTCPeerConnection
       try {
         if (webrtcChannel.readyState === 'open') channel._setReady();
       } catch (e) {
-        logger.info(e);
+        logger.log('error', 'can not set channel ready', { error: e as Error });
       }
       webrtcChannel.onmessage = event => {
         if (channel.ondata) channel.ondata(event.data);
@@ -235,7 +235,7 @@ export class WebRTCPeerConnection
 
   // Received Signaling and Control handling *************************************************************************
   async connect() {
-    logger.info('webrtc connect');
+    logger.log('info', 'webrtc connect');
     this.emit('signalingMessage', {
       signalingType: 'options',
       content: {
@@ -316,7 +316,7 @@ export class WebRTCPeerConnection
     this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
     const _offer = this.pc.localDescription;
     if (!_offer) {
-      logger.info('WebRTCPeerConnection.makeOffer failed to create offer');
+      logger.log('info', 'WebRTCPeerConnection.makeOffer failed to create offer');
       throw new Error('WebRTCPeerConnection.makeOffer failed to create offer');
     }
     offer = _offer;
@@ -423,16 +423,24 @@ export class WebRTCPeerConnection
         const modifiedSection = sections[sectionIdx].replace(msidRegex, '$1' + label);
 
         if (modifiedSection === sections[sectionIdx]) {
-          logger.error('WebRTCPeerConnection.modifySDP no msid found for transeiver', {
-            transeiver,
-          });
+          logger.log(
+            'error',
+            'WebRTCPeerConnection.modifySDP no msid found for transeiver',
+            {
+              transeiver,
+            },
+          );
         } else {
           sections[sectionIdx] = modifiedSection;
         }
       } else {
-        logger.error('WebRTCPeerConnection.modifySDP no media found for transeiver', {
-          transeiver,
-        });
+        logger.log(
+          'error',
+          'WebRTCPeerConnection.modifySDP no media found for transeiver',
+          {
+            transeiver,
+          },
+        );
       }
     }
 
@@ -495,7 +503,8 @@ export class WebRTCPeerConnection
     for (const label of this.mediaChannelMap.keys()) {
       const channel = this.mediaChannelMap.get(label);
       if (channel === undefined) {
-        logger.error(
+        logger.log(
+          'error',
           'WebRTCPeerConnection.createMediaChannels no media channel found for label',
           {
             label,
