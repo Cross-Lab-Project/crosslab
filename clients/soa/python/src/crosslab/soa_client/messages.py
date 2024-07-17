@@ -65,3 +65,8 @@ class ExperimentStatusChangedMessage(TypedDict):
     messageType: Literal["experiment-status-changed"]
     status: Literal["created", "booked", "setup", "running", "failed", "closed"]
     message: Optional[str]
+
+
+class LoggingMessage(TypedDict):
+    messageType: Literal["logging"]
+    content: dict

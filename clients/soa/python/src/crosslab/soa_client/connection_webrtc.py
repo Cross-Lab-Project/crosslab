@@ -14,8 +14,6 @@ from aiortc import (
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
 from crosslab.soa_client.connection import (
     Channel,
     Connection,
@@ -23,6 +21,7 @@ from crosslab.soa_client.connection import (
     MediaChannel,
 )
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +59,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         async def connectionstatechanged():
             if not self.pc:
                 return  # Fix: Do not access self.pc after close
-            print(
-                "connectionstatechanged",
+            logger.info(
+                "connectionstatechanged %s %s %s",
                 self.pc.connectionState,
                 self.pc.iceConnectionState,
                 self.pc.signalingState,
@@ -203,7 +202,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             pass
 
     async def handleSignalingMessage(self, message: SignalingMessage):
-        print("handleSignalingMessage")
+        logger.debug("handleSignalingMessage")
         if message["signalingType"] == "answer":
             await self._handleAnswer(message)
         if message["signalingType"] == "offer":
@@ -214,7 +213,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             await self._handleOptions(message)
 
     async def _makeOffer(self):
-        print("makeOffer")
+        logger.debug("makeOffer")
         offer = await self.pc.createOffer()
         await self.pc.setLocalDescription(offer)
         offer = self.pc.localDescription
@@ -227,7 +226,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         )
 
     async def _makeAnswer(self, offer):
-        print("makeAnswer")
+        logger.debug("makeAnswer")
         await self.pc.setRemoteDescription(offer)
         self._matchMediaChannels()
         await self.pc.setRemoteDescription(offer)
@@ -244,36 +243,36 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
         )
 
     async def _acceptAnswer(self, answer: RTCSessionDescription):
-        print("acceptAnswer")
+        logger.debug("acceptAnswer")
         await self.pc.setRemoteDescription(answer)
 
     async def _acceptIceCandiate(self, iceCanditate: RTCIceCandidate):
-        print("acceptIceCandidate")
+        logger.debug("acceptIceCandidate")
         await self.pc.addIceCandidate(iceCanditate)
 
     async def _handleOffer(self, message: SignalingMessage):
-        print("handleOffer")
+        logger.debug("handleOffer")
         offer = RTCSessionDescription(
             type=message["content"]["type"], sdp=message["content"]["sdp"]
         )
         await self._makeAnswer(offer)
 
     async def _handleAnswer(self, message: SignalingMessage):
-        print("handleAnswer")
+        logger.debug("handleAnswer")
         answer = RTCSessionDescription(
             type=message["content"]["type"], sdp=message["content"]["sdp"]
         )
         await self._acceptAnswer(answer)
 
     async def _handleIceCandidate(self, message: SignalingMessage):
-        print("handleIceCandidate")
+        logger.debug("handleIceCandidate")
         candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
         candidate.sdpMid = message["content"]["sdpMid"]
         candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
         await self._acceptIceCandiate(candidate)
 
     async def _handleOptions(self, message: SignalingMessage):
-        print("handleOptions")
+        logger.debug("handleOptions")
         self._trickleIce = message["content"]["canTrickle"]
         if not self._receivedOptions.done():
             self._receivedOptions.set_result(None)

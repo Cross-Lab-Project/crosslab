@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import re
 from typing import Dict, Optional
 
@@ -8,6 +9,7 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
+from crosslab.soa_client.logging import handler as loggin_handler
 from crosslab.soa_client.messages import (
     AuthenticationMessage,
     ClosePeerConnectionMessage,
@@ -15,14 +17,17 @@ from crosslab.soa_client.messages import (
     ConnectionStateChangedMessage,
     CreatePeerConnectionMessage,
     ExperimentStatusChangedMessage,
+    LoggingMessage,
     SignalingMessage,
 )
 from crosslab.soa_client.service import Service
 
+logger = logging.getLogger(__name__)
+
 
 async def receiveMessage(ws: aiohttp.ClientWebSocketResponse):
     msg = await ws.receive()
-    print(msg)
+    logger.debug(msg)
     if msg.type == aiohttp.WSMsgType.TEXT:
         return msg.json()
     else:
@@ -66,6 +71,11 @@ def derive_endpoints_from_url(url: str, fallback_base_url: Optional[str] = None)
     return base_url, device_url, token_endpoint, ws_endpoint
 
 
+async def sendLogMessage(ws: aiohttp.ClientWebSocketResponse, info: dict):
+    loggingMessage: LoggingMessage = {"messageType": "logging", "content": info}
+    await ws.send_json(loggingMessage)
+
+
 class DeviceHandler(AsyncIOEventEmitter):
     _services: Dict[str, Service]
     _connections: Dict[str, Connection]
@@ -98,6 +108,7 @@ class DeviceHandler(AsyncIOEventEmitter):
                 self.ws = await self.session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
                 self.emit("websocketConnected")
+                loggin_handler.setUpstream(lambda info: sendLogMessage(self.ws, info))
 
                 await self._message_loop()
 
@@ -109,13 +120,13 @@ class DeviceHandler(AsyncIOEventEmitter):
             msg = await receiveMessage(self.ws)
             if isinstance(msg, aiohttp.WSMessage):
                 if msg.type == aiohttp.WSMsgType.CLOSED:
-                    print("closed")
+                    logger.debug("Websocket reseived WSMessage closed")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSING:
-                    print("closing")
+                    logger.debug("Websocket reseived WSMessage closing")
                     break
                 elif msg.type == aiohttp.WSMsgType.CLOSE:
-                    print("close")
+                    logger.debug("Websocket reseived WSMessageclose")
                     await self.ws.close()
                     break
                 break
