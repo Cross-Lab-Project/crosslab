@@ -1,11 +1,13 @@
 import asyncio
 import logging
-from typing import Any, Dict
+from typing import List
 
 
 class CrosslabHandler(logging.Handler):
-    def __init__(self, level: int | str = 0) -> None:
-        super().__init__(level)
+    cache: List[dict]
+
+    def __init__(self) -> None:
+        super().__init__()
         self.upstreamHandler = None
         self.cache = []
 
@@ -42,15 +44,6 @@ class CrosslabHandler(logging.Handler):
         info["origin"]["processName"] = record.processName
         info["origin"]["threadName"] = record.threadName
 
-        if record.exc_info and record.exc_text is None:
-            record.exc_text = self.formatException(record.exc_info)
-
-        if record.exc_text:
-            info["exc_info"] = record.exc_text
-
-        if record.stack_info:
-            info["stack_info"] = self.formatStack(record.stack_info)
-        print(info)
         self.cache.append(info)
         asyncio.create_task(self.flush())
 
