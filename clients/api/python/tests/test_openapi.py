@@ -2641,7 +2641,7 @@ async def test_send_signaling_message(aioresponses: aioresponses):
     url_variant = r'devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/signaling'
     full_url = BASE_URL+r'/devices/c799cc2e-cdc5-4143-973a-6f56a5afa82c/signaling'
 
-    request = json.loads(r'{"messageType":"experiment-status-changed","status":"tempor","message":"dolore anim ipsum quis"}')
+    request = json.loads(r'{"messageType":"configuration","configuration":{}}')
 
     parameter_list = [{}, ]
 

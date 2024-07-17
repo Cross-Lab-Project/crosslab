@@ -2,13 +2,14 @@ import { die } from '../utils.js';
 import {
   LogLevel,
   LoggingConfig,
-  LoggingTransortConfig,
+  LoggingTransportConfig,
   logLevelMapping,
 } from './config.js';
 
 export function parseConfig(config: LoggingConfig): {
   LOGGING: LogLevel;
-  LOGGING_TRANSPORT: LoggingTransortConfig[];
+  LOGGING_TRANSPORT: LoggingTransportConfig[];
+  LOGGING_LABELS: Record<string, string>
 } {
   let LOGGING = config.LOGGING ?? 'info';
   let LOGGING_TRANSPORT = config.LOGGING_TRANSPORT ?? 'stdout';
@@ -21,7 +22,7 @@ export function parseConfig(config: LoggingConfig): {
   if (typeof LOGGING_TRANSPORT === 'string') {
     LOGGING_TRANSPORT = LOGGING_TRANSPORT.split(',').map(transport => {
       const [transportName, ...parameters] = transport.split('#');
-      const transportConfig: Partial<LoggingTransortConfig> = {
+      const transportConfig: Partial<LoggingTransportConfig> = {
         transport: transportName as 'stdout' | 'stderr' | 'loki' | 'file',
       };
       if (transportConfig.transport === 'loki') {
@@ -30,10 +31,12 @@ export function parseConfig(config: LoggingConfig): {
         transportConfig.filename =
           parameters[0] ?? die('File transport requires a filename');
       }
-      return transportConfig as LoggingTransortConfig;
+      return transportConfig as LoggingTransportConfig;
     });
   }
 
   if (!Array.isArray(LOGGING_TRANSPORT)) LOGGING_TRANSPORT = [LOGGING_TRANSPORT];
-  return { LOGGING: LOGGING as LogLevel, LOGGING_TRANSPORT };
+
+  const LOGGING_LABELS = typeof config.LOGGING_LABELS === 'string'? JSON.parse(config.LOGGING_LABELS): config.LOGGING_LABELS
+  return { LOGGING: LOGGING as LogLevel, LOGGING_TRANSPORT, LOGGING_LABELS };
 }

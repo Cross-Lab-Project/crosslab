@@ -4,18 +4,18 @@ import { URL } from 'url';
 
 import { JWTVerificationError } from './errors.js';
 
-export * from './errors.js';
-export * from './logger.js';
-export * from './handlers/index.js';
-export * from './types.js';
-export * from './database/abstractRepository.js';
 export * from './database/abstractDataSource.js';
+export * from './database/abstractRepository.js';
+export * from './errors.js';
+export * from './handlers/index.js';
+export { logger } from './logging/index.js';
+export * from './types.js';
 
-export * as config from './config.js';
-export * as utils from './utils.js';
 export * as authorization from './authorization/index.js';
-export * as logging from './logging/index.js';
+export * as config from './config.js';
 export * as error from './error_middleware.js';
+export * as logging from './logging/index.js';
+export * as utils from './utils.js';
 
 /**
  * @deprecated It should not be necessary to verify the JWT. Use the authorization server instead.

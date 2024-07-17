@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { errorHandler, logHandling } from '@crosslab/service-common';
+import { errorHandler, logging } from '@crosslab/service-common';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 
@@ -9,7 +9,8 @@ import { query_relations, update_relations } from './openfga.js';
 import { CheckTuple } from './types.js';
 
 const app = express();
-logHandling(app);
+
+app.use(logging.middleware());
 
 app.get('/authorization/status', (_req, res) => {
   res.send({ status: 'ok' });

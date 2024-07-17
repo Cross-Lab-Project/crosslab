@@ -5,9 +5,11 @@ import { repositories } from '../../../../database/dataSource.js';
 import { ConcreteDeviceModel } from '../../../../database/model.js';
 import {
   ConnectionStateChangedMessage,
+  LoggingMessage,
   Message,
   SignalingMessage,
   isConnectionStateChangedMessage,
+  isLoggingMessage,
   isMessage,
   isSignalingMessage,
 } from '../../../../generated/types.js';
@@ -55,8 +57,8 @@ export async function messageHandling(
 }
 
 /**
- * This function handles a message for a device.
- * @param deviceModel The device for which to handle the message.
+ * This function handles a message received from a device.
+ * @param deviceModel The device that had sent the message.
  * @param message The message to be handled.
  */
 async function handleDeviceMessage(deviceModel: ConcreteDeviceModel, message: Message) {
@@ -64,6 +66,8 @@ async function handleDeviceMessage(deviceModel: ConcreteDeviceModel, message: Me
     await handleSignalingMessage(deviceModel, message);
   } else if (isConnectionStateChangedMessage(message)) {
     await handleConnectionStateChangedMessage(deviceModel, message);
+  } else if (isLoggingMessage(message)){
+    await handleLoggingMessage(deviceModel, message)
   }
 }
 
@@ -185,4 +189,17 @@ async function handleConnectionStateChangedMessage(
   } finally {
     release();
   }
+}
+
+/**
+ * This function handles a logging message received from a device
+ * @param deviceModel The device that sent the logging message
+ * @param message The logging message to be handled
+ */
+async function handleLoggingMessage(deviceModel: ConcreteDeviceModel, message: LoggingMessage) {
+  let level = 'info';
+  if ('level' in message.content){
+    level = message.content.level as string;
+  }
+  logger.log(level, {...message.content, labels: {...message.labels ?? {}, job: 'remote_device'}, device: deviceModel.uuid, deviceName: deviceModel.name});
 }
