@@ -5,6 +5,11 @@ properties:
   serviceType:
     type: string
     format: uri
+  supportedConnectionTypes:
+    type: array
+    items:
+      type: string
+    default: ['webrtc']
   serviceId:
     type: string
   serviceDirection:
