@@ -24,7 +24,6 @@ async function handle_authentication_response(req: Request, res: Response) {
   await ApplicationDataSource.manager.delete(LtiMessageModel, message.id);
 
   const message_type = payload['https://purl.imsglobal.org/spec/lti/claim/message_type'];
-
   switch (message_type) {
     case 'LtiResourceLinkRequest':
       await handle_resource_link_request(req, res, payload, platform);
