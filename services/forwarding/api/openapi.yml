@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab Forwarding Service REST API (internal)
+  description: |-
+    This is the OpenAPI description of the internal CrossLab Forwarding Service REST API.
+  version: 0.0.1
+  x-service-name: Forwarding Service
+
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Device API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+  schemas:
+    connection_message:
+      $ref: './schemas/connection_message.yml'
+    
+tags:
+  - name: room
+    description: |-
+      This tag describes the room resource.
+paths:
+  /rooms:
+    $ref: './resources/rooms.yml'
+  /rooms/{room_id}:
+    $ref: './resources/room.yml'

@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_room
+  summary: View a registered room
+  tags:
+    - room
+  parameters:
+    - $ref: '../parameters/room_id.yml'
+  responses:
+    200:
+      description: The JSON Representation of the room.
+      content:
+        application/json:
+          $ref: '../content/room.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  operationId: update_room
+  summary: Update an existing room
+  tags:
+    - room
+  parameters:
+    - $ref: '../parameters/room_id.yml'
+  requestBody:
+    required: true
+    description: Updated room.
+    content:
+      application/json:
+        $ref: '../content/room.yml'
+  responses:
+    200:
+      description: The JSON Representation of the changed room.
+      content:
+        application/json:
+          $ref: '../content/room.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+delete:
+  operationId: delete_room
+  summary: Delete a registered room
+  tags:
+    - room
+  parameters:
+    - $ref: '../parameters/room_id.yml'
+  responses:
+    204:
+      description: The room was deleted.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

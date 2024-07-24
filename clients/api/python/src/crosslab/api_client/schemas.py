@@ -307,10 +307,12 @@ class CreateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -369,10 +371,12 @@ class CreateDeviceRequestAlt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -427,10 +431,12 @@ class CreateDeviceRequestAlt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -528,10 +534,12 @@ class CreateDeviceResponse201Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -590,10 +598,12 @@ class CreateDeviceResponse201Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -648,10 +658,12 @@ class CreateDeviceResponse201Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -752,10 +764,12 @@ class GetDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -814,10 +828,12 @@ class GetDeviceResponse200Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -872,10 +888,12 @@ class GetDeviceResponse200Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -976,10 +994,12 @@ class UpdateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1026,10 +1046,12 @@ class UpdateDeviceRequestAlt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1076,10 +1098,12 @@ class UpdateDeviceRequestAlt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1173,10 +1197,12 @@ class UpdateDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1235,10 +1261,12 @@ class UpdateDeviceResponse200Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1293,10 +1321,12 @@ class UpdateDeviceResponse200Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1410,10 +1440,12 @@ class InstantiateDeviceResponse201InstanceServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 

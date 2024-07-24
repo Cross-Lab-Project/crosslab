@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: list_rooms
+  summary: List rooms
+  tags:
+    - room
+  responses:
+    200:
+      description: The list of all rooms.
+      content:
+        application/json:
+          $ref: '../content/room_overview_list.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+post:
+  operationId: create_room
+  summary: Create a new room
+  tags:
+    - room
+  requestBody:
+    required: true
+    description: The room to be created.
+    content:
+      application/json:
+        $ref: '../content/room.yml'
+  responses:
+    201:
+      description: The room was created. A JSON representation of the new room is returned.
+      content:
+        application/json:
+          $ref: '../content/room.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

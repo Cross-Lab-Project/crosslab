@@ -339,6 +339,7 @@ export type ServiceDescription<T extends 'request' | 'response' | 'all' = 'all'>
   T extends 'all'
     ? {
         serviceType?: string;
+        supportedConnectionTypes?: string[];
         serviceId?: string;
         serviceDirection?: 'consumer' | 'producer' | 'prosumer';
         [k: string]: unknown;
@@ -346,6 +347,7 @@ export type ServiceDescription<T extends 'request' | 'response' | 'all' = 'all'>
     : T extends 'request'
     ? {
         serviceType?: string;
+        supportedConnectionTypes?: string[];
         serviceId?: string;
         serviceDirection?: 'consumer' | 'producer' | 'prosumer';
         [k: string]: unknown;
@@ -353,6 +355,7 @@ export type ServiceDescription<T extends 'request' | 'response' | 'all' = 'all'>
     : T extends 'response'
     ? {
         serviceType?: string;
+        supportedConnectionTypes?: string[];
         serviceId?: string;
         serviceDirection?: 'consumer' | 'producer' | 'prosumer';
         [k: string]: unknown;

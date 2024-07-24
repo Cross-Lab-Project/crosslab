@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+title: Participant
+properties:
+  id:
+    type: string
+    description: ID of the participant.
+required:
+  - id
+additionalProperties: true
