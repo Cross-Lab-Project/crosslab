@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class PlatformModel {
@@ -30,4 +30,14 @@ export class PlatformProvisionModel {
   jwks_url?: string;
 }
 
-export const Entities = [PlatformModel, PlatformProvisionModel];
+@Entity()
+export class LtiMessageModel {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+  @Column()
+  nonce!: string;
+  @ManyToOne(() => PlatformModel)
+  platform!: PlatformModel;
+}
+
+export const Entities = [PlatformModel, PlatformProvisionModel, LtiMessageModel];

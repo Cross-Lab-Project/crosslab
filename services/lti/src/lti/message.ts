@@ -1,40 +1,27 @@
-import { CookieOptions, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import fetch from 'node-fetch';
 
 import '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
-import { PlatformModel, PlatformProvisionModel } from '../database/model.js';
-import * as generators from '../helper/generators.js';
-import { nonce_store } from '../helper/nonce.js';
+import { LtiMessageModel, PlatformModel, PlatformProvisionModel } from '../database/model.js';
+import { random } from '../helper/generators.js';
 import { handle_deep_linking_request } from './deep_link.js';
 import { handle_resource_link_request } from './resource_link.js';
 import { tool_configuration } from './tool_configuration.js';
 
 async function handle_authentication_response(req: Request, res: Response) {
-  res.clearCookie('state', { httpOnly: true, sameSite: 'none', secure: true });
-  res.clearCookie('nonce', { httpOnly: true, sameSite: 'none', secure: true });
-
-  if (req.body.state !== req.signedCookies.state) {
-    throw new Error('state does not match');
-  }
-  const [_, encoded_iss, encoded_client_id] = req.body.state.split(':');
-  const iss = decodeURIComponent(encoded_iss);
-  const client_id = decodeURIComponent(encoded_client_id);
-  const platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
-    iss: iss,
-    client_id: client_id,
-  });
+  const message = await ApplicationDataSource.manager.findOneOrFail(LtiMessageModel, {where: {id: req.body.state}, relations: ['platform']});
+  const platform = message.platform
   const jwks_url = platform.jwks_url;
   const jwt = req.body.id_token;
   const jwks = createRemoteJWKSet(new URL(jwks_url));
   const { payload } = await jwtVerify(jwt, jwks);
-  if (payload.nonce !== req.signedCookies.nonce) {
+  if (payload.nonce !== message.nonce) {
     throw new Error('nonce does not match');
   }
-  if (!nonce_store.check(payload.nonce as string)) {
-    throw new Error('nonce has already been used');
-  }
+  // message successfully processed, delete it to prevent replay attacks
+  await ApplicationDataSource.manager.delete(LtiMessageModel, message.id);
 
   const message_type = payload['https://purl.imsglobal.org/spec/lti/claim/message_type'];
 
@@ -123,30 +110,14 @@ export async function handle_login_request(req: Request, res: Response) {
     }
   }
 
-  const stateParam =
-    generators.random() +
-    ':' +
-    encodeURIComponent(platform.iss) +
-    ':' +
-    encodeURIComponent(platform.client_id ?? '');
-  res.cookie('state', stateParam, {
-    httpOnly: true,
-    signed: true,
-    maxAge: 5 * 60 * 1000,
-    sameSite: 'none',
-    secure: true,
-    partitioned: true,
-  } as CookieOptions);
-  const nonceParam = nonce_store.get();
-  res.cookie('nonce', nonceParam, {
-    httpOnly: true,
-    signed: true,
-    maxAge: 5 * 60 * 1000,
-    sameSite: 'none',
-    secure: true,
-    partitioned: true,
-  } as CookieOptions);
-
+  
+  const nonceParam = random();
+  const message = ApplicationDataSource.manager.create(LtiMessageModel, {
+    nonce: nonceParam,
+    platform: platform,
+  })
+  await ApplicationDataSource.manager.save(message)
+  const stateParam = message.id
   const queryParams = {
     scope: 'openid',
     response_type: 'id_token',
