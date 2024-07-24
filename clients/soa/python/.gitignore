@@ -6,7 +6,7 @@ __pycache__
 .mypy_cache
 .tox
 build
-.coverage
+.coverage*
 coverage.xml
 
 *.egg-info
