@@ -5,7 +5,7 @@ import { ExperimentTest } from '../helper/experimentTest';
 const experimentConfig = {
   serviceConfigurations: [
     {
-      serviceType: 'http://api.goldi-labs.de/serviceTypes/electrical',
+      serviceType: 'https://api.goldi-labs.de/serviceTypes/electrical',
       configuration: {},
       participants: [
         {

@@ -8,8 +8,8 @@ import { MediaChannel } from '@cross-lab-project/soa-client';
 import { PeerConnection } from '@cross-lab-project/soa-client';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-type ServiceType = 'goldi/webcam';
-const ServiceType: ServiceType = 'goldi/webcam';
+type ServiceType = 'https://api.goldi-labs.de/serviceTypes/webcam';
+const ServiceType: ServiceType = 'https://api.goldi-labs.de/serviceTypes/webcam';
 
 export interface WebcamServiceConfiguration extends ServiceConfiguration {
   serviceType: ServiceType;
@@ -39,6 +39,7 @@ export class WebcamService__Producer implements Service<ServiceType> {
       serviceId: this.serviceId,
       serviceType: ServiceType,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc'],
     };
   }
 
@@ -69,6 +70,7 @@ export class WebcamService__Consumer
       serviceId: this.serviceId,
       serviceType: ServiceType,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc'],
     };
   }
 

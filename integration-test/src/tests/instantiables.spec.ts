@@ -5,7 +5,7 @@ import { ExperimentTest } from '../helper/experimentTest';
 const experimentConfig = {
   serviceConfigurations: [
     {
-      serviceType: 'http://api.goldi-labs.de/serviceTypes/electrical',
+      serviceType: 'https://api.goldi-labs.de/serviceTypes/electrical',
       configuration: {},
       participants: [
         {
@@ -27,7 +27,7 @@ const experimentConfig = {
   ],
 };
 
-for (const device1Type of deviceTypes.slice(0,2)) {
+for (const device1Type of deviceTypes.slice(0, 2)) {
   const device2Type = 'device';
   describe(`Client Communication (${device1Type} <-> ${device2Type})`, async function () {
     before(function () {

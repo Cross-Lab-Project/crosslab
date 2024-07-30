@@ -1555,7 +1555,7 @@ class SendSignalingMessageRequestAlt1ServicesItems(TypedDict):
     remoteServiceId: str
 
 
-class SendSignalingMessageRequestAlt1Config(TypedDict):
+class SendSignalingMessageRequestAlt1Connectionoptions(TypedDict):
     """
     Properties:
     """
@@ -1570,7 +1570,7 @@ class SendSignalingMessageRequestAlt1(TypedDict):
     - connectionUrl
     - services
     - tiebreaker
-    - config
+    - connectionOptions
     """
     messageType: Literal["command"]
     command: Literal["createPeerconnection"]
@@ -1578,7 +1578,7 @@ class SendSignalingMessageRequestAlt1(TypedDict):
     connectionUrl: str
     services: List[SendSignalingMessageRequestAlt1ServicesItems]
     tiebreaker: bool
-    config: NotRequired[SendSignalingMessageRequestAlt1Config]
+    connectionOptions: NotRequired[SendSignalingMessageRequestAlt1Connectionoptions]
 
 
 class SendSignalingMessageRequestAlt2(TypedDict):
@@ -1663,6 +1663,12 @@ SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignali
 SendSignalingMessageResponse: TypeAlias = None
 
 
+class ListPeerconnectionsResponse200ItemsConfiguration(TypedDict):
+    """
+    Properties:
+    """
+
+
 class ListPeerconnectionsResponse200ItemsDevicesItems(TypedDict):
     """
     Properties:
@@ -1677,11 +1683,13 @@ class ListPeerconnectionsResponse200Items(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[ListPeerconnectionsResponse200ItemsConfiguration]
     devices: List[ListPeerconnectionsResponse200ItemsDevicesItems]
 
 
@@ -1689,6 +1697,12 @@ ListPeerconnectionsResponse200: TypeAlias = List[ListPeerconnectionsResponse200I
 
 
 ListPeerconnectionsResponse: TypeAlias = ListPeerconnectionsResponse200
+
+
+class CreatePeerconnectionRequestConfiguration(TypedDict):
+    """
+    Properties:
+    """
 
 
 class CreatePeerconnectionRequestDevicesItemsConfigServicesItems(TypedDict):
@@ -1727,12 +1741,20 @@ class CreatePeerconnectionRequest(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionRequestConfiguration]
     devices: List[CreatePeerconnectionRequestDevicesItems]
+
+
+class CreatePeerconnectionResponse201Configuration(TypedDict):
+    """
+    Properties:
+    """
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
@@ -1771,12 +1793,20 @@ class CreatePeerconnectionResponse201(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionResponse201Configuration]
     devices: List[CreatePeerconnectionResponse201DevicesItems]
+
+
+class CreatePeerconnectionResponse202Configuration(TypedDict):
+    """
+    Properties:
+    """
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
@@ -1815,15 +1845,23 @@ class CreatePeerconnectionResponse202(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionResponse202Configuration]
     devices: List[CreatePeerconnectionResponse202DevicesItems]
 
 
 CreatePeerconnectionResponse: TypeAlias = Union[CreatePeerconnectionResponse201, CreatePeerconnectionResponse202]
+
+
+class GetPeerconnectionResponse200Configuration(TypedDict):
+    """
+    Properties:
+    """
 
 
 class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
@@ -1862,11 +1900,13 @@ class GetPeerconnectionResponse200(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[GetPeerconnectionResponse200Configuration]
     devices: List[GetPeerconnectionResponse200DevicesItems]
 
 

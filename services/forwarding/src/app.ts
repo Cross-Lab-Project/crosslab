@@ -1,46 +1,10 @@
 import { authorization, logging } from '@crosslab/service-common';
 import express, { Application, ErrorRequestHandler, RequestHandler } from 'express';
-import { IncomingMessage } from 'http';
-import { Socket } from 'net';
-import WebSocket, { WebSocketServer } from 'ws';
+import expressWs from 'express-ws';
 
 import { config } from './config.js';
 import { app } from './generated/index.js';
-import { websocketHandling } from './operations/webSocket.js';
-
-declare global {
-  // eslint-disable-next-line
-  namespace Express {
-    interface Application {
-      ws(path: string, listener: (socket: WebSocket) => void): void;
-      wsListeners: Map<string, (socket: WebSocket) => void>;
-    }
-  }
-}
-
-function setupWebsockets(localApp: express.Application) {
-  const wsServer = new WebSocketServer({ noServer: true });
-  localApp.wsListeners = new Map();
-  localApp.ws = (path, listener) => localApp.wsListeners.set(path, listener);
-  websocketHandling(localApp);
-
-  const originalListen = localApp.listen;
-  localApp.listen = port => {
-    localApp.listen = originalListen;
-    const server = localApp.listen(port);
-    server.on(
-      'upgrade',
-      async (request: IncomingMessage, socket: Socket, head: Buffer) => {
-        const listener = app.wsListeners.get(request.url ?? '');
-        if (listener) {
-          wsServer.handleUpgrade(request, socket, head, webSocket => listener(webSocket));
-        }
-      },
-    );
-    return server;
-  };
-  return localApp;
-}
+import { webSocketHandling } from './operations/rooms/room/ws.js';
 
 export const errormiddleware: ErrorRequestHandler = (err, req, res, _next) => {
   const status = err.status || 500;
@@ -67,12 +31,13 @@ export const errormiddleware: ErrorRequestHandler = (err, req, res, _next) => {
 export function initApp() {
   app.initService({
     preHandlers: [
-      setupWebsockets,
       (application: Application) => {
+        const wsInstance = expressWs(application);
         application.use(express.json());
         application.use(express.urlencoded({ extended: false }));
         application.use(logging.middleware() as RequestHandler);
         application.use(authorization.middleware(config) as RequestHandler);
+        webSocketHandling(wsInstance.app);
       },
     ],
     postHandlers: [

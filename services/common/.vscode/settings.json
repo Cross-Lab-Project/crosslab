@@ -10,7 +10,7 @@
     "**/app": true,
     "**/build": true,
     "**/lib": true,
-    "**/node_modules": true,
+    // "**/node_modules": true,
     "**/venv": true
     //end generated
   },

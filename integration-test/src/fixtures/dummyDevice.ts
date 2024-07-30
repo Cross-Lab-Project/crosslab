@@ -26,6 +26,7 @@ function createPythonEnvironment() {
   }
 }
 
+export const connectionTypes = ['webrtc', 'websocket'] as const;
 export const clientTypes = ['js', 'python'] as const;
 export type ClientType = (typeof clientTypes)[number];
 export const deviceTypes = [
@@ -91,7 +92,11 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
     this.context = context;
   }
 
-  public async start(client: APIClient, deviceUrl: string) {
+  public async start(
+    client: APIClient,
+    deviceUrl: string,
+    connectionType: 'webrtc' | 'websocket' = 'webrtc',
+  ) {
     assert(this.process === undefined, 'Device already started');
     this.context.log(this.log_file, 'starting device', 'log');
     this.url = deviceUrl;
@@ -104,6 +109,8 @@ export class DummyDevice extends TypedEmitter<DummyDeviceEvents> {
       client.accessToken,
       '--device-url',
       deviceUrl,
+      '--connection-type',
+      connectionType,
     ];
 
     this.process = spawn(this.binary[0], [...this.binary.slice(1), ...cli], {

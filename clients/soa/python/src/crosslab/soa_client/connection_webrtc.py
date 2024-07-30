@@ -5,15 +5,12 @@ from enum import Enum
 from typing import Any, Dict, List, Literal, cast
 
 from aiortc import RTCPeerConnection  # type: ignore
-from aiortc import (
-    RTCConfiguration,
-    RTCIceCandidate,
-    RTCIceServer,
-    RTCSessionDescription,
-)
+from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
+
 from crosslab.soa_client.connection import (
     Channel,
     Connection,
@@ -21,7 +18,6 @@ from crosslab.soa_client.connection import (
     MediaChannel,
 )
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -41,20 +37,10 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _trickleIce: bool
     'NOTE: currently not used, since "icecandidate"-event is not implemented in aiortc'
 
-    def __init__(self):
+    def __init__(self, options: RTCConfiguration = RTCConfiguration([])):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
-        config = RTCConfiguration(
-            [
-                RTCIceServer(urls="stun:stun.goldi-labs.de:3478"),
-                RTCIceServer(
-                    urls="turn:turn.goldi-labs.de:3478",
-                    username="goldi",
-                    credential="goldi",
-                ),
-            ]
-        )
-        self.pc = RTCPeerConnection(configuration=config)
+        self.pc = RTCPeerConnection(options)
 
         async def connectionstatechanged():
             if not self.pc:
@@ -322,4 +308,5 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             if media.msid is None:
                 raise Exception("No msid found")
             media.msid = media.msid.split(" ")[0] + " " + label
+        return str(sdp)
         return str(sdp)

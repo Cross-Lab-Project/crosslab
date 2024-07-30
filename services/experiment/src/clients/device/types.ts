@@ -105,7 +105,7 @@ type TupleObject<T, N extends number[]> = N extends [
   ...infer TAIL extends number[],
 ]
   ? TAIL extends []
-    ? Record<string, never>
+    ? T[]
     : { [P in HEAD]: T } & TupleObject<T, TAIL>
   : Record<string, never>;
 
@@ -2888,7 +2888,7 @@ export type CreatePeerconnectionMessage<
       connectionUrl: string;
       services: ServiceConfig[];
       tiebreaker: boolean;
-      config?: {
+      connectionOptions?: {
         [k: string]: unknown;
       };
       [k: string]: unknown;
@@ -2907,7 +2907,7 @@ export type CreatePeerconnectionMessage<
       connectionUrl: string;
       services: ServiceConfig<'request'>[];
       tiebreaker: boolean;
-      config?: {
+      connectionOptions?: {
         [k: string]: unknown;
       };
       [k: string]: unknown;
@@ -2926,7 +2926,7 @@ export type CreatePeerconnectionMessage<
       connectionUrl: string;
       services: ServiceConfig<'response'>[];
       tiebreaker: boolean;
-      config?: {
+      connectionOptions?: {
         [k: string]: unknown;
       };
       [k: string]: unknown;
@@ -3145,11 +3145,14 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       }
     : T extends 'request'
@@ -3157,7 +3160,10 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       }
     : T extends 'response'
@@ -3169,7 +3175,7 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
@@ -3188,11 +3194,14 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<DeviceReference, 2, 2>;
@@ -3203,7 +3212,10 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<DeviceReference<'request'>, 2, 2>;
@@ -3218,7 +3230,7 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
@@ -3279,11 +3291,14 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
@@ -3294,7 +3309,10 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
@@ -3309,7 +3327,7 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
@@ -3341,11 +3359,14 @@ export type PeerconnectionClosedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
@@ -3367,7 +3388,10 @@ export type PeerconnectionClosedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
@@ -3393,7 +3417,7 @@ export type PeerconnectionClosedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
@@ -3427,11 +3451,14 @@ export type PeerconnectionStatusChangedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
@@ -3453,7 +3480,10 @@ export type PeerconnectionStatusChangedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
+        configuration?: {
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
@@ -3479,7 +3509,7 @@ export type PeerconnectionStatusChangedEventCallback<
         /**
          * Type of the peerconnection
          */
-        type: 'local' | 'webrtc';
+        type: 'local' | 'webrtc' | 'websocket';
         /**
          * The status of the peerconnection.
          */

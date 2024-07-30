@@ -98,9 +98,8 @@ export function validateAuthOutput(
     return true;
   }
 
-  (
-    validateAuthOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateAuthOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -158,9 +157,8 @@ export function validateLoginOutput(
     return true;
   }
 
-  (
-    validateLoginOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateLoginOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -211,9 +209,8 @@ export function validateLogoutOutput(
     return true;
   }
 
-  (
-    validateLogoutOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateLogoutOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -280,9 +277,8 @@ export function validateListUsersOutput(
     return true;
   }
 
-  (
-    validateListUsersOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateListUsersOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -340,9 +336,8 @@ export function validateCreateUserOutput(
     return true;
   }
 
-  (
-    validateCreateUserOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreateUserOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -404,9 +399,8 @@ export function validateGetUserOutput(
     return true;
   }
 
-  (
-    validateGetUserOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetUserOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -478,9 +472,8 @@ export function validateUpdateUserOutput(
     return true;
   }
 
-  (
-    validateUpdateUserOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUpdateUserOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -535,9 +528,8 @@ export function validateDeleteUserOutput(
     return true;
   }
 
-  (
-    validateDeleteUserOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeleteUserOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -588,9 +580,8 @@ export function validateGetIdentityOutput(
     return true;
   }
 
-  (
-    validateGetIdentityOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetIdentityOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -652,9 +643,8 @@ export function validateUpdateIdentityOutput(
     return true;
   }
 
-  (
-    validateUpdateIdentityOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUpdateIdentityOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -692,9 +682,8 @@ export function validateCreateTokenOutput(
     return true;
   }
 
-  (
-    validateCreateTokenOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreateTokenOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

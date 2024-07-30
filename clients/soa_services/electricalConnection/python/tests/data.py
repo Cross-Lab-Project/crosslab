@@ -1,7 +1,7 @@
 from crosslab.soa_services.electrical.messages import ElectricalServiceConfig
 
 serviceConfig: ElectricalServiceConfig = {
-    "serviceType": "http://api.goldi-labs.de/serviceTypes/electrical",
+    "serviceType": "https://api.goldi-labs.de/serviceTypes/electrical",
     "interfaces": [
         {
             "interfaceId": "0",

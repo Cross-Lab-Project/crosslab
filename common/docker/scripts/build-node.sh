@@ -29,7 +29,7 @@ function get_local_dependencies() {
     # extract lines starting with file:
     dependencies=$(echo "$dependencies" | grep -E '^file:')
     # remove file: prefix
-    dependencies=$(echo "$dependencies" | sed 's/file://')
+    dependencies=$(echo "$dependencies" | sed 's/file://' | sed 's/\/dist\/npm-latest.tgz//')
 
     # for each dependency, recursively call this function
     for dependency in $dependencies; do

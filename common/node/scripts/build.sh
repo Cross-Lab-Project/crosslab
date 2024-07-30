@@ -43,7 +43,7 @@ rm -rf dist/*.tgz
 dependencies_replacement=$(cat package.json | jq -r '.dependencies + .devDependencies + .peerDependencies | .[]' | grep -E '^file:' | LC_ALL=C sort | uniq)
 sed_expression=""
 for dependency in $dependencies_replacement; do
-    dependency_path=$(echo "$dependency" | sed 's/file://')
+    dependency_path=$(echo "$dependency" | sed 's/file://' | sed 's/\/dist\/npm-latest.tgz//')
     archive_path=$(readlink -f $dependency_path/dist/npm-latest.tgz)
     version=$(tar xfO "$archive_path" package/package.json | jq -r '.version')
     sed_expression="$sed_expression""s#$dependency#$version#g;"

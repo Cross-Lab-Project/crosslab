@@ -13,9 +13,14 @@ properties:
     enum:
       - local
       - webrtc
+      - websocket
   status:
     $ref: ./peerconnection_status.yml
     readOnly: true
+  configuration:
+    type: object
+    additionalProperties: true
+    writeOnly: true
 required:
   - url
   - type

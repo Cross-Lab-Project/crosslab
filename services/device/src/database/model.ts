@@ -126,7 +126,7 @@ export abstract class PeerconnectionModel {
   uuid!: string;
 
   @Column()
-  type!: 'local' | 'webrtc';
+  type!: 'local' | 'webrtc' | 'websocket';
 
   @Column('varchar')
   status!: ConnectionStatus;
@@ -136,6 +136,9 @@ export abstract class PeerconnectionModel {
 
   @Column('simple-json')
   deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
+  @Column('simple-json')
+  configuration!: Record<string, unknown>;
 
   @DeleteDateColumn()
   deletedAt?: Date;

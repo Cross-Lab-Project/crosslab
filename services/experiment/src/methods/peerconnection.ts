@@ -1,3 +1,5 @@
+import { InvalidValueError } from '@crosslab/service-common';
+
 import { Clients } from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
 import { ExperimentModel } from '../database/model.js';
@@ -9,6 +11,7 @@ import {
 } from '../operations/callbacks/index.js';
 import { buildConnectionPlan } from './connectionPlan.js';
 import { sendStatusUpdateMessages } from './statusUpdateMessage.js';
+import { getUrlOrInstanceUrl } from './url.js';
 
 /**
  * This function attempts to establish the peerconnections for an experiment model according to its connection plan.
@@ -18,7 +21,20 @@ export async function createPeerconnections(
   experimentModel: ExperimentModel,
   clients: Clients,
 ) {
-  const peerconnectionRequests = buildConnectionPlan(experimentModel);
+  const devices = await Promise.all(
+    experimentModel.devices.map(async device => {
+      const resolvedDevice = await clients.device.getDevice(getUrlOrInstanceUrl(device));
+
+      if (resolvedDevice.type !== 'device')
+        throw new InvalidValueError(
+          `Device "${device.url}" has type "${resolvedDevice.type}" instead of expected type "device"`,
+          500,
+        );
+
+      return resolvedDevice;
+    }),
+  );
+  const peerconnectionRequests = await buildConnectionPlan(experimentModel, devices);
   if (!experimentModel.connections) experimentModel.connections = [];
   for (const peerconnectionRequest of peerconnectionRequests) {
     // TODO: error handling

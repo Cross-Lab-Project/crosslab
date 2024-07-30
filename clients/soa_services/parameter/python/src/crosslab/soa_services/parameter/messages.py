@@ -22,5 +22,5 @@ class ParameterListChangedEvent(TypedDict):
 
 
 class ParameterServiceConfig(TypedDict):
-    serviceType: Literal["http://api.goldi-labs.de/serviceTypes/parameter"]
+    serviceType: Literal["https://api.goldi-labs.de/serviceTypes/parameter"]
     parameters: List[ParameterConfig]

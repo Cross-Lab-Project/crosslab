@@ -39,6 +39,7 @@ export class MessageService__Producer implements Service {
       serviceType: this.serviceType,
       serviceId: this.serviceId,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc', 'websocket'],
     };
   }
 
@@ -83,6 +84,7 @@ export class MessageService__Consumer
       serviceType: this.serviceType,
       serviceId: this.serviceId,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc', 'websocket'],
     };
   }
 

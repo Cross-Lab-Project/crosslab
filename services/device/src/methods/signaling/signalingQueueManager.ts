@@ -1,4 +1,4 @@
-import { MissingEntityError, logger } from '@crosslab/service-common';
+import { InvalidValueError, MissingEntityError, logger } from '@crosslab/service-common';
 
 import { repositories } from '../../database/dataSource.js';
 import { ConcreteDeviceModel, PeerconnectionModel } from '../../database/model.js';
@@ -103,13 +103,23 @@ export class SignalingQueueManager {
       deviceB: { url: string; queue: SignalingQueue };
     },
   ) {
+    const webSocketUrls =
+      peerconnectionModel.type === 'websocket'
+        ? getWebSocketUrls(peerconnectionModel)
+        : undefined;
+
     // prepare createPeerconnection messages
     const common = <CreatePeerconnectionMessage>{
       messageType: 'command',
       command: 'createPeerconnection',
       connectionType: peerconnectionModel.type,
       connectionUrl: peerconnectionUrl,
+      connectionOptions: peerconnectionModel.configuration,
     };
+
+    if (peerconnectionModel.type === 'websocket') {
+      delete common.connectionOptions?.webSocketUrls;
+    }
 
     const deviceA = await getDevice(peerconnectionModel.deviceA);
     const deviceB = await getDevice(peerconnectionModel.deviceB);
@@ -139,6 +149,18 @@ export class SignalingQueueManager {
       services: peerconnectionModel.deviceB.config?.services ?? [],
       tiebreaker: !tiebreaker,
     };
+
+    if (peerconnectionModel.type === 'websocket') {
+      createPeerConnectionMessageA.connectionOptions = {
+        ...createPeerConnectionMessageA.connectionOptions,
+        webSocketUrl: webSocketUrls?.[0],
+      };
+
+      createPeerConnectionMessageB.connectionOptions = {
+        ...createPeerConnectionMessageB.connectionOptions,
+        webSocketUrl: webSocketUrls?.[1],
+      };
+    }
 
     // add createPeerconnection messages
     queues.deviceA.queue.add(createPeerConnectionMessageA);
@@ -225,3 +247,52 @@ export class SignalingQueueManager {
 }
 
 export const signalingQueueManager = SignalingQueueManager.getInstance();
+
+function getWebSocketUrls(peerconnectionModel: PeerconnectionModel): [string, string] {
+  const configuration = peerconnectionModel.configuration;
+
+  if (!('webSocketUrls' in configuration)) {
+    throw new InvalidValueError(
+      // prettier-ignore
+      `Expected property "webSocketUrls" does not exist in configuration of peerconnection "${
+          peerconnectionUrlFromId(peerconnectionModel.uuid)
+        }" of type "websocket"`,
+      400,
+    );
+  }
+
+  const webSocketUrls = configuration.webSocketUrls;
+  if (!Array.isArray(webSocketUrls)) {
+    throw new InvalidValueError(
+      // prettier-ignore
+      `Property "webSocketUrls" is not an array in the configuration of "${
+          peerconnectionUrlFromId(peerconnectionModel.uuid)
+        }"`,
+      400,
+    );
+  }
+
+  if (webSocketUrls.length !== 2) {
+    throw new InvalidValueError(
+      // prettier-ignore
+      `Property "webSocketUrls" has length ${webSocketUrls.length} instead of 2 in the configuration of "${
+          peerconnectionUrlFromId(peerconnectionModel.uuid)
+        }"`,
+      400,
+    );
+  }
+
+  for (const webSocketUrl in webSocketUrls) {
+    if (typeof webSocketUrl !== 'string') {
+      throw new InvalidValueError(
+        // prettier-ignore
+        `Property "webSocketUrls" contains a value of type "${typeof webSocketUrl}" in the configuration of "${
+            peerconnectionUrlFromId(peerconnectionModel.uuid)
+          }" but should only contain values of type "string"`,
+        400,
+      );
+    }
+  }
+
+  return webSocketUrls as [string, string];
+}

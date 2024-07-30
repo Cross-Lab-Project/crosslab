@@ -428,7 +428,7 @@ export class Client {
         {%- set successResponses = [] -%}
         {%- for response in operation.responses -%}
             {%- if response.status < 400 -%}
-                {%- set successResponses = (successResponses.push(response), successResponses) if response.status < 400 -%}
+                {%- set successResponses = (successResponses.push(response), successResponses) -%}
             {%- endif -%}
         {%- endfor -%}
         {#- Construct returns tsdoc tag #}
@@ -512,7 +512,7 @@ export class Client {
                 (RequestValidation.validate{{ cap_name }}Input as Types.FunctionWithErrors).errors
             )
         
-        {%- if operation.security | selectattr("JWT") | length > 0 %}
+        {%- if operation.security | default([]) | selectattr("JWT") | length > 0 %}
 
         const authorization: string = `Bearer ${this.accessToken}`
         {%- endif %}
@@ -524,7 +524,7 @@ export class Client {
                 {%- for headerParameter in headerParameters %}
                 ["{{ headerParameter.name }}", parameters.{{ headerParameter.name }}],
                 {%- endfor %}
-                {%- if operation.security | selectattr("JWT") | length > 0 -%}
+                {%- if operation.security | default([]) | selectattr("JWT") | length > 0 -%}
                 {{ "," if headerParameters | length > 0 }}
                 ["Authorization", authorization],
                 {%- endif %}

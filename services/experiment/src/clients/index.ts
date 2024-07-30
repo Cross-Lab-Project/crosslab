@@ -2,12 +2,17 @@ import { RequestHandler } from 'express';
 
 import { config } from '../config.js';
 import { Client as DeviceClient } from './device/client.js';
+import { Client as ForwardingClient } from './forwarding/client.js';
 
 export const device = new DeviceClient(config.BASE_URL, {
   serviceUrl: config.DEVICE_SERVICE_URL,
   fixedHeaders: [['x-request-authentication', 'experiment-service']],
 });
-export const clients = { device };
+export const forwarding = new ForwardingClient(config.BASE_URL, {
+  serviceUrl: config.FORWARDING_SERVICE_URL,
+  fixedHeaders: [['x-request-authentication', 'experiment-service']],
+});
+export const clients = { device, forwarding };
 export type Clients = typeof clients;
 
 declare global {
@@ -33,7 +38,11 @@ export const middleware: RequestHandler = (req, _res, next) => {
     serviceUrl: config.DEVICE_SERVICE_URL,
     fixedHeaders: fixed_headers,
   });
-  req.clients = { device: bound_device };
+  const bound_forwarding = new ForwardingClient(config.BASE_URL, {
+    serviceUrl: config.FORWARDING_SERVICE_URL,
+    fixedHeaders: fixed_headers,
+  });
+  req.clients = { device: bound_device, forwarding: bound_forwarding };
 
   next();
 };

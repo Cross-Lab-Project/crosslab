@@ -24,6 +24,7 @@ class MessageService__Producer(Service):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ['webrtc', 'websocket'],
         }
 
     def setupConnection(
@@ -39,7 +40,8 @@ class MessageService__Producer(Service):
         pass
 
     async def sendMessage(self, message: str, message_type: Literal["info", "error"]):
-        self.channel.send(json.dumps({"messageType": message_type, "message": message}))
+        self.channel.send(json.dumps(
+            {"messageType": message_type, "message": message}))
 
 
 class MessageService__Consumer(Service, AsyncIOEventEmitter):
@@ -56,6 +58,7 @@ class MessageService__Consumer(Service, AsyncIOEventEmitter):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ['webrtc', 'websocket'],
         }
 
     def setupConnection(

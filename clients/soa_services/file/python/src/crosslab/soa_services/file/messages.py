@@ -7,4 +7,4 @@ class FileServiceEvent(TypedDict):
 
 
 class FileServiceConfig(TypedDict):
-    serviceType: Literal["http://api.goldi-labs.de/serviceTypes/file"]
+    serviceType: Literal["https://api.goldi-labs.de/serviceTypes/file"]

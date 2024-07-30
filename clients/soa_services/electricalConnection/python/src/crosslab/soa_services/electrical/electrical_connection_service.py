@@ -29,7 +29,7 @@ class ConnectionMeta:
 
 
 class ElectricalConnectionService(Service, AsyncIOEventEmitter):
-    service_type = "http://api.goldi-labs.de/serviceTypes/electrical"
+    service_type = "https://api.goldi-labs.de/serviceTypes/electrical"
     service_id: str
     _interfaces: Dict[str, SignalInterface]
     _interfaces_constructors: Dict[str, ConstructableSignalInterface]
@@ -52,6 +52,7 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
             "serviceType": self.service_type,
             "serviceId": self.service_id,
             "serviceDirection": "prosumer",
+            "supportedConnectionTypes": ['webrtc', 'websocket'],
             "interfaces": [
                 {"interfaceType": i.interfaceType, **i.getDescription()}
                 for i in self._interfaces_constructors.values()
@@ -88,7 +89,8 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
         connection: Connection,
         serviceConfig: ElectricalServiceConfig,
     ):
-        connection_meta = ConnectionMeta(interfaces=set(), interface_meta=dict())
+        connection_meta = ConnectionMeta(
+            interfaces=set(), interface_meta=dict())
         self._connection_meta[connection] = connection_meta
 
         channel = DataChannel()

@@ -1,4 +1,4 @@
-from typing import List, Literal, Optional, TypedDict
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 
 
 class Message(TypedDict):
@@ -45,7 +45,7 @@ class CreatePeerConnectionMessage(TypedDict):
     connectionUrl: str
     services: List[ServiceConfig]
     tiebreaker: bool
-    config: dict
+    connectionOptions: Dict[str, Any]
 
 
 class ConnectionStateChangedMessage(TypedDict):
@@ -70,3 +70,7 @@ class ExperimentStatusChangedMessage(TypedDict):
 class LoggingMessage(TypedDict):
     messageType: Literal["logging"]
     content: dict
+
+
+class WebSocketConnectionOptions(TypedDict):
+    url: str

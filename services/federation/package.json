@@ -45,7 +45,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "ajv-formats": "^2.1.1",
     "body-parser": "^1.20.0",
     "dotenv": "^16.3.1",

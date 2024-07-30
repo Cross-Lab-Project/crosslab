@@ -101,7 +101,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     this._state = State.Created;
   }
 
-  async connect(client: APIClient) {
+  async connect(client: APIClient, connectionType: 'webrtc' | 'websocket' = 'webrtc') {
     if (this._state < State.Created) await this.createAPIDevices(client);
 
     const promiseList = [];
@@ -118,8 +118,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         this.events[idx].file.push(event) && this.emit('eventsChanged');
       });
       const apiDevice = this.apiDevices[idx];
-      if (apiDevice.type === 'device') device.start(client, apiDevice.url);
-      if (apiDevice.type === 'group') device.start(client, apiDevice.devices[0].url);
+      if (apiDevice.type === 'device')
+        device.start(client, apiDevice.url, connectionType);
+      if (apiDevice.type === 'group')
+        device.start(client, apiDevice.devices[0].url, connectionType);
     }
     await Promise.all(promiseList);
 
@@ -131,8 +133,12 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     this._state = State.Connected;
   }
 
-  async run(client: APIClient, experiment: ExperimentServiceTypes.Experiment<'request'>) {
-    if (this._state < State.Connected) await this.connect(client);
+  async run(
+    client: APIClient,
+    experiment: ExperimentServiceTypes.Experiment<'request'>,
+    connectionType: 'webrtc' | 'websocket' = 'webrtc',
+  ) {
+    if (this._state < State.Connected) await this.connect(client, connectionType);
 
     const promiseListConnections = this.devices.map(
       device =>
@@ -189,7 +195,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         ),
       );
       this.events.push({ gpio: [], file: [] });
-      this.devices[idx].start(new APIClient(client.url, deviceToken), instanceUrl);
+      this.devices[idx].start(
+        new APIClient(client.url, deviceToken),
+        instanceUrl,
+        connectionType,
+      );
     }
 
     await Promise.all(promiseList);
@@ -212,15 +222,17 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     context: Mocha.Context,
     clientType: ClientType,
     deviceType: DeviceType = 'device',
-    name?: string,
-    description?: string,
+    options?: {
+      name?: string;
+      description?: string;
+    },
   ) {
     this.devices.push(createDummyDevice(clientType, this.devices.length + 1, context));
     const deviceTypeName = { js: 'JS', python: 'Python' }[clientType];
     this.deviceMetas.push({
       type: deviceType,
-      name: name ?? `${deviceTypeName} Device ${this.devices.length}`,
-      description: description ?? `A ${deviceTypeName} test device`,
+      name: options?.name ?? `${deviceTypeName} Device ${this.devices.length}`,
+      description: options?.description ?? `A ${deviceTypeName} test device`,
       isPublic: true,
       instantiateUrl: 'http://localhost/edge_instantiable_device',
       codeUrl: 'http://localhost/cloud_instantiable_device',

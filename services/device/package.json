@@ -81,7 +81,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "ajv-formats": "^2.1.1",
     "async-mutex": "^0.4.0",
     "base64-url": "^2.3.3",
@@ -92,7 +92,7 @@
     "node-fetch": "^3.3.2",
     "queue": "^7.0.0",
     "sqlite3": "^5.1.6",
-    "typeorm": "^0.3.15",
+    "typeorm": "^0.3.17",
     "ws": "^8.14.0"
   }
 }

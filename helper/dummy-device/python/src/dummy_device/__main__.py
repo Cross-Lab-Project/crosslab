@@ -10,7 +10,7 @@ from functools import partial
 from typing import Dict, Optional
 
 import debugpy
-from crosslab.api_client import APIClient
+from crosslab.api_client.improved_client import APIClient
 from crosslab.soa_client.device_handler import DeviceHandler
 from crosslab.soa_services.electrical import ElectricalConnectionService
 from crosslab.soa_services.electrical.messages import State
@@ -133,6 +133,7 @@ async def main_async():
         help="URL of the CrossLab instance",
         default=os.environ.get("CROSSLAB_CLI_URL"),
     )
+    parser.add_argument("--connection-type", help="Connection type", default="webrtc")
 
     print("parsing")
     args = parser.parse_args()
@@ -140,6 +141,7 @@ async def main_async():
     auth_token: Optional[str] = args.auth_token
     device_id: Optional[str] = args.device_url
     url: Optional[str] = args.url
+    connection_type: Optional[str] = args.connection_type
 
     if auth_token is None:
         print("Error: No auth token provided.")
@@ -153,6 +155,9 @@ async def main_async():
 
     print("creating device handler")
     deviceHandler = DeviceHandler()
+    deviceHandler.supportedConnectionTypes = [
+        connection_type if connection_type is not None else "webrtc"
+    ]
 
     signal_service = ElectricalConnectionService("electrical")
     signal_interface = ConstractableGPIOInterface(signal_names, "inout")

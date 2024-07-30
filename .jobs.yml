@@ -255,6 +255,32 @@ services/gateway:
     dependencies:
       - services/gateway:build
 
+services/forwarding:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    paths:
+      - ./api
+    dependencies:
+      - services/forwarding:build-spec
+    tags:
+      - test
+  - script: build
+    dependencies:
+      - services/forwarding:build-spec
+      - services/common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+  - script: build-docker
+    dependencies:
+      - services/forwarding:build
+  - script: lint
+    dependencies:
+      - services/forwarding:build
+    tags:
+      - test
+
 ################################################################################
 # Clients ######################################################################
 ################################################################################

@@ -9,6 +9,7 @@ async function main() {
     baseUrl: string;
     authToken: string;
     deviceUrl: string;
+    connectionType: string;
   }
 
   program
@@ -23,6 +24,11 @@ async function main() {
     .addOption(
       new Option('--device-url <device-url>', 'Device url').env('CROSSLAB_DEVICE_URL'),
     )
+    .addOption(
+      new Option('--connection-type <connection-type>', 'Connection type').env(
+        'CROSSLAB_CONNECTION_TYPE',
+      ),
+    )
     .addOption(new Option('--browser-inspect <port>', 'Chrome Debug Port'));
 
   program.parse();
@@ -32,6 +38,7 @@ async function main() {
     baseUrl: opts.url,
     authToken: opts.authToken,
     deviceUrl: opts.deviceUrl,
+    connectionType: opts.connectionType,
   };
 
   const chromePort = opts.browserInspect ?? Math.floor(Math.random() * 10000) + 10000;

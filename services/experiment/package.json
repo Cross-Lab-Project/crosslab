@@ -18,7 +18,8 @@
     "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
     "build:generate:device": "npx openapi-codegen -i ../device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/device && prettier ./src/clients/device --write",
-    "build:compile": "tsc && cp src/generated/*.cjs app/generated && cp src/clients/device/basicValidation.cjs app/clients/device/",
+    "build:generate:forwarding": "npx openapi-codegen -i ../forwarding/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/forwarding && prettier ./src/clients/forwarding --write",
+    "build:compile": "tsc && cp src/generated/*.cjs app/generated && cp src/clients/device/basicValidation.cjs app/clients/device/ && cp src/clients/forwarding/basicValidation.cjs app/clients/forwarding/",
     "build:add-shebang": "bash scripts/add-shebang.sh",
     "build": "npm-run-all build:*",
     "start": "node app/index.js",
@@ -72,7 +73,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "ajv-formats": "^2.1.1",
     "async-mutex": "^0.4.0",
     "body-parser": "^1.20.2",

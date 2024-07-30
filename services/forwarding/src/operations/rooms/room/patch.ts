@@ -30,6 +30,10 @@ export const patchRoomsByRoomId: patchRoomsByRoomIdSignature = async (
 
   for (const participant of room.participants) {
     if (!body.participants.find(p => p.id === participant.id)) {
+      logger.log(
+        'info',
+        `removing participant "${participant.id}" from room "${room.url}"!`,
+      );
       webSocketMap.get(`${parameters.room_id}:${participant.id}`)?.close();
       webSocketMap.delete(`${parameters.room_id}:${participant.id}`);
     }

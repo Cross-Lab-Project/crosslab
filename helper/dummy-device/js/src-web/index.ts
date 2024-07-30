@@ -1,4 +1,4 @@
-import { APIClient } from '@cross-lab-project/api-client';
+import { APIClient, ValidationError } from '@cross-lab-project/api-client';
 import { DeviceHandler } from '@cross-lab-project/soa-client';
 import {
   ElectricalConnectionService,
@@ -28,7 +28,12 @@ for (let i = 0; i < 262140; i++) {
   dummyFile[i] = i % 256;
 }
 
-async function app(options: { baseUrl: string; authToken: string; deviceUrl: string }) {
+async function app(options: {
+  baseUrl: string;
+  authToken: string;
+  deviceUrl: string;
+  connectionType?: string;
+}) {
   const client = new APIClient(options.baseUrl);
   client.accessToken = options.authToken;
 
@@ -36,6 +41,7 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
   sendEvent('websocketToken', token);
 
   const deviceHandler = new DeviceHandler();
+  deviceHandler.supportedConnectionTypes = [options.connectionType ?? 'webrtc'];
   const electrical = new ElectricalConnectionService('electrical', ['gpio1', 'gpio2']);
   const gpio = new GPIO.ConstructableGPIOInterface(['gpio1', 'gpio2']);
   electrical.on('newInterface', interfaceEvent => {
@@ -112,6 +118,27 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
     id: options.deviceUrl,
     token: token,
   });
+
+  console.log(
+    JSON.stringify(
+      {
+        type: 'device',
+        services: deviceHandler.getServiceMeta(),
+      },
+      null,
+      4,
+    ),
+  );
+  try {
+    await client.updateDevice(options.deviceUrl, {
+      type: 'device',
+      services: deviceHandler.getServiceMeta(),
+    });
+  } catch (error) {
+    if (error instanceof ValidationError)
+      console.error('VALIDATION ERRORS:', JSON.stringify(error.errors, null, 4));
+    throw error;
+  }
   sendEvent('websocketConnected');
 }
 

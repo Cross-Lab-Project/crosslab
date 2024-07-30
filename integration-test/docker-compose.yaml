@@ -8,6 +8,7 @@ x-config: &common-config
   DEVICE_SERVICE_URL: 'http://127.0.0.1:3001'
   EXPERIMENT_SERVICE_URL: 'http://127.0.0.1:3002'
   FEDERATION_SERVICE_URL: 'http://127.0.0.1:3003'
+  FORWARDING_SERVICE_URL: 'http://127.0.0.1:3020'
   BASE_URL: 'http://localhost'
 
 services:
@@ -22,6 +23,7 @@ services:
       EXPERIMENT_SERVICE_DOMAIN: '127.0.0.1:3002'
       FEDERATION_SERVICE_DOMAIN: '127.0.0.1:3003'
       AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
+      FORWARDING_SERVICE_DOMAIN: '127.0.0.1:3020'
     network_mode: 'host'
   authentication:
     image: '${AUTHENTICATION_IMAGE}'
@@ -43,9 +45,18 @@ services:
     network_mode: 'host'
   experiment:
     image: '${EXPERIMENT_IMAGE}'
-    environment: *common-config
+    environment:
+      <<: *common-config
+      STUN_SERVER_URL: 'stun:stun.goldi-labs.de:3478'
+      TURN_SERVER_URL: 'turn:turn.goldi-labs.de:3478'
+      TURN_SERVER_USERNAME: 'goldi'
+      TURN_SERVER_CREDENTIAL: 'goldi'
     network_mode: 'host'
   federation:
     image: '${FEDERATION_IMAGE}'
+    environment: *common-config
+    network_mode: 'host'
+  forwarding:
+    image: '${FORWARDING_IMAGE}'
     environment: *common-config
     network_mode: 'host'

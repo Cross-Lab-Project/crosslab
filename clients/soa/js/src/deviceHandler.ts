@@ -18,13 +18,14 @@ import {
 import { crosslabTransport, logger } from './logging';
 import { PeerConnection } from './peer/connection';
 import { WebRTCPeerConnection } from './peer/webrtc-connection';
+import { WebSocketPeerConnection } from './peer/websocket-connection';
 import { Service } from './service';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
   configuration(configuration: { [k: string]: unknown }): void;
   experimentStatusChanged(status: {
-    status: 'created' | 'booked' | 'setup' | 'running' | 'failed' | 'closed';
+    status: 'created' | 'booked' | 'setup' | 'running' | 'finished';
     message?: string;
   }): void;
 }
@@ -33,6 +34,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   ws!: WebSocket;
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
+  supportedConnectionTypes: string[] = ['webrtc'];
 
   async connect(connectOptions: { endpoint: string; id: string; token: string }) {
     this.ws = new WebSocket(connectOptions.endpoint);
@@ -53,6 +55,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     const p = new Promise<void>((resolve, reject) => {
       this.ws.onmessage = authenticationEvent => {
         const authenticationMessage = JSON.parse(authenticationEvent.data as string);
+        console.log(JSON.stringify(authenticationMessage, null, 4));
         if (authenticationMessage.messageType === 'authenticate') {
           if (authenticationMessage.authenticated) {
             resolve();
@@ -77,6 +80,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
     this.ws.onmessage = event => {
       const message = JSON.parse(event.data as string);
+      console.log(JSON.stringify(message, null, 4));
 
       if (isCommandMessage(message)) {
         if (isCreatePeerConnectionMessage(message)) {
@@ -105,13 +109,11 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     if (this.connections.has(message.connectionUrl)) {
       throw Error('Can not create a connection. Connection Id is already present');
     }
-    logger.log('info', 'creating connection', message);
-    const connection = new WebRTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.goldi-labs.de:3478' },
-        { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' },
-      ],
-    });
+    console.log(JSON.stringify(message, null, 4));
+    const connection =
+      message.connectionType === 'webrtc'
+        ? new WebRTCPeerConnection(message.connectionOptions)
+        : new WebSocketPeerConnection({ url: message.connectionOptions.webSocketUrl });
     connection.tiebreaker = message.tiebreaker;
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
@@ -174,6 +176,15 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   }
 
   getServiceMeta() {
-    return Array.from(this.services).map(service => service[1].getMeta());
+    return Array.from(this.services.values()).map(service => {
+      const meta = service.getMeta();
+      return {
+        ...meta,
+        supportedConnectionTypes: meta.supportedConnectionTypes.filter(
+          supportedConnectionType =>
+            this.supportedConnectionTypes.includes(supportedConnectionType),
+        ),
+      };
+    });
   }
 }

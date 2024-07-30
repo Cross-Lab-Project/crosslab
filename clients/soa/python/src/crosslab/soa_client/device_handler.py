@@ -1,14 +1,16 @@
 import asyncio
 import logging
 import re
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import aiohttp
+from aiortc import RTCConfiguration, RTCIceServer  # type: ignore
 from crosslab.api_client import APIClient  # type: ignore
 from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
+from crosslab.soa_client.connection_websocket import WebSocketPeerconnection
 from crosslab.soa_client.logging import handler as loggin_handler
 from crosslab.soa_client.messages import (
     AuthenticationMessage,
@@ -43,7 +45,8 @@ def cleandict(d):
 async def authenticate(
     ws: aiohttp.ClientWebSocketResponse, device_url: str, token: str
 ):
-    authMessage: AuthenticationMessage = {"messageType": "authenticate", "token": token}
+    authMessage: AuthenticationMessage = {
+        "messageType": "authenticate", "token": token}
     await ws.send_json(authMessage)
     try:
         authentification_response = await receiveMessage(ws)
@@ -72,18 +75,21 @@ def derive_endpoints_from_url(url: str, fallback_base_url: Optional[str] = None)
 
 
 async def sendLogMessage(ws: aiohttp.ClientWebSocketResponse, info: dict):
-    loggingMessage: LoggingMessage = {"messageType": "logging", "content": info}
+    loggingMessage: LoggingMessage = {
+        "messageType": "logging", "content": info}
     await ws.send_json(loggingMessage)
 
 
 class DeviceHandler(AsyncIOEventEmitter):
     _services: Dict[str, Service]
     _connections: Dict[str, Connection]
+    supportedConnectionTypes: List[str]
 
     def __init__(self):
         super().__init__()
         self._services = dict()
         self._connections = dict()
+        self.supportedConnectionTypes = ["webrtc"]
 
     def add_service(self, service: Service):
         self._services[service.service_id] = service
@@ -101,19 +107,30 @@ class DeviceHandler(AsyncIOEventEmitter):
         async with self.client:
             async with aiohttp.ClientSession() as self.session:
                 await self.client.update_device(
-                    device_url, {"type": "device", "services": self.get_service_meta()}
+                    device_url, {"type": "device",
+                                 "services": self.get_service_meta()}
                 )
                 token = await self.client.create_websocket_token(token_endpoint)
                 self.emit("websocketToken", token)
                 self.ws = await self.session.ws_connect(ws_endpoint)
                 await authenticate(self.ws, device_url, token)
                 self.emit("websocketConnected")
-                loggin_handler.setUpstream(lambda info: sendLogMessage(self.ws, info))
+                loggin_handler.setUpstream(
+                    lambda info: sendLogMessage(self.ws, info))
 
                 await self._message_loop()
 
     def get_service_meta(self):
-        return [service.getMeta() for service in self._services.values()]
+        metas = [service.getMeta() for service in self._services.values()]
+        for meta in metas:
+            meta["supportedConnectionTypes"] = [
+                supportedConnectionType
+                for supportedConnectionType
+                in meta["supportedConnectionTypes"]
+                if supportedConnectionType in self.supportedConnectionTypes
+            ]
+
+        return metas
 
     async def _message_loop(self):
         while True:
@@ -151,13 +168,31 @@ class DeviceHandler(AsyncIOEventEmitter):
 
     async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
         assert msg["connectionUrl"] not in self._connections
+        connection: WebRTCPeerConnection | WebSocketPeerconnection
         if msg["connectionType"] == "webrtc":
-            connection = WebRTCPeerConnection()
+            iceServers = []
+            if msg.get("connectionOptions"):
+                if msg.get("iceServers"):
+                    for iceServer in msg["connectionOptions"]["iceServers"]:
+                        iceServers.append(
+                            RTCIceServer(
+                                urls=iceServer["urls"],
+                                username=iceServer.get("username"),
+                                credential=iceServer.get("credential"),
+                            )
+                        )
+            options = RTCConfiguration(iceServers)
+            connection = WebRTCPeerConnection(options)
+        elif msg["connectionType"] == "websocket":
+            connection = WebSocketPeerconnection(
+                {"url": msg["connectionOptions"]["webSocketUrl"]}
+            )
         else:
             raise Exception("Unknown connection type")
         connection.tiebreaker = msg["tiebreaker"]
         for service_config in msg["services"]:
-            assert service_config["serviceId"] in self._services  # see Issue #4
+            # see Issue #4
+            assert service_config["serviceId"] in self._services
             service = self._services.get(service_config["serviceId"], None)
             assert service is not None  # TODO: Error handling
             if asyncio.iscoroutinefunction(service.setupConnection):
