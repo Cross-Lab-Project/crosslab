@@ -25,7 +25,7 @@ function bind_authorization(
   authorization_funs: ReturnType<typeof authorization_functions>,
   user: string,
 ) {
-  const { check_authorization } = authorization_funs;
+  const { check_authorization, relate } = authorization_funs;
 
   async function bound_check_authorization(
     tuples: (AuthorizationActionTuple | AuthorizationActionTupleWithoutSubject)[],
@@ -61,6 +61,43 @@ function bind_authorization(
       }
     } else {
       return { result: false, reason: 'Invalid arguments' };
+    }
+  }
+
+  async function bound_relate(
+    tuples: (AuthorizationRelationTuple | AuthorizationRelationTupleWithoutSubject)[],
+  ): Promise<void>;
+  async function bound_relate(
+    subject: string,
+    relation: string,
+    object: string,
+  ): Promise<void>;
+  async function bound_relate(
+    relation: string,
+    object: string,
+  ): Promise<void>;
+  async function bound_relate(
+    subject_or_relation_or_tuples:
+    | string
+    | (AuthorizationRelationTuple | AuthorizationRelationTupleWithoutSubject)[],
+    relation_or_object?: string,
+    object?: string,
+  ): Promise<void>{
+    let tuples: AuthorizationRelationTuple[];
+    if (Array.isArray(subject_or_relation_or_tuples)) {
+      tuples = subject_or_relation_or_tuples.map(tuple => ({
+        subject: user,
+        ...tuple,
+      }));
+      return relate(tuples);
+    } else if (relation_or_object !== undefined) {
+      if (object === undefined) {
+        return relate(user, subject_or_relation_or_tuples, relation_or_object);
+      } else {
+        return relate(subject_or_relation_or_tuples, relation_or_object, object);
+      }
+    }else{
+      return;
     }
   }
 
@@ -111,6 +148,7 @@ function bind_authorization(
     ...authorization_funs,
     check_authorization: bound_check_authorization,
     check_authorization_or_fail,
+    relate: bound_relate,
     filter,
   };
 }
