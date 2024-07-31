@@ -3,8 +3,9 @@ from typing import Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
 from pyee.asyncio import AsyncIOEventEmitter
+
+from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
 
 
 class FileService__Producer(Service):
@@ -20,7 +21,7 @@ class FileService__Producer(Service):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
-            "supportedConnectionTypes": ['webrtc', 'websocket'],
+            "supportedConnectionTypes": ["webrtc", "websocket"],
         }
 
     def setupConnection(self, connection: Connection, serviceConfig: FileServiceConfig):
@@ -34,15 +35,12 @@ class FileService__Producer(Service):
         pass
 
     async def sendFile(self, file_type: str, content: bytes):
-        print("file service: sending file!")
         await self.channel.ready()
-        self.channel.send(json.dumps(
-            {"fileType": file_type, "length": len(content)}))
+        self.channel.send(json.dumps({"fileType": file_type, "length": len(content)}))
         # fragment to 8kb chunks
         chunkSize = 8192
         for i in range(0, len(content), chunkSize):
-            chunk = bytes(content[i: i + chunkSize])
-            print(len(chunk))
+            chunk = bytes(content[i : i + chunkSize])
             self.channel.send(chunk)
 
 
@@ -60,7 +58,7 @@ class FileService__Consumer(Service, AsyncIOEventEmitter):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
-            "supportedConnectionTypes": ['webrtc', 'websocket'],
+            "supportedConnectionTypes": ["webrtc", "websocket"],
         }
 
     def setupConnection(self, connection: Connection, serviceConfig: FileServiceConfig):
@@ -75,19 +73,15 @@ class FileService__Consumer(Service, AsyncIOEventEmitter):
         pass
 
     def handleData(self, data: Union[str, bytes]):
-        print("handling data")
-        print(data)
         if isinstance(data, str):
             header = json.loads(data)
             self.file_type = header["fileType"]
             self.file_length = header["length"]
             self.dataRead = 0
             self.dataBuffer = b""
-            print(data)
         elif self.file_type is not None:
             self.dataBuffer += data
             self.dataRead += len(data)
-            print(str(self.dataRead), str(self.file_length))
             if self.dataRead == self.file_length:
                 event: FileServiceEvent = {
                     "file_type": self.file_type,

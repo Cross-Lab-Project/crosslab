@@ -50,44 +50,46 @@ class WebSocketPeerconnection(AsyncIOEventEmitter, Connection):
         self.state = "connecting"
         self.emit("connectionChanged")
 
-        self._message_task = asyncio.create_task(self._handle_messages())
+        self._message_task = asyncio.create_task(self._connect())
 
     async def close(self):
-        print("closing websocket connection!")
         if self.state != "closed":
             if self._ws:
                 await self._ws.close()
+            for channel in self._channels.values():
+                channel.close()
             self.state = "closed"
             self.emit("connectionChanged")
 
     # helper functions
 
-    async def _handle_messages(self):
-        print("entering handle messages")
+    async def _connect(self):
         async with aiohttp.ClientSession() as self.session:
             self._ws = await self.session.ws_connect(self._connectionOptions["url"])
+            for channel in self._channels.values():
+                if channel.channel_type == "DataChannel":
+                    dchannel = cast(DataChannel, channel)
+                    asyncio.create_task(dchannel.opened())
+                    await dchannel.ready()
             self.state = "connected"
             self.emit("connectionChanged")
-            async for message in self._ws:
-                print(message)
-                if isinstance(message, WSMessage):
-                    if message.type == WSMsgType.text:
-                        print("incoming text message")
-                        print(message.data)
-                        message_json = message.json()
-                        self._handle_message(message_json)
-                    elif message.type == WSMsgType.close:
-                        print("incoming close message")
-                        await self._ws.close()
-                        self.state = "closed"
-                        self.emit("connectionChanged")
-                        break
-                    elif message.type == WSMsgType.closed:
-                        print("incoming closed message")
-                        self.state = "closed"
-                        self.emit("connectionChanged")
-                        break
-        print("leaving handle messages")
+            await self._handle_messages()
+
+    async def _handle_messages(self):
+        async for message in self._ws:
+            if isinstance(message, WSMessage):
+                if message.type == WSMsgType.text:
+                    message_json = message.json()
+                    self._handle_message(message_json)
+                elif message.type == WSMsgType.close:
+                    await self._ws.close()
+                    self.state = "closed"
+                    self.emit("connectionChanged")
+                    break
+                elif message.type == WSMsgType.closed:
+                    self.state = "closed"
+                    self.emit("connectionChanged")
+                    break
 
     def _handle_message(self, message):
         channel = self._channels[message["channel"]]
@@ -110,11 +112,13 @@ class WebSocketPeerconnection(AsyncIOEventEmitter, Connection):
             dchannel = cast(DataChannel, channel)
 
             async def upstreamData(data):
-                print("upstream data called", data)
                 if isinstance(data, str):
-                    await self._ws.send_json(
-                        {"type": "string", "content": str(data), "channel": label}
-                    )
+                    try:
+                        await self._ws.send_json(
+                            {"type": "string", "content": data, "channel": label}
+                        )
+                    except Exception as error:
+                        print("could not send message:", error)
                 elif isinstance(data, bytes):
                     await self._ws.send_json(
                         {

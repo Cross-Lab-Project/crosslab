@@ -31,10 +31,12 @@ x-config: &common-config
   DEVICE_SERVICE_URL: "http://device:3001"
   EXPERIMENT_SERVICE_URL: "http://experiment:3002"
   FEDERATION_SERVICE_URL: "http://federation:3003"
+  FORWARDING_SERVICE_URL: "http://forwarding:3007"
   AUTH_SERVICE_DOMAIN: "authentication:3000"
   DEVICE_SERVICE_DOMAIN: "device:3001"
   EXPERIMENT_SERVICE_DOMAIN: "experiment:3002"
   FEDERATION_SERVICE_DOMAIN: "federation:3003"
+  FORWARDING_SERVICE_DOMAIN: "forwarding:3007"
   AUTHORIZATION_SERVICE_DOMAIN: "authorization:3010"
 
 services:
@@ -49,7 +51,14 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--su=mysql", "--connect", "--innodb_initialized"]
+      test:
+        [
+          "CMD",
+          "healthcheck.sh",
+          "--su=mysql",
+          "--connect",
+          "--innodb_initialized",
+        ]
     restart: on-failure
   gateway:
     image: crosslab/gateway-service:latest
@@ -99,6 +108,10 @@ services:
       <<: *common-config
       DB_USERNAME: experiment
       DB_DATABASE: experiment
+      STUN_SERVER_URL: "stun:stun.goldi-labs.de:3478"
+      TURN_SERVER_URL: "turn:turn.goldi-labs.de:3478"
+      TURN_SERVER_USERNAME: "goldi"
+      TURN_SERVER_CREDENTIAL: "goldi"
     networks:
       backend:
     restart: on-failure
@@ -108,6 +121,13 @@ services:
       <<: *common-config
       DB_USERNAME: federation
       DB_DATABASE: federation
+    networks:
+      backend:
+    restart: on-failure
+  forwarding:
+    image: crosslab/forwarding-service:latest
+    environment:
+      <<: *common-config
     networks:
       backend:
     restart: on-failure

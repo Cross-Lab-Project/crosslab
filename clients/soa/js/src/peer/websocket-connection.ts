@@ -6,6 +6,7 @@ import {
   WebSocketMessage,
   isWebSocketMessage,
 } from '../deviceMessages';
+import { logger } from '../logging';
 import { Channel } from './channel';
 import { PeerConnection, PeerConnectionEvents, ServiceConfig } from './connection';
 
@@ -56,16 +57,23 @@ export class WebSocketPeerConnection
         if (channel.channel_type === 'DataChannel') channel._setReady();
       }
 
-      if (!this._webSocket) return;
+      if (!this._webSocket) {
+        logger.log('info', 'WebSocketConnection does not have a WebSocket!');
+        return;
+      }
 
       this._webSocket.onmessage = message => {
         const parsedMessage = JSON.parse(message.data.toString());
 
-        if (!isWebSocketMessage(parsedMessage)) return;
+        if (!isWebSocketMessage(parsedMessage)) {
+          logger.log('info', 'Received message is not a valid WebSocketMessage!');
+          return;
+        }
 
         const channel = this._channels.get(parsedMessage.channel);
 
         if (channel?.channel_type === 'DataChannel' && channel.ondata) {
+          console.log(JSON.stringify(parsedMessage, null, 4));
           switch (parsedMessage.type) {
             case 'string': {
               channel.ondata(parsedMessage.content);

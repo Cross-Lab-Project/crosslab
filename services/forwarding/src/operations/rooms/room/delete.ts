@@ -1,7 +1,7 @@
 import { MissingEntityError, logger } from '@crosslab/service-common';
 
 import { deleteRoomsByRoomIdSignature } from '../../../generated/signatures.js';
-import { roomMap, webSocketMap } from '../../../globals.js';
+import { removeParticipantData, roomMap } from '../../../globals.js';
 
 /**
  * This function implements the functionality for handling DELETE requests on
@@ -26,8 +26,7 @@ export const deleteRoomsByRoomId: deleteRoomsByRoomIdSignature = async (
   }
 
   for (const participant of room.participants) {
-    webSocketMap.get(`${parameters.room_id}:${participant.id}`)?.close();
-    webSocketMap.delete(`${parameters.room_id}:${participant.id}`);
+    removeParticipantData(parameters.room_id, participant.id);
   }
 
   logger.log('info', 'deleteRoomsByRoomId succeeded');

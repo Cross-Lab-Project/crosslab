@@ -142,6 +142,8 @@ class ElectricalConnectionService(Service, AsyncIOEventEmitter):
         connection_meta = self._connection_meta[connection]
         message = json.loads(data)
         busId = message["busId"]
+        print(data)
+        print(json.dumps(message))
 
         for interface in connection_meta.interfaces:
             if busId in connection_meta.interface_meta[interface].busIds:

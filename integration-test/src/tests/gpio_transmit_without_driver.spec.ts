@@ -74,7 +74,7 @@ const gpioExperimentConfiguration: Omit<
 for (const connectionType of connectionTypes) {
   for (const client1Type of clientTypes) {
     for (const client2Type of clientTypes) {
-      describe(`${client1Type} Client to ${client2Type} Client GPIO tests without driver`, async function () {
+      describe(`${client1Type} Client to ${client2Type} Client GPIO tests without driver (${connectionType})`, async function () {
         beforeEach(function () {
           this.timeout(120000);
           this.experiment = new ExperimentTest();

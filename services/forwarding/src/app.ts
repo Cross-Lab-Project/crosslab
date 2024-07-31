@@ -1,4 +1,4 @@
-import { authorization, logging } from '@crosslab/service-common';
+import { logging } from '@crosslab/service-common';
 import express, { Application, ErrorRequestHandler, RequestHandler } from 'express';
 import expressWs from 'express-ws';
 
@@ -36,7 +36,6 @@ export function initApp() {
         application.use(express.json());
         application.use(express.urlencoded({ extended: false }));
         application.use(logging.middleware() as RequestHandler);
-        application.use(authorization.middleware(config) as RequestHandler);
         webSocketHandling(wsInstance.app);
       },
     ],
@@ -49,5 +48,5 @@ export function initApp() {
     ],
     errorHandler: errormiddleware,
   });
-  app.listen(config.PORT);
+  return app.listen(config.PORT);
 }

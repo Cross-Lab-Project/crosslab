@@ -2,7 +2,13 @@ import { InvalidValueError, MissingEntityError, logger } from '@crosslab/service
 import * as expressWs from 'express-ws';
 import WebSocket from 'ws';
 
-import { roomMap, webSocketMap } from '../../../globals.js';
+import {
+  forwardingQueueMap,
+  getLabel,
+  removeParticipantData,
+  roomMap,
+  webSocketMap,
+} from '../../../globals.js';
 import { roomUrlFromId } from '../../../methods/urlFromId.js';
 
 export function webSocketHandling(app: expressWs.Application) {
@@ -35,16 +41,20 @@ export function webSocketHandling(app: expressWs.Application) {
       );
     }
 
-    webSocketMap.set(`${roomId}:${participantId}`, webSocket);
+    const label = getLabel(roomId, participantId);
+    webSocketMap.set(label, webSocket);
 
     webSocket.on('message', message => forwardMessage(message, roomId, participantId));
 
     webSocket.on('close', () => {
+      forwardingQueueMap.get(label)?.stop();
       logger.log(
         'info',
         `websocket connection closed for participant "${participant.id}" from room "${room.url}"`,
       );
     });
+
+    forwardingQueueMap.get(label)?.start();
 
     logger.log('info', 'The newly established connection was handled successfully!');
   });
@@ -60,17 +70,28 @@ function forwardMessage(
   if (!room) {
     logger.log(
       'error',
-      `room "${roomUrlFromId(roomId)}" does not exist anymore, closing websocket for participant "${participantId}"!`,
+      `room "${roomUrlFromId(
+        roomId,
+      )}" does not exist anymore, removing webSocket and forwarding-queue for participant "${participantId}"!`,
     );
-    webSocketMap.get(`${roomId}:${participantId}`)?.close();
-    webSocketMap.delete(`${roomId}:${participantId}`);
+
+    removeParticipantData(roomId, participantId);
     return;
   }
 
   for (const participant of room.participants) {
     if (participant.id === participantId) continue;
 
-    const webSocket = webSocketMap.get(`${roomId}:${participant.id}`);
-    webSocket?.send(message);
+    const forwardingQueue = forwardingQueueMap.get(`${roomId}:${participant.id}`);
+
+    if (!forwardingQueue) {
+      logger.log(
+        'error',
+        `Forwarding-queue for participant "${participant.id}" in room "${roomUrlFromId(roomId)}" does not exist anymore!`,
+      );
+      return;
+    }
+
+    forwardingQueue.push(message);
   }
 }

@@ -1,19 +1,44 @@
-import os
-
+import aiohttp
 import pytest
+from aiohttp import web
 from helpers import AsyncException, wait
 from test_helper import NoReferenceLeaks
 
-from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
-from crosslab.soa_client.messages import SignalingMessage, WebSocketConnectionOptions
-from crosslab.soa_client.test_helper.dummy_track import DummyTrack
+from crosslab.soa_client.messages import WebSocketConnectionOptions
 from crosslab.soa_client.test_helper.service_stub import ServiceStub
 from src.crosslab.soa_client.connection_websocket import WebSocketPeerconnection
+
+websockets = []
+
+
+async def websocket_handler(request):
+    ws = web.WebSocketResponse()
+    websockets.append(ws)
+    await ws.prepare(request)
+
+    async for msg in ws:
+        if msg.type == aiohttp.WSMsgType.TEXT:
+            for websocket in websockets:
+                if ws != websocket:
+                    await websocket.send_str(msg.data)
+
+    return ws
+
+
+@pytest.fixture
+async def server(aiohttp_server):
+    app = web.Application()
+    app.add_routes([web.get("/ws", websocket_handler)])
+    return await aiohttp_server(app, port=3020)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("tiebreaker", [True, False])
-async def test_webrtc_connection_data_only(tiebreaker: bool):
+async def test_webrtc_connection_data_only(
+    server,
+    tiebreaker: bool,
+):
+    await server
     asyncException = AsyncException()
 
     serviceConfig = {
@@ -26,37 +51,14 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
     remoteService = ServiceStub("data", dataChannel=True)
 
     local = WebSocketPeerconnection(
-        options=WebSocketConnectionOptions(url="ws://localhost")
+        options=WebSocketConnectionOptions(url="ws://127.0.0.1:3020/ws")
     )
     remote = WebSocketPeerconnection(
-        options=WebSocketConnectionOptions(url="ws://localhost")
+        options=WebSocketConnectionOptions(url="ws://127.0.0.1:3020/ws")
     )
 
     local.on("error", lambda error: asyncException.set(error))
     remote.on("error", lambda error: asyncException.set(error))
-
-    async def onLocalSignalingMessage(message: SignalingMessage):
-        await remote.handleSignalingMessage(
-            {
-                "messageType": "signaling",
-                "connectionUrl": "connection.url",
-                "content": message["content"],
-                "signalingType": message["signalingType"],
-            }
-        )
-
-    async def onRemoteSignalingMessage(message: SignalingMessage):
-        await local.handleSignalingMessage(
-            {
-                "messageType": "signaling",
-                "connectionUrl": "connection.url",
-                "content": message["content"],
-                "signalingType": message["signalingType"],
-            }
-        )
-
-    local.on("signaling", onLocalSignalingMessage)
-    remote.on("signaling", onRemoteSignalingMessage)
 
     local.tiebreaker = tiebreaker
     remote.tiebreaker = not tiebreaker
@@ -79,3 +81,5 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
 
     assert localService.messages == ["init"]
     assert remoteService.messages == ["init"]
+
+    websockets.clear()

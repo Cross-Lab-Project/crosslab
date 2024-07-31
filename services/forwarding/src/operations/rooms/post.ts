@@ -2,7 +2,8 @@ import { logger } from '@crosslab/service-common';
 import { randomUUID } from 'crypto';
 
 import { postRoomsSignature } from '../../generated/signatures.js';
-import { roomMap } from '../../globals.js';
+import { forwardingQueueMap, roomMap } from '../../globals.js';
+import { ForwardingQueue } from '../../methods/forwardingQueue.js';
 import { roomUrlFromId } from '../../methods/urlFromId.js';
 
 /**
@@ -16,7 +17,14 @@ export const postRooms: postRoomsSignature = async (_req, body) => {
 
   const uuid = randomUUID();
   const room = { ...body, url: roomUrlFromId(uuid) };
+
   roomMap.set(uuid, room);
+  for (const participant of room.participants) {
+    forwardingQueueMap.set(
+      `${uuid}:${participant.id}`,
+      new ForwardingQueue(uuid, participant.id),
+    );
+  }
 
   logger.log('info', 'postRooms succeeded');
 

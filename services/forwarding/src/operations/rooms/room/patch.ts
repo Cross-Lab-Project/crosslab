@@ -1,7 +1,7 @@
 import { MissingEntityError, logger } from '@crosslab/service-common';
 
 import { patchRoomsByRoomIdSignature } from '../../../generated/signatures.js';
-import { roomMap, webSocketMap } from '../../../globals.js';
+import { removeParticipantData, roomMap } from '../../../globals.js';
 import { roomUrlFromId } from '../../../methods/urlFromId.js';
 
 /**
@@ -32,10 +32,9 @@ export const patchRoomsByRoomId: patchRoomsByRoomIdSignature = async (
     if (!body.participants.find(p => p.id === participant.id)) {
       logger.log(
         'info',
-        `removing participant "${participant.id}" from room "${room.url}"!`,
+        `Removing participant "${participant.id}" from room "${room.url}"!`,
       );
-      webSocketMap.get(`${parameters.room_id}:${participant.id}`)?.close();
-      webSocketMap.delete(`${parameters.room_id}:${participant.id}`);
+      removeParticipantData(parameters.room_id, participant.id);
     }
   }
 

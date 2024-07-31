@@ -4,6 +4,7 @@ import {
   MissingPropertyError,
 } from '@crosslab/service-common';
 import { logger } from '@crosslab/service-common';
+import { randomUUID } from 'crypto';
 
 import { ConcreteDevice, Peerconnection } from '../clients/device/types.js';
 import { clients } from '../clients/index.js';
@@ -263,10 +264,7 @@ async function createPeerconnectionWebsocket(
   serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] },
 ): Promise<Peerconnection<'request'>> {
   const room = await clients.forwarding.createRoom({
-    participants: [
-      { id: getUrlOrInstanceUrl(serviceConfig.devices[0]) },
-      { id: getUrlOrInstanceUrl(serviceConfig.devices[1]) },
-    ],
+    participants: [{ id: randomUUID() }, { id: randomUUID() }],
   });
 
   return {
