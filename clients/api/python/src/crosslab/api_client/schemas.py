@@ -1746,7 +1746,7 @@ class CreatePeerconnectionRequestDevicesItemsConfigServicesItems(TypedDict):
     serviceType: str
     serviceId: str
     remoteServiceId: str
-    remoteServiceDescription: NotRequired[CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription]
+    remoteServiceDescription: CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionRequestDevicesItemsConfig(TypedDict):
@@ -1814,7 +1814,7 @@ class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
     serviceType: str
     serviceId: str
     remoteServiceId: str
-    remoteServiceDescription: NotRequired[CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription]
+    remoteServiceDescription: CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfig(TypedDict):
@@ -1882,7 +1882,7 @@ class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
     serviceType: str
     serviceId: str
     remoteServiceId: str
-    remoteServiceDescription: NotRequired[CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription]
+    remoteServiceDescription: CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfig(TypedDict):
@@ -1953,7 +1953,7 @@ class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
     serviceType: str
     serviceId: str
     remoteServiceId: str
-    remoteServiceDescription: NotRequired[GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription]
+    remoteServiceDescription: GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class GetPeerconnectionResponse200DevicesItemsConfig(TypedDict):

@@ -149,6 +149,18 @@ function updateServiceConfig(
   participant: ParticipantModel,
   remoteParticipant: ParticipantModel,
 ) {
+  const remoteServiceDescription = remoteDevice.services?.find(
+    service =>
+      service.serviceId === remoteParticipant.serviceId &&
+      service.serviceType === serviceConfig.serviceType,
+  );
+
+  if (!remoteServiceDescription)
+    throw new InvalidValueError(
+      `Could not find service description for service "${remoteParticipant.serviceId}" of device "${remoteDevice.url}"`,
+      400,
+    );
+
   device.config = device.config ?? {};
   device.config.services = device.config.services ?? [];
   device.config?.services?.push({
@@ -157,11 +169,7 @@ function updateServiceConfig(
     serviceId: participant.serviceId,
     serviceType: serviceConfig.serviceType,
     remoteServiceId: remoteParticipant.serviceId,
-    remoteServiceDescription: remoteDevice.services?.find(
-      service =>
-        service.serviceId === remoteParticipant.serviceId &&
-        service.serviceType === serviceConfig.serviceType,
-    ),
+    remoteServiceDescription,
   });
 }
 

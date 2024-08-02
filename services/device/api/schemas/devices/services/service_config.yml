@@ -15,4 +15,5 @@ required:
   - serviceType
   - serviceId
   - remoteServiceId
+  - remoteServiceDescription
 additionalProperties: true

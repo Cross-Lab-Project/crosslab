@@ -2860,7 +2860,7 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
         serviceType: string;
         serviceId: string;
         remoteServiceId: string;
-        remoteServiceDescription?: {
+        remoteServiceDescription: {
           serviceType?: string;
           supportedConnectionTypes?: string[];
           serviceId?: string;
@@ -2874,7 +2874,7 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
           serviceType: string;
           serviceId: string;
           remoteServiceId: string;
-          remoteServiceDescription?: {
+          remoteServiceDescription: {
             serviceType?: string;
             supportedConnectionTypes?: string[];
             serviceId?: string;
@@ -2888,7 +2888,7 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
             serviceType: string;
             serviceId: string;
             remoteServiceId: string;
-            remoteServiceDescription?: {
+            remoteServiceDescription: {
               serviceType?: string;
               supportedConnectionTypes?: string[];
               serviceId?: string;
