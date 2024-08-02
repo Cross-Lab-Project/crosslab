@@ -1543,16 +1543,32 @@ CreateWebsocketTokenResponse200: TypeAlias = str
 CreateWebsocketTokenResponse: TypeAlias = CreateWebsocketTokenResponse200
 
 
+class SendSignalingMessageRequestAlt1ServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class SendSignalingMessageRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[SendSignalingMessageRequestAlt1ServicesItemsRemoteservicedescription]
 
 
 class SendSignalingMessageRequestAlt1Connectionoptions(TypedDict):
@@ -1705,16 +1721,32 @@ class CreatePeerconnectionRequestConfiguration(TypedDict):
     """
 
 
+class CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class CreatePeerconnectionRequestDevicesItemsConfigServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription]
 
 
 class CreatePeerconnectionRequestDevicesItemsConfig(TypedDict):
@@ -1757,16 +1789,32 @@ class CreatePeerconnectionResponse201Configuration(TypedDict):
     """
 
 
+class CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription]
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfig(TypedDict):
@@ -1809,16 +1857,32 @@ class CreatePeerconnectionResponse202Configuration(TypedDict):
     """
 
 
+class CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription]
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfig(TypedDict):
@@ -1864,16 +1928,32 @@ class GetPeerconnectionResponse200Configuration(TypedDict):
     """
 
 
+class GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription]
 
 
 class GetPeerconnectionResponse200DevicesItemsConfig(TypedDict):

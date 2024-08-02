@@ -50,6 +50,9 @@ export abstract class DeviceOverviewModel {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @Column({ type: 'simple-json' })
+  additionalAttributes!: object;
 }
 
 @ChildEntity()

@@ -44,10 +44,24 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
   ) {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const {
+      type,
+      description,
+      instantiateUrl,
+      isPublic,
+      name,
+      owner,
+      services,
+      viewer,
+      ...additionalAttributes
+    } = { ...model.additionalAttributes, ...data };
+
     await this.dependencies.deviceOverview.write(model, data);
 
-    if (data.instantiateUrl) model.instantiateUrl = data.instantiateUrl;
-    if (data.services) model.services = data.services;
+    if (instantiateUrl) model.instantiateUrl = instantiateUrl;
+    if (services) model.services = services;
+
+    model.additionalAttributes = additionalAttributes;
   }
 
   async format(
@@ -60,6 +74,7 @@ export class InstantiableCloudDeviceRepository extends AbstractRepository<
       type: 'cloud instantiable',
       instantiateUrl: model.instantiateUrl,
       services: model.services ?? undefined,
+      ...model.additionalAttributes,
     };
   }
 }

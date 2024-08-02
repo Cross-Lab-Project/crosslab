@@ -2854,6 +2854,13 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
         serviceType: string;
         serviceId: string;
         remoteServiceId: string;
+        remoteServiceDescription?: {
+          serviceType?: string;
+          supportedConnectionTypes?: string[];
+          serviceId?: string;
+          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       }
     : T extends 'request'
@@ -2861,6 +2868,13 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
         serviceType: string;
         serviceId: string;
         remoteServiceId: string;
+        remoteServiceDescription?: {
+          serviceType?: string;
+          supportedConnectionTypes?: string[];
+          serviceId?: string;
+          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       }
     : T extends 'response'
@@ -2868,6 +2882,13 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
         serviceType: string;
         serviceId: string;
         remoteServiceId: string;
+        remoteServiceDescription?: {
+          serviceType?: string;
+          supportedConnectionTypes?: string[];
+          serviceId?: string;
+          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+          [k: string]: unknown;
+        };
         [k: string]: unknown;
       }
     : never;

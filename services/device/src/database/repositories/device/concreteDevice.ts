@@ -43,9 +43,23 @@ export class ConcreteDeviceRepository extends AbstractRepository<
   ): Promise<void> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const {
+      type,
+      description,
+      experiment,
+      isPublic,
+      name,
+      owner,
+      services,
+      viewer,
+      ...additionalAttributes
+    } = { ...model.additionalAttributes, ...data };
+
     await this.dependencies.deviceOverview.write(model, data);
-    if (data.experiment) model.experiment = data.experiment;
-    if (data.services) model.services = data.services;
+    if (experiment) model.experiment = experiment;
+    if (services) model.services = services;
+
+    model.additionalAttributes = additionalAttributes;
   }
 
   async format(model: ConcreteDeviceModel): Promise<ConcreteDevice<'response'>> {
@@ -58,6 +72,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
       connected: model.connected,
       experiment: model.experiment ?? undefined,
       services: model.services,
+      ...model.additionalAttributes,
     };
   }
 }

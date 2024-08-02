@@ -105,12 +105,14 @@ export async function buildConnectionPlan(
 
     updateServiceConfig(
       peerconnection.devices[0],
+      getResolvedDevice(resolvedDevices, peerconnection.devices[1].url),
       serviceConfig,
       serviceConfig.participants[0],
       serviceConfig.participants[1],
     );
     updateServiceConfig(
       peerconnection.devices[1],
+      getResolvedDevice(resolvedDevices, peerconnection.devices[0].url),
       serviceConfig,
       serviceConfig.participants[1],
       serviceConfig.participants[0],
@@ -142,6 +144,7 @@ function sortServiceParticipantsByDeviceId(
 
 function updateServiceConfig(
   device: Peerconnection<'request'>['devices'][number],
+  remoteDevice: ConcreteDevice<'response'>,
   serviceConfig: ServiceConfigurationModel,
   participant: ParticipantModel,
   remoteParticipant: ParticipantModel,
@@ -154,19 +157,30 @@ function updateServiceConfig(
     serviceId: participant.serviceId,
     serviceType: serviceConfig.serviceType,
     remoteServiceId: remoteParticipant.serviceId,
+    remoteServiceDescription: remoteDevice.services?.find(
+      service =>
+        service.serviceId === remoteParticipant.serviceId &&
+        service.serviceType === remoteParticipant.serviceConfiguration.serviceType,
+    ),
   });
 }
 
+type PairwiseServiceConfiguration = ServiceConfigurationModel & {
+  participants: [ParticipantModel, ParticipantModel];
+};
+
+type PairwiseServiceConfigurationWithDevices = PairwiseServiceConfiguration & {
+  devices: [DeviceModel, DeviceModel];
+};
+
 function mapRoleConfigToDevices(
-  pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'],
+  pairwiseServiceConfigurations: PairwiseServiceConfiguration[],
   experiment: ExperimentModel,
-) {
+): PairwiseServiceConfigurationWithDevices[] {
   if (!experiment.devices || experiment.devices.length === 0) {
     throw new MissingPropertyError('Experiment must have a device to be run', 400);
   }
-  const deviceMappedServiceConfigs: (ServiceConfigurationModel & {
-    devices: DeviceModel[];
-  })[] = [];
+  const deviceMappedServiceConfigs: PairwiseServiceConfigurationWithDevices[] = [];
   for (const serviceConfig of pairwiseServiceConfigurations) {
     if (!serviceConfig.participants || serviceConfig.participants.length !== 2) {
       throw new MissingPropertyError(
@@ -196,9 +210,10 @@ function mapRoleConfigToDevices(
   return deviceMappedServiceConfigs;
 }
 
-function toPairwiseServiceConfig(serviceConfigurations: ServiceConfigurationModel[]) {
-  const pairwiseServiceConfigurations: Required<ExperimentModel>['serviceConfigurations'] =
-    [];
+function toPairwiseServiceConfig(
+  serviceConfigurations: ServiceConfigurationModel[],
+): PairwiseServiceConfiguration[] {
+  const pairwiseServiceConfigurations: PairwiseServiceConfiguration[] = [];
 
   for (const serviceConfig of serviceConfigurations) {
     const participants = serviceConfig.participants;

@@ -44,10 +44,24 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
   ) {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const {
+      type,
+      codeUrl,
+      description,
+      isPublic,
+      name,
+      owner,
+      services,
+      viewer,
+      ...additionalAttributes
+    } = { ...model.additionalAttributes, ...data };
+
     await this.dependencies.deviceOverview.write(model, data);
 
-    if (data.codeUrl) model.codeUrl = data.codeUrl;
-    if (data.services) model.services = data.services;
+    if (codeUrl) model.codeUrl = codeUrl;
+    if (services) model.services = services;
+
+    model.additionalAttributes = additionalAttributes;
   }
 
   async format(
@@ -60,6 +74,7 @@ export class InstantiableBrowserDeviceRepository extends AbstractRepository<
       type: 'edge instantiable',
       codeUrl: model.codeUrl,
       services: model.services ?? undefined,
+      ...model.additionalAttributes,
     };
   }
 }
