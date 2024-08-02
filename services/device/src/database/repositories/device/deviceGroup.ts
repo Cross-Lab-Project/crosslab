@@ -44,13 +44,13 @@ export class DeviceGroupRepository extends AbstractRepository<
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     const {
-      type,
-      description,
+      type: _type,
+      description: _description,
       devices,
-      isPublic,
-      name,
-      owner,
-      viewer,
+      isPublic: _isPublic,
+      name: _name,
+      owner: _owner,
+      viewer: _viewer,
       ...additionalAttributes
     } = { ...model.additionalAttributes, ...data };
 
@@ -67,13 +67,13 @@ export class DeviceGroupRepository extends AbstractRepository<
     const devices: DeviceReference[] = model.devices;
 
     return {
+      ...model.additionalAttributes,
       ...(await this.dependencies.deviceOverview.format(model)),
       type: 'group',
       devices: devices.filter(
         (value, index, array) =>
           array.findIndex(device => device.url === value.url) === index,
       ),
-      ...model.additionalAttributes,
     };
   }
 }

@@ -7,7 +7,7 @@ import { InvalidStateError, MalformedExperimentError } from '../../../types/erro
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
 import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
-import { experimentUrlFromId } from '../../url.js';
+import { experimentUrlFromId, getUrlOrInstanceUrl } from '../../url.js';
 
 async function checkDevices(
   experimentModel: ExperimentModel,
@@ -16,7 +16,7 @@ async function checkDevices(
 ) {
   await Promise.all(
     experimentModel.devices.map(async device => {
-      const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
+      const deviceUrl = getUrlOrInstanceUrl(device);
       try {
         const resolvedDevice = await clients.device.getDevice(deviceUrl);
         connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
@@ -72,7 +72,7 @@ export async function createPeerconnectionsExperiment(
 
   for (const device of experimentModel.devices) {
     await globalClients.device.sendSignalingMessage(
-      device.instance?.url ?? device.resolvedDevice ?? device.url,
+      getUrlOrInstanceUrl(device),
       {
         messageType: 'configuration',
         configuration: {

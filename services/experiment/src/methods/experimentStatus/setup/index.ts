@@ -73,7 +73,7 @@ export async function setupExperiment(
       logger.log(
         'error',
         'Something went wrong while trying to create the peerconnections',
-        { data: { error } },
+        { data: { error: (error instanceof Error ? error.message : error) } },
       );
       sendStatusUpdateMessages(
         experimentModel,
@@ -83,7 +83,7 @@ export async function setupExperiment(
         await finishExperiment(experimentModel, clients);
       } catch (finishError) {
         logger.log('error', 'Could not finish the experiment!', {
-          data: { error: finishError },
+          data: { error: (finishError instanceof Error ? finishError.message : finishError) },
         });
       }
     })

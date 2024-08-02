@@ -160,7 +160,7 @@ function updateServiceConfig(
     remoteServiceDescription: remoteDevice.services?.find(
       service =>
         service.serviceId === remoteParticipant.serviceId &&
-        service.serviceType === remoteParticipant.serviceConfiguration.serviceType,
+        service.serviceType === serviceConfig.serviceType,
     ),
   });
 }

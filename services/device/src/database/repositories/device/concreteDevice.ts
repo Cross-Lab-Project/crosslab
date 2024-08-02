@@ -44,14 +44,14 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     const {
-      type,
-      description,
+      type: _type,
+      description: _description,
       experiment,
-      isPublic,
-      name,
-      owner,
+      isPublic: _isPublic,
+      name: _name,
+      owner: _owner,
       services,
-      viewer,
+      viewer: _viewer,
       ...additionalAttributes
     } = { ...model.additionalAttributes, ...data };
 
@@ -66,13 +66,13 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     return {
+      ...model.additionalAttributes,
       ...(await this.dependencies.deviceOverview.format(model)),
       type: 'device',
       announcedAvailability: model.announcedAvailability,
       connected: model.connected,
       experiment: model.experiment ?? undefined,
       services: model.services,
-      ...model.additionalAttributes,
     };
   }
 }
