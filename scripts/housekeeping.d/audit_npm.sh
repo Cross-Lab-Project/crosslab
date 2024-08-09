@@ -7,7 +7,8 @@ npm -g install npm-check
 
 for file in $(fd -gp '**/package.json'); do
   dir=$(dirname $file)
-  (cd $dir && rm -f package-lock.json && npm-check -y && npm i && npm audit fix)&
+  echo $dir
+  (cd $dir && npm audit)
 done
 
 wait $(jobs -p)
