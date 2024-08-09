@@ -30,7 +30,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",

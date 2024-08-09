@@ -33,7 +33,7 @@ dependencies_replacement=$(cat package.json | jq -r '.dependencies + .devDepende
 sed_expression=""
 for dependency in $dependencies_replacement; do
     dependency_path=$(echo "$dependency" | sed 's/file://')
-    archive_path=$(readlink -f $dependency_path/dist/npm-latest.tgz)
+    archive_path=$(readlink -f $dependency_path)
     version=$(tar xfO "$archive_path" package/package.json | jq -r '.version')
     sed_expression="$sed_expression""s#$dependency#$version#g;"
 done

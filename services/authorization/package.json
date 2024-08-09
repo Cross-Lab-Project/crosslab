@@ -24,7 +24,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "@openfga/sdk": "^0.6.2",
     "@openfga/syntax-transformer": "^0.1.6",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",

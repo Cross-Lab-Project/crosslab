@@ -50,7 +50,7 @@ function get_local_dependencies() {
 
 # copy dependencies to dist folder
 for dependency in $(get_local_dependencies package.json); do
-    cp $(readlink -f $dependency/dist/npm-latest.tgz) .packages/
+    cp $(readlink -f $dependency) .packages/
 done
 
 cp $(readlink -f ./dist/npm-latest.tgz) .packages/ | true

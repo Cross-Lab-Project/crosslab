@@ -22,8 +22,8 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
-    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
+    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon/dist/npm-latest.tgz",
+    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration/dist/npm-latest.tgz",
     "@types/express": "^4.17.21",
     "@types/node-fetch": "^2.6.11",
     "mocha": "^10.7.0",
@@ -34,7 +34,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common",
+    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^8.0.1",
     "@typescript-eslint/parser": "^8.0.1",

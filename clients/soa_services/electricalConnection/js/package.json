@@ -35,7 +35,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@cross-lab-project/soa-client": "file:../../../soa/js",
+    "@cross-lab-project/soa-client": "file:../../../soa/js/dist/npm-latest.tgz",
     "queue": "^7.0.0",
     "tiny-typed-emitter": "^2.1.0"
   }

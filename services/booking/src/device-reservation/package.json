@@ -13,7 +13,7 @@
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
-    "@crosslab/booking-service-common": "file:../common",
+    "@crosslab/booking-service-common": "file:../common/dist/npm-latest.tgz",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/amqplib": "^0.10.5",
     "amqplib": "^0.10.4",

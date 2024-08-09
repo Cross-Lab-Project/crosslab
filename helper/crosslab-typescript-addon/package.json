@@ -21,7 +21,7 @@
   "author": "Pierre Helbing",
   "license": "UNLICENSED",
   "devDependencies": {
-    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration",
+    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration/dist/npm-latest.tgz",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.1.0",
     "@types/nunjucks": "^3.2.6",
@@ -40,7 +40,7 @@
     "nunjucks": "^3.2.3"
   },
   "peerDependencies": {
-    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration",
+    "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration/dist/npm-latest.tgz",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1"
   }
