@@ -15,6 +15,7 @@ import * as mysql from 'mysql2/promise';
 
 import { config } from './config.js';
 import { DeviceBookingRequest } from './messageDefinition.js';
+import { logger } from '@crosslab/service-common';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -497,7 +498,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           if (
             data.Type === ReservationRequest.New &&
             data.Successful &&
-            data.Device?.toString() === possibleDevices[i] &&
+            data.Device?.toString() === new URL(possibleDevices[i]).toString() &&
             data.Start?.isSame(r.Start) &&
             data.End?.isSame(r.End)
           ) {
