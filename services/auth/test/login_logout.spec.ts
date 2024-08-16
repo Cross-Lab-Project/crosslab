@@ -1,10 +1,8 @@
-import chai from 'chai';
-import 'chai-http';
 
-import { app } from '../src/app.ts';
-import { createNewToken } from '../src/token/helper.ts';
-import { createUser } from '../src/user/helper.ts';
-import { resetDatabase } from './helper.ts';
+import { app } from '../src/app.js';
+import { createNewToken } from '../src/token/helper.js';
+import { createUser } from '../src/user/helper.js';
+import { chai, resetDatabase } from './helper.js';
 
 describe('Login', () => {
   before(async function () {
