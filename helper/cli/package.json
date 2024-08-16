@@ -20,7 +20,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@cross-lab-project/api-client": "file:../../clients/api/js/dist/npm-latest.tgz",
+    "@cross-lab-project/api-client": "file:../../clients/api/js",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@eslint/js": "^9.9.0",
     "@types/eslint__js": "^8.42.3",

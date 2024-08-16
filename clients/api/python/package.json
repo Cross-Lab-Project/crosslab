@@ -11,7 +11,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration/dist/npm-latest.tgz",
+    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "nodemon": "^3.1.4"
   },

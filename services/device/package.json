@@ -46,8 +46,8 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@babel/register": "^7.24.6",
-    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon/dist/npm-latest.tgz",
-    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration/dist/npm-latest.tgz",
+    "@cross-lab-project/codegen-typescript-addon": "file:../../helper/crosslab-typescript-addon",
+    "@cross-lab-project/openapi-codegen": "file:../../helper/openapi-codegeneration",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/base64-url": "^2.2.2",
     "@types/body-parser": "^1.19.5",
@@ -82,7 +82,7 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@crosslab/service-common": "file:../common/dist/npm-latest.tgz",
+    "@crosslab/service-common": "file:../common",
     "ajv-formats": "^3.0.1",
     "async-mutex": "^0.5.0",
     "base64-url": "^2.3.3",

@@ -40,8 +40,8 @@
   "author": "Pierre Helbing",
   "license": "ISC",
   "devDependencies": {
-    "@cross-lab-project/codegen-typescript-addon": "file:../../../helper/crosslab-typescript-addon/dist/npm-latest.tgz",
-    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration/dist/npm-latest.tgz",
+    "@cross-lab-project/codegen-typescript-addon": "file:../../../helper/crosslab-typescript-addon",
+    "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.1.0",
     "@eslint/js": "^9.9.0",

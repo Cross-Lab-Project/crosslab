@@ -389,7 +389,7 @@ const schema10 = {
   'x-schema-type': 'all',
 };
 const formats2 =
-  /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+  /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/;
 function validate25(
   data,
   { instancePath = '', parentData, parentDataProperty, rootData = data } = {},
