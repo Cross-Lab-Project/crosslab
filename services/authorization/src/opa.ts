@@ -87,11 +87,11 @@ export async function opa_check(checks: CheckTuple[]) {
           ...openfgaOpaData,
           response,
         });
-        return response;
+        return response as {result: {allow?: boolean, reason?: string}};
       })
       .then(json => ({
-        result: (json as any).result.allow ?? false,
-        reason: (json as any).result.reason ?? 'unknown',
+        result: json.result.allow ?? false,
+        reason: json.result.reason ?? 'unknown',
       })),
   );
   return await Promise.all(outputPromise);

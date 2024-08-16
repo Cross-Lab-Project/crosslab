@@ -16,6 +16,7 @@ export default tseslint.config(
   },
   {
     ignores: [
+      'src/clients/**/*',
       'src/generated/**/*',
       'src/database/migrations/**/*',
       'test/generated/**/*',

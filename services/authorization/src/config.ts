@@ -13,6 +13,6 @@ export const config = {
 };
 
 export function checkConfig() {
-  config.PSK ?? utils.die('AUTHORIZATION_PSK is not set');
-  config.JWT_SECRET ?? utils.die('JWT_SECRET is not set');
+  if(!config.PSK) utils.die('AUTHORIZATION_PSK is not set');
+  if(!config.JWT_SECRET) utils.die('JWT_SECRET is not set');
 }
