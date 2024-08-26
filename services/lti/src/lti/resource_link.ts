@@ -1,20 +1,18 @@
-import { HttpError } from '@crosslab/service-common';
-import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { JWTPayload } from 'jose';
 
-import { Client as ExperimentClient } from '../clients/experiment/client.js';
-import { authentication, experiment } from '../clients/index.js';
-import { config } from '../config.js';
 import { PlatformModel } from '../database/model.js';
 
 export async function handle_resource_link_request(
   _req: Request,
   res: Response,
-  payload: JWTPayload,
-  platform: PlatformModel,
+  _payload: JWTPayload,
+  _platform: PlatformModel,
 ) {
-  const custom = payload['https://purl.imsglobal.org/spec/lti/claim/custom'];
+  //const roles = payload['https://purl.imsglobal.org/spec/lti/claim/roles']
+  //const isInstructor = Array.isArray(roles) && roles.includes("http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor")
+
+  /*const custom = payload['https://purl.imsglobal.org/spec/lti/claim/custom'];
   const template_url =
     typeof custom === 'object' &&
     custom !== null &&
@@ -115,7 +113,8 @@ export async function handle_resource_link_request(
     )
     .join('\n')}
 </body>
-</html>`;
+</html>`;*/
+  const response = `<!doctype html>`
 
   res.send(response);
 }

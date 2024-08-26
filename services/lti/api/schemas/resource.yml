@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Resource
+allOf:
+  - $ref: '#/$defs/partial'
+  - type: object
+    required:
+    - uri
+    - students_uri
+$defs:
+  partial:
+    type: object
+    properties:
+      uri:
+        type: string
+        format: uri
+        readOnly: true
+      experiment_template_uri:
+        type: string
+        format: uri
+        description: The URI of the experiment template.
+      students_uri:
+        type: string
+        format: uri
+        description: The URI of the students.
+        readOnly: true
+    additionalProperties: false

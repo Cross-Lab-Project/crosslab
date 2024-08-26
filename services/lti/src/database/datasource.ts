@@ -17,9 +17,10 @@ export async function init_database(dataSourceConfig?: DataSourceOptions) {
       ? { ...dataSourceConfig, entities: Entities }
       : {
           ...config.orm,
-          migrations: [...Migrations],
-          migrationsRun: true,
+          //migrations: [...Migrations],
+          //migrationsRun: true,
           entities: Entities,
+          synchronize: true,
         },
   );
   await ApplicationDataSource.initialize();

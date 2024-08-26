@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 
 import { config } from '../config.js';
-import { ApplicationDataSource } from '../database/datasource.js';
-import { PlatformModel, PlatformProvisionModel } from '../database/model.js';
 import { tool_configuration } from './tool_configuration.js';
 
 export async function handle_manual_registration(_req: Request, res: Response) {
@@ -83,7 +81,7 @@ export async function handle_manual_registration(_req: Request, res: Response) {
   );
 }
 
-export async function complete_manual_registration(req: Request, res: Response) {
+/*export async function complete_manual_registration(req: Request, res: Response) {
   const iss = req.body.iss as string;
   const client_id = req.body.client_id as string;
   //const deployment_id = req.body.deployment_id as string;
@@ -136,3 +134,4 @@ export async function complete_manual_registration(req: Request, res: Response) 
     );
   }
 }
+*/

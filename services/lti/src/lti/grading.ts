@@ -40,7 +40,7 @@ export async function grading({
 
   console.log(jwt);
 
-  const result = await fetch(platform.access_token_url, {
+  const result = await fetch(platform.access_token_url!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({

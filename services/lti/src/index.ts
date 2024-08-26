@@ -11,6 +11,7 @@ async function main() {
     await init_database();
     await init_key_management();
     await init_app();
+    //setInterval(deletePendingPlatforms, 1000*5);
     logging.logger.info('LTI Service started successfully');
   } catch (e) {
     logging.logger.error(e);

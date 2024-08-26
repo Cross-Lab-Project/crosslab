@@ -1,0 +1,106 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+components:
+  parameters:
+      platform_id:
+        name: platform_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The ID of the platform.
+paths:
+  platform:
+    get:
+      operationId: list_platform
+      tags:
+      - lti
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: |-
+            Returns the registration parameters for the LTI service.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/platform.yml'
+        401:
+          description: Unauthorized.
+    post:
+      operationId: register_platform
+      tags:
+      - lti
+      security:
+        - JWT: []
+      responses:
+        '201':
+          description: |-
+            Platform created
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/platform.yml'
+          headers:
+            Location:
+              description: The location of the created platform.
+              schema:
+                type: string
+                format: uri
+        401:
+          description: Unauthorized
+  platform_by_id:
+    get:
+      operationId: get_platform
+      tags:
+      - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/platform_id'
+      responses:
+        '200':
+          description: |-
+            Returns the platform.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/platform.yml'
+        401:
+          description: Unauthorized.
+    patch:
+      operationId: update_platform
+      tags:
+      - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/platform_id'
+      responses:
+        '200':
+          description: |-
+            Platform updated
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/platform.yml'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized.
+    delete:
+      operationId: delete_platform
+      tags:
+      - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/platform_id'
+      responses:
+        '204':
+          description: |-
+            Platform deleted
+        401:
+          description: Unauthorized.

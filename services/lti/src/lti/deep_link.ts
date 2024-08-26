@@ -3,13 +3,10 @@ import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 import { JWTPayload, SignJWT } from 'jose';
 
-import {
-  /*authentication,*/
-  experiment,
-} from '../clients/index.js';
-import { kid, privateKey } from '../key_management.js';
-import { tool_configuration } from './tool_configuration.js';
 import { PlatformModel } from '../database/model.js';
+import { kid, privateKey } from '../key_management.js';
+import { membership } from './membership.js';
+import { tool_configuration } from './tool_configuration.js';
 
 function post_form(url: string, message: object): string {
   return `<form action="${url}" method="post">${Object.entries(message)
@@ -21,9 +18,31 @@ export async function handle_deep_linking_request(
   _req: Request,
   res: Response,
   payload: JWTPayload,
-  _platform: PlatformModel
+  platform: PlatformModel
 ) {
-  const templates = await experiment.listTemplate();
+  //const templates = await experiment.listTemplate();
+  const templates = [
+    {
+      name: 'Template 1',
+      description: 'This is the first template',
+      url: 'https://crosslab.io',
+    },
+    {
+      name: 'Template 2',
+      description: 'This is the second template',
+      url: 'https://crosslab.io',
+    },
+    {
+      name: 'Template 3',
+      description: 'This is the third template',
+      url: 'https://crosslab.io',
+    },
+  ];
+
+  /*const members = */await membership(platform, payload);
+  //console.log(JSON.stringify(members), null, 2));
+
+  console.log('payload', JSON.stringify(payload, null, 2));
 
   const deep_linking_settings =
     (payload['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] as {

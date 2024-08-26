@@ -1,3 +1,4 @@
+import { logger } from '@crosslab/service-common';
 import { randomBytes } from 'crypto';
 import * as jose from 'jose';
 
@@ -11,7 +12,7 @@ export async function init_key_management() {
   kid = randomBytes(8).toString('base64url');
   publicKey.kid = kid;
   privateKey = keyset.privateKey;
-  console.log('Key management initialized', publicKey, privateKey);
+  logger.info('Key management initialized', publicKey, privateKey);
 }
 
 export function get_jwks(): jose.JSONWebKeySet {
