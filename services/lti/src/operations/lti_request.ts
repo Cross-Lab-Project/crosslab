@@ -13,7 +13,6 @@ import {
 } from '../generated/signatures.js';
 import * as uri from './uris.js';
 
-
 export const postLtiPlatformByPlatformIdLogin: postLtiPlatformByPlatformIdLoginSignature =
   async (_req, parameters, body) => {
     const platform = await LTIPlatform.byId(parameters);
@@ -72,13 +71,10 @@ export const postLtiPlatformByPlatformIdLaunch: postLtiPlatformByPlatformIdLaunc
     };
   };
 
-
 export const getLtiPlatformByPlatformIdJwks: getLtiPlatformByPlatformIdJwksSignature =
   async () => {
     return {
       status: 200,
-      body: get_jwks() as  unknown as { [k: string]: unknown; },
+      body: get_jwks() as unknown as { [k: string]: unknown },
     };
   };
-
-  

@@ -2,26 +2,26 @@
 openapi: 3.1.0
 components:
   parameters:
-      resource_id:
-        name: resource_id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: The ID of the resource.
-      student_id:
-        name: student_id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: The ID of the student. 
+    resource_id:
+      name: resource_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the resource.
+    student_id:
+      name: student_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the student.
 paths:
   resource:
     get:
       operationId: list_resource
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       responses:
@@ -40,7 +40,7 @@ paths:
     get:
       operationId: get_resource
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -58,7 +58,7 @@ paths:
     patch:
       operationId: update_resource
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -84,7 +84,7 @@ paths:
     delete:
       operationId: delete_resource
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -99,7 +99,7 @@ paths:
     get:
       operationId: list_resource_students
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -120,7 +120,7 @@ paths:
       operationId: update_resource_students
       description: Update the students of the resource. Acts as you would call a PATCH on each student.
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -134,7 +134,7 @@ paths:
               items:
                 type: object
                 properties:
-                  uri: 
+                  uri:
                     type: string
                     format: uri
                   data:
@@ -158,7 +158,7 @@ paths:
     get:
       operationId: get_resource_student
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -182,7 +182,7 @@ paths:
     patch:
       operationId: update_resource_student
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -204,4 +204,3 @@ paths:
                 $ref: '../schemas/student.yml'
         401:
           description: Unauthorized.
-      

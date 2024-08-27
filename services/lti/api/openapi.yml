@@ -22,23 +22,23 @@ components:
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 paths:
   /lti/platform:
-    $ref: "operations/platform.yml#/paths/platform"
+    $ref: 'operations/platform.yml#/paths/platform'
   /lti/platform/{platform_id}:
-    $ref: "operations/platform.yml#/paths/platform_by_id"
+    $ref: 'operations/platform.yml#/paths/platform_by_id'
   /lti/platform/{platform_id}/login:
-    $ref: "operations/lti_request.yml#/paths/login"
+    $ref: 'operations/lti_request.yml#/paths/login'
   /lti/platform/{platform_id}/launch:
-    $ref: "operations/lti_request.yml#/paths/launch"
+    $ref: 'operations/lti_request.yml#/paths/launch'
   /lti/platform/{platform_id}/jwks:
-    $ref: "operations/lti_request.yml#/paths/jwks"
+    $ref: 'operations/lti_request.yml#/paths/jwks'
   /lti/resource:
-    $ref: "operations/resource.yml#/paths/resource"
+    $ref: 'operations/resource.yml#/paths/resource'
   /lti/resource/{resource_id}:
-    $ref: "operations/resource.yml#/paths/resource_by_id"
+    $ref: 'operations/resource.yml#/paths/resource_by_id'
   /lti/resource/{resource_id}/students:
-    $ref: "operations/resource.yml#/paths/resource_by_id_students"
+    $ref: 'operations/resource.yml#/paths/resource_by_id_students'
   /lti/resource/{resource_id}/students/{student_id}:
-    $ref: "operations/resource.yml#/paths/resource_by_id_students_by_id"
+    $ref: 'operations/resource.yml#/paths/resource_by_id_students_by_id'
 #  /lti/resource:
 #
 #  /lti/resource/takeOwnership:
@@ -69,4 +69,4 @@ paths:
 
 #  /lti/platform/{platform_id}/dynamic_registration:
 #    get:
-#      
+#

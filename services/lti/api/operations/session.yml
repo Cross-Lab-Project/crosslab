@@ -2,19 +2,19 @@
 openapi: 3.1.0
 components:
   parameters:
-      session_id:
-        name: session_id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: The ID of the session.
+    session_id:
+      name: session_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the session.
 paths:
   session:
     get:
       operationId: list_session
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       responses:
@@ -33,7 +33,7 @@ paths:
     get:
       operationId: get_session
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -51,7 +51,7 @@ paths:
     delete:
       operationId: delete_session
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -66,7 +66,7 @@ paths:
     post:
       operationId: create_lti_experiment
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:

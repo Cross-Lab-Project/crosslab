@@ -1,6 +1,6 @@
-import { createRemoteJWKSet, JWTPayload, jwtVerify, SignJWT } from 'jose';
-
+import { JWTPayload, SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
 import fetch, { RequestInfo, RequestInit } from 'node-fetch';
+
 import { kid, privateKey } from '../business/key_management.js';
 import '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
@@ -12,7 +12,7 @@ import { random } from '../helper/generators.js';
 export type RawLtiMessage = {
   'https://purl.imsglobal.org/spec/lti/claim/message_type': string;
   'https://purl.imsglobal.org/spec/lti/claim/roles': string[];
-  'https://purl.imsglobal.org/spec/lti/claim/resource_link': { id: string },
+  'https://purl.imsglobal.org/spec/lti/claim/resource_link': { id: string };
 };
 
 function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
@@ -33,11 +33,16 @@ function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
     return false;
   }
   if (
-    typeof message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] !== 'object' ||
+    typeof message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] !==
+      'object' ||
     message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] === null ||
-    typeof (message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] as {id: unknown}).id !== 'string'
+    typeof (
+      message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] as {
+        id: unknown;
+      }
+    ).id !== 'string'
   ) {
-    return false
+    return false;
   }
 
   return true;
@@ -87,14 +92,17 @@ export async function handle_login_request(
   return authentication_request_url;
 }
 
-async function getPlatfromAccessToken(platform: {client_id?: string, iss?: string, access_token_url?: string}, scopes: string[]) {
-  if(!platform.client_id){
+async function getPlatfromAccessToken(
+  platform: { client_id?: string; iss?: string; access_token_url?: string },
+  scopes: string[],
+) {
+  if (!platform.client_id) {
     throw new Error('client_id is not set');
   }
-  if(!platform.iss){
+  if (!platform.iss) {
     throw new Error('iss is not set');
   }
-  if(!platform.access_token_url){
+  if (!platform.access_token_url) {
     throw new Error('access_token_url is not set');
   }
 
@@ -121,7 +129,7 @@ async function getPlatfromAccessToken(platform: {client_id?: string, iss?: strin
       scope: scopes.join(' '),
     }),
   });
-  
+
   return (await result.json()) as {
     access_token: string;
     token_type: string;
@@ -131,7 +139,10 @@ async function getPlatfromAccessToken(platform: {client_id?: string, iss?: strin
 
 export async function platformFetch(
   url: URL | RequestInfo,
-  init: RequestInit & { platform: {client_id?: string, iss?: string, access_token_url?: string}; scopes: string[] },
+  init: RequestInit & {
+    platform: { client_id?: string; iss?: string; access_token_url?: string };
+    scopes: string[];
+  },
 ) {
   const { platform, scopes, ..._init } = init;
   const access_token = await getPlatfromAccessToken(platform, scopes);
@@ -144,7 +155,6 @@ export async function platformFetch(
     },
   });
 }
-
 
 export async function verifyMessage(id_token: string, nonce: string, jwks_url?: string) {
   if (!jwks_url) {

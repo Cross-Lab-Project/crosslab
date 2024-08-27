@@ -4,7 +4,7 @@ import { LTIMessage } from './lti_message.js';
 import { LTIPlatform } from './lti_platform.js';
 import { LTIResourceStudent } from './lti_resource_student.js';
 
-type ResourceId = {resource_id: string};
+type ResourceId = { resource_id: string };
 
 export class LTIResource implements ResourceId {
   public resource_id: string;
@@ -17,19 +17,25 @@ export class LTIResource implements ResourceId {
 
   static async getOrCreate(message: LTIMessage, platform: LTIPlatform) {
     const resource_init = {
-      platform: {id: platform.platform_model.id},
-      resource_link_id: message.resource_link_id
-    }
+      platform: { id: platform.platform_model.id },
+      resource_link_id: message.resource_link_id,
+    };
 
-    const resource = await ApplicationDataSource.manager.save(LtiResourceModel, resource_init);
+    const resource = await ApplicationDataSource.manager.save(
+      LtiResourceModel,
+      resource_init,
+    );
     return new LTIResource(resource);
   }
-  
-  static async byId({resource_id}: ResourceId) {
-    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel,{ id: resource_id });
+
+  static async byId({ resource_id }: ResourceId) {
+    const resource = await ApplicationDataSource.manager.findOneByOrFail(
+      LtiResourceModel,
+      { id: resource_id },
+    );
     return new LTIResource(resource);
   }
-  
+
   static async list() {
     const resources = await ApplicationDataSource.manager.find(LtiResourceModel, {});
     return resources.map(resource => new LTIResource(resource));
@@ -48,20 +54,20 @@ export class LTIResource implements ResourceId {
   //  }
   //  return roles;
   //}
-  
+
   setNameService(context_memberships_url: string) {
     this.resource_model.namesServiceUrl = context_memberships_url;
     ApplicationDataSource.manager.save(LtiResourceModel, this.resource_model);
   }
 
-  async getStudent(id: {student_id: string}) {
-    return LTIResourceStudent.byId({resource_id: this.resource_id, ...id})
+  async getStudent(id: { student_id: string }) {
+    return LTIResourceStudent.byId({ resource_id: this.resource_id, ...id });
   }
 
   async getStudents() {
-    return LTIResourceStudent.list({resource_id: this.resource_id})
+    return LTIResourceStudent.list({ resource_id: this.resource_id });
   }
-  
+
   /*async getStudents(): Promise<Student<'response'>[]> {
     if(!this.resource_model.namesServiceUrl){
       throw new Error("No name service provided");
@@ -77,8 +83,9 @@ export class LTIResource implements ResourceId {
     }))
   }*/
 
-  public async update(data: {experiment_template_uri?: string}) {
-    if(data.experiment_template_uri) this.resource_model.experiment_template_uri = data.experiment_template_uri;
+  public async update(data: { experiment_template_uri?: string }) {
+    if (data.experiment_template_uri)
+      this.resource_model.experiment_template_uri = data.experiment_template_uri;
     await ApplicationDataSource.manager.save(LtiResourceModel, this.resource_model);
   }
 

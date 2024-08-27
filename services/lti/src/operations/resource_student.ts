@@ -6,7 +6,7 @@ import {
   getLtiResourceByResourceIdStudentsByStudentIdSignature,
   getLtiResourceByResourceIdStudentsSignature,
   patchLtiResourceByResourceIdStudentsByStudentIdSignature,
-  patchLtiResourceByResourceIdStudentsSignature
+  patchLtiResourceByResourceIdStudentsSignature,
 } from '../generated/signatures.js';
 import { Student as StudentObject } from '../generated/types.js';
 import * as uri from './uris.js';
@@ -17,13 +17,16 @@ function to_wire(student: LTIResourceStudent): StudentObject<'response'> {
     external_id: student.student_id,
     email: student.email,
     name: student.name,
-    role_mapping: student.role_mappings
+    role_mapping: student.role_mappings,
   });
 }
 
 export const getLtiResourceByResourceIdStudents: getLtiResourceByResourceIdStudentsSignature =
   async (req, parameters) => {
-    await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+    await req.authorization.check_authorization_or_fail(
+      'view',
+      uri.generate_resource(parameters),
+    );
 
     const resource = await LTIResource.byId(parameters);
     const students = await resource.getStudents();
@@ -36,7 +39,10 @@ export const getLtiResourceByResourceIdStudents: getLtiResourceByResourceIdStude
 
 export const getLtiResourceByResourceIdStudentsByStudentId: getLtiResourceByResourceIdStudentsByStudentIdSignature =
   async (req, parameters) => {
-    await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+    await req.authorization.check_authorization_or_fail(
+      'view',
+      uri.generate_resource(parameters),
+    );
 
     const resource = await LTIResource.byId(parameters);
     const student = await resource.getStudent(parameters);
@@ -49,7 +55,10 @@ export const getLtiResourceByResourceIdStudentsByStudentId: getLtiResourceByReso
 
 export const patchLtiResourceByResourceIdStudents: patchLtiResourceByResourceIdStudentsSignature =
   async (req, parameters, body) => {
-    await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+    await req.authorization.check_authorization_or_fail(
+      'view',
+      uri.generate_resource(parameters),
+    );
 
     const resource = await LTIResource.byId(parameters);
 
@@ -71,7 +80,10 @@ export const patchLtiResourceByResourceIdStudents: patchLtiResourceByResourceIdS
 
 export const patchLtiResourceByResourceIdStudentsByStudentId: patchLtiResourceByResourceIdStudentsByStudentIdSignature =
   async (req, parameters, body) => {
-    await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+    await req.authorization.check_authorization_or_fail(
+      'view',
+      uri.generate_resource(parameters),
+    );
 
     const resource = await LTIResource.byId(parameters);
     const student = await resource.getStudent(parameters);

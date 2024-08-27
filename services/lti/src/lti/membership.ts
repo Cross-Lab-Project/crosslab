@@ -1,4 +1,3 @@
-
 import { platformFetch } from './message.js';
 
 export type nameServiceClaim = {
@@ -61,7 +60,10 @@ function isResourceMemberResponse(obj: unknown): obj is { members: ResourceMembe
   );
 }
 
-export async function membership(platform: {client_id?: string, iss?: string, access_token_url?: string}, namesServiceUrl: string) {
+export async function membership(
+  platform: { client_id?: string; iss?: string; access_token_url?: string },
+  namesServiceUrl: string,
+) {
   const res = await platformFetch(namesServiceUrl, {
     headers: { Accept: 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json' },
     platform,

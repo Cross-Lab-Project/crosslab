@@ -5,7 +5,7 @@ paths:
     post:
       operationId: lti_launch
       tags:
-      - lti
+        - lti
       security: []
       parameters:
         - $ref: 'platform.yml#/components/parameters/platform_id'
@@ -47,7 +47,7 @@ paths:
     post:
       operationId: lti_login
       tags:
-      - lti
+        - lti
       security: []
       parameters:
         - $ref: 'platform.yml#/components/parameters/platform_id'
@@ -102,7 +102,7 @@ paths:
     get:
       operationId: lti_jwks
       tags:
-      - lti
+        - lti
       security: []
       parameters:
         - $ref: 'platform.yml#/components/parameters/platform_id'

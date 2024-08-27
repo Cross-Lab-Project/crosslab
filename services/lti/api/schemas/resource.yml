@@ -4,8 +4,8 @@ allOf:
   - $ref: '#/$defs/partial'
   - type: object
     required:
-    - uri
-    - students_uri
+      - uri
+      - students_uri
 $defs:
   partial:
     type: object

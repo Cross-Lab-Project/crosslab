@@ -15,7 +15,7 @@ export const generate_platform = (id: { platform_id: string }) => {
 export const parse_platform = (uri: string) => {
   const match = parse(`${base}/platform/(.*)`, uri);
   return { platform_id: match[1] };
-}
+};
 
 export const generate_resource = (id: { resource_id: string }) => {
   return base + `/resource/${id.resource_id}`;
@@ -26,12 +26,12 @@ export const parse_resource = (uri: string) => {
 };
 
 export const generate_resource_students = (id: { resource_id: string }) => {
-    return base + `/resource/${id.resource_id}/students`;
-  };
-  export const parse_resource_students = (uri: string) => {
-    const match = parse(`${base}/resource/(.*)/students`, uri);
-    return { resource_id: match[1] };
-  };
+  return base + `/resource/${id.resource_id}/students`;
+};
+export const parse_resource_students = (uri: string) => {
+  const match = parse(`${base}/resource/(.*)/students`, uri);
+  return { resource_id: match[1] };
+};
 
 export const generate_resource_student = (id: {
   resource_id: string;

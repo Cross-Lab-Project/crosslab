@@ -1,12 +1,11 @@
-
-
 import { utils } from '@crosslab/service-common';
+
 import { LTIResource } from '../business/lti_resource.js';
 import {
   deleteLtiResourceByResourceIdSignature,
   getLtiResourceByResourceIdSignature,
   getLtiResourceSignature,
-  patchLtiResourceByResourceIdSignature
+  patchLtiResourceByResourceIdSignature,
 } from '../generated/signatures.js';
 import { Resource as ResourceObject } from '../generated/types.js';
 import * as uri from './uris.js';
@@ -28,7 +27,7 @@ export const getLtiResource: getLtiResourceSignature = async req => {
     'view',
     uri.generate_resource,
   );
-  
+
   return {
     status: 200,
     body: filtered_resources.map(resource_to_wire),
@@ -39,7 +38,10 @@ export const getLtiResourceByResourceId: getLtiResourceByResourceIdSignature = a
   req,
   parameters,
 ) => {
-  await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+  await req.authorization.check_authorization_or_fail(
+    'view',
+    uri.generate_resource(parameters),
+  );
 
   const resource = await LTIResource.byId(parameters);
 
@@ -54,7 +56,10 @@ export const patchLtiResourceByResourceId: patchLtiResourceByResourceIdSignature
   parameters,
   body,
 ) => {
-  await req.authorization.check_authorization_or_fail('edit', uri.generate_resource(parameters));
+  await req.authorization.check_authorization_or_fail(
+    'edit',
+    uri.generate_resource(parameters),
+  );
 
   const resource = await LTIResource.byId(parameters);
 
@@ -67,10 +72,13 @@ export const patchLtiResourceByResourceId: patchLtiResourceByResourceIdSignature
 
 export const deleteLtiResourceByResourceId: deleteLtiResourceByResourceIdSignature =
   async (req, parameters) => {
-    await req.authorization.check_authorization_or_fail('delete', uri.generate_resource(parameters));
+    await req.authorization.check_authorization_or_fail(
+      'delete',
+      uri.generate_resource(parameters),
+    );
 
     const resource = await LTIResource.byId(parameters);
-    
+
     await resource.delete();
     return { status: 204 };
   };

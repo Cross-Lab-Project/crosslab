@@ -2,19 +2,19 @@
 openapi: 3.1.0
 components:
   parameters:
-      platform_id:
-        name: platform_id
-        in: path
-        required: true
-        schema:
-          type: string
-        description: The ID of the platform.
+    platform_id:
+      name: platform_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the platform.
 paths:
   platform:
     get:
       operationId: list_platform
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       responses:
@@ -32,7 +32,7 @@ paths:
     post:
       operationId: register_platform
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       responses:
@@ -55,7 +55,7 @@ paths:
     get:
       operationId: get_platform
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -73,7 +73,7 @@ paths:
     patch:
       operationId: update_platform
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:
@@ -93,7 +93,7 @@ paths:
     delete:
       operationId: delete_platform
       tags:
-      - lti
+        - lti
       security:
         - JWT: []
       parameters:

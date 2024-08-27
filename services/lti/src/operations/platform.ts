@@ -4,7 +4,7 @@ import {
   getLtiPlatformByPlatformIdSignature,
   getLtiPlatformSignature,
   patchLtiPlatformByPlatformIdSignature,
-  postLtiPlatformSignature
+  postLtiPlatformSignature,
 } from '../generated/signatures.js';
 import * as uri from './uris.js';
 
@@ -43,7 +43,10 @@ export const getLtiPlatformByPlatformId: getLtiPlatformByPlatformIdSignature = a
   req,
   parameters,
 ) => {
-  await req.authorization.check_authorization_or_fail('view', uri.generate_platform(parameters));
+  await req.authorization.check_authorization_or_fail(
+    'view',
+    uri.generate_platform(parameters),
+  );
 
   const platform = await LTIPlatform.byId(parameters);
   return {
@@ -56,7 +59,10 @@ export const patchLtiPlatformByPlatformId: patchLtiPlatformByPlatformIdSignature
   req,
   parameters,
 ) => {
-  await req.authorization.check_authorization_or_fail('edit', uri.generate_platform(parameters));
+  await req.authorization.check_authorization_or_fail(
+    'edit',
+    uri.generate_platform(parameters),
+  );
 
   const platform = await LTIPlatform.byId(parameters);
   return {
@@ -67,8 +73,11 @@ export const patchLtiPlatformByPlatformId: patchLtiPlatformByPlatformIdSignature
 
 export const deleteLtiPlatformByPlatformId: deleteLtiPlatformByPlatformIdSignature =
   async (req, parameters) => {
-    await req.authorization.check_authorization_or_fail('delete', uri.generate_platform(parameters));
-    
+    await req.authorization.check_authorization_or_fail(
+      'delete',
+      uri.generate_platform(parameters),
+    );
+
     const platform = await LTIPlatform.byId(parameters);
     await platform.delete();
     return { status: 204 };
