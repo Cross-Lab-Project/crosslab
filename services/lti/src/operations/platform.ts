@@ -1,4 +1,4 @@
-import { logger } from '@crosslab/service-common';
+import { LTIPlatform } from '../business/lti_platform.js';
 import {
   deleteLtiPlatformByPlatformIdSignature,
   getLtiPlatformByPlatformIdSignature,
@@ -6,17 +6,18 @@ import {
   patchLtiPlatformByPlatformIdSignature,
   postLtiPlatformSignature
 } from '../generated/signatures.js';
-import { createNewPlatform, getPlatformById, listPlatforms } from '../lti/platform.js';
+import * as uri from './uris.js';
 
 export const getLtiPlatform: getLtiPlatformSignature = async req => {
-    logger.info(req.authorization.user)
   await req.authorization.check_authorization_or_fail('view', 'lti-platform');
-  const platforms = await listPlatforms();
+
+  const platforms = await LTIPlatform.list();
   const filtered_platforms = await req.authorization.filter(
     platforms,
     'view',
     p => p.uri,
   );
+
   return {
     status: 200,
     body: filtered_platforms.map(p => p.toObject()),
@@ -25,8 +26,10 @@ export const getLtiPlatform: getLtiPlatformSignature = async req => {
 
 export const postLtiPlatform: postLtiPlatformSignature = async req => {
   await req.authorization.check_authorization_or_fail('create', 'lti-platform');
-  const platform = await createNewPlatform(req.authorization.user);
+
+  const platform = await LTIPlatform.create(req.authorization.user);
   await req.authorization.relate('owner', platform.uri);
+
   return {
     status: 201,
     body: platform.toObject(),
@@ -40,8 +43,9 @@ export const getLtiPlatformByPlatformId: getLtiPlatformByPlatformIdSignature = a
   req,
   parameters,
 ) => {
-  const platform = await getPlatformById(parameters.platform_id);
-  await req.authorization.check_authorization_or_fail('view', platform.uri);
+  await req.authorization.check_authorization_or_fail('view', uri.generate_platform(parameters));
+
+  const platform = await LTIPlatform.byId(parameters);
   return {
     status: 200,
     body: platform.toObject(),
@@ -52,8 +56,9 @@ export const patchLtiPlatformByPlatformId: patchLtiPlatformByPlatformIdSignature
   req,
   parameters,
 ) => {
-  const platform = await getPlatformById(parameters.platform_id);
-  await req.authorization.check_authorization_or_fail('edit', platform.uri);
+  await req.authorization.check_authorization_or_fail('edit', uri.generate_platform(parameters));
+
+  const platform = await LTIPlatform.byId(parameters);
   return {
     status: 200,
     body: platform.toObject(),
@@ -62,8 +67,9 @@ export const patchLtiPlatformByPlatformId: patchLtiPlatformByPlatformIdSignature
 
 export const deleteLtiPlatformByPlatformId: deleteLtiPlatformByPlatformIdSignature =
   async (req, parameters) => {
-    const platform = await getPlatformById(parameters.platform_id);
-    await req.authorization.check_authorization_or_fail('delete', platform.uri);
+    await req.authorization.check_authorization_or_fail('delete', uri.generate_platform(parameters));
+    
+    const platform = await LTIPlatform.byId(parameters);
     await platform.delete();
     return { status: 204 };
   };

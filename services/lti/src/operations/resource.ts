@@ -1,128 +1,76 @@
-import { HttpError, logger } from '@crosslab/service-common';
+
+
+import { utils } from '@crosslab/service-common';
+import { LTIResource } from '../business/lti_resource.js';
 import {
   deleteLtiResourceByResourceIdSignature,
   getLtiResourceByResourceIdSignature,
-  getLtiResourceByResourceIdStudentsByStudentIdSignature,
-  getLtiResourceByResourceIdStudentsSignature,
   getLtiResourceSignature,
-  patchLtiResourceByResourceIdSignature,
-  patchLtiResourceByResourceIdStudentsByStudentIdSignature,
-  patchLtiResourceByResourceIdStudentsSignature
+  patchLtiResourceByResourceIdSignature
 } from '../generated/signatures.js';
-import { getResourceById, listResources } from '../lti/resource.js';
+import { Resource as ResourceObject } from '../generated/types.js';
+import * as uri from './uris.js';
+
+function resource_to_wire(resource: LTIResource): ResourceObject<'response'> {
+  return utils.removeNullOrUndefined({
+    uri: uri.generate_resource(resource),
+    students_uri: uri.generate_resource_students(resource),
+    experiment_template_uri: resource.experiment_template_uri,
+  });
+}
 
 export const getLtiResource: getLtiResourceSignature = async req => {
-    logger.info(req.authorization.user)
   await req.authorization.check_authorization_or_fail('view', 'lti-resource');
-  const resources = await listResources();
+
+  const resources = await LTIResource.list();
   const filtered_resources = await req.authorization.filter(
     resources,
     'view',
-    p => p.uri,
+    uri.generate_resource,
   );
+  
   return {
     status: 200,
-    body: filtered_resources.map(p => p.toObject()),
+    body: filtered_resources.map(resource_to_wire),
   };
 };
-
 
 export const getLtiResourceByResourceId: getLtiResourceByResourceIdSignature = async (
   req,
   parameters,
 ) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('view', resource.uri);
+  await req.authorization.check_authorization_or_fail('view', uri.generate_resource(parameters));
+
+  const resource = await LTIResource.byId(parameters);
+
   return {
     status: 200,
-    body: resource.toObject(),
+    body: resource_to_wire(resource),
   };
 };
 
 export const patchLtiResourceByResourceId: patchLtiResourceByResourceIdSignature = async (
   req,
   parameters,
-  body
+  body,
 ) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('edit', resource.uri);
-  resource.update(body)
+  await req.authorization.check_authorization_or_fail('edit', uri.generate_resource(parameters));
+
+  const resource = await LTIResource.byId(parameters);
+
+  resource.update(body);
   return {
     status: 200,
-    body: resource.toObject(),
+    body: resource_to_wire(resource),
   };
 };
 
 export const deleteLtiResourceByResourceId: deleteLtiResourceByResourceIdSignature =
   async (req, parameters) => {
-    const resource = await getResourceById(parameters.resource_id);
-    await req.authorization.check_authorization_or_fail('delete', resource.uri);
+    await req.authorization.check_authorization_or_fail('delete', uri.generate_resource(parameters));
+
+    const resource = await LTIResource.byId(parameters);
+    
     await resource.delete();
     return { status: 204 };
   };
-
-export const getLtiResourceByResourceIdStudents: getLtiResourceByResourceIdStudentsSignature = async (req, parameters) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('view', resource.uri);
-
-  return {
-    status: 200,
-    body: await resource.getStudents(),
-  };
-}
-
-export const getLtiResourceByResourceIdStudentsByStudentId: getLtiResourceByResourceIdStudentsByStudentIdSignature = async (req, parameters) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('view', resource.uri);
-
-  const students = await resource.getStudents()
-  const student = students.find(s => s.external_id === parameters.student_id)
-  if (!student) {
-    throw new HttpError(404, 'Student not found');
-  }
-
-  return {
-    status: 200,
-    body: student,
-  };
-}
-
-export const patchLtiResourceByResourceIdStudents: patchLtiResourceByResourceIdStudentsSignature = async (req, parameters, body) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('view', resource.uri);
-
-  for (const student of body){
-    const external_id = student.uri.split('/').pop()
-    if (!external_id) {
-      throw new HttpError(400, 'Invalid student URI');
-    }
-    for (const role of student.data.role_mapping){
-      await resource.updateStudent({external_id, role: role.role, device: role.device})
-    }
-  }
-
-  return {
-    status: 200,
-    body: await resource.getStudents(),
-  };
-}
-
-export const patchLtiResourceByResourceIdStudentsByStudentId: patchLtiResourceByResourceIdStudentsByStudentIdSignature = async (req, parameters, body) => {
-  const resource = await getResourceById(parameters.resource_id);
-  await req.authorization.check_authorization_or_fail('view', resource.uri);
-
-  for (const role of body.role_mapping){
-    resource.updateStudent({external_id:parameters.student_id, role: role.role, device: role.device})
-  }
-
-  const students = await resource.getStudents()
-  const student = students.find(s => s.external_id === parameters.student_id)
-  if (!student) {
-    throw new HttpError(404, 'Student not found');
-  }
-
-  return {
-    status: 200,
-    body: student,
-  };
-}

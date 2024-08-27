@@ -1,21 +1,21 @@
-import { JWTPayload, SignJWT } from 'jose';
+import { createRemoteJWKSet, JWTPayload, jwtVerify, SignJWT } from 'jose';
 
 import fetch, { RequestInfo, RequestInit } from 'node-fetch';
+import { kid, privateKey } from '../business/key_management.js';
 import '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { LtiMessageModel, PlatformModel } from '../database/model.js';
 import { random } from '../helper/generators.js';
-import { kid, privateKey } from '../key_management.js';
 
 //import { tool_configuration } from './tool_configuration.js';
 
-export type LtiMessage = JWTPayload & {
+export type RawLtiMessage = {
   'https://purl.imsglobal.org/spec/lti/claim/message_type': string;
   'https://purl.imsglobal.org/spec/lti/claim/roles': string[];
   'https://purl.imsglobal.org/spec/lti/claim/resource_link': { id: string },
 };
 
-export function isLtiMessage(message: JWTPayload): message is LtiMessage {
+function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
   if (
     typeof message['https://purl.imsglobal.org/spec/lti/claim/message_type'] !== 'string'
   ) {
@@ -87,7 +87,17 @@ export async function handle_login_request(
   return authentication_request_url;
 }
 
-async function getPlatfromAccessToken(platform: PlatformModel, scopes: string[]) {
+async function getPlatfromAccessToken(platform: {client_id?: string, iss?: string, access_token_url?: string}, scopes: string[]) {
+  if(!platform.client_id){
+    throw new Error('client_id is not set');
+  }
+  if(!platform.iss){
+    throw new Error('iss is not set');
+  }
+  if(!platform.access_token_url){
+    throw new Error('access_token_url is not set');
+  }
+
   const jwt_fields = {
     iss: platform.client_id,
     aud: platform.iss,
@@ -101,7 +111,7 @@ async function getPlatfromAccessToken(platform: PlatformModel, scopes: string[])
     .setExpirationTime('5m')
     .sign(privateKey);
 
-  const result = await fetch(platform.access_token_url!, {
+  const result = await fetch(platform.access_token_url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -121,7 +131,7 @@ async function getPlatfromAccessToken(platform: PlatformModel, scopes: string[])
 
 export async function platformFetch(
   url: URL | RequestInfo,
-  init: RequestInit & { platform: PlatformModel; scopes: string[] },
+  init: RequestInit & { platform: {client_id?: string, iss?: string, access_token_url?: string}; scopes: string[] },
 ) {
   const { platform, scopes, ..._init } = init;
   const access_token = await getPlatfromAccessToken(platform, scopes);
@@ -133,4 +143,23 @@ export async function platformFetch(
       ...(_init?.headers ?? []),
     },
   });
+}
+
+
+export async function verifyMessage(id_token: string, nonce: string, jwks_url?: string) {
+  if (!jwks_url) {
+    throw new Error('jwks_url is not set');
+  }
+
+  const jwks = createRemoteJWKSet(new URL(jwks_url));
+  const { payload } = await jwtVerify(id_token, jwks);
+  if (payload.nonce !== nonce) {
+    throw new Error('nonce does not match');
+  }
+
+  if (!isRawLtiMessage(payload)) {
+    throw new Error('Malformed LTI Message');
+  }
+
+  return payload;
 }

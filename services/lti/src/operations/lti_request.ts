@@ -1,5 +1,7 @@
-import { HttpError } from '@crosslab/service-common';
+import { HttpError, utils } from '@crosslab/service-common';
 
+import { get_jwks } from '../business/key_management.js';
+import { LTIPlatform } from '../business/lti_platform.js';
 import { Client as AuthenticationClient } from '../clients/authentication/client.js';
 import { Client as DeviceClient } from '../clients/device/client.js';
 import { Client as ExperimentClient } from '../clients/experiment/client.js';
@@ -9,15 +11,14 @@ import {
   postLtiPlatformByPlatformIdLaunchSignature,
   postLtiPlatformByPlatformIdLoginSignature,
 } from '../generated/signatures.js';
-import { get_jwks } from '../key_management.js';
-import { getPlatformById } from '../lti/platform.js';
-import { getOrCreateResource } from '../lti/resource.js';
-import { createSession } from '../lti/session.js';
+import * as uri from './uris.js';
+
 
 export const postLtiPlatformByPlatformIdLogin: postLtiPlatformByPlatformIdLoginSignature =
   async (_req, parameters, body) => {
-    const platform = await getPlatformById(parameters.platform_id);
+    const platform = await LTIPlatform.byId(parameters);
     const authentication_request_url = await platform.getAuthUrl(body);
+
     return {
       status: 200,
       body: { authentication_request_url: authentication_request_url },
@@ -26,10 +27,8 @@ export const postLtiPlatformByPlatformIdLogin: postLtiPlatformByPlatformIdLoginS
 
 export const postLtiPlatformByPlatformIdLaunch: postLtiPlatformByPlatformIdLaunchSignature =
   async (_req, parameters, body) => {
-    const platform = await getPlatformById(parameters.platform_id);
-    const payload = await platform.verifyLtiMessage(body);
-    const resource = await getOrCreateResource(payload, platform);
-    const session = await createSession(payload, resource);
+    const platform = await LTIPlatform.byId(parameters);
+    const session = await platform.startSession(body);
 
     if (!platform.platform_model.associated_user) {
       throw new HttpError(401, 'The platform does not have an associated');
@@ -63,10 +62,16 @@ export const postLtiPlatformByPlatformIdLaunch: postLtiPlatformByPlatformIdLaunc
       status: 200,
       body: {
         access_token: await session.createAccessToken(),
-        session: session.toObject(),
+        session: utils.removeNullOrUndefined({
+          uri: uri.generate_session(session),
+          resource_uri: uri.generate_resource(session),
+          experiment_uri: await session.get_experiment_uri(),
+          roles: Array.from(session.launchMessage.roles),
+        }),
       },
     };
   };
+
 
 export const getLtiPlatformByPlatformIdJwks: getLtiPlatformByPlatformIdJwksSignature =
   async () => {

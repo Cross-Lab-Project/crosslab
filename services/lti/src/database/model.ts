@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { RawLtiMessage } from '../lti/message.js';
 
 @Entity()
 export class PlatformModel {
@@ -62,7 +63,7 @@ export class LtiSessionModel{
   resource!: LtiResourceModel
   
   @Column("simple-json")
-  launchMessage!: object
+  launchMessage!: RawLtiMessage
 
   @Column({nullable: true})
   experiment_uri?: string
@@ -72,8 +73,8 @@ export class LtiSessionModel{
 }
 
 @Entity()
-@Unique(["resource", "external_id", "role"])
-export class LtiResourceStudentRoleMapModel{
+@Unique(["resource", "external_id"])
+export class LtiResourceStudent{
   @PrimaryGeneratedColumn("uuid")
   id!: string
 
@@ -83,6 +84,23 @@ export class LtiResourceStudentRoleMapModel{
   @Column()
   external_id!: string
 
+  @Column({nullable: true})
+  name?: string
+
+  @Column({nullable: true})
+  email?: string
+}
+
+
+@Entity()
+@Unique(["student", "role"])
+export class LtiResourceStudentRoleMapModel{
+  @PrimaryGeneratedColumn("uuid")
+  id!: string
+  
+  @ManyToOne(()=>LtiResourceStudent, {eager: false})
+  student!: LtiResourceStudent
+
   @Column()
   role!: string
 
@@ -90,4 +108,4 @@ export class LtiResourceStudentRoleMapModel{
   device!: string
 }
 
-export const Entities = [PlatformModel, LtiMessageModel, LtiResourceModel, LtiSessionModel, LtiResourceStudentRoleMapModel ];
+export const Entities = [PlatformModel, LtiMessageModel, LtiResourceModel, LtiSessionModel, LtiResourceStudent, LtiResourceStudentRoleMapModel ];
