@@ -1,10 +1,10 @@
-import chai from 'chai';
+import * as chaiModule from 'chai';
 import chaiHttp from 'chai-http';
 
 import app from '../src/app.js';
 
 // Configure chai
-chai.use(chaiHttp);
+export const chai = chaiModule.use(chaiHttp);
 chai.should();
 
 export async function relate(subject: string, relation: string, object: string) {

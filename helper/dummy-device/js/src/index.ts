@@ -105,7 +105,7 @@ async function main() {
   });
 
   await new Promise(resolve => setTimeout(resolve, 500));
-  debugging && (await Debugger.pause());
+  if (debugging) await Debugger.pause();
   const expression = 'window.app(' + JSON.stringify(options) + ')';
   const appPromise = await (await Runtime.evaluate({ expression, silent: false })).result;
   if (appPromise.objectId === undefined) {

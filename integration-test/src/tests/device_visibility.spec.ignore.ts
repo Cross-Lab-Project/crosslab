@@ -6,7 +6,7 @@ import {
 import { DeviceOwnershipError } from '@crosslab/service-common';
 import assert from 'assert';
 
-import { config } from '../config';
+import { config } from '../config.js';
 
 const apiClient = new APIClient(config.API_URL);
 

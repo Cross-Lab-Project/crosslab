@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { errorHandler, logging } from '@crosslab/service-common';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 
@@ -23,7 +22,6 @@ export function init_app() {
   app.use(logging.middleware())
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(cookieParser(config.COOKIE_SECRET));
 
   app.get(
     '/',

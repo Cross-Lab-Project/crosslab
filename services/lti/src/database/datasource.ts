@@ -1,6 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-//import { RelationModel } from "./model.js";
 import { config } from '../config.js';
 import { Migrations } from './migrations/index.js';
 import { Entities } from './model.js';

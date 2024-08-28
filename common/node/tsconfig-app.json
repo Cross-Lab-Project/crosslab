@@ -18,6 +18,9 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "skipLibCheck": true,
+        "paths": {
+            "typeorm": ["./node_modules/typeorm"]
+        }
     },
     "include": ["src"]
 }

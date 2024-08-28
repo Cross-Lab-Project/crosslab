@@ -12,9 +12,9 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "^20.5.9",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "@types/node": "^22.1.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0"
