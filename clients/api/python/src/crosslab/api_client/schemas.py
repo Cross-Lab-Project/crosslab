@@ -3643,3 +3643,319 @@ UpdateInstitutionResponse: TypeAlias = UpdateInstitutionResponse200
 
 
 DeleteInstitutionResponse: TypeAlias = None
+
+
+class ListPlatformResponse200ItemsRegistration(TypedDict):
+    """
+    Properties:
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
+    """
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
+
+
+class ListPlatformResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
+    """
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: ListPlatformResponse200ItemsRegistration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
+
+
+ListPlatformResponse200: TypeAlias = List[ListPlatformResponse200Items]
+
+
+ListPlatformResponse: TypeAlias = ListPlatformResponse200
+
+
+class RegisterPlatformResponse201Registration(TypedDict):
+    """
+    Properties:
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
+    """
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
+
+
+class RegisterPlatformResponse201(TypedDict):
+    """
+    Properties:
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
+    """
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: RegisterPlatformResponse201Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
+
+
+RegisterPlatformResponse: TypeAlias = RegisterPlatformResponse201
+
+
+class GetPlatformResponse200Registration(TypedDict):
+    """
+    Properties:
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
+    """
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
+
+
+class GetPlatformResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
+    """
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: GetPlatformResponse200Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
+
+
+GetPlatformResponse: TypeAlias = GetPlatformResponse200
+
+
+class UpdatePlatformResponse200Registration(TypedDict):
+    """
+    Properties:
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
+    """
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
+
+
+class UpdatePlatformResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
+    """
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: UpdatePlatformResponse200Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
+
+
+UpdatePlatformResponse: TypeAlias = UpdatePlatformResponse200
+
+
+DeletePlatformResponse: TypeAlias = None
+
+
+class LtiLoginRequest(TypedDict):
+    """
+    Properties:
+    - iss: The issuer of the LTI message.
+    - client_id: The client ID of the LTI message.
+    - lti_deployment_id: The deployment ID of the LTI message.
+    - target_link_uri: The target link URI of the LTI message.
+    - login_hint: The login hint of the LTI message.
+    - lti_message_hint: The LTI message hint of the LTI message.
+    """
+    iss: str
+    client_id: str
+    lti_deployment_id: NotRequired[str]
+    target_link_uri: str
+    login_hint: str
+    lti_message_hint: str
+
+
+class LtiLoginResponse200(TypedDict):
+    """
+    Properties:
+    - authentication_request_url: The authentication request URL. The Frontend should send a 302 redirect of this URL to the user agent.
+    """
+    authentication_request_url: str
+
+
+LtiLoginResponse: TypeAlias = LtiLoginResponse200
+
+
+class LtiLaunchRequest(TypedDict):
+    """
+    Properties:
+    - state: The state of the LTI message.
+    - id_token: The ID token of the LTI message.
+    """
+    state: str
+    id_token: str
+
+
+class LtiLaunchResponse200Session(TypedDict):
+    """
+    Properties:
+    - uri
+    - resource_uri: The URI of the resource.
+    - experiment_uri: The URI of the experiment.
+    - roles: The roles of the session.
+    """
+    uri: str
+    resource_uri: str
+    experiment_uri: NotRequired[str]
+    roles: List[Literal["instructor", "student"]]
+
+
+class LtiLaunchResponse200(TypedDict):
+    """
+    Properties:
+    - access_token: The access token to authenticate subsequent requests.
+    - session
+    """
+    access_token: str
+    session: LtiLaunchResponse200Session
+
+
+LtiLaunchResponse: TypeAlias = LtiLaunchResponse200
+
+
+class ListResourceResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+ListResourceResponse200: TypeAlias = List[ListResourceResponse200Items]
+
+
+ListResourceResponse: TypeAlias = ListResourceResponse200
+
+
+class GetResourceResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+GetResourceResponse: TypeAlias = GetResourceResponse200
+
+
+class UpdateResourceRequest(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: NotRequired[str]
+    experiment_template_uri: NotRequired[str]
+    students_uri: NotRequired[str]
+
+
+class UpdateResourceResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+UpdateResourceResponse: TypeAlias = UpdateResourceResponse200
+
+
+DeleteResourceResponse: TypeAlias = None
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDevice = Union[ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1, ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2]
+
+
+class ListResourceStudentsResponse200ItemsRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: NotRequired[str]
+    device: NotRequired[ListResourceStudentsResponse200ItemsRole_mappingItemsDevice]
+
+
+class ListResourceStudentsResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[ListResourceStudentsResponse200ItemsRole_mappingItems]
+
+
+ListResourceStudentsResponse200: TypeAlias = List[ListResourceStudentsResponse200Items]
+
+
+ListResourceStudentsResponse: TypeAlias = ListResourceStudentsResponse200
