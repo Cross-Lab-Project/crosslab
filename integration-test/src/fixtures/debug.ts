@@ -1,5 +1,8 @@
 import { WriteStream, createWriteStream, readFileSync } from 'fs';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 
 export interface DebugContext {
   debug?: {

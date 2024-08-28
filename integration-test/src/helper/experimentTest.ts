@@ -11,7 +11,7 @@ import {
   DeviceType,
   DummyDevice,
   DummyDeviceEvents,
-} from '../fixtures/dummyDevice';
+} from '../fixtures/dummyDevice.js';
 
 function createDummyDevice(type: ClientType, index: number, context: Mocha.Context) {
   switch (type) {
