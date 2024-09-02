@@ -3,6 +3,7 @@ openapi: 3.1.0
 paths:
   launch:
     post:
+      summary: Launch the LTI tool.
       operationId: lti_launch
       tags:
         - lti
@@ -45,6 +46,7 @@ paths:
                   - session
   login:
     post:
+      summary: Login with LTI.
       operationId: lti_login
       tags:
         - lti
@@ -100,6 +102,7 @@ paths:
                 additionalProperties: false
   jwks:
     get:
+      summary: Get the JSON Web Key Set (JWKS) for the tool.
       operationId: lti_jwks
       tags:
         - lti

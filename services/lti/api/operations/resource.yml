@@ -19,6 +19,7 @@ components:
 paths:
   resource:
     get:
+      summary: List all LTI-Resources.
       operationId: list_resource
       tags:
         - lti
@@ -38,6 +39,7 @@ paths:
           description: Unauthorized.
   resource_by_id:
     get:
+      summary: Get the LTI-Resource.
       operationId: get_resource
       tags:
         - lti
@@ -56,6 +58,7 @@ paths:
         401:
           description: Unauthorized.
     patch:
+      summary: Update the LTI-Resource.
       operationId: update_resource
       tags:
         - lti
@@ -82,6 +85,7 @@ paths:
         401:
           description: Unauthorized.
     delete:
+      summary: Delete the LTI-Resource.
       operationId: delete_resource
       tags:
         - lti
@@ -97,6 +101,7 @@ paths:
           description: Unauthorized.
   resource_by_id_students:
     get:
+      summary: List all students of the LTI-Resource.
       operationId: list_resource_students
       tags:
         - lti
@@ -117,6 +122,7 @@ paths:
         401:
           description: Unauthorized.
     patch:
+      summary: Update the students of the resource.
       operationId: update_resource_students
       description: Update the students of the resource. Acts as you would call a PATCH on each student.
       tags:
@@ -156,6 +162,7 @@ paths:
           description: Unauthorized.
   resource_by_id_students_by_id:
     get:
+      summary: Get the student of the resource.
       operationId: get_resource_student
       tags:
         - lti
@@ -180,6 +187,7 @@ paths:
         401:
           description: Unauthorized.
     patch:
+      summary: Update the student of the resource.
       operationId: update_resource_student
       tags:
         - lti

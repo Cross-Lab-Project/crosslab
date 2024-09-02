@@ -12,6 +12,7 @@ components:
 paths:
   platform:
     get:
+      summary: List all platforms.
       operationId: list_platform
       tags:
         - lti
@@ -30,6 +31,7 @@ paths:
         401:
           description: Unauthorized.
     post:
+      summary: Register a new platform.
       operationId: register_platform
       tags:
         - lti
@@ -53,6 +55,7 @@ paths:
           description: Unauthorized
   platform_by_id:
     get:
+      summary: Get the platform.
       operationId: get_platform
       tags:
         - lti
@@ -71,6 +74,7 @@ paths:
         401:
           description: Unauthorized.
     patch:
+      summary: Update the platform.
       operationId: update_platform
       tags:
         - lti
@@ -91,6 +95,7 @@ paths:
         401:
           description: Unauthorized.
     delete:
+      summary: Delete the platform.
       operationId: delete_platform
       tags:
         - lti
