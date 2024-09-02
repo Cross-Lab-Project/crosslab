@@ -6,9 +6,5 @@ import { PlatformModel } from '../database/model.js';
 
 export async function deletePendingPlatforms() {
   const date = DateFun.sub(new Date(), { minutes: 10 });
-  console.log(
-    await ApplicationDataSource.manager.find(PlatformModel, {
-      where: { registrated: false, createdDate: LessThan(date) },
-    }),
-  );
+  await ApplicationDataSource.createQueryBuilder().delete().from(PlatformModel).where( {registrated: false, createdDate: LessThan(date) }).execute();
 }

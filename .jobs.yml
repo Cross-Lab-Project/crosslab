@@ -245,6 +245,11 @@ services/lti:
   - script: build-docker
     dependencies:
       - services/lti:build
+  - script: test
+    dependencies:
+      - services/authorization:build
+    tags:
+      - test
 
 services/openapi:
   - script: build

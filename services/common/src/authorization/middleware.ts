@@ -10,7 +10,7 @@ import {
   AuthorizationResponse,
   authorization_functions,
 } from './authorization.js';
-import { AuthorizationMockConfig, mock_authorization_functions } from './mock.js';
+import { AuthorizationMockConfig, AuthorizationMockLogEntry, mock_authorization_functions } from './mock.js';
 
 export type AuthorizationActionTupleWithoutSubject = Omit<
   AuthorizationActionTuple,
@@ -164,6 +164,7 @@ declare global {
 
     export interface Application {
       authorization_mock: undefined | AuthorizationMockConfig;
+      authorization_mock_log: undefined | AuthorizationMockLogEntry[];
     }
   }
 }
@@ -198,7 +199,7 @@ export function middleware(config?: AuthorizationConfig) {
     }
 
     if (req.app.authorization_mock) {
-      authorization_funs = mock_authorization_functions(req.app.authorization_mock);
+      authorization_funs = mock_authorization_functions(req.app.authorization_mock, req.app);
     }
     req.authorization = {
       ...bind_authorization(authorization_funs, user),

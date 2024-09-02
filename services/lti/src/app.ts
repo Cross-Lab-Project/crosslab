@@ -5,6 +5,7 @@ import express, { Application } from 'express';
 import { middleware as clientMiddleware } from './clients/index.js';
 import { config } from './config.js';
 import { app } from './generated/index.js';
+export { app };
 
 export function init_app() {
   app.initService({
@@ -30,6 +31,5 @@ export function init_app() {
     ],
     errorHandler: error.middleware,
   });
-
-  app.listen(config.PORT);
+  return app;
 }
