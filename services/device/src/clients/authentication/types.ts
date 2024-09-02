@@ -76,8 +76,8 @@ export type SizedTuple<
     ? _SizedTuple<T, NumericRangeTuple<MIN, MAX>>
     : TupleObject<T, NumericRangeTuple<0, MIN>> & T[]
   : MAX extends number
-    ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
-    : T[];
+  ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
+  : T[];
 
 type _SizedTuple<T, ARR extends number[], Z extends boolean = false> = ARR extends [
   infer HEAD extends number,
@@ -151,30 +151,30 @@ export type Credentials<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-      ? {
-          /**
-           * Username of the user.
-           */
-          username: string;
-          /**
-           * Password of the user.
-           */
-          password: string;
-          [k: string]: unknown;
-        }
-      : T extends 'response'
-        ? {
-            /**
-             * Username of the user.
-             */
-            username: string;
-            /**
-             * Password of the user.
-             */
-            password: string;
-            [k: string]: unknown;
-          }
-        : never;
+    ? {
+        /**
+         * Username of the user.
+         */
+        username: string;
+        /**
+         * Password of the user.
+         */
+        password: string;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+    ? {
+        /**
+         * Username of the user.
+         */
+        username: string;
+        /**
+         * Password of the user.
+         */
+        password: string;
+        [k: string]: unknown;
+      }
+    : never;
 
 /**
  * Authentication method.
@@ -182,10 +182,10 @@ export type Credentials<T extends 'request' | 'response' | 'all' = 'all'> =
 export type AuthMethod<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
   ? 'tui' | 'local'
   : T extends 'request'
-    ? 'tui' | 'local'
-    : T extends 'response'
-      ? 'tui' | 'local'
-      : never;
+  ? 'tui' | 'local'
+  : T extends 'response'
+  ? 'tui' | 'local'
+  : never;
 
 export type User<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
   ? {
@@ -197,21 +197,21 @@ export type User<T extends 'request' | 'response' | 'all' = 'all'> = T extends '
       [k: string]: unknown;
     }
   : T extends 'request'
-    ? {
-        username?: string;
-        password?: string;
-        admin?: boolean;
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-      ? {
-          url?: string;
-          id?: string;
-          username?: string;
-          admin?: boolean;
-          [k: string]: unknown;
-        }
-      : never;
+  ? {
+      username?: string;
+      password?: string;
+      admin?: boolean;
+      [k: string]: unknown;
+    }
+  : T extends 'response'
+  ? {
+      url?: string;
+      id?: string;
+      username?: string;
+      admin?: boolean;
+      [k: string]: unknown;
+    }
+  : never;
 
 export function isUser<T extends 'request' | 'response' | 'all' = 'all'>(
   obj: unknown,

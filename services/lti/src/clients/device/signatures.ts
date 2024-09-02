@@ -5,45 +5,40 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import * as Types from './types.js';
+
+import * as Types from "./types.js"
 // @ts-ignore
-import { type Require } from './types.js';
+import { type Require } from "./types.js"
 
 /**
  * Typing for all possible responses to the request made by listDevices()
  * @category listDevices()
  */
-export type ListDevicesResponse = ListDevicesSuccessResponse | ListDevicesErrorResponse;
+export type ListDevicesResponse = ListDevicesSuccessResponse | ListDevicesErrorResponse
 
 /**
  * Typing for all successful responses to the request made by listDevices()
  * @category listDevices()
  */
-export type ListDevicesSuccessResponse = ListDevicesResponse200;
+export type ListDevicesSuccessResponse = ListDevicesResponse200
 
 /**
  * Typing for all error responses to the request made by listDevices()
  * @category listDevices()
  */
-export type ListDevicesErrorResponse =
-  | ListDevicesResponse400
-  | ListDevicesResponse401
-  | ListDevicesResponse403
-  | ListDevicesResponse404
-  | ListDevicesResponse500;
+export type ListDevicesErrorResponse = ListDevicesResponse400 | ListDevicesResponse401 | ListDevicesResponse403 | ListDevicesResponse404 | ListDevicesResponse500
 
 /**
  * Typing for a response with status 200 to the request made by listDevices()
  * @category listDevices()
  */
 export interface ListDevicesResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.DeviceOverview<'response'>[];
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: (Types.DeviceOverview<"response">)[]
 }
 
 /**
@@ -51,11 +46,11 @@ export interface ListDevicesResponse200 extends Types.SuccessResponse {
  * @category listDevices()
  */
 export interface ListDevicesResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -63,11 +58,11 @@ export interface ListDevicesResponse400 extends Types.ErrorResponse {
  * @category listDevices()
  */
 export interface ListDevicesResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -75,11 +70,11 @@ export interface ListDevicesResponse401 extends Types.ErrorResponse {
  * @category listDevices()
  */
 export interface ListDevicesResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -87,11 +82,11 @@ export interface ListDevicesResponse403 extends Types.ErrorResponse {
  * @category listDevices()
  */
 export interface ListDevicesResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -99,11 +94,11 @@ export interface ListDevicesResponse404 extends Types.ErrorResponse {
  * @category listDevices()
  */
 export interface ListDevicesResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -111,50 +106,43 @@ export interface ListDevicesResponse500 extends Types.ErrorResponse {
  * @category createDevice()
  */
 export type CreateDeviceParameters = {
-  changedUrl?: string;
-};
+    "changedUrl"?: string,
+}
 
 /**
  * Typing for the body of the request made by createDevice()
  * @category createDevice()
  */
-export type CreateDeviceBody = Types.Device<'request'>;
+export type CreateDeviceBody = Types.Device<"request">
 
 /**
  * Typing for all possible responses to the request made by createDevice()
  * @category createDevice()
  */
-export type CreateDeviceResponse =
-  | CreateDeviceSuccessResponse
-  | CreateDeviceErrorResponse;
+export type CreateDeviceResponse = CreateDeviceSuccessResponse | CreateDeviceErrorResponse
 
 /**
  * Typing for all successful responses to the request made by createDevice()
  * @category createDevice()
  */
-export type CreateDeviceSuccessResponse = CreateDeviceResponse201;
+export type CreateDeviceSuccessResponse = CreateDeviceResponse201
 
 /**
  * Typing for all error responses to the request made by createDevice()
  * @category createDevice()
  */
-export type CreateDeviceErrorResponse =
-  | CreateDeviceResponse400
-  | CreateDeviceResponse401
-  | CreateDeviceResponse403
-  | CreateDeviceResponse404
-  | CreateDeviceResponse500;
+export type CreateDeviceErrorResponse = CreateDeviceResponse400 | CreateDeviceResponse401 | CreateDeviceResponse403 | CreateDeviceResponse404 | CreateDeviceResponse500
 
 /**
  * Typing for a response with status 201 to the request made by createDevice()
  * @category createDevice()
  */
 export interface CreateDeviceResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Device<'response'>;
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Device<"response">
 }
 
 /**
@@ -162,11 +150,11 @@ export interface CreateDeviceResponse201 extends Types.SuccessResponse {
  * @category createDevice()
  */
 export interface CreateDeviceResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -174,11 +162,11 @@ export interface CreateDeviceResponse400 extends Types.ErrorResponse {
  * @category createDevice()
  */
 export interface CreateDeviceResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -186,11 +174,11 @@ export interface CreateDeviceResponse401 extends Types.ErrorResponse {
  * @category createDevice()
  */
 export interface CreateDeviceResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -198,11 +186,11 @@ export interface CreateDeviceResponse403 extends Types.ErrorResponse {
  * @category createDevice()
  */
 export interface CreateDeviceResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -210,11 +198,11 @@ export interface CreateDeviceResponse404 extends Types.ErrorResponse {
  * @category createDevice()
  */
 export interface CreateDeviceResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -222,43 +210,38 @@ export interface CreateDeviceResponse500 extends Types.ErrorResponse {
  * @category getDevice()
  */
 export type GetDeviceParameters = {
-  device_id: string;
-  flat_group?: boolean;
-};
+    "device_id": string,
+	"flat_group"?: boolean,
+}
 
 /**
  * Typing for all possible responses to the request made by getDevice()
  * @category getDevice()
  */
-export type GetDeviceResponse = GetDeviceSuccessResponse | GetDeviceErrorResponse;
+export type GetDeviceResponse = GetDeviceSuccessResponse | GetDeviceErrorResponse
 
 /**
  * Typing for all successful responses to the request made by getDevice()
  * @category getDevice()
  */
-export type GetDeviceSuccessResponse = GetDeviceResponse200;
+export type GetDeviceSuccessResponse = GetDeviceResponse200
 
 /**
  * Typing for all error responses to the request made by getDevice()
  * @category getDevice()
  */
-export type GetDeviceErrorResponse =
-  | GetDeviceResponse400
-  | GetDeviceResponse401
-  | GetDeviceResponse403
-  | GetDeviceResponse404
-  | GetDeviceResponse500;
+export type GetDeviceErrorResponse = GetDeviceResponse400 | GetDeviceResponse401 | GetDeviceResponse403 | GetDeviceResponse404 | GetDeviceResponse500
 
 /**
  * Typing for a response with status 200 to the request made by getDevice()
  * @category getDevice()
  */
 export interface GetDeviceResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Device<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Device<"response">
 }
 
 /**
@@ -266,11 +249,11 @@ export interface GetDeviceResponse200 extends Types.SuccessResponse {
  * @category getDevice()
  */
 export interface GetDeviceResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -278,11 +261,11 @@ export interface GetDeviceResponse400 extends Types.ErrorResponse {
  * @category getDevice()
  */
 export interface GetDeviceResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -290,11 +273,11 @@ export interface GetDeviceResponse401 extends Types.ErrorResponse {
  * @category getDevice()
  */
 export interface GetDeviceResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -302,11 +285,11 @@ export interface GetDeviceResponse403 extends Types.ErrorResponse {
  * @category getDevice()
  */
 export interface GetDeviceResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -314,11 +297,11 @@ export interface GetDeviceResponse404 extends Types.ErrorResponse {
  * @category getDevice()
  */
 export interface GetDeviceResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -326,51 +309,44 @@ export interface GetDeviceResponse500 extends Types.ErrorResponse {
  * @category updateDevice()
  */
 export type UpdateDeviceParameters = {
-  device_id: string;
-  changedUrl?: string;
-};
+    "device_id": string,
+	"changedUrl"?: string,
+}
 
 /**
  * Typing for the body of the request made by updateDevice()
  * @category updateDevice()
  */
-export type UpdateDeviceBody = Types.DeviceUpdate<'request'> | undefined;
+export type UpdateDeviceBody = Types.DeviceUpdate<"request"> | undefined
 
 /**
  * Typing for all possible responses to the request made by updateDevice()
  * @category updateDevice()
  */
-export type UpdateDeviceResponse =
-  | UpdateDeviceSuccessResponse
-  | UpdateDeviceErrorResponse;
+export type UpdateDeviceResponse = UpdateDeviceSuccessResponse | UpdateDeviceErrorResponse
 
 /**
  * Typing for all successful responses to the request made by updateDevice()
  * @category updateDevice()
  */
-export type UpdateDeviceSuccessResponse = UpdateDeviceResponse200;
+export type UpdateDeviceSuccessResponse = UpdateDeviceResponse200
 
 /**
  * Typing for all error responses to the request made by updateDevice()
  * @category updateDevice()
  */
-export type UpdateDeviceErrorResponse =
-  | UpdateDeviceResponse400
-  | UpdateDeviceResponse401
-  | UpdateDeviceResponse403
-  | UpdateDeviceResponse404
-  | UpdateDeviceResponse500;
+export type UpdateDeviceErrorResponse = UpdateDeviceResponse400 | UpdateDeviceResponse401 | UpdateDeviceResponse403 | UpdateDeviceResponse404 | UpdateDeviceResponse500
 
 /**
  * Typing for a response with status 200 to the request made by updateDevice()
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Device<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Device<"response">
 }
 
 /**
@@ -378,11 +354,11 @@ export interface UpdateDeviceResponse200 extends Types.SuccessResponse {
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -390,11 +366,11 @@ export interface UpdateDeviceResponse400 extends Types.ErrorResponse {
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -402,11 +378,11 @@ export interface UpdateDeviceResponse401 extends Types.ErrorResponse {
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -414,11 +390,11 @@ export interface UpdateDeviceResponse403 extends Types.ErrorResponse {
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -426,11 +402,11 @@ export interface UpdateDeviceResponse404 extends Types.ErrorResponse {
  * @category updateDevice()
  */
 export interface UpdateDeviceResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -438,44 +414,37 @@ export interface UpdateDeviceResponse500 extends Types.ErrorResponse {
  * @category deleteDevice()
  */
 export type DeleteDeviceParameters = {
-  device_id: string;
-};
+    "device_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by deleteDevice()
  * @category deleteDevice()
  */
-export type DeleteDeviceResponse =
-  | DeleteDeviceSuccessResponse
-  | DeleteDeviceErrorResponse;
+export type DeleteDeviceResponse = DeleteDeviceSuccessResponse | DeleteDeviceErrorResponse
 
 /**
  * Typing for all successful responses to the request made by deleteDevice()
  * @category deleteDevice()
  */
-export type DeleteDeviceSuccessResponse = DeleteDeviceResponse204;
+export type DeleteDeviceSuccessResponse = DeleteDeviceResponse204
 
 /**
  * Typing for all error responses to the request made by deleteDevice()
  * @category deleteDevice()
  */
-export type DeleteDeviceErrorResponse =
-  | DeleteDeviceResponse400
-  | DeleteDeviceResponse401
-  | DeleteDeviceResponse403
-  | DeleteDeviceResponse404
-  | DeleteDeviceResponse500;
+export type DeleteDeviceErrorResponse = DeleteDeviceResponse400 | DeleteDeviceResponse401 | DeleteDeviceResponse403 | DeleteDeviceResponse404 | DeleteDeviceResponse500
 
 /**
  * Typing for a response with status 204 to the request made by deleteDevice()
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse204 extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -483,11 +452,11 @@ export interface DeleteDeviceResponse204 extends Types.SuccessResponse {
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -495,11 +464,11 @@ export interface DeleteDeviceResponse400 extends Types.ErrorResponse {
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -507,11 +476,11 @@ export interface DeleteDeviceResponse401 extends Types.ErrorResponse {
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -519,11 +488,11 @@ export interface DeleteDeviceResponse403 extends Types.ErrorResponse {
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -531,11 +500,11 @@ export interface DeleteDeviceResponse404 extends Types.ErrorResponse {
  * @category deleteDevice()
  */
 export interface DeleteDeviceResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -543,49 +512,42 @@ export interface DeleteDeviceResponse500 extends Types.ErrorResponse {
  * @category instantiateDevice()
  */
 export type InstantiateDeviceParameters = {
-  device_id: string;
-  changedUrl?: string;
-};
+    "device_id": string,
+	"changedUrl"?: string,
+}
 
 /**
  * Typing for all possible responses to the request made by instantiateDevice()
  * @category instantiateDevice()
  */
-export type InstantiateDeviceResponse =
-  | InstantiateDeviceSuccessResponse
-  | InstantiateDeviceErrorResponse;
+export type InstantiateDeviceResponse = InstantiateDeviceSuccessResponse | InstantiateDeviceErrorResponse
 
 /**
  * Typing for all successful responses to the request made by instantiateDevice()
  * @category instantiateDevice()
  */
-export type InstantiateDeviceSuccessResponse = InstantiateDeviceResponse201;
+export type InstantiateDeviceSuccessResponse = InstantiateDeviceResponse201
 
 /**
  * Typing for all error responses to the request made by instantiateDevice()
  * @category instantiateDevice()
  */
-export type InstantiateDeviceErrorResponse =
-  | InstantiateDeviceResponse400
-  | InstantiateDeviceResponse401
-  | InstantiateDeviceResponse403
-  | InstantiateDeviceResponse404
-  | InstantiateDeviceResponse500;
+export type InstantiateDeviceErrorResponse = InstantiateDeviceResponse400 | InstantiateDeviceResponse401 | InstantiateDeviceResponse403 | InstantiateDeviceResponse404 | InstantiateDeviceResponse500
 
 /**
  * Typing for a response with status 201 to the request made by instantiateDevice()
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: {
-    instance: Types.ConcreteDevice<'response'>;
-    deviceToken: string;
-    [k: string]: unknown;
-  };
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: {
+        	instance: Types.ConcreteDevice<"response">
+        	deviceToken: string
+        	[k: string]: unknown
+        }
 }
 
 /**
@@ -593,11 +555,11 @@ export interface InstantiateDeviceResponse201 extends Types.SuccessResponse {
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -605,11 +567,11 @@ export interface InstantiateDeviceResponse400 extends Types.ErrorResponse {
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -617,11 +579,11 @@ export interface InstantiateDeviceResponse401 extends Types.ErrorResponse {
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -629,11 +591,11 @@ export interface InstantiateDeviceResponse403 extends Types.ErrorResponse {
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -641,11 +603,11 @@ export interface InstantiateDeviceResponse404 extends Types.ErrorResponse {
  * @category instantiateDevice()
  */
 export interface InstantiateDeviceResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -653,46 +615,39 @@ export interface InstantiateDeviceResponse500 extends Types.ErrorResponse {
  * @category getDeviceAvailability()
  */
 export type GetDeviceAvailabilityParameters = {
-  device_id: string;
-  startTime?: string;
-  endTime?: string;
-};
+    "device_id": string,
+	"startTime"?: string,
+	"endTime"?: string,
+}
 
 /**
  * Typing for all possible responses to the request made by getDeviceAvailability()
  * @category getDeviceAvailability()
  */
-export type GetDeviceAvailabilityResponse =
-  | GetDeviceAvailabilitySuccessResponse
-  | GetDeviceAvailabilityErrorResponse;
+export type GetDeviceAvailabilityResponse = GetDeviceAvailabilitySuccessResponse | GetDeviceAvailabilityErrorResponse
 
 /**
  * Typing for all successful responses to the request made by getDeviceAvailability()
  * @category getDeviceAvailability()
  */
-export type GetDeviceAvailabilitySuccessResponse = GetDeviceAvailabilityResponse200;
+export type GetDeviceAvailabilitySuccessResponse = GetDeviceAvailabilityResponse200
 
 /**
  * Typing for all error responses to the request made by getDeviceAvailability()
  * @category getDeviceAvailability()
  */
-export type GetDeviceAvailabilityErrorResponse =
-  | GetDeviceAvailabilityResponse400
-  | GetDeviceAvailabilityResponse401
-  | GetDeviceAvailabilityResponse403
-  | GetDeviceAvailabilityResponse404
-  | GetDeviceAvailabilityResponse500;
+export type GetDeviceAvailabilityErrorResponse = GetDeviceAvailabilityResponse400 | GetDeviceAvailabilityResponse401 | GetDeviceAvailabilityResponse403 | GetDeviceAvailabilityResponse404 | GetDeviceAvailabilityResponse500
 
 /**
  * Typing for a response with status 200 to the request made by getDeviceAvailability()
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Availability<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Availability<"response">
 }
 
 /**
@@ -700,11 +655,11 @@ export interface GetDeviceAvailabilityResponse200 extends Types.SuccessResponse 
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -712,11 +667,11 @@ export interface GetDeviceAvailabilityResponse400 extends Types.ErrorResponse {
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -724,11 +679,11 @@ export interface GetDeviceAvailabilityResponse401 extends Types.ErrorResponse {
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -736,11 +691,11 @@ export interface GetDeviceAvailabilityResponse403 extends Types.ErrorResponse {
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -748,11 +703,11 @@ export interface GetDeviceAvailabilityResponse404 extends Types.ErrorResponse {
  * @category getDeviceAvailability()
  */
 export interface GetDeviceAvailabilityResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -760,45 +715,37 @@ export interface GetDeviceAvailabilityResponse500 extends Types.ErrorResponse {
  * @category deleteDeviceAvailabilityRules()
  */
 export type DeleteDeviceAvailabilityRulesParameters = {
-  device_id: string;
-};
+    "device_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by deleteDeviceAvailabilityRules()
  * @category deleteDeviceAvailabilityRules()
  */
-export type DeleteDeviceAvailabilityRulesResponse =
-  | DeleteDeviceAvailabilityRulesSuccessResponse
-  | DeleteDeviceAvailabilityRulesErrorResponse;
+export type DeleteDeviceAvailabilityRulesResponse = DeleteDeviceAvailabilityRulesSuccessResponse | DeleteDeviceAvailabilityRulesErrorResponse
 
 /**
  * Typing for all successful responses to the request made by deleteDeviceAvailabilityRules()
  * @category deleteDeviceAvailabilityRules()
  */
-export type DeleteDeviceAvailabilityRulesSuccessResponse =
-  DeleteDeviceAvailabilityRulesResponse204;
+export type DeleteDeviceAvailabilityRulesSuccessResponse = DeleteDeviceAvailabilityRulesResponse204
 
 /**
  * Typing for all error responses to the request made by deleteDeviceAvailabilityRules()
  * @category deleteDeviceAvailabilityRules()
  */
-export type DeleteDeviceAvailabilityRulesErrorResponse =
-  | DeleteDeviceAvailabilityRulesResponse400
-  | DeleteDeviceAvailabilityRulesResponse401
-  | DeleteDeviceAvailabilityRulesResponse403
-  | DeleteDeviceAvailabilityRulesResponse404
-  | DeleteDeviceAvailabilityRulesResponse500;
+export type DeleteDeviceAvailabilityRulesErrorResponse = DeleteDeviceAvailabilityRulesResponse400 | DeleteDeviceAvailabilityRulesResponse401 | DeleteDeviceAvailabilityRulesResponse403 | DeleteDeviceAvailabilityRulesResponse404 | DeleteDeviceAvailabilityRulesResponse500
 
 /**
  * Typing for a response with status 204 to the request made by deleteDeviceAvailabilityRules()
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse204 extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -806,11 +753,11 @@ export interface DeleteDeviceAvailabilityRulesResponse204 extends Types.SuccessR
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -818,11 +765,11 @@ export interface DeleteDeviceAvailabilityRulesResponse400 extends Types.ErrorRes
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -830,11 +777,11 @@ export interface DeleteDeviceAvailabilityRulesResponse401 extends Types.ErrorRes
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -842,11 +789,11 @@ export interface DeleteDeviceAvailabilityRulesResponse403 extends Types.ErrorRes
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -854,11 +801,11 @@ export interface DeleteDeviceAvailabilityRulesResponse404 extends Types.ErrorRes
  * @category deleteDeviceAvailabilityRules()
  */
 export interface DeleteDeviceAvailabilityRulesResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -866,53 +813,43 @@ export interface DeleteDeviceAvailabilityRulesResponse500 extends Types.ErrorRes
  * @category addDeviceAvailabilityRules()
  */
 export type AddDeviceAvailabilityRulesParameters = {
-  device_id: string;
-};
+    "device_id": string,
+}
 
 /**
  * Typing for the body of the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
-export type AddDeviceAvailabilityRulesBody =
-  | Types.AvailabilityRule<'request'>[]
-  | undefined;
+export type AddDeviceAvailabilityRulesBody = (Types.AvailabilityRule<"request">)[] | undefined
 
 /**
  * Typing for all possible responses to the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
-export type AddDeviceAvailabilityRulesResponse =
-  | AddDeviceAvailabilityRulesSuccessResponse
-  | AddDeviceAvailabilityRulesErrorResponse;
+export type AddDeviceAvailabilityRulesResponse = AddDeviceAvailabilityRulesSuccessResponse | AddDeviceAvailabilityRulesErrorResponse
 
 /**
  * Typing for all successful responses to the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
-export type AddDeviceAvailabilityRulesSuccessResponse =
-  AddDeviceAvailabilityRulesResponse200;
+export type AddDeviceAvailabilityRulesSuccessResponse = AddDeviceAvailabilityRulesResponse200
 
 /**
  * Typing for all error responses to the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
-export type AddDeviceAvailabilityRulesErrorResponse =
-  | AddDeviceAvailabilityRulesResponse400
-  | AddDeviceAvailabilityRulesResponse401
-  | AddDeviceAvailabilityRulesResponse403
-  | AddDeviceAvailabilityRulesResponse404
-  | AddDeviceAvailabilityRulesResponse500;
+export type AddDeviceAvailabilityRulesErrorResponse = AddDeviceAvailabilityRulesResponse400 | AddDeviceAvailabilityRulesResponse401 | AddDeviceAvailabilityRulesResponse403 | AddDeviceAvailabilityRulesResponse404 | AddDeviceAvailabilityRulesResponse500
 
 /**
  * Typing for a response with status 200 to the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Availability<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Availability<"response">
 }
 
 /**
@@ -920,11 +857,11 @@ export interface AddDeviceAvailabilityRulesResponse200 extends Types.SuccessResp
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -932,11 +869,11 @@ export interface AddDeviceAvailabilityRulesResponse400 extends Types.ErrorRespon
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -944,11 +881,11 @@ export interface AddDeviceAvailabilityRulesResponse401 extends Types.ErrorRespon
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -956,11 +893,11 @@ export interface AddDeviceAvailabilityRulesResponse403 extends Types.ErrorRespon
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -968,11 +905,11 @@ export interface AddDeviceAvailabilityRulesResponse404 extends Types.ErrorRespon
  * @category addDeviceAvailabilityRules()
  */
 export interface AddDeviceAvailabilityRulesResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -980,44 +917,37 @@ export interface AddDeviceAvailabilityRulesResponse500 extends Types.ErrorRespon
  * @category createWebsocketToken()
  */
 export type CreateWebsocketTokenParameters = {
-  device_id: string;
-};
+    "device_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by createWebsocketToken()
  * @category createWebsocketToken()
  */
-export type CreateWebsocketTokenResponse =
-  | CreateWebsocketTokenSuccessResponse
-  | CreateWebsocketTokenErrorResponse;
+export type CreateWebsocketTokenResponse = CreateWebsocketTokenSuccessResponse | CreateWebsocketTokenErrorResponse
 
 /**
  * Typing for all successful responses to the request made by createWebsocketToken()
  * @category createWebsocketToken()
  */
-export type CreateWebsocketTokenSuccessResponse = CreateWebsocketTokenResponse200;
+export type CreateWebsocketTokenSuccessResponse = CreateWebsocketTokenResponse200
 
 /**
  * Typing for all error responses to the request made by createWebsocketToken()
  * @category createWebsocketToken()
  */
-export type CreateWebsocketTokenErrorResponse =
-  | CreateWebsocketTokenResponse400
-  | CreateWebsocketTokenResponse401
-  | CreateWebsocketTokenResponse403
-  | CreateWebsocketTokenResponse404
-  | CreateWebsocketTokenResponse500;
+export type CreateWebsocketTokenErrorResponse = CreateWebsocketTokenResponse400 | CreateWebsocketTokenResponse401 | CreateWebsocketTokenResponse403 | CreateWebsocketTokenResponse404 | CreateWebsocketTokenResponse500
 
 /**
  * Typing for a response with status 200 to the request made by createWebsocketToken()
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: string;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: string
 }
 
 /**
@@ -1025,11 +955,11 @@ export interface CreateWebsocketTokenResponse200 extends Types.SuccessResponse {
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1037,11 +967,11 @@ export interface CreateWebsocketTokenResponse400 extends Types.ErrorResponse {
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1049,11 +979,11 @@ export interface CreateWebsocketTokenResponse401 extends Types.ErrorResponse {
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1061,11 +991,11 @@ export interface CreateWebsocketTokenResponse403 extends Types.ErrorResponse {
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1073,11 +1003,11 @@ export interface CreateWebsocketTokenResponse404 extends Types.ErrorResponse {
  * @category createWebsocketToken()
  */
 export interface CreateWebsocketTokenResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1085,56 +1015,43 @@ export interface CreateWebsocketTokenResponse500 extends Types.ErrorResponse {
  * @category sendSignalingMessage()
  */
 export type SendSignalingMessageParameters = {
-  device_id: string;
-};
+    "device_id": string,
+}
 
 /**
  * Typing for the body of the request made by sendSignalingMessage()
  * @category sendSignalingMessage()
  */
-export type SendSignalingMessageBody =
-  | Types.CreatePeerconnectionMessage<'request'>
-  | Types.ClosePeerconnectionMessage<'request'>
-  | Types.SignalingMessage<'request'>
-  | Types.ConfigurationMessage<'request'>
-  | Types.ExperimentStatusChangedMessage<'request'>
-  | Types.LoggingMessage<'request'>;
+export type SendSignalingMessageBody = Types.CreatePeerconnectionMessage<"request"> | Types.ClosePeerconnectionMessage<"request"> | Types.SignalingMessage<"request"> | Types.ConfigurationMessage<"request"> | Types.ExperimentStatusChangedMessage<"request"> | Types.LoggingMessage<"request">
 
 /**
  * Typing for all possible responses to the request made by sendSignalingMessage()
  * @category sendSignalingMessage()
  */
-export type SendSignalingMessageResponse =
-  | SendSignalingMessageSuccessResponse
-  | SendSignalingMessageErrorResponse;
+export type SendSignalingMessageResponse = SendSignalingMessageSuccessResponse | SendSignalingMessageErrorResponse
 
 /**
  * Typing for all successful responses to the request made by sendSignalingMessage()
  * @category sendSignalingMessage()
  */
-export type SendSignalingMessageSuccessResponse = SendSignalingMessageResponse200;
+export type SendSignalingMessageSuccessResponse = SendSignalingMessageResponse200
 
 /**
  * Typing for all error responses to the request made by sendSignalingMessage()
  * @category sendSignalingMessage()
  */
-export type SendSignalingMessageErrorResponse =
-  | SendSignalingMessageResponse400
-  | SendSignalingMessageResponse401
-  | SendSignalingMessageResponse403
-  | SendSignalingMessageResponse404
-  | SendSignalingMessageResponse500;
+export type SendSignalingMessageErrorResponse = SendSignalingMessageResponse400 | SendSignalingMessageResponse401 | SendSignalingMessageResponse403 | SendSignalingMessageResponse404 | SendSignalingMessageResponse500
 
 /**
  * Typing for a response with status 200 to the request made by sendSignalingMessage()
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1142,11 +1059,11 @@ export interface SendSignalingMessageResponse200 extends Types.SuccessResponse {
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1154,11 +1071,11 @@ export interface SendSignalingMessageResponse400 extends Types.ErrorResponse {
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1166,11 +1083,11 @@ export interface SendSignalingMessageResponse401 extends Types.ErrorResponse {
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1178,11 +1095,11 @@ export interface SendSignalingMessageResponse403 extends Types.ErrorResponse {
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1190,48 +1107,41 @@ export interface SendSignalingMessageResponse404 extends Types.ErrorResponse {
  * @category sendSignalingMessage()
  */
 export interface SendSignalingMessageResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for all possible responses to the request made by listPeerconnections()
  * @category listPeerconnections()
  */
-export type ListPeerconnectionsResponse =
-  | ListPeerconnectionsSuccessResponse
-  | ListPeerconnectionsErrorResponse;
+export type ListPeerconnectionsResponse = ListPeerconnectionsSuccessResponse | ListPeerconnectionsErrorResponse
 
 /**
  * Typing for all successful responses to the request made by listPeerconnections()
  * @category listPeerconnections()
  */
-export type ListPeerconnectionsSuccessResponse = ListPeerconnectionsResponse200;
+export type ListPeerconnectionsSuccessResponse = ListPeerconnectionsResponse200
 
 /**
  * Typing for all error responses to the request made by listPeerconnections()
  * @category listPeerconnections()
  */
-export type ListPeerconnectionsErrorResponse =
-  | ListPeerconnectionsResponse400
-  | ListPeerconnectionsResponse401
-  | ListPeerconnectionsResponse403
-  | ListPeerconnectionsResponse404
-  | ListPeerconnectionsResponse500;
+export type ListPeerconnectionsErrorResponse = ListPeerconnectionsResponse400 | ListPeerconnectionsResponse401 | ListPeerconnectionsResponse403 | ListPeerconnectionsResponse404 | ListPeerconnectionsResponse500
 
 /**
  * Typing for a response with status 200 to the request made by listPeerconnections()
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.PeerconnectionOverview<'response'>[];
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: (Types.PeerconnectionOverview<"response">)[]
 }
 
 /**
@@ -1239,11 +1149,11 @@ export interface ListPeerconnectionsResponse200 extends Types.SuccessResponse {
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1251,11 +1161,11 @@ export interface ListPeerconnectionsResponse400 extends Types.ErrorResponse {
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1263,11 +1173,11 @@ export interface ListPeerconnectionsResponse401 extends Types.ErrorResponse {
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1275,11 +1185,11 @@ export interface ListPeerconnectionsResponse403 extends Types.ErrorResponse {
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1287,11 +1197,11 @@ export interface ListPeerconnectionsResponse404 extends Types.ErrorResponse {
  * @category listPeerconnections()
  */
 export interface ListPeerconnectionsResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1299,53 +1209,44 @@ export interface ListPeerconnectionsResponse500 extends Types.ErrorResponse {
  * @category createPeerconnection()
  */
 export type CreatePeerconnectionParameters = {
-  closedUrl?: string;
-  statusChangedUrl?: string;
-};
+    "closedUrl"?: string,
+	"statusChangedUrl"?: string,
+}
 
 /**
  * Typing for the body of the request made by createPeerconnection()
  * @category createPeerconnection()
  */
-export type CreatePeerconnectionBody = Types.Peerconnection<'request'>;
+export type CreatePeerconnectionBody = Types.Peerconnection<"request">
 
 /**
  * Typing for all possible responses to the request made by createPeerconnection()
  * @category createPeerconnection()
  */
-export type CreatePeerconnectionResponse =
-  | CreatePeerconnectionSuccessResponse
-  | CreatePeerconnectionErrorResponse;
+export type CreatePeerconnectionResponse = CreatePeerconnectionSuccessResponse | CreatePeerconnectionErrorResponse
 
 /**
  * Typing for all successful responses to the request made by createPeerconnection()
  * @category createPeerconnection()
  */
-export type CreatePeerconnectionSuccessResponse =
-  | CreatePeerconnectionResponse201
-  | CreatePeerconnectionResponse202;
+export type CreatePeerconnectionSuccessResponse = CreatePeerconnectionResponse201 | CreatePeerconnectionResponse202
 
 /**
  * Typing for all error responses to the request made by createPeerconnection()
  * @category createPeerconnection()
  */
-export type CreatePeerconnectionErrorResponse =
-  | CreatePeerconnectionResponse400
-  | CreatePeerconnectionResponse401
-  | CreatePeerconnectionResponse403
-  | CreatePeerconnectionResponse404
-  | CreatePeerconnectionResponse500;
+export type CreatePeerconnectionErrorResponse = CreatePeerconnectionResponse400 | CreatePeerconnectionResponse401 | CreatePeerconnectionResponse403 | CreatePeerconnectionResponse404 | CreatePeerconnectionResponse500
 
 /**
  * Typing for a response with status 201 to the request made by createPeerconnection()
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Peerconnection<'response'>;
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Peerconnection<"response">
 }
 
 /**
@@ -1353,11 +1254,11 @@ export interface CreatePeerconnectionResponse201 extends Types.SuccessResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse202 extends Types.SuccessResponse {
-  status: 202;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Peerconnection<'response'>;
+    status: 202
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Peerconnection<"response">
 }
 
 /**
@@ -1365,11 +1266,11 @@ export interface CreatePeerconnectionResponse202 extends Types.SuccessResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1377,11 +1278,11 @@ export interface CreatePeerconnectionResponse400 extends Types.ErrorResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1389,11 +1290,11 @@ export interface CreatePeerconnectionResponse401 extends Types.ErrorResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1401,11 +1302,11 @@ export interface CreatePeerconnectionResponse403 extends Types.ErrorResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1413,11 +1314,11 @@ export interface CreatePeerconnectionResponse404 extends Types.ErrorResponse {
  * @category createPeerconnection()
  */
 export interface CreatePeerconnectionResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1425,44 +1326,37 @@ export interface CreatePeerconnectionResponse500 extends Types.ErrorResponse {
  * @category getPeerconnection()
  */
 export type GetPeerconnectionParameters = {
-  peerconnection_id: string;
-};
+    "peerconnection_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by getPeerconnection()
  * @category getPeerconnection()
  */
-export type GetPeerconnectionResponse =
-  | GetPeerconnectionSuccessResponse
-  | GetPeerconnectionErrorResponse;
+export type GetPeerconnectionResponse = GetPeerconnectionSuccessResponse | GetPeerconnectionErrorResponse
 
 /**
  * Typing for all successful responses to the request made by getPeerconnection()
  * @category getPeerconnection()
  */
-export type GetPeerconnectionSuccessResponse = GetPeerconnectionResponse200;
+export type GetPeerconnectionSuccessResponse = GetPeerconnectionResponse200
 
 /**
  * Typing for all error responses to the request made by getPeerconnection()
  * @category getPeerconnection()
  */
-export type GetPeerconnectionErrorResponse =
-  | GetPeerconnectionResponse400
-  | GetPeerconnectionResponse401
-  | GetPeerconnectionResponse403
-  | GetPeerconnectionResponse404
-  | GetPeerconnectionResponse500;
+export type GetPeerconnectionErrorResponse = GetPeerconnectionResponse400 | GetPeerconnectionResponse401 | GetPeerconnectionResponse403 | GetPeerconnectionResponse404 | GetPeerconnectionResponse500
 
 /**
  * Typing for a response with status 200 to the request made by getPeerconnection()
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.Peerconnection<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.Peerconnection<"response">
 }
 
 /**
@@ -1470,11 +1364,11 @@ export interface GetPeerconnectionResponse200 extends Types.SuccessResponse {
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1482,11 +1376,11 @@ export interface GetPeerconnectionResponse400 extends Types.ErrorResponse {
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1494,11 +1388,11 @@ export interface GetPeerconnectionResponse401 extends Types.ErrorResponse {
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1506,11 +1400,11 @@ export interface GetPeerconnectionResponse403 extends Types.ErrorResponse {
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1518,11 +1412,11 @@ export interface GetPeerconnectionResponse404 extends Types.ErrorResponse {
  * @category getPeerconnection()
  */
 export interface GetPeerconnectionResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1530,46 +1424,37 @@ export interface GetPeerconnectionResponse500 extends Types.ErrorResponse {
  * @category deletePeerconnection()
  */
 export type DeletePeerconnectionParameters = {
-  peerconnection_id: string;
-};
+    "peerconnection_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by deletePeerconnection()
  * @category deletePeerconnection()
  */
-export type DeletePeerconnectionResponse =
-  | DeletePeerconnectionSuccessResponse
-  | DeletePeerconnectionErrorResponse;
+export type DeletePeerconnectionResponse = DeletePeerconnectionSuccessResponse | DeletePeerconnectionErrorResponse
 
 /**
  * Typing for all successful responses to the request made by deletePeerconnection()
  * @category deletePeerconnection()
  */
-export type DeletePeerconnectionSuccessResponse =
-  | DeletePeerconnectionResponse202
-  | DeletePeerconnectionResponse204;
+export type DeletePeerconnectionSuccessResponse = DeletePeerconnectionResponse202 | DeletePeerconnectionResponse204
 
 /**
  * Typing for all error responses to the request made by deletePeerconnection()
  * @category deletePeerconnection()
  */
-export type DeletePeerconnectionErrorResponse =
-  | DeletePeerconnectionResponse400
-  | DeletePeerconnectionResponse401
-  | DeletePeerconnectionResponse403
-  | DeletePeerconnectionResponse404
-  | DeletePeerconnectionResponse500;
+export type DeletePeerconnectionErrorResponse = DeletePeerconnectionResponse400 | DeletePeerconnectionResponse401 | DeletePeerconnectionResponse403 | DeletePeerconnectionResponse404 | DeletePeerconnectionResponse500
 
 /**
  * Typing for a response with status 202 to the request made by deletePeerconnection()
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse202 extends Types.SuccessResponse {
-  status: 202;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 202
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1577,11 +1462,11 @@ export interface DeletePeerconnectionResponse202 extends Types.SuccessResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse204 extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1589,11 +1474,11 @@ export interface DeletePeerconnectionResponse204 extends Types.SuccessResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1601,11 +1486,11 @@ export interface DeletePeerconnectionResponse400 extends Types.ErrorResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1613,11 +1498,11 @@ export interface DeletePeerconnectionResponse401 extends Types.ErrorResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1625,11 +1510,11 @@ export interface DeletePeerconnectionResponse403 extends Types.ErrorResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1637,11 +1522,11 @@ export interface DeletePeerconnectionResponse404 extends Types.ErrorResponse {
  * @category deletePeerconnection()
  */
 export interface DeletePeerconnectionResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1649,59 +1534,50 @@ export interface DeletePeerconnectionResponse500 extends Types.ErrorResponse {
  * @category patchPeerconnectionDeviceStatus()
  */
 export type PatchPeerconnectionDeviceStatusParameters = {
-  peerconnection_id: string;
-  device_url: string;
-};
+    "peerconnection_id": string,
+	"device_url": string,
+}
 
 /**
  * Typing for the body of the request made by patchPeerconnectionDeviceStatus()
  * @category patchPeerconnectionDeviceStatus()
  */
 export type PatchPeerconnectionDeviceStatusBody = {
-  /**
-   * The status of the peerconnection.
-   */
-  status: Types.ConnectionStatus<'request'>;
-  [k: string]: unknown;
-};
+    	/**
+    	 * The status of the peerconnection.
+    	 */
+    	status: Types.ConnectionStatus<"request">
+    	[k: string]: unknown
+    }
 
 /**
  * Typing for all possible responses to the request made by patchPeerconnectionDeviceStatus()
  * @category patchPeerconnectionDeviceStatus()
  */
-export type PatchPeerconnectionDeviceStatusResponse =
-  | PatchPeerconnectionDeviceStatusSuccessResponse
-  | PatchPeerconnectionDeviceStatusErrorResponse;
+export type PatchPeerconnectionDeviceStatusResponse = PatchPeerconnectionDeviceStatusSuccessResponse | PatchPeerconnectionDeviceStatusErrorResponse
 
 /**
  * Typing for all successful responses to the request made by patchPeerconnectionDeviceStatus()
  * @category patchPeerconnectionDeviceStatus()
  */
-export type PatchPeerconnectionDeviceStatusSuccessResponse =
-  PatchPeerconnectionDeviceStatusResponse204;
+export type PatchPeerconnectionDeviceStatusSuccessResponse = PatchPeerconnectionDeviceStatusResponse204
 
 /**
  * Typing for all error responses to the request made by patchPeerconnectionDeviceStatus()
  * @category patchPeerconnectionDeviceStatus()
  */
-export type PatchPeerconnectionDeviceStatusErrorResponse =
-  | PatchPeerconnectionDeviceStatusResponse400
-  | PatchPeerconnectionDeviceStatusResponse401
-  | PatchPeerconnectionDeviceStatusResponse403
-  | PatchPeerconnectionDeviceStatusResponse404
-  | PatchPeerconnectionDeviceStatusResponse500;
+export type PatchPeerconnectionDeviceStatusErrorResponse = PatchPeerconnectionDeviceStatusResponse400 | PatchPeerconnectionDeviceStatusResponse401 | PatchPeerconnectionDeviceStatusResponse403 | PatchPeerconnectionDeviceStatusResponse404 | PatchPeerconnectionDeviceStatusResponse500
 
 /**
  * Typing for a response with status 204 to the request made by patchPeerconnectionDeviceStatus()
  * @category patchPeerconnectionDeviceStatus()
  */
-export interface PatchPeerconnectionDeviceStatusResponse204
-  extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+export interface PatchPeerconnectionDeviceStatusResponse204 extends Types.SuccessResponse {
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1709,11 +1585,11 @@ export interface PatchPeerconnectionDeviceStatusResponse204
  * @category patchPeerconnectionDeviceStatus()
  */
 export interface PatchPeerconnectionDeviceStatusResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1721,11 +1597,11 @@ export interface PatchPeerconnectionDeviceStatusResponse400 extends Types.ErrorR
  * @category patchPeerconnectionDeviceStatus()
  */
 export interface PatchPeerconnectionDeviceStatusResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1733,11 +1609,11 @@ export interface PatchPeerconnectionDeviceStatusResponse401 extends Types.ErrorR
  * @category patchPeerconnectionDeviceStatus()
  */
 export interface PatchPeerconnectionDeviceStatusResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1745,11 +1621,11 @@ export interface PatchPeerconnectionDeviceStatusResponse403 extends Types.ErrorR
  * @category patchPeerconnectionDeviceStatus()
  */
 export interface PatchPeerconnectionDeviceStatusResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1757,9 +1633,9 @@ export interface PatchPeerconnectionDeviceStatusResponse404 extends Types.ErrorR
  * @category patchPeerconnectionDeviceStatus()
  */
 export interface PatchPeerconnectionDeviceStatusResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }

@@ -5,28 +5,28 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+
+import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 import * as RequestValidation from './requestValidation.js';
 import * as Signatures from './signatures.js';
 import * as Types from './types.js';
 // @ts-ignore
-import { type Require } from './types.js';
+import { type Require } from "./types.js"
 
 /**
  * This error class should be used if an error occurs during validation of a request/response.
  * @category Errors
  */
 export class ValidationError extends Error {
-  public errors: unknown;
+    public errors: unknown
 
-  constructor(message: string, errors: unknown) {
-    super(message);
-    this.name = 'ValidationError';
-    this.errors = errors;
-  }
+    constructor(message: string, errors: unknown) {
+        super(message)
+        this.name = "ValidationError"
+        this.errors = errors
+    }
 }
 
 /**
@@ -34,25 +34,25 @@ export class ValidationError extends Error {
  * @category Errors
  */
 export class FetchError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'FetchError';
-  }
+    constructor(message: string) {
+        super(message)
+        this.name = "FetchError"
+    }
 }
 
 /**
- * This error class should be used if the response of the server has a status
+ * This error class should be used if the response of the server has a status 
  * greater than or equal to 400. This error should contain the validated response.
  * @category Errors
  */
 export class UnsuccessfulRequestError extends Error {
-  public response: Types.ResponseData;
+    public response: Types.ResponseData
 
-  constructor(message: string, response: Types.ResponseData) {
-    super(message);
-    this.response = response;
-    this.name = 'UnsuccessfulRequestError';
-  }
+    constructor(message: string, response: Types.ResponseData) {
+        super(message)
+        this.response = response
+        this.name = 'UnsuccessfulRequestError'
+    }
 }
 
 /**
@@ -60,24 +60,24 @@ export class UnsuccessfulRequestError extends Error {
  * @category Errors
  */
 export class InvalidUrlError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'InvalidUrlError';
-  }
+    constructor(message: string) {
+        super(message)
+        this.name = 'InvalidUrlError'
+    }
 }
 
 /**
  * This function attempts to parse a Response as ResponseData.
  */
 async function parseResponse(response: Response): Promise<Types.ResponseData> {
-  let text = null;
-  try {
-    text = await response.text();
-    const json = JSON.parse(text);
-    return { status: response.status, body: json };
-  } catch {
-    return { status: response.status, body: text };
-  }
+    let text = null
+    try {
+        text = await response.text()
+        const json = JSON.parse(text)
+        return { status: response.status, body: json }
+    } catch {
+        return { status: response.status, body: text }
+    }
 }
 
 /**
@@ -86,15 +86,15 @@ async function parseResponse(response: Response): Promise<Types.ResponseData> {
  * @returns True if the string is a valid http url.
  */
 function isValidHttpUrl(string: string) {
-  let url;
+    let url
 
-  try {
-    url = new URL(string);
-  } catch (_) {
-    return false;
-  }
+    try {
+        url = new URL(string)
+    } catch (_) {
+        return false
+    }
 
-  return url.protocol === 'http:' || url.protocol === 'https:';
+    return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
 /**
@@ -108,13 +108,15 @@ function isValidHttpUrl(string: string) {
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
 function parsePathParameters(url: string, endpoint: string): string[] {
-  const parameterRegex = '([a-zA-Z0-9-:]+)';
-  const regex = new RegExp(endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$');
-  const matches = url.match(regex);
+    const parameterRegex = '([a-zA-Z0-9-:]+)'
+    const regex = new RegExp(
+        endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$'
+    )
+    const matches = url.match(regex)
 
-  if (!matches) throw new InvalidUrlError('Url does not end with the provided endpoint');
+    if (!matches) throw new InvalidUrlError('Url does not end with the provided endpoint')
 
-  return matches.slice(1);
+    return matches.slice(1)
 }
 
 /**
@@ -159,7 +161,7 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
  * @returns The url with the appended endpoint.
  */
 function appendToUrl(url: string, endpoint: string) {
-  return url.endsWith('/') ? `${url.slice(0, -1)}${endpoint}` : `${url}${endpoint}`;
+    return url.endsWith('/') ? `${url.slice(0, -1)}${endpoint}` : `${url}${endpoint}`
 }
 
 /**
@@ -167,760 +169,735 @@ function appendToUrl(url: string, endpoint: string) {
  * @category Client
  */
 export class Client {
-  public readonly baseUrl: string;
-  public readonly serviceUrl: string;
-  public accessToken: string;
-  private fixedHeaders: [string, string][];
-  private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
-    let raw_response;
-    try {
-      if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
-      ) {
-        raw_response = await fetch(url, init);
-      } else {
-        raw_response = await fetch(
-          appendToUrl(
-            this.baseUrl,
-            '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
-          ),
-          init,
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new FetchError(error.message);
-      } else if (typeof error === 'string') {
-        throw new FetchError(error);
-      } else {
-        throw new FetchError('Something went wrong while trying to fetch the request');
-      }
+    public readonly baseUrl: string;
+    public readonly serviceUrl: string;
+    public accessToken: string;
+    private fixedHeaders: [string, string][]
+    private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
+        let raw_response;
+        try {
+            if (
+                url.toString().startsWith(this.baseUrl) ||
+                url.toString().startsWith(this.serviceUrl)
+            ) {
+                raw_response = await fetch(url, init);
+            } else {
+                raw_response = await fetch(
+                appendToUrl(
+                    this.baseUrl,
+                    '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
+                ),
+                init,
+                );
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new FetchError(error.message);
+            } else if (typeof error === 'string') {
+                throw new FetchError(error);
+            } else {
+                throw new FetchError('Something went wrong while trying to fetch the request');
+            }
+        }
+        return await parseResponse(raw_response);
+    };
+
+    /**
+     * @category Constructors
+     */
+    constructor(
+        baseUrl: string,
+        options: { serviceUrl?: string; accessToken?: string, fixedHeaders?: [string, string][] },
+    ) {
+        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        this.serviceUrl = options.serviceUrl
+        ? options.serviceUrl.endsWith('/')
+            ? options.serviceUrl.slice(0, -1)
+            : options.serviceUrl
+        : this.baseUrl;
+        this.accessToken = options.accessToken ?? '';
+        this.fixedHeaders = options.fixedHeaders ?? [];
     }
-    return await parseResponse(raw_response);
-  };
-
-  /**
-   * @category Constructors
-   */
-  constructor(
-    baseUrl: string,
-    options: {
-      serviceUrl?: string;
-      accessToken?: string;
-      fixedHeaders?: [string, string][];
-    },
-  ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
-    this.accessToken = options.accessToken ?? '';
-    this.fixedHeaders = options.fixedHeaders ?? [];
-  }
-
-  /**
-   * List experiments
-   *
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The list of all experiments.
-   */
-  public async listExperiments(options?: {
-    headers?: [string, string][];
-    url?: string;
-  }): Promise<Signatures.ListExperimentsSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/experiments');
-
-    if (!RequestValidation.validateListExperimentsInput())
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateListExperimentsInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateListExperimentsOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateListExperimentsOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Create a new experiment
-   *
-   * @param experiment
-   * The experiment to be created.
-   * @param options.changedURL
-   * An URL that will be called when the experiment status changes.
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 201: The experiment was created. A JSON representation of the new experiment is returned.
-   * 202: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
-   */
-  public async createExperiment(
-    experiment: Types.Experiment<'request'>,
-    options?: {
-      headers?: [string, string][];
-      changedURL?: string;
-      url?: string;
-    },
-  ): Promise<Signatures.CreateExperimentSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/experiments');
-
-    const body = experiment;
-
-    const parameters = {
-      changedURL: options?.changedURL,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['changedURL'])
-      query.push(['changedURL', parameters['changedURL'].toString()]);
-
-    if (!RequestValidation.validateCreateExperimentInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateCreateExperimentInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateCreateExperimentOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateCreateExperimentOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * View an experiment.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the experiment
-   */
-  public async getExperiment(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.GetExperimentSuccessResponse['body']> {
-    const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [experiment_id] = validateUrl(url, this.baseUrl, '/experiments/{}');
-
-    const parameters = {
-      experiment_id: experiment_id,
-    };
-
-    if (!RequestValidation.validateGetExperimentInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateGetExperimentInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateGetExperimentOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateGetExperimentOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Update an existing experiment.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param experimentUpdate
-   * Update the experiment
-   * @param options.changedURL
-   * An URL that will be called when the experiment status changes.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 200: The JSON Representation of the changed experiment
-   * 202: The JSON Representation of the changed experiment, that will be set to running eventually
-   */
-  public async updateExperiment(
-    url: string,
-    experimentUpdate: Types.ExperimentUpdate<'request'>,
-    options?: {
-      headers?: [string, string][];
-      changedURL?: string;
-    },
-  ): Promise<Signatures.UpdateExperimentSuccessResponse['body']> {
-    const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [experiment_id] = validateUrl(url, this.baseUrl, '/experiments/{}');
-
-    const body = experimentUpdate;
-
-    const parameters = {
-      experiment_id: experiment_id,
-      changedURL: options?.changedURL,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['changedURL'])
-      query.push(['changedURL', parameters['changedURL'].toString()]);
-
-    if (!RequestValidation.validateUpdateExperimentInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateUpdateExperimentInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'PATCH',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateUpdateExperimentOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateUpdateExperimentOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Delete an experiment
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The experiment was deleted.
-   */
-  public async deleteExperiment(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [experiment_id] = validateUrl(url, this.baseUrl, '/experiments/{}');
-
-    const parameters = {
-      experiment_id: experiment_id,
-    };
-
-    if (!RequestValidation.validateDeleteExperimentInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateDeleteExperimentInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateDeleteExperimentOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateDeleteExperimentOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * List templates
-   *
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The list of all templates.
-   */
-  public async listTemplate(options?: {
-    headers?: [string, string][];
-    url?: string;
-  }): Promise<Signatures.ListTemplateSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/templates');
-
-    if (!RequestValidation.validateListTemplateInput())
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateListTemplateInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateListTemplateOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateListTemplateOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Create a new template
-   *
-   * @param template
-   * The template to be created.
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 201: The template was created. A JSON representation of the new template is returned.
-   * 202: The template was created and will be set to running eventually. A JSON representation of the new template is returned.
-   */
-  public async createTemplate(
-    template: Types.Template<'request'>,
-    options?: {
-      headers?: [string, string][];
-      url?: string;
-    },
-  ): Promise<Signatures.CreateTemplateSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/templates');
-
-    const body = template;
-
-    if (!RequestValidation.validateCreateTemplateInput(body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateCreateTemplateInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
-
-    if (!RequestValidation.validateCreateTemplateOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateCreateTemplateOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * View an template.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the template
-   */
-  public async getTemplate(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.GetTemplateSuccessResponse['body']> {
-    const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [template_id] = validateUrl(url, this.baseUrl, '/templates/{}');
-
-    const parameters = {
-      template_id: template_id,
-    };
-
-    if (!RequestValidation.validateGetTemplateInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateGetTemplateInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateGetTemplateOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateGetTemplateOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Update an existing template.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param templateUpdate
-   * Update the template
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 200: The JSON Representation of the changed template
-   * 202: The JSON Representation of the changed template, that will be set to running eventually
-   */
-  public async updateTemplate(
-    url: string,
-    templateUpdate: Types.TemplateUpdate<'request'>,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.UpdateTemplateSuccessResponse['body']> {
-    const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [template_id] = validateUrl(url, this.baseUrl, '/templates/{}');
-
-    const body = templateUpdate;
-
-    const parameters = {
-      template_id: template_id,
-    };
-
-    if (!RequestValidation.validateUpdateTemplateInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateUpdateTemplateInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'PATCH',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
-
-    if (!RequestValidation.validateUpdateTemplateOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateUpdateTemplateOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Delete an template
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The template was deleted.
-   */
-  public async deleteTemplate(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [template_id] = validateUrl(url, this.baseUrl, '/templates/{}');
-
-    const parameters = {
-      template_id: template_id,
-    };
-
-    if (!RequestValidation.validateDeleteTemplateInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateDeleteTemplateInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateDeleteTemplateOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateDeleteTemplateOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
+
+    /**
+     * List experiments 
+	 * 
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The list of all experiments.
+     */
+    public async listExperiments(
+            options?: {
+                headers?: [string, string][],url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+
+        
+
+        
+
+        if (!RequestValidation.validateListExperimentsInput())
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateListExperimentsInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateListExperimentsOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateListExperimentsOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Create a new experiment 
+	 * 
+	 * @param experiment
+	 * The experiment to be created.
+	 * @param options.changedURL
+	 * An URL that will be called when the experiment status changes.
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 201: The experiment was created. A JSON representation of the new experiment is returned.
+	 * 202: The experiment was created and will be set to running eventually. A JSON representation of the new experiment is returned.
+     */
+    public async createExperiment(experiment: Types.Experiment<"request">,
+            options?: {
+                headers?: [string, string][],changedURL?: string,url?: string}): Promise<Signatures.CreateExperimentSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
+
+        const body = experiment
+
+        
+        const parameters = {
+            changedURL: options?.changedURL,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["changedURL"]) 
+                    query.push(["changedURL", parameters["changedURL"].toString()])
+
+        if (!RequestValidation.validateCreateExperimentInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateCreateExperimentInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateCreateExperimentOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateCreateExperimentOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * View an experiment. 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the experiment
+     */
+    public async getExperiment(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.GetExperimentSuccessResponse["body"]> {
+                const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+
+        
+
+        
+        const parameters = {
+            experiment_id: experiment_id,
+        }
+
+        if (!RequestValidation.validateGetExperimentInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateGetExperimentInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateGetExperimentOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateGetExperimentOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Update an existing experiment. 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param experimentUpdate
+	 * Update the experiment
+	 * @param options.changedURL
+	 * An URL that will be called when the experiment status changes.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 200: The JSON Representation of the changed experiment
+	 * 202: The JSON Representation of the changed experiment, that will be set to running eventually
+     */
+    public async updateExperiment(url: string,experimentUpdate: Types.ExperimentUpdate<"request">,
+            options?: {
+                headers?: [string, string][],changedURL?: string,}): Promise<Signatures.UpdateExperimentSuccessResponse["body"]> {
+                const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+
+        const body = experimentUpdate
+
+        
+        const parameters = {
+            experiment_id: experiment_id,
+            changedURL: options?.changedURL,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["changedURL"]) 
+                    query.push(["changedURL", parameters["changedURL"].toString()])
+
+        if (!RequestValidation.validateUpdateExperimentInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateUpdateExperimentInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "PATCH", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateUpdateExperimentOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateUpdateExperimentOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Delete an experiment 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The experiment was deleted.
+     */
+    public async deleteExperiment(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/experiments/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [experiment_id,] = validateUrl(url, this.baseUrl, '/experiments/{}')
+
+        
+
+        
+        const parameters = {
+            experiment_id: experiment_id,
+        }
+
+        if (!RequestValidation.validateDeleteExperimentInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateDeleteExperimentInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "DELETE", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateDeleteExperimentOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateDeleteExperimentOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    /**
+     * List templates 
+	 * 
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The list of all templates.
+     */
+    public async listTemplate(
+            options?: {
+                headers?: [string, string][],url?: string}): Promise<Signatures.ListTemplateSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+
+        
+
+        
+
+        if (!RequestValidation.validateListTemplateInput())
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateListTemplateInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateListTemplateOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateListTemplateOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Create a new template 
+	 * 
+	 * @param template
+	 * The template to be created.
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 201: The template was created. A JSON representation of the new template is returned.
+	 * 202: The template was created and will be set to running eventually. A JSON representation of the new template is returned.
+     */
+    public async createTemplate(template: Types.Template<"request">,
+            options?: {
+                headers?: [string, string][],url?: string}): Promise<Signatures.CreateTemplateSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/templates")
+
+        const body = template
+
+        
+
+        if (!RequestValidation.validateCreateTemplateInput(body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateCreateTemplateInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateCreateTemplateOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateCreateTemplateOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * View an template. 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the template
+     */
+    public async getTemplate(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.GetTemplateSuccessResponse["body"]> {
+                const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+
+        
+
+        
+        const parameters = {
+            template_id: template_id,
+        }
+
+        if (!RequestValidation.validateGetTemplateInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateGetTemplateInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateGetTemplateOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateGetTemplateOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Update an existing template. 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param templateUpdate
+	 * Update the template
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 200: The JSON Representation of the changed template
+	 * 202: The JSON Representation of the changed template, that will be set to running eventually
+     */
+    public async updateTemplate(url: string,templateUpdate: Types.TemplateUpdate<"request">,
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.UpdateTemplateSuccessResponse["body"]> {
+                const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+
+        const body = templateUpdate
+
+        
+        const parameters = {
+            template_id: template_id,
+        }
+
+        if (!RequestValidation.validateUpdateTemplateInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateUpdateTemplateInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "PATCH", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateUpdateTemplateOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateUpdateTemplateOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Delete an template 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The template was deleted.
+     */
+    public async deleteTemplate(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/templates/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [template_id,] = validateUrl(url, this.baseUrl, '/templates/{}')
+
+        
+
+        
+        const parameters = {
+            template_id: template_id,
+        }
+
+        if (!RequestValidation.validateDeleteTemplateInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateDeleteTemplateInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "DELETE", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateDeleteTemplateOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateDeleteTemplateOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    
 }

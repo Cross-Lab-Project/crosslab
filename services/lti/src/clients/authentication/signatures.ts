@@ -5,56 +5,51 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import * as Types from './types.js';
+
+import * as Types from "./types.js"
 // @ts-ignore
-import { type Require } from './types.js';
+import { type Require } from "./types.js"
 
 /**
  * Typing for the parameters of the request made by auth()
  * @category auth()
  */
 export type AuthParameters = {
-  Authorization?: string;
-  'X-Real-IP'?: string;
-  'X-Forwarded-Proto'?: string;
-};
+    "Authorization"?: string,
+	"X-Real-IP"?: string,
+	"X-Forwarded-Proto"?: string,
+}
 
 /**
  * Typing for all possible responses to the request made by auth()
  * @category auth()
  */
-export type AuthResponse = AuthSuccessResponse | AuthErrorResponse;
+export type AuthResponse = AuthSuccessResponse | AuthErrorResponse
 
 /**
  * Typing for all successful responses to the request made by auth()
  * @category auth()
  */
-export type AuthSuccessResponse = AuthResponse200;
+export type AuthSuccessResponse = AuthResponse200
 
 /**
  * Typing for all error responses to the request made by auth()
  * @category auth()
  */
-export type AuthErrorResponse =
-  | AuthResponse400
-  | AuthResponse401
-  | AuthResponse403
-  | AuthResponse404
-  | AuthResponse500;
+export type AuthErrorResponse = AuthResponse400 | AuthResponse401 | AuthResponse403 | AuthResponse404 | AuthResponse500
 
 /**
  * Typing for a response with status 200 to the request made by auth()
  * @category auth()
  */
 export interface AuthResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers: {
-    XRequestAuthentication?: string;
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 200
+    headers: {
+        "XRequestAuthentication"?: string,
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -62,11 +57,11 @@ export interface AuthResponse200 extends Types.SuccessResponse {
  * @category auth()
  */
 export interface AuthResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -74,11 +69,11 @@ export interface AuthResponse400 extends Types.ErrorResponse {
  * @category auth()
  */
 export interface AuthResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -86,11 +81,11 @@ export interface AuthResponse401 extends Types.ErrorResponse {
  * @category auth()
  */
 export interface AuthResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -98,11 +93,11 @@ export interface AuthResponse403 extends Types.ErrorResponse {
  * @category auth()
  */
 export interface AuthResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -110,58 +105,53 @@ export interface AuthResponse404 extends Types.ErrorResponse {
  * @category auth()
  */
 export interface AuthResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for the body of the request made by login()
  * @category login()
  */
-export type LoginBody = Types.Credentials<'request'> & {
-  /**
-   * Authentication method.
-   */
-  method?: Types.AuthMethod<'request'>;
-  [k: string]: unknown;
-};
+export type LoginBody = Types.Credentials<"request"> & {
+    	/**
+    	 * Authentication method.
+    	 */
+    	method?: Types.AuthMethod<"request">
+    	[k: string]: unknown
+    }
 
 /**
  * Typing for all possible responses to the request made by login()
  * @category login()
  */
-export type LoginResponse = LoginSuccessResponse | LoginErrorResponse;
+export type LoginResponse = LoginSuccessResponse | LoginErrorResponse
 
 /**
  * Typing for all successful responses to the request made by login()
  * @category login()
  */
-export type LoginSuccessResponse = LoginResponse201;
+export type LoginSuccessResponse = LoginResponse201
 
 /**
  * Typing for all error responses to the request made by login()
  * @category login()
  */
-export type LoginErrorResponse =
-  | LoginResponse400
-  | LoginResponse401
-  | LoginResponse403
-  | LoginResponse404
-  | LoginResponse500;
+export type LoginErrorResponse = LoginResponse400 | LoginResponse401 | LoginResponse403 | LoginResponse404 | LoginResponse500
 
 /**
  * Typing for a response with status 201 to the request made by login()
  * @category login()
  */
 export interface LoginResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: string;
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: string
 }
 
 /**
@@ -169,11 +159,11 @@ export interface LoginResponse201 extends Types.SuccessResponse {
  * @category login()
  */
 export interface LoginResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -181,11 +171,11 @@ export interface LoginResponse400 extends Types.ErrorResponse {
  * @category login()
  */
 export interface LoginResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -193,11 +183,11 @@ export interface LoginResponse401 extends Types.ErrorResponse {
  * @category login()
  */
 export interface LoginResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -205,11 +195,11 @@ export interface LoginResponse403 extends Types.ErrorResponse {
  * @category login()
  */
 export interface LoginResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -217,11 +207,11 @@ export interface LoginResponse404 extends Types.ErrorResponse {
  * @category login()
  */
 export interface LoginResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -229,46 +219,41 @@ export interface LoginResponse500 extends Types.ErrorResponse {
  * @category logout()
  */
 export type LogoutBody = {
-  /**
-   * The token to be invalidated.
-   */
-  token?: string;
-  [k: string]: unknown;
-};
+    	/**
+    	 * The token to be invalidated.
+    	 */
+    	token?: string
+    	[k: string]: unknown
+    }
 
 /**
  * Typing for all possible responses to the request made by logout()
  * @category logout()
  */
-export type LogoutResponse = LogoutSuccessResponse | LogoutErrorResponse;
+export type LogoutResponse = LogoutSuccessResponse | LogoutErrorResponse
 
 /**
  * Typing for all successful responses to the request made by logout()
  * @category logout()
  */
-export type LogoutSuccessResponse = LogoutResponse204;
+export type LogoutSuccessResponse = LogoutResponse204
 
 /**
  * Typing for all error responses to the request made by logout()
  * @category logout()
  */
-export type LogoutErrorResponse =
-  | LogoutResponse400
-  | LogoutResponse401
-  | LogoutResponse403
-  | LogoutResponse404
-  | LogoutResponse500;
+export type LogoutErrorResponse = LogoutResponse400 | LogoutResponse401 | LogoutResponse403 | LogoutResponse404 | LogoutResponse500
 
 /**
  * Typing for a response with status 204 to the request made by logout()
  * @category logout()
  */
 export interface LogoutResponse204 extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -276,11 +261,11 @@ export interface LogoutResponse204 extends Types.SuccessResponse {
  * @category logout()
  */
 export interface LogoutResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -288,11 +273,11 @@ export interface LogoutResponse400 extends Types.ErrorResponse {
  * @category logout()
  */
 export interface LogoutResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -300,11 +285,11 @@ export interface LogoutResponse401 extends Types.ErrorResponse {
  * @category logout()
  */
 export interface LogoutResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -312,11 +297,11 @@ export interface LogoutResponse403 extends Types.ErrorResponse {
  * @category logout()
  */
 export interface LogoutResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -324,11 +309,11 @@ export interface LogoutResponse404 extends Types.ErrorResponse {
  * @category logout()
  */
 export interface LogoutResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -336,42 +321,37 @@ export interface LogoutResponse500 extends Types.ErrorResponse {
  * @category listUsers()
  */
 export type ListUsersParameters = {
-  username?: string;
-};
+    "username"?: string,
+}
 
 /**
  * Typing for all possible responses to the request made by listUsers()
  * @category listUsers()
  */
-export type ListUsersResponse = ListUsersSuccessResponse | ListUsersErrorResponse;
+export type ListUsersResponse = ListUsersSuccessResponse | ListUsersErrorResponse
 
 /**
  * Typing for all successful responses to the request made by listUsers()
  * @category listUsers()
  */
-export type ListUsersSuccessResponse = ListUsersResponse200;
+export type ListUsersSuccessResponse = ListUsersResponse200
 
 /**
  * Typing for all error responses to the request made by listUsers()
  * @category listUsers()
  */
-export type ListUsersErrorResponse =
-  | ListUsersResponse400
-  | ListUsersResponse401
-  | ListUsersResponse403
-  | ListUsersResponse404
-  | ListUsersResponse500;
+export type ListUsersErrorResponse = ListUsersResponse400 | ListUsersResponse401 | ListUsersResponse403 | ListUsersResponse404 | ListUsersResponse500
 
 /**
  * Typing for a response with status 200 to the request made by listUsers()
  * @category listUsers()
  */
 export interface ListUsersResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Require<Types.User<'response'>, 'url' | 'id' | 'username'>[];
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: (Require<Types.User<"response">, "url" | "id" | "username">)[]
 }
 
 /**
@@ -379,11 +359,11 @@ export interface ListUsersResponse200 extends Types.SuccessResponse {
  * @category listUsers()
  */
 export interface ListUsersResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -391,11 +371,11 @@ export interface ListUsersResponse400 extends Types.ErrorResponse {
  * @category listUsers()
  */
 export interface ListUsersResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -403,11 +383,11 @@ export interface ListUsersResponse401 extends Types.ErrorResponse {
  * @category listUsers()
  */
 export interface ListUsersResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -415,11 +395,11 @@ export interface ListUsersResponse403 extends Types.ErrorResponse {
  * @category listUsers()
  */
 export interface ListUsersResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -427,52 +407,47 @@ export interface ListUsersResponse404 extends Types.ErrorResponse {
  * @category listUsers()
  */
 export interface ListUsersResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for the body of the request made by createUser()
  * @category createUser()
  */
-export type CreateUserBody = Require<Types.User<'request'>, 'username' | 'password'>;
+export type CreateUserBody = Require<Types.User<"request">, "username" | "password">
 
 /**
  * Typing for all possible responses to the request made by createUser()
  * @category createUser()
  */
-export type CreateUserResponse = CreateUserSuccessResponse | CreateUserErrorResponse;
+export type CreateUserResponse = CreateUserSuccessResponse | CreateUserErrorResponse
 
 /**
  * Typing for all successful responses to the request made by createUser()
  * @category createUser()
  */
-export type CreateUserSuccessResponse = CreateUserResponse201;
+export type CreateUserSuccessResponse = CreateUserResponse201
 
 /**
  * Typing for all error responses to the request made by createUser()
  * @category createUser()
  */
-export type CreateUserErrorResponse =
-  | CreateUserResponse400
-  | CreateUserResponse401
-  | CreateUserResponse403
-  | CreateUserResponse404
-  | CreateUserResponse500;
+export type CreateUserErrorResponse = CreateUserResponse400 | CreateUserResponse401 | CreateUserResponse403 | CreateUserResponse404 | CreateUserResponse500
 
 /**
  * Typing for a response with status 201 to the request made by createUser()
  * @category createUser()
  */
 export interface CreateUserResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Require<Types.User<'response'>, 'url' | 'id' | 'username'>;
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -480,11 +455,11 @@ export interface CreateUserResponse201 extends Types.SuccessResponse {
  * @category createUser()
  */
 export interface CreateUserResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -492,11 +467,11 @@ export interface CreateUserResponse400 extends Types.ErrorResponse {
  * @category createUser()
  */
 export interface CreateUserResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -504,11 +479,11 @@ export interface CreateUserResponse401 extends Types.ErrorResponse {
  * @category createUser()
  */
 export interface CreateUserResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -516,11 +491,11 @@ export interface CreateUserResponse403 extends Types.ErrorResponse {
  * @category createUser()
  */
 export interface CreateUserResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -528,11 +503,11 @@ export interface CreateUserResponse404 extends Types.ErrorResponse {
  * @category createUser()
  */
 export interface CreateUserResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -540,42 +515,37 @@ export interface CreateUserResponse500 extends Types.ErrorResponse {
  * @category getUser()
  */
 export type GetUserParameters = {
-  user_id: string;
-};
+    "user_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by getUser()
  * @category getUser()
  */
-export type GetUserResponse = GetUserSuccessResponse | GetUserErrorResponse;
+export type GetUserResponse = GetUserSuccessResponse | GetUserErrorResponse
 
 /**
  * Typing for all successful responses to the request made by getUser()
  * @category getUser()
  */
-export type GetUserSuccessResponse = GetUserResponse200;
+export type GetUserSuccessResponse = GetUserResponse200
 
 /**
  * Typing for all error responses to the request made by getUser()
  * @category getUser()
  */
-export type GetUserErrorResponse =
-  | GetUserResponse400
-  | GetUserResponse401
-  | GetUserResponse403
-  | GetUserResponse404
-  | GetUserResponse500;
+export type GetUserErrorResponse = GetUserResponse400 | GetUserResponse401 | GetUserResponse403 | GetUserResponse404 | GetUserResponse500
 
 /**
  * Typing for a response with status 200 to the request made by getUser()
  * @category getUser()
  */
 export interface GetUserResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Require<Types.User<'response'>, 'url' | 'id' | 'username'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -583,11 +553,11 @@ export interface GetUserResponse200 extends Types.SuccessResponse {
  * @category getUser()
  */
 export interface GetUserResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -595,11 +565,11 @@ export interface GetUserResponse400 extends Types.ErrorResponse {
  * @category getUser()
  */
 export interface GetUserResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -607,11 +577,11 @@ export interface GetUserResponse401 extends Types.ErrorResponse {
  * @category getUser()
  */
 export interface GetUserResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -619,11 +589,11 @@ export interface GetUserResponse403 extends Types.ErrorResponse {
  * @category getUser()
  */
 export interface GetUserResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -631,11 +601,11 @@ export interface GetUserResponse404 extends Types.ErrorResponse {
  * @category getUser()
  */
 export interface GetUserResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -643,48 +613,43 @@ export interface GetUserResponse500 extends Types.ErrorResponse {
  * @category updateUser()
  */
 export type UpdateUserParameters = {
-  user_id: string;
-};
+    "user_id": string,
+}
 
 /**
  * Typing for the body of the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserBody = Types.User<'request'>;
+export type UpdateUserBody = Types.User<"request">
 
 /**
  * Typing for all possible responses to the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserResponse = UpdateUserSuccessResponse | UpdateUserErrorResponse;
+export type UpdateUserResponse = UpdateUserSuccessResponse | UpdateUserErrorResponse
 
 /**
  * Typing for all successful responses to the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserSuccessResponse = UpdateUserResponse200;
+export type UpdateUserSuccessResponse = UpdateUserResponse200
 
 /**
  * Typing for all error responses to the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserErrorResponse =
-  | UpdateUserResponse400
-  | UpdateUserResponse401
-  | UpdateUserResponse403
-  | UpdateUserResponse404
-  | UpdateUserResponse500;
+export type UpdateUserErrorResponse = UpdateUserResponse400 | UpdateUserResponse401 | UpdateUserResponse403 | UpdateUserResponse404 | UpdateUserResponse500
 
 /**
  * Typing for a response with status 200 to the request made by updateUser()
  * @category updateUser()
  */
 export interface UpdateUserResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Require<Types.User<'response'>, 'url' | 'id' | 'username'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Require<Types.User<"response">, "url" | "id" | "username">
 }
 
 /**
@@ -692,11 +657,11 @@ export interface UpdateUserResponse200 extends Types.SuccessResponse {
  * @category updateUser()
  */
 export interface UpdateUserResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -704,11 +669,11 @@ export interface UpdateUserResponse400 extends Types.ErrorResponse {
  * @category updateUser()
  */
 export interface UpdateUserResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -716,11 +681,11 @@ export interface UpdateUserResponse401 extends Types.ErrorResponse {
  * @category updateUser()
  */
 export interface UpdateUserResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -728,11 +693,11 @@ export interface UpdateUserResponse403 extends Types.ErrorResponse {
  * @category updateUser()
  */
 export interface UpdateUserResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -740,11 +705,11 @@ export interface UpdateUserResponse404 extends Types.ErrorResponse {
  * @category updateUser()
  */
 export interface UpdateUserResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -752,42 +717,37 @@ export interface UpdateUserResponse500 extends Types.ErrorResponse {
  * @category deleteUser()
  */
 export type DeleteUserParameters = {
-  user_id: string;
-};
+    "user_id": string,
+}
 
 /**
  * Typing for all possible responses to the request made by deleteUser()
  * @category deleteUser()
  */
-export type DeleteUserResponse = DeleteUserSuccessResponse | DeleteUserErrorResponse;
+export type DeleteUserResponse = DeleteUserSuccessResponse | DeleteUserErrorResponse
 
 /**
  * Typing for all successful responses to the request made by deleteUser()
  * @category deleteUser()
  */
-export type DeleteUserSuccessResponse = DeleteUserResponse204;
+export type DeleteUserSuccessResponse = DeleteUserResponse204
 
 /**
  * Typing for all error responses to the request made by deleteUser()
  * @category deleteUser()
  */
-export type DeleteUserErrorResponse =
-  | DeleteUserResponse400
-  | DeleteUserResponse401
-  | DeleteUserResponse403
-  | DeleteUserResponse404
-  | DeleteUserResponse500;
+export type DeleteUserErrorResponse = DeleteUserResponse400 | DeleteUserResponse401 | DeleteUserResponse403 | DeleteUserResponse404 | DeleteUserResponse500
 
 /**
  * Typing for a response with status 204 to the request made by deleteUser()
  * @category deleteUser()
  */
 export interface DeleteUserResponse204 extends Types.SuccessResponse {
-  status: 204;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 204
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -795,11 +755,11 @@ export interface DeleteUserResponse204 extends Types.SuccessResponse {
  * @category deleteUser()
  */
 export interface DeleteUserResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -807,11 +767,11 @@ export interface DeleteUserResponse400 extends Types.ErrorResponse {
  * @category deleteUser()
  */
 export interface DeleteUserResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -819,11 +779,11 @@ export interface DeleteUserResponse401 extends Types.ErrorResponse {
  * @category deleteUser()
  */
 export interface DeleteUserResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -831,11 +791,11 @@ export interface DeleteUserResponse403 extends Types.ErrorResponse {
  * @category deleteUser()
  */
 export interface DeleteUserResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -843,46 +803,41 @@ export interface DeleteUserResponse404 extends Types.ErrorResponse {
  * @category deleteUser()
  */
 export interface DeleteUserResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for all possible responses to the request made by getIdentity()
  * @category getIdentity()
  */
-export type GetIdentityResponse = GetIdentitySuccessResponse | GetIdentityErrorResponse;
+export type GetIdentityResponse = GetIdentitySuccessResponse | GetIdentityErrorResponse
 
 /**
  * Typing for all successful responses to the request made by getIdentity()
  * @category getIdentity()
  */
-export type GetIdentitySuccessResponse = GetIdentityResponse200;
+export type GetIdentitySuccessResponse = GetIdentityResponse200
 
 /**
  * Typing for all error responses to the request made by getIdentity()
  * @category getIdentity()
  */
-export type GetIdentityErrorResponse =
-  | GetIdentityResponse400
-  | GetIdentityResponse401
-  | GetIdentityResponse403
-  | GetIdentityResponse404
-  | GetIdentityResponse500;
+export type GetIdentityErrorResponse = GetIdentityResponse400 | GetIdentityResponse401 | GetIdentityResponse403 | GetIdentityResponse404 | GetIdentityResponse500
 
 /**
  * Typing for a response with status 200 to the request made by getIdentity()
  * @category getIdentity()
  */
 export interface GetIdentityResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.User<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.User<"response">
 }
 
 /**
@@ -890,11 +845,11 @@ export interface GetIdentityResponse200 extends Types.SuccessResponse {
  * @category getIdentity()
  */
 export interface GetIdentityResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -902,11 +857,11 @@ export interface GetIdentityResponse400 extends Types.ErrorResponse {
  * @category getIdentity()
  */
 export interface GetIdentityResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -914,11 +869,11 @@ export interface GetIdentityResponse401 extends Types.ErrorResponse {
  * @category getIdentity()
  */
 export interface GetIdentityResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -926,11 +881,11 @@ export interface GetIdentityResponse403 extends Types.ErrorResponse {
  * @category getIdentity()
  */
 export interface GetIdentityResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -938,54 +893,47 @@ export interface GetIdentityResponse404 extends Types.ErrorResponse {
  * @category getIdentity()
  */
 export interface GetIdentityResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for the body of the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentityBody = Types.User<'request'> | undefined;
+export type UpdateIdentityBody = Types.User<"request"> | undefined
 
 /**
  * Typing for all possible responses to the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentityResponse =
-  | UpdateIdentitySuccessResponse
-  | UpdateIdentityErrorResponse;
+export type UpdateIdentityResponse = UpdateIdentitySuccessResponse | UpdateIdentityErrorResponse
 
 /**
  * Typing for all successful responses to the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentitySuccessResponse = UpdateIdentityResponse200;
+export type UpdateIdentitySuccessResponse = UpdateIdentityResponse200
 
 /**
  * Typing for all error responses to the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentityErrorResponse =
-  | UpdateIdentityResponse400
-  | UpdateIdentityResponse401
-  | UpdateIdentityResponse403
-  | UpdateIdentityResponse404
-  | UpdateIdentityResponse500;
+export type UpdateIdentityErrorResponse = UpdateIdentityResponse400 | UpdateIdentityResponse401 | UpdateIdentityResponse403 | UpdateIdentityResponse404 | UpdateIdentityResponse500
 
 /**
  * Typing for a response with status 200 to the request made by updateIdentity()
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse200 extends Types.SuccessResponse {
-  status: 200;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: Types.User<'response'>;
+    status: 200
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: Types.User<"response">
 }
 
 /**
@@ -993,11 +941,11 @@ export interface UpdateIdentityResponse200 extends Types.SuccessResponse {
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse400 extends Types.ErrorResponse {
-  status: 400;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 400
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1005,11 +953,11 @@ export interface UpdateIdentityResponse400 extends Types.ErrorResponse {
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse401 extends Types.ErrorResponse {
-  status: 401;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 401
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1017,11 +965,11 @@ export interface UpdateIdentityResponse401 extends Types.ErrorResponse {
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse403 extends Types.ErrorResponse {
-  status: 403;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 403
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1029,11 +977,11 @@ export interface UpdateIdentityResponse403 extends Types.ErrorResponse {
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse404 extends Types.ErrorResponse {
-  status: 404;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 404
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
@@ -1041,67 +989,65 @@ export interface UpdateIdentityResponse404 extends Types.ErrorResponse {
  * @category updateIdentity()
  */
 export interface UpdateIdentityResponse500 extends Types.ErrorResponse {
-  status: 500;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body?: undefined;
+    status: 500
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
 }
 
 /**
  * Typing for the body of the request made by createToken()
  * @category createToken()
  */
-export type CreateTokenBody =
-  | {
-      /**
-       * Url or uuid of the user that will be used to create the token.
-       */
-      user: string;
-      /**
-       * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
-       *
-       */
-      claims?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
+export type CreateTokenBody = {
+    	/**
+    	 * Url or uuid of the user that will be used to create the token.
+    	 */
+    	user: string
+    	/**
+    	 * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    	 * 
+    	 */
+    	claims?: {
+    		[k: string]: unknown
+    	}
+    	[k: string]: unknown
+    } | {
+    	/**
+    	 * Url or uuid of the user that will be used to create the token.
+    	 */
+    	username: string
+    	/**
+    	 * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
+    	 * 
+    	 */
+    	claims?: {
+    		[k: string]: unknown
+    	}
+    	[k: string]: unknown
     }
-  | {
-      /**
-       * Url or uuid of the user that will be used to create the token.
-       */
-      username: string;
-      /**
-       * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
-       *
-       */
-      claims?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    };
 
 /**
  * Typing for all possible responses to the request made by createToken()
  * @category createToken()
  */
-export type CreateTokenResponse = CreateTokenSuccessResponse;
+export type CreateTokenResponse = CreateTokenSuccessResponse
 
 /**
  * Typing for all successful responses to the request made by createToken()
  * @category createToken()
  */
-export type CreateTokenSuccessResponse = CreateTokenResponse201;
+export type CreateTokenSuccessResponse = CreateTokenResponse201
 
 /**
  * Typing for a response with status 201 to the request made by createToken()
  * @category createToken()
  */
 export interface CreateTokenResponse201 extends Types.SuccessResponse {
-  status: 201;
-  headers?: {
-    [k: string]: string | undefined;
-  };
-  body: string;
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body: string
 }

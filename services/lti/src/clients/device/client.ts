@@ -5,28 +5,28 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
+
+import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 import * as RequestValidation from './requestValidation.js';
 import * as Signatures from './signatures.js';
 import * as Types from './types.js';
 // @ts-ignore
-import { type Require } from './types.js';
+import { type Require } from "./types.js"
 
 /**
  * This error class should be used if an error occurs during validation of a request/response.
  * @category Errors
  */
 export class ValidationError extends Error {
-  public errors: unknown;
+    public errors: unknown
 
-  constructor(message: string, errors: unknown) {
-    super(message);
-    this.name = 'ValidationError';
-    this.errors = errors;
-  }
+    constructor(message: string, errors: unknown) {
+        super(message)
+        this.name = "ValidationError"
+        this.errors = errors
+    }
 }
 
 /**
@@ -34,25 +34,25 @@ export class ValidationError extends Error {
  * @category Errors
  */
 export class FetchError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'FetchError';
-  }
+    constructor(message: string) {
+        super(message)
+        this.name = "FetchError"
+    }
 }
 
 /**
- * This error class should be used if the response of the server has a status
+ * This error class should be used if the response of the server has a status 
  * greater than or equal to 400. This error should contain the validated response.
  * @category Errors
  */
 export class UnsuccessfulRequestError extends Error {
-  public response: Types.ResponseData;
+    public response: Types.ResponseData
 
-  constructor(message: string, response: Types.ResponseData) {
-    super(message);
-    this.response = response;
-    this.name = 'UnsuccessfulRequestError';
-  }
+    constructor(message: string, response: Types.ResponseData) {
+        super(message)
+        this.response = response
+        this.name = 'UnsuccessfulRequestError'
+    }
 }
 
 /**
@@ -60,24 +60,24 @@ export class UnsuccessfulRequestError extends Error {
  * @category Errors
  */
 export class InvalidUrlError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'InvalidUrlError';
-  }
+    constructor(message: string) {
+        super(message)
+        this.name = 'InvalidUrlError'
+    }
 }
 
 /**
  * This function attempts to parse a Response as ResponseData.
  */
 async function parseResponse(response: Response): Promise<Types.ResponseData> {
-  let text = null;
-  try {
-    text = await response.text();
-    const json = JSON.parse(text);
-    return { status: response.status, body: json };
-  } catch {
-    return { status: response.status, body: text };
-  }
+    let text = null
+    try {
+        text = await response.text()
+        const json = JSON.parse(text)
+        return { status: response.status, body: json }
+    } catch {
+        return { status: response.status, body: text }
+    }
 }
 
 /**
@@ -86,15 +86,15 @@ async function parseResponse(response: Response): Promise<Types.ResponseData> {
  * @returns True if the string is a valid http url.
  */
 function isValidHttpUrl(string: string) {
-  let url;
+    let url
 
-  try {
-    url = new URL(string);
-  } catch (_) {
-    return false;
-  }
+    try {
+        url = new URL(string)
+    } catch (_) {
+        return false
+    }
 
-  return url.protocol === 'http:' || url.protocol === 'https:';
+    return url.protocol === 'http:' || url.protocol === 'https:'
 }
 
 /**
@@ -108,13 +108,15 @@ function isValidHttpUrl(string: string) {
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
 function parsePathParameters(url: string, endpoint: string): string[] {
-  const parameterRegex = '([a-zA-Z0-9-:]+)';
-  const regex = new RegExp(endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$');
-  const matches = url.match(regex);
+    const parameterRegex = '([a-zA-Z0-9-:]+)'
+    const regex = new RegExp(
+        endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$'
+    )
+    const matches = url.match(regex)
 
-  if (!matches) throw new InvalidUrlError('Url does not end with the provided endpoint');
+    if (!matches) throw new InvalidUrlError('Url does not end with the provided endpoint')
 
-  return matches.slice(1);
+    return matches.slice(1)
 }
 
 /**
@@ -159,7 +161,7 @@ function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
  * @returns The url with the appended endpoint.
  */
 function appendToUrl(url: string, endpoint: string) {
-  return url.endsWith('/') ? `${url.slice(0, -1)}${endpoint}` : `${url}${endpoint}`;
+    return url.endsWith('/') ? `${url.slice(0, -1)}${endpoint}` : `${url}${endpoint}`
 }
 
 /**
@@ -167,1279 +169,1216 @@ function appendToUrl(url: string, endpoint: string) {
  * @category Client
  */
 export class Client {
-  public readonly baseUrl: string;
-  public readonly serviceUrl: string;
-  public accessToken: string;
-  private fixedHeaders: [string, string][];
-  private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
-    let raw_response;
-    try {
-      if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
-      ) {
-        raw_response = await fetch(url, init);
-      } else {
-        raw_response = await fetch(
-          appendToUrl(
-            this.baseUrl,
-            '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
-          ),
-          init,
-        );
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new FetchError(error.message);
-      } else if (typeof error === 'string') {
-        throw new FetchError(error);
-      } else {
-        throw new FetchError('Something went wrong while trying to fetch the request');
-      }
+    public readonly baseUrl: string;
+    public readonly serviceUrl: string;
+    public accessToken: string;
+    private fixedHeaders: [string, string][]
+    private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
+        let raw_response;
+        try {
+            if (
+                url.toString().startsWith(this.baseUrl) ||
+                url.toString().startsWith(this.serviceUrl)
+            ) {
+                raw_response = await fetch(url, init);
+            } else {
+                raw_response = await fetch(
+                appendToUrl(
+                    this.baseUrl,
+                    '/proxy?' + new URLSearchParams([['URL', url.toString()]]).toString(),
+                ),
+                init,
+                );
+            }
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new FetchError(error.message);
+            } else if (typeof error === 'string') {
+                throw new FetchError(error);
+            } else {
+                throw new FetchError('Something went wrong while trying to fetch the request');
+            }
+        }
+        return await parseResponse(raw_response);
+    };
+
+    /**
+     * @category Constructors
+     */
+    constructor(
+        baseUrl: string,
+        options: { serviceUrl?: string; accessToken?: string, fixedHeaders?: [string, string][] },
+    ) {
+        this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        this.serviceUrl = options.serviceUrl
+        ? options.serviceUrl.endsWith('/')
+            ? options.serviceUrl.slice(0, -1)
+            : options.serviceUrl
+        : this.baseUrl;
+        this.accessToken = options.accessToken ?? '';
+        this.fixedHeaders = options.fixedHeaders ?? [];
     }
-    return await parseResponse(raw_response);
-  };
-
-  /**
-   * @category Constructors
-   */
-  constructor(
-    baseUrl: string,
-    options: {
-      serviceUrl?: string;
-      accessToken?: string;
-      fixedHeaders?: [string, string][];
-    },
-  ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
-    this.accessToken = options.accessToken ?? '';
-    this.fixedHeaders = options.fixedHeaders ?? [];
-  }
-
-  /**
-   * List devices
-   *
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The list of all devices.
-   */
-  public async listDevices(options?: {
-    headers?: [string, string][];
-    url?: string;
-  }): Promise<Signatures.ListDevicesSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
-
-    if (!RequestValidation.validateListDevicesInput())
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateListDevicesInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateListDevicesOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateListDevicesOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Create a new device
-   *
-   * @param device
-   * The device to be created.
-   * @param options.changedUrl
-   * **An URL that will be called once the device changes.**
-   *
-   * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
-   * as long as every callback resolves with a successful status code.
-   *
-   * If the callback fails the url MIGHT not be called in the future.
-   *
-   * There can be multiple callbacks registered with the same device.
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The device was created. A JSON representation of the new device is returned.
-   */
-  public async createDevice(
-    device: Types.Device<'request'>,
-    options?: {
-      headers?: [string, string][];
-      changedUrl?: string;
-      url?: string;
-    },
-  ): Promise<Signatures.CreateDeviceSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
-
-    const body = device;
-
-    const parameters = {
-      changedUrl: options?.changedUrl,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['changedUrl'])
-      query.push(['changedUrl', parameters['changedUrl'].toString()]);
-
-    if (!RequestValidation.validateCreateDeviceInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateCreateDeviceInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateCreateDeviceOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateCreateDeviceOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * View a registered device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param options.flat_group
-   * If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the device.
-   */
-  public async getDevice(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-      flat_group?: boolean;
-    },
-  ): Promise<Signatures.GetDeviceSuccessResponse['body']> {
-    const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
-
-    const parameters = {
-      device_id: device_id,
-      flat_group: options?.flat_group,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['flat_group'])
-      query.push(['flat_group', parameters['flat_group'].toString()]);
-
-    if (!RequestValidation.validateGetDeviceInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateGetDeviceInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'GET',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-      },
-    );
-
-    if (!RequestValidation.validateGetDeviceOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateGetDeviceOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Update an existing device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param deviceUpdate
-   * Updated device.
-   * @param options.changedUrl
-   * **An URL that will be called once the device changes.**
-   *
-   * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
-   * as long as every callback resolves with a successful status code.
-   *
-   * If the callback fails the url MIGHT not be called in the future.
-   *
-   * There can be multiple callbacks registered with the same device.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the changed device.
-   */
-  public async updateDevice(
-    url: string,
-    deviceUpdate: Types.DeviceUpdate<'request'>,
-    options?: {
-      headers?: [string, string][];
-      changedUrl?: string;
-    },
-  ): Promise<Signatures.UpdateDeviceSuccessResponse['body']> {
-    const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
-
-    const body = deviceUpdate;
-
-    const parameters = {
-      device_id: device_id,
-      changedUrl: options?.changedUrl,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['changedUrl'])
-      query.push(['changedUrl', parameters['changedUrl'].toString()]);
-
-    if (!RequestValidation.validateUpdateDeviceInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateUpdateDeviceInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'PATCH',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateUpdateDeviceOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateUpdateDeviceOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Delete a registered device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The device was deleted.
-   */
-  public async deleteDevice(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
-
-    const parameters = {
-      device_id: device_id,
-    };
-
-    if (!RequestValidation.validateDeleteDeviceInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateDeleteDeviceInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateDeleteDeviceOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateDeleteDeviceOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * Instantiate a cloud instantiable device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param options.changedUrl
-   * **An URL that will be called once the device changes.**
-   *
-   * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
-   * as long as every callback resolves with a successful status code.
-   *
-   * If the callback fails the url MIGHT not be called in the future.
-   *
-   * There can be multiple callbacks registered with the same device.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the created instance.
-   */
-  public async instantiateDevice(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-      changedUrl?: string;
-    },
-  ): Promise<Signatures.InstantiateDeviceSuccessResponse['body']> {
-    const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
-
-    const parameters = {
-      device_id: device_id,
-      changedUrl: options?.changedUrl,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['changedUrl'])
-      query.push(['changedUrl', parameters['changedUrl'].toString()]);
-
-    if (!RequestValidation.validateInstantiateDeviceInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateInstantiateDeviceInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-      },
-    );
-
-    if (!RequestValidation.validateInstantiateDeviceOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateInstantiateDeviceOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Get the availability of a device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param options.startTime
-   * Start time of the requested availability
-   * @param options.endTime
-   * End time of the requested availability
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the availability of the device.
-   */
-  public async getDeviceAvailability(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-      startTime?: string;
-      endTime?: string;
-    },
-  ): Promise<Signatures.GetDeviceAvailabilitySuccessResponse['body']> {
-    const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
-
-    const parameters = {
-      device_id: device_id,
-      startTime: options?.startTime,
-      endTime: options?.endTime,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['startTime'])
-      query.push(['startTime', parameters['startTime'].toString()]);
-
-    if (parameters['endTime']) query.push(['endTime', parameters['endTime'].toString()]);
-
-    if (!RequestValidation.validateGetDeviceAvailabilityInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateGetDeviceAvailabilityInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'GET',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-      },
-    );
-
-    if (!RequestValidation.validateGetDeviceAvailabilityOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateGetDeviceAvailabilityOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Delete the availability rules of a device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The availability rules of the device were deleted successfully.
-   */
-  public async deleteDeviceAvailabilityRules(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
-
-    const parameters = {
-      device_id: device_id,
-    };
-
-    if (!RequestValidation.validateDeleteDeviceAvailabilityRulesInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateDeleteDeviceAvailabilityRulesInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateDeleteDeviceAvailabilityRulesOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateDeleteDeviceAvailabilityRulesOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * Add availability rules for a device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param availabilityRules
-   * The availability rules to be applied.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the changed availability.
-   */
-  public async addDeviceAvailabilityRules(
-    url: string,
-    availabilityRules: Types.AvailabilityRule<'request'>[],
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse['body']> {
-    const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
-
-    const body = availabilityRules;
-
-    const parameters = {
-      device_id: device_id,
-    };
-
-    if (!RequestValidation.validateAddDeviceAvailabilityRulesInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateAddDeviceAvailabilityRulesInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
-
-    if (!RequestValidation.validateAddDeviceAvailabilityRulesOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateAddDeviceAvailabilityRulesOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Create new websocket token for device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The newly generated websocket token for the device.
-   */
-  public async createWebsocketToken(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.CreateWebsocketTokenSuccessResponse['body']> {
-    const urlSuffix = '/devices/{}/websocket'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/websocket');
-
-    const parameters = {
-      device_id: device_id,
-    };
-
-    if (!RequestValidation.validateCreateWebsocketTokenInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateCreateWebsocketTokenInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateCreateWebsocketTokenOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateCreateWebsocketTokenOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Send signaling message to device
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param sigMessage
-   * The signaling message to be sent.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The signaling message was delivered successfully.
-   */
-  public async sendSignalingMessage(
-    url: string,
-    sigMessage:
-      | Types.CreatePeerconnectionMessage<'request'>
-      | Types.ClosePeerconnectionMessage<'request'>
-      | Types.SignalingMessage<'request'>
-      | Types.ConfigurationMessage<'request'>
-      | Types.ExperimentStatusChangedMessage<'request'>
-      | Types.LoggingMessage<'request'>,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/devices/{}/signaling'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/signaling');
-
-    const body = sigMessage;
-
-    const parameters = {
-      device_id: device_id,
-    };
-
-    if (!RequestValidation.validateSendSignalingMessageInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateSendSignalingMessageInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
-
-    if (!RequestValidation.validateSendSignalingMessageOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateSendSignalingMessageOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * List Peer Connection
-   *
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The list of all peerconnections.
-   */
-  public async listPeerconnections(options?: {
-    headers?: [string, string][];
-    url?: string;
-  }): Promise<Signatures.ListPeerconnectionsSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
-
-    if (!RequestValidation.validateListPeerconnectionsInput())
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateListPeerconnectionsInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateListPeerconnectionsOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateListPeerconnectionsOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Create a new Peer Connection
-   *
-   * @param peerconnection
-   * The peerconnection to be created.
-   * @param options.closedUrl
-   * An URL that will be called once the peer connection is closed.
-   * @param options.statusChangedUrl
-   * An URL that will be called if the status of the peerconnection changes.
-   * @param options.url
-   * Url of the  to be used.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 201: The peerconnection was created. A JSON representation of the new peer connection is returned.
-   * 202: The device service will attempt to create the peerconnection as soon as possible.
-   */
-  public async createPeerconnection(
-    peerconnection: Types.Peerconnection<'request'>,
-    options?: {
-      headers?: [string, string][];
-      closedUrl?: string;
-      statusChangedUrl?: string;
-      url?: string;
-    },
-  ): Promise<Signatures.CreatePeerconnectionSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
-
-    const body = peerconnection;
-
-    const parameters = {
-      closedUrl: options?.closedUrl,
-      statusChangedUrl: options?.statusChangedUrl,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['closedUrl'])
-      query.push(['closedUrl', parameters['closedUrl'].toString()]);
-
-    if (parameters['statusChangedUrl'])
-      query.push(['statusChangedUrl', parameters['statusChangedUrl'].toString()]);
-
-    if (!RequestValidation.validateCreatePeerconnectionInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateCreatePeerconnectionInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateCreatePeerconnectionOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateCreatePeerconnectionOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * View a peer connection
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * The JSON Representation of the device peer connection.
-   */
-  public async getPeerconnection(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.GetPeerconnectionSuccessResponse['body']> {
-    const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
-
-    const parameters = {
-      peerconnection_id: peerconnection_id,
-    };
-
-    if (!RequestValidation.validateGetPeerconnectionInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateGetPeerconnectionInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateGetPeerconnectionOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateGetPeerconnectionOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-   * Delete a peer connection
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * 202: The peerconnection will be deleted as soon as it's closed.
-   * 204: The peerconnection was deleted successfully.
-   */
-  public async deletePeerconnection(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
-
-    const parameters = {
-      peerconnection_id: peerconnection_id,
-    };
-
-    if (!RequestValidation.validateDeletePeerconnectionInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validateDeletePeerconnectionInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
-
-    if (!RequestValidation.validateDeletePeerconnectionOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateDeletePeerconnectionOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * Sets the peerconnection status of a single device.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   * @param body
-   * The JSON Representation of the device peer connection.
-   * @param device_url
-   * URL of the device
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * OK.
-   */
-  public async patchPeerconnectionDeviceStatus(
-    url: string,
-    body: {
-      /**
-       * The status of the peerconnection.
-       */
-      status: Types.ConnectionStatus<'request'>;
-      [k: string]: unknown;
-    },
-    device_url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/peerconnections/{}/device_status'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(
-      url,
-      this.baseUrl,
-      '/peerconnections/{}/device_status',
-    );
-
-    const parameters = {
-      peerconnection_id: peerconnection_id,
-      device_url: device_url,
-    };
-
-    const query: [string, string][] = [];
-
-    if (parameters['device_url'])
-      query.push(['device_url', parameters['device_url'].toString()]);
-
-    if (!RequestValidation.validatePatchPeerconnectionDeviceStatusInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (
-          RequestValidation.validatePatchPeerconnectionDeviceStatusInput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
-      {
-        method: 'PATCH',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validatePatchPeerconnectionDeviceStatusOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validatePatchPeerconnectionDeviceStatusOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
+
+    /**
+     * List devices 
+	 * 
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The list of all devices.
+     */
+    public async listDevices(
+            options?: {
+                headers?: [string, string][],url?: string}): Promise<Signatures.ListDevicesSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/devices")
+
+        
+
+        
+
+        if (!RequestValidation.validateListDevicesInput())
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateListDevicesInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateListDevicesOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateListDevicesOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Create a new device 
+	 * 
+	 * @param device
+	 * The device to be created.
+	 * @param options.changedUrl
+	 * **An URL that will be called once the device changes.**
+	 * 
+	 * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
+	 * as long as every callback resolves with a successful status code.
+	 * 
+	 * If the callback fails the url MIGHT not be called in the future.
+	 * 
+	 * There can be multiple callbacks registered with the same device.
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The device was created. A JSON representation of the new device is returned.
+     */
+    public async createDevice(device: Types.Device<"request">,
+            options?: {
+                headers?: [string, string][],changedUrl?: string,url?: string}): Promise<Signatures.CreateDeviceSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/devices")
+
+        const body = device
+
+        
+        const parameters = {
+            changedUrl: options?.changedUrl,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["changedUrl"]) 
+                    query.push(["changedUrl", parameters["changedUrl"].toString()])
+
+        if (!RequestValidation.validateCreateDeviceInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateCreateDeviceInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateCreateDeviceOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateCreateDeviceOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * View a registered device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param options.flat_group
+	 * If true the returned device group will only contain concrete devices. I.e. any subgroups will be flattend.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the device.
+     */
+    public async getDevice(url: string,
+            options?: {
+                headers?: [string, string][],flat_group?: boolean,}): Promise<Signatures.GetDeviceSuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+            flat_group: options?.flat_group,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["flat_group"]) 
+                    query.push(["flat_group", parameters["flat_group"].toString()])
+
+        if (!RequestValidation.validateGetDeviceInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateGetDeviceInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateGetDeviceOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateGetDeviceOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Update an existing device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param deviceUpdate
+	 * Updated device.
+	 * @param options.changedUrl
+	 * **An URL that will be called once the device changes.**
+	 * 
+	 * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
+	 * as long as every callback resolves with a successful status code.
+	 * 
+	 * If the callback fails the url MIGHT not be called in the future.
+	 * 
+	 * There can be multiple callbacks registered with the same device.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the changed device.
+     */
+    public async updateDevice(url: string,deviceUpdate: Types.DeviceUpdate<"request">,
+            options?: {
+                headers?: [string, string][],changedUrl?: string,}): Promise<Signatures.UpdateDeviceSuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}')
+
+        const body = deviceUpdate
+
+        
+        const parameters = {
+            device_id: device_id,
+            changedUrl: options?.changedUrl,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["changedUrl"]) 
+                    query.push(["changedUrl", parameters["changedUrl"].toString()])
+
+        if (!RequestValidation.validateUpdateDeviceInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateUpdateDeviceInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "PATCH", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateUpdateDeviceOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateUpdateDeviceOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Delete a registered device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The device was deleted.
+     */
+    public async deleteDevice(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+        }
+
+        if (!RequestValidation.validateDeleteDeviceInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateDeleteDeviceInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "DELETE", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateDeleteDeviceOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateDeleteDeviceOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    /**
+     * Instantiate a cloud instantiable device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param options.changedUrl
+	 * **An URL that will be called once the device changes.**
+	 * 
+	 * Once the device was given a changedUrl parameter the contained URL will be called every time a device is changed
+	 * as long as every callback resolves with a successful status code.
+	 * 
+	 * If the callback fails the url MIGHT not be called in the future.
+	 * 
+	 * There can be multiple callbacks registered with the same device.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the created instance.
+     */
+    public async instantiateDevice(url: string,
+            options?: {
+                headers?: [string, string][],changedUrl?: string,}): Promise<Signatures.InstantiateDeviceSuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+            changedUrl: options?.changedUrl,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["changedUrl"]) 
+                    query.push(["changedUrl", parameters["changedUrl"].toString()])
+
+        if (!RequestValidation.validateInstantiateDeviceInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateInstantiateDeviceInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateInstantiateDeviceOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateInstantiateDeviceOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Get the availability of a device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param options.startTime
+	 * Start time of the requested availability
+	 * @param options.endTime
+	 * End time of the requested availability
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the availability of the device.
+     */
+    public async getDeviceAvailability(url: string,
+            options?: {
+                headers?: [string, string][],startTime?: string,endTime?: string,}): Promise<Signatures.GetDeviceAvailabilitySuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}/availability')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+            startTime: options?.startTime,
+            endTime: options?.endTime,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["startTime"]) 
+                    query.push(["startTime", parameters["startTime"].toString()])
+            
+                if (parameters["endTime"]) 
+                    query.push(["endTime", parameters["endTime"].toString()])
+
+        if (!RequestValidation.validateGetDeviceAvailabilityInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateGetDeviceAvailabilityInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateGetDeviceAvailabilityOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateGetDeviceAvailabilityOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Delete the availability rules of a device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The availability rules of the device were deleted successfully.
+     */
+    public async deleteDeviceAvailabilityRules(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}/availability')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+        }
+
+        if (!RequestValidation.validateDeleteDeviceAvailabilityRulesInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateDeleteDeviceAvailabilityRulesInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "DELETE", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateDeleteDeviceAvailabilityRulesOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateDeleteDeviceAvailabilityRulesOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    /**
+     * Add availability rules for a device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param availabilityRules
+	 * The availability rules to be applied.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the changed availability.
+     */
+    public async addDeviceAvailabilityRules(url: string,availabilityRules: (Types.AvailabilityRule<"request">)[],
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}/availability')
+
+        const body = availabilityRules
+
+        
+        const parameters = {
+            device_id: device_id,
+        }
+
+        if (!RequestValidation.validateAddDeviceAvailabilityRulesInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateAddDeviceAvailabilityRulesInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateAddDeviceAvailabilityRulesOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateAddDeviceAvailabilityRulesOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Create new websocket token for device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The newly generated websocket token for the device.
+     */
+    public async createWebsocketToken(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.CreateWebsocketTokenSuccessResponse["body"]> {
+                const urlSuffix = '/devices/{}/websocket'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}/websocket')
+
+        
+
+        
+        const parameters = {
+            device_id: device_id,
+        }
+
+        if (!RequestValidation.validateCreateWebsocketTokenInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateCreateWebsocketTokenInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateCreateWebsocketTokenOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateCreateWebsocketTokenOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Send signaling message to device 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param sigMessage
+	 * The signaling message to be sent.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The signaling message was delivered successfully.
+     */
+    public async sendSignalingMessage(url: string,sigMessage: Types.CreatePeerconnectionMessage<"request"> | Types.ClosePeerconnectionMessage<"request"> | Types.SignalingMessage<"request"> | Types.ConfigurationMessage<"request"> | Types.ExperimentStatusChangedMessage<"request"> | Types.LoggingMessage<"request">,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/devices/{}/signaling'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [device_id,] = validateUrl(url, this.baseUrl, '/devices/{}/signaling')
+
+        const body = sigMessage
+
+        
+        const parameters = {
+            device_id: device_id,
+        }
+
+        if (!RequestValidation.validateSendSignalingMessageInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateSendSignalingMessageInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateSendSignalingMessageOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateSendSignalingMessageOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    /**
+     * List Peer Connection 
+	 * 
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The list of all peerconnections.
+     */
+    public async listPeerconnections(
+            options?: {
+                headers?: [string, string][],url?: string}): Promise<Signatures.ListPeerconnectionsSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/peerconnections")
+
+        
+
+        
+
+        if (!RequestValidation.validateListPeerconnectionsInput())
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateListPeerconnectionsInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateListPeerconnectionsOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateListPeerconnectionsOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Create a new Peer Connection 
+	 * 
+	 * @param peerconnection
+	 * The peerconnection to be created.
+	 * @param options.closedUrl
+	 * An URL that will be called once the peer connection is closed.
+	 * @param options.statusChangedUrl
+	 * An URL that will be called if the status of the peerconnection changes.
+	 * @param options.url
+	 * Url of the  to be used.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 201: The peerconnection was created. A JSON representation of the new peer connection is returned.
+	 * 202: The device service will attempt to create the peerconnection as soon as possible.
+     */
+    public async createPeerconnection(peerconnection: Types.Peerconnection<"request">,
+            options?: {
+                headers?: [string, string][],closedUrl?: string,statusChangedUrl?: string,url?: string}): Promise<Signatures.CreatePeerconnectionSuccessResponse["body"]> {
+            const url = appendToUrl(options?.url ?? this.baseUrl, "/peerconnections")
+
+        const body = peerconnection
+
+        
+        const parameters = {
+            closedUrl: options?.closedUrl,
+            statusChangedUrl: options?.statusChangedUrl,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["closedUrl"]) 
+                    query.push(["closedUrl", parameters["closedUrl"].toString()])
+            
+                if (parameters["statusChangedUrl"]) 
+                    query.push(["statusChangedUrl", parameters["statusChangedUrl"].toString()])
+
+        if (!RequestValidation.validateCreatePeerconnectionInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateCreatePeerconnectionInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "POST", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validateCreatePeerconnectionOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateCreatePeerconnectionOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * View a peer connection 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * The JSON Representation of the device peer connection.
+     */
+    public async getPeerconnection(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<Signatures.GetPeerconnectionSuccessResponse["body"]> {
+                const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [peerconnection_id,] = validateUrl(url, this.baseUrl, '/peerconnections/{}')
+
+        
+
+        
+        const parameters = {
+            peerconnection_id: peerconnection_id,
+        }
+
+        if (!RequestValidation.validateGetPeerconnectionInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateGetPeerconnectionInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "GET", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateGetPeerconnectionOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateGetPeerconnectionOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+
+            return response.body
+    }
+
+    /**
+     * Delete a peer connection 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * 202: The peerconnection will be deleted as soon as it's closed.
+	 * 204: The peerconnection was deleted successfully.
+     */
+    public async deletePeerconnection(url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [peerconnection_id,] = validateUrl(url, this.baseUrl, '/peerconnections/{}')
+
+        
+
+        
+        const parameters = {
+            peerconnection_id: peerconnection_id,
+        }
+
+        if (!RequestValidation.validateDeletePeerconnectionInput(parameters))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validateDeletePeerconnectionInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
+            method: "DELETE", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ]
+        })
+
+        if (!RequestValidation.validateDeletePeerconnectionOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validateDeletePeerconnectionOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    /**
+     * Sets the peerconnection status of a single device. 
+	 * 
+	 * @param url
+	 * Url of the resource to be accessed.
+	 * @param body
+	 * The JSON Representation of the device peer connection.
+	 * @param device_url
+	 * URL of the device
+     *
+     * @throws {@link FetchError | FetchError } 
+     * Thrown if fetch fails.
+     * @throws {@link ValidationError | ValidationError } 
+     * Thrown if the request/response validation fails.
+     * @throws {@link InvalidUrlError | InvalidUrlError } 
+     * Thrown if the provided url is not valid for this request.
+     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
+     * Thrown if response is validated but has status greater than or equal to 400.
+     * 
+     * @returns
+	 * OK.
+     */
+    public async patchPeerconnectionDeviceStatus(url: string,body: {
+	/**
+	 * The status of the peerconnection.
+	 */
+	status: Types.ConnectionStatus<"request">
+	[k: string]: unknown
+},device_url: string,
+            options?: {
+                headers?: [string, string][],}): Promise<void> {
+                const urlSuffix = '/peerconnections/{}/device_status'.split('{}').at(-1) ?? ''
+                if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
+                const [peerconnection_id,] = validateUrl(url, this.baseUrl, '/peerconnections/{}/device_status')
+
+        
+
+        
+        const parameters = {
+            peerconnection_id: peerconnection_id,
+            device_url: device_url,
+        }
+
+            const query: [string,string][] = []
+            
+                if (parameters["device_url"]) 
+                    query.push(["device_url", parameters["device_url"].toString()])
+
+        if (!RequestValidation.validatePatchPeerconnectionDeviceStatusInput(parameters, body))
+            throw new ValidationError(
+                'Request validation failed!', 
+                (RequestValidation.validatePatchPeerconnectionDeviceStatusInput as Types.FunctionWithErrors).errors
+            )
+
+        const authorization: string = `Bearer ${this.accessToken}`
+
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+            method: "PATCH", 
+            headers: [
+                ["Content-Type", "application/json"],
+                ["Authorization", authorization],
+                ...this.fixedHeaders,
+                ...(options?.headers ?? [])
+            ], 
+            body: JSON.stringify(body)
+        })
+
+        if (!RequestValidation.validatePatchPeerconnectionDeviceStatusOutput(response))
+            throw new ValidationError(
+                'Response validation failed!', 
+                (RequestValidation.validatePatchPeerconnectionDeviceStatusOutput as Types.FunctionWithErrors).errors
+            )
+
+        if (Types.isErrorResponse(response)) 
+            throw new UnsuccessfulRequestError(
+                `Server returned response with status ${response.status}`, 
+                response
+            )
+        
+        
+    }
+
+    
 }

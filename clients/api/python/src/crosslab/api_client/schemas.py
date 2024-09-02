@@ -3857,6 +3857,15 @@ class LtiLaunchResponse200(TypedDict):
 LtiLaunchResponse: TypeAlias = LtiLaunchResponse200
 
 
+class LtiJwksResponse200(TypedDict):
+    """
+    Properties:
+    """
+
+
+LtiJwksResponse: TypeAlias = LtiJwksResponse200
+
+
 class ListResourceResponse200Items(TypedDict):
     """
     Properties:
@@ -3935,8 +3944,8 @@ class ListResourceStudentsResponse200ItemsRole_mappingItems(TypedDict):
     - role
     - device
     """
-    role: NotRequired[str]
-    device: NotRequired[ListResourceStudentsResponse200ItemsRole_mappingItemsDevice]
+    role: str
+    device: ListResourceStudentsResponse200ItemsRole_mappingItemsDevice
 
 
 class ListResourceStudentsResponse200Items(TypedDict):
@@ -3959,3 +3968,203 @@ ListResourceStudentsResponse200: TypeAlias = List[ListResourceStudentsResponse20
 
 
 ListResourceStudentsResponse: TypeAlias = ListResourceStudentsResponse200
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDevice = Union[UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt1, UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentsRequestItemsDataRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentsRequestItemsDataRole_mappingItemsDevice
+
+
+class UpdateResourceStudentsRequestItemsData(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentsRequestItemsDataRole_mappingItems]
+
+
+class UpdateResourceStudentsRequestItems(TypedDict):
+    """
+    Properties:
+    - uri
+    - data
+    """
+    uri: str
+    data: UpdateResourceStudentsRequestItemsData
+
+
+UpdateResourceStudentsRequest: TypeAlias = List[UpdateResourceStudentsRequestItems]
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDevice = Union[UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1, UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentsResponse200ItemsRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentsResponse200ItemsRole_mappingItemsDevice
+
+
+class UpdateResourceStudentsResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentsResponse200ItemsRole_mappingItems]
+
+
+UpdateResourceStudentsResponse200: TypeAlias = List[UpdateResourceStudentsResponse200Items]
+
+
+UpdateResourceStudentsResponse: TypeAlias = UpdateResourceStudentsResponse200
+
+
+GetResourceStudentResponse200Role_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+GetResourceStudentResponse200Role_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+GetResourceStudentResponse200Role_mappingItemsDevice = Union[GetResourceStudentResponse200Role_mappingItemsDeviceAlt1, GetResourceStudentResponse200Role_mappingItemsDeviceAlt2]
+
+
+class GetResourceStudentResponse200Role_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: GetResourceStudentResponse200Role_mappingItemsDevice
+
+
+class GetResourceStudentResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[GetResourceStudentResponse200Role_mappingItems]
+
+
+GetResourceStudentResponse: TypeAlias = GetResourceStudentResponse200
+
+
+UpdateResourceStudentRequestRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentRequestRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentRequestRole_mappingItemsDevice = Union[UpdateResourceStudentRequestRole_mappingItemsDeviceAlt1, UpdateResourceStudentRequestRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentRequestRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentRequestRole_mappingItemsDevice
+
+
+class UpdateResourceStudentRequest(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentRequestRole_mappingItems]
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDevice = Union[UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt1, UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentResponse200Role_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentResponse200Role_mappingItemsDevice
+
+
+class UpdateResourceStudentResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentResponse200Role_mappingItems]
+
+
+UpdateResourceStudentResponse: TypeAlias = UpdateResourceStudentResponse200
