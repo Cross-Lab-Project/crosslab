@@ -51,7 +51,7 @@ export function mock_authorization_functions(
         return [];
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuple, action: action!, object: object! }];
     }
     const result = tuples.map(match);
@@ -84,7 +84,7 @@ export function mock_authorization_functions(
     if (Array.isArray(subject_or_tuples)) {
       tuples = subject_or_tuples;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
     }
     await update_relations(tuples, []);
@@ -105,7 +105,7 @@ export function mock_authorization_functions(
     if (Array.isArray(subject_or_tuples)) {
       tuples = subject_or_tuples;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
     }
     await update_relations([], tuples);

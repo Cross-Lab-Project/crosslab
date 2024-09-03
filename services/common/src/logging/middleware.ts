@@ -36,5 +36,5 @@ export function middleware(): NextHandleFunction {
     requestIdContext.run(req.id, () => {
       next();
     });
-  } as any;
+  } as unknown as NextHandleFunction;
 }

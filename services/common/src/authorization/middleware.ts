@@ -195,7 +195,7 @@ export function middleware(config?: AuthorizationConfig): NextHandleFunction {
     let user_id = user;
     try {
       user_id = decodeJwt(user).sub ?? 'user:anonymus';
-    } catch (e) {
+    } catch (_e) {
       //ignore
     }
 
@@ -208,5 +208,5 @@ export function middleware(config?: AuthorizationConfig): NextHandleFunction {
     };
 
     next();
-  }) as any;
+  }) as unknown as NextHandleFunction;
 }
