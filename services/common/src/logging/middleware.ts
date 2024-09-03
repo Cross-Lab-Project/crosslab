@@ -1,4 +1,5 @@
-import express from 'express';
+import { NextHandleFunction } from 'connect';
+import { NextFunction, Request, Response } from 'express';
 import { v1 as uuidv1 } from 'uuid';
 
 import { logger } from './logging.js';
@@ -17,8 +18,8 @@ declare global {
 /**
  * This middleware injects the request id into the request object and logs the request.
  */
-export function middleware() {
-  return function (req, res, next) {
+export function middleware(): NextHandleFunction {
+  return function (req: Request, res: Response, next: NextFunction) {
     req.id = req.get('X-Request-ID') ?? uuidv1();
     req.startTime = Date.now();
     res.on('finish', () => {
@@ -35,5 +36,5 @@ export function middleware() {
     requestIdContext.run(req.id, () => {
       next();
     });
-  } as express.RequestHandler;
+  } as any;
 }

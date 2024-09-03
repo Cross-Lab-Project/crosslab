@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { NextHandleFunction } from 'connect';
 import { decodeJwt } from 'jose';
 
 import { ForbiddenError, UnauthorizedError } from '../errors.js';
@@ -169,6 +169,7 @@ declare global {
   }
 }
 
+import { NextFunction, Request, Response } from 'express';
 /**
  * This middleware adds the authorization functions to the request object.
  *
@@ -176,7 +177,7 @@ declare global {
  * @param config
  * @returns
  */
-export function middleware(config?: AuthorizationConfig) {
+export function middleware(config?: AuthorizationConfig): NextHandleFunction {
   if (config === undefined) {
     config = {
       AUTHORIZATION_SERVER:
@@ -189,7 +190,7 @@ export function middleware(config?: AuthorizationConfig) {
   }
 
   let authorization_funs = authorization_functions(config);
-  return ((req, _res, next) => {
+  return ((req: Request, _res: Response, next: NextFunction) => {
     const user = req.header('X-Request-Authentication') ?? 'user:anonymus';
     let user_id = user;
     try {
@@ -207,5 +208,5 @@ export function middleware(config?: AuthorizationConfig) {
     };
 
     next();
-  }) as express.RequestHandler;
+  }) as any;
 }
