@@ -205,7 +205,10 @@ async function addDeviceCallback(
       [id, callbackType.DeviceUpdate, targetbooking, data],
     );
 
-    await clients.device.updateDevice(device.toString(), undefined, {
+    // TODO: For now get the type first since it is required. Remove this once the type is no longer needed
+    let deviceData = await clients.device.getDevice(device.toString());
+
+    await clients.device.updateDevice(device.toString(), {type: deviceData.type} , {
       changedUrl: config.OwnURL + '/booking_callback/' + id,
     });
   } catch (e) {
