@@ -171,26 +171,25 @@ export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
   request,
   parameters,
 ) => {
-  let parameterID: bigint = BigInt(parameters.ID);
-
-  await request.authorization.check_authorization_or_fail(
-    'edit',
-    `booking:${parameterID}`,
-  );
-
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
 
   try {
     let [rows, fields]: [any, any] = await db.execute(
       'SELECT `type`, `targetbooking`, `parameters` FROM callback WHERE `id`=?',
-      [parameterID],
+      [parameters.ID],
     );
     if (rows.length === 0) {
       return {
         status: 404,
       };
     }
+
+    await request.authorization.check_authorization_or_fail(
+      'edit',
+      `booking:${rows[0].targetbooking}`,
+    );
+
     await handleCallback(
       rows[0].type,
       rows[0].targetbooking,
