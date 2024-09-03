@@ -6,7 +6,7 @@ export interface ClientContext {
 
 export const mochaHooks = {
   async beforeAll(this: ClientContext & Mocha.Context) {
-    this.client = new APIClient(process.env['HOST'] ?? 'http://localhost');
+    this.client = new APIClient(process.env['HOST'] ?? 'http://localhost:80');
     const username = process.env['USERNAME'];
     const password = process.env['PASSWORD'];
     if (username && password) {
