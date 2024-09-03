@@ -168,7 +168,7 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
 };
 
 export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
-  request,
+  _,
   parameters,
 ) => {
   let db = await mysql.createConnection(config.BookingDSN);
@@ -184,11 +184,6 @@ export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
         status: 404,
       };
     }
-
-    await request.authorization.check_authorization_or_fail(
-      'edit',
-      `booking:${rows[0].targetbooking}`,
-    );
 
     await handleCallback(
       rows[0].type,
