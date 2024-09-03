@@ -76,8 +76,8 @@ export type SizedTuple<
     ? _SizedTuple<T, NumericRangeTuple<MIN, MAX>>
     : TupleObject<T, NumericRangeTuple<0, MIN>> & T[]
   : MAX extends number
-    ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
-    : T[];
+  ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
+  : T[];
 
 type _SizedTuple<T, ARR extends number[], Z extends boolean = false> = ARR extends [
   infer HEAD extends number,
@@ -148,19 +148,19 @@ export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-      ? {
-          name?: string;
-          homepage?: string;
-          api?: string;
-          apiToken?: string;
-          [k: string]: unknown;
-        }
-      : T extends 'response'
-        ? {
-            url: string;
-            name?: string;
-            homepage?: string;
-            api?: string;
-            [k: string]: unknown;
-          }
-        : never;
+    ? {
+        name?: string;
+        homepage?: string;
+        api?: string;
+        apiToken?: string;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+    ? {
+        url: string;
+        name?: string;
+        homepage?: string;
+        api?: string;
+        [k: string]: unknown;
+      }
+    : never;

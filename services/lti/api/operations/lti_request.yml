@@ -1,0 +1,119 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+paths:
+  launch:
+    post:
+      summary: Launch the LTI tool.
+      operationId: lti_launch
+      tags:
+        - lti
+      security: []
+      parameters:
+        - $ref: 'platform.yml#/components/parameters/platform_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  type: string
+                  description: The state of the LTI message.
+                id_token:
+                  type: string
+                  description: The ID token of the LTI message.
+              required:
+                - state
+                - id_token
+              additionalProperties: false
+      responses:
+        200:
+          description: |-
+            returns the verified and parsed LTI message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: The access token to authenticate subsequent requests.
+                  session:
+                    $ref: '../schemas/session.yml'
+                required:
+                  - access_token
+                  - session
+  login:
+    post:
+      summary: Login with LTI.
+      operationId: lti_login
+      tags:
+        - lti
+      security: []
+      parameters:
+        - $ref: 'platform.yml#/components/parameters/platform_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                iss:
+                  type: string
+                  description: The issuer of the LTI message.
+                client_id:
+                  type: string
+                  description: The client ID of the LTI message.
+                lti_deployment_id:
+                  type: string
+                  description: The deployment ID of the LTI message.
+                target_link_uri:
+                  type: string
+                  description: The target link URI of the LTI message.
+                login_hint:
+                  type: string
+                  description: The login hint of the LTI message.
+                lti_message_hint:
+                  type: string
+                  description: The LTI message hint of the LTI message.
+              required:
+                - iss
+                - client_id
+                - target_link_uri
+                - login_hint
+                - lti_message_hint
+              additionalProperties: false
+      responses:
+        200:
+          description: |-
+            returns the verified and parsed LTI message.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authentication_request_url:
+                    type: string
+                    description: The authentication request URL. The Frontend should send a 302 redirect of this URL to the user agent.
+                required:
+                  - authentication_request_url
+                additionalProperties: false
+  jwks:
+    get:
+      summary: Get the JSON Web Key Set (JWKS) for the tool.
+      operationId: lti_jwks
+      tags:
+        - lti
+      security: []
+      parameters:
+        - $ref: 'platform.yml#/components/parameters/platform_id'
+      responses:
+        200:
+          description: |-
+            returns the JSON Web Key Set (JWKS) for the tool.
+          content:
+            application/json:
+              schema:
+                type: object

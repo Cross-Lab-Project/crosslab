@@ -62,7 +62,28 @@ from crosslab.api_client.schemas import (
     GetInstitutionResponse,
     UpdateInstitutionRequest,
     UpdateInstitutionResponse,
-    DeleteInstitutionResponse
+    DeleteInstitutionResponse,
+    ListPlatformResponse,
+    RegisterPlatformResponse,
+    GetPlatformResponse,
+    UpdatePlatformResponse,
+    DeletePlatformResponse,
+    LtiLoginRequest,
+    LtiLoginResponse,
+    LtiLaunchRequest,
+    LtiLaunchResponse,
+    LtiJwksResponse,
+    ListResourceResponse,
+    GetResourceResponse,
+    UpdateResourceRequest,
+    UpdateResourceResponse,
+    DeleteResourceResponse,
+    ListResourceStudentsResponse,
+    UpdateResourceStudentsRequest,
+    UpdateResourceStudentsResponse,
+    GetResourceStudentResponse,
+    UpdateResourceStudentRequest,
+    UpdateResourceStudentResponse
 )
 
 
@@ -1162,5 +1183,358 @@ class APIClient:
            
         # transform response
         if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def list_platform(self, url: str = "/lti/platform") -> ListPlatformResponse:  # noqa: E501
+        """
+        List all platforms.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/platform)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/lti/platform'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def register_platform(self, url: str = "/lti/platform") -> RegisterPlatformResponse:  # noqa: E501
+        """
+        Register a new platform.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/platform)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/lti/platform'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post")
+           
+        # transform response
+        if status == 201:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def get_platform(self, url: str) -> GetPlatformResponse:  # noqa: E501
+        """
+        Get the platform.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_platform(self, url: str) -> UpdatePlatformResponse:  # noqa: E501
+        """
+        Update the platform.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_platform(self, url: str) -> DeletePlatformResponse:  # noqa: E501
+        """
+        Delete the platform.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def lti_login(self, url: str, body: LtiLoginRequest) -> LtiLoginResponse:  # noqa: E501
+        """
+        Login with LTI.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/login)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/login'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def lti_launch(self, url: str, body: LtiLaunchRequest) -> LtiLaunchResponse:  # noqa: E501
+        """
+        Launch the LTI tool.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/launch)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/launch'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def lti_jwks(self, url: str) -> LtiJwksResponse:  # noqa: E501
+        """
+        Get the JSON Web Key Set (JWKS) for the tool.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/jwks)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/jwks'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def list_resource(self, url: str = "/lti/resource") -> ListResourceResponse:  # noqa: E501
+        """
+        List all LTI-Resources.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/resource)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/lti/resource'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def get_resource(self, url: str) -> GetResourceResponse:  # noqa: E501
+        """
+        Get the LTI-Resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_resource(self, url: str, body: UpdateResourceRequest) -> UpdateResourceResponse:  # noqa: E501
+        """
+        Update the LTI-Resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def delete_resource(self, url: str) -> DeleteResourceResponse:  # noqa: E501
+        """
+        Delete the LTI-Resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def list_resource_students(self, url: str) -> ListResourceStudentsResponse:  # noqa: E501
+        """
+        List all students of the LTI-Resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/students'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_resource_students(self, url: str, body: UpdateResourceStudentsRequest) -> UpdateResourceStudentsResponse:  # noqa: E501
+        """
+        Update the students of the resource.
+        
+        Update the students of the resource. Acts as you would call a PATCH on each student."""  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/students'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def get_resource_student(self, url: str) -> GetResourceStudentResponse:  # noqa: E501
+        """
+        Get the student of the resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_resource_student(self, url: str, body: UpdateResourceStudentRequest) -> UpdateResourceStudentResponse:  # noqa: E501
+        """
+        Update the student of the resource.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
             return resp
         raise Exception(f"Unexpected status code: {status}")

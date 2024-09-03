@@ -43,6 +43,6 @@
   "peerDependencies": {
     "@cross-lab-project/openapi-codegen": "file:../openapi-codegeneration",
     "ajv": "^8.11.0",
-    "ajv-formats": "^2.1.1"
+    "ajv-formats": "^3.0.1"
   }
 }

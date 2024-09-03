@@ -5,6 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "internalConsoleOptions": "openOnSessionStart",
+      "name": "Mocha Tests",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "test",
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "attach",
       "name": "Attach",

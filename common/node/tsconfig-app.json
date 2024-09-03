@@ -19,7 +19,7 @@
         "emitDecoratorMetadata": true,
         "skipLibCheck": true,
         "paths": {
-            "typeorm": ["./node_modules/typeorm"]
+            "typeorm": ["./node_modules/typeorm"],
         }
     },
     "include": ["src"]

@@ -225,8 +225,19 @@ services/federation:
       - services/federation:build
 
 services/lti:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: lint-spec
+    paths:
+      - ./api
+    dependencies:
+      - services/lti:build-spec
+    tags:
+      - test
   - script: build
     dependencies:
+      - services/lti:build-spec
       - services/common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
@@ -234,6 +245,11 @@ services/lti:
   - script: build-docker
     dependencies:
       - services/lti:build
+  - script: test
+    dependencies:
+      - services/authorization:build
+    tags:
+      - test
 
 services/openapi:
   - script: build
@@ -243,6 +259,7 @@ services/openapi:
       - services/device:build-spec
       - services/experiment:build-spec
       - services/federation:build-spec
+      - services/lti:build-spec
   - script: lint
     dependencies:
       - services/openapi:build

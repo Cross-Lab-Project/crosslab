@@ -7,8 +7,8 @@
     "generate-experiment-config": "./oas2nginx.sh --upstream experiment_service --basepath / ../experiment/dist/openapi.json > conf/experiment_service.conf",
     "generate-federation-config": "./oas2nginx.sh --upstream federation_service --basepath / ../federation/dist/openapi.json > conf/federation_service.conf",
     "generate-auth-config": "./oas2nginx.sh --upstream auth_service --basepath / ../auth/dist/openapi.json > conf/auth_service.conf",
-    "generate-update-config": "./oas2nginx.sh --upstream update_service --basepath / ../update/dist/openapi.json > conf/update_service.conf",
-    "build": "exit 0; npm run generate-device-config && npm run generate-experiment-config && npm run generate-federation-config && npm run generate-auth-config && npm run generate-update-config",
+    "generate-lti-config": "./oas2nginx.sh --upstream lti_service --basepath / ../lti/dist/openapi.json > conf/lti_service.conf",
+    "build": "npm run generate-device-config && npm run generate-experiment-config && npm run generate-federation-config && npm run generate-auth-config && npm run generate-lti-config",
     "format": "prettier . --write",
     "lint": "eslint ."
   },

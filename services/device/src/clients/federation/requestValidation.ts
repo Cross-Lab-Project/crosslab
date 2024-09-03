@@ -53,8 +53,9 @@ export function validateListInstitutionsOutput(
     return true;
   }
 
-  (validateListInstitutionsOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateListInstitutionsOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -112,8 +113,9 @@ export function validateCreateInstitutionOutput(
     return true;
   }
 
-  (validateCreateInstitutionOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateCreateInstitutionOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -177,8 +179,9 @@ export function validateGetInstitutionOutput(
     return true;
   }
 
-  (validateGetInstitutionOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateGetInstitutionOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -254,8 +257,9 @@ export function validateUpdateInstitutionOutput(
     return true;
   }
 
-  (validateUpdateInstitutionOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateUpdateInstitutionOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -312,8 +316,9 @@ export function validateDeleteInstitutionOutput(
     return true;
   }
 
-  (validateDeleteInstitutionOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateDeleteInstitutionOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -369,8 +374,9 @@ export function validateProxyGetOutput(
     return true;
   }
 
-  (validateProxyGetOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyGetOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -426,8 +432,9 @@ export function validateProxyPostOutput(
     return true;
   }
 
-  (validateProxyPostOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyPostOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -483,8 +490,9 @@ export function validateProxyPutOutput(
     return true;
   }
 
-  (validateProxyPutOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyPutOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -540,8 +548,9 @@ export function validateProxyPatchOutput(
     return true;
   }
 
-  (validateProxyPatchOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyPatchOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -597,8 +606,9 @@ export function validateProxyDeleteOutput(
     return true;
   }
 
-  (validateProxyDeleteOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyDeleteOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -654,8 +664,9 @@ export function validateProxyHeadOutput(
     return true;
   }
 
-  (validateProxyHeadOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyHeadOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -711,8 +722,9 @@ export function validateProxyOptionsOutput(
     return true;
   }
 
-  (validateProxyOptionsOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyOptionsOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -768,8 +780,9 @@ export function validateProxyTraceOutput(
     return true;
   }
 
-  (validateProxyTraceOutput as FunctionWithErrors).errors =
-    `Response status ${response.status} is unexpected`;
+  (
+    validateProxyTraceOutput as FunctionWithErrors
+  ).errors = `Response status ${response.status} is unexpected`;
 
   return false;
 }

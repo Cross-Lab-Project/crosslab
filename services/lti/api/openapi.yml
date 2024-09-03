@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+info:
+  title: CrossLab LTI Service REST API (internal)
+  description: |-
+    This is the OpenAPI description of the internal CrossLab LTI Service REST API.
+  version: 0.0.1
+  x-service-name: LTI Service
+tags:
+  - name: lti
+    description: |-
+      LTI related operations
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal LTI API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+paths:
+  /lti/platform:
+    $ref: 'operations/platform.yml#/paths/platform'
+  /lti/platform/{platform_id}:
+    $ref: 'operations/platform.yml#/paths/platform_by_id'
+  /lti/platform/{platform_id}/login:
+    $ref: 'operations/lti_request.yml#/paths/login'
+  /lti/platform/{platform_id}/launch:
+    $ref: 'operations/lti_request.yml#/paths/launch'
+  /lti/platform/{platform_id}/jwks:
+    $ref: 'operations/lti_request.yml#/paths/jwks'
+  /lti/resource:
+    $ref: 'operations/resource.yml#/paths/resource'
+  /lti/resource/{resource_id}:
+    $ref: 'operations/resource.yml#/paths/resource_by_id'
+  /lti/resource/{resource_id}/students:
+    $ref: 'operations/resource.yml#/paths/resource_by_id_students'
+  /lti/resource/{resource_id}/students/{student_id}:
+    $ref: 'operations/resource.yml#/paths/resource_by_id_students_by_id'
+#  /lti/resource:
+#
+#  /lti/resource/takeOwnership:
+#    post:
+#      operationId: take_ownership
+#      tags:
+#      - lti
+#      security: []
+#      parameters:
+#        - name: lti_session_token
+#      responses:
+#        '200':
+#          description: |-
+#            Returns the resource ID of the resource that was taken ownership of.
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                properties:
+#                  resource_id:
+#                    type: string
+#                    description: The ID of the resource that was taken ownership of.
+#                required:
+#                  - resource_id
+#                additionalProperties: false
+#        401:
+#          description: Unauthorized.
+
+#  /lti/platform/{platform_id}/dynamic_registration:
+#    get:
+#

@@ -8,6 +8,7 @@ x-config: &common-config
   DEVICE_SERVICE_URL: 'http://127.0.0.1:3001'
   EXPERIMENT_SERVICE_URL: 'http://127.0.0.1:3002'
   FEDERATION_SERVICE_URL: 'http://127.0.0.1:3003'
+  LTI_SERVICE_URL: 'http://127.0.0.1:3004'
   BASE_URL: 'http://localhost'
 
 services:
@@ -22,6 +23,7 @@ services:
       EXPERIMENT_SERVICE_DOMAIN: '127.0.0.1:3002'
       FEDERATION_SERVICE_DOMAIN: '127.0.0.1:3003'
       AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
+      LTI_SERVICE_DOMAIN: '127.0.0.2:3004'
     network_mode: 'host'
   authentication:
     image: '${AUTHENTICATION_IMAGE}'

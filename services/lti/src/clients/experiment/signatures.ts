@@ -38,7 +38,7 @@ export interface ListExperimentsResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.ExperimentOverview<"response">[]
+    body: (Types.ExperimentOverview<"response">)[]
 }
 
 /**
@@ -557,7 +557,7 @@ export interface ListTemplateResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.TemplateOverview<"response">[]
+    body: (Types.TemplateOverview<"response">)[]
 }
 
 /**

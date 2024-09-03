@@ -1,0 +1,90 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json
+openapi: 3.1.0
+components:
+  parameters:
+    session_id:
+      name: session_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the session.
+paths:
+  session:
+    get:
+      operationId: list_session
+      tags:
+        - lti
+      security:
+        - JWT: []
+      responses:
+        '200':
+          description: |-
+            List all LTI-Sessions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../schemas/session.yml'
+        401:
+          description: Unauthorized.
+  session_by_id:
+    get:
+      operationId: get_session
+      tags:
+        - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '200':
+          description: |-
+            Returns the session.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/session.yml'
+        401:
+          description: Unauthorized.
+    delete:
+      operationId: delete_session
+      tags:
+        - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '204':
+          description: |-
+            session deleted
+        401:
+          description: Unauthorized.
+  session_by_id_experiment:
+    post:
+      operationId: create_lti_experiment
+      tags:
+        - lti
+      security:
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      responses:
+        '201':
+          description: |-
+            Returns the URI of the created experiment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  experiment_uri:
+                    type: string
+                    format: uri
+                    description: The URI of the created experiment.
+                required:
+                  - experiment_uri
+        401:
+          description: Unauthorized.

@@ -1,133 +1,87 @@
-import { Request, Response } from 'express';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-import fetch from 'node-fetch';
+import { JWTPayload, SignJWT, createRemoteJWKSet, jwtVerify } from 'jose';
+import fetch, { RequestInfo, RequestInit } from 'node-fetch';
 
+import { kid, privateKey } from '../business/key_management.js';
 import '../clients/index.js';
 import { ApplicationDataSource } from '../database/datasource.js';
-import { LtiMessageModel, PlatformModel, PlatformProvisionModel } from '../database/model.js';
+import { LtiMessageModel, PlatformModel } from '../database/model.js';
 import { random } from '../helper/generators.js';
-import { handle_deep_linking_request } from './deep_link.js';
-import { handle_resource_link_request } from './resource_link.js';
-import { tool_configuration } from './tool_configuration.js';
 
-async function handle_authentication_response(req: Request, res: Response) {
-  const message = await ApplicationDataSource.manager.findOneOrFail(LtiMessageModel, {where: {id: req.body.state}, relations: ['platform']});
-  const platform = message.platform
-  const jwks_url = platform.jwks_url;
-  const jwt = req.body.id_token;
-  const jwks = createRemoteJWKSet(new URL(jwks_url));
-  const { payload } = await jwtVerify(jwt, jwks);
-  if (payload.nonce !== message.nonce) {
-    throw new Error('nonce does not match');
+//import { tool_configuration } from './tool_configuration.js';
+
+export type RawLtiMessage = {
+  'https://purl.imsglobal.org/spec/lti/claim/message_type': string;
+  'https://purl.imsglobal.org/spec/lti/claim/roles': string[];
+  'https://purl.imsglobal.org/spec/lti/claim/resource_link': { id: string };
+};
+
+function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
+  if (
+    typeof message['https://purl.imsglobal.org/spec/lti/claim/message_type'] !== 'string'
+  ) {
+    return false;
   }
-  // message successfully processed, delete it to prevent replay attacks
-  await ApplicationDataSource.manager.delete(LtiMessageModel, message.id);
 
-  const message_type = payload['https://purl.imsglobal.org/spec/lti/claim/message_type'];
-  switch (message_type) {
-    case 'LtiResourceLinkRequest':
-      await handle_resource_link_request(req, res, payload, platform);
-      break;
-    case 'LtiDeepLinkingRequest':
-      await handle_deep_linking_request(req, res, payload, platform);
-      break;
-    default:
-      res.send(payload);
-  }
-}
-
-export async function handle_login_request(req: Request, res: Response) {
-  if (req.body.id_token) {
-    return await handle_authentication_response(req, res);
+  if (!Array.isArray(message['https://purl.imsglobal.org/spec/lti/claim/roles'])) {
+    return false;
   }
   if (
-    req.body.target_link_uri !==
-    tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration']
-      .target_link_uri
+    !message['https://purl.imsglobal.org/spec/lti/claim/roles'].every(
+      role => typeof role === 'string',
+    )
   ) {
-    throw new Error(
-      `target_link_uri does not match: ` +
-        `expected ${tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration'].target_link_uri}, got ${req.body.target_link_uri}`,
-    );
+    return false;
   }
-
-  let platform: PlatformModel | undefined = undefined;
-  try {
-    platform = await ApplicationDataSource.manager.findOneByOrFail(PlatformModel, {
-      iss: req.body.iss,
-      client_id: req.body.client_id,
-    });
-  } catch (e) {
-    const _platform = await ApplicationDataSource.manager
-      .getRepository(PlatformProvisionModel)
-      .createQueryBuilder()
-      .where(
-        '(PlatformProvisionModel.iss = :iss OR PlatformProvisionModel.iss IS NULL) ' +
-          'AND (PlatformProvisionModel.client_id = :client_id OR PlatformProvisionModel.client_id IS NULL)',
-        {
-          iss: req.body.iss,
-          client_id: req.body.client_id,
-        },
-      )
-      .getOneOrFail();
-    console.log(_platform);
-    await ApplicationDataSource.manager.delete(PlatformProvisionModel, _platform.id);
-
-    // check possilbe urls:
-    const possible_urls = [
-      {
-        authentication_request_url: req.body.iss + '/mod/lti/auth.php',
-        access_token_url: req.body.iss + '/mod/lti/token.php',
-        jwks_url: req.body.iss + '/mod/lti/certs.php',
-      },
-    ];
-
-    for (const urls of possible_urls) {
-      const auth_result = await fetch(urls.authentication_request_url);
-      const token_result = await fetch(urls.access_token_url);
-      const jwks_result = await fetch(urls.jwks_url);
-
-      if (
-        [200, 400].includes(auth_result.status) &&
-        [200, 400].includes(token_result.status) &&
-        [200].includes(jwks_result.status)
-      ) {
-        platform = ApplicationDataSource.manager.create(PlatformModel, {
-          iss: _platform.iss ?? req.body.iss,
-          client_id: _platform.client_id ?? req.body.client_id,
-          authentication_request_url:
-            _platform.authentication_request_url ?? urls.authentication_request_url,
-          access_token_url: _platform.access_token_url ?? urls.access_token_url,
-          jwks_url: _platform.jwks_url ?? urls.jwks_url,
-        });
-        await ApplicationDataSource.manager.save(platform);
+  if (
+    typeof message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] !==
+      'object' ||
+    message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] === null ||
+    typeof (
+      message['https://purl.imsglobal.org/spec/lti/claim/resource_link'] as {
+        id: unknown;
       }
-    }
-
-    if (platform === undefined) {
-      throw new Error('platform not found');
-    }
+    ).id !== 'string'
+  ) {
+    return false;
   }
 
-  
+  return true;
+}
+
+export async function handle_login_request(
+  params: { target_link_uri: string; login_hint: string; lti_message_hint: string },
+  platform: PlatformModel,
+) {
+  //if (
+  //  params.target_link_uri !==
+  //  tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration']
+  //    .target_link_uri
+  //) {
+  //  throw new Error(
+  //    `target_link_uri does not match: ` +
+  //      `expected ${tool_configuration['https://purl.imsglobal.org/spec/lti-tool-configuration'].target_link_uri}, got ${params.target_link_uri}`,
+  //  );
+  //}
+
   const nonceParam = random();
   const message = ApplicationDataSource.manager.create(LtiMessageModel, {
     nonce: nonceParam,
     platform: platform,
-  })
-  await ApplicationDataSource.manager.save(message)
-  const stateParam = message.id
+  });
+  await ApplicationDataSource.manager.save(message);
+  const stateParam = message.id;
   const queryParams = {
     scope: 'openid',
     response_type: 'id_token',
-    client_id: platform.client_id,
-    redirect_uri: req.body.target_link_uri,
-    login_hint: req.body.login_hint,
+    client_id: platform.client_id!,
+    redirect_uri: params.target_link_uri,
+    login_hint: params.login_hint,
     state: stateParam,
     response_mode: 'form_post',
     nonce: nonceParam,
     prompt: 'none',
-    lti_message_hint: req.body.lti_message_hint,
+    lti_message_hint: params.lti_message_hint,
+    lti_deployment_id: platform.deployment_id!,
   };
 
   const authentication_request_url =
@@ -135,6 +89,87 @@ export async function handle_login_request(req: Request, res: Response) {
     '?' +
     new URLSearchParams(queryParams).toString();
 
-  res.setHeader('Location', authentication_request_url);
-  res.status(302).send();
+  return authentication_request_url;
+}
+
+async function getPlatfromAccessToken(
+  platform: { client_id?: string; iss?: string; access_token_url?: string },
+  scopes: string[],
+) {
+  if (!platform.client_id) {
+    throw new Error('client_id is not set');
+  }
+  if (!platform.iss) {
+    throw new Error('iss is not set');
+  }
+  if (!platform.access_token_url) {
+    throw new Error('access_token_url is not set');
+  }
+
+  const jwt_fields = {
+    iss: platform.client_id,
+    aud: platform.iss,
+    sub: platform.client_id,
+    jti: random(),
+  };
+
+  const jwt = await new SignJWT(jwt_fields)
+    .setProtectedHeader({ alg: 'ES256', kid: kid })
+    .setIssuedAt()
+    .setExpirationTime('5m')
+    .sign(privateKey);
+
+  const result = await fetch(platform.access_token_url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_assertion_type: 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
+      client_assertion: jwt,
+      scope: scopes.join(' '),
+    }),
+  });
+
+  return (await result.json()) as {
+    access_token: string;
+    token_type: string;
+    expires_in: number;
+  };
+}
+
+export async function platformFetch(
+  url: URL | RequestInfo,
+  init: RequestInit & {
+    platform: { client_id?: string; iss?: string; access_token_url?: string };
+    scopes: string[];
+  },
+) {
+  const { platform, scopes, ..._init } = init;
+  const access_token = await getPlatfromAccessToken(platform, scopes);
+
+  return await fetch(url, {
+    ..._init,
+    headers: {
+      Authorization: access_token.token_type + ' ' + access_token.access_token,
+      ...(_init?.headers ?? []),
+    },
+  });
+}
+
+export async function verifyMessage(id_token: string, nonce: string, jwks_url?: string) {
+  if (!jwks_url) {
+    throw new Error('jwks_url is not set');
+  }
+
+  const jwks = createRemoteJWKSet(new URL(jwks_url));
+  const { payload } = await jwtVerify(id_token, jwks);
+  if (payload.nonce !== nonce) {
+    throw new Error('nonce does not match');
+  }
+
+  if (!isRawLtiMessage(payload)) {
+    throw new Error('Malformed LTI Message');
+  }
+
+  return payload;
 }

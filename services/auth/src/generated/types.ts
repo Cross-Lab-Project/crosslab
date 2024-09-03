@@ -149,21 +149,21 @@ type NumericRangeTuple<
                     ? {
 	url: string
 	username: string
-	scopes: string[]
+	scopes: (string)[]
 	[k: string]: unknown
 }
                     : T extends "request" 
                     ? {
 	url: string
 	username: string
-	scopes: string[]
+	scopes: (string)[]
 	[k: string]: unknown
 }
                     : T extends "response"
                     ? {
 	url: string
 	username: string
-	scopes: string[]
+	scopes: (string)[]
 	[k: string]: unknown
 }
                     : never
