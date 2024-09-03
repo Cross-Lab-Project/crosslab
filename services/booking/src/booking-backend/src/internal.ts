@@ -67,12 +67,18 @@ export async function handleCallback(
           if (rows.length == 0) {
             throw Error(
               'Booking, Position (' +
-                targetBooking +
-                ',' +
-                parameters.Position +
-                ') not known',
+              targetBooking +
+              ',' +
+              parameters.Position +
+              ') not known',
             );
           }
+
+          // Check if device is actually booked -- if not, just jump out
+          if (rows[0].bookeddevice == null && rows[0].remotereference == null) {
+            return;
+          }
+
           let bookedDeviceId: bigint = BigInt(rows[0].id);
           let originalDevice: string = rows[0].originaldevice;
 
@@ -208,7 +214,7 @@ async function addDeviceCallback(
     // TODO: For now get the type first since it is required. Remove this once the type is no longer needed
     let deviceData = await clients.device.getDevice(device.toString());
 
-    await clients.device.updateDevice(device.toString(), {type: deviceData.type} , {
+    await clients.device.updateDevice(device.toString(), { type: deviceData.type }, {
       changedUrl: config.OwnURL + '/booking_callback/' + id,
     });
   } catch (e) {
@@ -436,7 +442,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
       } catch (e) {
         console.log(
           'Error while getting schedule in reservateDevice (using next device): ' +
-            (e as Error).toString(),
+          (e as Error).toString(),
         );
         continue;
       }
@@ -811,7 +817,7 @@ export async function DeleteBooking(
           // Don't jump out here, since some devices might already be freed
           console.log(
             'Got error while cancelling booking, devices might not be freed: ' +
-              (err as Error).toString(),
+            (err as Error).toString(),
           );
         } finally {
           await channel.close();
