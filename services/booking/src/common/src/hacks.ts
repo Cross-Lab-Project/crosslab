@@ -7,10 +7,10 @@ export function hackURLWithPort(u: string | URL): string {
         let portstring = u.port
         if (portstring === "") {
             switch (u.protocol) {
-                case "http":
+                case "http:":
                     portstring = "80"
                     break;
-                case "https":
+                case "https:":
                     portstring = "443"
                     break;
                 default:
