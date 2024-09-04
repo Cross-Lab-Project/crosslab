@@ -1,6 +1,11 @@
+import { logger } from '@crosslab/service-common';
+
 import { repositories } from '../../../../database/dataSource.js';
 import { signalingQueueManager } from '../../../../methods/signaling/signalingQueueManager.js';
-import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import {
+  deviceUrlFromId,
+  peerconnectionUrlFromId,
+} from '../../../../methods/urlFromId.js';
 import { sendStatusChangedCallback } from '../../../callbacks/index.js';
 
 export const disconnectTimeouts = new Map<string, NodeJS.Timeout>();
@@ -19,11 +24,19 @@ export function addDisconnectTimeout(deviceId: string) {
 
       for (const peerconnection of peerconnections) {
         peerconnection.status = 'closed';
-        try {
-          signalingQueueManager.closeSignalingQueues(peerconnection.uuid);
-        } catch {
-          // empty
-        }
+        signalingQueueManager.closeSignalingQueues(peerconnection.uuid).catch(error =>
+          logger.log(
+            'error',
+            `Something went wrong while trying to close the signaling queues of peerconnection "${peerconnectionUrlFromId(
+              peerconnection.uuid,
+            )}"`,
+            {
+              data: {
+                error,
+              },
+            },
+          ),
+        );
         await repositories.peerconnection.save(peerconnection);
         sendStatusChangedCallback(peerconnection);
       }

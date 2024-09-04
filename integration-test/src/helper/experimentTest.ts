@@ -87,6 +87,7 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           name: 'Internal Test Device',
           isPublic: true,
         });
+        await client.addDeviceAvailabilityRules(device.url, [{ available: true }]);
         deviceMeta.devices.push(device);
       }
       const apiDevice = await client.createDevice({
