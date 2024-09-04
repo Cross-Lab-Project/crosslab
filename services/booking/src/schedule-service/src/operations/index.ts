@@ -6,6 +6,7 @@ import { BelongsToUs, clients } from '@crosslab/booking-service-common';
 import dayjs from 'dayjs';
 import lodash from 'lodash';
 import * as mysql from 'mysql2/promise';
+import { hackURLWithPort } from '@crosslab/booking-service-common';
 
 import { config } from '../config.js';
 import {
@@ -326,7 +327,7 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
     }
     let freeCombined = timetableAnd(...free);
     response.push({
-      Device: body.Experiment.Devices[device].ID,
+      Device: hackURLWithPort(body.Experiment.Devices[device].ID),
       Booked: timetableNot(freeCombined, dayjs(body.Time.Start), dayjs(body.Time.End)),
       Free: freeCombined,
     });

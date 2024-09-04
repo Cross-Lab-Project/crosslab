@@ -4,6 +4,7 @@ import { logger } from '@crosslab/service-common/logging';
 import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mysql from 'mysql2/promise';
+import { hackURLWithPort } from '@crosslab/booking-service-common';
 
 import { config } from '../config.js';
 import {
@@ -182,7 +183,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
       [requestID],
     );
     for (let i = 0; i < rows.length; i++) {
-      body.Booking.Devices.push(rows[i].originaldevice);
+      body.Booking.Devices.push(hackURLWithPort(rows[i].originaldevice));
     }
 
     return {

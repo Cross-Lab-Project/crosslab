@@ -1,4 +1,5 @@
 import * as mysql from 'mysql2/promise';
+import { hackURLWithPort } from '@crosslab/booking-service-common';
 
 import { config } from '../config.js';
 import {
@@ -80,8 +81,8 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
       );
       for (let i = 0; i < deviceRows.length; i++) {
         deviceList.push({
-          Requested: deviceRows[i].originaldevice,
-          Selected: deviceRows[i].bookeddevice,
+          Requested: hackURLWithPort(deviceRows[i].originaldevice),
+          Selected: hackURLWithPort(deviceRows[i].bookeddevice),
         });
       }
 
