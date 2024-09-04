@@ -273,7 +273,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (
     }
 
     // if both are set, the request is invalid
-    if (typeof body.Callback === 'string' && typeof body.Devices !== 'undefined') {
+    if (typeof body.Callback === 'string' && typeof body.Devices !== 'undefined' && (body.Devices as Device[]).length !== 0) {
       return {
         status: 400,
         body: 'can not add callback and devices in one request',
@@ -287,97 +287,103 @@ export const patchBookingByID: patchBookingByIDSignature = async (
     } else if (typeof body.Devices !== 'undefined') {
       let Devices: Device[] = body.Devices as Device[];
 
-      // Set locked to default if not given
-      if (body.Locked == undefined) {
-        body.Locked = false;
-      }
+      if (Devices.length !== 0) {
 
-      switch (body.Locked) {
-        case true:
-          if (
-            rows[0].status !== 'active' &&
-            rows[0].status !== 'active-rejected' &&
-            rows[0].status !== 'active-pending'
-          ) {
-            return {
-              status: 423,
-            };
-          }
-          await db.execute('UPDATE booking SET `status`=? WHERE id=?', [
-            'active-pending',
-            requestID,
-          ]);
-          break;
-        case false:
-          if (rows[0].status !== 'booked' && rows[0].status !== 'pending') {
-            return {
-              status: 423,
-            };
-          }
-          await db.execute('UPDATE booking SET `status`=? WHERE id=?', [
-            'pending',
-            requestID,
-          ]);
-          break;
-        default:
-          throw Error('BUG: unknown status body.Locked: ' + body.Locked);
-          break;
-      }
-
-      let [deviceRows, deviceFields]: [any, any] = await db.execute(
-        'SELECT MAX(`originalposition`) as max FROM bookeddevices WHERE `booking`=?',
-        [requestID],
-      );
-
-      let toadd: number = 0;
-      if (deviceRows.length != 0) {
-        toadd = deviceRows[0].max + 1;
-      }
-
-      let start: string = rows[0].start;
-      let end: string = rows[0].end;
-
-      let connection = await amqplib.connect(config.AmqpUrl);
-      let channel = await connection.createChannel();
-
-      await channel.assertQueue('device-booking', {
-        durable: true,
-      });
-
-      try {
-        for (let i = 0; i < Devices.length; i++) {
-          await db.execute(
-            'INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)',
-            [requestID, Devices[i].ID, i + toadd],
-          );
+        // Set locked to default if not given
+        if (body.Locked == undefined) {
+          body.Locked = false;
         }
-        await db.commit();
-        db.beginTransaction();
 
-        // Send devices to backend
-        for (let i = 0; i < Devices.length; i++) {
-          let s = JSON.stringify(
-            new DeviceBookingRequest(
+        switch (body.Locked) {
+          case true:
+            if (
+              rows[0].status !== 'active' &&
+              rows[0].status !== 'active-rejected' &&
+              rows[0].status !== 'active-pending'
+            ) {
+              return {
+                status: 423,
+              };
+            }
+            await db.execute('UPDATE booking SET `status`=? WHERE id=?', [
+              'active-pending',
               requestID,
-              new URL(Devices[i].ID),
-              i + toadd,
-              dayjs(start),
-              dayjs(end),
-            ),
-          );
-          if (
-            !channel.sendToQueue('device-booking', Buffer.from(s), { persistent: true })
-          ) {
-            throw new Error('amqp queue full');
-          }
+            ]);
+            break;
+          case false:
+            if (rows[0].status !== 'booked' && rows[0].status !== 'pending') {
+              return {
+                status: 423,
+              };
+            }
+            await db.execute('UPDATE booking SET `status`=? WHERE id=?', [
+              'pending',
+              requestID,
+            ]);
+            break;
+          default:
+            throw Error('BUG: unknown status body.Locked: ' + body.Locked);
+            break;
         }
-      } finally {
-        await channel.close();
-        await await sleep(250);
-        await connection.close();
+
+        let [deviceRows, deviceFields]: [any, any] = await db.execute(
+          'SELECT MAX(`originalposition`) as max FROM bookeddevices WHERE `booking`=?',
+          [requestID],
+        );
+
+        let toadd: number = 0;
+        if (deviceRows.length != 0) {
+          toadd = deviceRows[0].max + 1;
+        }
+
+        let start: string = rows[0].start;
+        let end: string = rows[0].end;
+
+        let connection = await amqplib.connect(config.AmqpUrl);
+        let channel = await connection.createChannel();
+
+        await channel.assertQueue('device-booking', {
+          durable: true,
+        });
+
+        try {
+          for (let i = 0; i < Devices.length; i++) {
+            await db.execute(
+              'INSERT INTO bookeddevices (`booking`, `originaldevice`, `originalposition`) VALUES (?,?,?)',
+              [requestID, Devices[i].ID, i + toadd],
+            );
+          }
+          await db.commit();
+          db.beginTransaction();
+
+          // Send devices to backend
+          for (let i = 0; i < Devices.length; i++) {
+            let s = JSON.stringify(
+              new DeviceBookingRequest(
+                requestID,
+                new URL(Devices[i].ID),
+                i + toadd,
+                dayjs(start),
+                dayjs(end),
+              ),
+            );
+            if (
+              !channel.sendToQueue('device-booking', Buffer.from(s), { persistent: true })
+            ) {
+              throw new Error('amqp queue full');
+            }
+          }
+        } finally {
+          await channel.close();
+          await await sleep(250);
+          await connection.close();
+        }
       }
     } else {
-      throw Error('Unknown request type');
+      return {
+        status: 500,
+        body: "Unknown request type or wrong/missing parameter",
+      };
     }
 
     success = true;

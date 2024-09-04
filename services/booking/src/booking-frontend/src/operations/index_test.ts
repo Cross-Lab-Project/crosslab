@@ -60,9 +60,9 @@ mocha.describe('operations.ts', function () {
     startFakeServer();
   });
 
-  mocha.before(function(){
+  mocha.before(function () {
     logging.init();
-  } )
+  })
 
   mocha.after(function () {
     stopFakeServer();
@@ -88,8 +88,8 @@ mocha.describe('operations.ts', function () {
     });
 
     // Drain queues
-    while (await channel.get('device-booking', { noAck: true })) {}
-    while (await channel.get('device-freeing', { noAck: true })) {}
+    while (await channel.get('device-booking', { noAck: true })) { }
+    while (await channel.get('device-freeing', { noAck: true })) { }
   });
 
   mocha.afterEach(async function () {
@@ -155,9 +155,9 @@ mocha.describe('operations.ts', function () {
       if (Number(rows[0].n) != Number(before)) {
         throw new Error(
           'authorization failed but number of bookings was changed from ' +
-            before +
-            ' to ' +
-            rows[0].n,
+          before +
+          ' to ' +
+          rows[0].n,
         );
       }
       if ((req as any).related.length != 0) {
@@ -297,13 +297,13 @@ mocha.describe('operations.ts', function () {
       if (TestAMQPresultsBooking.size != 1) {
         throw new Error(
           'wrong number of device reservation messages found ' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
       if (
         !TestAMQPresultsBooking.has(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         )
       ) {
         throw new Error(
@@ -313,12 +313,12 @@ mocha.describe('operations.ts', function () {
       if (
         TestAMQPresultsBooking.get(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         ) !== 1
       ) {
         throw new Error(
           'wrong device reservation message number found' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
     } finally {
@@ -450,13 +450,13 @@ mocha.describe('operations.ts', function () {
       if (TestAMQPresultsBooking.size != 1) {
         throw new Error(
           'wrong number of device reservation messages found ' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
       if (
         !TestAMQPresultsBooking.has(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         )
       ) {
         throw new Error(
@@ -466,12 +466,12 @@ mocha.describe('operations.ts', function () {
       if (
         TestAMQPresultsBooking.get(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         ) !== 1
       ) {
         throw new Error(
           'wrong device reservation message number found' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
     } finally {
@@ -619,13 +619,13 @@ mocha.describe('operations.ts', function () {
       if (TestAMQPresultsBooking.size != 2) {
         throw new Error(
           'wrong number of device reservation messages found ' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
       if (
         !TestAMQPresultsBooking.has(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         )
       ) {
         throw new Error(
@@ -635,18 +635,18 @@ mocha.describe('operations.ts', function () {
       if (
         TestAMQPresultsBooking.get(
           bookingID.toString() +
-            '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          '-0-http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
         ) !== 1
       ) {
         throw new Error(
           'wrong device reservation message number found' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
       if (
         !TestAMQPresultsBooking.has(
           bookingID.toString() +
-            '-1-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
+          '-1-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
         )
       ) {
         throw new Error(
@@ -656,12 +656,12 @@ mocha.describe('operations.ts', function () {
       if (
         TestAMQPresultsBooking.get(
           bookingID.toString() +
-            '-1-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
+          '-1-http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
         ) !== 1
       ) {
         throw new Error(
           'wrong device reservation message number found' +
-            MapToString(TestAMQPresultsBooking),
+          MapToString(TestAMQPresultsBooking),
         );
       }
     } finally {
@@ -709,7 +709,7 @@ mocha.describe('operations.ts', function () {
         throw new Error('booking is locked');
       }
 
-      if (b.body.Booking.ID != '1') {
+      if (b.body.Booking.ID != 'http://localhost:10801/booking/1') {
         throw new Error('bad id' + b.body.Booking.ID);
       }
 
@@ -768,7 +768,7 @@ mocha.describe('operations.ts', function () {
         throw new Error('booking is locked');
       }
 
-      if (b.body.Booking.ID != '1') {
+      if (b.body.Booking.ID != 'http://localhost:10801/booking/1') {
         throw new Error('bad id' + b.body.Booking.ID);
       }
 
@@ -827,7 +827,7 @@ mocha.describe('operations.ts', function () {
         throw new Error('booking is locked');
       }
 
-      if (b.body.Booking.ID != '2') {
+      if (b.body.Booking.ID != 'http://localhost:10801/booking/2') {
         throw new Error('bad id' + b.body.Booking.ID);
       }
 
@@ -893,7 +893,7 @@ mocha.describe('operations.ts', function () {
         throw new Error('booking is locked');
       }
 
-      if (b.body.Booking.ID != '3') {
+      if (b.body.Booking.ID != 'http://localhost:10801/booking/3') {
         throw new Error('bad id' + b.body.Booking.ID);
       }
 
@@ -959,7 +959,7 @@ mocha.describe('operations.ts', function () {
         throw new Error('booking is not locked');
       }
 
-      if (b.body.Booking.ID != '1') {
+      if (b.body.Booking.ID != 'http://localhost:10801/booking/1') {
         throw new Error('bad id' + b.body.Booking.ID);
       }
 
@@ -1419,6 +1419,53 @@ mocha.describe('operations.ts', function () {
       }
 
       [rows, _] = await db.execute('SELECT `status` FROM booking WHERE `id`=?', [
+        BigInt(1),
+      ]);
+      if (rows.length !== 1) {
+        throw new Error('can not find booking');
+      }
+
+      if (rows[0].status != 'active') {
+        throw new Error('wrong status ' + rows[0].status);
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestBooking();
+      ResetAMQPBookingDeviceCount();
+    }
+  });
+
+  mocha.it('patchBookingByID empty device list does not change anything', async function () {
+    let db = await mysql.createConnection(getSQLDNS());
+    await db.connect();
+    await StartAMQPTestBooking();
+    try {
+      await db.execute('UPDATE booking SET `status`=? WHERE `id`=?', [
+        'active',
+        BigInt(1),
+      ]);
+
+      let req = getFakeRequest({ user: 'unittest.user', isAuthorized: true });
+
+      let res = await patchBookingByID(
+        req,
+        { ID: '1' },
+        {
+          Devices: [],
+          Locked: true,
+        },
+      );
+      await sleep(250);
+
+      if (res.status != 200) {
+        throw new Error('bad status code ' + res.status);
+      }
+
+      if (TestAMQPresultsBooking.size != 0) {
+        throw new Error('devices were requested ' + MapToString(TestAMQPresultsBooking));
+      }
+
+      let [rows, _]: [any, any] = await db.execute('SELECT `status` FROM booking WHERE `id`=?', [
         BigInt(1),
       ]);
       if (rows.length !== 1) {
