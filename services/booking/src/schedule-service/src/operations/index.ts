@@ -102,10 +102,8 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
     if (r.type === 'device') {
       realDevices[device].push(r.url);
     } else if (r.type === 'cloud instantiable' || r.type === 'edge instantiable') {
-      // For now, just add free time
       realDevices[device].push(r.url);
       timetables[device].push([]);
-      continue;
     } else {
       // group
       for (let i = 0; i < r.devices.length; i++) {
