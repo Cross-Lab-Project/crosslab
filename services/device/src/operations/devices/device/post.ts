@@ -46,9 +46,10 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     type: 'device',
   });
 
-  concreteDeviceModel = (await repositories.device.save(
-    concreteDeviceModel,
-  )) as ConcreteDeviceModel;
+  concreteDeviceModel = (await repositories.device.save({
+    ...concreteDeviceModel,
+    availabilityRules: [{ available: true }],
+  })) as ConcreteDeviceModel;
 
   await req.authorization.relate(
     `user:${req.authorization.user}`,

@@ -70,7 +70,10 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     for (let i = 0; i < 10; i++) {
       const updatedBooking = await clients.booking.frontend.getBooking(booking.BookingID);
 
-      if (updatedBooking.Booking.Status === 'booked') resolve();
+      if (updatedBooking.Booking.Status === 'booked') {
+        resolve();
+        break;
+      }
 
       await new Promise<void>(resolve => setTimeout(resolve, 1000));
     }
