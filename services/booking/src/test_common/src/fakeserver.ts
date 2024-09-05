@@ -204,6 +204,30 @@ export async function startFakeServer() {
     }
   });
 
+  app.get('/devices/00000000-0000-1111-0000-000000000000', (_req, res) => {
+    switch (fakeServerConfig.device_service_status) {
+      case 200:
+          res.send(
+            '{"url": "http://localhost:10801/devices/00000000-0000-1111-0000-000000000000", "type": "edge instantiable", "name": "JS Device 1", "description": "A test device", "isPublic": true, "codeUrl": "http://localhost/cloud_instantiable_device", "owner": [{"url": "http://localhost:80/users/69d03aff-1a7f-41de-8b66-0902bdc0886f"}], "viewer": []}'
+          );
+          return;
+      case 404:
+        res.status(404).send();
+        return;
+      case 500:
+        res.status(500).send();
+        return;
+      case 503:
+        res.status(503).send();
+        return;
+      default:
+        res
+          .status(fakeServerConfig.device_service_status)
+          .send('Undefined error' + fakeServerConfig.device_service_status);
+        return;
+    }
+  });
+
   app.post('/test_callbacks/test-local-single', (_req, res) => {
     fakeServerConfig.callback_test_local_single_was_called = true;
     res.status(200).send();

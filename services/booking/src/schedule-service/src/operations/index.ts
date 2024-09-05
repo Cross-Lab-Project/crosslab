@@ -99,11 +99,8 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       };
     }
 
-    if (r.type === 'device') {
+    if (r.type === 'device'|| r.type === 'cloud instantiable' || r.type === 'edge instantiable') {
       realDevices[device].push(r.url);
-    } else if (r.type === 'cloud instantiable' || r.type === 'edge instantiable') {
-      realDevices[device].push(r.url);
-      timetables[device].push([]);
     } else {
       // group
       for (let i = 0; i < r.devices.length; i++) {

@@ -452,6 +452,65 @@ mocha.describe('operations.ts', function () {
     }
   });
 
+  mocha.it('postBookingSchedule (edge device no availability)', async function () {
+    let r = await postSchedule(getFakeRequest(), {
+      Experiment: {
+        Devices: [
+          {
+            ID: 'http://localhost:10801/devices/00000000-0000-1111-0000-000000000000',
+          },
+        ],
+      },
+      Combined: false,
+      Time: { Start: '1999-06-25T00:00:00Z', End: '1999-06-28T23:59:59Z' },
+      onlyOwn: undefined,
+    });
+    if (r.status !== 200) {
+      if(r.status === 500){
+        throw Error('Response error: ' + r.status + ' Message:' + r.body);  
+      } 
+      throw Error('Response error: ' + r.status);
+    }
+    if (r.body.length != 1) {
+      throw Error('Body has wrong length, should 1, is ' + r.body.length);
+    }
+
+    if (
+      r.body[0].Device !==
+      'http://localhost:10801/devices/00000000-0000-1111-0000-000000000000'
+    ) {
+      throw Error('Device is ' + r.body[0].Device);
+    }
+
+    if (r.body[0].Booked.length !== 0) {
+      console.log(r.body[0].Booked);
+      throw Error('Device ' + 0 + ' Booked has length ' + r.body[0].Booked.length);
+    }
+
+    if (r.body[0].Free.length !== 1) {
+      console.log(r.body[0].Free);
+      throw Error('Device ' + 0 + ' Free has length ' + r.body[0].Free.length);
+    }
+
+    if (!dayjs(r.body[0].Free[0].Start).isSame(dayjs('1999-06-25T00:00:00Z'))) {
+      throw Error(
+        'Device ' +
+          0 +
+          ' Free.Start is wrong, should 1999-06-25T00:00:00Z is ' +
+          r.body[0].Free[0].Start,
+      );
+    }
+
+    if (!dayjs(r.body[0].Free[0].End).isSame(dayjs('1999-06-28T23:59:59Z'))) {
+      throw Error(
+        'Device ' +
+          0 +
+          ' Free.End is wrong, should 1999-06-28T23:59:59Z is ' +
+          r.body[0].Free[0].End,
+      );
+    }
+  }); 
+
   mocha.it('postBookingSchedule (remote error case)', async function () {
     this.timeout(10000);
 
