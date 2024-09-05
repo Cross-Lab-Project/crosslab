@@ -1,7 +1,8 @@
-import { APIClient, ExperimentServiceTypes } from '@cross-lab-project/api-client';
+import { ExperimentServiceTypes } from '@cross-lab-project/api-client';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
+import { getClient } from './login.js';
 import { prompt } from './prompt.js';
 
 function shortExperimentList(
@@ -25,14 +26,14 @@ async function selecteExperiment(
   return experiments[parseInt(await prompt('Select experiment: '))];
 }
 
-export function experiment(program: Command, getClient: () => APIClient) {
+export function experiment(program: Command) {
   const experiment = program.command('experiment');
 
   experiment
     .command('list')
     .option('--json', 'Output the JSON response')
     .action(async options => {
-      const client = getClient();
+      const client = await getClient();
       const experiments = await client.listExperiments();
       if (options.json) {
         console.log(JSON.stringify(experiments, null, 2));
@@ -45,7 +46,7 @@ export function experiment(program: Command, getClient: () => APIClient) {
     .command('inspect')
     .argument('[experiment url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
       if (url == undefined)
         url = (await selecteExperiment(await client.listExperiments())).url;
       if (url == undefined) throw new Error('No device selected');
@@ -54,7 +55,7 @@ export function experiment(program: Command, getClient: () => APIClient) {
     });
 
   experiment.command('create').action(async () => {
-    const client = getClient();
+    const client = await getClient();
     let experiment = '';
     for await (const chunk of process.stdin) experiment += chunk;
 
@@ -67,7 +68,7 @@ export function experiment(program: Command, getClient: () => APIClient) {
     .command('delete')
     .argument('[experiment url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
       if (url == undefined)
         url = (await selecteExperiment(await client.listExperiments())).url;
       if (url == undefined) throw new Error('No experiment selected');

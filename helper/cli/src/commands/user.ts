@@ -1,9 +1,9 @@
-import { APIClient } from '@cross-lab-project/api-client';
 import { Command } from 'commander';
 
+import { getClient } from './login.js';
 import { prompt } from './prompt.js';
 
-export function user(program: Command, getClient: () => APIClient) {
+export function user(program: Command) {
   const user = program.command('user');
 
   user
@@ -11,7 +11,7 @@ export function user(program: Command, getClient: () => APIClient) {
     .alias('ls')
     .option('--json', 'Output the JSON response')
     .action(async options => {
-      const client = getClient();
+      const client = await getClient();
 
       const users = await client.listUsers();
 
@@ -26,7 +26,7 @@ export function user(program: Command, getClient: () => APIClient) {
     .command('inspect')
     .argument('[user url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
 
       if (url == undefined) {
         console.log('Please provide a user url');
@@ -41,7 +41,7 @@ export function user(program: Command, getClient: () => APIClient) {
     .option('-u, --username <username>', 'Username to use for authentication')
     .option('-p, --password <password>', 'Password to use for authentication')
     .action(async options => {
-      const client = getClient();
+      const client = await getClient();
       let username: string = options.username;
       let password: string = options.password;
 
@@ -55,7 +55,7 @@ export function user(program: Command, getClient: () => APIClient) {
     .command('delete')
     .argument('[user url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
 
       if (url == undefined) {
         console.log('Please provide a user url');

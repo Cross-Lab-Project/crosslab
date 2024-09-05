@@ -1,7 +1,8 @@
-import { APIClient, DeviceServiceTypes } from '@cross-lab-project/api-client';
+import { DeviceServiceTypes } from '@cross-lab-project/api-client';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
+import { getClient } from './login.js';
 import { prompt } from './prompt.js';
 
 function shortDeviceList(
@@ -45,14 +46,14 @@ async function selecteDevice(devices: DeviceServiceTypes.DeviceOverview[]) {
   return devices[parseInt(await prompt('Select device: '))];
 }
 
-export function device(program: Command, getClient: () => APIClient) {
+export function device(program: Command) {
   const device = program.command('device');
 
   device
     .command('list')
     .option('--json', 'Output the JSON response')
     .action(async options => {
-      const client = getClient();
+      const client = await getClient();
       const devices = await client.listDevices();
       if (options.json) {
         console.log(JSON.stringify(devices, null, 2));
@@ -66,7 +67,7 @@ export function device(program: Command, getClient: () => APIClient) {
     .argument('[device url]')
     .option('--json', 'Output the JSON response')
     .action(async (url, options) => {
-      const client = getClient();
+      const client = await getClient();
       if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
       if (url == undefined) throw new Error('No device selected');
       const device = await client.getDevice(url);
@@ -78,7 +79,7 @@ export function device(program: Command, getClient: () => APIClient) {
     });
 
   device.command('create').action(async options => {
-    const client = getClient();
+    const client = await getClient();
     let name: string = options.username;
 
     if (name == undefined) name = await prompt('Name: ');
@@ -95,7 +96,7 @@ export function device(program: Command, getClient: () => APIClient) {
     .command('update')
     .argument('[device url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
 
       let device = '';
       for await (const chunk of process.stdin) device += chunk;
@@ -111,7 +112,7 @@ export function device(program: Command, getClient: () => APIClient) {
     .command('delete')
     .argument('[device url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
       if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
       if (url == undefined) throw new Error('No device selected');
       await client.deleteDevice(url);
@@ -121,7 +122,7 @@ export function device(program: Command, getClient: () => APIClient) {
     .command('token')
     .argument('[device url]')
     .action(async (url?: string) => {
-      const client = getClient();
+      const client = await getClient();
       if (url == undefined) url = (await selecteDevice(await client.listDevices())).url;
       if (url == undefined) throw new Error('No device selected');
       const identity = await client.getIdentity();

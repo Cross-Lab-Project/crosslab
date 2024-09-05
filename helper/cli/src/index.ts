@@ -1,39 +1,23 @@
 #!/usr/bin/env node
-import { APIClient } from '@cross-lab-project/api-client';
-import { Option, program } from 'commander';
+import { program } from 'commander';
 
 import { device } from './commands/device.js';
 import { experiment } from './commands/experiment.js';
 import { login } from './commands/login.js';
-import { user } from './commands/user.js';
 import { template } from './commands/template.js';
+import { user } from './commands/user.js';
+import { config } from './config.js';
 
-program
-  .description('CLI to interact with CrossLab')
-  .addOption(
-    new Option('--url <url>', 'URL of the CrossLab instance').env('CROSSLAB_CLI_URL'),
-  )
-  .addOption(
-    new Option('--token <token>', 'Token to use for authentication').env(
-      'CROSSLAB_CLI_TOKEN',
-    ),
-  )
-  .option('-u, --username <username>', 'Username to use for authentication')
-  .option('-p, --password <password>', 'Password to use for authentication');
+const setProfile = (profile: string) => {
+  config.activeProfile = profile;
+  console.log('Profile set to', profile);
+};
+program.description('CLI to interact with CrossLab').option('-p, --profile <name>', 'Set the the profile to use for authentication', setProfile);
 
-login(program, getClient);
-device(program, getClient);
-experiment(program, getClient);
-user(program, getClient);
-template(program, getClient);
+login(program);
+device(program);
+experiment(program);
+user(program);
+template(program);
 
 program.parse();
-
-function getClient() {
-  const globalOptions = program.opts();
-  const client = new APIClient(globalOptions.url);
-  if (globalOptions.token) {
-    client.accessToken = globalOptions.token;
-  }
-  return client;
-}
