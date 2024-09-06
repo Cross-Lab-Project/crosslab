@@ -47,11 +47,11 @@ export async function mainLoop(): Promise<void> {
         try {
           data = ReservationMessage.fromString(msg.content.toString());
         } catch (error) {
-          console.log('Can not parse message:', error);
+          console.error('Can not parse message:', error);
           try {
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
           continue;
         }
@@ -306,7 +306,7 @@ export async function mainLoop(): Promise<void> {
                 break;
             }
           } catch (error) {
-            console.log('Can not process request: ' + error);
+            console.error('Can not process request: ' + error);
             // Do not jump out here, always send an answer to caller
             answer = {
               Type: data.Type,
@@ -330,7 +330,7 @@ export async function mainLoop(): Promise<void> {
             channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
         } catch (error) {
           try {
@@ -349,14 +349,14 @@ export async function mainLoop(): Promise<void> {
             channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
             channel.ack(msg);
           } catch (e) {
-            console.log('Can not ack message:', e);
+            console.error('Can not ack message:', e);
           }
         } finally {
           release();
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error('Uncaught error in mainLoop:', err);
       console.log('Reconnecting...');
       await sleep(1000);
     }

@@ -1,5 +1,5 @@
 export function die(reason: string): never {
-  console.error(reason);
+  console.error('Died because of', reason);
   process.exit(1);
 }
 

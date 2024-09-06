@@ -37,11 +37,11 @@ async function helperLoop(): Promise<void> {
     try {
       data = BigInt(msg.content.toString());
     } catch (error) {
-      console.log('Can not parse message:', error);
+      console.error('Can not parse message:', error);
       try {
         channel.ack(msg);
       } catch (error) {
-        console.log('Can not ack message:', error);
+        console.error('Can not ack message:', error);
       }
       continue;
     }
@@ -56,7 +56,7 @@ async function helperLoop(): Promise<void> {
       TestAMQPresults.set(data, 1);
       channel.ack(msg);
     } catch (err) {
-      console.log('Error at helperLoop: ' + err);
+      console.error('Error at helperLoop:', err);
     }
   }
 }
