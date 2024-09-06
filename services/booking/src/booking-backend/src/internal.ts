@@ -15,7 +15,6 @@ import * as mysql from 'mysql2/promise';
 
 import { config } from './config.js';
 import { DeviceBookingRequest } from './messageDefinition.js';
-import { logger } from '@crosslab/service-common';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);

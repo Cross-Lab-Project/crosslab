@@ -1,6 +1,5 @@
 import { BelongsToUs, sleep } from '@crosslab/booking-service-common';
 import { DeviceBookingRequest } from '@crosslab/service-booking-backend';
-import { logger } from '@crosslab/service-common/logging';
 import * as amqplib from 'amqplib';
 import dayjs from 'dayjs';
 import * as mysql from 'mysql2/promise';
@@ -70,18 +69,6 @@ export const postBooking: postBookingSignature = async (request, body) => {
 
     // Send devices to backend
     for (let i = 0; i < body.Devices.length; i++) {
-      logger.log(
-        'info',
-        JSON.stringify(
-          new DeviceBookingRequest(
-            bookingID,
-            new URL(body.Devices[i].ID),
-            i,
-            dayjs(body.Time.Start),
-            dayjs(body.Time.End),
-          ),
-        ),
-      );
       let s = JSON.stringify(
         new DeviceBookingRequest(
           bookingID,
@@ -107,7 +94,7 @@ export const postBooking: postBookingSignature = async (request, body) => {
   } catch (err) {
     await db.rollback();
 
-    logger.log('error', 'Error creating booking: ' + (err as Error).toString());
+    console.error('error', 'Error creating booking: ' + (err as Error).toString());
 
     return {
       status: 500,
@@ -193,7 +180,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
   } catch (err) {
     await db.rollback();
     db.end();
-    logger.log('error', 'Error getting Booking by ID: ' + (err as Error).toString());
+    console.error('error', 'Error getting Booking by ID: ' + (err as Error).toString());
 
     return {
       status: 500,
@@ -224,10 +211,10 @@ export const deleteBookingByID: deleteBookingByIDSignature = async (
   let [code, err] = await commonRemoveBooking(requestID);
 
   if (err != '') {
-    logger.log('error', 'Error deleting booking by ID: ' + err);
+    console.error('error', 'Error deleting booking by ID: ' + err);
   }
   if (code != 200) {
-    logger.log('warn', 'Delete booking by ID returned not 200: ' + code);
+    console.error('warn', 'Delete booking by ID returned not 200: ' + code);
   }
 
   // Typescript seems to have problems to infer body correctly with case 500.
@@ -389,7 +376,7 @@ export const patchBookingByID: patchBookingByIDSignature = async (
 
     success = true;
   } catch (err) {
-    logger.log('error', 'Error patching booking in DB: ' + (err as Error).toString());
+    console.error('error', 'Error patching booking in DB: ' + (err as Error).toString());
     return {
       status: 500,
       body: err.toString(),
@@ -431,10 +418,10 @@ export const deleteBookingByIDDestroy: deleteBookingByIDDestroySignature = async
   let [code, err] = await commonRemoveBooking(requestID);
 
   if (err != '') {
-    logger.log('error', 'Error deleting booking by ID destroying signature: ' + err);
+    console.error('error', 'Error deleting booking by ID destroying signature: ' + err);
   }
   if (code != 200) {
-    logger.log(
+    console.error(
       'warn',
       'Delete booking by ID destroying signature returned not 200: ' + code,
     );
@@ -539,7 +526,7 @@ async function commonRemoveBooking(
 
     success = true;
   } catch (err) {
-    logger.log('error', 'Error commonRemoveBooking: ' + (err as Error).toString());
+    console.error('error', 'Error commonRemoveBooking: ' + (err as Error).toString());
     return [500, err.toString()];
   } finally {
     if (success) {
