@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-const configLocation = os.homedir() + '/.config/crosslab/config.json';
+export const configLocation = os.homedir() + '/.config/crosslab/config.json';
 
 // load json
 export let config:{
@@ -14,6 +14,7 @@ export let config:{
             token?: string;
         };
     };
+    editor?: string;
 } = {};
 if (fs.existsSync(configLocation)) {
   config = JSON.parse(fs.readFileSync(configLocation, 'utf8'));

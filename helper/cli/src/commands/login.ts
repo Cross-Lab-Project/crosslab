@@ -14,7 +14,8 @@ export async function getClient() {
       client.accessToken = profile.token;
     }
     try{
-      await client.getIdentity()
+      const identity=await client.getIdentity()
+      process.stderr.write('Logged in as ' + identity.username + '\n');
     }catch{
       // if the tty is interactive, then we can prompt the user for the password
       if (process.stdin.isTTY) {
