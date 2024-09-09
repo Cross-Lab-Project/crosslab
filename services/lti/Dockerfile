@@ -12,7 +12,7 @@ RUN chown node:node /app/*
 USER node
 
 ENV NODE_ENV production
-ENV PORT 3001
+ENV PORT 3009
 ENV DB_TYPE sqlite
 ENV DB_DATABASE db/lti.db
 EXPOSE 3009/tcp
