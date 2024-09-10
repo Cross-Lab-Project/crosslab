@@ -21,11 +21,10 @@ export class LTIResource implements ResourceId {
       resource_link_id: message.resource_link_id,
     };
 
-    const resource = await ApplicationDataSource.manager.save(
-      LtiResourceModel,
-      resource_init,
-    );
-    return new LTIResource(resource);
+    await ApplicationDataSource.createQueryBuilder(LtiResourceModel, 'resource').insert().values({...resource_init}).orIgnore().execute();
+    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, resource_init);
+
+    return new LTIResource(resource as any);
   }
 
   static async byId({ resource_id }: ResourceId) {

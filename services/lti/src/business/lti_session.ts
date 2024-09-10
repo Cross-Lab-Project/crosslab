@@ -22,18 +22,18 @@ export class LTISession {
 
   static async createSession(message: LTIMessage, resource: LTIResource) {
     const id = random();
-    const session = ApplicationDataSource.manager.create(LtiSessionModel, {
+    let session = ApplicationDataSource.manager.create(LtiSessionModel, {
       id,
       resource: { id: resource.resource_id },
       launchMessage: message.raw,
     });
     await ApplicationDataSource.manager.insert(LtiSessionModel, session);
+    session = await ApplicationDataSource.manager.findOneByOrFail(LtiSessionModel, { id });
 
     /* gather lti service infos */
     //if (hasNameServiceClaims(message)) {
     //  resource.setNameService(message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'].context_memberships_url);
     //}
-
     return new LTISession(session);
   }
 

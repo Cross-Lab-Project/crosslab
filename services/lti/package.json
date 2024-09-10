@@ -23,7 +23,7 @@
     "build": "npm run build:generate && npm run build:compile",
     "build:compile": "tsc --project tsconfig.json && cp src/generated/*.cjs app/generated && cp src/clients/authentication/basicValidation.cjs app/clients/authentication/ && cp src/clients/experiment/basicValidation.cjs app/clients/experiment/ && cp src/clients/device/basicValidation.cjs app/clients/device/",
     "dev": "tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9009 ./app/index.js'",
-    "test": "mocha",
+    "test": "AUTH_SERVICE_URL=http://localhost:4000 DEVICE_SERVICE_URL=http://localhost:4000 EXPERIMENT_SERVICE_URL=http://localhost:4000 mocha",
     "format": "prettier . --write",
     "lint": "eslint ."
   },
@@ -40,7 +40,8 @@
     ],
     "watch-files": [
       "test"
-    ]
+    ],
+    "exit": true
   },
   "devDependencies": {
     "@cross-lab-project/api-client": "file:../../clients/api/js",
@@ -50,11 +51,15 @@
     "@types/express": "^4.17.21",
     "@types/mocha": "^10.0.7",
     "@types/node-fetch": "^2.6.11",
+    "@types/sinon": "^17.0.3",
+    "@types/wtfnode": "^0.7.3",
     "chai": "^5.1.1",
     "chai-http": "^4.4.0",
     "mocha": "^10.7.0",
+    "msw": "^2.4.4",
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
+    "sinon": "^18.0.0",
     "ts-node": "^10.9.2",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.5.4"
@@ -75,6 +80,7 @@
     "openid-client": "^5.6.5",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20",
-    "typescript-eslint": "^8.1.0"
+    "typescript-eslint": "^8.1.0",
+    "wtfnode": "^0.9.3"
   }
 }

@@ -1,9 +1,6 @@
-import { utils } from '@crosslab/service-common';
 
-import { config } from '../config.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { LtiMessageModel, PlatformModel } from '../database/model.js';
-import { Platform as PlatformObject } from '../generated/types.js';
 import { handle_login_request, verifyMessage } from '../lti/message.js';
 import { getPlatformEndpoints } from '../lti/platforms/index.js';
 import { LTIMessage } from './lti_message.js';
@@ -11,11 +8,11 @@ import { LTIResource } from './lti_resource.js';
 import { LTISession } from './lti_session.js';
 
 export class LTIPlatform {
-  public uri: string;
+  public platform_id: string;
 
   // #region Initializers
   public constructor(public platform_model: PlatformModel) {
-    this.uri = `${config.API_BASE_URL}/lti/platform/${this.platform_model.id}`;
+    this.platform_id = this.platform_model.id;
   }
   static async create(associated_user: string) {
     const _platform = ApplicationDataSource.manager.create(PlatformModel, {
@@ -79,23 +76,7 @@ export class LTIPlatform {
     }
     return await handle_login_request(params, this.platform_model);
   }
-
-  // Move to api Layer
-  public toObject(): PlatformObject<'response'> {
-    return utils.removeNullOrUndefined({
-      uri: this.uri,
-      issuer: this.platform_model.iss,
-      client_id: this.platform_model.client_id,
-      deployment_id: this.platform_model.deployment_id,
-      registration: {
-        state: this.platform_model.registrated ? 'complete' : 'pending',
-      },
-      jwks_uri: `${config.API_BASE_URL}/lti/platform/${this.platform_model.id}/jwks`,
-      login_uri: `${config.API_BASE_URL}/lti/platform/${this.platform_model.id}/login`,
-      launch_uri: `${config.API_BASE_URL}/lti/platform/${this.platform_model.id}/launch`,
-    });
-  }
-
+  
   private async verifyLtiMessage(params: { id_token: string; state: string }) {
     // Get the messageModel from the database (needed for jwks_url and nonce)
     const message = await ApplicationDataSource.manager.findOneOrFail(LtiMessageModel, {

@@ -16,6 +16,9 @@ export const parse_platform = (uri: string) => {
   const match = parse(`${base}/platform/(.*)`, uri);
   return { platform_id: match[1] };
 };
+export const generate_platform_jwks = (id: { platform_id: string }) => {return generate_platform(id) + '/jwks';};
+export const generate_platform_login = (id: { platform_id: string }) => {return generate_platform(id) + '/login';};
+export const generate_platform_launch = (id: { platform_id: string }) => {return generate_platform(id) + '/launch';};
 
 export const generate_resource = (id: { resource_id: string }) => {
   return base + `/resource/${id.resource_id}`;
