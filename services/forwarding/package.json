@@ -1,6 +1,7 @@
 {
   "type": "module",
   "name": "@crosslab/service-forwarding",
+  "dockerName": "forwarding-service",
   "description": "A forwarding server implementation for crosslab.",
   "main": "app/index.js",
   "bin": {
