@@ -12,6 +12,7 @@ import { callbackUrl } from '../../../operations/callbacks/index.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { InstantiatedDevice } from '../../../types/types.js';
+import { instantiateCloudDevice } from '../../instantiateCloudDevice.js';
 import { experimentUrlFromId } from '../../url.js';
 
 export type Instantiable = InstantiableBrowserDevice | InstantiableCloudDevice;
@@ -56,6 +57,13 @@ export async function instantiateDevicesExperiment(
       instanceData.instance.url,
       experimentModel.uuid,
     );
+
+    if (instantiable.type === 'cloud instantiable') {
+      await instantiateCloudDevice(instantiable.instantiateUrl!, {
+        instanceUrl: instanceData.instance.url,
+        deviceToken: instanceData.deviceToken,
+      });
+    }
 
     instances.push({ ...instanceData.instance, token: instanceData.deviceToken });
 

@@ -13,8 +13,8 @@ export function initApp() {
       application => {
         application.use(express.json());
         application.use(express.urlencoded({ extended: false }));
-        application.use(logging.middleware());
-        application.use(authorization.middleware());
+        application.use(logging.middleware() as express.RequestHandler);
+        application.use(authorization.middleware() as express.RequestHandler);
       },
     ],
     postHandlers: [
@@ -25,7 +25,7 @@ export function initApp() {
         });
       },
     ],
-    errorHandler: error.middleware,
+    errorHandler: error.middleware as express.ErrorRequestHandler,
   });
   app.listen(config.PORT);
 }
