@@ -24,6 +24,7 @@ TAG=$(cat package.json | jq -r '.dockerName'):${VERSION}
 
 # build docker image
 docker build -t $TAG .
+docker tag $TAG $(cat package.json | jq -r '.dockerName'):latest
 
 # Save the container to a tar file
 mkdir -p dist
