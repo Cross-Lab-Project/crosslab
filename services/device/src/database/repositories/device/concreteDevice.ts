@@ -33,7 +33,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     model.announcedAvailability = [];
     model.availabilityRules = [];
     model.connected = false;
-    model.services = [];
+    model.services ??= [];
     return model;
   }
 
