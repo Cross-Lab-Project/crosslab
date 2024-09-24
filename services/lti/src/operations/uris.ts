@@ -1,6 +1,6 @@
 import { config } from '../config.js';
 
-const base = `${config.API_BASE_URL}/lti`;
+const base = `${config.BASE_URL}/lti`;
 function parse(template: string, uri: string) {
   const match = uri.match(template);
   if (!match) {
@@ -16,6 +16,9 @@ export const parse_platform = (uri: string) => {
   const match = parse(`${base}/platform/(.*)`, uri);
   return { platform_id: match[1] };
 };
+export const generate_platform_jwks = (id: { platform_id: string }) => {return generate_platform(id) + '/jwks';};
+export const generate_platform_login = (id: { platform_id: string }) => {return generate_platform(id) + '/login';};
+export const generate_platform_launch = (id: { platform_id: string }) => {return generate_platform(id) + '/launch';};
 
 export const generate_resource = (id: { resource_id: string }) => {
   return base + `/resource/${id.resource_id}`;
@@ -48,3 +51,10 @@ export const parse_session = (uri: string) => {
   const match = parse(`${base}/session/(.*)`, uri);
   return { session_id: match[1] };
 };
+export const generate_session_change_experiment = (id: { session_id: string }) =>
+  base + `/session/${id.session_id}/experiment`;
+export const parse_session_change_experiment = (uri: string) => {
+  const match = parse(`${base}/session/(.*)/experiment`, uri);
+  return { session_id: match[1] };
+}
+

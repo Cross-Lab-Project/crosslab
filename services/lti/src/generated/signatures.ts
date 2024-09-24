@@ -857,3 +857,57 @@ export interface patchLtiResourceByResourceIdStudentsByStudentId401ResponseType 
     }
     body?: undefined
 }
+
+/**
+ * Function signature for handling a PATCH request on /lti/session/{session_id}/experiment
+ */
+export type patchLtiSessionBySessionIdExperimentSignature = (
+        req: express.Request,parameters: patchLtiSessionBySessionIdExperimentParametersType, body: patchLtiSessionBySessionIdExperimentRequestBodyType) => Promise<patchLtiSessionBySessionIdExperimentResponseType> | patchLtiSessionBySessionIdExperimentResponseType
+
+/**
+ * Typing for the parameters of a PATCH request on /lti/session/{session_id}/experiment
+ */
+export type patchLtiSessionBySessionIdExperimentParametersType = {
+    "session_id": string,
+}
+
+/**
+ * Typing for the request body of a PATCH request on /lti/session/{session_id}/experiment
+ */
+export type patchLtiSessionBySessionIdExperimentRequestBodyType = {
+	/**
+	 * URI of the student to impersonate.
+	 */
+	impersonate?: string
+	/**
+	 * Mapping of roles to devices.
+	 * This overwrites any existing role mapping possibles et by the student impersonation.
+	 */
+	role_mapping?: ({
+		role: string
+		device: "GROUP" | string
+		[k: string]: unknown
+	})[]
+	[k: string]: unknown
+}
+
+/**
+ * Typing for all possible responses to a PATCH request on /lti/session/{session_id}/experiment
+ */
+export type patchLtiSessionBySessionIdExperimentResponseType = patchLtiSessionBySessionIdExperimentSuccessResponseType
+
+/**
+ * Typing for all successful responses to a PATCH request on /lti/session/{session_id}/experiment
+ */
+export type patchLtiSessionBySessionIdExperimentSuccessResponseType = patchLtiSessionBySessionIdExperiment201ResponseType
+
+/**
+ * Typing for a response with status 201 to a PATCH request on /lti/session/{session_id}/experiment
+ */
+export interface patchLtiSessionBySessionIdExperiment201ResponseType extends SuccessResponse {
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
+}

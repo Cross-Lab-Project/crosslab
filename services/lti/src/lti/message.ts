@@ -10,12 +10,20 @@ import { random } from '../helper/generators.js';
 //import { tool_configuration } from './tool_configuration.js';
 
 export type RawLtiMessage = {
+  'sub': string;
   'https://purl.imsglobal.org/spec/lti/claim/message_type': string;
   'https://purl.imsglobal.org/spec/lti/claim/roles': string[];
   'https://purl.imsglobal.org/spec/lti/claim/resource_link': { id: string };
+  "https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice"?: {
+    "context_memberships_url": string,
+    "service_versions": string[],
+  }
 };
 
 function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
+  if (typeof message.sub !== 'string') {
+    return false;
+  }
   if (
     typeof message['https://purl.imsglobal.org/spec/lti/claim/message_type'] !== 'string'
   ) {
@@ -43,6 +51,28 @@ function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
     ).id !== 'string'
   ) {
     return false;
+  }
+  if (message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']){
+    if (
+      typeof message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] !== 'object' ||
+      message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] === null ||
+      typeof (
+        message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] as {
+          context_memberships_url: unknown;
+          service_versions: unknown;
+        }
+      ).context_memberships_url !== 'string' ||
+      !Array.isArray((message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] as {
+        context_memberships_url: string;
+        service_versions: string[];
+      }).service_versions) ||
+      !(message['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] as {
+        context_memberships_url: string;
+        service_versions: string[];
+      }).service_versions.every(version => typeof version === 'string')
+    ) {
+      return false;
+    }
   }
 
   return true;

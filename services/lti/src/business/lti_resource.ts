@@ -9,6 +9,8 @@ type ResourceId = { resource_id: string };
 export class LTIResource implements ResourceId {
   public resource_id: string;
   public experiment_template_uri?: string;
+  private students_synced: boolean = false;
+
   // #region Initializers
   private constructor(private resource_model: LtiResourceModel) {
     this.resource_id = resource_model.id;
@@ -21,11 +23,10 @@ export class LTIResource implements ResourceId {
       resource_link_id: message.resource_link_id,
     };
 
-    const resource = await ApplicationDataSource.manager.save(
-      LtiResourceModel,
-      resource_init,
-    );
-    return new LTIResource(resource);
+    await ApplicationDataSource.createQueryBuilder(LtiResourceModel, 'resource').insert().values({...resource_init}).orIgnore().execute();
+    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, resource_init);
+
+    return new LTIResource(resource as any);
   }
 
   static async byId({ resource_id }: ResourceId) {
@@ -42,46 +43,26 @@ export class LTIResource implements ResourceId {
   }
   // #endregion
 
-  //private async getTemplateRoles(){
-  //  const template = await clients.experiment.getTemplate(this.resource_model.experiment_template_uri!)
-  //  const devices = await Promise.all(template.configuration.devices.map(d=>clients.device.getDevice(d.device)))
-  //  const roles: {role: string, devices: string[]}[]= []
-  //  for(let i=0;i<devices.length;i++){
-  //    const device = devices[i];
-  //    if (device.type === 'group') {
-  //      roles.push({role:template.configuration.devices[i].role, devices:device.devices.map(d=>d.url)});
-  //    }
-  //  }
-  //  return roles;
-  //}
-
   setNameService(context_memberships_url: string) {
     this.resource_model.namesServiceUrl = context_memberships_url;
     ApplicationDataSource.manager.save(LtiResourceModel, this.resource_model);
   }
 
+  async syncStudents(force: boolean=false) {
+    if (this.students_synced && !force) return;
+    await LTIResourceStudent.updateStudentsFromLtiResource(this.resource_id);
+    this.students_synced = true;
+  }
+
   async getStudent(id: { student_id: string }) {
+    await this.syncStudents();
     return LTIResourceStudent.byId({ resource_id: this.resource_id, ...id });
   }
 
   async getStudents() {
+    await this.syncStudents();
     return LTIResourceStudent.list({ resource_id: this.resource_id });
   }
-
-  /*async getStudents(): Promise<Student<'response'>[]> {
-    if(!this.resource_model.namesServiceUrl){
-      throw new Error("No name service provided");
-    }
-    const roles = await this.getTemplateRoles();
-    const members = membership(this.resource_model.platform, this.resource_model.namesServiceUrl);
-
-    return members.map(m=>({
-      name: m.name ?? `${m.given_name} ${m.family_name}`,
-      uri: this.uri+'/students/'+m.user_id,
-      external_id: m.user_id,
-      role_mapping: roles.map(r=>({role: r.role, device: 'GROUP'})),
-    }))
-  }*/
 
   public async update(data: { experiment_template_uri?: string }) {
     if (data.experiment_template_uri)

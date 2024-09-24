@@ -1,10 +1,13 @@
+import { logger } from '@crosslab/service-common';
 import { ApplicationDataSource } from '../database/datasource.js';
-import { LtiResourceStudent, LtiResourceStudentRoleMapModel } from '../database/model.js';
+import { LtiResourceModel, LtiResourceStudent, LtiResourceStudentRoleMapModel } from '../database/model.js';
+import { membership } from '../lti/membership.js';
 
 type ResourceStudentId = { student_id: string; resource_id: string };
 
 export class LTIResourceStudent implements ResourceStudentId {
   public student_id: string;
+  public external_id: string;
 
   // #region Initializers
   private constructor(
@@ -13,6 +16,7 @@ export class LTIResourceStudent implements ResourceStudentId {
     public role_mapping_models: LtiResourceStudentRoleMapModel[],
   ) {
     this.student_id = student_model.id;
+    this.external_id = student_model.external_id;
   }
 
   private static async newStudent(resource_id: string, student: LtiResourceStudent) {
@@ -28,8 +32,8 @@ export class LTIResourceStudent implements ResourceStudentId {
     const student = await ApplicationDataSource.manager.findOneByOrFail(
       LtiResourceStudent,
       {
+        id: student_id,
         resource: { id: resource_id },
-        external_id: student_id,
       },
     );
     return this.newStudent(resource_id, student);
@@ -62,8 +66,7 @@ export class LTIResourceStudent implements ResourceStudentId {
         student: { id: this.student_id },
         role: p.role,
       });
-    }
-    {
+    }else {
       await ApplicationDataSource.manager.upsert(
         LtiResourceStudentRoleMapModel,
         {
@@ -74,5 +77,26 @@ export class LTIResourceStudent implements ResourceStudentId {
         ['student', 'role'],
       );
     }
+  }
+
+  public static async updateStudentsFromLtiResource(resource_id: string) {
+    const resource_model = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, {
+      id: resource_id,
+    });
+    logger.info(`Updating students for resource ${resource_id}`)
+    logger.info(resource_model.namesServiceUrl);
+    if(!resource_model.namesServiceUrl){
+      return; // No name service provided
+    }
+    const members = await membership(resource_model.platform, resource_model.namesServiceUrl);
+    const students = members.map(m=>({
+      name: m.name ?? `${m.given_name} ${m.family_name}`,
+      external_id: m.user_id,
+      resource: { id: resource_id },
+    }));
+    logger.info(`Updating students for resource ${resource_id}`)
+    logger.info(students);
+    
+    await ApplicationDataSource.createQueryBuilder(LtiResourceStudent, 'student').insert().values(students).orUpdate(['name'], ['resourceId', 'external_id']).execute();
   }
 }

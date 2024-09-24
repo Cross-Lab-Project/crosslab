@@ -52,11 +52,7 @@ export const postLtiPlatformByPlatformIdLaunch: postLtiPlatformByPlatformIdLaunc
     });
     const clients = { experiment, authentication, device };
     await session.createOrUpdateExperiment(clients);
-    // const resource_link_id = getResourceLinkId(message);
-    // const resource = ApplicationDataSource.manager.create(LtiResourceModel, { platform, resource_link_id});
-    //await ApplicationDataSource.manager.save(resource);
-    //const session = ApplicationDataSource.manager.create(LtiSessionModel, {resource, session_id: random(32)});
-    //await ApplicationDataSource.manager.insert(LtiSessionModel, session);
+    
     return {
       status: 200,
       body: {
@@ -65,7 +61,9 @@ export const postLtiPlatformByPlatformIdLaunch: postLtiPlatformByPlatformIdLaunc
           uri: uri.generate_session(session),
           resource_uri: uri.generate_resource(session),
           experiment_uri: await session.get_experiment_uri(),
+          experiment_change_uri: session.launchMessage.roles.has('instructor')?uri.generate_session_change_experiment(session):undefined,
           roles: Array.from(session.launchMessage.roles),
+          role_mapping: session.launchMessage.roles.has('instructor')?session.role_mappings: undefined
         }),
       },
     };

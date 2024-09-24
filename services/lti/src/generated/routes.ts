@@ -30,7 +30,9 @@ import {
 	patchLtiResourceByResourceIdStudentsRequestBodyType,
 	getLtiResourceByResourceIdStudentsByStudentIdParametersType,
 	patchLtiResourceByResourceIdStudentsByStudentIdParametersType,
-	patchLtiResourceByResourceIdStudentsByStudentIdRequestBodyType
+	patchLtiResourceByResourceIdStudentsByStudentIdRequestBodyType,
+	patchLtiSessionBySessionIdExperimentParametersType,
+	patchLtiSessionBySessionIdExperimentRequestBodyType
 } from "./signatures.js"
 
 import {
@@ -65,7 +67,9 @@ import {
 	validateGetLtiResourceByResourceIdStudentsByStudentIdInput,
 	validateGetLtiResourceByResourceIdStudentsByStudentIdOutput,
 	validatePatchLtiResourceByResourceIdStudentsByStudentIdInput,
-	validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput
+	validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput,
+	validatePatchLtiSessionBySessionIdExperimentInput,
+	validatePatchLtiSessionBySessionIdExperimentOutput
 } from "./requestValidation.js"
 
 export default function router(): express.Router {
@@ -551,6 +555,39 @@ export default function router(): express.Router {
 
             if (!validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput(result)) {
                 throw new ValidationError("Response validation failed", (validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput as any).errors, 500)
+            }
+
+            for (const headerName in result.headers) {
+                const header = result.headers[headerName]
+                if (header) {
+                    res.setHeader(headerName, header)
+                }
+            }
+
+            return res.status(result.status).json(result.body)
+        } catch(error) {
+            next(error)
+            return
+        }
+    })
+
+    router.patch("/lti/session/:session_id/experiment", async (req: TypedRequest<{ "session_id": string },patchLtiSessionBySessionIdExperimentRequestBodyType,{}>, res, next) => {
+        const parameters: patchLtiSessionBySessionIdExperimentParametersType = {
+            "session_id": req.params["session_id"]
+        }
+
+        const body: patchLtiSessionBySessionIdExperimentRequestBodyType = req.body
+
+        try {
+            if (!validatePatchLtiSessionBySessionIdExperimentInput(parameters, body)) {
+                throw new ValidationError("Request validation failed", (validatePatchLtiSessionBySessionIdExperimentInput as any).errors, 400)
+            }
+
+            const result = await operations.patchLtiSessionBySessionIdExperiment(
+                req,parameters, body)
+
+            if (!validatePatchLtiSessionBySessionIdExperimentOutput(result)) {
+                throw new ValidationError("Response validation failed", (validatePatchLtiSessionBySessionIdExperimentOutput as any).errors, 500)
             }
 
             for (const headerName in result.headers) {

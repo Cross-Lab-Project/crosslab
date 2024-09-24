@@ -1,11 +1,9 @@
-import fetch from 'node-fetch';
-
 export async function getPlatformEndpoints({ iss }: { iss: string }) {
   const possible_urls = [
     {
-      authentication_request_url: iss + '/mod/lti/auth.php',
-      access_token_url: iss + '/mod/lti/token.php',
-      jwks_url: iss + '/mod/lti/certs.php',
+      authentication_request_url: iss + '/auth_request',
+      access_token_url: iss + '/access_token',
+      jwks_url: iss + '/jwks',
     },
   ];
 
@@ -23,7 +21,9 @@ export async function getPlatformEndpoints({ iss }: { iss: string }) {
         return urls;
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 
   return undefined;
 }
