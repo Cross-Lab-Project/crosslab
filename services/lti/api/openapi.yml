@@ -39,34 +39,5 @@ paths:
     $ref: 'operations/resource.yml#/paths/resource_by_id_students'
   /lti/resource/{resource_id}/students/{student_id}:
     $ref: 'operations/resource.yml#/paths/resource_by_id_students_by_id'
-#  /lti/resource:
-#
-#  /lti/resource/takeOwnership:
-#    post:
-#      operationId: take_ownership
-#      tags:
-#      - lti
-#      security: []
-#      parameters:
-#        - name: lti_session_token
-#      responses:
-#        '200':
-#          description: |-
-#            Returns the resource ID of the resource that was taken ownership of.
-#          content:
-#            application/json:
-#              schema:
-#                type: object
-#                properties:
-#                  resource_id:
-#                    type: string
-#                    description: The ID of the resource that was taken ownership of.
-#                required:
-#                  - resource_id
-#                additionalProperties: false
-#        401:
-#          description: Unauthorized.
-
-#  /lti/platform/{platform_id}/dynamic_registration:
-#    get:
-#
+  /lti/session/{session_id}/experiment:
+    $ref: 'operations/session.yml#/paths/session_by_id_experiment'

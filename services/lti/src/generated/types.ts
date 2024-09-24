@@ -286,13 +286,26 @@ type NumericRangeTuple<
 	 */
 	experiment_uri?: string
 	/**
+	 * The URI to change the experiment setting.
+	 */
+	experiment_change_uri?: string
+	/**
 	 * The roles of the session.
 	 */
 	roles: ("instructor" | "student")[]
+	role_mapping?: ({
+		role: string
+		device: "GROUP" | string
+		[k: string]: unknown
+	})[]
 }
                     : T extends "request" 
                     ? {
-	
+	role_mapping?: ({
+		role: string
+		device: "GROUP" | string
+		[k: string]: unknown
+	})[]
 }
                     : T extends "response"
                     ? {
@@ -306,9 +319,18 @@ type NumericRangeTuple<
 	 */
 	experiment_uri?: string
 	/**
+	 * The URI to change the experiment setting.
+	 */
+	experiment_change_uri?: string
+	/**
 	 * The roles of the session.
 	 */
 	roles: ("instructor" | "student")[]
+	role_mapping?: ({
+		role: string
+		device: "GROUP" | string
+		[k: string]: unknown
+	})[]
 }
                     : never
                 

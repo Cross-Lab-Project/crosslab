@@ -82,6 +82,22 @@ export class LtiSessionModel {
 }
 
 @Entity()
+@Unique(['session', 'role'])
+export class LtiSessionRoleMapModel {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @ManyToOne(() => LtiSessionModel, { eager: false })
+  session!: LtiSessionModel;
+
+  @Column()
+  role!: string;
+
+  @Column()
+  device!: string;
+}
+
+@Entity()
 @Unique(['resource', 'external_id'])
 export class LtiResourceStudent {
   @PrimaryGeneratedColumn('uuid')
@@ -121,6 +137,7 @@ export const Entities = [
   LtiMessageModel,
   LtiResourceModel,
   LtiSessionModel,
+  LtiSessionRoleMapModel,
   LtiResourceStudent,
   LtiResourceStudentRoleMapModel,
 ];

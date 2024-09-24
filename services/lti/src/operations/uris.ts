@@ -1,6 +1,6 @@
 import { config } from '../config.js';
 
-const base = `${config.API_BASE_URL}/lti`;
+const base = `${config.BASE_URL}/lti`;
 function parse(template: string, uri: string) {
   const match = uri.match(template);
   if (!match) {
@@ -51,3 +51,10 @@ export const parse_session = (uri: string) => {
   const match = parse(`${base}/session/(.*)`, uri);
   return { session_id: match[1] };
 };
+export const generate_session_change_experiment = (id: { session_id: string }) =>
+  base + `/session/${id.session_id}/experiment`;
+export const parse_session_change_experiment = (uri: string) => {
+  const match = parse(`${base}/session/(.*)/experiment`, uri);
+  return { session_id: match[1] };
+}
+

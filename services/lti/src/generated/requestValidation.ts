@@ -42,7 +42,10 @@ import {
 	getLtiResourceByResourceIdStudentsByStudentIdResponseType,
 	patchLtiResourceByResourceIdStudentsByStudentIdParametersType,
 	patchLtiResourceByResourceIdStudentsByStudentIdRequestBodyType,
-	patchLtiResourceByResourceIdStudentsByStudentIdResponseType
+	patchLtiResourceByResourceIdStudentsByStudentIdResponseType,
+	patchLtiSessionBySessionIdExperimentParametersType,
+	patchLtiSessionBySessionIdExperimentRequestBodyType,
+	patchLtiSessionBySessionIdExperimentResponseType
 } from "./signatures.js"
 
 import * as basicValidation from "./basicValidation.cjs"
@@ -750,6 +753,45 @@ export function validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput(re
     }
 
     (validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput as any).errors = `Response status ${response.status} is unexpected`
+
+    return false
+}
+
+/**
+ * This function validates the inputs of a PATCH request on /lti/session/{session_id}/experiment
+ */
+export function validatePatchLtiSessionBySessionIdExperimentInput(parameters: patchLtiSessionBySessionIdExperimentParametersType, body: patchLtiSessionBySessionIdExperimentRequestBodyType) {
+    if (parameters) {
+        if (
+            !basicValidation.validateSessionIdRequest(parameters["session_id"])
+        ) {
+            (validatePatchLtiSessionBySessionIdExperimentInput as any).errors = (basicValidation.validateSessionIdRequest as any).errors
+            return false
+        }
+    } else {
+        return false
+    }
+
+    if (!basicValidation.validatePatchLtiSessionBySessionIdExperimentRequestBodyRequest(body)) {
+        (validatePatchLtiSessionBySessionIdExperimentInput as any).errors = (basicValidation.validatePatchLtiSessionBySessionIdExperimentRequestBodyRequest as any).errors
+        return false
+    }
+
+    return true
+}
+
+/**
+ * This function validates the outputs to a PATCH request on /lti/session/{session_id}/experiment
+ */
+export function validatePatchLtiSessionBySessionIdExperimentOutput(response: ResponseData): response is patchLtiSessionBySessionIdExperimentResponseType {
+    if (response.status < 100 || response.status >= 600) return false
+
+    
+    if (response.status === 201) {
+        return true
+    }
+
+    (validatePatchLtiSessionBySessionIdExperimentOutput as any).errors = `Response status ${response.status} is unexpected`
 
     return false
 }

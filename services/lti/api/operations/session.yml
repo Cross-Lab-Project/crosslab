@@ -63,28 +63,48 @@ paths:
         401:
           description: Unauthorized.
   session_by_id_experiment:
-    post:
-      operationId: create_lti_experiment
+    patch:
+      summary: Update the LTI experiment settings.
+      operationId: update_lti_experiment
       tags:
         - lti
       security:
         - JWT: []
       parameters:
         - $ref: '#/components/parameters/session_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                impersonate:
+                  description: URI of the student to impersonate.
+                  type: string
+                  format: uri
+                role_mapping:
+                  description: |-
+                    Mapping of roles to devices.
+                    This overwrites any existing role mapping possibles et by the student impersonation.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      device:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - GROUP
+                          - type: string
+                            format: uri
+                            description: The URI of the device to use instead of the group device.
+                    required:
+                      - role
+                      - device
       responses:
-        '201':
+        201:
           description: |-
-            Returns the URI of the created experiment.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  experiment_uri:
-                    type: string
-                    format: uri
-                    description: The URI of the created experiment.
-                required:
-                  - experiment_uri
-        401:
-          description: Unauthorized.
+            The session was updated.

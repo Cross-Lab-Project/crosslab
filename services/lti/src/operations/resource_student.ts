@@ -14,7 +14,7 @@ import * as uri from './uris.js';
 function to_wire(student: LTIResourceStudent): StudentObject<'response'> {
   return utils.removeNullOrUndefined({
     uri: uri.generate_resource_student(student),
-    external_id: student.student_id,
+    external_id: student.external_id,
     email: student.email,
     name: student.name,
     role_mapping: student.role_mappings,
@@ -66,7 +66,7 @@ export const patchLtiResourceByResourceIdStudents: patchLtiResourceByResourceIdS
       const student = await resource.getStudent(uri.parse_resource_student(item.uri));
 
       for (const role of item.data.role_mapping) {
-        student.set_role_mapping(role);
+        await student.set_role_mapping(role);
       }
     }
 
@@ -89,7 +89,7 @@ export const patchLtiResourceByResourceIdStudentsByStudentId: patchLtiResourceBy
     const student = await resource.getStudent(parameters);
 
     for (const role of body.role_mapping) {
-      student.set_role_mapping(role);
+      await student.set_role_mapping(role);
     }
 
     return {
