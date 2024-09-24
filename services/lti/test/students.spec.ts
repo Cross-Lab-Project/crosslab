@@ -34,7 +34,6 @@ describe('LTI Students', () => {
   });
 
   it('should update students', async function () {
-    this.timeout(0);
     app.authorization_mock = [{ result: true }];
     let res = await chai
     .request(app)

@@ -153,6 +153,7 @@ export async function launch(platform: LTIPlatform, platformHost: PlatformHost) 
     .post('/lti/platform/' + platform.platform_id + '/launch')
     .send(
       await platformHost.get_launch_parameters(res.body.authentication_request_url, {
+        'sub': 'Test User',
         'https://purl.imsglobal.org/spec/lti/claim/message_type':
           'LtiResourceLinkRequest',
         'https://purl.imsglobal.org/spec/lti/claim/roles': [
