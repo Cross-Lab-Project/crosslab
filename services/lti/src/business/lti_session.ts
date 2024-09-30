@@ -55,7 +55,7 @@ export class LTISession {
         })
       : [];
 
-    ApplicationDataSource.manager.insert(
+    await ApplicationDataSource.manager.insert(
       LtiSessionRoleMapModel,
       role_mappings.map(role => ({
         session: { id: session.id },
@@ -122,12 +122,12 @@ export class LTISession {
         this.session_model.experiment_uri = (
           await experimentClient.createExperiment({ status: 'created', ...experiment })
         ).url;
-        ApplicationDataSource.manager.save(LtiSessionModel, this.session_model);
+        await ApplicationDataSource.manager.save(LtiSessionModel, this.session_model);
       }
     } catch (e) {
       logger.warn(e);
       this.session_model.experiment_uri = undefined;
-      ApplicationDataSource.manager.save(LtiSessionModel, this.session_model);
+      await ApplicationDataSource.manager.save(LtiSessionModel, this.session_model);
     }
   }
 
@@ -152,9 +152,12 @@ export class LTISession {
           session: { id: this.session_id },
           device: p.device,
         },
-        ['student', 'role'],
+        ['session', 'role'],
       );
     }
+    this.role_mapping_models = await ApplicationDataSource.manager.findBy(LtiSessionRoleMapModel, {
+      session: { id: this.session_id },
+    });
     await this.createOrUpdateExperiment(clients);
   }
 }

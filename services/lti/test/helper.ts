@@ -14,7 +14,8 @@ export const chai = chaiModule.use(chaiHttp) ;
 chai.should();
 
 let server: Server;
-let apiMock: APIMock;
+export let apiMock: APIMock;
+
 before(async () => {
   apiMock=new APIMock();
   await apiMock.init();

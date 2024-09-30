@@ -1,6 +1,5 @@
 import { ApplicationDataSource } from '../database/datasource.js';
 import { LtiResourceModel } from '../database/model.js';
-import { LTIMessage } from './lti_message.js';
 import { LTIPlatform } from './lti_platform.js';
 import { LTIResourceStudent } from './lti_resource_student.js';
 
@@ -17,7 +16,7 @@ export class LTIResource implements ResourceId {
     this.experiment_template_uri = resource_model.experiment_template_uri;
   }
 
-  static async getOrCreate(message: LTIMessage, platform: LTIPlatform) {
+  static async getOrCreate(message: {resource_link_id: string}, platform: LTIPlatform) {
     const resource_init = {
       platform: { id: platform.platform_model.id },
       resource_link_id: message.resource_link_id,
