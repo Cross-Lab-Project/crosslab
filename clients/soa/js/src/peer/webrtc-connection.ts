@@ -69,7 +69,7 @@ export class WebRTCPeerConnection
   private transeiverMap = new Map<RTCRtpTransceiver, string>();
   private mediaChannelMap = new Map<string, MediaChannel>();
   private trickleIce = false;
-  tiebreaker!: boolean;
+  tiebreaker: boolean;
   pc: RTCPeerConnection;
   state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
 
@@ -101,10 +101,11 @@ export class WebRTCPeerConnection
     }
   }
 
-  constructor(configuration: RTCConfiguration) {
+  constructor(configuration: RTCConfiguration & { tiebreaker: boolean }) {
     super();
 
     this.state = 'connecting';
+    this.tiebreaker = configuration.tiebreaker;
     this.pc = new RTCPeerConnection(configuration);
     this.pc.onicecandidate = event => this.onicecandidate(event);
     this.pc.onicegatheringstatechange = _ => this.onicegatheringstatechange();

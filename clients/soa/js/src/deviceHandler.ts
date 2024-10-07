@@ -17,6 +17,7 @@ import {
 } from './deviceMessages';
 import { crosslabTransport, logger } from './logging';
 import { PeerConnection } from './peer/connection';
+import { LocalPeerConnection } from './peer/local-connection';
 import { WebRTCPeerConnection } from './peer/webrtc-connection';
 import { WebSocketPeerConnection } from './peer/websocket-connection';
 import { Service } from './service';
@@ -32,6 +33,7 @@ export interface DeviceHandlerEvents {
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   ws!: WebSocket;
+  bufferedLocalConnection?: CreatePeerConnectionMessage & { connectionType: 'local' };
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
   supportedConnectionTypes: string[] = ['webrtc'];
@@ -110,11 +112,36 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       throw Error('Can not create a connection. Connection Id is already present');
     }
     console.log(JSON.stringify(message, null, 4));
+
+    if (message.connectionType === 'local' && !this.bufferedLocalConnection) {
+      this.bufferedLocalConnection = message;
+      return;
+    }
+
+    //prettier-ignore
     const connection =
-      message.connectionType === 'webrtc'
-        ? new WebRTCPeerConnection(message.connectionOptions)
-        : new WebSocketPeerConnection({ url: message.connectionOptions.webSocketUrl });
-    connection.tiebreaker = message.tiebreaker;
+      message.connectionType === 'webrtc' ? 
+        new WebRTCPeerConnection({
+          ...message.connectionOptions,
+          tiebreaker: message.tiebreaker,
+        })
+      : message.connectionType === 'websocket' ? 
+        new WebSocketPeerConnection({
+          url: message.connectionOptions.webSocketUrl,
+          tiebreaker: message.tiebreaker,
+        })
+      : new LocalPeerConnection({
+          deviceA: {
+            tiebreaker: this.bufferedLocalConnection!.tiebreaker,
+            services: this.bufferedLocalConnection!.services,
+          },
+          deviceB: { tiebreaker: message.tiebreaker, services: message.services },
+        });
+
+    if (message.connectionType === 'local') {
+      this.bufferedLocalConnection = undefined;
+    }
+
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
       const service = this.services.get(serviceConfig.serviceId);

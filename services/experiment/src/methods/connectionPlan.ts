@@ -45,14 +45,6 @@ export async function buildConnectionPlan(
 
   const peerconnections: Record<string, Peerconnection<'request'>> = {};
   for (const serviceConfig of sortedDeviceMappedServiceConfigs) {
-    // HOTFIX: for local services: Don't connect local services to each other
-    // TODO: create a new connection type 'local' as opposed to 'webrtc' and handle it correctly
-    if (
-      getUrlOrInstanceUrl(serviceConfig.devices[0]) ===
-      getUrlOrInstanceUrl(serviceConfig.devices[1])
-    ) {
-      continue;
-    }
     const lookupKey = `${getUrlOrInstanceUrl(
       serviceConfig.devices[0],
     )}::${getUrlOrInstanceUrl(serviceConfig.devices[1])}`;
@@ -66,18 +58,22 @@ export async function buildConnectionPlan(
         getUrlOrInstanceUrl(serviceConfig.devices[1]),
       );
 
-      const connectionType = intersection(
-        getSupportedConnectionTypes(
-          deviceA,
-          serviceConfig.serviceType,
-          serviceConfig.participants[0].serviceId,
-        ),
-        getSupportedConnectionTypes(
-          deviceB,
-          serviceConfig.serviceType,
-          serviceConfig.participants[1].serviceId,
-        ),
-      )[0];
+      const connectionType =
+        getUrlOrInstanceUrl(serviceConfig.devices[0]) ===
+        getUrlOrInstanceUrl(serviceConfig.devices[1])
+          ? 'local'
+          : intersection(
+              getSupportedConnectionTypes(
+                deviceA,
+                serviceConfig.serviceType,
+                serviceConfig.participants[0].serviceId,
+              ),
+              getSupportedConnectionTypes(
+                deviceB,
+                serviceConfig.serviceType,
+                serviceConfig.participants[1].serviceId,
+              ),
+            )[0];
 
       if (!connectionType)
         throw new InvalidValueError(
@@ -246,7 +242,7 @@ function toPairwiseServiceConfig(
 }
 
 async function createPeerconnection(
-  type: 'webrtc' | 'websocket',
+  type: 'webrtc' | 'websocket' | 'local',
   serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] },
 ): Promise<Peerconnection<'request'>> {
   switch (type) {
@@ -254,6 +250,8 @@ async function createPeerconnection(
       return createPeerconnectionWebrtc(serviceConfig);
     case 'websocket':
       return await createPeerconnectionWebsocket(serviceConfig);
+    case 'local':
+      return await createPeerconnectionLocal(serviceConfig);
   }
 }
 
@@ -309,6 +307,22 @@ async function createPeerconnectionWebsocket(
           .replace('https://', 'wss://'),
       ),
     },
+  };
+}
+
+async function createPeerconnectionLocal(
+  serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] },
+): Promise<Peerconnection<'request'>> {
+  return {
+    type: 'local',
+    devices: [
+      {
+        url: getUrlOrInstanceUrl(serviceConfig.devices[0]),
+      },
+      {
+        url: getUrlOrInstanceUrl(serviceConfig.devices[1]),
+      },
+    ],
   };
 }
 

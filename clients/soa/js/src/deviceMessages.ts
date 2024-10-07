@@ -64,9 +64,15 @@ const createWebRTCPeerConnectionMessageSchema =
     }),
   });
 
+const createLocalPeerConnectionMessageSchema =
+  createPeerConnectionMessageBaseSchema.extend({
+    connectionType: z.literal('local'),
+  });
+
 const createPeerConnectionMessageSchema = z.union([
   createWebSocketPeerConnectionMessageSchema,
   createWebRTCPeerConnectionMessageSchema,
+  createLocalPeerConnectionMessageSchema,
 ]);
 export type CreatePeerConnectionMessage = z.infer<
   typeof createPeerConnectionMessageSchema

@@ -12,6 +12,7 @@ import { PeerConnection, PeerConnectionEvents, ServiceConfig } from './connectio
 
 type WebSocketConnectionOptions = {
   url: string;
+  tiebreaker: boolean;
 };
 
 export class WebSocketPeerConnection
@@ -23,12 +24,13 @@ export class WebSocketPeerConnection
   private _webSocket?: WebSocket;
   state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed' =
     'new';
-  tiebreaker!: boolean;
+  tiebreaker: boolean;
 
   constructor(connectionData: WebSocketConnectionOptions) {
     super();
 
     this._connectionOptions = connectionData;
+    this.tiebreaker = connectionData.tiebreaker;
   }
 
   transmit(serviceConfig: ServiceConfig, id: string, channel: Channel): void {
@@ -108,7 +110,7 @@ export class WebSocketPeerConnection
   }
 
   teardown(): void {
-    if (this.state != 'closed') {
+    if (this.state !== 'closed') {
       this._webSocket?.close();
       this.state = 'closed';
       this.emit('connectionChanged');
