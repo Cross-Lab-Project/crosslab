@@ -15,7 +15,6 @@ import * as mysql from 'mysql2/promise';
 
 import { config } from './config.js';
 import { DeviceBookingRequest } from './messageDefinition.js';
-import { logger } from '@crosslab/service-common';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -296,9 +295,9 @@ export async function dispatchCallback(bookingID: bigint) {
         }
       } catch (err) {
         // Something went wrong here - just continue for now
-        console.log(
+        console.error(
           'error',
-          'Unknown error in dispatchCallback: ' + (err as Error).toString(),
+          'Unknown error in dispatchCallback:', err,
         );
         continue;
       }
@@ -440,9 +439,9 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           onlyOwn: true,
         });
       } catch (e) {
-        console.log(
-          'Error while getting schedule in reservateDevice (using next device): ' +
-          (e as Error).toString(),
+        console.error(
+          'Error while getting schedule in reservateDevice (using next device):',
+          e,
         );
         continue;
       }
@@ -527,7 +526,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           }
           continue;
         } catch (err) {
-          console.log(err);
+          console.error('Unknown error while booking device:', err);
           continue;
         } finally {
           if (channel !== undefined) {
@@ -599,7 +598,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
               continue;
               break;
             default:
-              console.log(
+              console.error(
                 'Unknown API response for getBookingManageByID:',
                 getReturn.Booking.Status,
               );
@@ -815,9 +814,9 @@ export async function DeleteBooking(
           }
         } catch (err) {
           // Don't jump out here, since some devices might already be freed
-          console.log(
-            'Got error while cancelling booking, devices might not be freed: ' +
-            (err as Error).toString(),
+          console.error(
+            'Got error while cancelling booking, devices might not be freed:',
+            err,
           );
         } finally {
           await channel.close();

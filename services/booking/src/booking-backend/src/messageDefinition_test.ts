@@ -92,7 +92,7 @@ mocha.describe('messageDefinition.ts', function () {
       try {
         DeviceBookingRequest.fromString(bad[i]);
       } catch (err) {
-        //    console.log(err);
+        console.log(err);
         fail = true;
       }
       if (!fail) {

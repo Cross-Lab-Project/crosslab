@@ -54,11 +54,11 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
         flat_group: true,
       });
     } catch (error) {
-      console.log(
+      console.error(
         'Error while getting device ' +
           body.Experiment.Devices[device].ID +
-          ' :' +
-          (error as Error).toString(),
+          ' :',
+          error,
       );
       const err = error as UnsuccessfulRequestError;
       // Bad status code
@@ -82,7 +82,6 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
         };
       }
 
-      console.log('ANY ERROR device');
       // any other error
       throw err;
     }
@@ -173,8 +172,8 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
     try {
       req = await lr[3];
     } catch (error) {
-      console.log(
-        'Error while getting schedule for ' + k + ' :' + (error as Error).toString(),
+      console.error(
+        'Error while getting schedule for ' + k + ' :', error
       );
       const err = error as UnsuccessfulRequestError;
       if (err.response !== undefined && err.response.status !== undefined) {
@@ -189,7 +188,6 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
           body: 'Institution ' + k + ' returned status code ' + err.response.status,
         };
       }
-      console.log('ANY ERROR lr');
       throw err;
     }
     if (req.length != lr[2]!.Experiment.Devices.length) {
@@ -243,13 +241,13 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       try {
         a = await availability[device][i];
       } catch (error) {
-        console.log(
+        console.error(
           'Error while availability for ' +
             device +
             ' ' +
             i +
-            ' :' +
-            (error as Error).toString(),
+            ' :',
+            error,
         );
         const err = error as UnsuccessfulRequestError;
         if (err.response !== undefined && err.response.status !== undefined) {
@@ -272,7 +270,6 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
               err.response.status,
           };
         }
-        console.log('ANY ERROR availability');
         throw err;
       }
       if (a.type == 'group') {
@@ -303,7 +300,7 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       );
       let notFree: Timeslot[] = timetableAnd(notAvailable, timetables[device][i]);
 
-      console.log(
+      console.error(
         JSON.stringify(
           timetableNot(notFree, dayjs(body.Time.Start), dayjs(body.Time.End)),
         ),
