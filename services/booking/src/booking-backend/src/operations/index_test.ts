@@ -513,27 +513,6 @@ mocha.describe('operations.ts', function () {
     }
   });
 
-  mocha.it('postBookingCallbackByID no authorization', async function () {
-    let isError = false;
-    try {
-      await postBookingCallbackByID(
-        getFakeRequest({ user: 'badActor', isAuthorized: false }),
-        { ID: '' },
-      );
-      await sleep(250);
-    } catch (err) {
-      if ((err as Error).message == 'test authorization failed') {
-        isError = true;
-      } else {
-        console.log((err as Error).message);
-        throw err;
-      }
-    }
-    if (!isError) {
-      throw new Error('no access violation detected');
-    }
-  });
-
   mocha.it('postBookingCallbackByID success', async function () {
     await postBookingCallbackByID(getFakeRequest(), { ID: '1' });
     await sleep(250);

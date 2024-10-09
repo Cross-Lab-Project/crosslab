@@ -127,27 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError(
-      `Provided url "${url}" does not start with the provided base url "${baseUrl}"`,
-    );
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError(
-      `Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`,
-    );
-
-  return pathParameters;
+    throw new InvalidUrlError('Provided url is not a valid http url');
+  return parsePathParameters(url, endpoint);
 }
 
 /**

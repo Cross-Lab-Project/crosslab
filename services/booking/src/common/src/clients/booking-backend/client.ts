@@ -127,27 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
-    throw new InvalidUrlError(`Provided url "${url}" is not a valid http url`);
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError(
-      `Provided url "${url}" does not start with the provided base url "${baseUrl}"`,
-    );
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError(
-      `Provided url "${url}" does not match extended base url "${extendedBaseUrl}"`,
-    );
-
-  return pathParameters;
+    throw new InvalidUrlError('Provided url is not a valid http url');
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -248,7 +231,7 @@ export class Client {
   ): Promise<Signatures.LockBookingSuccessResponse['body']> {
     const urlSuffix = '/booking/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), this.baseUrl, '/booking/{}/lock');
+    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}/lock');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -321,7 +304,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/booking/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), this.baseUrl, '/booking/{}/lock');
+    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}/lock');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -394,11 +377,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/booking_callback/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/booking_callback/{}',
-    );
+    const [ID] = validateUrl(new URL(url).toString(), '/booking_callback/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {

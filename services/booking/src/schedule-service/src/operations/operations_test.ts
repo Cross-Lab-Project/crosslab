@@ -98,6 +98,7 @@ mocha.describe('operations.ts', function () {
 
       if (r.body[i].Booked.length !== correctBooked.length) {
         console.log(r.body[i].Booked);
+        console.log(r.body[i].Free);
         throw Error('Device ' + i + ' Booked has length ' + r.body[i].Booked.length);
       }
 

@@ -114,13 +114,6 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
 
       // Get timetable
       let d: URL = new URL(realDevices[device][i]);
-      console.log(
-        'DEBUG:',
-        d.toString(),
-        body.Experiment.Devices[device].ID,
-        BelongsToUs(d),
-        JSON.stringify(config.InstitutePrefix),
-      );
       let t: Timeslot[] = [];
       if (!BelongsToUs(d)) {
         // This is not our device
@@ -293,12 +286,10 @@ export const postSchedule: postScheduleSignature = async (request, body) => {
       if (a.type == 'cloud instantiable' || a.type == 'edge instantiable') {
         available = [{ Start: body.Time.Start, End: body.Time.End }];
       } else {
-        const announcedAvailability = await clients.device.getDeviceAvailability(a.url, {
+        const announcedAvailability = await clients.device.getDeviceAvailability(a.url, { // Currently broken in tests
           startTime: body.Time.Start,
           endTime: body.Time.End,
         });
-        console.log('DEBUG:', JSON.stringify(a.announcedAvailability));
-        console.log('DEBUG:', JSON.stringify(announcedAvailability));
         available = timetableAnd(
           announcedAvailability!.map(e => {
             return { Start: e.start!, End: e.end! };
