@@ -206,7 +206,10 @@ function mapRoleConfigToDevices(
             devices: [deviceA, deviceB],
           });
         } else {
-          // TODO: Handle same device
+          deviceMappedServiceConfigs.push({
+            ...serviceConfig,
+            devices: [deviceA, deviceB],
+          });
         }
       }
     }
@@ -251,7 +254,7 @@ async function createPeerconnection(
     case 'websocket':
       return await createPeerconnectionWebsocket(serviceConfig);
     case 'local':
-      return await createPeerconnectionLocal(serviceConfig);
+      return createPeerconnectionLocal(serviceConfig);
   }
 }
 
@@ -310,9 +313,9 @@ async function createPeerconnectionWebsocket(
   };
 }
 
-async function createPeerconnectionLocal(
+function createPeerconnectionLocal(
   serviceConfig: ServiceConfigurationModel & { devices: DeviceModel[] },
-): Promise<Peerconnection<'request'>> {
+): Peerconnection<'request'> {
   return {
     type: 'local',
     devices: [

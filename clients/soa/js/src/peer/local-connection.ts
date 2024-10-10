@@ -33,7 +33,7 @@ export class LocalPeerConnection
           service.remoteServiceId === serviceConfig.remoteServiceId,
       )
     ) {
-      this._addChannel(serviceConfig, id, channel, this.deviceA.tiebreaker);
+      this._addChannel(serviceConfig, id, channel);
     } else if (
       this.deviceB.services.find(
         service =>
@@ -42,7 +42,7 @@ export class LocalPeerConnection
           service.remoteServiceId === serviceConfig.remoteServiceId,
       )
     ) {
-      this._addChannel(serviceConfig, id, channel, this.deviceB.tiebreaker);
+      this._addChannel(serviceConfig, id, channel);
     } else {
       throw new Error(
         `Could not find corresponding service for ["${serviceConfig.serviceType}","${serviceConfig.serviceId}","${serviceConfig.remoteServiceId}"]!`,
@@ -59,7 +59,7 @@ export class LocalPeerConnection
           service.remoteServiceId === serviceConfig.remoteServiceId,
       )
     ) {
-      this._addChannel(serviceConfig, id, channel, this.deviceA.tiebreaker);
+      this._addChannel(serviceConfig, id, channel);
     } else if (
       this.deviceB.services.find(
         service =>
@@ -68,7 +68,7 @@ export class LocalPeerConnection
           service.remoteServiceId === serviceConfig.remoteServiceId,
       )
     ) {
-      this._addChannel(serviceConfig, id, channel, this.deviceB.tiebreaker);
+      this._addChannel(serviceConfig, id, channel);
     } else {
       throw new Error(
         `Could not find corresponding service for ["${serviceConfig.serviceType}","${serviceConfig.serviceId}","${serviceConfig.remoteServiceId}"]!`,
@@ -108,14 +108,9 @@ export class LocalPeerConnection
     }
   }
 
-  private _addChannel(
-    serviceConfig: ServiceConfig,
-    id: string,
-    channel: Channel,
-    tiebreaker: boolean,
-  ) {
-    const label1 = this._createLabel(serviceConfig, id, tiebreaker);
-    const label2 = this._createLabel(serviceConfig, id, !tiebreaker);
+  private _addChannel(serviceConfig: ServiceConfig, id: string, channel: Channel) {
+    const label1 = this._createLabel(serviceConfig, id, false);
+    const label2 = this._createLabel(serviceConfig, id, true);
     this._channels.set(label1, channel);
     if (channel.channel_type === 'DataChannel') {
       channel.send = data => {
@@ -127,14 +122,13 @@ export class LocalPeerConnection
     }
   }
 
-  private _createLabel(
-    serviceConfig: ServiceConfig,
-    id: string,
-    tiebreaker: boolean,
-  ): string {
-    const id1 = tiebreaker ? serviceConfig.serviceId : serviceConfig.remoteServiceId;
-    const id2 = tiebreaker ? serviceConfig.remoteServiceId : serviceConfig.serviceId;
-    const label = JSON.stringify([serviceConfig.serviceType, id1, id2, id]);
+  private _createLabel(serviceConfig: ServiceConfig, id: string, swap: boolean): string {
+    const label = JSON.stringify([
+      serviceConfig.serviceType,
+      swap ? serviceConfig.remoteServiceId : serviceConfig.serviceId,
+      swap ? serviceConfig.serviceId : serviceConfig.remoteServiceId,
+      id,
+    ]);
     return label;
   }
 }

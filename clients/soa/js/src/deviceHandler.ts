@@ -138,12 +138,17 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
           deviceB: { tiebreaker: message.tiebreaker, services: message.services },
         });
 
+    const serviceConfigs =
+      message.connectionType === 'local'
+        ? [...(this.bufferedLocalConnection?.services ?? []), ...message.services]
+        : message.services;
+
     if (message.connectionType === 'local') {
       this.bufferedLocalConnection = undefined;
     }
 
     this.connections.set(message.connectionUrl, connection);
-    for (const serviceConfig of message.services) {
+    for (const serviceConfig of serviceConfigs) {
       const service = this.services.get(serviceConfig.serviceId);
       if (service === undefined) {
         throw Error('No Service for the service config was found');
