@@ -57,6 +57,16 @@ helper/dummy-device/python:
     tags:
       - test
 
+helper/cli:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+  - script: lint
+    dependencies:
+      - helper/cli:build
+    tags:
+      - test
+
 ################################################################################
 # Backend ######################################################################
 ################################################################################
