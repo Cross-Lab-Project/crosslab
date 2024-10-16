@@ -9,6 +9,7 @@ import {
   roomMap,
   webSocketMap,
 } from '../../../globals.js';
+import { heartbeatHandling } from '../../../methods/heartbeatHandling.js';
 import { roomUrlFromId } from '../../../methods/urlFromId.js';
 
 export function webSocketHandling(app: expressWs.Application) {
@@ -41,16 +42,18 @@ export function webSocketHandling(app: expressWs.Application) {
       );
     }
 
+    heartbeatHandling(webSocket, participantId, roomUrlFromId(roomId));
+
     const label = getLabel(roomId, participantId);
     webSocketMap.set(label, webSocket);
 
     webSocket.on('message', message => forwardMessage(message, roomId, participantId));
 
-    webSocket.on('close', () => {
+    webSocket.on('close', (code, reason) => {
       forwardingQueueMap.get(label)?.stop();
       logger.log(
         'info',
-        `websocket connection closed for participant "${participant.id}" from room "${room.url}"`,
+        `websocket connection closed for participant "${participant.id}" from room "${room.url}", code: ${code}, reason: ${reason.toString()}`,
       );
     });
 
