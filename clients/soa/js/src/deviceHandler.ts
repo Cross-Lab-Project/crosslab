@@ -15,6 +15,7 @@ import {
   isExperimentStatusChangedMessage,
   isSignalingMessage,
 } from './deviceMessages';
+import { crosslabTransport, logger } from './logging';
 import { PeerConnection } from './peer/connection';
 import { WebRTCPeerConnection } from './peer/webrtc-connection';
 import { Service } from './service';
@@ -44,6 +45,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
           token: connectOptions.token,
         }),
       );
+      crosslabTransport._set_upstream(info =>
+        this.ws.send(JSON.stringify({ messageType: 'logging', content: info })),
+      );
     };
 
     const p = new Promise<void>((resolve, reject) => {
@@ -62,11 +66,11 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     });
 
     this.ws.onclose = event => {
-      console.log('ws closed', event);
+      logger.log('info', 'ws closed', { reason: event.reason, code: event.code });
     };
 
     this.ws.onerror = event => {
-      console.log('ws error', event);
+      logger.log('error', event.message, { type: event.type, error: event.error });
     };
 
     await p;
@@ -101,7 +105,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     if (this.connections.has(message.connectionUrl)) {
       throw Error('Can not create a connection. Connection Id is already present');
     }
-    console.log('creating connection', message);
+    logger.log('info', 'creating connection', message);
     const connection = new WebRTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.goldi-labs.de:3478' },
@@ -118,7 +122,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       service.setupConnection(connection, serviceConfig);
     }
     connection.on('signalingMessage', msg => {
-      console.log('sending:', msg);
+      logger.log('info', 'sending:', msg);
       this.ws.send(
         JSON.stringify({
           ...msg,
@@ -153,7 +157,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     if (!connection) {
       throw Error('Cannot close a connection. Connection Id is not present');
     }
-    console.log('closing connection', message);
+    logger.log('info', 'closing connection', message);
     connection.teardown();
     this.connections.delete(message.connectionUrl);
   }

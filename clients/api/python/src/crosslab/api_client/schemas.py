@@ -505,7 +505,8 @@ class CreateDeviceRequestAlt4(TypedDict):
     devices: List[CreateDeviceRequestAlt4DevicesItems]
 
 
-CreateDeviceRequest = Union[CreateDeviceRequestAlt1, CreateDeviceRequestAlt2, CreateDeviceRequestAlt3, CreateDeviceRequestAlt4]
+CreateDeviceRequest = Union[CreateDeviceRequestAlt1,
+                            CreateDeviceRequestAlt2, CreateDeviceRequestAlt3, CreateDeviceRequestAlt4]
 
 
 class CreateDeviceResponse201Alt1ViewerItems(TypedDict):
@@ -726,7 +727,8 @@ class CreateDeviceResponse201Alt4(TypedDict):
     devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
 
-CreateDeviceResponse201 = Union[CreateDeviceResponse201Alt1, CreateDeviceResponse201Alt2, CreateDeviceResponse201Alt3, CreateDeviceResponse201Alt4]
+CreateDeviceResponse201 = Union[CreateDeviceResponse201Alt1,
+                                CreateDeviceResponse201Alt2, CreateDeviceResponse201Alt3, CreateDeviceResponse201Alt4]
 
 
 CreateDeviceResponse: TypeAlias = CreateDeviceResponse201
@@ -950,7 +952,8 @@ class GetDeviceResponse200Alt4(TypedDict):
     devices: List[GetDeviceResponse200Alt4DevicesItems]
 
 
-GetDeviceResponse200 = Union[GetDeviceResponse200Alt1, GetDeviceResponse200Alt2, GetDeviceResponse200Alt3, GetDeviceResponse200Alt4]
+GetDeviceResponse200 = Union[GetDeviceResponse200Alt1,
+                             GetDeviceResponse200Alt2, GetDeviceResponse200Alt3, GetDeviceResponse200Alt4]
 
 
 GetDeviceResponse: TypeAlias = GetDeviceResponse200
@@ -1150,7 +1153,8 @@ class UpdateDeviceRequestAlt4(TypedDict):
     devices: NotRequired[List[UpdateDeviceRequestAlt4DevicesItems]]
 
 
-UpdateDeviceRequest = Union[UpdateDeviceRequestAlt1, UpdateDeviceRequestAlt2, UpdateDeviceRequestAlt3, UpdateDeviceRequestAlt4]
+UpdateDeviceRequest = Union[UpdateDeviceRequestAlt1,
+                            UpdateDeviceRequestAlt2, UpdateDeviceRequestAlt3, UpdateDeviceRequestAlt4]
 
 
 class UpdateDeviceResponse200Alt1ViewerItems(TypedDict):
@@ -1371,7 +1375,8 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
 
-UpdateDeviceResponse200 = Union[UpdateDeviceResponse200Alt1, UpdateDeviceResponse200Alt2, UpdateDeviceResponse200Alt3, UpdateDeviceResponse200Alt4]
+UpdateDeviceResponse200 = Union[UpdateDeviceResponse200Alt1,
+                                UpdateDeviceResponse200Alt2, UpdateDeviceResponse200Alt3, UpdateDeviceResponse200Alt4]
 
 
 UpdateDeviceResponse: TypeAlias = UpdateDeviceResponse200
@@ -1609,7 +1614,24 @@ class SendSignalingMessageRequestAlt5(TypedDict):
     message: NotRequired[str]
 
 
-SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2, SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4, SendSignalingMessageRequestAlt5]
+class SendSignalingMessageRequestAlt6Content(TypedDict):
+    """
+    Properties:
+    """
+
+
+class SendSignalingMessageRequestAlt6(TypedDict):
+    """
+    Properties:
+    - messageType
+    - content
+    """
+    messageType: Literal["logging"]
+    content: SendSignalingMessageRequestAlt6Content
+
+
+SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignalingMessageRequestAlt2,
+                                    SendSignalingMessageRequestAlt3, SendSignalingMessageRequestAlt4, SendSignalingMessageRequestAlt5, SendSignalingMessageRequestAlt6]
 
 
 SendSignalingMessageResponse: TypeAlias = None
@@ -1633,7 +1655,8 @@ class ListPeerconnectionsResponse200Items(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
     devices: List[ListPeerconnectionsResponse200ItemsDevicesItems]
 
 
@@ -1683,7 +1706,8 @@ class CreatePeerconnectionRequest(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionRequestDevicesItems]
 
 
@@ -1727,7 +1751,8 @@ class CreatePeerconnectionResponse201(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionResponse201DevicesItems]
 
 
@@ -1771,11 +1796,13 @@ class CreatePeerconnectionResponse202(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
     devices: List[CreatePeerconnectionResponse202DevicesItems]
 
 
-CreatePeerconnectionResponse: TypeAlias = Union[CreatePeerconnectionResponse201, CreatePeerconnectionResponse202]
+CreatePeerconnectionResponse: TypeAlias = Union[CreatePeerconnectionResponse201,
+                                                CreatePeerconnectionResponse202]
 
 
 class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
@@ -1818,7 +1845,8 @@ class GetPeerconnectionResponse200(TypedDict):
     """
     url: str
     type: Literal["local", "webrtc"]
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
     devices: List[GetPeerconnectionResponse200DevicesItems]
 
 
@@ -1833,19 +1861,23 @@ class PatchPeerconnectionDeviceStatusRequest(TypedDict):
     Properties:
     - status: The status of the peerconnection.
     """
-    status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    status: Literal["new", "connecting", "connected",
+                    "disconnected", "failed", "closed"]
 
 
 PatchPeerconnectionDeviceStatusResponse: TypeAlias = None
 
 
-ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created",
+                                                               "booked", "setup", "running", "finished"]
 
 
-ListExperimentsResponse200ItemsStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+ListExperimentsResponse200ItemsStatusAlt2: TypeAlias = Literal["created",
+                                                               "booked", "running", "finished"]
 
 
-ListExperimentsResponse200ItemsStatus = Union[ListExperimentsResponse200ItemsStatusAlt1, ListExperimentsResponse200ItemsStatusAlt2]
+ListExperimentsResponse200ItemsStatus = Union[ListExperimentsResponse200ItemsStatusAlt1,
+                                              ListExperimentsResponse200ItemsStatusAlt2]
 
 
 class ListExperimentsResponse200Items(TypedDict):
@@ -1864,13 +1896,16 @@ ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
 ListExperimentsResponse: TypeAlias = ListExperimentsResponse200
 
 
-CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created",
+                                                       "booked", "setup", "running", "finished"]
 
 
-CreateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+CreateExperimentRequestStatusAlt2: TypeAlias = Literal["created",
+                                                       "booked", "running", "finished"]
 
 
-CreateExperimentRequestStatus = Union[CreateExperimentRequestStatusAlt1, CreateExperimentRequestStatusAlt2]
+CreateExperimentRequestStatus = Union[CreateExperimentRequestStatusAlt1,
+                                      CreateExperimentRequestStatusAlt2]
 
 
 class CreateExperimentRequestBookingtime(TypedDict):
@@ -1914,7 +1949,7 @@ class CreateExperimentRequestRolesItems(TypedDict):
 class CreateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -1923,7 +1958,7 @@ class CreateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
 class CreateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -1995,13 +2030,16 @@ class CreateExperimentRequest(TypedDict):
     instantiatedDevices: List[CreateExperimentRequestInstantiateddevicesItems]
 
 
-CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created",
+                                                           "booked", "setup", "running", "finished"]
 
 
-CreateExperimentResponse201StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+CreateExperimentResponse201StatusAlt2: TypeAlias = Literal["created",
+                                                           "booked", "running", "finished"]
 
 
-CreateExperimentResponse201Status = Union[CreateExperimentResponse201StatusAlt1, CreateExperimentResponse201StatusAlt2]
+CreateExperimentResponse201Status = Union[CreateExperimentResponse201StatusAlt1,
+                                          CreateExperimentResponse201StatusAlt2]
 
 
 class CreateExperimentResponse201Bookingtime(TypedDict):
@@ -2045,7 +2083,7 @@ class CreateExperimentResponse201RolesItems(TypedDict):
 class CreateExperimentResponse201ServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2054,7 +2092,7 @@ class CreateExperimentResponse201ServiceconfigurationsItemsConfiguration(TypedDi
 class CreateExperimentResponse201ServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2126,13 +2164,16 @@ class CreateExperimentResponse201(TypedDict):
     instantiatedDevices: List[CreateExperimentResponse201InstantiateddevicesItems]
 
 
-CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created",
+                                                           "booked", "setup", "running", "finished"]
 
 
-CreateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+CreateExperimentResponse202StatusAlt2: TypeAlias = Literal["created",
+                                                           "booked", "running", "finished"]
 
 
-CreateExperimentResponse202Status = Union[CreateExperimentResponse202StatusAlt1, CreateExperimentResponse202StatusAlt2]
+CreateExperimentResponse202Status = Union[CreateExperimentResponse202StatusAlt1,
+                                          CreateExperimentResponse202StatusAlt2]
 
 
 class CreateExperimentResponse202Bookingtime(TypedDict):
@@ -2176,7 +2217,7 @@ class CreateExperimentResponse202RolesItems(TypedDict):
 class CreateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2185,7 +2226,7 @@ class CreateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDi
 class CreateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2257,16 +2298,20 @@ class CreateExperimentResponse202(TypedDict):
     instantiatedDevices: List[CreateExperimentResponse202InstantiateddevicesItems]
 
 
-CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
+CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201,
+                                            CreateExperimentResponse202]
 
 
-GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created",
+                                                        "booked", "setup", "running", "finished"]
 
 
-GetExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+GetExperimentResponse200StatusAlt2: TypeAlias = Literal["created",
+                                                        "booked", "running", "finished"]
 
 
-GetExperimentResponse200Status = Union[GetExperimentResponse200StatusAlt1, GetExperimentResponse200StatusAlt2]
+GetExperimentResponse200Status = Union[GetExperimentResponse200StatusAlt1,
+                                       GetExperimentResponse200StatusAlt2]
 
 
 class GetExperimentResponse200Bookingtime(TypedDict):
@@ -2310,7 +2355,7 @@ class GetExperimentResponse200RolesItems(TypedDict):
 class GetExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2319,7 +2364,7 @@ class GetExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict)
 class GetExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2394,13 +2439,16 @@ class GetExperimentResponse200(TypedDict):
 GetExperimentResponse: TypeAlias = GetExperimentResponse200
 
 
-UpdateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+UpdateExperimentRequestStatusAlt1: TypeAlias = Literal["created",
+                                                       "booked", "setup", "running", "finished"]
 
 
-UpdateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+UpdateExperimentRequestStatusAlt2: TypeAlias = Literal["created",
+                                                       "booked", "running", "finished"]
 
 
-UpdateExperimentRequestStatus = Union[UpdateExperimentRequestStatusAlt1, UpdateExperimentRequestStatusAlt2]
+UpdateExperimentRequestStatus = Union[UpdateExperimentRequestStatusAlt1,
+                                      UpdateExperimentRequestStatusAlt2]
 
 
 class UpdateExperimentRequestBookingtime(TypedDict):
@@ -2444,7 +2492,7 @@ class UpdateExperimentRequestRolesItems(TypedDict):
 class UpdateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2453,7 +2501,7 @@ class UpdateExperimentRequestServiceconfigurationsItemsConfiguration(TypedDict):
 class UpdateExperimentRequestServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2505,13 +2553,16 @@ class UpdateExperimentRequest(TypedDict):
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
 
 
-UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created",
+                                                           "booked", "setup", "running", "finished"]
 
 
-UpdateExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+UpdateExperimentResponse200StatusAlt2: TypeAlias = Literal["created",
+                                                           "booked", "running", "finished"]
 
 
-UpdateExperimentResponse200Status = Union[UpdateExperimentResponse200StatusAlt1, UpdateExperimentResponse200StatusAlt2]
+UpdateExperimentResponse200Status = Union[UpdateExperimentResponse200StatusAlt1,
+                                          UpdateExperimentResponse200StatusAlt2]
 
 
 class UpdateExperimentResponse200Bookingtime(TypedDict):
@@ -2555,7 +2606,7 @@ class UpdateExperimentResponse200RolesItems(TypedDict):
 class UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2564,7 +2615,7 @@ class UpdateExperimentResponse200ServiceconfigurationsItemsConfiguration(TypedDi
 class UpdateExperimentResponse200ServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2636,13 +2687,16 @@ class UpdateExperimentResponse200(TypedDict):
     instantiatedDevices: List[UpdateExperimentResponse200InstantiateddevicesItems]
 
 
-UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created",
+                                                           "booked", "setup", "running", "finished"]
 
 
-UpdateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
+UpdateExperimentResponse202StatusAlt2: TypeAlias = Literal["created",
+                                                           "booked", "running", "finished"]
 
 
-UpdateExperimentResponse202Status = Union[UpdateExperimentResponse202StatusAlt1, UpdateExperimentResponse202StatusAlt2]
+UpdateExperimentResponse202Status = Union[UpdateExperimentResponse202StatusAlt1,
+                                          UpdateExperimentResponse202StatusAlt2]
 
 
 class UpdateExperimentResponse202Bookingtime(TypedDict):
@@ -2686,7 +2740,7 @@ class UpdateExperimentResponse202RolesItems(TypedDict):
 class UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2695,7 +2749,7 @@ class UpdateExperimentResponse202ServiceconfigurationsItemsConfiguration(TypedDi
 class UpdateExperimentResponse202ServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2767,7 +2821,8 @@ class UpdateExperimentResponse202(TypedDict):
     instantiatedDevices: List[UpdateExperimentResponse202InstantiateddevicesItems]
 
 
-UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200, UpdateExperimentResponse202]
+UpdateExperimentResponse: TypeAlias = Union[UpdateExperimentResponse200,
+                                            UpdateExperimentResponse202]
 
 
 DeleteExperimentResponse: TypeAlias = None
@@ -2822,7 +2877,7 @@ class CreateTemplateRequestConfigurationRolesItems(TypedDict):
 class CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2831,7 +2886,7 @@ class CreateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(
 class CreateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2924,7 +2979,7 @@ class CreateTemplateResponse201ConfigurationRolesItems(TypedDict):
 class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -2933,7 +2988,7 @@ class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsConfigurat
 class CreateTemplateResponse201ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3026,7 +3081,7 @@ class CreateTemplateResponse202ConfigurationRolesItems(TypedDict):
 class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3035,7 +3090,7 @@ class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsConfigurat
 class CreateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3097,7 +3152,8 @@ class CreateTemplateResponse202(TypedDict):
     configuration: CreateTemplateResponse202Configuration
 
 
-CreateTemplateResponse: TypeAlias = Union[CreateTemplateResponse201, CreateTemplateResponse202]
+CreateTemplateResponse: TypeAlias = Union[CreateTemplateResponse201,
+                                          CreateTemplateResponse202]
 
 
 class GetTemplateResponse200ConfigurationDevicesItems(TypedDict):
@@ -3131,7 +3187,7 @@ class GetTemplateResponse200ConfigurationRolesItems(TypedDict):
 class GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3140,7 +3196,7 @@ class GetTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration
 class GetTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3236,7 +3292,7 @@ class UpdateTemplateRequestConfigurationRolesItems(TypedDict):
 class UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3245,7 +3301,7 @@ class UpdateTemplateRequestConfigurationServiceconfigurationsItemsConfiguration(
 class UpdateTemplateRequestConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3336,7 +3392,7 @@ class UpdateTemplateResponse200ConfigurationRolesItems(TypedDict):
 class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3345,7 +3401,7 @@ class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsConfigurat
 class UpdateTemplateResponse200ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3438,7 +3494,7 @@ class UpdateTemplateResponse202ConfigurationRolesItems(TypedDict):
 class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfiguration(TypedDict):
     """
     Configuration of the service
-    
+
     This configuration object will be merged with the participant configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3447,7 +3503,7 @@ class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsConfigurat
 class UpdateTemplateResponse202ConfigurationServiceconfigurationsItemsParticipantsItemsConfig(TypedDict):
     """
     Service configuration of the participant.
-    
+
     This configuration object will be merged with the service configuration to become the service configuration send to the participant (fields of the participant configuration override the service configuration).
     Properties:
     """
@@ -3509,7 +3565,8 @@ class UpdateTemplateResponse202(TypedDict):
     configuration: UpdateTemplateResponse202Configuration
 
 
-UpdateTemplateResponse: TypeAlias = Union[UpdateTemplateResponse200, UpdateTemplateResponse202]
+UpdateTemplateResponse: TypeAlias = Union[UpdateTemplateResponse200,
+                                          UpdateTemplateResponse202]
 
 
 DeleteTemplateResponse: TypeAlias = None
@@ -3629,273 +3686,534 @@ UpdateInstitutionResponse: TypeAlias = UpdateInstitutionResponse200
 DeleteInstitutionResponse: TypeAlias = None
 
 
-class ScheduleRequestExperimentDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class ScheduleRequestExperiment(TypedDict):
-    """
-    An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
-    - Devices: List of devices used in experiment.
-    - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-
-    """
-    Devices: List[ScheduleRequestExperimentDevicesItems]
-    Description: NotRequired[str]
-
-
-class ScheduleRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleRequest(TypedDict):
+class ListPlatformResponse200ItemsRegistration(TypedDict):
     """
     Properties:
-    - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
-    - Time: A time slot represents a slice of time used for bookings.
-    - Combined: If true, show only one timetable per device instead of one for all available physical devices.
-    - onlyOwn: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
     """
-    Experiment: ScheduleRequestExperiment
-    Time: ScheduleRequestTime
-    Combined: NotRequired[bool]
-    onlyOwn: NotRequired[bool]
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
 
 
-class ScheduleResponse200ItemsBookedItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200ItemsFreeItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200Items(TypedDict):
+class ListPlatformResponse200Items(TypedDict):
     """
     Properties:
-    - Device: ID of the device (or * if combined).
-    - Booked: Array of booked times.
-    - Free: Array of free times.
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
     """
-    Device: str
-    Booked: List[ScheduleResponse200ItemsBookedItems]
-    Free: List[ScheduleResponse200ItemsFreeItems]
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: ListPlatformResponse200ItemsRegistration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
 
 
-ScheduleResponse200: TypeAlias = List[ScheduleResponse200Items]
+ListPlatformResponse200: TypeAlias = List[ListPlatformResponse200Items]
 
 
-ScheduleResponse404: TypeAlias = str
+ListPlatformResponse: TypeAlias = ListPlatformResponse200
 
 
-ScheduleResponse422: TypeAlias = str
-
-
-ScheduleResponse500: TypeAlias = str
-
-
-ScheduleResponse: TypeAlias = Union[ScheduleResponse200, ScheduleResponse404, ScheduleResponse422, ScheduleResponse500]
-
-
-class NewBookingRequestDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class NewBookingRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class NewBookingRequest(TypedDict):
+class RegisterPlatformResponse201Registration(TypedDict):
     """
     Properties:
-    - Devices: List of devices which should be added.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
     """
-    Devices: List[NewBookingRequestDevicesItems]
-    Time: NewBookingRequestTime
-    Type: NotRequired[Literal["normal"]]
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
 
 
-class NewBookingResponse200(TypedDict):
+class RegisterPlatformResponse201(TypedDict):
     """
     Properties:
-    - BookingID: ID at which the booking can be managed.
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
     """
-    BookingID: str
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: RegisterPlatformResponse201Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
 
 
-NewBookingResponse500: TypeAlias = str
+RegisterPlatformResponse: TypeAlias = RegisterPlatformResponse201
 
 
-NewBookingResponse: TypeAlias = Union[NewBookingResponse200, NewBookingResponse500]
-
-
-class UpdateBookingRequestAlt1DevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class UpdateBookingRequestAlt1(TypedDict):
-    """
-    Use this request for adding devices.Properties:
-    - Locked: Expresses whether the devices should be locked. Must match current status of booking. Is assumed to be false if not set.
-    - Devices: List of devices which should be added.
-    """
-    Locked: NotRequired[bool]
-    Devices: NotRequired[List[UpdateBookingRequestAlt1DevicesItems]]
-
-
-class UpdateBookingRequestAlt2(TypedDict):
-    """
-    Use this request for adding callbacks.Properties:
-    - Callback: Callback which should be called at changes.
-    """
-    Callback: NotRequired[str]
-
-
-UpdateBookingRequest = Union[UpdateBookingRequestAlt1, UpdateBookingRequestAlt2]
-
-
-class UpdateBookingResponse200(TypedDict):
+class GetPlatformResponse200Registration(TypedDict):
     """
     Properties:
-    - BookingID
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
     """
-    BookingID: str
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
 
 
-UpdateBookingResponse400: TypeAlias = str
-
-
-UpdateBookingResponse500: TypeAlias = str
-
-
-UpdateBookingResponse: TypeAlias = Union[UpdateBookingResponse200, UpdateBookingResponse400, UpdateBookingResponse500]
-
-
-DeleteBookingResponse500: TypeAlias = str
-
-
-DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
-
-
-class GetBookingResponse200BookingTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class GetBookingResponse200Booking(TypedDict):
-    """
-    A booking in the booking system.Properties:
-    - ID: Unique ID of the booking.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Devices
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-    - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
-
-    - You: If true, this booking was done by you.
-    - External: Shows whether the booking was done by an external institution.
-    - Message: User readable notes about the status of the booking (e.g. if devices are unknown).
-    """
-    ID: str
-    Time: GetBookingResponse200BookingTime
-    Devices: List[str]
-    Type: NotRequired[Literal["normal"]]
-    Status: Literal["pending", "booked", "rejected", "cancelled", "active", "active-pending", "active-rejected"]
-    You: bool
-    External: bool
-    Message: NotRequired[str]
-
-
-class GetBookingResponse200(TypedDict):
+class GetPlatformResponse200(TypedDict):
     """
     Properties:
-    - Booking: A booking in the booking system.
-    - Locked: Shows if the booking is in a locked status.
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
     """
-    Booking: GetBookingResponse200Booking
-    Locked: bool
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: GetPlatformResponse200Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
 
 
-GetBookingResponse500: TypeAlias = str
+GetPlatformResponse: TypeAlias = GetPlatformResponse200
 
 
-GetBookingResponse: TypeAlias = Union[GetBookingResponse200, GetBookingResponse500]
-
-
-DestroyBookingResponse500: TypeAlias = str
-
-
-DestroyBookingResponse: TypeAlias = DestroyBookingResponse500
-
-
-class LockBookingResponse200Items(TypedDict):
+class UpdatePlatformResponse200Registration(TypedDict):
     """
     Properties:
-    - Requested
-    - Selected
+    - state: The state of the registration.
+    - token: The registration token used for the manual and dynamic registration.
     """
-    Requested: str
-    Selected: str
+    state: Literal["pending", "complete"]
+    token: NotRequired[str]
 
 
-LockBookingResponse200: TypeAlias = List[LockBookingResponse200Items]
+class UpdatePlatformResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - issuer: The JWT issuer of the platform.
+    - client_id: The client ID of the platform.
+    - deployment_id: The deployment ID of the platform.
+    - registration
+    - jwks_uri: The JWKS URI of the tool.
+    - login_uri: The login URI of the tool.
+    - launch_uri: The launch URI of the tool.
+    """
+    uri: str
+    issuer: NotRequired[str]
+    client_id: NotRequired[str]
+    deployment_id: NotRequired[str]
+    registration: UpdatePlatformResponse200Registration
+    jwks_uri: str
+    login_uri: str
+    launch_uri: str
 
 
-LockBookingResponse500: TypeAlias = str
+UpdatePlatformResponse: TypeAlias = UpdatePlatformResponse200
 
 
-LockBookingResponse: TypeAlias = Union[LockBookingResponse200, LockBookingResponse500]
+DeletePlatformResponse: TypeAlias = None
 
 
-UnlockBookingResponse500: TypeAlias = str
+class LtiLoginRequest(TypedDict):
+    """
+    Properties:
+    - iss: The issuer of the LTI message.
+    - client_id: The client ID of the LTI message.
+    - lti_deployment_id: The deployment ID of the LTI message.
+    - target_link_uri: The target link URI of the LTI message.
+    - login_hint: The login hint of the LTI message.
+    - lti_message_hint: The LTI message hint of the LTI message.
+    """
+    iss: str
+    client_id: str
+    lti_deployment_id: NotRequired[str]
+    target_link_uri: str
+    login_hint: str
+    lti_message_hint: str
 
 
-UnlockBookingResponse: TypeAlias = UnlockBookingResponse500
+class LtiLoginResponse200(TypedDict):
+    """
+    Properties:
+    - authentication_request_url: The authentication request URL. The Frontend should send a 302 redirect of this URL to the user agent.
+    """
+    authentication_request_url: str
 
 
-BookingCallbackResponse500: TypeAlias = str
+LtiLoginResponse: TypeAlias = LtiLoginResponse200
 
 
-BookingCallbackResponse: TypeAlias = BookingCallbackResponse500
+class LtiLaunchRequest(TypedDict):
+    """
+    Properties:
+    - state: The state of the LTI message.
+    - id_token: The ID token of the LTI message.
+    """
+    state: str
+    id_token: str
+
+
+class LtiLaunchResponse200Session(TypedDict):
+    """
+    Properties:
+    - uri
+    - resource_uri: The URI of the resource.
+    - experiment_uri: The URI of the experiment.
+    - roles: The roles of the session.
+    """
+    uri: str
+    resource_uri: str
+    experiment_uri: NotRequired[str]
+    roles: List[Literal["instructor", "student"]]
+
+
+class LtiLaunchResponse200(TypedDict):
+    """
+    Properties:
+    - access_token: The access token to authenticate subsequent requests.
+    - session
+    """
+    access_token: str
+    session: LtiLaunchResponse200Session
+
+
+LtiLaunchResponse: TypeAlias = LtiLaunchResponse200
+
+
+class LtiJwksResponse200(TypedDict):
+    """
+    Properties:
+    """
+
+
+LtiJwksResponse: TypeAlias = LtiJwksResponse200
+
+
+class ListResourceResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+ListResourceResponse200: TypeAlias = List[ListResourceResponse200Items]
+
+
+ListResourceResponse: TypeAlias = ListResourceResponse200
+
+
+class GetResourceResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+GetResourceResponse: TypeAlias = GetResourceResponse200
+
+
+class UpdateResourceRequest(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: NotRequired[str]
+    experiment_template_uri: NotRequired[str]
+    students_uri: NotRequired[str]
+
+
+class UpdateResourceResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - experiment_template_uri: The URI of the experiment template.
+    - students_uri: The URI of the students.
+    """
+    uri: str
+    experiment_template_uri: NotRequired[str]
+    students_uri: str
+
+
+UpdateResourceResponse: TypeAlias = UpdateResourceResponse200
+
+
+DeleteResourceResponse: TypeAlias = None
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+ListResourceStudentsResponse200ItemsRole_mappingItemsDevice = Union[
+    ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1, ListResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2]
+
+
+class ListResourceStudentsResponse200ItemsRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: ListResourceStudentsResponse200ItemsRole_mappingItemsDevice
+
+
+class ListResourceStudentsResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[ListResourceStudentsResponse200ItemsRole_mappingItems]
+
+
+ListResourceStudentsResponse200: TypeAlias = List[ListResourceStudentsResponse200Items]
+
+
+ListResourceStudentsResponse: TypeAlias = ListResourceStudentsResponse200
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt1: TypeAlias = Literal[
+    "GROUP"]
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentsRequestItemsDataRole_mappingItemsDevice = Union[
+    UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt1, UpdateResourceStudentsRequestItemsDataRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentsRequestItemsDataRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentsRequestItemsDataRole_mappingItemsDevice
+
+
+class UpdateResourceStudentsRequestItemsData(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentsRequestItemsDataRole_mappingItems]
+
+
+class UpdateResourceStudentsRequestItems(TypedDict):
+    """
+    Properties:
+    - uri
+    - data
+    """
+    uri: str
+    data: UpdateResourceStudentsRequestItemsData
+
+
+UpdateResourceStudentsRequest: TypeAlias = List[UpdateResourceStudentsRequestItems]
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1: TypeAlias = Literal[
+    "GROUP"]
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentsResponse200ItemsRole_mappingItemsDevice = Union[
+    UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt1, UpdateResourceStudentsResponse200ItemsRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentsResponse200ItemsRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentsResponse200ItemsRole_mappingItemsDevice
+
+
+class UpdateResourceStudentsResponse200Items(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentsResponse200ItemsRole_mappingItems]
+
+
+UpdateResourceStudentsResponse200: TypeAlias = List[UpdateResourceStudentsResponse200Items]
+
+
+UpdateResourceStudentsResponse: TypeAlias = UpdateResourceStudentsResponse200
+
+
+GetResourceStudentResponse200Role_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+GetResourceStudentResponse200Role_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+GetResourceStudentResponse200Role_mappingItemsDevice = Union[GetResourceStudentResponse200Role_mappingItemsDeviceAlt1,
+                                                             GetResourceStudentResponse200Role_mappingItemsDeviceAlt2]
+
+
+class GetResourceStudentResponse200Role_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: GetResourceStudentResponse200Role_mappingItemsDevice
+
+
+class GetResourceStudentResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[GetResourceStudentResponse200Role_mappingItems]
+
+
+GetResourceStudentResponse: TypeAlias = GetResourceStudentResponse200
+
+
+UpdateResourceStudentRequestRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentRequestRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentRequestRole_mappingItemsDevice = Union[UpdateResourceStudentRequestRole_mappingItemsDeviceAlt1,
+                                                            UpdateResourceStudentRequestRole_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentRequestRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentRequestRole_mappingItemsDevice
+
+
+class UpdateResourceStudentRequest(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentRequestRole_mappingItems]
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateResourceStudentResponse200Role_mappingItemsDevice = Union[UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt1,
+                                                                UpdateResourceStudentResponse200Role_mappingItemsDeviceAlt2]
+
+
+class UpdateResourceStudentResponse200Role_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateResourceStudentResponse200Role_mappingItemsDevice
+
+
+class UpdateResourceStudentResponse200(TypedDict):
+    """
+    Properties:
+    - uri
+    - external_id: The external id of the student.
+    - name: The name of the student.
+    - email: The email of the student.
+    - role_mapping
+    """
+    uri: str
+    external_id: str
+    name: NotRequired[str]
+    email: NotRequired[str]
+    role_mapping: List[UpdateResourceStudentResponse200Role_mappingItems]
+
+
+UpdateResourceStudentResponse: TypeAlias = UpdateResourceStudentResponse200

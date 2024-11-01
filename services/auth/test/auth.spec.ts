@@ -1,11 +1,8 @@
-import chai from 'chai';
-import 'chai-http';
-
-import { app } from '../src/app.ts';
+import { app } from '../src/app.js';
 import { UserModel } from '../src/database/model.js';
 import { createNewToken } from '../src/token/helper.js';
 import { createUser } from '../src/user/helper.js';
-import { resetDatabase } from './helper.js';
+import { chai, resetDatabase } from './helper.js';
 
 describe('Authentication', () => {
   let valid_token!: string;

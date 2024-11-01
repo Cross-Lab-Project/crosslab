@@ -1,9 +1,9 @@
-/// <reference types="../context" />
+/// <reference types="../context.js" />
 import { ExperimentServiceTypes } from '@cross-lab-project/api-client';
 import { expect } from 'chai';
 
-import { clientTypes } from '../fixtures/dummyDevice';
-import { ExperimentTest } from '../helper/experimentTest';
+import { clientTypes } from '../fixtures/dummyDevice.js';
+import { ExperimentTest } from '../helper/experimentTest.js';
 
 const gpioExperimentConfiguration: Omit<
   ExperimentServiceTypes.Experiment<'request'>,

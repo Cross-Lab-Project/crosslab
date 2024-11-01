@@ -11,12 +11,11 @@ import {
   DeviceType,
   DummyDevice,
   DummyDeviceEvents,
-} from '../fixtures/dummyDevice';
+} from '../fixtures/dummyDevice.js';
 
 function createDummyDevice(type: ClientType, index: number, context: Mocha.Context) {
   switch (type) {
     case 'js':
-      // eslint-disable-next-line max-len
       return new DummyDevice(
         type,
         context.debug?.jsDevice?.[index]?.debug_port,
@@ -117,10 +116,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         );
       this.events.push({ gpio: [], file: [] });
       device.on('gpio', event => {
-        this.events[idx].gpio.push(event) && this.emit('eventsChanged');
+        if(this.events[idx].gpio.push(event)) this.emit('eventsChanged');
       });
       device.on('file', event => {
-        this.events[idx].file.push(event) && this.emit('eventsChanged');
+        if(this.events[idx].file.push(event)) this.emit('eventsChanged');
       });
       const apiDevice = this.apiDevices[idx];
       if (apiDevice.type === 'device') device.start(client, apiDevice.url);

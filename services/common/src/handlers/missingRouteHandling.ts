@@ -1,6 +1,6 @@
 import * as express from 'express';
+import { logger } from '../logging/index.js';
 
-import { logger } from '../logger.js';
 
 export function missingRouteHandling(app: express.Application) {
   app.use((req, res, next) => {

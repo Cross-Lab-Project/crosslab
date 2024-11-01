@@ -1,3 +1,4 @@
+import { Application } from 'express';
 import {
   AuthorizationActionTuple,
   AuthorizationRelationTuple,
@@ -11,8 +12,14 @@ export type AuthorizationMockConfigItem = Partial<AuthorizationActionTuple> & {
 };
 export type AuthorizationMockConfig = AuthorizationMockConfigItem[];
 
+export type AuthorizationMockLogEntry = {
+  add: AuthorizationRelationTuple[];
+  remove: AuthorizationRelationTuple[];
+};
+
 export function mock_authorization_functions(
   config: AuthorizationMockConfig,
+  app: Application,
 ): ReturnType<typeof authorization_functions> {
   function match(tuple: AuthorizationActionTuple) {
     for (const item of config) {
@@ -44,7 +51,7 @@ export function mock_authorization_functions(
         return [];
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuple, action: action!, object: object! }];
     }
     const result = tuples.map(match);
@@ -59,20 +66,28 @@ export function mock_authorization_functions(
   }
 
   async function update_relations(
-    _add: AuthorizationRelationTuple[],
-    _remove: AuthorizationRelationTuple[],
+    add: AuthorizationRelationTuple[],
+    remove: AuthorizationRelationTuple[],
   ): Promise<void> {
-    throw Error('Not implemented');
+    app.authorization_mock_log = app.authorization_mock_log ?? [];
+    app.authorization_mock_log.push({ add, remove });
   }
 
   async function relate(tuples: AuthorizationRelationTuple[]): Promise<void>;
   async function relate(subject: string, relation: string, object: string): Promise<void>;
   async function relate(
-    _subject_or_tuples: string | AuthorizationRelationTuple[],
-    _relation?: string,
-    _object?: string,
+    subject_or_tuples: string | AuthorizationRelationTuple[],
+    relation?: string,
+    object?: string,
   ): Promise<void> {
-    throw Error('Not implemented');
+    let tuples: AuthorizationRelationTuple[];
+    if (Array.isArray(subject_or_tuples)) {
+      tuples = subject_or_tuples;
+    } else {
+       
+      tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
+    }
+    await update_relations(tuples, []);
   }
 
   async function unrelate(tuples: AuthorizationRelationTuple[]): Promise<void>;
@@ -82,11 +97,18 @@ export function mock_authorization_functions(
     object: string,
   ): Promise<void>;
   async function unrelate(
-    _subject_or_tuples: string | AuthorizationRelationTuple[],
-    _relation?: string,
-    _object?: string,
+    subject_or_tuples: string | AuthorizationRelationTuple[],
+    relation?: string,
+    object?: string,
   ): Promise<void> {
-    throw Error('Not implemented');
+    let tuples: AuthorizationRelationTuple[];
+    if (Array.isArray(subject_or_tuples)) {
+      tuples = subject_or_tuples;
+    } else {
+       
+      tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
+    }
+    await update_relations([], tuples);
   }
 
   async function query(

@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Student
+
+type: object
+properties:
+  uri:
+    type: string
+    format: uri
+    readOnly: true
+  external_id:
+    type: string
+    description: The external id of the student.
+    readOnly: true
+  name:
+    type: string
+    description: The name of the student.
+    readOnly: true
+  email:
+    type: string
+    format: email
+    description: The email of the student.
+    readOnly: true
+  role_mapping:
+    type: array
+    items:
+      type: object
+      properties:
+        role:
+          type: string
+        device:
+          anyOf:
+            - type: string
+              enum:
+                - GROUP
+            - type: string
+              format: uri
+              description: The URI of the device to use instead of the group device.
+      required:
+        - role
+        - device
+required:
+  - uri
+  - external_id
+  - role_mapping
+additionalProperties: false

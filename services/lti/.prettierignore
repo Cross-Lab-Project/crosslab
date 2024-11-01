@@ -1,0 +1,7 @@
+*.md
+.nyc_output
+app
+src/clients/**/
+src/database/migrations/**/
+src/generated
+test/generated

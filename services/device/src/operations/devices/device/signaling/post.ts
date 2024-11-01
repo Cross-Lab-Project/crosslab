@@ -8,8 +8,9 @@ import {
 import { repositories } from '../../../../database/dataSource.js';
 import { postDevicesByDeviceIdSignalingSignature } from '../../../../generated/signatures.js';
 import {
-  isConfigurationMessage,
-  isExperimentStatusChangedMessage,
+  isClosePeerconnectionMessage,
+  isCreatePeerconnectionMessage,
+  isSignalingMessage,
 } from '../../../../generated/types.js';
 import { getPeerconnection } from '../../../../methods/peerconnection.js';
 import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
@@ -48,7 +49,11 @@ export const postDevicesByDeviceIdSignaling: postDevicesByDeviceIdSignalingSigna
       );
 
     // Retrieve peerconnection and make sure the device is taking part in it
-    if (!isConfigurationMessage(body) && !isExperimentStatusChangedMessage(body)) {
+    if (
+      isCreatePeerconnectionMessage(body) ||
+      isClosePeerconnectionMessage(body) ||
+      isSignalingMessage(body)
+    ) {
       const peerconnection = await getPeerconnection({
         url: body.connectionUrl,
       });

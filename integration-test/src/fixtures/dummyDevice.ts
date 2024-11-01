@@ -4,6 +4,9 @@ import { ChildProcessWithoutNullStreams, execSync, spawn } from 'child_process';
 import fs from 'fs';
 import { resolve } from 'path';
 import { TypedEmitter } from 'tiny-typed-emitter';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 
 const repository_dir = resolve(__filename, '../../../../');
 

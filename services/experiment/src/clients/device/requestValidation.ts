@@ -53,9 +53,8 @@ export function validateListDevicesOutput(
     return true;
   }
 
-  (
-    validateListDevicesOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateListDevicesOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -132,9 +131,8 @@ export function validateCreateDeviceOutput(
     return true;
   }
 
-  (
-    validateCreateDeviceOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreateDeviceOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -205,9 +203,8 @@ export function validateGetDeviceOutput(
     return true;
   }
 
-  (
-    validateGetDeviceOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetDeviceOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -292,9 +289,8 @@ export function validateUpdateDeviceOutput(
     return true;
   }
 
-  (
-    validateUpdateDeviceOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUpdateDeviceOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -349,9 +345,8 @@ export function validateDeleteDeviceOutput(
     return true;
   }
 
-  (
-    validateDeleteDeviceOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeleteDeviceOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -424,9 +419,8 @@ export function validateInstantiateDeviceOutput(
     return true;
   }
 
-  (
-    validateInstantiateDeviceOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateInstantiateDeviceOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -510,9 +504,8 @@ export function validateGetDeviceAvailabilityOutput(
     return true;
   }
 
-  (
-    validateGetDeviceAvailabilityOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetDeviceAvailabilityOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -569,9 +562,8 @@ export function validateDeleteDeviceAvailabilityRulesOutput(
     return true;
   }
 
-  (
-    validateDeleteDeviceAvailabilityRulesOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeleteDeviceAvailabilityRulesOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -651,9 +643,8 @@ export function validateAddDeviceAvailabilityRulesOutput(
     return true;
   }
 
-  (
-    validateAddDeviceAvailabilityRulesOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateAddDeviceAvailabilityRulesOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -717,9 +708,8 @@ export function validateCreateWebsocketTokenOutput(
     return true;
   }
 
-  (
-    validateCreateWebsocketTokenOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreateWebsocketTokenOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -784,9 +774,8 @@ export function validateSendSignalingMessageOutput(
     return true;
   }
 
-  (
-    validateSendSignalingMessageOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateSendSignalingMessageOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -837,9 +826,8 @@ export function validateListPeerconnectionsOutput(
     return true;
   }
 
-  (
-    validateListPeerconnectionsOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateListPeerconnectionsOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -936,9 +924,8 @@ export function validateCreatePeerconnectionOutput(
     return true;
   }
 
-  (
-    validateCreatePeerconnectionOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreatePeerconnectionOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -1004,9 +991,8 @@ export function validateGetPeerconnectionOutput(
     return true;
   }
 
-  (
-    validateGetPeerconnectionOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetPeerconnectionOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -1069,9 +1055,8 @@ export function validateDeletePeerconnectionOutput(
     return true;
   }
 
-  (
-    validateDeletePeerconnectionOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeletePeerconnectionOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -1144,9 +1129,8 @@ export function validatePatchPeerconnectionDeviceStatusOutput(
     return true;
   }
 
-  (
-    validatePatchPeerconnectionDeviceStatusOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validatePatchPeerconnectionDeviceStatusOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

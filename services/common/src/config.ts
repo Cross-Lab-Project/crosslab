@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DataSourceOptions } from 'typeorm';
 
-export function readOrmConfig(): DataSourceOptions {
+export function readOrmConfig() {
   return {
     type: (process.env.DB_TYPE as any) ?? 'sqlite',
     host: process.env.DB_HOST ?? 'localhost',
@@ -9,7 +9,7 @@ export function readOrmConfig(): DataSourceOptions {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE ?? 'database.db',
-  };
+  } satisfies DataSourceOptions;
 }
 
 export function readAuthorizationConfig() {

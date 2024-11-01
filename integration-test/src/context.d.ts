@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+ 
 import { ClientContext } from './fixtures/client';
 import { DebugContext } from './fixtures/debug';
 

@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { NextHandleFunction } from 'connect';
 import { decodeJwt } from 'jose';
 
 import { ForbiddenError, UnauthorizedError } from '../errors.js';
@@ -10,7 +10,7 @@ import {
   AuthorizationResponse,
   authorization_functions,
 } from './authorization.js';
-import { AuthorizationMockConfig, mock_authorization_functions } from './mock.js';
+import { AuthorizationMockConfig, AuthorizationMockLogEntry, mock_authorization_functions } from './mock.js';
 
 export type AuthorizationActionTupleWithoutSubject = Omit<
   AuthorizationActionTuple,
@@ -25,7 +25,7 @@ function bind_authorization(
   authorization_funs: ReturnType<typeof authorization_functions>,
   user: string,
 ) {
-  const { check_authorization } = authorization_funs;
+  const { check_authorization, relate } = authorization_funs;
 
   async function bound_check_authorization(
     tuples: (AuthorizationActionTuple | AuthorizationActionTupleWithoutSubject)[],
@@ -61,6 +61,43 @@ function bind_authorization(
       }
     } else {
       return { result: false, reason: 'Invalid arguments' };
+    }
+  }
+
+  async function bound_relate(
+    tuples: (AuthorizationRelationTuple | AuthorizationRelationTupleWithoutSubject)[],
+  ): Promise<void>;
+  async function bound_relate(
+    subject: string,
+    relation: string,
+    object: string,
+  ): Promise<void>;
+  async function bound_relate(
+    relation: string,
+    object: string,
+  ): Promise<void>;
+  async function bound_relate(
+    subject_or_relation_or_tuples:
+    | string
+    | (AuthorizationRelationTuple | AuthorizationRelationTupleWithoutSubject)[],
+    relation_or_object?: string,
+    object?: string,
+  ): Promise<void>{
+    let tuples: AuthorizationRelationTuple[];
+    if (Array.isArray(subject_or_relation_or_tuples)) {
+      tuples = subject_or_relation_or_tuples.map(tuple => ({
+        subject: user,
+        ...tuple,
+      }));
+      return relate(tuples);
+    } else if (relation_or_object !== undefined) {
+      if (object === undefined) {
+        return relate(user, subject_or_relation_or_tuples, relation_or_object);
+      } else {
+        return relate(subject_or_relation_or_tuples, relation_or_object, object);
+      }
+    }else{
+      return;
     }
   }
 
@@ -111,6 +148,7 @@ function bind_authorization(
     ...authorization_funs,
     check_authorization: bound_check_authorization,
     check_authorization_or_fail,
+    relate: bound_relate,
     filter,
   };
 }
@@ -126,10 +164,12 @@ declare global {
 
     export interface Application {
       authorization_mock: undefined | AuthorizationMockConfig;
+      authorization_mock_log: undefined | AuthorizationMockLogEntry[];
     }
   }
 }
 
+import { NextFunction, Request, Response } from 'express';
 /**
  * This middleware adds the authorization functions to the request object.
  *
@@ -137,7 +177,7 @@ declare global {
  * @param config
  * @returns
  */
-export function middleware(config?: AuthorizationConfig) {
+export function middleware(config?: AuthorizationConfig): NextHandleFunction {
   if (config === undefined) {
     config = {
       AUTHORIZATION_SERVER:
@@ -150,17 +190,17 @@ export function middleware(config?: AuthorizationConfig) {
   }
 
   let authorization_funs = authorization_functions(config);
-  return ((req, _res, next) => {
+  return ((req: Request, _res: Response, next: NextFunction) => {
     const user = req.header('X-Request-Authentication') ?? 'user:anonymus';
     let user_id = user;
     try {
       user_id = decodeJwt(user).sub ?? 'user:anonymus';
-    } catch (e) {
+    } catch (_e) {
       //ignore
     }
 
     if (req.app.authorization_mock) {
-      authorization_funs = mock_authorization_functions(req.app.authorization_mock);
+      authorization_funs = mock_authorization_functions(req.app.authorization_mock, req.app);
     }
     req.authorization = {
       ...bind_authorization(authorization_funs, user),
@@ -168,5 +208,5 @@ export function middleware(config?: AuthorizationConfig) {
     };
 
     next();
-  }) as express.RequestHandler;
+  }) as unknown as NextHandleFunction;
 }
