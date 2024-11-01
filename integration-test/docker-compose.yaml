@@ -29,6 +29,7 @@ x-config: &common-config
   BOOKING_BACKEND_DOMAIN: 'localhost:3005'
   SCHEDULE_SERVICE_DOMAIN: 'localhost:3006'
   AUTHORIZATION_SERVICE_DOMAIN: 'localhost:3010'
+  LTI_SERVICE_DOMAIN: '127.0.0.2:3004'
 
 services:
   # Database

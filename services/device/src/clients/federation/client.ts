@@ -108,7 +108,7 @@ function isValidHttpUrl(string: string) {
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
 function parsePathParameters(url: string, endpoint: string): string[] {
-  const parameterRegex = '([a-zA-Z0-9-:]+)';
+  const parameterRegex = '([^/]+)';
   const regex = new RegExp(endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$');
   const matches = url.match(regex);
 
@@ -377,11 +377,7 @@ export class Client {
   ): Promise<Signatures.GetInstitutionSuccessResponse['body']> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/institutions/{}',
-    );
+    const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -461,11 +457,7 @@ export class Client {
   ): Promise<Signatures.UpdateInstitutionSuccessResponse['body']> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/institutions/{}',
-    );
+    const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
     console.log('trying to fetch url:', url);
 
     const body = institution;
@@ -545,11 +537,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [institution_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/institutions/{}',
-    );
+    const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {

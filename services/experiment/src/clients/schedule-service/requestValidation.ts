@@ -93,9 +93,8 @@ export function validateScheduleOutput(
     return true;
   }
 
-  (
-    validateScheduleOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateScheduleOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

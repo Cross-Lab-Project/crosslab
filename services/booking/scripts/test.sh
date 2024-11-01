@@ -15,16 +15,20 @@ current=$(pwd)
 result=0
 
 cd "$current/src/schedule-service"
-bash ./scripts/test.sh
+npm ci
+npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/booking-backend"
-bash ./scripts/test.sh
+npm ci
+npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/booking-frontend"
-bash ./scripts/test.sh
+npm ci
+npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 cd "$current/src/device-reservation"
-bash ./scripts/test.sh
+npm ci
+npm test
 result=$(( $result == 0 ? ( $? == 0 ? 0 : 1 ) : 1 ))
 
 cd $current
@@ -32,5 +36,5 @@ exit $result
 
 sudo mysql -e "DROP USER 'test'@localhost;"
 sudo mysql -e "DROP DATABASE unittest;"
-sudo service mysql stop
+sudo service mariadb stop
 sudo service rabbitmq-server stop

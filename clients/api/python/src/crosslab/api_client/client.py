@@ -63,6 +63,18 @@ from crosslab.api_client.schemas import (
     UpdateInstitutionRequest,
     UpdateInstitutionResponse,
     DeleteInstitutionResponse,
+    ScheduleRequest,
+    ScheduleResponse,
+    NewBookingRequest,
+    NewBookingResponse,
+    UpdateBookingRequest,
+    UpdateBookingResponse,
+    DeleteBookingResponse,
+    GetBookingResponse,
+    DestroyBookingResponse,
+    LockBookingResponse,
+    UnlockBookingResponse,
+    BookingCallbackResponse,
     ListPlatformResponse,
     RegisterPlatformResponse,
     GetPlatformResponse,
@@ -83,20 +95,9 @@ from crosslab.api_client.schemas import (
     UpdateResourceStudentsResponse,
     GetResourceStudentResponse,
     UpdateResourceStudentRequest,
-    UpdateResourceStudentResponse
-    DeleteInstitutionResponse,
-    ScheduleRequest,
-    ScheduleResponse,
-    NewBookingRequest,
-    NewBookingResponse,
-    UpdateBookingRequest,
-    UpdateBookingResponse,
-    DeleteBookingResponse,
-    GetBookingResponse,
-    DestroyBookingResponse,
-    LockBookingResponse,
-    UnlockBookingResponse,
-    BookingCallbackResponse
+    UpdateResourceStudentResponse,
+    UpdateLtiExperimentRequest,
+    UpdateLtiExperimentResponse
 )
 
 
@@ -126,8 +127,7 @@ class APIClient:
     async def __aenter__(self):
         self.http_session = aiohttp.ClientSession()
         if self.authToken is not None:
-            self.http_session.headers.update(
-                {"Authorization": f'Bearer {self.authToken}'})
+            self.http_session.headers.update({"Authorization": f'Bearer {self.authToken}'})
         return self
 
     async def __aexit__(self, *err):
@@ -178,7 +178,7 @@ class APIClient:
     async def login(self, body: LoginRequest, url: str = "/login") -> LoginResponse:  # noqa: E501
         """
         Login user
-
+        
         This endpoint will login a user and return an access token for the use of the microservice architecture."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -192,7 +192,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -201,7 +201,7 @@ class APIClient:
     async def logout(self, body: LogoutRequest, url: str = "/logout") -> LogoutResponse:  # noqa: E501
         """
         Logout user
-
+        
         This endpoint will logout a user and remove the corresponding access token for the use of the microservice architecture."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -215,7 +215,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 204:
             return resp
@@ -243,10 +243,10 @@ class APIClient:
                 query_params['username'] = username
             else:
                 query_params['username'] = str(username)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -268,7 +268,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -282,8 +282,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(users\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -291,7 +290,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -305,8 +304,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(users\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -314,7 +312,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -328,8 +326,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(users\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(users\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -337,7 +334,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -351,8 +348,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(identity)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(identity)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/identity'
@@ -360,7 +356,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -374,8 +370,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(identity)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(identity)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/identity'
@@ -383,7 +378,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -392,7 +387,7 @@ class APIClient:
     async def createToken(self, body: CreateTokenRequest, url: str = "/token") -> CreateTokenResponse:  # noqa: E501
         """
         Create a new token
-
+        
         This endpoint will create a new token for the use of the microservice architecture."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
@@ -406,7 +401,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -420,8 +415,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(devices)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(devices)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/devices'
@@ -429,7 +423,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -443,8 +437,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(devices)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(devices)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/devices'
@@ -458,10 +451,10 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -475,8 +468,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -490,10 +482,10 @@ class APIClient:
                 query_params['flat_group'] = flat_group
             else:
                 query_params['flat_group'] = str(flat_group)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -507,8 +499,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -522,10 +513,10 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -539,8 +530,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -548,7 +538,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -562,8 +552,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -577,10 +566,10 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", params=query_params)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -594,8 +583,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/availability'
@@ -614,10 +602,10 @@ class APIClient:
                 query_params['endTime'] = endTime
             else:
                 query_params['endTime'] = str(endTime)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -631,8 +619,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/availability'
@@ -640,7 +627,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -654,8 +641,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/availability)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/availability'
@@ -663,7 +649,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -677,8 +663,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)(\/websocket)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/websocket)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/websocket'
@@ -686,7 +671,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -700,8 +685,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(devices\/[^?]*?)(\/signaling)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(devices\/[^?]*?)(\/signaling)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/signaling'
@@ -709,7 +693,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -723,8 +707,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(peerconnections)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(peerconnections)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/peerconnections'
@@ -732,7 +715,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -746,8 +729,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(peerconnections)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(peerconnections)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/peerconnections'
@@ -766,10 +748,10 @@ class APIClient:
                 query_params['statusChangedUrl'] = statusChangedUrl
             else:
                 query_params['statusChangedUrl'] = str(statusChangedUrl)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -785,8 +767,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(peerconnections\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(peerconnections\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -794,7 +775,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -808,8 +789,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(peerconnections\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(peerconnections\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -817,7 +797,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 202:
             return resp
@@ -833,8 +813,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(peerconnections\/[^?]*?)(\/device_status)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(peerconnections\/[^?]*?)(\/device_status)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/device_status'
@@ -848,10 +827,10 @@ class APIClient:
                 query_params['device_url'] = device_url
             else:
                 query_params['device_url'] = str(device_url)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
-
+           
         # transform response
         if status == 204:
             return resp
@@ -865,8 +844,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(experiments)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(experiments)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/experiments'
@@ -880,10 +858,10 @@ class APIClient:
                 query_params['experimentStatus'] = experimentStatus
             else:
                 query_params['experimentStatus'] = str(experimentStatus)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="get", params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -897,8 +875,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(experiments)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(experiments)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/experiments'
@@ -912,10 +889,10 @@ class APIClient:
                 query_params['changedURL'] = changedURL
             else:
                 query_params['changedURL'] = str(changedURL)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -931,8 +908,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(experiments\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -940,7 +916,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -949,17 +925,16 @@ class APIClient:
     async def update_experiment(self, url: str, body: Optional[UpdateExperimentRequest] = None, changedURL: Optional[str] = None) -> UpdateExperimentResponse:  # noqa: E501
         """
         Update an existing experiment.
-
+        
         With this endpoint an experiment can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
-
+        
         If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing experiment.
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(experiments\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -973,10 +948,10 @@ class APIClient:
                 query_params['changedURL'] = changedURL
             else:
                 query_params['changedURL'] = str(changedURL)
-
+        
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -992,8 +967,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(experiments\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(experiments\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1001,7 +975,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -1015,8 +989,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(templates)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/templates'
@@ -1024,7 +997,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1038,8 +1011,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(templates)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(templates)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/templates'
@@ -1047,7 +1019,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -1063,8 +1035,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(templates\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1072,7 +1043,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1081,17 +1052,16 @@ class APIClient:
     async def update_template(self, url: str, body: UpdateTemplateRequest) -> UpdateTemplateResponse:  # noqa: E501
         """
         Update an existing template.
-
+        
         With this endpoint an template can be changed. The request body may be skipped if you just want to set a hook via the query string parameters.
-
+        
         If a body is supplied you can choose to include any first level fields which will fully replace the field in the existing template.
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(templates\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1099,7 +1069,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1115,8 +1085,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(templates\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(templates\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1124,7 +1093,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -1138,8 +1107,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(institutions)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(institutions)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/institutions'
@@ -1147,7 +1115,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1161,8 +1129,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(institutions)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(institutions)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/institutions'
@@ -1170,7 +1137,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 201:
             return resp
@@ -1184,8 +1151,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(institutions\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1193,7 +1159,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1207,8 +1173,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(institutions\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1216,7 +1181,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1230,8 +1195,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(institutions\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(institutions\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1239,9 +1203,208 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def schedule(self, url: str = "/schedule", body: Optional[ScheduleRequest] = None) -> ScheduleResponse:  # noqa: E501
+        """
+        Returns the free / booked times for given experiment.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(schedule)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/schedule'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def newBooking(self, body: NewBookingRequest, url: str = "/booking") -> NewBookingResponse:  # noqa: E501
+        """
+        Books an experiment.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(booking)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/booking'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def updateBooking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
+        """
+        Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
+
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def deleteBooking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
+        """
+        Cancels a booking, as long as the booking was originally done by you.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def getBooking(self, url: str) -> GetBookingResponse:  # noqa: E501
+        """
+        Returns whether a list of devices is currently booked for a user.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="get")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def destroyBooking(self, url: str) -> DestroyBookingResponse:  # noqa: E501
+        """
+        Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/destroy)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/destroy'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def lockBooking(self, url: str) -> LockBookingResponse:  # noqa: E501
+        """
+        Locks the current booking so the devices can be used.  This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/lock)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/lock'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="put")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def unlockBooking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
+        """
+        Unlocks all devices belonging to a booking, status will be set to 'booked'.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/lock)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/lock'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def bookingCallback(self, url: str) -> BookingCallbackResponse:  # noqa: E501
+        """
+        Callback used for updating device info / booking info.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking_callback\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post")
+           
+        # transform response
+        if status == 200:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
@@ -1253,8 +1416,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(lti\/platform)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/platform)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/lti/platform'
@@ -1262,7 +1424,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1276,8 +1438,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(lti\/platform)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/platform)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/lti/platform'
@@ -1285,7 +1446,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post")
-
+           
         # transform response
         if status == 201:
             return resp
@@ -1299,8 +1460,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1308,7 +1468,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1322,8 +1482,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1331,7 +1490,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1345,8 +1504,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1354,7 +1512,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -1368,8 +1526,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)(\/login)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/login)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/login'
@@ -1377,7 +1534,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1391,8 +1548,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)(\/launch)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/launch)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/launch'
@@ -1400,7 +1556,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="post", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1414,8 +1570,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/platform\/[^?]*?)(\/jwks)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/platform\/[^?]*?)(\/jwks)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/jwks'
@@ -1423,7 +1578,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1437,8 +1592,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?()(lti\/resource)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(lti\/resource)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/lti/resource'
@@ -1446,7 +1600,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1460,8 +1614,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1469,7 +1622,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1483,8 +1636,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1492,7 +1644,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1506,8 +1658,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1515,7 +1666,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="delete")
-
+           
         # transform response
         if status == 204:
             return resp
@@ -1529,8 +1680,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/students'
@@ -1538,7 +1688,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1547,14 +1697,13 @@ class APIClient:
     async def update_resource_students(self, url: str, body: UpdateResourceStudentsRequest) -> UpdateResourceStudentsResponse:  # noqa: E501
         """
         Update the students of the resource.
-
+        
         Update the students of the resource. Acts as you would call a PATCH on each student."""  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?)(\/students)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/students'
@@ -1562,7 +1711,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1576,8 +1725,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1585,7 +1733,7 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="get")
-
+           
         # transform response
         if status == 200:
             return resp
@@ -1599,8 +1747,7 @@ class APIClient:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL) +
-                      r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/resource\/[^?]*?\/students\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1608,8 +1755,30 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
-
+           
         # transform response
         if status == 200:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_lti_experiment(self, url: str, body: UpdateLtiExperimentRequest) -> UpdateLtiExperimentResponse:  # noqa: E501
+        """
+        Update the LTI experiment settings.
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/session\/[^?]*?)(\/experiment)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/experiment'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 201:
             return resp
         raise Exception(f"Unexpected status code: {status}")

@@ -66,18 +66,15 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   });
 
   // TEMPORARY HOTFIX: wait for booking to have status "booked"
-  await new Promise<void>(async resolve => {
-    for (let i = 0; i < 10; i++) {
-      const updatedBooking = await clients.booking.frontend.getBooking(booking.BookingID);
+  for (let i = 0; i < 10; i++) {
+    const updatedBooking = await clients.booking.frontend.getBooking(booking.BookingID);
 
-      if (updatedBooking.Booking.Status === 'booked') {
-        resolve();
-        break;
-      }
-
-      await new Promise<void>(resolve => setTimeout(resolve, 1000));
+    if (updatedBooking.Booking.Status === 'booked') {
+      break;
     }
-  });
+
+    await new Promise<void>(resolve => setTimeout(resolve, 1000));
+  }
 
   callbackHandler.addListener('booking', booking.BookingID, experimentModel.uuid);
 

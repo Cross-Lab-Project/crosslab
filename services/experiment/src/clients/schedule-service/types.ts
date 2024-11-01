@@ -76,8 +76,8 @@ export type SizedTuple<
     ? _SizedTuple<T, NumericRangeTuple<MIN, MAX>>
     : TupleObject<T, NumericRangeTuple<0, MIN>> & T[]
   : MAX extends number
-  ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
-  : T[];
+    ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
+    : T[];
 
 type _SizedTuple<T, ARR extends number[], Z extends boolean = false> = ARR extends [
   infer HEAD extends number,
@@ -192,108 +192,108 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      /**
-       * Unique ID of the booking.
-       */
-      ID: string;
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: {
+    ? {
         /**
-         * Start time of the booking.
+         * Unique ID of the booking.
          */
-        Start: string;
+        ID: string;
         /**
-         * End time of the booking.
+         * A time slot represents a slice of time used for bookings.
          */
-        End: string;
+        Time: {
+          /**
+           * Start time of the booking.
+           */
+          Start: string;
+          /**
+           * End time of the booking.
+           */
+          End: string;
+          [k: string]: unknown;
+        };
+        Devices: string[];
+        /**
+         * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+         */
+        Type?: 'normal';
+        /**
+         * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+         *
+         */
+        Status:
+          | 'pending'
+          | 'booked'
+          | 'rejected'
+          | 'cancelled'
+          | 'active'
+          | 'active-pending'
+          | 'active-rejected';
+        /**
+         * If true, this booking was done by you.
+         */
+        You: boolean;
+        /**
+         * Shows whether the booking was done by an external institution.
+         */
+        External: boolean;
+        /**
+         * User readable notes about the status of the booking (e.g. if devices are unknown).
+         */
+        Message?: string;
         [k: string]: unknown;
-      };
-      Devices: string[];
-      /**
-       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-       */
-      Type?: 'normal';
-      /**
-       * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
-       *
-       */
-      Status:
-        | 'pending'
-        | 'booked'
-        | 'rejected'
-        | 'cancelled'
-        | 'active'
-        | 'active-pending'
-        | 'active-rejected';
-      /**
-       * If true, this booking was done by you.
-       */
-      You: boolean;
-      /**
-       * Shows whether the booking was done by an external institution.
-       */
-      External: boolean;
-      /**
-       * User readable notes about the status of the booking (e.g. if devices are unknown).
-       */
-      Message?: string;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      /**
-       * Unique ID of the booking.
-       */
-      ID: string;
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: {
-        /**
-         * Start time of the booking.
-         */
-        Start: string;
-        /**
-         * End time of the booking.
-         */
-        End: string;
-        [k: string]: unknown;
-      };
-      Devices: string[];
-      /**
-       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-       */
-      Type?: 'normal';
-      /**
-       * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
-       *
-       */
-      Status:
-        | 'pending'
-        | 'booked'
-        | 'rejected'
-        | 'cancelled'
-        | 'active'
-        | 'active-pending'
-        | 'active-rejected';
-      /**
-       * If true, this booking was done by you.
-       */
-      You: boolean;
-      /**
-       * Shows whether the booking was done by an external institution.
-       */
-      External: boolean;
-      /**
-       * User readable notes about the status of the booking (e.g. if devices are unknown).
-       */
-      Message?: string;
-      [k: string]: unknown;
-    }
-  : never;
+      }
+    : T extends 'response'
+      ? {
+          /**
+           * Unique ID of the booking.
+           */
+          ID: string;
+          /**
+           * A time slot represents a slice of time used for bookings.
+           */
+          Time: {
+            /**
+             * Start time of the booking.
+             */
+            Start: string;
+            /**
+             * End time of the booking.
+             */
+            End: string;
+            [k: string]: unknown;
+          };
+          Devices: string[];
+          /**
+           * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
+           */
+          Type?: 'normal';
+          /**
+           * Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+           *
+           */
+          Status:
+            | 'pending'
+            | 'booked'
+            | 'rejected'
+            | 'cancelled'
+            | 'active'
+            | 'active-pending'
+            | 'active-rejected';
+          /**
+           * If true, this booking was done by you.
+           */
+          You: boolean;
+          /**
+           * Shows whether the booking was done by an external institution.
+           */
+          External: boolean;
+          /**
+           * User readable notes about the status of the booking (e.g. if devices are unknown).
+           */
+          Message?: string;
+          [k: string]: unknown;
+        }
+      : never;
 
 /**
  * A device might either be a physical/virtual device or a group of device.
@@ -307,22 +307,22 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      /**
-       * Unique ID of the device. Contains the institution (by having an end point at that institution)
-       */
-      ID: string;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      /**
-       * Unique ID of the device. Contains the institution (by having an end point at that institution)
-       */
-      ID: string;
-      [k: string]: unknown;
-    }
-  : never;
+    ? {
+        /**
+         * Unique ID of the device. Contains the institution (by having an end point at that institution)
+         */
+        ID: string;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+      ? {
+          /**
+           * Unique ID of the device. Contains the institution (by having an end point at that institution)
+           */
+          ID: string;
+          [k: string]: unknown;
+        }
+      : never;
 
 /**
  * An experiment describes a set of devices and how they should be connected (potentially among other metadata).
@@ -341,32 +341,32 @@ export type Experiment<T extends 'request' | 'response' | 'all' = 'all'> = T ext
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      /**
-       * List of devices used in experiment.
-       */
-      Devices: Device<'request'>[];
-      /**
-       * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-       *
-       */
-      Description?: string;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      /**
-       * List of devices used in experiment.
-       */
-      Devices: Device<'response'>[];
-      /**
-       * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-       *
-       */
-      Description?: string;
-      [k: string]: unknown;
-    }
-  : never;
+    ? {
+        /**
+         * List of devices used in experiment.
+         */
+        Devices: Device<'request'>[];
+        /**
+         * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+         *
+         */
+        Description?: string;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+      ? {
+          /**
+           * List of devices used in experiment.
+           */
+          Devices: Device<'response'>[];
+          /**
+           * User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+           *
+           */
+          Description?: string;
+          [k: string]: unknown;
+        }
+      : never;
 
 /**
  * A time slot represents a slice of time used for bookings.
@@ -384,27 +384,27 @@ export type Timeslot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      /**
-       * Start time of the booking.
-       */
-      Start: string;
-      /**
-       * End time of the booking.
-       */
-      End: string;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      /**
-       * Start time of the booking.
-       */
-      Start: string;
-      /**
-       * End time of the booking.
-       */
-      End: string;
-      [k: string]: unknown;
-    }
-  : never;
+    ? {
+        /**
+         * Start time of the booking.
+         */
+        Start: string;
+        /**
+         * End time of the booking.
+         */
+        End: string;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+      ? {
+          /**
+           * Start time of the booking.
+           */
+          Start: string;
+          /**
+           * End time of the booking.
+           */
+          End: string;
+          [k: string]: unknown;
+        }
+      : never;

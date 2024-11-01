@@ -15,7 +15,6 @@ import {
   ConnectionStatus,
   DeviceReference,
   ServiceDescription,
-  TimeSlot,
 } from '../generated/types.js';
 
 export type DeviceModel =

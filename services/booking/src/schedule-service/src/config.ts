@@ -1,4 +1,4 @@
-import { baseConfig, die } from '@crosslab/booking-service-common';
+import { baseConfig } from '@crosslab/booking-service-common';
 
 const PORT = parseInt(process.env.PORT ?? '3006');
 const DEFAULT_BASE_URL = 'http://localhost:' + PORT;

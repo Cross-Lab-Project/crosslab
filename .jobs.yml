@@ -138,6 +138,8 @@ services/booking/src/common:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - services/booking:build-spec
+      - services/device:build-spec
+      - clients/api/js:build
 
 services/booking/src/device-reservation:
   - script: build
@@ -195,11 +197,11 @@ services/booking/src/schedule-service:
       - services/booking/src/test_common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
-  - script: test
-    dependencies:
-      - services/booking/src/schedule-service:build
-    tags:
-      - test
+  # - script: test
+  #   dependencies:
+  #     - services/booking/src/schedule-service:build
+  #   tags:
+  #     - test
   - script: build-docker
     dependencies:
       - services/booking/src/schedule-service:build

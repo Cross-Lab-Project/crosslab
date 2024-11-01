@@ -63,9 +63,8 @@ export function validateNewBookingOutput(
     return true;
   }
 
-  (
-    validateNewBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateNewBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -159,9 +158,8 @@ export function validateUpdateBookingOutput(
     return true;
   }
 
-  (
-    validateUpdateBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUpdateBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -229,9 +227,8 @@ export function validateDeleteBookingOutput(
     return true;
   }
 
-  (
-    validateDeleteBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeleteBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -300,9 +297,8 @@ export function validateGetBookingOutput(
     return true;
   }
 
-  (
-    validateGetBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -370,9 +366,8 @@ export function validateDestroyBookingOutput(
     return true;
   }
 
-  (
-    validateDestroyBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDestroyBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

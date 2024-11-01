@@ -75,9 +75,8 @@ export function validateLockBookingOutput(
     return true;
   }
 
-  (
-    validateLockBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateLockBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -145,9 +144,8 @@ export function validateUnlockBookingOutput(
     return true;
   }
 
-  (
-    validateUnlockBookingOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUnlockBookingOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -203,9 +201,8 @@ export function validateBookingCallbackOutput(
     return true;
   }
 
-  (
-    validateBookingCallbackOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateBookingCallbackOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

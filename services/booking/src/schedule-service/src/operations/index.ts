@@ -349,7 +349,7 @@ export async function getTimetables(
   try {
     await db.connect();
 
-    let [rows, fields]: [any, any] = await db.execute(
+    let [rows, _fields]: [any, any] = await db.execute(
       'SELECT start, end FROM reservation WHERE `device`=? AND ((`start` < ? AND `end` > ?) OR (`start` < ? AND `end` > ?) OR (`start` > ? AND `end` < ?) OR (`start` < ? AND `end` > ?)) ORDER BY `start` ASC',
       [
         device.toString(),

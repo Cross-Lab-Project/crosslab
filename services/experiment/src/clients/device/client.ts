@@ -108,7 +108,7 @@ function isValidHttpUrl(string: string) {
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
 function parsePathParameters(url: string, endpoint: string): string[] {
-  const parameterRegex = '([a-zA-Z0-9-:]+)';
+  const parameterRegex = '([^/]+)';
   const regex = new RegExp(endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$');
   const matches = url.match(regex);
 
@@ -395,7 +395,7 @@ export class Client {
   ): Promise<Signatures.GetDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(new URL(url).toString(), this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -491,7 +491,7 @@ export class Client {
   ): Promise<Signatures.UpdateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(new URL(url).toString(), this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
     console.log('trying to fetch url:', url);
 
     const body = deviceUpdate;
@@ -577,7 +577,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(new URL(url).toString(), this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -658,7 +658,7 @@ export class Client {
   ): Promise<Signatures.InstantiateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(new URL(url).toString(), this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -751,11 +751,7 @@ export class Client {
   ): Promise<Signatures.GetDeviceAvailabilitySuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/devices/{}/availability',
-    );
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -845,11 +841,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/devices/{}/availability',
-    );
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -927,11 +919,7 @@ export class Client {
   ): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/devices/{}/availability',
-    );
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
     console.log('trying to fetch url:', url);
 
     const body = availabilityRules;
@@ -1011,11 +999,7 @@ export class Client {
   ): Promise<Signatures.CreateWebsocketTokenSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/websocket'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/devices/{}/websocket',
-    );
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/websocket');
     console.log('trying to fetch url:', url);
 
     const parameters = {
@@ -1101,11 +1085,7 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/signaling'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(
-      new URL(url).toString(),
-      this.baseUrl,
-      '/devices/{}/signaling',
-    );
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/signaling');
     console.log('trying to fetch url:', url);
 
     const body = sigMessage;
@@ -1355,7 +1335,6 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [peerconnection_id] = validateUrl(
       new URL(url).toString(),
-      this.baseUrl,
       '/peerconnections/{}',
     );
     console.log('trying to fetch url:', url);
@@ -1437,7 +1416,6 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [peerconnection_id] = validateUrl(
       new URL(url).toString(),
-      this.baseUrl,
       '/peerconnections/{}',
     );
     console.log('trying to fetch url:', url);
@@ -1528,7 +1506,6 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [peerconnection_id] = validateUrl(
       new URL(url).toString(),
-      this.baseUrl,
       '/peerconnections/{}/device_status',
     );
     console.log('trying to fetch url:', url);
