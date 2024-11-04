@@ -1,12 +1,1 @@
-{
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "Node",
-    "target": "ES2020",
-    "outDir": "app",
-    "rootDir": "src",
-    "sourceMap": true,
-    "esModuleInterop": true
-  },
-  "exclude": ["../generated_modified"]
-}
+../../../../common/node/tsconfig-app.json

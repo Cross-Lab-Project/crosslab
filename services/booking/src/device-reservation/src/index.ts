@@ -1,8 +1,5 @@
-import { mainLoop } from './mainLoop';
-
-export * from './mainLoop';
-export * from './messageDefinition';
+import { mainLoop } from './mainLoop.js';
 
 console.log('Starting reservation service');
 
-if (require.main === module) mainLoop();
+mainLoop();

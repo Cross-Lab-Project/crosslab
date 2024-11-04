@@ -15,7 +15,6 @@ import {
   ConnectionStatus,
   DeviceReference,
   ServiceDescription,
-  TimeSlot,
 } from '../generated/types.js';
 
 export type DeviceModel =
@@ -67,9 +66,6 @@ export class ConcreteDeviceModel extends DeviceOverviewModel {
 
   @Column()
   connected!: boolean;
-
-  @Column('simple-json')
-  announcedAvailability!: Required<TimeSlot>[];
 
   @Column('simple-json')
   availabilityRules!: AvailabilityRule[];
