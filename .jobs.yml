@@ -138,6 +138,9 @@ services/booking/src/common:
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - services/booking:build-spec
+      - services/booking/src/booking-backend:build-spec
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/schedule-service:build-spec
       - services/device:build-spec
       - clients/api/js:build
 
@@ -161,6 +164,9 @@ services/booking/src/test_common:
       - services/booking/src/device-reservation:build
 
 services/booking/src/booking-backend:
+  - script: build-spec
+    paths:
+      - ./api
   - script: build
     dependencies:
       - services/booking:build-spec
@@ -175,6 +181,9 @@ services/booking/src/booking-backend:
       - services/booking/src/booking-backend:build
 
 services/booking/src/booking-frontend:
+  - script: build-spec
+    paths:
+      - ./api
   - script: build
     dependencies:
       - services/booking:build-spec
@@ -189,6 +198,9 @@ services/booking/src/booking-frontend:
       - services/booking/src/booking-frontend:build
 
 services/booking/src/schedule-service:
+  - script: build-spec
+    paths:
+      - ./api
   - script: build
     dependencies:
       - services/booking:build-spec
@@ -259,6 +271,10 @@ services/experiment:
   - script: build
     dependencies:
       - services/experiment:build-spec
+      - services/booking/src/booking-backend:build-spec
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/schedule-service:build-spec
+      - services/booking:build-spec
       - services/common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
