@@ -9,11 +9,13 @@ export class LTIResource implements ResourceId {
   public resource_id: string;
   public experiment_template_uri?: string;
   private students_synced: boolean = false;
+  public platform_id: string;
 
   // #region Initializers
   private constructor(private resource_model: LtiResourceModel) {
     this.resource_id = resource_model.id;
     this.experiment_template_uri = resource_model.experiment_template_uri;
+    this.platform_id = resource_model.platform.id;
   }
 
   static async getOrCreate(message: {resource_link_id: string}, platform: LTIPlatform) {
@@ -23,7 +25,7 @@ export class LTIResource implements ResourceId {
     };
 
     await ApplicationDataSource.createQueryBuilder(LtiResourceModel, 'resource').insert().values({...resource_init}).orIgnore().execute();
-    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, resource_init);
+    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, resource_init, { relations: ['platform'] });
 
     return new LTIResource(resource as any);
   }
@@ -32,12 +34,13 @@ export class LTIResource implements ResourceId {
     const resource = await ApplicationDataSource.manager.findOneByOrFail(
       LtiResourceModel,
       { id: resource_id },
+      { relations: ['platform'] },
     );
     return new LTIResource(resource);
   }
 
   static async list() {
-    const resources = await ApplicationDataSource.manager.find(LtiResourceModel, {});
+    const resources = await ApplicationDataSource.manager.find(LtiResourceModel, {}, { relations: ['platform'] });
     return resources.map(resource => new LTIResource(resource));
   }
   // #endregion
