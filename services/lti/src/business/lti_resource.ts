@@ -25,22 +25,21 @@ export class LTIResource implements ResourceId {
     };
 
     await ApplicationDataSource.createQueryBuilder(LtiResourceModel, 'resource').insert().values({...resource_init}).orIgnore().execute();
-    const resource = await ApplicationDataSource.manager.findOneByOrFail(LtiResourceModel, resource_init, { relations: ['platform'] });
+    const resource = await ApplicationDataSource.manager.findOneOrFail(LtiResourceModel, { relations: ['platform'], where: resource_init});
 
     return new LTIResource(resource as any);
   }
 
   static async byId({ resource_id }: ResourceId) {
-    const resource = await ApplicationDataSource.manager.findOneByOrFail(
+    const resource = await ApplicationDataSource.manager.findOneOrFail(
       LtiResourceModel,
-      { id: resource_id },
-      { relations: ['platform'] },
+      {relations: ['platform'] , where: { id: resource_id }}
     );
     return new LTIResource(resource);
   }
 
   static async list() {
-    const resources = await ApplicationDataSource.manager.find(LtiResourceModel, {}, { relations: ['platform'] });
+    const resources = await ApplicationDataSource.manager.find(LtiResourceModel, { relations: ['platform'] });
     return resources.map(resource => new LTIResource(resource));
   }
   // #endregion
