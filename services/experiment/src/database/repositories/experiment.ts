@@ -81,15 +81,17 @@ export class ExperimentRepository extends AbstractRepository<
     if (devices) {
       const newDevices = [];
       for (const device of model.devices ?? []) {
-        const foundDevice = devices.find(d => d.device === device.url);
+        const foundDevice = devices.find(
+          d => d.device === device.url && d.role === device.role,
+        );
         if (!foundDevice) await this.dependencies.device.remove(device);
         else {
-          device.role = foundDevice.role;
           newDevices.push(device);
         }
       }
       for (const device of devices) {
-        if (newDevices.find(d => d.url === device.url)) continue;
+        if (newDevices.find(d => d.url === device.device && d.role === device.role))
+          continue;
         const deviceModel = await this.dependencies.device.create(device);
         newDevices.push(deviceModel);
         callbackHandler.addListener('device', device.device, model.uuid);

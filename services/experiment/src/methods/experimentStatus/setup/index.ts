@@ -23,15 +23,27 @@ export async function setupExperiment(
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Setting up experiment', { data: { experimentUrl } });
 
-  if (experimentModel.status !== 'booked')
+  if (experimentModel.status !== 'booked' && experimentModel.status !== 'running')
     throw new InvalidStateError(
-      `Expected experiment to have status 'booked', instead has status '${experimentModel.status}'`,
+      `Expected experiment to have status 'booked' or 'running', instead has status '${experimentModel.status}'`,
       500,
     );
 
-  if (!validateExperimentStatus(experimentModel, 'booked'))
+  if (
+    experimentModel.status === 'booked' &&
+    !validateExperimentStatus(experimentModel, 'booked')
+  )
     throw new MalformedExperimentError(
       `Experiment is in status 'booked', but does not satisfy the requirements for this status`,
+      500,
+    );
+
+  if (
+    experimentModel.status === 'running' &&
+    !validateExperimentStatus(experimentModel, 'running')
+  )
+    throw new MalformedExperimentError(
+      `Experiment is in status 'running', but does not satisfy the requirements for this status`,
       500,
     );
 
@@ -47,9 +59,11 @@ export async function setupExperiment(
     }
   }
 
+  logger.log('info', 'uninstantiated devices', uninstantiatedDevices);
+
   await lockBookingExperiment(experimentModel, resolvedDevices);
 
-  if (uninstantiatedDevices) {
+  if (uninstantiatedDevices.length > 0) {
     const instances = await instantiateDevicesExperiment(
       experimentModel,
       uninstantiatedDevices,
@@ -73,7 +87,7 @@ export async function setupExperiment(
       logger.log(
         'error',
         'Something went wrong while trying to create the peerconnections',
-        { data: { error: (error instanceof Error ? error.message : error) } },
+        { data: { error: error instanceof Error ? error.message : error } },
       );
       sendStatusUpdateMessages(
         experimentModel,
@@ -83,7 +97,9 @@ export async function setupExperiment(
         await finishExperiment(experimentModel, clients);
       } catch (finishError) {
         logger.log('error', 'Could not finish the experiment!', {
-          data: { error: (finishError instanceof Error ? finishError.message : finishError) },
+          data: {
+            error: finishError instanceof Error ? finishError.message : finishError,
+          },
         });
       }
     })

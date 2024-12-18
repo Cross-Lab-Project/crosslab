@@ -45,7 +45,7 @@ export function heartbeatHandling(
         { data: { error } },
       );
     }
-  }, 30000);
+  }, 5000);
 
   return interval;
 }

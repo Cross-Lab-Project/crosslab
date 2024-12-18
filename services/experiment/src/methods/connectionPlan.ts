@@ -273,9 +273,9 @@ function createPeerconnectionWebrtc(
     ],
     configuration: {
       iceServers: [
-        { urls: config.STUN_SERVER_URL },
+        { urls: config.STUN_SERVER_URL ?? [] },
         {
-          urls: config.TURN_SERVER_URL,
+          urls: config.TURN_SERVER_URL ?? [],
           username: config.TURN_SERVER_USERNAME,
           credential: config.TURN_SERVER_CREDENTIAL,
         },

@@ -36,7 +36,22 @@ export async function createPeerconnections(
   );
   const peerconnectionRequests = await buildConnectionPlan(experimentModel, devices);
   if (!experimentModel.connections) experimentModel.connections = [];
+  const resolvedConnections = await Promise.all(
+    experimentModel.connections.map(connection =>
+      clients.device.getPeerconnection(connection.url),
+    ),
+  );
   for (const peerconnectionRequest of peerconnectionRequests) {
+    if (
+      resolvedConnections.find(
+        connection =>
+          connection.devices[0].url === peerconnectionRequest.devices[0].url &&
+          connection.devices[1].url === peerconnectionRequest.devices[1].url,
+      )
+    ) {
+      continue;
+    }
+
     // TODO: error handling
     try {
       const peerconnection = await clients.device.createPeerconnection(

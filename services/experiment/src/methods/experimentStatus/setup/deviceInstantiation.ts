@@ -43,10 +43,10 @@ export async function instantiateDevicesExperiment(
   const instances: InstantiatedDevice[] = [];
   for (const instantiable of instantiables) {
     const instantiableDevice = experimentModel.devices.find(
-      device => device.url === instantiable.url,
+      device => device.url === instantiable.url && !device.instance,
     );
 
-    if (!instantiableDevice || instantiableDevice.instance) continue;
+    if (!instantiableDevice) continue;
 
     const instanceData = await clients.device.instantiateDevice(instantiable.url, {
       changedUrl: callbackUrl,

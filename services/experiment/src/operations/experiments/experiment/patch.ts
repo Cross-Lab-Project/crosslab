@@ -54,11 +54,16 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
           where: { uuid: parameters.experiment_id },
         });
 
+        const { instantiatedDevices } =
+          await repositories.experiment.format(experimentModel);
+
         if (body) await repositories.experiment.write(experimentModel, body);
 
         await transitionExperiment(experimentModel, body?.status, req.clients);
 
         await repositories.experiment.save(experimentModel);
+
+        const formattedExperiment = await repositories.experiment.format(experimentModel);
 
         logger.log(
           'info',
@@ -67,7 +72,19 @@ export const patchExperimentsByExperimentId: patchExperimentsByExperimentIdSigna
 
         return {
           status: 200,
-          body: await repositories.experiment.format(experimentModel),
+          body: {
+            ...formattedExperiment,
+            instantiatedDevices: formattedExperiment.instantiatedDevices.filter(
+              instantiatedDevice => {
+                for (const _instantiatedDevice of instantiatedDevices) {
+                  if (instantiatedDevice.url === _instantiatedDevice.url) {
+                    return false;
+                  }
+                }
+                return true;
+              },
+            ),
+          },
         };
       } finally {
         release();

@@ -53,16 +53,15 @@ export async function createPeerconnectionsExperiment(
           resolve();
           clearInterval(connectionInterval);
         } else if (i === 6) {
-          reject('Devices did not connect in time');
-          sendStatusUpdateMessages(
-            experimentModel,
+          const errorMessage =
             `The following devices did not connect in time: "` +
-              Array.from(connectedMap.entries())
-                .filter(entry => !entry[1])
-                .map(entry => entry[0])
-                .join('", "') +
-              '"',
-          );
+            Array.from(connectedMap.entries())
+              .filter(entry => !entry[1])
+              .map(entry => entry[0])
+              .join('", "') +
+            '"';
+          reject(errorMessage);
+          sendStatusUpdateMessages(experimentModel, errorMessage);
           clearInterval(connectionInterval);
         } else {
           i++;
@@ -71,16 +70,14 @@ export async function createPeerconnectionsExperiment(
     });
 
   for (const device of experimentModel.devices) {
-    await globalClients.device.sendSignalingMessage(
-      getUrlOrInstanceUrl(device),
-      {
-        messageType: 'configuration',
-        configuration: {
-          experimentUrl: experimentUrlFromId(experimentModel.uuid),
-          ...experimentModel.roles.find(role => role.name === device.role)?.configuration,
-        },
+    await globalClients.device.sendSignalingMessage(getUrlOrInstanceUrl(device), {
+      messageType: 'configuration',
+      configuration: {
+        role: device.role,
+        experimentUrl: experimentUrlFromId(experimentModel.uuid),
+        ...experimentModel.roles.find(role => role.name === device.role)?.configuration,
       },
-    );
+    });
   }
 
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
