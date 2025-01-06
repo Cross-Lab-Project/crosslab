@@ -3,6 +3,7 @@ import fs from "node:fs"
 import os from 'node:os'
 import path from "node:path"
 import { inspect } from "node:util"
+import { Document, Node, parse, YAMLMap, YAMLSeq } from 'yaml'
 import { config } from "./config.js"
 
 export function outputJson(parsed: any){
@@ -17,6 +18,31 @@ export function outputJson(parsed: any){
     process.stdout.write('\n')
 }
 
+function addComments(node: Node | null, path: string = ''){
+    if (node instanceof YAMLMap){
+        const keysToDelete = []
+        for(const item of node.items){
+            console.log(item.key)
+            if ((item.key as any).toString().startsWith('_c_')){
+                const key = (item.key as any).toString().slice(3)
+                keysToDelete.push(item.key)
+                if (!node.has(key)){
+                    node.commentBefore=(node.commentBefore?node.commentBefore+'\n':'')+key+': '+item.value
+                }
+            }else{
+                addComments(item.value as Node, path+'.'+item.key)
+            }
+        }
+        for(const key of keysToDelete){
+            node.delete(key)
+        }
+    }else if (node instanceof YAMLSeq){
+        for(const item of node.items){
+            addComments(item as Node, path+'[]')
+        }
+    }
+}
+
 export async function editJson(json: any){
     if (!process.stdin.isTTY) {
         let input = '';
@@ -25,12 +51,14 @@ export async function editJson(json: any){
     }
 
     const tmpdir = os.tmpdir()
-    const tmpfile = path.join(tmpdir, 'edit.json')
+    const tmpfile = path.join(tmpdir, 'edit.yaml')
 
-    fs.writeFileSync(tmpfile, JSON.stringify(json, undefined, 2))
+    const doc = new Document(json)
+    addComments(doc.contents)
+    fs.writeFileSync(tmpfile, doc.toString().replace(/\n{}\n$/g,'\n'))
     process.stderr.write('Waiting for editor to close\n')
     editFile(tmpfile)
-    const newJson = JSON.parse(fs.readFileSync(tmpfile).toString())
+    const newJson = parse(fs.readFileSync(tmpfile).toString())
     fs.unlinkSync(tmpfile)
     return newJson
 }
@@ -43,3 +71,4 @@ export function editFile(tmpfile: string) {
         throw new Error('Editor returned non-zero exit code')
     }
 }
+

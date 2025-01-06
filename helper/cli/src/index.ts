@@ -4,6 +4,7 @@ import { program } from 'commander';
 import { device } from './commands/device.js';
 import { experiment } from './commands/experiment.js';
 import { login } from './commands/login.js';
+import { lti } from './commands/lti.js';
 import { template } from './commands/template.js';
 import { user } from './commands/user.js';
 import { config, configLocation } from './config.js';
@@ -19,6 +20,7 @@ device(program);
 experiment(program);
 user(program);
 template(program);
+lti(program);
 
 program.command('config').action(async () => editFile(configLocation));
 

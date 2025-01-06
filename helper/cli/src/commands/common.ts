@@ -21,6 +21,7 @@ export function CRUD(
   methods: Methods,
   objectName: string,
   toList: (item: any) => { name: string; url: string },
+  empty: any={},
 ) {
   const promptUrl = async (client: APIClient) => {
     const items = (await client[methods.list]());
@@ -53,8 +54,8 @@ export function CRUD(
   program.command('create').action(async () => {
     const client = await getClient();
 
-    const obj: any = {};
-    outputJson(client[methods.create](obj));
+    const obj = await editJson({...empty});
+    outputJson(await client[methods.create](obj));
   });
 
   program
@@ -65,7 +66,7 @@ export function CRUD(
 
       url = url || (await promptUrl(client));
 
-      const user = await editJson(await client[methods.read](url));
+      const user = await editJson({...empty, ...(await client[methods.read](url) as any)});
       outputJson(await client[methods.update](url, user));
     });
 

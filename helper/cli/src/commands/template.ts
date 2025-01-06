@@ -15,6 +15,13 @@ export function template(program: Command) {
       del: 'deleteTemplate',
     },
     'experiment template',
-    (item: any) => {console.log(item);return { name: item.name, url: item.url }},
+    (item: any) => {
+      console.log(item);
+      return { name: item.name, url: item.url };
+    },
+    {
+      _c_name: 'Name of the template',
+      _c_description: 'OPTIONAL Description of the template',
+    },
   );
 }
